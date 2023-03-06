@@ -803,6 +803,7 @@ class UpdateObjectsTest:
         self, mock_api_poster, mock_call_allocine_api
     ):
         # Given
+        mock_api_poster.return_value = bytes()
         mock_call_allocine_api.return_value = iter(
             [
                 {
@@ -890,6 +891,9 @@ class UpdateObjectsTest:
         assert created_price_category_label.venue == venue
         assert created_price_category_label.label == "Tarif unique"
 
+        assert allocine_stocks_provider.erroredObjects == 0
+        assert allocine_stocks_provider.erroredThumbs == 0
+
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
@@ -898,6 +902,7 @@ class UpdateObjectsTest:
         self, mock_poster_get_allocine, mock_call_allocine_api
     ):
         # Given
+        mock_poster_get_allocine.return_value = bytes()
         mock_call_allocine_api.return_value = iter(
             [
                 {
@@ -1013,6 +1018,9 @@ class UpdateObjectsTest:
         assert second_price_category.offerId == vo_offer.id
         assert second_price_category.price == 10
         assert second_price_category.priceCategoryLabel == created_price_category_label
+
+        assert allocine_stocks_provider.erroredObjects == 0
+        assert allocine_stocks_provider.erroredThumbs == 0
 
     class WhenAllocineStockAreSynchronizedTwiceTest:
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")

@@ -107,6 +107,8 @@ class BoostStocksTest:
             "https://cinema-0.example.com/api/showtimes/36932",
             json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36932_DATA_NO_PC_PRICING,
         )
+        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
+        requests_mock.get("http://example.com/images/149489.jpg", content=bytes())
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
@@ -169,6 +171,9 @@ class BoostStocksTest:
         )
         assert created_price_category_label.label == "PASS CULTURE"
 
+        assert boost_stocks.erroredObjects == 0
+        assert boost_stocks.erroredThumbs == 0
+
     def should_fill_offer_and_product_and_stocks_and_price_categories(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
@@ -189,6 +194,7 @@ class BoostStocksTest:
             "https://cinema-0.example.com/api/showtimes/36684",
             json=fixtures.ShowtimeDetailsEndpointResponse.PC2_AND_FULL_PRICINGS_SHOWTIME_36684_DATA,
         )
+        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
@@ -237,6 +243,9 @@ class BoostStocksTest:
         assert created_price_categories[1].price == 18.0
         assert created_price_categories[1].label == "PASS CULTURE 1"
         assert created_price_categories[1].priceCategoryLabel == created_price_category_labels[1]
+
+        assert boost_stocks.erroredObjects == 0
+        assert boost_stocks.erroredThumbs == 0
 
     def should_not_create_stock_when_showtime_does_not_have_pass_culture_pricing(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
@@ -334,6 +343,8 @@ class BoostStocksTest:
             == f"http://localhost/storage/thumbs/products/{humanize(created_products[0].id)}"
         )
         assert created_products[0].thumbCount == 1
+
+        assert boost_stocks.erroredThumbs == 0
 
     def should_not_update_thumbnail_more_then_once_a_day(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
