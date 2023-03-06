@@ -81,15 +81,15 @@ class DigitalLocation(serialization.ConfiguredBaseModel):
 
 
 class ExtraDataModel(serialization.ConfiguredBaseModel):
-    author: str | None
-    ean: str | None
+    author: str | None = pydantic.Field(example="Jane Doe")
+    ean: str | None = pydantic.Field(example="12345678")
     isbn: str | None = pydantic.Field(None, example="9783140464079")
     musicType: MusicTypeEnum | None  # type: ignore [valid-type]
-    performer: str | None
-    stageDirector: str | None
+    performer: str | None = pydantic.Field(example="Jane Doe")
+    stageDirector: str | None = pydantic.Field(example="Jane Doe")
     showType: ShowTypeEnum | None  # type: ignore [valid-type]
-    speaker: str | None
-    visa: str | None
+    speaker: str | None = pydantic.Field(example="Jane Doe")
+    visa: str | None = pydantic.Field(example="140843")
 
 
 class CategoryRelatedFields(ExtraDataModel):
@@ -115,6 +115,7 @@ ACCESSIBILITY_FIELD = pydantic.Field(description="Accessibility to disabled peop
 EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic.Field(
     None,
     description="Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
+    example="https://example.com",
 )
 IMAGE_FIELD = pydantic.Field(
     None, description="Image illustrating the offer. Offers with images are more likely to be booked."
@@ -137,6 +138,7 @@ TICKET_COLLECTION_FIELD = pydantic.Field(
     None,
     description="How the ticket will be collected. Leave empty if there is no ticket. Only some categories are compatible with tickets.",
     discriminator="way",
+    example=None,
 )
 PRICE_CATEGORY_LABEL_FIELD = pydantic.Field(description="Price category label", example="Carré or")
 PRICE_CATEGORIES_FIELD = pydantic.Field(description="Available price categories for dates of this offer")
@@ -821,14 +823,14 @@ class GetDatesResponse(serialization.ConfiguredBaseModel):
 class OffererResponse(serialization.ConfiguredBaseModel):
     id: int
     dateCreated: datetime.datetime = pydantic.Field(..., alias="createdDatetime")
-    name: str
-    siren: str | None
+    name: str = pydantic.Field(example="Structure A")
+    siren: str | None = pydantic.Field(example="123456789")
 
 
 class VenuePhysicalLocation(serialization.ConfiguredBaseModel):
-    address: str | None
-    city: str | None
-    postalCode: str | None
+    address: str | None = pydantic.Field(example="55 rue du Faubourg-Saint-Honoré")
+    city: str | None = pydantic.Field(example="Paris")
+    postalCode: str | None = pydantic.Field(example="75008")
     type: typing.Literal["physical"] = "physical"
 
 
@@ -838,9 +840,7 @@ class VenueDigitalLocation(serialization.ConfiguredBaseModel):
 
 class VenueResponse(serialization.ConfiguredBaseModel):
     comment: str | None = pydantic.Field(
-        None,
-        description="Applicable if siret is null and venue is physical.",
-        alias="siretComment",
+        None, description="Applicable if siret is null and venue is physical.", alias="siretComment", example=None
     )
     dateCreated: datetime.datetime = pydantic.Field(..., alias="createdDatetime")
     id: int
@@ -849,9 +849,11 @@ class VenueResponse(serialization.ConfiguredBaseModel):
         description="Location where the offers will be available or will take place. There is exactly one digital venue per offerer, which is listed although its id is not required to create a digital offer (see DigitalLocation model).",
         discriminator="type",
     )
-    name: str = pydantic.Field(alias="legalName")
-    publicName: str | None = pydantic.Field(..., description="If null, legalName is used")
-    siret: str | None = pydantic.Field(description="Null when venue is digital or when siretComment field is not null.")
+    name: str = pydantic.Field(alias="legalName", example="Palais de l'Élysée")
+    publicName: str | None = pydantic.Field(..., description="If null, legalName is used", example="Élysée")
+    siret: str | None = pydantic.Field(
+        description="Null when venue is digital or when siretComment field is not null.", example="12345678901234"
+    )
     venueTypeCode: offerers_models.VenueTypeCode = pydantic.Field(alias="activityDomain")
 
     @classmethod
