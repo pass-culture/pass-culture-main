@@ -29,9 +29,9 @@ const Signup = () => {
       className={styles['sign-up']}
     >
       <PageTitle title="S’inscrire" />
-      <div className={styles['logo-side']}>
+      <header className={styles['logo-side']}>
         <Logo noLink signPage />
-      </div>
+      </header>
       {isProAccountCreationEnabled ? (
         <Routes>
           <Route element={<SignupContainer />} path="" />
