@@ -1,4 +1,9 @@
 <div class="form-floating">
-    <input type="date" id="{{ field.name }}" name="{{ field.name }}" class="form-control" value="{{ field.data if field.data else "" }}">
-    <label for="floatingInput">{{ field.label }}</label>
+    <input
+        type="date"
+        name="{{ field.name }}"
+        class="form-control"
+        value="{{ field.data if field.data else "" }}"
+    >
+    <label for="{{ field.name }}">{{ field.label }}</label>
 </div>
