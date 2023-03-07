@@ -4,14 +4,17 @@
             transform: rotate(90deg)
         }
     </style>
-    <button class="btn btn-sm btn-outline-primary pc-btn-chevron-toggle" data-bs-toggle="collapse"
-            data-bs-target="#b{{ booking.id }}">
+    <button
+        class="btn btn-sm btn-outline-primary pc-btn-chevron-toggle"
+        data-bs-toggle="collapse"
+        data-bs-target="#b{{ booking.id }}"
+    >
         <i class="bi bi-chevron-right"></i>
     </button>
 {% endmacro %}
 
 {% macro build_booking_extra_row(booking, stock, offer) %}
-    <tr class="collapse accordion-collapse" id="b{{ booking.id }}">
+    <tr class="collapse accordion-collapse">
         <td colspan="100%">
             <div class="row">
                 <div class="col-6">

@@ -6,9 +6,17 @@
 {% extends "layouts/connected.html" %}
 
 {% block page %}
-    <div class="pt-3 px-5">
+    <div class="pt-3 px-5" data-toggle="filters" data-toggle-id="collective-bookings">
         <h2 class="fw-light">Réservations collectives</h2>
-        <div id="filters">
+        <div class="col-2">
+            <div class="py-2">
+                <button type="submit" class="btn btn-primary filters-toggle-button" disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span class="visually-hidden">Chargement...</span>
+                </button>
+            </div>
+        </div>
+        <div class="filters-container">
             {{ forms.build_filters_form(form, dst) }}
         </div>
         <div>
