@@ -10,7 +10,7 @@ describe('onSubmit', () => {
     expectedStocks: IStocksEvent[]
   }[] = [
     {
-      description: 'one unique date',
+      description: 'generate stocks for one unique date',
       formValues: {
         recurrenceType: RecurrenceType.UNIQUE,
         startingDate: new Date('2020-03-03'),
@@ -53,7 +53,7 @@ describe('onSubmit', () => {
       ],
     },
     {
-      description: 'on a daily basis',
+      description: 'generate stocks on a daily basis',
       formValues: {
         recurrenceType: RecurrenceType.DAILY,
         startingDate: new Date('2020-03-03'),
@@ -92,7 +92,7 @@ describe('onSubmit', () => {
   ]
 
   cases.forEach(({ description, formValues, expectedStocks }) => {
-    it(`should validate the form for case: ${description}`, async () => {
+    it(`should ${description}`, async () => {
       const newStocks = onSubmit(formValues, '75')
 
       expect(newStocks).toEqual(expectedStocks)
