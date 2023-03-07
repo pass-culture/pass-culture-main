@@ -50,8 +50,16 @@ class SubscriptionItemStatus(enum.Enum):
     VOID = "void"
 
 
+class SubscriptionStepCompletionState(enum.Enum):
+    COMPLETED = "completed"
+    CURRENT = "current"
+    DISABLED = "disabled"
+    RETRY = "retry"
+
+
 @dataclasses.dataclass
 class SubscriptionStepDetails:
+    completion_state: SubscriptionStepCompletionState
     name: SubscriptionStep
     title: SubscriptionStepTitle
     subtitle: str | None = None
