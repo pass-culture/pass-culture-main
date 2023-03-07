@@ -1121,7 +1121,7 @@ def public_account_history(user: models.User) -> list[dict]:
 
     history = sorted(
         email_changes_history + user_suspension_history + fraud_checks_history + reviews_history + imports_history,
-        key=lambda item: item["datetime"],
+        key=lambda item: item["datetime"] or datetime.datetime.min,
         reverse=True,
     )
 

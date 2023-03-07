@@ -9,6 +9,7 @@ import pytest
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -19,6 +20,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.notifications.sms import testing as sms_testing
+from pcapi.repository import repository
 import pcapi.utils.email as email_utils
 
 from .helpers import accounts as accounts_helpers
@@ -492,6 +494,34 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
             f"https://www.demarches-simplifiees.fr/procedures/{new_dms.source_data().procedure_number}/dossiers/{new_dms.thirdPartyId}"
             in new_dms_card
         )
+
+    def test_get_public_account_history_date(self, authenticated_client):
+        # given
+        user = users_factories.BeneficiaryGrant18Factory()
+        no_date_action = history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_SUSPENDED, actionDate=None, user=user, authorUser=user
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_UNSUSPENDED,
+            actionDate=datetime.datetime.utcnow() - relativedelta(days=1),
+            user=user,
+            authorUser=users_factories.AdminFactory(),
+        )
+
+        # Here we want to check that it does not crash with None date in the history (legacy action migrated)
+        # Force actionDate because it was replaced with default (now) when inserted in database
+        no_date_action.actionDate = None
+        repository.save(no_date_action)
+
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+
+        # then
+        assert response.status_code == 200
+        # TODO (prouzet) <thead> is missing in account history, check rows when history is well implemented (PC-19723)
+        # history_rows = html_parser.extract_table_rows(response.data, parent_id="history-tab-pane")
+        # assert len(history_rows) >= 2
+        # assert history_rows[0]["..."] == "..."
 
 
 class EditPublicAccountTest(accounts_helpers.PageRendersHelper):
