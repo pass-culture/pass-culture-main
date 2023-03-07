@@ -2,6 +2,7 @@
     select.form-select.pc-select-multiple-field:not(.pc-select-multiple-autocomplete-field) {
         height: 1em;
         overflow: hidden;
+        border-radius: 1rem;
     }
     select.form-select.pc-select-multiple-field:not(.tomselected):not(.pc-select-multiple-autocomplete-field) > option {
         display: none;
@@ -10,7 +11,7 @@
 <div class="form-floating {{ field.name }}-container">
     <select
         multiple
-        class="rounded-pill form-select pc-select-multiple-field"
+        class="form-select pc-select-multiple-field"
         id="{{ field.name }}"
         name="{{ field.name }}"
         size="2"
