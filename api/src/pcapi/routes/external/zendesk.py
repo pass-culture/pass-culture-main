@@ -18,8 +18,8 @@ def zendesk_webhook_ticket_notification(body: zendesk_validation.WebhookRequest)
     update_zendesk_attributes_task.delay(
         UpdateZendeskAttributesRequest(
             is_new_ticket=body.is_new_ticket,
-            ticket_id=body.ticket_id,
-            zendesk_user_id=body.requester_id,
+            ticket_id=int(body.ticket_id),
+            zendesk_user_id=int(body.requester_id),
             email=body.requester_email,
             phone_number=body.requester_phone,
         )
