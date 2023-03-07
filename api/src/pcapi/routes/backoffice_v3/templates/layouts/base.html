@@ -67,7 +67,10 @@
 {% block content %}{% endblock %}
 
 <script type="module">
-    import hotwiredTurbo from 'https://cdn.skypack.dev/@hotwired/turbo';
+    import * as Turbo from 'https://cdn.skypack.dev/@hotwired/turbo';
+
+    addEventListener('turbo:before-frame-render', app.unbindEvents)
+    addEventListener('turbo:frame-render', app.bindEvents)
 
     // Handle server-side errors without a turbo-frame
     addEventListener("turbo:frame-missing", async (event) => {
@@ -82,15 +85,6 @@
 
         event.target.textContent = "Une erreur est survenue";
     })
-
-    addEventListener('turbo:before-frame-render', async () => {
-      app.unbindEvents()
-    })
-
-    addEventListener('turbo:frame-render', async () => {
-      app.bindEvents()
-    })
-
 </script>
 </body>
 </html>

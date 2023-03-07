@@ -23,6 +23,11 @@
 class PcSelectMultipleField extends PcAddOn {
   static SELECT_MULTIPLE_SELECTOR = 'select.pc-select-multiple-field[multiple]'
   static SELECT_MULTIPLE_AUTOCOMPLETE_CLASS = 'pc-select-multiple-autocomplete-field'
+  static SELECT_MULTIPLE_SETTINGS = {
+    plugins: ['dropdown_input', 'clear_button', 'checkbox_options'],
+    persist: false,
+    create: false,
+  }
 
   state = {
     selects: []
@@ -34,38 +39,15 @@ class PcSelectMultipleField extends PcAddOn {
 
   bindEvents = () => {
     this.$selects.forEach(($select) => {
-      let settings = {
-        plugins: ['dropdown_input', 'clear_button', 'checkbox_options'],
-        persist: false,
-        create: false,
+      const settingsXhrAutocomplete = $select.classList.contains(PcSelectMultipleField.SELECT_MULTIPLE_AUTOCOMPLETE_CLASS) ?
+        this.#getSettingsXhrAutocomplete($select) :
+        {}
+      if (!$select.tomselect) {
+        this.state.selects.push(new TomSelect($select, {
+          ...PcSelectMultipleField.SELECT_MULTIPLE_SETTINGS,
+          ...settingsXhrAutocomplete,
+        }))
       }
-      if ($select.classList.contains(PcSelectMultipleField.SELECT_MULTIPLE_AUTOCOMPLETE_CLASS)) {
-        const {
-          tomselectAutocompleteUrl,
-          tomselectOptions,
-          tomselectItems,
-        } = $select.dataset
-        settings = {
-          ...settings,
-          valueField: 'id',
-          labelField: 'text',
-          load: (query, callback) => {
-            const url = `${tomselectAutocompleteUrl}?q=${encodeURIComponent(query)}`;
-            fetch(url)
-              .then((response) => response.json())
-              .then((json) => callback(json.items))
-              .catch((error) => callback(undefined, error));
-          },
-          render: {
-            no_results: function(data, escape){
-              return '<div class="no-results">Aucun résultat pour "' + escape(data.input) + '"</div>';
-            },
-          },
-          ...(tomselectOptions ? { options: JSON.parse(tomselectOptions) } : {}),
-          ...(tomselectItems ? { items: JSON.parse(tomselectItems) } : {}),
-        }
-      }
-      this.state.selects.push(new TomSelect($select, settings))
     })
     EventHandler.on(document.body, 'mousemove', PcSelectMultipleField.SELECT_MULTIPLE_SELECTOR, this._preventDefault)
     EventHandler.on(document.body, 'mousedown', PcSelectMultipleField.SELECT_MULTIPLE_SELECTOR, this.#onMouseDown)
@@ -74,7 +56,12 @@ class PcSelectMultipleField extends PcAddOn {
   }
 
   unbindEvents = () => {
-    this.state.selects.forEach((select) => select.destroy())
+    // NOTE: destroy method unbind event but also destroy the HTML initialized by TomSelect which cause a UX glitch.
+    // Since we do not have control nor want to maintain tom select lib, until a better method exist to unbind/rebind
+    // We tolerate it's deactivation
+    // See https://github.com/orchidjs/tom-select/discussions/569 for resolution
+    // this.state.selects.forEach((select) => select.destroy())
+
     EventHandler.off(document.body, 'mousemove', PcSelectMultipleField.SELECT_MULTIPLE_SELECTOR, this._preventDefault)
     EventHandler.off(document.body, 'mousedown', PcSelectMultipleField.SELECT_MULTIPLE_SELECTOR, this.#onMouseDown)
     EventHandler.off(document.body, 'change', PcSelectMultipleField.SELECT_MULTIPLE_SELECTOR, this.#onScrollOrChange)
@@ -99,5 +86,31 @@ class PcSelectMultipleField extends PcAddOn {
       return
     }
     event.target.parentElement.querySelector('label').classList.remove('d-none')
+  }
+
+  #getSettingsXhrAutocomplete($select) {
+    const {
+      tomselectAutocompleteUrl,
+      tomselectOptions,
+      tomselectItems,
+    } = $select.dataset
+    return {
+      valueField: 'id',
+      labelField: 'text',
+      load: (query, callback) => {
+        const url = `${tomselectAutocompleteUrl}?q=${encodeURIComponent(query)}`;
+        fetch(url)
+          .then((response) => response.json())
+          .then((json) => callback(json.items))
+          .catch((error) => callback(undefined, error))
+      },
+      render: {
+        no_results: (data, escape) => {
+          return '<div class="no-results">Aucun résultat pour "' + escape(data.input) + '"</div>'
+        },
+      },
+      ...(tomselectOptions ? { options: JSON.parse(tomselectOptions) } : {}),
+      ...(tomselectItems ? { items: JSON.parse(tomselectItems) } : {}),
+    }
   }
 }
