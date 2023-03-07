@@ -72,13 +72,13 @@ jobs:
             "attachments": [
               {
                 "mrkdwn_in": ["text"],
-                "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
+                "color": "#A30002",
                 "author_name": "${{github.actor}}",
                 "author_link": "https://github.com/${{github.actor}}",
                 "author_icon": "https://github.com/${{github.actor}}.png",
                 "title": "Api tests",
                 "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Les tests quality-checks échouent sur `master` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
+                "text": "Les tests quality-checks échouent sur `master` :boom:"
               }
             ],
             "unfurl_links": false,
@@ -131,13 +131,13 @@ jobs:
             "attachments": [
               {
                 "mrkdwn_in": ["text"],
-                "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
+                "color": "#A30002",
                 "author_name": "${{github.actor}}",
                 "author_link": "https://github.com/${{github.actor}}",
                 "author_icon": "https://github.com/${{github.actor}}.png",
                 "title": "Api tests",
                 "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Les tests pylint-checks échouent sur `master` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
+                "text": "Les tests pylint-checks échouent sur `master` :boom:"
               }
             ],
             "unfurl_links": false,
@@ -241,13 +241,13 @@ jobs:
             "attachments": [
               {
                 "mrkdwn_in": ["text"],
-                "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
+                "color": "#A30002",
                 "author_name": "${{github.actor}}",
                 "author_link": "https://github.com/${{github.actor}}",
                 "author_icon": "https://github.com/${{github.actor}}.png",
                 "title": "Api tests",
                 "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Les tests database échouent sur `master` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
+                "text": "Les tests database échouent sur `master` :boom:"
               }
             ],
             "unfurl_links": false,
@@ -364,13 +364,13 @@ jobs:
             "attachments": [
               {
                 "mrkdwn_in": ["text"],
-                "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
+                "color": "#A30002",
                 "author_name": "${{github.actor}}",
                 "author_link": "https://github.com/${{github.actor}}",
                 "author_icon": "https://github.com/${{github.actor}}.png",
                 "title": "Api tests",
                 "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Les tests pytest échouent sur `master` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
+                "text": "Les tests pytest échouent sur `master` :boom:"
               }
             ],
             "unfurl_links": false,
