@@ -1,4 +1,5 @@
 import datetime
+import random
 import typing
 from urllib.parse import urlparse
 from urllib.parse import urlunparse
@@ -238,6 +239,18 @@ def parse_referrer(url: str) -> str:
         return "/"
 
 
+def action_to_name(action_url: str) -> str:
+    """
+    Slugify a form action path to a name so form can be controlled with JS.
+    """
+    try:
+        if len(action_url) != 0:
+            return action_url[1:].replace("-", "_").replace("/", "_")
+        return format(random.getrandbits(128), "x")
+    except Exception:  # pylint: disable=broad-except
+        return action_url
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -265,6 +278,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_reason_label"] = format_reason_label
     app.jinja_env.filters["format_adage_referred"] = format_adage_referred
     app.jinja_env.filters["parse_referrer"] = parse_referrer
+    app.jinja_env.filters["action_to_name"] = action_to_name
     app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link
     app.jinja_env.filters["pc_pro_offerer_link"] = urls.build_pc_pro_offerer_link
     app.jinja_env.filters["pc_pro_venue_bookings_link"] = urls.build_pc_pro_venue_bookings_link

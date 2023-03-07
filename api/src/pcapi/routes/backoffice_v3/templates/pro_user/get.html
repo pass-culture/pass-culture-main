@@ -43,7 +43,7 @@
                                         <div class="modal-header fs-5" id="edit-pro-user-modal-label">
                                             Modification des informations
                                             de {{ user.firstName }} {{ user.lastName | upper }}</div>
-                                        <form action="{{ dst }}" method="POST">
+                                        <form action="{{ dst }}" name="{{ dst | action_to_name }}" method="POST">
                                             <div class="modal-body">
                                                 {{ build_form_fields_group(form) }}
                                             </div>

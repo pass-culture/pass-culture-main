@@ -1,5 +1,5 @@
 {% macro build_filters_form(form, action) %}
-    <form action="{{ action }}" method="GET" class="mb-4 mt-3">
+    <form action="{{ action }}" name="{{ action | action_to_name }}" method="GET" class="mb-4 mt-3">
         <div class="row">
             <div class="col-10">
                 {% set select_multiple = [] %}
