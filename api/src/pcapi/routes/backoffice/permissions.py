@@ -102,4 +102,8 @@ def delete_role(id_: int) -> serialization.Role:
     except ValueError as err:
         raise ApiErrors(errors={"id": str(err)})
 
-    return serialization.Role(id=deleted_id, name=deleted_name, permissions=deleted_permissions)
+    return serialization.Role(
+        id=deleted_id,
+        name=deleted_name,
+        permissions=[serialization.Permission.from_orm(permission) for permission in deleted_permissions],
+    )
