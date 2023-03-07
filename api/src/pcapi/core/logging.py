@@ -100,7 +100,7 @@ def monkey_patch_logger_makeRecord() -> None:
         return record
 
     logging.Logger.__original_makeRecord = logging.Logger.makeRecord  # type: ignore [attr-defined]
-    logging.Logger.makeRecord = makeRecord  # type: ignore [assignment]
+    logging.Logger.makeRecord = makeRecord  # type: ignore [method-assign]
 
 
 def monkey_patch_logger_log() -> None:
@@ -132,7 +132,7 @@ def monkey_patch_logger_log() -> None:
         )
 
     logging.Logger.__original_log = logging.Logger._log  # type: ignore [attr-defined]
-    logging.Logger._log = _log  # type: ignore [assignment]
+    logging.Logger._log = _log  # type: ignore [method-assign]
 
 
 class JsonLogEncoder(json.JSONEncoder):
