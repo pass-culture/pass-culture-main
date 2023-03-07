@@ -8,6 +8,18 @@ const priceCategoriesOptions: SelectOption[] = [
   { label: 'Tarif 1', value: '1' },
 ]
 
+const baseValidForm: RecurrenceFormValues = {
+  recurrenceType: RecurrenceType.UNIQUE,
+  startingDate: new Date('2020-03-03'),
+  endingDate: null,
+  beginningTimes: [
+    new Date('2020-01-01T10:00:00'),
+    new Date('2020-01-01T10:30:00'),
+  ],
+  quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
+  bookingLimitDateInterval: 2,
+}
+
 describe('validationSchema', () => {
   const cases: {
     description: string
@@ -15,24 +27,25 @@ describe('validationSchema', () => {
     expectedErrors: string[]
   }[] = [
     {
-      description: 'valid form',
+      description: 'valid form for unique date',
+      formValues: baseValidForm,
+      expectedErrors: [],
+    },
+    {
+      description: 'valid form for daily recurrence',
       formValues: {
-        recurrenceType: RecurrenceType.UNIQUE,
-        startingDate: new Date('2020-03-03'),
-        beginningTimes: [
-          new Date('2020-01-01T10:00:00'),
-          new Date('2020-01-01T10:30:00'),
-        ],
-        quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
-        bookingLimitDateInterval: 2,
+        ...baseValidForm,
+        recurrenceType: RecurrenceType.DAILY,
+        endingDate: new Date('2020-03-07'),
       },
       expectedErrors: [],
     },
     {
-      description: 'invalid form',
+      description: 'missing required fields for unique date',
       formValues: {
         recurrenceType: '',
         startingDate: null,
+        endingDate: null,
         beginningTimes: [null],
         quantityPerPriceCategories: [
           { quantity: -5, priceCategory: '666' },
@@ -50,6 +63,15 @@ describe('validationSchema', () => {
         'Veuillez renseigner un tarif',
         'bookingLimitDateInterval must be a `number` type, but the final value was: `NaN` (cast from the value `""`).',
       ],
+    },
+    {
+      description: 'missing ending date for daily recurrence',
+      formValues: {
+        ...baseValidForm,
+        recurrenceType: RecurrenceType.DAILY,
+        endingDate: null,
+      },
+      expectedErrors: ['Veuillez renseigner une date'],
     },
   ]
 

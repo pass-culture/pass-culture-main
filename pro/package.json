@@ -91,6 +91,7 @@
     "react-tooltip": "^4.2.18",
     "redux": "^4.0.5",
     "reselect": "^4.1.5",
+    "rrule": "^2.7.2",
     "sass": "^1.50.1",
     "sass-rem": "^3.0.0",
     "search-insights": "^2.3.0",

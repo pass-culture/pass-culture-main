@@ -82,8 +82,19 @@ export const RecurrenceForm = ({
             />
           </FormLayout.Row>
 
-          <FormLayout.Row>
-            <DatePicker name="startingDate" label="Date de l’évènement" />
+          <FormLayout.Row inline>
+            <DatePicker
+              name="startingDate"
+              label={
+                values.recurrenceType === RecurrenceType.UNIQUE
+                  ? 'Date de l’évènement'
+                  : 'Du'
+              }
+            />
+
+            {values.recurrenceType !== RecurrenceType.UNIQUE && (
+              <DatePicker name="endingDate" label="Au" />
+            )}
           </FormLayout.Row>
 
           <div className={styles['legend']}>
