@@ -48,7 +48,11 @@
             </p>
         </a>
 
-        <form action="{{ url_for('backoffice_v3_web.logout') }}" method="POST">
+        <form
+            action="{{ url_for('backoffice_v3_web.logout') }}"
+            name="{{ url_for('backoffice_v3_web.logout') | action_to_name }}"
+            method="POST"
+        >
             {{ csrf_token }}
 
             <button type="submit" class="btn btn-link text-white">

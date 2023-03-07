@@ -13,7 +13,12 @@
                 aria-describedby="create-offerer-tag-modal-label" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <form action="{{ url_for("backoffice_v3_web.offerer_tag.create_offerer_tag") }}" method="POST" data-turbo="false">
+                    <form
+                        action="{{ url_for("backoffice_v3_web.offerer_tag.create_offerer_tag") }}"
+                        name="{{ url_for("backoffice_v3_web.offerer_tag.create_offerer_tag") | action_to_name }}"
+                        method="POST"
+                        data-turbo="false"
+                    >
                         <div class="modal-header" id="create-offerer-tag-modal-label">
                             <h5 class="modal-title">Créer un tag structure</h5>
                         </div>
@@ -72,8 +77,12 @@
                                     aria-labelledby="edit-offerer-tag-modal-{{ offerer_tag.id }}-label" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
-                                            <form action="{{ url_for("backoffice_v3_web.offerer_tag.update_offerer_tag", offerer_tag_id=offerer_tag.id) }}"
-                                                method="POST" data-turbo="false">
+                                            <form
+                                                action="{{ url_for("backoffice_v3_web.offerer_tag.update_offerer_tag", offerer_tag_id=offerer_tag.id) }}"
+                                                action="{{ url_for("backoffice_v3_web.offerer_tag.update_offerer_tag", offerer_tag_id=offerer_tag.id) | action_to_name }}"
+                                                method="POST"
+                                                data-turbo="false"
+                                            >
                                                 <div class="modal-header" id="edit-offerer-tag-modal-{{ offerer_tag.id }}-label">
                                                     <h5 class="modal-title">Modifier le tag {{ offerer_tag.name }}</h5>
                                                 </div>
@@ -93,8 +102,12 @@
                                         aria-labelledby="delete-offerer-tag-modal-{{ offerer_tag.id }}-label" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
-                                                <form action="{{ url_for("backoffice_v3_web.offerer_tag.delete_offerer_tag", offerer_tag_id=offerer_tag.id) }}"
-                                                    method="POST" data-turbo="false">
+                                                <form
+                                                    action="{{ url_for("backoffice_v3_web.offerer_tag.delete_offerer_tag", offerer_tag_id=offerer_tag.id) }}"
+                                                    action="{{ url_for("backoffice_v3_web.offerer_tag.delete_offerer_tag", offerer_tag_id=offerer_tag.id) | action_to_name }}"
+                                                    method="POST"
+                                                    data-turbo="false"
+                                                >
                                                     <div class="modal-header" id="delete-offerer-tag-modal-{{ offerer_tag.id }}-label">
                                                         <h5 class="modal-title">Supprimer le tag {{ offerer_tag.name }}</h5>
                                                     </div>

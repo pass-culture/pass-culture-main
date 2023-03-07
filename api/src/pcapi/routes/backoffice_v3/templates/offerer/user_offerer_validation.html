@@ -118,7 +118,14 @@
                                                     offerer_id=offerer.id,
                                                     user_offerer_id=user_offerer.id
                                                 ) }}"
-                                                    method="POST">
+                                                name="{{
+                                                url_for(
+                                                    "backoffice_v3_web.validation.validate_user_offerer",
+                                                    offerer_id=offerer.id,
+                                                    user_offerer_id=user_offerer.id
+                                                ) | action_to_name }}"
+                                                method="POST"
+                                            >
                                                 {{ csrf_token }}
                                                 <button type="submit" class="btn btn-sm d-block w-100 text-start px-3">
                                                     Valider

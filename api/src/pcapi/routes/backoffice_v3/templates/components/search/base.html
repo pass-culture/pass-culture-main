@@ -21,7 +21,7 @@
                     {% endfor %}
                 </div>
 
-                <form action="{{ dst }}" method="GET">
+                <form action="{{ dst }}" name="{{ dst | action_to_name }}" method="GET">
                     <div class="row col-10 translate-middle-x position-relative start-50 ">
 
                         <div class="input-group mb-3">

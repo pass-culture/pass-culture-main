@@ -73,11 +73,10 @@
                                     <ul class="dropdown-menu">
                                         <li class="dropdown-item p-0">
                                             <form
-                                                    action="{{ url_for(
-                                                    "backoffice_v3_web.validation.validate_offerer",
-                                                    offerer_id=offerer.id
-                                                ) }}"
-                                                    method="POST">
+                                                action="{{ url_for("backoffice_v3_web.validation.validate_offerer", offerer_id=offerer.id) }}"
+                                                name="{{ url_for("backoffice_v3_web.validation.validate_offerer", offerer_id=offerer.id) | action_to_name }}"
+                                                method="POST"
+                                            >
                                                 {{ csrf_token }}
                                                 <button type="submit" class="btn btn-sm d-block w-100 text-start px-3">
                                                     Valider
@@ -109,11 +108,10 @@
                                 {% set top_actor_checked = is_top_actor_func(offerer) %}
                                 <div class="form-check form-switch">
                                     <form
-                                            action="{{ url_for(
-                                                "backoffice_v3_web.validation.toggle_top_actor",
-                                                offerer_id=offerer.id
-                                            ) }}"
-                                            method="POST">
+                                        action="{{ url_for("backoffice_v3_web.validation.toggle_top_actor", offerer_id=offerer.id) }}"
+                                        name="{{ url_for("backoffice_v3_web.validation.toggle_top_actor", offerer_id=offerer.id) | action_to_name }}"
+                                        method="POST"
+                                    >
                                         {{ csrf_token }}
 
                                         <input class="form-check-input" type="checkbox" role="switch"
