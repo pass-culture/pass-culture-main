@@ -15,6 +15,13 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       .date()
       .nullable()
       .required('Veuillez renseigner une date'),
+    endingDate: yup
+      .date()
+      .nullable()
+      .when('recurrenceType', {
+        is: RecurrenceType.DAILY,
+        then: schema => schema.required('Veuillez renseigner une date'),
+      }),
     beginningTimes: yup
       .array()
       .of(yup.string().nullable().required('Veuillez renseigner un horaire')),

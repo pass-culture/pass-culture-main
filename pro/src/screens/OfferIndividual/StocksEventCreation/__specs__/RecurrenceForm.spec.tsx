@@ -75,4 +75,10 @@ describe('RecurrenceForm', () => {
       screen.getByRole('button', { name: 'Supprimer les places' })
     ).toBeDisabled()
   })
+
+  it('should render for daily recurrence', async () => {
+    render(<RecurrenceForm {...defaultProps} />)
+
+    await userEvent.click(screen.getByLabelText('Tous les jours'))
+  })
 })
