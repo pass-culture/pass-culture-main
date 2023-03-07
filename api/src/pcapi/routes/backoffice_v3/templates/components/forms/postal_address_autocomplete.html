@@ -6,7 +6,7 @@
         value="{{ field.data | empty_string_if_null }}"
         data-toggle="postal-address-autocomplete"
         data-limit="{{ field.limit }}"
-        {% if field.required %}required{% endif %}
+        {% if field.required %}required {% endif %}
         {% if field.has_reset %}data-has-reset="true"{% endif %}
         {% if field.has_manual_editing %}data-has-manual-editing="true"{% endif %}
         {# Bellow data are necessary to tell add on PcPostalAddressAutocomplete which field in the form to set on selection #}
