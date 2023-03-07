@@ -51,6 +51,10 @@ ShowTypeEnum = StrEnum(  # type: ignore [call-overload]
     },
 )
 
+VenueTypeEnum = StrEnum(  # type: ignore [call-overload]
+    "VenueTypeEnum", {venue_type.name: venue_type.name for venue_type in offerers_models.VenueTypeCode}
+)
+
 
 class Accessibility(serialization.ConfiguredBaseModel):
     audio_disability_compliant: bool
@@ -854,7 +858,7 @@ class VenueResponse(serialization.ConfiguredBaseModel):
     siret: str | None = pydantic.Field(
         description="Null when venue is digital or when siretComment field is not null.", example="12345678901234"
     )
-    venueTypeCode: offerers_models.VenueTypeCode = pydantic.Field(alias="activityDomain")
+    venueTypeCode: VenueTypeEnum = pydantic.Field(alias="activityDomain")  # type: ignore [valid-type]
 
     @classmethod
     def build_model(cls, venue: offerers_models.Venue) -> "VenueResponse":
@@ -868,7 +872,7 @@ class VenueResponse(serialization.ConfiguredBaseModel):
             name=venue.name,
             publicName=venue.publicName,
             siret=venue.siret,
-            venueTypeCode=venue.venueTypeCode,
+            venueTypeCode=venue.venueTypeCode.name,
         )
 
     class Config:
