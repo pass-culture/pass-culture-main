@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'jest-axe'
 import React from 'react'
 
 import { individualOfferFactory } from 'utils/individualApiFactories'
@@ -13,6 +14,11 @@ const defaultProps = {
 }
 
 describe('RecurrenceForm', () => {
+  it('should pass axe accessibility tests', async () => {
+    const { container } = render(<RecurrenceForm {...defaultProps} />)
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should submit', async () => {
     const onConfirm = jest.fn()
     render(<RecurrenceForm {...defaultProps} onConfirm={onConfirm} />)

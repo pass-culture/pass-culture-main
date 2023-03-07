@@ -2,8 +2,10 @@ import 'regenerator-runtime/runtime'
 import fetchMock from 'jest-fetch-mock'
 
 import '@testing-library/jest-dom'
-
 import acceptableErrors from './jestErrorsAllowList'
+import { toHaveNoViolations } from 'jest-axe'
+
+expect.extend(toHaveNoViolations)
 
 fetchMock.enableMocks()
 
