@@ -8,6 +8,7 @@ from pcapi import settings
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
+from pcapi.core.subscription.models import SubscriptionStepCompletionState
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -632,6 +633,18 @@ class StepperTest:
             "subtitle": None,
         }
 
+        self.all_steps = {
+            "phone_validation_step": self.phone_validation_step,
+            "profile_completion_step": self.profile_completion_step,
+            "identity_check_step": self.identity_check_step,
+            "honor_statement_step": self.honor_statement_step,
+        }
+
+    def get_step(self, step_name, completion_state):
+        step = self.all_steps[step_name]
+        step["completionState"] = completion_state
+        return step
+
     def should_contain_all_subscription_steps_for_18yo_user(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -644,10 +657,10 @@ class StepperTest:
 
         assert response.status_code == 200
         assert response.json["subscriptionStepsToDisplay"] == [
-            self.phone_validation_step,
-            self.profile_completion_step,
-            self.identity_check_step,
-            self.honor_statement_step,
+            self.get_step("phone_validation_step", SubscriptionStepCompletionState.CURRENT.value),
+            self.get_step("profile_completion_step", SubscriptionStepCompletionState.DISABLED.value),
+            self.get_step("identity_check_step", SubscriptionStepCompletionState.DISABLED.value),
+            self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
         assert response.json["title"] == "C'est très rapide !"
         assert response.json["subtitle"] == "Pour débloquer tes 300€ tu dois suivre les étapes suivantes :"
@@ -665,9 +678,9 @@ class StepperTest:
         assert response.status_code == 200
 
         assert response.json["subscriptionStepsToDisplay"] == [
-            self.profile_completion_step,
-            self.identity_check_step,
-            self.honor_statement_step,
+            self.get_step("profile_completion_step", SubscriptionStepCompletionState.CURRENT.value),
+            self.get_step("identity_check_step", SubscriptionStepCompletionState.DISABLED.value),
+            self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
         assert response.json["title"] == "C'est très rapide !"
         assert response.json["subtitle"] == "Pour débloquer tes 20€ tu dois suivre les étapes suivantes :"
@@ -689,9 +702,9 @@ class StepperTest:
         response = client.get("/native/v1/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
-            self.phone_validation_step,
-            self.profile_completion_step,
-            self.honor_statement_step,
+            self.get_step("phone_validation_step", SubscriptionStepCompletionState.CURRENT.value),
+            self.get_step("profile_completion_step", SubscriptionStepCompletionState.DISABLED.value),
+            self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
 
     def should_contain_id_check_in_steps_if_educonnect_done_for_underage(self, client):
@@ -709,10 +722,10 @@ class StepperTest:
         response = client.get("/native/v1/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
-            self.phone_validation_step,
-            self.profile_completion_step,
-            self.identity_check_step,
-            self.honor_statement_step,
+            self.get_step("phone_validation_step", SubscriptionStepCompletionState.CURRENT.value),
+            self.get_step("profile_completion_step", SubscriptionStepCompletionState.DISABLED.value),
+            self.get_step("identity_check_step", SubscriptionStepCompletionState.DISABLED.value),
+            self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
 
     def should_have_subtitle_for_id_check_when_ubble_retryable(self, client):
@@ -730,14 +743,15 @@ class StepperTest:
         response = client.get("/native/v1/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
-            self.phone_validation_step,
-            self.profile_completion_step,
+            self.get_step("phone_validation_step", SubscriptionStepCompletionState.COMPLETED.value),
+            self.get_step("profile_completion_step", SubscriptionStepCompletionState.COMPLETED.value),
             {
                 "name": "identity-check",
                 "title": "Identification",
                 "subtitle": "Réessaie avec ta pièce d'identité en t'assurant qu'elle soit lisible",
+                "completionState": SubscriptionStepCompletionState.CURRENT.value,
             },
-            self.honor_statement_step,
+            self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
 
 
