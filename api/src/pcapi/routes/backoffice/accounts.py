@@ -214,8 +214,9 @@ def review_public_account(
     return serialization.BeneficiaryReviewResponseModel(
         userId=review.user.id,
         authorId=review.author.id,
-        review=getattr(review.review, "value", None),
+        review=getattr(review.review, "value", None),  # type: ignore [arg-type]
         reason=review.reason,
+        eligibility=eligibility.value if eligibility else None,
     )
 
 

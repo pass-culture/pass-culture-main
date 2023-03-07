@@ -16,7 +16,7 @@ class VenueOffersStats(OffersStats):
 
 class VenueStats(BaseModel):
     stats: VenueOffersStats
-    total_revenue: int
+    total_revenue: float
 
 
 class VenueDmsStats(BaseModel):
