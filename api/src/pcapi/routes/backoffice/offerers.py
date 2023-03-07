@@ -48,9 +48,9 @@ def get_offerer_users(offerer_id: int) -> serialization.OffererAttachedUsersResp
                 firstName=user_offerer.user.firstName,
                 lastName=user_offerer.user.lastName,
                 email=user_offerer.user.email,
-                phoneNumber=user_offerer.user.phoneNumber,
+                phoneNumber=user_offerer.user.phoneNumber,  # type: ignore [arg-type]
                 user_offerer_id=user_offerer.id,
-                validationStatus=user_offerer.validationStatus,
+                validationStatus=user_offerer.validationStatus,  # type: ignore [arg-type]
             )
             for user_offerer in users_offerer
         ]
@@ -135,7 +135,7 @@ def get_offerer_history(offerer_id: int) -> serialization.HistoryResponseModel:
     return serialization.HistoryResponseModel(
         data=[
             serialization.HistoryItem(
-                type=action.actionType.value,
+                type=action.actionType,
                 date=format_into_utc_date(action.actionDate) if action.actionDate else None,
                 authorId=action.authorUserId,
                 authorName=action.authorUser.publicName if action.authorUser else None,

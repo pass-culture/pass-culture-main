@@ -210,7 +210,10 @@ class BeneficiaryReviewRequestModel(BaseModel):
     eligibility: str | None
 
 
-class BeneficiaryReviewResponseModel(BeneficiaryReviewRequestModel):
+class BeneficiaryReviewResponseModel(BaseModel):
+    reason: str | None
+    review: fraud_models.FraudReviewStatus
+    eligibility: str | None
     userId: int
     authorId: int
 
@@ -404,7 +407,7 @@ class HistoryItem(BaseModel):
         use_enum_values = True
 
     type: history_models.ActionType
-    date: datetime.datetime
+    date: str | None
     authorId: int | None  # backoffice user OR pro user who made the action
     authorName: str | None
     comment: str | None
@@ -417,7 +420,7 @@ class HistoryResponseModel(Response):
 
 
 class Comment(BaseModel):
-    date: datetime.datetime
+    date: str | None
     author: str | None
     content: str
 
@@ -429,7 +432,7 @@ class OfferersStatsResponseModel(BaseModel):
 class OffererToBeValidated(BaseModel):
     id: int
     name: str
-    dateCreated: datetime.datetime
+    dateCreated: str
     status: str
     step: str | None
     siren: str | None
@@ -466,12 +469,12 @@ class UserOffererToBeValidated(BaseModel):
     email: str | None
     userName: str
     status: str
-    dateCreated: datetime.datetime | None
+    dateCreated: str | None
     lastComment: Comment | None
     phoneNumber: str | None
     offererId: int
     offererName: str
-    offererCreatedDate: datetime.datetime
+    offererCreatedDate: str
     ownerId: int | None
     ownerEmail: str | None
     siren: str

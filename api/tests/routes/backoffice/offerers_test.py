@@ -620,7 +620,7 @@ class GetOffererHistoryTest:
         assert response.json["data"] == [
             {
                 "type": "Structure validée",
-                "date": "2022-10-06T16:04:00+00:00",
+                "date": "2022-10-06T16:04:00Z",
                 "authorId": admin.id,
                 "authorName": admin.publicName,
                 "comment": None,
@@ -629,7 +629,7 @@ class GetOffererHistoryTest:
             },
             {
                 "type": "Commentaire interne",
-                "date": "2022-10-05T15:03:00+00:00",
+                "date": "2022-10-05T15:03:00Z",
                 "authorId": admin.id,
                 "authorName": admin.publicName,
                 "comment": "Documents reçus",
@@ -638,7 +638,7 @@ class GetOffererHistoryTest:
             },
             {
                 "type": "Structure mise en attente",
-                "date": "2022-10-04T14:02:00+00:00",
+                "date": "2022-10-04T14:02:00Z",
                 "authorId": admin.id,
                 "authorName": admin.publicName,
                 "comment": "Documents complémentaires demandés",
@@ -647,7 +647,7 @@ class GetOffererHistoryTest:
             },
             {
                 "type": "Nouvelle structure",
-                "date": "2022-10-03T13:01:00+00:00",
+                "date": "2022-10-03T13:01:00Z",
                 "authorId": user_offerer.user.id,
                 "authorName": user_offerer.user.publicName,
                 "comment": None,
@@ -1429,7 +1429,7 @@ class ListOfferersToBeValidatedTest:
         payload = response.json["data"][0]
         assert payload["id"] == user_offerer.offerer.id
         assert payload["name"] == user_offerer.offerer.name
-        assert payload["dateCreated"] == "2022-10-03T11:59:00+00:00"
+        assert payload["dateCreated"] == "2022-10-03T11:59:00Z"
         assert payload["status"] == expected_status
         assert payload["step"] is None  # TODO
         assert payload["siren"] == user_offerer.offerer.siren
@@ -1448,7 +1448,7 @@ class ListOfferersToBeValidatedTest:
         assert payload["lastComment"] == {
             "author": "Inspecteur Validateur",
             "content": "Houlala",
-            "date": "2022-10-03T14:02:00+00:00",
+            "date": "2022-10-03T14:02:00Z",
         }
         assert payload["isTopActor"] == (tag in user_offerer.offerer.tags)
 
@@ -1473,7 +1473,7 @@ class ListOfferersToBeValidatedTest:
         payload = response.json["data"][0]
         assert payload["id"] == user_offerer.offerer.id
         assert payload["name"] == user_offerer.offerer.name
-        assert payload["dateCreated"] == "2022-10-03T11:59:00+00:00"
+        assert payload["dateCreated"] == "2022-10-03T11:59:00Z"
         assert payload["status"] == "NEW"
         assert payload["step"] is None  # TODO
         assert payload["lastComment"] is None
@@ -2312,16 +2312,16 @@ class ListUserOffererToBeValidatedTest:
         assert payload["email"] == new_user_offerer.user.email
         assert payload["userName"] == new_user_offerer.user.full_name
         assert payload["status"] == expected_status
-        assert payload["dateCreated"] == "2022-11-03T12:00:00+00:00"
+        assert payload["dateCreated"] == "2022-11-03T12:00:00Z"
         assert payload["lastComment"] == {
             "author": "Inspecteur Validateur",
             "content": "Bla blabla",
-            "date": "2022-11-03T13:01:00+00:00",
+            "date": "2022-11-03T13:01:00Z",
         }
         assert payload["phoneNumber"] == new_user_offerer.user.phoneNumber
         assert payload["offererId"] == owner_user_offerer.offerer.id
         assert payload["offererName"] == owner_user_offerer.offerer.name
-        assert payload["offererCreatedDate"] == "2022-11-02T11:30:00+00:00"
+        assert payload["offererCreatedDate"] == "2022-11-02T11:30:00Z"
         assert payload["ownerId"] == owner_user_offerer.user.id
         assert payload["ownerEmail"] == owner_user_offerer.user.email
         assert payload["siren"] == owner_user_offerer.offerer.siren
@@ -2353,12 +2353,12 @@ class ListUserOffererToBeValidatedTest:
         assert payload["email"] == new_user_offerer.user.email
         assert payload["userName"] == new_user_offerer.user.full_name
         assert payload["status"] == ValidationStatus.NEW.value
-        assert payload["dateCreated"] == "2022-11-25T12:34:00+00:00"
+        assert payload["dateCreated"] == "2022-11-25T12:34:00Z"
         assert payload["lastComment"] is None
         assert payload["phoneNumber"] == new_user_offerer.user.phoneNumber
         assert payload["offererId"] == owner_user_offerer.offerer.id
         assert payload["offererName"] == owner_user_offerer.offerer.name
-        assert payload["offererCreatedDate"] == "2022-11-03T00:00:00+00:00"
+        assert payload["offererCreatedDate"] == "2022-11-03T00:00:00Z"
         assert payload["ownerId"] == owner_user_offerer.user.id
         assert payload["ownerEmail"] == owner_user_offerer.user.email
         assert payload["siren"] == owner_user_offerer.offerer.siren
