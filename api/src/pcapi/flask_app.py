@@ -112,12 +112,12 @@ login_manager = LoginManager()
 if settings.PROFILE_REQUESTS:
     profiling_restrictions = [settings.PROFILE_REQUESTS_LINES_LIMIT]
     app.config["PROFILE"] = True
-    app.wsgi_app = ProfilerMiddleware(  # type: ignore [assignment]
+    app.wsgi_app = ProfilerMiddleware(  # type: ignore [method-assign]
         app.wsgi_app,
         restrictions=profiling_restrictions,
     )
 
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)  # type: ignore [assignment]
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)  # type: ignore [method-assign]
 
 if not settings.JWT_SECRET_KEY:
     raise ValueError("JWT_SECRET_KEY not found in env")

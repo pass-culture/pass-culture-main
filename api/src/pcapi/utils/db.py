@@ -43,7 +43,7 @@ class MagicEnum(sqla_types.TypeDecorator):
         # argument in `__init__()` for SQLAlchemy to produce a valid
         # cache key. See https://docs.sqlalchemy.org/en/14/core/type_api.html#sqlalchemy.types.ExternalType.cache_ok
         self.enum_class = enum_class
-        first_value = list(enum_class)[0].value  # type: ignore[attr-defined]
+        first_value = list(enum_class)[0].value
         if isinstance(first_value, str):
             self.impl = sqla_types.Text()
         elif isinstance(first_value, int):
