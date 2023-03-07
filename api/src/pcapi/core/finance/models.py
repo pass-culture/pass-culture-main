@@ -601,14 +601,6 @@ class CashflowPricing(Base, Model):
     cashflowId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow.id"), index=True, primary_key=True)
     pricingId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, primary_key=True)
 
-    __table_args__ = (
-        sqla.UniqueConstraint(
-            "cashflowId",
-            "pricingId",
-            name="unique_cashflow_pricing_association",
-        ),
-    )
-
 
 class CashflowBatch(Base, Model):
     """A cashflow batch groups cashflows that are sent to the bank at the
