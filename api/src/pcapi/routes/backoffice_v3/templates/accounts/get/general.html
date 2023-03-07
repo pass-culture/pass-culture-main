@@ -66,7 +66,11 @@
                             <span class="fw-bold">E-mail :</span> {{ user.email }}
                             {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
                                 <br>
-                                <form action="{{ url_for('.resend_validation_email', user_id=user.id) }}" method="POST">
+                                <form
+                                    action="{{ url_for('.resend_validation_email', user_id=user.id) }}"
+                                    name="{{ url_for('.resend_validation_email', user_id=user.id) | action_to_name }}"
+                                    method="POST"
+                                >
                                     {{ resend_email_validation_form.csrf_token }}
 
                                     <button class="btn btn-outline-secondary btn-sm fw-bold mt-1">
@@ -81,8 +85,11 @@
                             {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
                                 <div class="d-flex">
                                     <div class="me-1">
-                                        <form action="{{ url_for('.send_validation_code', user_id=user.id) }}"
-                                              method="POST">
+                                        <form
+                                            action="{{ url_for('.send_validation_code', user_id=user.id) }}"
+                                            name="{{ url_for('.send_validation_code', user_id=user.id) | action_to_name }}"
+                                            method="POST"
+                                        >
                                             {{ send_validation_code_form.csrf_token }}
 
                                             <button class="btn btn-outline-secondary btn-sm fw-bold mt-1">
@@ -91,8 +98,11 @@
                                         </form>
                                     </div>
 
-                                    <form action="{{ url_for('.manually_validate_phone_number', user_id=user.id) }}"
-                                          method="POST">
+                                    <form
+                                        action="{{ url_for('.manually_validate_phone_number', user_id=user.id) }}"
+                                        name="{{ url_for('.manually_validate_phone_number', user_id=user.id) | action_to_name }}"
+                                        method="POST"
+                                    >
                                         {{ manual_validation_form.csrf_token }}
 
                                         <button class="btn btn-outline-secondary btn-sm fw-bold mt-1">

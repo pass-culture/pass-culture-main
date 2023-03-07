@@ -10,7 +10,11 @@
                 <div class="modal-header fs-5" id="{{ modal_id }}-modal-label">
                     {{ title }}
                 </div>
-                <form action="{{ dst }}" method="POST">
+                <form
+                    action="{{ dst }}"
+                    name="{{ dst | action_to_name }}"
+                    method="POST"
+                >
                     <div class="modal-body">
                         <div class="form-group">
                             {% for form_field in form %}
