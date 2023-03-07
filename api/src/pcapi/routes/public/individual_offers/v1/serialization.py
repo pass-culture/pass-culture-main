@@ -57,6 +57,8 @@ VenueTypeEnum = StrEnum(  # type: ignore [call-overload]
 
 
 class Accessibility(serialization.ConfiguredBaseModel):
+    """Accessibility for people with disabilities."""
+
     audio_disability_compliant: bool
     mental_disability_compliant: bool
     motor_disability_compliant: bool
@@ -115,14 +117,10 @@ CATEGORY_RELATED_FIELD = pydantic.Field(..., description=CATEGORY_RELATED_FIELD_
 DESCRIPTION_FIELD = pydantic.Field(
     None, description="Offer description", example="A great book for kids and old kids.", max_length=1000
 )
-ACCESSIBILITY_FIELD = pydantic.Field(description="Accessibility to disabled people.")
 EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic.Field(
     None,
     description="Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
     example="https://example.com",
-)
-IMAGE_FIELD = pydantic.Field(
-    None, description="Image illustrating the offer. Offers with images are more likely to be booked."
 )
 IMAGE_CREDIT_FIELD = pydantic.Field(None, description="Image owner or author.", example="Jane Doe")
 WITHDRAWAL_DETAILS_FIELD = pydantic.Field(
@@ -162,6 +160,8 @@ BY_EMAIL_DAYS_BEFORE_EVENT_FIELD = pydantic.Field(
 
 
 class ImageBody(serialization.ConfiguredBaseModel):
+    """Image illustrating the offer. Offers with images are more likely to be booked."""
+
     credit: str | None = IMAGE_CREDIT_FIELD
     file: str = pydantic.Field(
         ...,
@@ -171,6 +171,8 @@ class ImageBody(serialization.ConfiguredBaseModel):
 
 
 class ImageResponse(serialization.ConfiguredBaseModel):
+    """Image illustrating the offer. Offers with images are more likely to be booked."""
+
     credit: str | None = IMAGE_CREDIT_FIELD
     url: str = pydantic.Field(
         ..., description="Url where the image is accessible", example="https://example.com/image.png"
@@ -178,12 +180,12 @@ class ImageResponse(serialization.ConfiguredBaseModel):
 
 
 class OfferCreationBase(serialization.ConfiguredBaseModel):
-    accessibility: Accessibility = ACCESSIBILITY_FIELD
+    accessibility: Accessibility
     booking_email: pydantic.EmailStr | None = BOOKING_EMAIL_FIELD
     category_related_fields: CategoryRelatedFields = CATEGORY_RELATED_FIELD
     description: str | None = DESCRIPTION_FIELD
     external_ticket_office_url: pydantic.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
-    image: ImageBody | None = IMAGE_FIELD
+    image: ImageBody | None
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     name: str = NAME_FIELD
@@ -616,11 +618,11 @@ class PostDatesResponse(serialization.ConfiguredBaseModel):
 
 class OfferResponse(serialization.ConfiguredBaseModel):
     id: int
-    accessibility: Accessibility = ACCESSIBILITY_FIELD
+    accessibility: Accessibility
     booking_email: pydantic.EmailStr | None = BOOKING_EMAIL_FIELD
     description: str | None = DESCRIPTION_FIELD
     external_ticket_office_url: pydantic.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
-    image: ImageResponse | None = IMAGE_FIELD
+    image: ImageResponse | None
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     name: str = NAME_FIELD
