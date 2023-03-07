@@ -839,37 +839,55 @@ def get_subscription_steps_to_display(
     return the list of steps to complete to subscribe to the pass Culture
     the steps are ordered
     """
-    steps = []
+    ordered_steps = _get_ordered_steps(user)
+    return _get_steps_details(ordered_steps, user_subscription_state)
+
+
+def _get_ordered_steps(user: users_models.User) -> list[models.SubscriptionStep]:
+    ordered_steps = []
     if user.eligibility == users_models.EligibilityType.AGE18 and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
-        steps.append(
-            models.SubscriptionStepDetails(
-                name=models.SubscriptionStep.PHONE_VALIDATION,
-                title=models.SubscriptionStepTitle.PHONE_VALIDATION,
-            )
-        )
-
-    steps.append(
-        models.SubscriptionStepDetails(
-            name=models.SubscriptionStep.PROFILE_COMPLETION,
-            title=models.SubscriptionStepTitle.PROFILE_COMPLETION,
-        )
-    )
-
+        ordered_steps.append(models.SubscriptionStep.PHONE_VALIDATION)
+    ordered_steps.append(models.SubscriptionStep.PROFILE_COMPLETION)
     if not can_skip_identity_check_step(user):
+        ordered_steps.append(models.SubscriptionStep.IDENTITY_CHECK)
+    ordered_steps.append(models.SubscriptionStep.HONOR_STATEMENT)
+    return ordered_steps
+
+
+def _get_steps_details(
+    ordered_steps: list[models.SubscriptionStep], user_subscription_state: models.UserSubscriptionState
+) -> list[models.SubscriptionStepDetails]:
+    steps: list[models.SubscriptionStepDetails] = []
+    is_before_current_step = True
+
+    for step in ordered_steps:
+        subtitle = _get_step_subtitle(user_subscription_state, step)
+        if step == user_subscription_state.next_step:
+            is_before_current_step = False
+            completion_step = (
+                models.SubscriptionStepCompletionState.RETRY
+                if _has_subscription_issues(user_subscription_state)
+                else models.SubscriptionStepCompletionState.CURRENT
+            )
+            steps.append(
+                models.SubscriptionStepDetails(
+                    name=step,
+                    title=models.SubscriptionStepTitle[step.name],
+                    completion_state=completion_step,
+                    subtitle=subtitle,
+                )
+            )
+            continue
         steps.append(
             models.SubscriptionStepDetails(
-                name=models.SubscriptionStep.IDENTITY_CHECK,
-                title=models.SubscriptionStepTitle.IDENTITY_CHECK,
-                subtitle=_get_step_subtitle(user_subscription_state, models.SubscriptionStep.IDENTITY_CHECK),
+                name=step,
+                title=models.SubscriptionStepTitle[step.name],
+                subtitle=subtitle,
+                completion_state=models.SubscriptionStepCompletionState.COMPLETED
+                if is_before_current_step
+                else models.SubscriptionStepCompletionState.DISABLED,
             )
         )
-
-    steps.append(
-        models.SubscriptionStepDetails(
-            name=models.SubscriptionStep.HONOR_STATEMENT,
-            title=models.SubscriptionStepTitle.HONOR_STATEMENT,
-        )
-    )
 
     return steps
 

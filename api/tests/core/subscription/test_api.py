@@ -2332,6 +2332,19 @@ class GetStatusFromFraudCheckTest:
 
 @pytest.mark.usefixtures("db_session")
 class StepperTest:
+    def get_step(
+        self,
+        step: subscription_models.SubscriptionStep,
+        step_completion_state: subscription_models.SubscriptionStepCompletionState,
+        subtitle: str | None = None,
+    ):
+        return subscription_models.SubscriptionStepDetails(
+            name=step,
+            title=subscription_models.SubscriptionStepTitle[step.name],
+            subtitle=subtitle,
+            completion_state=step_completion_state,
+        )
+
     def test_get_stepper_title_18_yo(self):
         user = users_factories.EligibleGrant18Factory()
         assert subscription_api.get_stepper_title_and_subtitle(
@@ -2383,3 +2396,239 @@ class StepperTest:
             title="La vérification de ton identité a échoué",
             subtitle=None,
         )
+
+    def test_get_subscription_steps_to_display_for_18yo_has_not_started(self):
+        user = users_factories.EligibleGrant18Factory()
+
+        steps = subscription_api.get_subscription_steps_to_display(
+            user, subscription_api.get_user_subscription_state(user)
+        )
+
+        assert steps == [
+            self.get_step(
+                subscription_models.SubscriptionStep.PHONE_VALIDATION,
+                subscription_models.SubscriptionStepCompletionState.CURRENT,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.PROFILE_COMPLETION,
+                subscription_models.SubscriptionStepCompletionState.DISABLED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.IDENTITY_CHECK,
+                subscription_models.SubscriptionStepCompletionState.DISABLED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.HONOR_STATEMENT,
+                subscription_models.SubscriptionStepCompletionState.DISABLED,
+            ),
+        ]
+
+    def test_get_subscription_steps_to_display_for_18yo_has_validated_phone(self):
+        user = users_factories.EligibleGrant18Factory(phoneValidationStatus=PhoneValidationStatusType.VALIDATED)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+        )
+
+        steps = subscription_api.get_subscription_steps_to_display(
+            user, subscription_api.get_user_subscription_state(user)
+        )
+
+        assert steps == [
+            self.get_step(
+                subscription_models.SubscriptionStep.PHONE_VALIDATION,
+                subscription_models.SubscriptionStepCompletionState.COMPLETED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.PROFILE_COMPLETION,
+                subscription_models.SubscriptionStepCompletionState.CURRENT,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.IDENTITY_CHECK,
+                subscription_models.SubscriptionStepCompletionState.DISABLED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.HONOR_STATEMENT,
+                subscription_models.SubscriptionStepCompletionState.DISABLED,
+            ),
+        ]
+
+    def test_get_subscription_steps_to_display_for_18yo_has_completed_profile(self):
+        user = users_factories.EligibleGrant18Factory(phoneValidationStatus=PhoneValidationStatusType.VALIDATED)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+        )
+
+        steps = subscription_api.get_subscription_steps_to_display(
+            user, subscription_api.get_user_subscription_state(user)
+        )
+
+        assert steps == [
+            self.get_step(
+                subscription_models.SubscriptionStep.PHONE_VALIDATION,
+                subscription_models.SubscriptionStepCompletionState.COMPLETED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.PROFILE_COMPLETION,
+                subscription_models.SubscriptionStepCompletionState.COMPLETED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.IDENTITY_CHECK,
+                subscription_models.SubscriptionStepCompletionState.CURRENT,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.HONOR_STATEMENT,
+                subscription_models.SubscriptionStepCompletionState.DISABLED,
+            ),
+        ]
+
+    def test_get_subscription_steps_to_display_for_18yo_has_ubble_issue(self):
+        user = users_factories.EligibleGrant18Factory(phoneValidationStatus=PhoneValidationStatusType.VALIDATED)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.KO,
+            type=fraud_models.FraudCheckType.UBBLE,
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
+        )
+
+        steps = subscription_api.get_subscription_steps_to_display(
+            user, subscription_api.get_user_subscription_state(user)
+        )
+
+        assert steps == [
+            self.get_step(
+                subscription_models.SubscriptionStep.PHONE_VALIDATION,
+                subscription_models.SubscriptionStepCompletionState.COMPLETED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.PROFILE_COMPLETION,
+                subscription_models.SubscriptionStepCompletionState.COMPLETED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.IDENTITY_CHECK,
+                subscription_models.SubscriptionStepCompletionState.RETRY,
+                subtitle="Réessaie avec un autre document d’identité valide",
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.HONOR_STATEMENT,
+                subscription_models.SubscriptionStepCompletionState.DISABLED,
+            ),
+        ]
+
+    def test_get_subscription_steps_to_display_for_18yo_has_completed_id_check(self):
+        user = users_factories.EligibleGrant18Factory(phoneValidationStatus=PhoneValidationStatusType.VALIDATED)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.UBBLE,
+        )
+
+        steps = subscription_api.get_subscription_steps_to_display(
+            user, subscription_api.get_user_subscription_state(user)
+        )
+
+        assert steps == [
+            self.get_step(
+                subscription_models.SubscriptionStep.PHONE_VALIDATION,
+                subscription_models.SubscriptionStepCompletionState.COMPLETED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.PROFILE_COMPLETION,
+                subscription_models.SubscriptionStepCompletionState.COMPLETED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.IDENTITY_CHECK,
+                subscription_models.SubscriptionStepCompletionState.COMPLETED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.HONOR_STATEMENT,
+                subscription_models.SubscriptionStepCompletionState.CURRENT,
+            ),
+        ]
+
+    def test_get_subscription_steps_to_display_for_18yo_has_completed_everything(self):
+        user = users_factories.EligibleGrant18Factory(phoneValidationStatus=PhoneValidationStatusType.VALIDATED)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.UBBLE,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+        )
+
+        steps = subscription_api.get_subscription_steps_to_display(
+            user, subscription_api.get_user_subscription_state(user)
+        )
+
+        assert steps == [
+            self.get_step(
+                subscription_models.SubscriptionStep.PHONE_VALIDATION,
+                subscription_models.SubscriptionStepCompletionState.COMPLETED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.PROFILE_COMPLETION,
+                subscription_models.SubscriptionStepCompletionState.COMPLETED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.IDENTITY_CHECK,
+                subscription_models.SubscriptionStepCompletionState.COMPLETED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.HONOR_STATEMENT,
+                subscription_models.SubscriptionStepCompletionState.COMPLETED,
+            ),
+        ]
