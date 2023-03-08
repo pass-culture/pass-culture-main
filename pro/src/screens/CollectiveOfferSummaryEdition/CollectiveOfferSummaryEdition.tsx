@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom-v5-compat'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
@@ -9,13 +9,11 @@ import {
   OFFER_FROM_TEMPLATE_ENTRIES,
 } from 'core/FirebaseEvents/constants'
 import {
-  cancelCollectiveBookingAdapter,
   CollectiveOffer,
   CollectiveOfferTemplate,
   createOfferFromTemplate,
   EducationalCategories,
-  patchIsCollectiveOfferActiveAdapter,
-  patchIsTemplateOfferActiveAdapter,
+  Mode,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { computeCollectiveOffersUrl } from 'core/Offers'
@@ -30,14 +28,15 @@ interface CollectiveOfferSummaryEditionProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
   categories: EducationalCategories
   reloadCollectiveOffer: () => void
+  mode: Mode
 }
 
 const CollectiveOfferSummaryEdition = ({
   offer,
   categories,
   reloadCollectiveOffer,
+  mode,
 }: CollectiveOfferSummaryEditionProps) => {
-  const [isActive, setIsActive] = useState(offer.isActive)
   const notify = useNotification()
   const navigate = useNavigate()
 
@@ -53,55 +52,18 @@ const CollectiveOfferSummaryEdition = ({
 
   const visibilityEditLink = `/offre/${offer.id}/collectif/visibilite/edition`
 
-  const cancelActiveBookings = async () => {
-    if (offer.isTemplate) {
-      return
-    }
-
-    const { isOk, message } = await cancelCollectiveBookingAdapter({
-      offerId: offer.id,
-      offerStatus: offer.status,
-    })
-
-    if (!isOk) {
-      return notify.error(message)
-    }
-
-    notify.success(message)
-    reloadCollectiveOffer()
-  }
-
   const { logEvent } = useAnalytics()
-
-  const setIsOfferActive = async () => {
-    const adapter = offer.isTemplate
-      ? patchIsTemplateOfferActiveAdapter
-      : patchIsCollectiveOfferActiveAdapter
-
-    const response = await adapter({
-      offerId: offer.id,
-      isActive: !isActive,
-    })
-
-    if (response.isOk) {
-      setIsActive(!isActive)
-      reloadCollectiveOffer()
-      return notify.success(response.message)
-    }
-    notify.error(response.message)
-  }
 
   return (
     <>
       <OfferEducationalActions
-        cancelActiveBookings={cancelActiveBookings}
         className={styles.actions}
         isBooked={
           offer.isTemplate ? false : Boolean(offer.collectiveStock?.isBooked)
         }
         offer={offer}
-        isOfferActive={isActive}
-        setIsOfferActive={setIsOfferActive}
+        reloadCollectiveOffer={reloadCollectiveOffer}
+        mode={mode}
       />
       {offer.isTemplate && (
         <div className={styles['duplicate-offer']}>

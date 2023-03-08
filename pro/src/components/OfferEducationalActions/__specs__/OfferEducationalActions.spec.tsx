@@ -1,11 +1,17 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import { CollectiveBookingStatus, OfferStatus } from 'apiClient/v1'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
+import { Mode } from 'core/OfferEducational/types'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import * as useNotification from 'hooks/useNotification'
+import {
+  collectiveOfferFactory,
+  collectiveOfferTemplateFactory,
+} from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferEducationalActions, {
@@ -19,15 +25,84 @@ const renderOfferEducationalActions = (props: IOfferEducationalActions) => {
 describe('OfferEducationalActions', () => {
   const defaultValues = {
     className: 'string',
-    isOfferActive: true,
     isBooked: false,
     offer: collectiveOfferFactory(),
-    setIsOfferActive: jest.fn(),
-    cancelActiveBookings: jest.fn(),
+    reloadCollectiveOffer: jest.fn(),
+    mode: Mode.EDITION,
   }
 
+  it('should update active status value for template offer', async () => {
+    const toggle = jest
+      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
+      .mockResolvedValue()
+
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: collectiveOfferTemplateFactory({
+        isActive: false,
+        isTemplate: true,
+      }),
+    })
+    const activateOffer = screen.getByRole('button', {
+      name: 'Publier sur Adage',
+    })
+
+    await userEvent.click(activateOffer)
+
+    expect(toggle).toHaveBeenCalledTimes(1)
+    expect(defaultValues.reloadCollectiveOffer).toHaveBeenCalledTimes(1)
+  })
+
+  it('should update active status value for collective offer', async () => {
+    const toggle = jest
+      .spyOn(api, 'patchCollectiveOffersActiveStatus')
+      .mockResolvedValue()
+
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: collectiveOfferFactory({
+        isActive: false,
+      }),
+    })
+    const activateOffer = screen.getByRole('button', {
+      name: 'Publier sur Adage',
+    })
+
+    await userEvent.click(activateOffer)
+
+    expect(toggle).toHaveBeenCalledTimes(1)
+    expect(defaultValues.reloadCollectiveOffer).toHaveBeenCalledTimes(1)
+  })
+
+  it('should failed active status value', async () => {
+    const notifyError = jest.fn()
+    // @ts-expect-error
+    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      error: notifyError,
+    }))
+    const toggle = jest
+      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
+      .mockRejectedValue({ isOk: false })
+
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: collectiveOfferTemplateFactory({
+        isActive: false,
+        isTemplate: true,
+      }),
+    })
+    const activateOffer = screen.getByRole('button', {
+      name: 'Publier sur Adage',
+    })
+
+    await userEvent.click(activateOffer)
+
+    expect(toggle).toHaveBeenCalledTimes(1)
+    await waitFor(() => expect(notifyError).toHaveBeenCalledTimes(1))
+  })
+
   it('should display actions button and status tag by default', () => {
-    renderOfferEducationalActions({ ...defaultValues })
+    renderOfferEducationalActions({ ...defaultValues, isBooked: false })
     expect(
       screen.getByRole('button', { name: 'Masquer la publication sur Adage' })
     ).toBeInTheDocument()

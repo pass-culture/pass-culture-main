@@ -39,8 +39,7 @@ export interface IOfferEducationalStockProps<
   offer: T
   onSubmit: (offer: T, values: OfferEducationalStockFormValues) => Promise<void>
   mode: Mode
-  cancelActiveBookings?: () => void
-  setIsOfferActive?: (isActive: boolean) => void
+  reloadCollectiveOffer?: () => void
 }
 
 const OfferEducationalStock = <
@@ -50,8 +49,7 @@ const OfferEducationalStock = <
   offer,
   onSubmit,
   mode,
-  cancelActiveBookings,
-  setIsOfferActive,
+  reloadCollectiveOffer,
 }: IOfferEducationalStockProps<T>): JSX.Element => {
   const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
@@ -99,11 +97,6 @@ const OfferEducationalStock = <
     }),
   })
 
-  const shouldShowOfferActions =
-    (mode === Mode.EDITION || mode === Mode.READ_ONLY) &&
-    setIsOfferActive &&
-    cancelActiveBookings
-
   useEffect(() => {
     // update formik values with initial values when initial values
     // are updated after stock update
@@ -115,18 +108,15 @@ const OfferEducationalStock = <
 
   return (
     <>
-      {shouldShowOfferActions && (
-        <OfferEducationalActions
-          cancelActiveBookings={cancelActiveBookings}
-          className={styles.actions}
-          isBooked={
-            offer.isTemplate ? false : Boolean(offer.collectiveStock?.isBooked)
-          }
-          offer={offer}
-          isOfferActive={offer.isActive}
-          setIsOfferActive={setIsOfferActive}
-        />
-      )}
+      <OfferEducationalActions
+        className={styles.actions}
+        isBooked={
+          offer.isTemplate ? false : Boolean(offer.collectiveStock?.isBooked)
+        }
+        offer={offer}
+        reloadCollectiveOffer={reloadCollectiveOffer}
+        mode={mode}
+      />
       <FormikProvider value={{ ...formik, resetForm }}>
         <form onSubmit={formik.handleSubmit}>
           <FormLayout className={styles['offer-educational-stock-form-layout']}>

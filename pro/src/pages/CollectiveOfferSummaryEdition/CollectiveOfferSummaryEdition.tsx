@@ -5,6 +5,7 @@ import PageTitle from 'components/PageTitle/PageTitle'
 import {
   getEducationalCategoriesAdapter,
   EducationalCategories,
+  Mode,
 } from 'core/OfferEducational'
 import useNotification from 'hooks/useNotification'
 import CollectiveOfferSummaryEditionScreen from 'screens/CollectiveOfferSummaryEdition'
@@ -50,6 +51,7 @@ const CollectiveOfferSummaryEdition = ({
         offer={offer}
         categories={categories}
         reloadCollectiveOffer={reloadCollectiveOffer}
+        mode={Mode.EDITION}
       />
     </CollectiveOfferLayout>
   )
