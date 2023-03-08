@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as ArrowIcon } from 'icons/ico-arrow-right.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -24,6 +26,7 @@ const BookingLinkCell = ({
   if (!offerEventDate) {
     return null
   }
+  const { logEvent } = useAnalytics()
   const eventDateFormated = formatBrowserTimezonedDateAsUTC(
     offerEventDate,
     FORMAT_ISO_DATE_ONLY
@@ -37,6 +40,11 @@ const BookingLinkCell = ({
         link={{ isExternal: false, to: bookingLink }}
         Icon={ArrowIcon}
         iconPosition={IconPositionEnum.CENTER}
+        onClick={() =>
+          logEvent?.(CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING, {
+            from: location.pathname,
+          })
+        }
         hasTooltip
       >
         Voir la {bookingStatus == 'PENDING' ? 'préréservation' : 'réservation'}

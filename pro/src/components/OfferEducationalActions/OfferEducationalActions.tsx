@@ -2,11 +2,13 @@ import cn from 'classnames'
 import React from 'react'
 
 import { CollectiveBookingStatus, OfferStatus } from 'apiClient/v1'
+import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   isCollectiveOffer,
 } from 'core/OfferEducational'
+import useAnalytics from 'hooks/useAnalytics'
 import { CircleArrowIcon } from 'icons'
 import { getCollectiveStatusLabel } from 'pages/Offers/Offers/OfferItem/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
 import { Button, ButtonLink } from 'ui-kit'
@@ -36,6 +38,7 @@ const OfferEducationalActions = ({
   offer,
   setIsOfferActive,
 }: IOfferEducationalActions): JSX.Element => {
+  const { logEvent } = useAnalytics()
   const lastBookingId = isCollectiveOffer(offer) ? offer.lastBookingId : null
   const lastBookingStatus = isCollectiveOffer(offer)
     ? offer.lastBookingStatus
@@ -80,6 +83,14 @@ const OfferEducationalActions = ({
               link={{ isExternal: false, to: getBookingLink() }}
               Icon={CircleArrowIcon}
               iconPosition={IconPositionEnum.LEFT}
+              onClick={() =>
+                logEvent?.(
+                  CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
+                  {
+                    from: location.pathname,
+                  }
+                )
+              }
             >
               Voir la{' '}
               {lastBookingStatus == 'PENDING'

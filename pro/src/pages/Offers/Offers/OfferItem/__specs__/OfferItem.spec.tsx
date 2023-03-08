@@ -7,8 +7,10 @@ import { ApiError, OfferStatus } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
+import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { getToday } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -602,6 +604,38 @@ describe('src | components | pages | Offers | OfferItem', () => {
       })
 
       expect(bookingLink).toBeInTheDocument()
+    })
+    it('should log event when clicking booking link', async () => {
+      const mockLogEvent = jest.fn()
+      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+        ...jest.requireActual('hooks/useAnalytics'),
+        logEvent: mockLogEvent,
+      }))
+
+      renderOfferItem({
+        ...props,
+        audience: Audience.COLLECTIVE,
+        offer: {
+          ...props.offer,
+          status: OfferStatus.SOLD_OUT,
+          stocks: [{ remainingQuantity: 0, beginningDatetime: getToday() }],
+          educationalBooking: { id: 'A1', booking_status: 'PENDING' },
+        },
+      })
+
+      const bookingLink = screen.getByRole('link', {
+        name: 'Voir la préréservation',
+      })
+      await userEvent.click(bookingLink)
+
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
+        {
+          from: '/',
+        }
+      )
     })
   })
 })
