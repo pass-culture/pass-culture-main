@@ -6,6 +6,7 @@ logger = logging.getLogger(__name__)
 
 ACCEPTED_CHARS_FOR_NAMES = [" ", "-", ".", ",", "'", "’"]
 ACCEPTED_CHARS_FOR_CITY = [" ", "-", "'", "(", ")"]
+ACCEPTED_CHARS_FOR_ADDRESS = [" ", "-", ".", ",", "'", "’"]
 
 
 def is_latin(s: str, accepted_chars: list[str]) -> bool:
@@ -39,7 +40,7 @@ def validate_name(name: str) -> None:
 def validate_address(address: str) -> None:
     validate_not_empty(address)
     for char in address:
-        if not is_latin(char, accepted_chars=[" "]) and not char.isnumeric():
+        if not is_latin(char, accepted_chars=ACCEPTED_CHARS_FOR_ADDRESS) and not char.isnumeric():
             logger.info("Invalid value for field address: %s", address)
             raise ValueError("L'adresse doit contenir des caractères alphanumériques")
 
