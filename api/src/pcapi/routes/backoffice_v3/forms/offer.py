@@ -36,4 +36,4 @@ class EditOfferForm(FlaskForm):
     criteria = fields.PCAutocompleteSelectMultipleField(
         "Tags", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_criteria"
     )
-    rankingWeight = fields.PCIntegerField("Pondération")
+    rankingWeight = fields.PCOptIntegerField("Pondération")

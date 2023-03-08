@@ -227,9 +227,8 @@ class EditOffersTest:
         assert criteria[1].name in row[0]["Tag"]
         assert criteria[2].name not in row[0]["Tag"]
 
-        # New Update
-        choosenRankingWeight = 25
-        base_form = {"criteria": [criteria[2].id, criteria[1].id], "rankingWeight": choosenRankingWeight}
+        # New Update without rankingWeight
+        base_form = {"criteria": [criteria[2].id, criteria[1].id], "rankingWeight": ""}
         response = self._update_offerer(authenticated_client, offer_to_edit, base_form)
         assert response.status_code == 303
 
@@ -239,7 +238,7 @@ class EditOffersTest:
         assert response.status_code == 200
         row = html_parser.extract_table_rows(response.data)
         assert len(row) == 1
-        assert row[0]["Pondération"] == str(choosenRankingWeight)
+        assert row[0]["Pondération"] == ""
         assert criteria[2].name in row[0]["Tag"]
         assert criteria[1].name in row[0]["Tag"]
         assert criteria[0].name not in row[0]["Tag"]
