@@ -76,6 +76,8 @@ class BookingStockResponse(BaseModel):
     price: int
     priceCategoryLabel: str | None
 
+    _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
+
     class Config:
         orm_mode = True
 
