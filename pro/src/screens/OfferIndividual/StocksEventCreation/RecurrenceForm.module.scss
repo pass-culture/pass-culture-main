@@ -4,20 +4,32 @@
 @use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
 
+.section {
+  padding: rem.torem(16px);
+  border: 1px solid colors.$grey-medium-shadow;
+  border-radius: rem.torem(8px);
+  margin-bottom: rem.torem(16px);
+}
+
 .legend {
+  @include fonts.title4;
+
   display: flex;
   align-items: center;
   gap: rem.torem(10px);
-  margin: rem.torem(24px) 0;
+  margin-bottom: rem.torem(24px);
 
   &-icon {
+    width: rem.torem(24px);
+    height: rem.torem(24px);
     fill: colors.$tertiary;
   }
 }
 
 .radio-group {
   display: flex;
-  gap: rem.torem(12px);
+  gap: rem.torem(8px);
+  margin-bottom: rem.torem(16px);
 }
 
 .action-buttons {
@@ -43,7 +55,33 @@
   // "Center" with input
   // We are using margin-top and not flex center because when there is an error the
   // input field grows at the bottom and we don't want the icon to move
+  // stylelint-disable scss/operator-no-newline-after
   margin-top: calc(
-    #{forms.$label-small-space-before-input} + #{fonts.$caption-line-height}
+    #{fonts.$body-line-height} + #{forms.$label-space-before-input} +
+      (#{size.$input-min-height} - #{size.$button-icon-size}) / 2
   );
+}
+
+.date-input {
+  width: rem.torem(200px);
+  margin-bottom: 0;
+}
+
+.quantity-input {
+  width: rem.torem(172px);
+}
+
+.price-category-input {
+  width: rem.torem(328px);
+}
+
+.booking-date-limit-container {
+  display: flex;
+  align-items: center;
+  gap: rem.torem(8px);
+}
+
+.booking-date-limit-input {
+  width: rem.torem(72px);
+  margin-bottom: 0;
 }

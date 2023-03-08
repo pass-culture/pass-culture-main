@@ -50,7 +50,7 @@
 
 // Using input selector to override styles defines in _RadioInput.scss
 .base-radio-primary {
-  input {
+  input[type="radio"] {
     &:checked {
       box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
       border-color: colors.$primary;
@@ -91,8 +91,10 @@
 
 // Using input selector to override styles defines in _RadioInput.scss
 .base-radio-secondary {
-  input {
+  input[type="radio"] {
     border: rem.torem(2px) solid colors.$grey-dark;
+    width: rem.torem(16px);
+    height: rem.torem(16px);
 
     &:checked,
     &:hover:checked,
@@ -106,8 +108,8 @@
       );
     }
 
-    &:hover:not(:checked),
-    &:focus:not(:checked),
+    &:hover:not(:checked, :disabled),
+    &:focus:not(:checked, :disabled),
     &:hover,
     &:focus {
       border-color: colors.$grey-dark;
@@ -127,6 +129,7 @@
 
   .base-radio-label {
     padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) 0;
+    white-space: nowrap;
   }
 
   &:focus-within {
@@ -146,6 +149,10 @@
 
     &:focus-within {
       outline: none;
+    }
+
+    &:hover {
+      box-shadow: none;
     }
   }
 
