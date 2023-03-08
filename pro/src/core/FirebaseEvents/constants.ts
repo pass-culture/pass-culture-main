@@ -67,6 +67,7 @@ export enum CollectiveBookingsEvents {
   CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS = 'hasClickedExpandCollectiveBookingDetails',
   CLICKED_DETAILS_BUTTON_CELL = 'hasClickedDetailsButtonCell',
   CLICKED_MODIFY_BOOKING_LIMIT_DATE = 'hasClickedModifyBookingLimitDate',
+  CLICKED_SEE_COLLECTIVE_BOOKING = 'hasClickedSeeCollectiveBooking',
 }
 
 export enum OFFER_FORM_NAVIGATION_MEDIUM {
