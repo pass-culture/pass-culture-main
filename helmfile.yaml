@@ -21,7 +21,7 @@ environments:
       - chartVersion: 0.17.4
   staging:
     values:
-      - chartVersion: 0.17.2
+      - chartVersion: 0.17.4
   integration:
     values:
       - chartVersion: 0.17.2
