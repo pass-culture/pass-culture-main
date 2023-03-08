@@ -205,11 +205,13 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
                 raise ValueError(f"Barcode {barcode} contains one or more invalid char (only digit allowed)")
             barcodes_int.append(int(barcode))
 
-        cancel_body = cds_serializers.CancelBookingCDS(barcodes=barcodes_int, paiementtypeid=paiement_type_id)  # type: ignore [call-arg]
+        cancel_body = cds_serializers.CancelBookingCDS(barcodes=barcodes_int, paiement_type_id=paiement_type_id)
         api_response = put_resource(self.api_url, self.account_id, self.token, ResourceCDS.CANCEL_BOOKING, cancel_body)
 
         if api_response:
             cancel_errors = parse_obj_as(cds_serializers.CancelBookingsErrorsCDS, api_response)
+            if {cds_constants.CDS_TICKET_ALREADY_CANCELED_ERROR_MESSAGE} == set(cancel_errors.__root__.values()):
+                return  # We don't raise if the tickets have already been cancelled
             sep = "\n"
             raise cds_exceptions.CineDigitalServiceAPIException(
                 f"Error while canceling bookings :{sep}{sep.join([f'{barcode} : {error_msg}' for barcode, error_msg in cancel_errors.__root__.items()])}"

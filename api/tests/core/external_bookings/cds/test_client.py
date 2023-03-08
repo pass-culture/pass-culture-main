@@ -897,6 +897,31 @@ class CineDigitalServiceCancelBookingTest:
             == f"""Error while canceling bookings :{sep}111111111111 : BARCODE_NOT_FOUND{sep}222222222222 : TICKET_ALREADY_CANCELED{sep}333333333333 : AFTER_END_OF_DAY{sep}444444444444 : AFTER_END_OF_SHOW{sep}555555555555 : DAY_CLOSED"""
         )
 
+    @patch("pcapi.core.external_bookings.cds.client.put_resource")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
+    def test_should_not_raise_error_when_cancel_bookings_already_cancelled(
+        self, mocked_get_voucher_payment_type, mocked_put_resource
+    ):
+        # Given
+        json_response = {
+            "111111111111": "TICKET_ALREADY_CANCELED",
+            "222222222222": "TICKET_ALREADY_CANCELED",
+            "333333333333": "TICKET_ALREADY_CANCELED",
+        }
+        mocked_put_resource.return_value = json_response
+        mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
+            id=12, internal_code="VCH", is_active=True
+        )
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+        )
+
+        # When
+        try:
+            cine_digital_service.cancel_booking(["111111111111", "222222222222", "333333333333"])
+        except cds_exceptions.CineDigitalServiceAPIException:
+            pytest.fail("Should not raise CineDigitalServiceAPIException")
+
 
 class CineDigitalServiceGetVoucherForShowTest:
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
