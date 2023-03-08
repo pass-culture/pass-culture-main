@@ -199,7 +199,7 @@ class GetBookingsTest:
             "stock": {
                 "beginningDatetime": None,
                 "id": used2.stock.id,
-                "price": used2.stock.price,
+                "price": used2.stock.price * 100,
                 "priceCategoryLabel": None,
                 "offer": {
                     "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
@@ -246,12 +246,12 @@ class GetBookingsTest:
             response.json["ended_bookings"][0]["stock"]["priceCategoryLabel"]
             == stock.priceCategory.priceCategoryLabel.label
         )
-        assert response.json["ended_bookings"][0]["stock"]["price"] == stock.price
+        assert response.json["ended_bookings"][0]["stock"]["price"] == stock.price * 100
         assert (
             response.json["ongoing_bookings"][0]["stock"]["priceCategoryLabel"]
             == stock.priceCategory.priceCategoryLabel.label
         )
-        assert response.json["ongoing_bookings"][0]["stock"]["price"] == stock.price
+        assert response.json["ongoing_bookings"][0]["stock"]["price"] == stock.price * 100
 
     @freeze_time("2021-03-12")
     def test_get_bookings_15_17_user(self, client):
