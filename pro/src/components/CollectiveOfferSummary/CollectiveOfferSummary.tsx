@@ -71,7 +71,12 @@ const CollectiveOfferSummary = ({
             )}
           </SummaryLayout.Section>
           {!offer.isTemplate && (
-            <SummaryLayout.Section title="Date & Prix" editLink={stockEditLink}>
+            <SummaryLayout.Section
+              title="Date & Prix"
+              editLink={
+                offerManuallyCreated || offer.isTemplate ? stockEditLink : ''
+              }
+            >
               <CollectiveOfferStockSection
                 stock={offer.collectiveStock}
                 venueDepartmentCode={offer.venue.departementCode}
@@ -81,7 +86,11 @@ const CollectiveOfferSummary = ({
           {!offer.isTemplate && (
             <SummaryLayout.Section
               title="Visibilité"
-              editLink={visibilityEditLink}
+              editLink={
+                offerManuallyCreated || offer.isTemplate
+                  ? visibilityEditLink
+                  : ''
+              }
             >
               <CollectiveOfferVisibilitySection
                 institution={offer.institution}

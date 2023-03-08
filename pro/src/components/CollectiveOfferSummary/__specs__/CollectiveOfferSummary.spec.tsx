@@ -58,4 +58,16 @@ describe('CollectiveOfferSummary', () => {
       )
     ).toBeInTheDocument()
   })
+
+  it('should not see edit button if offer from publicApi', async () => {
+    const offer = collectiveOfferFactory({ isPublicApi: true })
+
+    renderCollectiveOfferSummary({
+      ...props,
+      offer,
+    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.queryAllByRole('link', { name: 'Modifier' })).toHaveLength(0)
+  })
 })
