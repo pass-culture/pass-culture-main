@@ -98,7 +98,7 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
             venue_ids = {venue.id for venue in offerer.managedVenues}
         offer_counts.update(repository.get_offer_counts_by_venue(venue_ids))
 
-    return GetOfferersListResponseModel(
+    return GetOfferersListResponseModel(  # type: ignore [call-arg]
         offerers=[
             offerers_serialize.GetOfferersResponseModel.from_orm(
                 offerer,
@@ -226,11 +226,11 @@ def get_available_reimbursement_points(
     is_new_onboarding_enabled = feature.FeatureToggle.WIP_ENABLE_NEW_ONBOARDING.is_active()
     return offerers_serialize.ReimbursementPointListResponseModel(
         __root__=[
-            offerers_serialize.ReimbursementPointResponseModel(
+            offerers_serialize.ReimbursementPointResponseModel(  # type: ignore [call-arg]
                 venueId=reimbursement_point.id,
-                venueName=reimbursement_point.name if is_new_onboarding_enabled else reimbursement_point.common_name,
+                venueName=reimbursement_point.name if is_new_onboarding_enabled else reimbursement_point.common_name,  # type: ignore [arg-type]
                 siret=reimbursement_point.siret,
-                iban=reimbursement_point.iban,
+                iban=reimbursement_point.iban,  # type: ignore [arg-type]
                 bic=reimbursement_point.bic,
             )
             for reimbursement_point in reimbursement_points

@@ -193,7 +193,7 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
 
     _ensure_phone_number_unicity(user, phone_number, change_owner=True)
 
-    user.phoneNumber = phone_number  # type: ignore [assignment]
+    user.phoneNumber = phone_number  # type: ignore [method-assign]
     user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
 
     fraud_check = fraud_models.BeneficiaryFraudCheck(
@@ -201,7 +201,7 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
         type=fraud_models.FraudCheckType.PHONE_VALIDATION,
         status=fraud_models.FraudCheckStatus.OK,
         eligibilityType=user.eligibility,
-        resultContent=fraud_models.PhoneValidationFraudData(phone_number=phone_number),  # type: ignore [arg-type]
+        resultContent=fraud_models.PhoneValidationFraudData(phone_number=phone_number),  # type: ignore [arg-type, call-arg]
         thirdPartyId=f"PC-{user.id}",
     )
 
