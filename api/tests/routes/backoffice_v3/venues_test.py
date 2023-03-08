@@ -55,6 +55,7 @@ class GetVenueTest:
                 "dateDepot": "2022-09-21T16:30:22+02:00",
             }
         }
+        venue.publicName = "Le grand Rantanplan 1"
 
         url = url_for("backoffice_v3_web.venue.get", venue_id=venue.id)
 
@@ -73,6 +74,7 @@ class GetVenueTest:
 
         response_text = html_parser.content_as_text(response.data)
         assert venue.name in response_text
+        assert f"Nom d'usage : {venue.publicName} " in response_text
         assert f"Venue ID : {venue.id} " in response_text
         assert f"SIRET : {venue.siret} " in response_text
         assert "Région : Île-de-France " in response_text
@@ -457,6 +459,8 @@ class UpdateVenueTest:
 
         url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = {
+            "name": "IKEA",
+            "public_name": "Kanelbulle café",
             "siret": venue.managingOfferer.siren + "98765",
             "city": "Umeå",
             "postal_code": "90325",
@@ -475,6 +479,8 @@ class UpdateVenueTest:
 
         db.session.refresh(venue)
 
+        assert venue.name == data["name"]
+        assert venue.publicName == data["public_name"]
         assert venue.siret == data["siret"]
         assert venue.city == data["city"]
         assert venue.postalCode == data["postal_code"]
@@ -506,6 +512,7 @@ class UpdateVenueTest:
 
         url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = {
+            "name": venue.name,
             "siret": venue.siret,
             "city": venue.city,
             "postal_code": venue.postalCode,
@@ -539,6 +546,7 @@ class UpdateVenueTest:
 
         url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = {
+            "name": venue.name,
             "siret": venue.siret,
             "city": venue.city,
             "postal_code": venue.postalCode,
@@ -558,6 +566,8 @@ class UpdateVenueTest:
 
         url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = {
+            "name": venue.name,
+            "public_name": venue.publicName,
             "siret": venue.siret,
             "city": venue.city,
             "postal_code": venue.postalCode,
