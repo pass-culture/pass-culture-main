@@ -7,6 +7,7 @@ from typing import List
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
+from sqlalchemy import Sequence
 from sqlalchemy import and_
 from sqlalchemy import false
 from sqlalchemy import func
@@ -723,3 +724,8 @@ def exclude_offers_from_inactive_venue_provider(query: BaseQuery) -> BaseQuery:
             )
         )
     )
+
+
+def get_next_product_id_from_database() -> int:
+    sequence: Sequence = Sequence("product_id_seq")
+    return db.session.execute(sequence)

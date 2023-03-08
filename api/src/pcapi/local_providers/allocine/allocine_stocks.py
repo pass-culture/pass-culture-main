@@ -8,7 +8,8 @@ from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
-import pcapi.core.offers.models as offers_models
+from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import repository as offers_repository
 import pcapi.core.providers.models as providers_models
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
@@ -149,6 +150,10 @@ class AllocineStocks(LocalProvider):
         allocine_product.subcategoryId = subcategories.SEANCE_CINE.id
 
         self.update_from_movie_information(allocine_product, self.movie_information)  # type: ignore [arg-type]
+
+        is_new_product_to_insert = allocine_product.id is None
+        if is_new_product_to_insert:
+            allocine_product.id = offers_repository.get_next_product_id_from_database()
 
         self.last_product = allocine_product
 
