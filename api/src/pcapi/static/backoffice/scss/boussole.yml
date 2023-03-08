@@ -1,0 +1,4 @@
+---
+SOURCES_PATH: "."
+TARGET_PATH: "../css/compiled"
+SOURCE_MAP: "true"

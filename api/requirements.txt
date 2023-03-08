@@ -84,3 +84,5 @@ WTForms-SQLAlchemy==0.3
 XlsxWriter
 Flask-WTF==1.0.1
 zeep==4.1.0
+libsass==0.22.0
+boussole==2.1.0
