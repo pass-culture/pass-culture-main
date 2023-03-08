@@ -145,6 +145,9 @@ class CancelBookingCDS(BaseModel):
     barcodes: list[int]
     paiement_type_id: int = Field(alias="paiementtypeid")
 
+    class Config:
+        allow_population_by_field_name = True
+
 
 class CancelBookingsErrorsCDS(BaseModel):
     __root__: Dict[str, str]
