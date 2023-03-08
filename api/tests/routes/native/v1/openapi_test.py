@@ -1535,30 +1535,37 @@ def test_public_api(client):
                     ],
                     "title": "SubscriptionStep",
                 },
-                "SubscriptionStepDetails": {
+                "SubscriptionStepCompletionState": {
+                    "description": "An enumeration.",
+                    "enum": ["completed", "current", "disabled", "retry"],
+                    "title": "SubscriptionStepCompletionState",
+                },
+                "SubscriptionStepDetailsResponse": {
                     "properties": {
+                        "completionState": {"$ref": "#/components/schemas/SubscriptionStepCompletionState"},
                         "name": {"$ref": "#/components/schemas/SubscriptionStep"},
-                        "title": {"$ref": "#/components/schemas/SubscriptionStepTitle"},
                         "subtitle": {"nullable": True, "title": "Subtitle", "type": "string"},
+                        "title": {"$ref": "#/components/schemas/SubscriptionStepTitle"},
                     },
-                    "required": ["name", "title"],
-                    "title": "SubscriptionStepDetails",
+                    "required": ["name", "title", "completionState"],
+                    "title": "SubscriptionStepDetailsResponse",
                     "type": "object",
                 },
                 "SubscriptionStepTitle": {
-                    "description": "An " "enumeration.",
+                    "description": "An enumeration.",
                     "enum": ["Numéro de téléphone", "Profil", "Identification", "Confirmation"],
                     "title": "SubscriptionStepTitle",
                 },
                 "SubscriptionStepperResponse": {
                     "properties": {
+                        "errorMessage": {"nullable": True, "title": "Errormessage", "type": "string"},
                         "subscriptionStepsToDisplay": {
-                            "items": {"$ref": "#/components/schemas/SubscriptionStepDetails"},
+                            "items": {"$ref": "#/components/schemas/SubscriptionStepDetailsResponse"},
                             "title": "Subscriptionstepstodisplay",
                             "type": "array",
                         },
+                        "subtitle": {"nullable": True, "title": "Subtitle", "type": "string"},
                         "title": {"title": "Title", "type": "string"},
-                        "subtitle": {"title": "Subtitle", "type": "string", "nullable": True},
                     },
                     "required": ["subscriptionStepsToDisplay", "title"],
                     "title": "SubscriptionStepperResponse",
