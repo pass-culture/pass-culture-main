@@ -358,13 +358,13 @@ def _create_profile_completion_fraud_check_from_dms(
         fraud_api.create_profile_completion_fraud_check(
             user,
             eligibility,
-            fraud_models.ProfileCompletionContent(
-                activity=activity,
-                city=city,
+            fraud_models.ProfileCompletionContent(  # type: ignore [call-arg]
+                activity=activity,  # type: ignore [arg-type]
+                city=city,  # type: ignore [arg-type]
                 first_name=first_name,
                 last_name=last_name,
                 origin=f"Completed in DMS application {application_id}",
-                postalCode=content.postal_code,
+                postalCode=content.postal_code,  # type: ignore [arg-type]
             ),
         )
 

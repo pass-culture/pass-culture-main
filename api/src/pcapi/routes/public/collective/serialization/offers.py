@@ -296,15 +296,15 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             subcategoryId=offer.subcategoryId,
             bookingEmails=offer.bookingEmails,
             contactEmail=offer.contactEmail,
-            contactPhone=offer.contactPhone,
+            contactPhone=offer.contactPhone,  # type: ignore [arg-type]
             domains=[domain.id for domain in offer.domains],
             durationMinutes=offer.durationMinutes,
             interventionArea=offer.interventionArea,
             students=[student.name for student in offer.students],
             dateCreated=offer.dateCreated.replace(microsecond=0).isoformat(),
-            hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed,
+            hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed,  # type: ignore [arg-type]
             isActive=offer.isActive,
-            isSoldOut=offer.isSoldOut,
+            isSoldOut=offer.isSoldOut,  # type: ignore [arg-type]
             venueId=offer.venueId,
             audioDisabilityCompliant=offer.audioDisabilityCompliant,
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
@@ -317,7 +317,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             educationalPriceDetail=offer.collectiveStock.priceDetail,
             educationalInstitution=offer.institution.institutionId if offer.institutionId else None,
             educationalInstitutionId=offer.institution.id if offer.institutionId else None,
-            offerVenue={
+            offerVenue={  # type: ignore [arg-type]
                 "venueId": dehumanize(offer.offerVenue.get("venueId")) or None,
                 "addressType": offer.offerVenue["addressType"],
                 "otherAddress": offer.offerVenue["otherAddress"] or None,
