@@ -112,6 +112,7 @@ class CallToActionMessage:
 @dataclasses.dataclass
 class SubscriptionMessage:
     user_message: str
+    message_summary: str | None = None
     action_hint: str | None = None
     call_to_action: CallToActionMessage | None = None
     pop_over_icon: PopOverIcon | None = None

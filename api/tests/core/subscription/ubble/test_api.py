@@ -24,6 +24,7 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
+from pcapi.core.subscription.ubble import models as ubble_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -764,31 +765,35 @@ class SubscriptionMessageTest:
         assert ubble_subscription_api.get_ubble_subscription_message(fraud_check) is None
 
     @pytest.mark.parametrize(
-        "reason_codes,expected_message,expected_action_hint",
+        "reason_codes,expected_message,expected_message_summary,expected_action_hint",
         [
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
-                "Ton document d'identité est expiré. Réessaye avec un passeport ou une carte d'identité française en cours de validité.",
-                "Réessaie avec un autre document d’identité valide",
+                ubble_models.UbbleRetryableUserMessage.ID_CHECK_EXPIRED.value,
+                ubble_models.UbbleRetryableMessageSummary.ID_CHECK_EXPIRED.value,
+                ubble_models.UbbleRetryableActionHint.ID_CHECK_EXPIRED.value,
             ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC],
-                "Le document que tu as présenté n’est pas accepté car il s’agit d’une photo ou d’une copie de l’original. Réessaye avec un document original en cours de validité.",
-                "Réessaie avec ta carte d’identité ou ton passeport",
+                ubble_models.UbbleRetryableUserMessage.ID_CHECK_NOT_AUTHENTIC.value,
+                ubble_models.UbbleRetryableMessageSummary.ID_CHECK_NOT_AUTHENTIC.value,
+                ubble_models.UbbleRetryableActionHint.ID_CHECK_NOT_AUTHENTIC.value,
             ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
-                "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site demarches-simplifiees.fr. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité.",
-                "Réessaie avec ta carte d’identité ou ton passeport",
+                ubble_models.UbbleRetryableUserMessage.ID_CHECK_NOT_SUPPORTED.value,
+                ubble_models.UbbleRetryableMessageSummary.ID_CHECK_NOT_SUPPORTED.value,
+                ubble_models.UbbleRetryableActionHint.ID_CHECK_NOT_SUPPORTED.value,
             ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
-                "Nous n'arrivons pas à lire ton document. Réessaye avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé.",
-                "Réessaie avec ta pièce d'identité en t'assurant qu'elle soit lisible",
+                ubble_models.UbbleRetryableUserMessage.ID_CHECK_UNPROCESSABLE.value,
+                ubble_models.UbbleRetryableMessageSummary.ID_CHECK_UNPROCESSABLE.value,
+                ubble_models.UbbleRetryableActionHint.ID_CHECK_UNPROCESSABLE.value,
             ),
         ],
     )
-    def test_retryable(self, reason_codes, expected_message, expected_action_hint):
+    def test_retryable(self, reason_codes, expected_message, expected_message_summary, expected_action_hint):
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             status=FraudCheckStatus.SUSPICIOUS,
@@ -798,6 +803,7 @@ class SubscriptionMessageTest:
             fraud_check
         ) == subscription_models.SubscriptionMessage(
             user_message=expected_message,
+            message_summary=expected_message_summary,
             action_hint=expected_action_hint,
             call_to_action=subscription_models.CallToActionMessage(
                 title="Réessayer la vérification de mon identité",

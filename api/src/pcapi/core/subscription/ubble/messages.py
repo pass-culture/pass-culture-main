@@ -30,22 +30,28 @@ def get_ubble_retryable_message(
 ) -> subscription_models.SubscriptionMessage:
     if fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in reason_codes:
         user_message = models.UbbleRetryableUserMessage.ID_CHECK_UNPROCESSABLE.value
+        message_summary = models.UbbleRetryableMessageSummary.ID_CHECK_UNPROCESSABLE.value
         action_hint = models.UbbleRetryableActionHint.ID_CHECK_UNPROCESSABLE.value
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in reason_codes:
         user_message = models.UbbleRetryableUserMessage.ID_CHECK_NOT_AUTHENTIC.value
+        message_summary = models.UbbleRetryableMessageSummary.ID_CHECK_NOT_AUTHENTIC.value
         action_hint = models.UbbleRetryableActionHint.ID_CHECK_NOT_AUTHENTIC.value
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in reason_codes:
         user_message = models.UbbleRetryableUserMessage.ID_CHECK_NOT_SUPPORTED.value
+        message_summary = models.UbbleRetryableMessageSummary.ID_CHECK_NOT_SUPPORTED.value
         action_hint = models.UbbleRetryableActionHint.ID_CHECK_NOT_SUPPORTED.value
     elif fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in reason_codes:
         user_message = models.UbbleRetryableUserMessage.ID_CHECK_EXPIRED.value
+        message_summary = models.UbbleRetryableMessageSummary.ID_CHECK_EXPIRED.value
         action_hint = models.UbbleRetryableActionHint.ID_CHECK_EXPIRED.value
     else:
         user_message = models.UbbleRetryableUserMessage.DEFAULT.value
+        message_summary = models.UbbleRetryableMessageSummary.DEFAULT.value
         action_hint = models.UbbleRetryableActionHint.DEFAULT.value
 
     return subscription_models.SubscriptionMessage(
         user_message=user_message,
+        message_summary=message_summary,
         action_hint=action_hint,
         call_to_action=subscription_messages.REDIRECT_TO_IDENTIFICATION_CHOICE,
         pop_over_icon=None,
