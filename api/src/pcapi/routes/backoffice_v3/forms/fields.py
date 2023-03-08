@@ -115,6 +115,13 @@ class PCEmailField(wtforms.EmailField):
     ]
 
 
+class PCOptIntegerField(wtforms.IntegerField):
+    widget = partial(widget, template="components/forms/string_field.html")
+    validators = [
+        validators.Optional(""),
+    ]
+
+
 class PCIntegerField(wtforms.IntegerField):
     widget = partial(widget, template="components/forms/string_field.html")
     validators = [

@@ -1,6 +1,6 @@
-<div class="form-floating my-3 {% if field.type == "PCIntegerField"  %} d-inline-block {% elif field.type == "PCOptHiddenField" or field.type == "PCPostalCodeHiddenField" or field.type == "PCOptPostalCodeHiddenField" or field.type == "PCHiddenField" %} d-none {% endif %}">
+<div class="form-floating my-3 {% if field.type == "PCIntegerField" or field.type == "PCOptIntegerField"  %} d-inline-block {% elif field.type == "PCOptHiddenField" or field.type == "PCPostalCodeHiddenField" or field.type == "PCOptPostalCodeHiddenField" or field.type == "PCHiddenField" %} d-none {% endif %}">
     <input
-        type="{% if field.type == "PCIntegerField" %}number{% else %}text{% endif %}"
+        type="{% if field.type == "PCIntegerField" or field.type == "PCOptIntegerField" %}number{% else %}text{% endif %}"
         id="{{ field.name }}"
         name="{{ field.name }}"
         class="form-control"
