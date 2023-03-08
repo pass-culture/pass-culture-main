@@ -9,6 +9,7 @@ from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription.models import SubscriptionStepCompletionState
+import pcapi.core.subscription.ubble.models as ubble_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -728,7 +729,28 @@ class StepperTest:
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
 
-    def should_have_subtitle_for_id_check_when_ubble_retryable(self, client):
+    @pytest.mark.parametrize(
+        "error_code,expected_subtitle",
+        [
+            (
+                fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
+                ubble_models.UbbleRetryableActionHint.ID_CHECK_UNPROCESSABLE.value,
+            ),
+            (
+                fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,
+                ubble_models.UbbleRetryableActionHint.ID_CHECK_NOT_AUTHENTIC.value,
+            ),
+            (
+                fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
+                ubble_models.UbbleRetryableActionHint.ID_CHECK_NOT_SUPPORTED.value,
+            ),
+            (
+                fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
+                ubble_models.UbbleRetryableActionHint.ID_CHECK_EXPIRED.value,
+            ),
+        ],
+    )
+    def should_have_subtitle_for_id_check_when_ubble_retryable(self, client, error_code, expected_subtitle):
         user = fraud_factories.UserEligibleAtIdentityCheckStepFactory()
 
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -736,7 +758,7 @@ class StepperTest:
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.KO,
             eligibilityType=users_models.EligibilityType.AGE18,
-            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
+            reasonCodes=[error_code],
         )
 
         client.with_token(user.email)
@@ -748,8 +770,8 @@ class StepperTest:
             {
                 "name": "identity-check",
                 "title": "Identification",
-                "subtitle": "Réessaie avec ta pièce d'identité en t'assurant qu'elle soit lisible",
-                "completionState": SubscriptionStepCompletionState.CURRENT.value,
+                "subtitle": expected_subtitle,
+                "completionState": SubscriptionStepCompletionState.RETRY.value,
             },
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
