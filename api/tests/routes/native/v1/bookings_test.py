@@ -6,6 +6,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -198,6 +199,8 @@ class GetBookingsTest:
             "stock": {
                 "beginningDatetime": None,
                 "id": used2.stock.id,
+                "price": used2.stock.price,
+                "priceCategoryLabel": None,
                 "offer": {
                     "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
                     "extraData": None,
@@ -228,6 +231,27 @@ class GetBookingsTest:
 
         for booking in response.json["ongoing_bookings"]:
             assert booking["qrCodeData"] is not None
+
+    def test_get_bookings_returns_stock_price_and_price_category_label(self, client):
+        now = datetime.utcnow()
+        stock = EventStockFactory()
+        ongoing_booking = BookingFactory(stock=stock, user__deposit__expirationDate=now + timedelta(days=180))
+        BookingFactory(stock=stock, user=ongoing_booking.user, status=BookingStatus.CANCELLED)
+
+        with assert_no_duplicated_queries():
+            response = client.with_token(ongoing_booking.user.email).get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        assert (
+            response.json["ended_bookings"][0]["stock"]["priceCategoryLabel"]
+            == stock.priceCategory.priceCategoryLabel.label
+        )
+        assert response.json["ended_bookings"][0]["stock"]["price"] == stock.price
+        assert (
+            response.json["ongoing_bookings"][0]["stock"]["priceCategoryLabel"]
+            == stock.priceCategory.priceCategoryLabel.label
+        )
+        assert response.json["ongoing_bookings"][0]["stock"]["price"] == stock.price
 
     @freeze_time("2021-03-12")
     def test_get_bookings_15_17_user(self, client):

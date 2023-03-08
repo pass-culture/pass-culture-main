@@ -6,6 +6,7 @@ from pydantic.class_validators import validator
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
@@ -72,9 +73,18 @@ class BookingStockResponse(BaseModel):
     id: int
     beginningDatetime: datetime | None
     offer: BookingOfferResponse
+    price: int
+    priceCategoryLabel: str | None
 
     class Config:
         orm_mode = True
+
+    @classmethod
+    def from_orm(cls, stock: Stock) -> "BookingStockResponse":
+        stock_response = super().from_orm(stock)
+        price_category = getattr(stock, "priceCategory", None)
+        stock_response.priceCategoryLabel = price_category.priceCategoryLabel.label if price_category else None
+        return stock_response
 
 
 class BookingActivationCodeResponse(BaseModel):

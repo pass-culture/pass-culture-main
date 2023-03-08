@@ -85,11 +85,6 @@ class OfferStockResponse(BaseModel):
         stock_response = super().from_orm(stock)
 
         price_category = getattr(stock, "priceCategory", None)
-        if price_category:
-            stock_response.priceCategoryLabel = price_category.priceCategoryLabel.label
-        else:
-            stock_response.priceCategoryLabel = None
-
         stock_response.priceCategoryLabel = price_category.priceCategoryLabel.label if price_category else None
         stock_response.remainingQuantity = (
             stock.remainingQuantity if stock.remainingQuantity != "unlimited" else None  # type: ignore [assignment]
