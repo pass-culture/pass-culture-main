@@ -1,5 +1,5 @@
 <div class="card my-4 pc-personal-information-registration-view">
-    <div class="card-body {{ history_type }}">
+    <div class="card-body" id="{{ history_type }}">
         <h5 class="card-title text-bold fs-2 m-3">
             Parcours d'inscription
             <span class="badge rounded-pill text-bg-primary fs-6 align-middle mx-4">
@@ -32,7 +32,7 @@
     </div>
     <div class="row justify-content-evenly g-4 mb-4">
         {% for idCheckItem in history.idCheckHistory %}
-            <div class="card mx-1 shadow col-auto {{ idCheckItem.thirdPartyId }}">
+            <div class="card mx-1 shadow col-auto" id="{{ idCheckItem.thirdPartyId }}">
                 <div class="card-header bg-white">
                     <h5 class="card-title text-bold fs-3 m-3">
                         {{ idCheckItem.type }}
@@ -97,7 +97,7 @@
                                     </button>
                                 </div>
                                 <div class="col">
-                                    <div class="fs-6 collapse collapse-details{{ idCheckItem.thirdPartyId }}">
+                                    <div class="fs-6 collapse" id="collapse-details{{ idCheckItem.thirdPartyId }}">
                                     <pre>
                                          <code><br>{{ idCheckItem.technicalDetails  | tojson(indent=4) | safe | empty_string_if_null }}</code>
                                     </pre>
