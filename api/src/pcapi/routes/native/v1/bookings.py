@@ -11,6 +11,8 @@ import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import PriceCategory
+from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
@@ -83,7 +85,7 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
 def get_bookings(user: User) -> BookingsResponse:
     individual_bookings = (
         Booking.query.filter_by(userId=user.id)
-        .options(joinedload(Booking.stock).load_only(Stock.id, Stock.beginningDatetime))
+        .options(joinedload(Booking.stock).load_only(Stock.id, Stock.beginningDatetime, Stock.price))
         .options(
             joinedload(Booking.stock)
             .joinedload(Stock.offer)
@@ -101,6 +103,12 @@ def get_bookings(user: User) -> BookingsResponse:
                 Product.id,
                 Product.thumbCount,
             )
+        )
+        .options(
+            joinedload(Booking.stock)
+            .joinedload(Stock.priceCategory)
+            .joinedload(PriceCategory.priceCategoryLabel)
+            .load_only(PriceCategoryLabel.label)
         )
         .options(
             joinedload(Booking.stock)
