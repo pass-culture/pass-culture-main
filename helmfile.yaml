@@ -27,10 +27,10 @@ environments:
       - chartVersion: 0.17.2
   production:
     values:
-      - chartVersion: 0.17.2
+      - chartVersion: 0.17.4
   ops:
     values:
-      - chartVersion: 0.17.2
+      - chartVersion: 0.17.4
   perf:
     values:
-      - chartVersion: 0.17.2
+      - chartVersion: 0.17.4
