@@ -35,7 +35,7 @@ isort
 itsdangerous==2.0.1
 Jinja2==3.0.3
 MarkupSafe==2.0.1
-mypy
+mypy==1.0.1
 notion-client==1.0.0
 openpyxl
 pgcli # a tool not used in code. There is no point in pinning its version
