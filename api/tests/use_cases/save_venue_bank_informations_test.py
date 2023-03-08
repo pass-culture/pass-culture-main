@@ -36,7 +36,26 @@ class SaveVenueBankInformationsTest:
                 bank_informations_repository=BankInformationsSQLRepository(),
             )
 
-        def test_raises_an_error_if_no_venue_found_by_siret(self):
+        def test_v3_raises_an_error_if_siret_is_absent(self):
+            application_details = ApplicationDetail(
+                siren="999999999",
+                status=BankInformationStatus.ACCEPTED,
+                application_id=1,
+                iban="XXX",
+                bic="YYY",
+                modification_date=datetime.utcnow(),
+                siret=None,
+            )
+            errors = CannotRegisterBankInformation()
+
+            self.save_venue_bank_informations.get_referent_venue(
+                application_details,
+                errors,
+                procedure_version=3,
+            )
+            assert errors.errors["Venue"] == ["Venue not found"]
+
+        def test_v3_raises_an_error_if_no_venue_found_by_siret(self):
             application_details = ApplicationDetail(
                 siren="999999999",
                 status=BankInformationStatus.ACCEPTED,
@@ -48,10 +67,30 @@ class SaveVenueBankInformationsTest:
             )
             errors = CannotRegisterBankInformation()
 
-            self.save_venue_bank_informations.get_referent_venue(application_details, errors)
+            self.save_venue_bank_informations.get_referent_venue(
+                application_details,
+                errors,
+                procedure_version=3,
+            )
             assert errors.errors["Venue"] == ["Venue not found"]
 
-        def test_raises_an_error_if_no_venue_found_by_dms_token(self):
+        def test_v4_raises_an_error_if_dms_token_is_absent(self):
+            application_details = ApplicationDetail(
+                status=BankInformationStatus.ACCEPTED,
+                application_id=1,
+                modification_date=datetime.utcnow(),
+                dms_token=None,
+            )
+            errors = CannotRegisterBankInformation()
+
+            self.save_venue_bank_informations.get_referent_venue(
+                application_details,
+                errors,
+                procedure_version=4,
+            )
+            assert errors.errors["Venue"] == ["Venue not found"]
+
+        def test_v4_raises_an_error_if_no_venue_found_by_dms_token(self):
             application_details = ApplicationDetail(
                 status=BankInformationStatus.ACCEPTED,
                 application_id=1,
@@ -60,11 +99,15 @@ class SaveVenueBankInformationsTest:
             )
             errors = CannotRegisterBankInformation()
 
-            self.save_venue_bank_informations.get_referent_venue(application_details, errors)
+            self.save_venue_bank_informations.get_referent_venue(
+                application_details,
+                errors,
+                procedure_version=4,
+            )
             assert errors.errors["Venue"] == ["Venue not found"]
 
         @patch("pcapi.connectors.sirene.siret_is_active", side_effect=sirene.UnknownEntityException())
-        def test_raises_an_error_if_sirene_api_errored(self, siret_is_active):
+        def test_v3_raises_an_error_if_sirene_api_errored(self, siret_is_active):
             offerer = offerers_factories.OffererFactory()
             offerers_factories.VenueFactory(managingOfferer=offerer, siret="99999999900000")
             application_details = ApplicationDetail(
@@ -78,7 +121,11 @@ class SaveVenueBankInformationsTest:
             )
             errors = CannotRegisterBankInformation()
 
-            self.save_venue_bank_informations.get_referent_venue(application_details, errors)
+            self.save_venue_bank_informations.get_referent_venue(
+                application_details,
+                errors,
+                procedure_version=3,
+            )
             assert errors.errors["Venue"] == ["Error while checking SIRET on Sirene API"]
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient")
@@ -107,6 +154,19 @@ class SaveVenueBankInformationsTest:
             assert bank_information.iban is None
             assert bank_information.status == BankInformationStatus.DRAFT
             mock_archive_dossier.assert_not_called()
+
+        def test_draft_application_without_dms_token(self, mock_archive_dossier, mock_dms_graphql_client):
+            application_id = "9"
+            mock_dms_graphql_client.return_value.get_bank_info.return_value = (
+                dms_creators.get_bank_info_response_procedure_v4(
+                    state=GraphQLApplicationStates.draft.value,
+                    dms_token="",
+                )
+            )
+
+            self.save_venue_bank_informations.execute(application_id, procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4)
+
+            assert BankInformation.query.count() == 0
 
         def test_on_going_application(self, mock_archive_dossier, mock_dms_graphql_client, app):
             venue = offerers_factories.VenueFactory(pricing_point="self")
