@@ -7,7 +7,7 @@ import { IOffererFormValues } from '../Offerer/OffererForm'
 
 export interface IOffererAuthenticationFormValues extends IOffererFormValues {
   name: string
-  publicName?: string
+  publicName: string
 }
 
 const OffererAuthenticationForm = (): JSX.Element => {

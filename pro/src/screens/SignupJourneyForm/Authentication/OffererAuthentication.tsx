@@ -1,11 +1,9 @@
 import { FormikProvider, useFormik } from 'formik'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom-v5-compat'
 
 import FormLayout from 'components/FormLayout'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
-import { FORM_ERROR_MESSAGE } from 'core/shared'
-import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
 import { DEFAULT_OFFERER_FORM_VALUES } from '../Offerer/constants'
@@ -16,24 +14,17 @@ import OffererAuthenticationForm, {
 import { validationSchema } from './validationSchema'
 
 const OffererAuthentication = (): JSX.Element => {
-  const notify = useNotification()
   const navigate = useNavigate()
 
   const { offerer, setOfferer } = useSignupJourneyContext()
 
-  const initialValues: IOffererAuthenticationFormValues = offerer
-    ? offerer
-    : DEFAULT_OFFERER_FORM_VALUES
+  const initialValues: IOffererAuthenticationFormValues = {
+    ...DEFAULT_OFFERER_FORM_VALUES,
+    ...offerer,
+  }
 
   const handlePreviousStep = () => {
     navigate('/parcours-inscription/structure')
-  }
-
-  const handleNextStep = () => async () => {
-    if (Object.keys(formik.errors).length !== 0) {
-      notify.error(FORM_ERROR_MESSAGE)
-      return
-    }
   }
 
   const onSubmitOffererAuthentication = async (
@@ -50,6 +41,12 @@ const OffererAuthentication = (): JSX.Element => {
     enableReinitialize: true,
   })
 
+  useEffect(() => {
+    if (offerer?.siret === '' || offerer?.name === '') {
+      handlePreviousStep()
+    }
+  }, [])
+
   return (
     <FormLayout>
       <FormikProvider value={formik}>
@@ -62,7 +59,6 @@ const OffererAuthentication = (): JSX.Element => {
           <ActionBar
             onClickPrevious={handlePreviousStep}
             previousStepTitle="Retour"
-            onClickNext={handleNextStep()}
             isDisabled={formik.isSubmitting}
           />
         </form>

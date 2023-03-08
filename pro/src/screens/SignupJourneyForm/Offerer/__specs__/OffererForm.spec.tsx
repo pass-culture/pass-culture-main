@@ -48,7 +48,7 @@ fetch.mockResponse(
   { status: 200 }
 )
 
-const renderActivityForm = ({
+const renderOffererForm = ({
   initialValues,
   onSubmit = jest.fn(),
   contextValue,
@@ -111,7 +111,7 @@ describe('screens:SignupJourney::OffererForm', () => {
   })
 
   it('should render offerer form', async () => {
-    renderActivityForm({
+    renderOffererForm({
       initialValues: initialValues,
       contextValue,
     })
@@ -131,11 +131,11 @@ describe('screens:SignupJourney::OffererForm', () => {
     ).toHaveValue('')
   })
 
-  it('should render activity form with initialValues', async () => {
+  it('should render offerer form with initialValues', async () => {
     initialValues = {
       siret: '123456789333',
     }
-    renderActivityForm({
+    renderOffererForm({
       initialValues: initialValues,
       contextValue,
     })
@@ -145,7 +145,7 @@ describe('screens:SignupJourney::OffererForm', () => {
   })
 
   it('should fill siret field only with numbers', async () => {
-    renderActivityForm({
+    renderOffererForm({
       initialValues: initialValues,
       contextValue,
     })
@@ -161,7 +161,7 @@ describe('screens:SignupJourney::OffererForm', () => {
   })
 
   it('should render empty siret field error', async () => {
-    renderActivityForm({
+    renderOffererForm({
       initialValues: initialValues,
       contextValue,
     })
@@ -173,7 +173,7 @@ describe('screens:SignupJourney::OffererForm', () => {
 
   const lenErrorCondition = ['22223333', '1234567891234567']
   it.each(lenErrorCondition)('should render errors', async siretValue => {
-    renderActivityForm({
+    renderOffererForm({
       initialValues: initialValues,
       contextValue,
     })
@@ -200,7 +200,7 @@ describe('screens:SignupJourney::OffererForm', () => {
       )
     )
 
-    renderActivityForm({
+    renderOffererForm({
       initialValues: initialValues,
       contextValue,
     })

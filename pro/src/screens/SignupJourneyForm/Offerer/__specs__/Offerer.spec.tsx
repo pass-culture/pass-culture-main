@@ -46,7 +46,7 @@ fetch.mockResponse(
   }),
   { status: 200 }
 )
-const renderActivityScreen = (contextValue: ISignupJourneyContext) => {
+const renderOffererScreen = (contextValue: ISignupJourneyContext) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -108,7 +108,7 @@ describe('screens:SignupJourney::Offerer', () => {
 
   it('should render component', async () => {
     contextValue.offerer = null
-    renderActivityScreen(contextValue)
+    renderOffererScreen(contextValue)
 
     expect(
       await screen.findByText('Renseignez le SIRET de votre structure')
@@ -131,7 +131,7 @@ describe('screens:SignupJourney::Offerer', () => {
       name: '',
     }
 
-    renderActivityScreen(contextValue)
+    renderOffererScreen(contextValue)
     expect(
       await screen.findByText('Renseignez le SIRET de votre structure')
     ).toBeInTheDocument()
@@ -151,7 +151,7 @@ describe('screens:SignupJourney::Offerer', () => {
       )
     )
 
-    renderActivityScreen(contextValue)
+    renderOffererScreen(contextValue)
 
     expect(
       await screen.getByText('Renseignez le SIRET de votre structure')
@@ -179,7 +179,7 @@ describe('screens:SignupJourney::Offerer', () => {
         { id: '2', name: 'Second Venue' },
       ],
     })
-    await renderActivityScreen(contextValue)
+    await renderOffererScreen(contextValue)
 
     await userEvent.type(
       screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
@@ -202,7 +202,7 @@ describe('screens:SignupJourney::Offerer', () => {
         ''
       )
     )
-    await renderActivityScreen(contextValue)
+    await renderOffererScreen(contextValue)
 
     await userEvent.type(
       screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
