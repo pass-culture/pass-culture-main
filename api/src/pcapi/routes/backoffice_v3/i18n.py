@@ -71,6 +71,10 @@ def i18n_column_name(term: str) -> str:
             return "Numéro de téléphone de contact"
         case "ispermanent":
             return "Permanent"
+        case "name":
+            return "Nom juridique"
+        case "publicname":
+            return "Nom d'usage"
         case _:
             return term.replace("_", " ").capitalize()
 

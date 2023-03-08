@@ -16,6 +16,14 @@ class EditVirtualVenueForm(utils.PCForm):
 
 
 class EditVenueForm(EditVirtualVenueForm):
+    name = fields.PCStringField(
+        "Nom juridique",
+        validators=(wtforms.validators.Length(max=140, message="doit contenir moins de %(max)d caractères"),),
+    )
+    public_name = fields.PCOptStringField(
+        "Nom d'usage",
+        validators=(wtforms.validators.Length(max=255, message="doit contenir moins de %(max)d caractères"),),
+    )
     siret = fields.PCStringField("siret")
     postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
         "Adresse",
