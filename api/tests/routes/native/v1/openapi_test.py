@@ -258,12 +258,12 @@ def test_public_api(client):
                             "title": "Ended Bookings",
                             "type": "array",
                         },
+                        "hasBookingsAfter18": {"title": "Hasbookingsafter18", "type": "boolean"},
                         "ongoing_bookings": {
                             "items": {"$ref": "#/components/schemas/BookingReponse"},
                             "title": "Ongoing Bookings",
                             "type": "array",
                         },
-                        "hasBookingsAfter18": {"title": "Hasbookingsafter18", "type": "boolean"},
                     },
                     "required": ["ended_bookings", "ongoing_bookings", "hasBookingsAfter18"],
                     "title": "BookingsResponse",
@@ -733,9 +733,9 @@ def test_public_api(client):
                 },
                 "NativeCategoryResponseModelv2": {
                     "properties": {
+                        "genreType": {"anyOf": [{"$ref": "#/components/schemas/GenreType"}], "nullable": True},
                         "name": {"$ref": "#/components/schemas/NativeCategoryIdEnumv2"},
                         "value": {"nullable": True, "title": "Value", "type": "string"},
-                        "genreType": {"anyOf": [{"$ref": "#/components/schemas/GenreType"}], "nullable": True},
                     },
                     "required": ["name"],
                     "title": "NativeCategoryResponseModelv2",
@@ -1273,9 +1273,19 @@ def test_public_api(client):
                 },
                 "SubcategoriesResponseModelv2": {
                     "properties": {
+                        "genreTypes": {
+                            "items": {"$ref": "#/components/schemas/GenreTypeModel"},
+                            "title": "Genretypes",
+                            "type": "array",
+                        },
                         "homepageLabels": {
                             "items": {"$ref": "#/components/schemas/HomepageLabelResponseModelv2"},
                             "title": "Homepagelabels",
+                            "type": "array",
+                        },
+                        "nativeCategories": {
+                            "items": {"$ref": "#/components/schemas/NativeCategoryResponseModelv2"},
+                            "title": "Nativecategories",
                             "type": "array",
                         },
                         "searchGroups": {
@@ -1286,16 +1296,6 @@ def test_public_api(client):
                         "subcategories": {
                             "items": {"$ref": "#/components/schemas/SubcategoryResponseModelv2"},
                             "title": "Subcategories",
-                            "type": "array",
-                        },
-                        "nativeCategories": {
-                            "items": {"$ref": "#/components/schemas/NativeCategoryResponseModelv2"},
-                            "title": "Nativecategories",
-                            "type": "array",
-                        },
-                        "genreTypes": {
-                            "items": {"$ref": "#/components/schemas/GenreTypeModel"},
-                            "title": "Genretypes",
                             "type": "array",
                         },
                     },
@@ -1490,9 +1490,9 @@ def test_public_api(client):
                         "homepageLabelName": {"$ref": "#/components/schemas/_HomepageLabelNameEnumv2"},
                         "id": {"$ref": "#/components/schemas/SubcategoryIdEnumv2"},
                         "isEvent": {"title": "Isevent", "type": "boolean"},
+                        "nativeCategoryId": {"$ref": "#/components/schemas/NativeCategoryIdEnumv2"},
                         "onlineOfflinePlatform": {"$ref": "#/components/schemas/OnlineOfflinePlatformChoicesEnumv2"},
                         "searchGroupName": {"$ref": "#/components/schemas/SearchGroupNameEnumv2"},
-                        "nativeCategoryId": {"$ref": "#/components/schemas/NativeCategoryIdEnumv2"},
                     },
                     "required": [
                         "id",
@@ -1521,6 +1521,11 @@ def test_public_api(client):
                     "required": ["userMessage"],
                     "title": "SubscriptionMessage",
                     "type": "object",
+                },
+                "SubscriptionStatus": {
+                    "description": "An enumeration.",
+                    "enum": ["has_to_complete_subscription", "has_subscription_pending", "has_subscription_issues"],
+                    "title": "SubscriptionStatus",
                 },
                 "SubscriptionStep": {
                     "description": "An enumeration.",
@@ -1703,34 +1708,6 @@ def test_public_api(client):
                     "enum": ["ADMIN", "BENEFICIARY", "PRO", "UNDERAGE_BENEFICIARY", "TEST"],
                     "title": "UserRole",
                 },
-                "YoungStatusResponse": {
-                    "properties": {
-                        "statusType": {"$ref": "#/components/schemas/YoungStatusType"},
-                        "subscriptionStatus": {
-                            "anyOf": [{"$ref": "#/components/schemas/SubscriptionStatus"}],
-                            "nullable": True,
-                        },
-                    },
-                    "required": ["statusType"],
-                    "title": "YoungStatusResponse",
-                    "type": "object",
-                },
-                "YoungStatusType": {
-                    "description": "An enumeration.",
-                    "enum": [
-                        "eligible",
-                        "non_eligible",
-                        "beneficiary",
-                        "ex_beneficiary",
-                        "suspended",
-                    ],
-                    "title": "YoungStatusType",
-                },
-                "SubscriptionStatus": {
-                    "description": "An enumeration.",
-                    "enum": ["has_to_complete_subscription", "has_subscription_pending", "has_subscription_issues"],
-                    "title": "SubscriptionStatus",
-                },
                 "UserSuspensionDateResponse": {
                     "properties": {
                         "date": {"format": "date-time", "nullable": True, "title": "Date", "type": "string"}
@@ -1826,12 +1803,7 @@ def test_public_api(client):
                             "nullable": True,
                             "title": "VenueContactModel",
                         },
-                        "description": {
-                            "maxLength": 1000,
-                            "nullable": True,
-                            "title": "Description",
-                            "type": "string",
-                        },
+                        "description": {"maxLength": 1000, "nullable": True, "title": "Description", "type": "string"},
                         "id": {"title": "Id", "type": "integer"},
                         "isPermanent": {"nullable": True, "title": "Ispermanent", "type": "boolean"},
                         "isVirtual": {"title": "Isvirtual", "type": "boolean"},
@@ -1881,6 +1853,23 @@ def test_public_api(client):
                     "description": "An enumeration.",
                     "enum": ["by_email", "no_ticket", "on_site"],
                     "title": "WithdrawalTypeEnum",
+                },
+                "YoungStatusResponse": {
+                    "properties": {
+                        "statusType": {"$ref": "#/components/schemas/YoungStatusType"},
+                        "subscriptionStatus": {
+                            "anyOf": [{"$ref": "#/components/schemas/SubscriptionStatus"}],
+                            "nullable": True,
+                        },
+                    },
+                    "required": ["statusType"],
+                    "title": "YoungStatusResponse",
+                    "type": "object",
+                },
+                "YoungStatusType": {
+                    "description": "An enumeration.",
+                    "enum": ["eligible", "non_eligible", "beneficiary", "ex_beneficiary", "suspended"],
+                    "title": "YoungStatusType",
                 },
                 "_HomepageLabelNameEnum": {
                     "description": "An enumeration.",
@@ -2065,7 +2054,7 @@ def test_public_api(client):
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
-                            "description": "Unprocessable " "Entity",
+                            "description": "Unprocessable Entity",
                         },
                     },
                     "security": [{"JWTAuth": []}],
@@ -2306,16 +2295,16 @@ def test_public_api(client):
                         }
                     },
                     "responses": {
-                        "204": {"description": "No " "Content"},
+                        "204": {"description": "No Content"},
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
-                            "description": "Unprocessable " "Entity",
+                            "description": "Unprocessable Entity",
                         },
                     },
-                    "summary": "set_feature " "<PATCH>",
+                    "summary": "set_feature <PATCH>",
                     "tags": [],
                 }
             },
@@ -3122,11 +3111,11 @@ def test_public_api(client):
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
-                            "description": "Unprocessable " "Entity",
+                            "description": "Unprocessable Entity",
                         },
                     },
                     "security": [{"JWTAuth": []}],
-                    "summary": "get_subscription_stepper " "<GET>",
+                    "summary": "get_subscription_stepper <GET>",
                     "tags": [],
                 }
             },
