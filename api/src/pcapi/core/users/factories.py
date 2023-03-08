@@ -18,6 +18,7 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.testing import BaseFactory
 from pcapi.core.users import utils as users_utils
 import pcapi.core.users.constants as users_constants
+from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
@@ -260,6 +261,17 @@ class BeneficiaryGrant18Factory(BaseFactory):
             kwargs["dateCreated"] = obj.dateCreated
 
         return DepositGrantFactory(user=obj, **kwargs)
+
+
+def RichBeneficiaryFactory() -> models.User:
+    # Create a rich beneficiary who can book expensive stocks. Useful
+    # when we want to simulate a large amount of (booked) money
+    # without having to create many bookings.
+    user = BeneficiaryGrant18Factory()
+    user.deposits[0].amount = 100_000
+    db.session.add(user.deposits[0])
+    db.session.commit()
+    return user
 
 
 class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):

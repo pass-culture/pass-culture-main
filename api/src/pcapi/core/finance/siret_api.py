@@ -4,22 +4,28 @@ import pcapi.core.history.models as history_models
 import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
 
+from . import models
+
+
+# Revenue above which we refuse to do any change without an explicit
+# validation from the accounting department.
+YEARLY_REVENUE_THRESHOLD = 10_000
+
 
 class CheckError(Exception):
     pass
 
 
 def get_yearly_revenue(venue_id: int) -> Decimal:
-    # Calculate yearly revenue of target venue
+    # Calculate yearly revenue of a venue
     query = """
       select sum(booking.amount * booking.quantity) as "chiffre d'affaires"
       from booking
       where
         "venueId" = :venue_id
         and "dateUsed" is not null
-        -- On ajoute 1 heure pour la conversion UTC -> CET afin de récupérer
-        -- le chiffre d'affaires de l'année en cours.
-        and DATE_PART('year', "dateUsed" + interval '1 hour') = date_part('year', now() + interval '1 hour');
+        -- Add 1 hour for UTC -> CET conversion
+        and date_part('year', "dateUsed" + interval '1 hour') = date_part('year', now() + interval '1 hour');
     """
     rows = db.session.execute(query, {"venue_id": venue_id}).fetchone()
     return rows[0]
@@ -40,7 +46,7 @@ def check_can_move_siret(
 
     if not override_revenue_check:
         revenue = get_yearly_revenue(target.id)
-        if revenue and revenue > 10_000:
+        if revenue and revenue >= YEARLY_REVENUE_THRESHOLD:
             raise CheckError(f"Target venue has an unexpectedly high yearly revenue: {revenue}")
 
 
@@ -139,6 +145,114 @@ def move_siret(
                 },
             )
         )
+    except Exception:
+        db.session.rollback()
+        raise
+
+    if apply_changes:
+        db.session.commit()
+    else:
+        db.session.rollback()
+
+
+def has_pending_pricings(pricing_point: offerers_models.Venue) -> bool:
+    return db.session.query(
+        models.Pricing.query.filter_by(
+            pricingPoint=pricing_point,
+            status=models.PricingStatus.PENDING,
+        ).exists()
+    ).scalar()
+
+
+def check_can_remove_siret(
+    venue: offerers_models.Venue,
+    comment: str,
+    override_revenue_check: bool = False,
+) -> None:
+    if not comment:
+        raise CheckError("Comment is required")
+    # Deleting the SIRET implies deleting non-final pricings (see
+    # `remove_siret()`). If the venue has pending pricings, it means
+    # we want to block them from being reimbursed. If those pricings
+    # were deleted, they would be recreated under the "validated"
+    # status and they would not be blocked anymore.
+    if has_pending_pricings(venue):
+        raise CheckError("Venue has pending pricings")
+    if not override_revenue_check:
+        revenue = get_yearly_revenue(venue.id)
+        if revenue and revenue >= YEARLY_REVENUE_THRESHOLD:
+            raise CheckError(f"Venue has an unexpectedly high yearly revenue: {revenue}")
+
+
+def remove_siret(
+    venue: offerers_models.Venue,
+    comment: str,
+    apply_changes: bool = False,
+    override_revenue_check: bool = False,
+    author_user_id: int | None = None,
+) -> None:
+    if not venue.siret:
+        return
+    check_can_remove_siret(venue, comment, override_revenue_check)
+    old_siret = venue.siret
+
+    db.session.rollback()  # discard any previous transaction to start a fresh new one.
+
+    queries = (
+        """
+        update venue
+        set siret = NULL, comment = :comment
+        where id = :venue_id
+        """,
+        # End all links to this pricing point
+        """
+        update venue_pricing_point_link
+        set timespan = tsrange(lower(timespan), now()::timestamp, '[)')
+        where "pricingPointId" = :venue_id
+        """,
+        # Delete all ongoing pricings (and related pricing lines),
+        # except pending ones.  The corresponding bookings will be
+        # priced again once a new pricing point has been selected for
+        # their venues.
+        """
+        delete from pricing_line
+        where "pricingId" in (
+          select id from pricing
+          where "pricingPointId" = :venue_id and status = :validated_pricing_status
+        )
+        """,
+        """
+        delete from pricing
+        where "pricingPointId" = :venue_id and status = :validated_pricing_status
+        """,
+    )
+    try:
+        db.session.begin()
+        for query in queries:
+            db.session.execute(
+                query,
+                {
+                    "venue_id": venue.id,
+                    "comment": comment,
+                    "validated_pricing_status": models.PricingStatus.VALIDATED.value,
+                },
+            )
+
+        db.session.add(
+            history_models.ActionHistory(
+                actionType=history_models.ActionType.INFO_MODIFIED,
+                authorUserId=author_user_id,
+                offererId=venue.managingOffererId,
+                venueId=venue.id,
+                comment=comment,
+                extraData={
+                    "modified_info": {
+                        "siret": {"old_info": old_siret, "new_info": None},
+                    }
+                },
+            )
+        )
+
     except Exception:
         db.session.rollback()
         raise
