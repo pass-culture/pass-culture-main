@@ -1,10 +1,10 @@
 import sub from 'date-fns/sub'
-import { RRule } from 'rrule'
 
 import { IStocksEvent } from 'components/StocksEventList/StocksEventList'
 import { serializeBeginningDateTime } from 'screens/OfferIndividual/StocksEventEdition/adapters/serializers'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 
+import { getDatesInInterval } from './recurrenceUtils'
 import { RecurrenceFormValues, RecurrenceType } from './types'
 
 export const onSubmit = (
@@ -31,13 +31,7 @@ const getRecurrenceDates = (values: RecurrenceFormValues): Date[] => {
         throw new Error('Starting or ending date is empty')
       }
 
-      const rule = new RRule({
-        freq: RRule.DAILY,
-        dtstart: values.startingDate,
-        until: values.endingDate,
-      })
-
-      return rule.all()
+      return getDatesInInterval(values.startingDate, values.endingDate)
     }
 
     default:
