@@ -22,8 +22,8 @@ class BannerTest:
         self.activation_banner = {
             "banner": {
                 "name": "activation_banner",
-                "title": "Débloque tes 300€",
-                "text": "a dépenser sur l'application",
+                "title": "Débloque tes 300 €",
+                "text": "à dépenser sur l'application",
             }
         }
 
@@ -127,7 +127,7 @@ class BannerTest:
         assert response.json == {
             "banner": {
                 "name": "activation_banner",
-                "title": "Débloque tes 20€",
-                "text": "a dépenser sur l'application",
+                "title": "Débloque tes 20 €",
+                "text": "à dépenser sur l'application",
             }
         }
