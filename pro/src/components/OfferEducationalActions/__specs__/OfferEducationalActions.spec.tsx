@@ -1,7 +1,10 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { CollectiveBookingStatus, OfferStatus } from 'apiClient/v1'
+import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -79,5 +82,32 @@ describe('OfferEducationalActions', () => {
         name: 'Voir la réservation',
       })
     ).not.toBeInTheDocument()
+  })
+  it('should log event when clicked on booking link', async () => {
+    const mockLogEvent = jest.fn()
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      ...jest.requireActual('hooks/useAnalytics'),
+      logEvent: mockLogEvent,
+    }))
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: collectiveOfferFactory({
+        status: OfferStatus.ACTIVE,
+        lastBookingId: 1,
+        lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
+      }),
+    })
+    const bookingLink = screen.getByRole('link', {
+      name: 'Voir la réservation',
+    })
+    await userEvent.click(bookingLink)
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
+      {
+        from: '/',
+      }
+    )
   })
 })
