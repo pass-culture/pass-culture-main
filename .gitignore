@@ -40,3 +40,6 @@ pro-packed-staging/
 
 # storybook build
 docs-build/
+
+# Backoffice compiled css
+/api/src/pcapi/static/backoffice/css/compiled/
