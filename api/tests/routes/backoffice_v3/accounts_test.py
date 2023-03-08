@@ -446,6 +446,32 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         assert not html_parser.extract_table_rows(response.data, parent_class="bookings-tab-pane")
         assert "Aucune réservation à ce jour" in response.data.decode("utf-8")
 
+    def test_subscription_items(self, authenticated_client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+
+        parsed_html = html_parser.get_soup(response.data)
+        underage_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.UNDERAGE.value}")
+        age18_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.AGE18.value}")
+
+        assert underage_subscription_card is None
+        assert age18_subscription_card is not None
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            dateCreated=datetime.date.today() - datetime.timedelta(days=3),
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+
+        parsed_html = html_parser.get_soup(response.data)
+        underage_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.UNDERAGE.value}")
+        age18_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.AGE18.value}")
+
+        assert underage_subscription_card is not None
+        assert age18_subscription_card is not None
+
     def test_fraud_check_link(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()
         # modifiy the date for clearer tests
