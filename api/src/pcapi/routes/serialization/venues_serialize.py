@@ -227,7 +227,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
             return None
 
         if not meta:
-            return BannerMetaModel()
+            return BannerMetaModel()  # type: ignore [call-arg]
 
         return meta
 

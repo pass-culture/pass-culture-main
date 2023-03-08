@@ -64,7 +64,7 @@ def _create_beneficiary(row: dict, role: UserRole | None) -> User:
 
 def _create_pro_user(row: dict) -> User:
     user = users_api.create_pro_user_and_offerer(
-        ProUserCreationBodyModel(
+        ProUserCreationBodyModel(  # type: ignore [call-arg]
             firstName=row["Prénom"],
             lastName=row["Nom"],
             address="1 avenue des pros",
@@ -119,7 +119,7 @@ def _add_or_update_user_from_row(row: dict, update_if_exists: bool) -> User | No
     user.lastName = row["Nom"]
     user.firstName = row["Prénom"]
     user.publicName = f"{user.firstName} {user.lastName}"
-    user.phoneNumber = row["Téléphone"]  # type: ignore [assignment]
+    user.phoneNumber = row["Téléphone"]  # type: ignore [method-assign]
     user.departementCode = row["Département"]
     user.postalCode = row["Code postal"]
     user.comment = row["Type"]

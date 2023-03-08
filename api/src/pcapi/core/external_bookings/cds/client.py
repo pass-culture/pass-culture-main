@@ -205,7 +205,7 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
                 raise ValueError(f"Barcode {barcode} contains one or more invalid char (only digit allowed)")
             barcodes_int.append(int(barcode))
 
-        cancel_body = cds_serializers.CancelBookingCDS(barcodes=barcodes_int, paiementtypeid=paiement_type_id)
+        cancel_body = cds_serializers.CancelBookingCDS(barcodes=barcodes_int, paiementtypeid=paiement_type_id)  # type: ignore [call-arg]
         api_response = put_resource(self.api_url, self.account_id, self.token, ResourceCDS.CANCEL_BOOKING, cancel_body)
 
         if api_response:

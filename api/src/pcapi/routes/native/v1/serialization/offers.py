@@ -179,7 +179,7 @@ class OfferResponse(BaseModel):
         if result.extraData:
             result.extraData.durationMinutes = offer.durationMinutes
         else:
-            result.extraData = OfferExtraData(durationMinutes=offer.durationMinutes)
+            result.extraData = OfferExtraData(durationMinutes=offer.durationMinutes)  # type: ignore [call-arg]
 
         return result
 
