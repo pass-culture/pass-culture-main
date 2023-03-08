@@ -424,7 +424,7 @@ class CancelBookingTest:
         # when
         url = url_for("backoffice_v3_web.individual_bookings.mark_booking_as_cancelled", booking_id=reimbursed.id)
         response = send_request(authenticated_client, url)
-        print(response.data.decode("utf8"))
+
         # then
         assert response.status_code == 303
 
@@ -452,7 +452,7 @@ class CancelBookingTest:
         assert cancelled.status == old_status
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        print(html_parser.extract_alert(redirected_response.data))
+
         assert "Impossible d'annuler une réservation déjà annulée" in html_parser.extract_alert(
             redirected_response.data
         )

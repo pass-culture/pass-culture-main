@@ -27,11 +27,11 @@ import pcapi.core.subscription.api as subscription_api
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import api as users_api
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
-import pcapi.core.users.constants as users_constants
+from pcapi.core.users import utils as users_utils
 import pcapi.core.users.email.update as email_update
-import pcapi.core.users.utils as users_utils
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
@@ -434,17 +434,22 @@ def get_eligibility_history(user: users_models.User) -> dict[str, accounts.Eligi
         subscription_api.get_user_profiling_subscription_item,
         subscription_api.get_honor_statement_subscription_item,
     ]
-
     # Do not show information about eligibility types which are not possible depending on known user age
     if user.birth_date:
         age_at_creation = users_utils.get_age_at_date(user.birth_date, user.dateCreated)
         if age_at_creation <= users_constants.ELIGIBILITY_AGE_18:
             if age_at_creation == users_constants.ELIGIBILITY_AGE_18:
                 eligibility_types.append(users_models.EligibilityType.AGE18)
+                if users_models.EligibilityType.UNDERAGE in [
+                    fraud_check.eligibilityType for fraud_check in user.beneficiaryFraudChecks
+                ]:
+                    eligibility_types.insert(0, users_models.EligibilityType.UNDERAGE)
             else:
                 eligibility_types.append(users_models.EligibilityType.UNDERAGE)
                 age_now = users_utils.get_age_from_birth_date(user.birth_date)
-                if age_now >= users_constants.ELIGIBILITY_AGE_18:
+                if age_now >= users_constants.ELIGIBILITY_AGE_18 or users_models.EligibilityType.AGE18 in [
+                    fraud_check.eligibilityType for fraud_check in user.beneficiaryFraudChecks
+                ]:
                     eligibility_types.append(users_models.EligibilityType.AGE18)
     else:
         # Profile completion step not reached yet; can't guess eligibility, display all
