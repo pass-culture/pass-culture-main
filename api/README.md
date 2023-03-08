@@ -326,3 +326,4 @@ et choisir le python précédemment installé en local (virtual env ou pyenv).
 Les commandes à lancer régulièrement (par example des synchro journalières) sont définies dans le fichier src/pcapi/scheduled_tasks/commands.py
 Pour que les commandes soient exécutées, il faut ouvrir une PR sur le repo pass-culture/pass-culture-deployment
 Les infos sont dans le [README](https://github.com/pass-culture/pass-culture-deployment)
+TOTO
