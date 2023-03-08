@@ -62,7 +62,7 @@ class SaveVenueBankInformations:
             procedure_version=procedure_version,
         )
         api_errors = CannotRegisterBankInformation()
-        venue = self.get_referent_venue(application_details, api_errors)
+        venue = self.get_referent_venue(application_details, api_errors, procedure_version)
 
         if api_errors.errors:
             if application_details.error_annotation_id is not None:
@@ -168,15 +168,14 @@ class SaveVenueBankInformations:
         self,
         application_details: ApplicationDetail,
         api_errors: CannotRegisterBankInformation,
+        procedure_version: int,
     ) -> VenueWithBasicInformation | None:
         venue = None
-        if dms_token := (application_details.dms_token or "").strip():
-            venue = self.venue_repository.find_by_dms_token(dms_token)
-            if not venue:
-                api_errors.add_error("Venue", "Venue not found")
 
-        elif siret := (application_details.siret or "").strip():
-            venue = self.venue_repository.find_by_siret(siret)
+        if procedure_version in (2, 3):
+            siret = (application_details.siret or "").strip()
+            if siret:
+                venue = self.venue_repository.find_by_siret(siret)
             if not venue:
                 api_errors.add_error("Venue", "Venue not found")
             else:
@@ -185,6 +184,18 @@ class SaveVenueBankInformations:
                         api_errors.add_error("Venue", "SIRET is no longer active")
                 except sirene.SireneException:
                     api_errors.add_error("Venue", "Error while checking SIRET on Sirene API")
+
+        elif procedure_version == 4:
+            dms_token = (application_details.dms_token or "").strip()
+            if dms_token:
+                venue = self.venue_repository.find_by_dms_token(dms_token)
+            if not venue:
+                api_errors.add_error("Venue", "Venue not found")
+
+        else:
+            raise ValueError(f"Unsupported procedure version: {procedure_version}")
+
+        assert venue or api_errors.errors
         return venue
 
     def create_new_bank_informations(self, application_details: ApplicationDetail, venue_id: int) -> BankInformations:
