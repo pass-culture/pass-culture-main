@@ -108,6 +108,8 @@ def render_venue_details(
         else:
             edit_venue_form = forms.EditVenueForm(
                 venue=venue,
+                name=venue.name,
+                public_name=venue.publicName,
                 siret=venue.siret,
                 city=venue.city,
                 postal_address_autocomplete=f"{venue.address}, {venue.postalCode} {venue.city}"
