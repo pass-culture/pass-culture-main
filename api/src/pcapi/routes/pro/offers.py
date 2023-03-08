@@ -53,7 +53,7 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
         period_ending_date=query.period_ending_date,
     )
 
-    return offers_serialize.ListOffersResponseModel(__root__=serialize_offers_recap_paginated(paginated_offers))
+    return offers_serialize.ListOffersResponseModel(__root__=serialize_offers_recap_paginated(paginated_offers))  # type: ignore [arg-type]
 
 
 @private_api.route("/offers/<offer_id>", methods=["GET"])
@@ -282,7 +282,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
             crop_params=form.crop_params,
         )
 
-    return CreateThumbnailResponseModel(id=thumbnail.id, url=thumbnail.thumbUrl, credit=thumbnail.credit)
+    return CreateThumbnailResponseModel(id=thumbnail.id, url=thumbnail.thumbUrl, credit=thumbnail.credit)  # type: ignore [arg-type]
 
 
 @private_api.route("/offers/thumbnails/<offer_id>", methods=["DELETE"])

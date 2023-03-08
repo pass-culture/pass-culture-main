@@ -411,7 +411,7 @@ def handle_phone_already_exists(user: users_models.User, phone_number: str) -> m
     )
     reason = f"Le numéro est déjà utilisé par l'utilisateur {orig_user_id}"
     reason_codes = [models.FraudReasonCode.PHONE_ALREADY_EXISTS]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)  # type: ignore [call-arg]
 
     return _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
@@ -419,7 +419,7 @@ def handle_phone_already_exists(user: users_models.User, phone_number: str) -> m
 def handle_blacklisted_sms_recipient(user: users_models.User, phone_number: str) -> models.BeneficiaryFraudCheck:
     reason = "Le numéro saisi est interdit"
     reason_codes = [models.FraudReasonCode.BLACKLISTED_PHONE_NUMBER]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)  # type: ignore [call-arg]
 
     return _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
@@ -427,7 +427,7 @@ def handle_blacklisted_sms_recipient(user: users_models.User, phone_number: str)
 def handle_invalid_country_code(user: users_models.User, phone_number: str) -> models.BeneficiaryFraudCheck:
     reason = "L'indicatif téléphonique est invalide"
     reason_codes = [models.FraudReasonCode.INVALID_PHONE_COUNTRY_CODE]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)  # type: ignore [call-arg]
 
     return _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
@@ -435,7 +435,7 @@ def handle_invalid_country_code(user: users_models.User, phone_number: str) -> m
 def handle_sms_sending_limit_reached(user: users_models.User) -> None:
     reason = "Le nombre maximum de sms envoyés est atteint"
     reason_codes = [models.FraudReasonCode.SMS_SENDING_LIMIT_REACHED]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)  # type: ignore [call-arg, arg-type]
 
     _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
@@ -443,7 +443,7 @@ def handle_sms_sending_limit_reached(user: users_models.User) -> None:
 def handle_phone_validation_attempts_limit_reached(user: users_models.User, attempts_count: int) -> None:
     reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
     reason_codes = [models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)  # type: ignore [call-arg, arg-type]
 
     _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
