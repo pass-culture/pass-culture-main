@@ -20,8 +20,5 @@
 // False positive
 /* stylelint-disable scss/operator-no-newline-after */
 .recurrence-modal {
-  width: calc(
-    size.$main-content-width - size.$main-content-padding * 2 -
-      dialogBox.$dialog-box-padding * 2
-  );
+  width: calc(size.$main-content-width - dialogBox.$dialog-box-padding * 2);
 }

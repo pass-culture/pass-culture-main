@@ -13,7 +13,7 @@ import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
-import { MoreCircleIcon } from 'icons'
+import { PlusCircleIcon } from 'icons'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -120,15 +120,17 @@ export const StocksEventCreation = ({
       {stocks.length === 0 && (
         <HelpSection className={styles['help-section']} />
       )}
+
       <Button
         id="add-recurrence"
         variant={ButtonVariant.PRIMARY}
         type="button"
         onClick={() => setIsRecurrenceModalOpen(true)}
-        Icon={MoreCircleIcon}
+        Icon={PlusCircleIcon}
       >
-        Ajouter une récurrence
+        Ajouter une ou plusieurs dates
       </Button>
+
       {stocks.length !== 0 && offer?.priceCategories && (
         <StocksEventList
           className={styles['stock-section']}
@@ -138,6 +140,7 @@ export const StocksEventCreation = ({
           departmentCode="75"
         />
       )}
+
       {isRecurrenceModalOpen && (
         <DialogBox
           onDismiss={onCancel}

@@ -34,7 +34,7 @@ export const HelpSection = ({ className }: Props): JSX.Element => (
       <Step
         stepNumber={1}
         image={step1}
-        content="Ajoutez une récurrence et le nombre de places"
+        content="Ajoutez une ou plusieurs dates et le nombre de places"
       />
 
       <Step
@@ -46,7 +46,7 @@ export const HelpSection = ({ className }: Props): JSX.Element => (
       <Step
         stepNumber={3}
         image={step3}
-        content="Si besoin, ajoutez une nouvelle récurrence"
+        content="Si besoin, ajoutez de nouvelles dates"
       />
     </ol>
   </section>
