@@ -56,11 +56,25 @@ def next_subscription_step(
 def get_subscription_stepper(user: users_models.User) -> serializers.SubscriptionStepperResponse:
     user_subscription_state = subscription_api.get_user_subscription_state(user)
     stepper_header = subscription_api.get_stepper_title_and_subtitle(user, user_subscription_state)
+    subscription_steps_to_display = subscription_api.get_subscription_steps_to_display(user, user_subscription_state)
 
     return serializers.SubscriptionStepperResponse(
-        subscription_steps_to_display=subscription_api.get_subscription_steps_to_display(user, user_subscription_state),
+        subscription_steps_to_display=[
+            serializers.SubscriptionStepDetailsResponse(
+                title=step.title,
+                subtitle=step.subtitle,
+                completion_state=step.completion_state,
+                name=step.name,
+            )
+            for step in subscription_steps_to_display
+        ],
         title=stepper_header.title,
         subtitle=stepper_header.subtitle,
+        error_message=(
+            user_subscription_state.subscription_message.message_summary
+            if user_subscription_state.subscription_message
+            else None
+        ),
     )
 
 

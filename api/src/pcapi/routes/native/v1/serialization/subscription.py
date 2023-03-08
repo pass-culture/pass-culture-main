@@ -53,10 +53,23 @@ class NextSubscriptionStepResponse(BaseModel):
         allow_population_by_field_name = True
 
 
+class SubscriptionStepDetailsResponse(BaseModel):
+    name: subscription_models.SubscriptionStep
+    title: subscription_models.SubscriptionStepTitle
+    subtitle: str | None
+    completion_state: subscription_models.SubscriptionStepCompletionState
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        use_enum_values = True
+
+
 class SubscriptionStepperResponse(BaseModel):
-    subscription_steps_to_display: list[subscription_models.SubscriptionStepDetails]
+    subscription_steps_to_display: list[SubscriptionStepDetailsResponse]
     title: str
     subtitle: str | None
+    error_message: str | None
 
     class Config:
         alias_generator = to_camel
