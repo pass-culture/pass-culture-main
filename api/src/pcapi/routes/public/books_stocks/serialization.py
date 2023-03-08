@@ -134,10 +134,7 @@ class UpdateVenueStockBodyModel(BaseModel):
 
     ref: str = Field(title="ISBN", description="Format: EAN13")
     available: NonNegativeInt
-    if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
-        price: decimal.Decimal
-    else:
-        price: condecimal(gt=0, decimal_places=2)
+    price: typing.Annotated[decimal.Decimal, condecimal(gt=decimal.Decimal(0), decimal_places=2)]
 
     class Config:
         title = "Stock"

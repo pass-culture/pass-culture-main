@@ -222,10 +222,7 @@ class UserProfileUpdateRequest(BaseModel):
 
 class UserProfileEmailUpdate(BaseModel):
     email: pydantic.EmailStr
-    if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
-        password: str
-    else:
-        password: pydantic.constr(strip_whitespace=True, min_length=8, strict=True)
+    password: typing.Annotated[str, pydantic.constr(strip_whitespace=True, min_length=8, strict=True)]
 
 
 class ValidateEmailRequest(BaseModel):

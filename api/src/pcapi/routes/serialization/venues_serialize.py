@@ -397,10 +397,7 @@ class VenueListQueryModel(BaseModel):
 
 
 class VenueBannerContentModel(BaseModel):
-    if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
-        content: bytes
-    else:
-        content: pydantic.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)
+    content: typing.Annotated[bytes, pydantic.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)]
     image_credit: base.VenueImageCredit | None
 
     # cropping parameters must be a % (between 0 and 1) of the original
