@@ -80,6 +80,7 @@ const CollectiveOfferVisibility = ({
         institutions={institutionsPayload.institutions}
         isLoadingInstitutions={isLoading}
         offer={offer}
+        reloadCollectiveOffer={reloadCollectiveOffer}
       />
     </CollectiveOfferLayout>
   )

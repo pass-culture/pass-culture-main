@@ -7,8 +7,12 @@ import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   isCollectiveOffer,
+  Mode,
+  patchIsCollectiveOfferActiveAdapter,
+  patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
 import useAnalytics from 'hooks/useAnalytics'
+import useNotification from 'hooks/useNotification'
 import { CircleArrowIcon } from 'icons'
 import { getCollectiveStatusLabel } from 'pages/Offers/Offers/OfferItem/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
 import { Button, ButtonLink } from 'ui-kit'
@@ -24,21 +28,21 @@ import style from './OfferEducationalActions.module.scss'
 
 export interface IOfferEducationalActions {
   className?: string
-  isOfferActive: boolean
   isBooked: boolean
-  offer?: CollectiveOffer | CollectiveOfferTemplate
-  setIsOfferActive?(isActive: boolean): void
-  cancelActiveBookings?(): void
+  offer: CollectiveOffer | CollectiveOfferTemplate
+  mode?: Mode
+  reloadCollectiveOffer?: () => void
 }
 
 const OfferEducationalActions = ({
   className,
-  isOfferActive,
   isBooked,
   offer,
-  setIsOfferActive,
+  mode,
+  reloadCollectiveOffer,
 }: IOfferEducationalActions): JSX.Element => {
   const { logEvent } = useAnalytics()
+  const notify = useNotification()
   const lastBookingId = isCollectiveOffer(offer) ? offer.lastBookingId : null
   const lastBookingStatus = isCollectiveOffer(offer)
     ? offer.lastBookingStatus
@@ -55,62 +59,85 @@ const OfferEducationalActions = ({
       )
       return `/reservations/collectives?page=1&offerEventDate=${eventDateFormated}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=${lastBookingId}`
     }
+    // istanbul ignore next: this case should never happen
     return ''
   }
 
+  const setIsOfferActive = async (isActive: boolean) => {
+    const patchAdapter = offer.isTemplate
+      ? patchIsTemplateOfferActiveAdapter
+      : patchIsCollectiveOfferActiveAdapter
+    const { isOk, message } = await patchAdapter({
+      isActive,
+      // istanbul ignore next: there is always an id so the condition will not be reachable
+      offerId: offer.id,
+    })
+
+    if (!isOk) {
+      return notify.error(message)
+    }
+
+    notify.success(message)
+    reloadCollectiveOffer && reloadCollectiveOffer()
+  }
+
+  const shouldShowOfferActions =
+    mode === Mode.EDITION || mode === Mode.READ_ONLY
+
   return (
     <>
-      <div className={cn(style['actions'], className)}>
-        {!isBooked &&
-          setIsOfferActive &&
-          offer?.status != OfferStatus.EXPIRED && (
+      {shouldShowOfferActions && (
+        <div className={cn(style['actions'], className)}>
+          {!isBooked && offer.status != OfferStatus.EXPIRED && (
             <Button
-              Icon={isOfferActive ? IconInactive : IconActive}
-              className={style['actions-button']}
-              onClick={() => setIsOfferActive(!isOfferActive)}
+              Icon={offer.isActive ? IconInactive : IconActive}
               variant={ButtonVariant.TERNARY}
+              className={style['button-link']}
+              iconPosition={IconPositionEnum.LEFT}
+              onClick={() => setIsOfferActive(!offer.isActive)}
             >
-              {isOfferActive
+              {offer.isActive
                 ? 'Masquer la publication sur Adage'
                 : 'Publier sur Adage'}
             </Button>
           )}
 
-        {lastBookingId &&
-          (lastBookingStatus != CollectiveBookingStatus.CANCELLED ||
-            offer?.status == OfferStatus.EXPIRED) && (
-            <ButtonLink
-              variant={ButtonVariant.TERNARY}
-              className={style['button-link']}
-              link={{ isExternal: false, to: getBookingLink() }}
-              Icon={CircleArrowIcon}
-              iconPosition={IconPositionEnum.LEFT}
-              onClick={() =>
-                logEvent?.(
-                  CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
-                  {
-                    from: location.pathname,
-                  }
-                )
-              }
-            >
-              Voir la{' '}
-              {lastBookingStatus == 'PENDING'
-                ? 'préréservation'
-                : 'réservation'}
-            </ButtonLink>
-          )}
-        {offer?.status && (
-          <>
-            {offer.status != OfferStatus.EXPIRED && (
-              <>
-                <div className={style.separator} />{' '}
-              </>
+          {lastBookingId &&
+            (lastBookingStatus != CollectiveBookingStatus.CANCELLED ||
+              offer.status == OfferStatus.EXPIRED) && (
+              <ButtonLink
+                variant={ButtonVariant.TERNARY}
+                className={style['button-link']}
+                link={{ isExternal: false, to: getBookingLink() }}
+                Icon={CircleArrowIcon}
+                iconPosition={IconPositionEnum.LEFT}
+                onClick={() =>
+                  logEvent?.(
+                    CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
+                    {
+                      from: location.pathname,
+                    }
+                  )
+                }
+              >
+                Voir la{' '}
+                {lastBookingStatus == 'PENDING'
+                  ? 'préréservation'
+                  : 'réservation'}
+              </ButtonLink>
             )}
-            {getCollectiveStatusLabel(offer?.status, lastBookingStatus || '')}
-          </>
-        )}
-      </div>
+          {offer.status && (
+            <>
+              {offer.status != OfferStatus.EXPIRED && (
+                <>
+                  <div className={style.separator} />{' '}
+                </>
+              )}
+              {getCollectiveStatusLabel(offer.status, lastBookingStatus || '')}
+            </>
+          )}
+        </div>
+      )}
     </>
   )
 }

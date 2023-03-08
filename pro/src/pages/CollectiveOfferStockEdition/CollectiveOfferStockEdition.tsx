@@ -3,14 +3,11 @@ import { useNavigate } from 'react-router-dom-v5-compat'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
-import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import {
   Mode,
   OfferEducationalStockFormValues,
-  cancelCollectiveBookingAdapter,
   extractInitialStockValues,
   getStockCollectiveOfferAdapter,
-  patchIsCollectiveOfferActiveAdapter,
   CollectiveOffer,
   isCollectiveOfferTemplate,
 } from 'core/OfferEducational'
@@ -72,40 +69,10 @@ const CollectiveOfferStockEdition = ({
     )
   }
 
-  const setIsOfferActive = async (isActive: boolean) => {
-    const { isOk, message } = await patchIsCollectiveOfferActiveAdapter({
-      isActive,
-      offerId: offer.id,
-    })
-
-    if (!isOk) {
-      return notify.error(message)
-    }
-
-    notify.success(message)
-    reloadCollectiveOffer()
-  }
-
-  const cancelActiveBookings = async () => {
-    const { isOk, message } = await cancelCollectiveBookingAdapter({
-      offerId: offer.id,
-    })
-
-    if (!isOk) {
-      return notify.error(message, {
-        duration: NOTIFICATION_LONG_SHOW_DURATION,
-      })
-    }
-
-    notify.success(message, { duration: NOTIFICATION_LONG_SHOW_DURATION })
-    reloadCollectiveOffer()
-  }
-
   return (
     <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
       <PageTitle title="Date et prix" />
       <OfferEducationalStockScreen
-        cancelActiveBookings={cancelActiveBookings}
         initialValues={initialValues}
         mode={
           offer.collectiveStock?.isEducationalStockEditable
@@ -114,7 +81,7 @@ const CollectiveOfferStockEdition = ({
         }
         offer={offer}
         onSubmit={handleSubmitStock}
-        setIsOfferActive={setIsOfferActive}
+        reloadCollectiveOffer={reloadCollectiveOffer}
       />
     </CollectiveOfferLayout>
   )
