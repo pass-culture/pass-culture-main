@@ -722,7 +722,7 @@ class GetOffererDetailsTest:
         assert response.status_code == 200
 
         parsed_html = html_parser.get_soup(response.data)
-        select = parsed_html.find("select", attrs={"name": "pro_user_id"})
+        select = parsed_html.find(id="pro_user_id")
         options = select.find_all("option")
         assert [option["value"] for option in options] == ["", str(user3.id), str(user2.id)]
 

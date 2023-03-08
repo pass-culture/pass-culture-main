@@ -461,16 +461,15 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
 
         parsed_html = html_parser.get_soup(response.data)
-        print(parsed_html)
-        main_dossier_card = str(parsed_html.find("div", class_="accounts-show-user-credit-card"))
+        main_dossier_card = str(parsed_html.find(id="main-check-item"))
         assert (
             f"https://www.demarches-simplifiees.fr/procedures/{old_dms.source_data().procedure_number}/dossiers/{old_dms.thirdPartyId}"
             in main_dossier_card
         )
 
-        old_ubble_card = str(parsed_html.find("div", class_=old_ubble.thirdPartyId))
+        old_ubble_card = str(parsed_html.find(id=old_ubble.thirdPartyId))
         assert f"https://dashboard.ubble.ai/identifications/{old_ubble.thirdPartyId}" in old_ubble_card
-        old_dms_card = str(parsed_html.find("div", class_=old_dms.thirdPartyId))
+        old_dms_card = str(parsed_html.find(id=old_dms.thirdPartyId))
         assert (
             f"https://www.demarches-simplifiees.fr/procedures/{old_dms.source_data().procedure_number}/dossiers/{old_dms.thirdPartyId}"
             in old_dms_card
@@ -485,12 +484,12 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
 
         parsed_html = html_parser.get_soup(response.data)
-        main_dossier_card = str(parsed_html.find("div", class_="accounts-show-user-credit-card"))
+        main_dossier_card = str(parsed_html.find(id="main-check-item"))
         assert (
             f"https://www.demarches-simplifiees.fr/procedures/{new_dms.source_data().procedure_number}/dossiers/{new_dms.thirdPartyId}"
             in main_dossier_card
         )
-        new_dms_card = str(parsed_html.find("div", class_=new_dms.thirdPartyId))
+        new_dms_card = str(parsed_html.find(id=new_dms.thirdPartyId))
         assert (
             f"https://www.demarches-simplifiees.fr/procedures/{new_dms.source_data().procedure_number}/dossiers/{new_dms.thirdPartyId}"
             in new_dms_card
