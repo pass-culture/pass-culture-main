@@ -3,7 +3,11 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import {
+  CollectiveBookingStatus,
+  EducationalInstitutionResponseModel,
+  OfferStatus,
+} from 'apiClient/v1'
 import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
 import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
@@ -76,6 +80,26 @@ describe('CollectiveOfferVisibility', () => {
     expect(
       screen.getByText('Offre importée automatiquement')
     ).toBeInTheDocument()
+  })
+
+  it('should display booking link for sold out offer with pending booking', () => {
+    const offer = collectiveOfferFactory({
+      status: OfferStatus.SOLD_OUT,
+      lastBookingStatus: CollectiveBookingStatus.PENDING,
+      lastBookingId: 76,
+    })
+
+    renderVisibilityStep({
+      ...props,
+      mode: Mode.EDITION,
+      offer: offer,
+    })
+
+    const bookingLink = screen.getByRole('link', {
+      name: 'Voir la préréservation',
+    })
+
+    expect(bookingLink).toBeInTheDocument()
   })
 
   it('should disable visibility form if offer is not editable', async () => {

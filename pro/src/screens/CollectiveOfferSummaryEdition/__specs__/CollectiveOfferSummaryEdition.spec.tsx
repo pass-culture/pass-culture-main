@@ -19,6 +19,7 @@ import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   EducationalCategories,
+  Mode,
 } from 'core/OfferEducational'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
@@ -55,6 +56,7 @@ const renderCollectiveOfferSummaryEdition = (
       offer={offer}
       categories={categories}
       reloadCollectiveOffer={jest.fn()}
+      mode={Mode.EDITION}
     />,
     { storeOverrides }
   )
@@ -122,30 +124,5 @@ describe('CollectiveOfferSummary', () => {
         from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
       }
     )
-  })
-
-  it('should activate offer', async () => {
-    offer = collectiveOfferTemplateFactory({
-      isTemplate: true,
-      isActive: false,
-    })
-    renderCollectiveOfferSummaryEdition(offer, categories)
-    const toggle = jest
-      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
-      .mockResolvedValue()
-
-    const activateOffer = screen.getByRole('button', {
-      name: 'Publier sur Adage',
-    })
-
-    await userEvent.click(activateOffer)
-
-    expect(toggle).toHaveBeenCalledTimes(1)
-
-    const desactivateOffer = screen.getByRole('button', {
-      name: 'Masquer la publication sur Adage',
-    })
-
-    expect(desactivateOffer).toBeInTheDocument()
   })
 })

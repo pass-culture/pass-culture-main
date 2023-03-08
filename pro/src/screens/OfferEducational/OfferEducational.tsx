@@ -37,13 +37,12 @@ export interface IOfferEducationalProps {
   userOfferers: GetEducationalOffererResponseModel[]
   getIsOffererEligible?: CanOffererCreateCollectiveOffer
   mode: Mode
-  cancelActiveBookings?: () => void
-  setIsOfferActive?: (isActive: boolean) => void
   isOfferBooked?: boolean
   isOfferActive?: boolean
   domainsOptions: SelectOption[]
   isTemplate: boolean
   isOfferCreated?: boolean
+  reloadCollectiveOffer?: () => void
 }
 
 const OfferEducational = ({
@@ -54,11 +53,9 @@ const OfferEducational = ({
   domainsOptions,
   getIsOffererEligible,
   mode,
-  cancelActiveBookings,
-  setIsOfferActive,
   isOfferBooked = false,
-  isOfferActive = false,
   isTemplate,
+  reloadCollectiveOffer,
 }: IOfferEducationalProps): JSX.Element => {
   const notify = useNotification()
   const history = useHistory()
@@ -151,21 +148,15 @@ const OfferEducational = ({
     validationSchema,
   })
 
-  const shouldShowOfferActions =
-    (mode === Mode.EDITION || mode === Mode.READ_ONLY) &&
-    setIsOfferActive &&
-    cancelActiveBookings
-
   return (
     <>
-      {shouldShowOfferActions && (
+      {offer && (
         <OfferEducationalActions
-          cancelActiveBookings={cancelActiveBookings}
           className={styles.actions}
           isBooked={isOfferBooked}
-          isOfferActive={isOfferActive}
-          setIsOfferActive={setIsOfferActive}
           offer={offer}
+          reloadCollectiveOffer={reloadCollectiveOffer}
+          mode={mode}
         />
       )}
       <FormikProvider value={{ ...formik, resetForm }}>
