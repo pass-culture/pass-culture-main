@@ -2,9 +2,9 @@ import { api } from 'apiClient/api'
 import { ApiError, StockResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { STOCK_THING_FORM_DEFAULT_VALUES } from 'components/StockThingForm'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 
+import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../'
 import upsertStocksThingAdapter from '../upsertStocksThingAdapter'
 
 describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
