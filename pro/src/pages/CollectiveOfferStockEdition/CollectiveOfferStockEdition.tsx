@@ -1,5 +1,5 @@
 import React from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
@@ -27,9 +27,10 @@ import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'
 const CollectiveOfferStockEdition = ({
   offer,
   reloadCollectiveOffer,
+  isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
-  const history = useHistory()
   const notify = useNotification()
+  const navigate = useNavigate()
 
   if (isCollectiveOfferTemplate(offer)) {
     throw new Error("Impossible de mettre à jour le stock d'une offre vitrine.")
@@ -63,7 +64,7 @@ const CollectiveOfferStockEdition = ({
 
     notify.success(stockResponse.message)
     reloadCollectiveOffer()
-    history.push(
+    navigate(
       `/offre/${computeURLCollectiveOfferId(
         offer.id,
         false
@@ -101,7 +102,7 @@ const CollectiveOfferStockEdition = ({
   }
 
   return (
-    <CollectiveOfferLayout subTitle={offer.name}>
+    <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
       <PageTitle title="Date et prix" />
       <OfferEducationalStockScreen
         cancelActiveBookings={cancelActiveBookings}

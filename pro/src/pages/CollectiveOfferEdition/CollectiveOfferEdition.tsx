@@ -22,6 +22,7 @@ const CollectiveOfferEdition = ({
   offer,
   setOffer,
   reloadCollectiveOffer,
+  isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
   const notify = useNotification()
   const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
@@ -66,7 +67,7 @@ const CollectiveOfferEdition = ({
   }
 
   return (
-    <CollectiveOfferLayout subTitle={offer.name}>
+    <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
       <PageTitle title="Détails de l'offre" />
       <OfferEducationalScreen
         categories={offerEducationalFormData.categories}

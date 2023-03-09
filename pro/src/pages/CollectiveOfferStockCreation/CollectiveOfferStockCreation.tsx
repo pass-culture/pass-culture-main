@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
@@ -30,9 +30,12 @@ import postCollectiveStockAdapter from './adapters/postCollectiveStock'
 export const CollectiveOfferStockCreation = ({
   offer,
   setOffer,
+  isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element | null => {
   const notify = useNotification()
-  const history = useHistory()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const isCreation = !location.pathname.includes('edition')
 
   const [offerTemplate, setOfferTemplate] = useState<CollectiveOfferTemplate>()
 
@@ -120,13 +123,15 @@ export const CollectiveOfferStockCreation = ({
     } else {
       url = `${url}/creation/recapitulatif`
     }
-    history.push(url)
+    navigate(url)
   }
 
   return (
     <CollectiveOfferLayout
       subTitle={offer?.name}
       isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+      isTemplate={isTemplate}
+      isCreation={isCreation}
     >
       <PageTitle title="Date et prix" />
       <OfferEducationalStockScreen

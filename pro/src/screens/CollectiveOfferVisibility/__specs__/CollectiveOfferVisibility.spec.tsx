@@ -1,5 +1,3 @@
-import 'react-router-dom'
-
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
@@ -14,13 +12,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import CollectiveOfferVisibility, {
   CollectiveOfferVisibilityProps,
 } from '../CollectiveOfferVisibility'
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({
-    offerId: 'BQ',
-  }),
-}))
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -70,6 +61,7 @@ describe('CollectiveOfferVisibility', () => {
       onSuccess: jest.fn(),
       institutions,
       isLoadingInstitutions: false,
+      offer: collectiveOfferFactory({ id: 'BQ' }),
     }
   })
 

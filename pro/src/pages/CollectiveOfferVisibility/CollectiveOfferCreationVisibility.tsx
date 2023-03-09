@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory } from 'react-router'
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
@@ -25,8 +25,11 @@ import patchEducationalInstitutionAdapter from './adapters/patchEducationalInsti
 export const CollectiveOfferVisibility = ({
   setOffer,
   offer,
+  isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
-  const history = useHistory()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const isCreation = !location.pathname.includes('edition')
 
   const [institutions, setInstitutions] = useState<
     EducationalInstitutionResponseModel[]
@@ -40,7 +43,7 @@ export const CollectiveOfferVisibility = ({
     payload: CollectiveOffer
   }) => {
     setOffer(payload)
-    history.push(`/offre/${offerId}/collectif/creation/recapitulatif`)
+    navigate(`/offre/${offerId}/collectif/creation/recapitulatif`)
   }
 
   useEffect(() => {
@@ -66,6 +69,8 @@ export const CollectiveOfferVisibility = ({
     <CollectiveOfferLayout
       subTitle={offer?.name}
       isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+      isTemplate={isTemplate}
+      isCreation={isCreation}
     >
       <PageTitle title="Visibilité" />
       <CollectiveOfferVisibilityScreen
@@ -75,6 +80,7 @@ export const CollectiveOfferVisibility = ({
         onSuccess={onSuccess}
         institutions={institutions}
         isLoadingInstitutions={isLoadingInstitutions}
+        offer={offer}
       />
       <RouteLeavingGuardCollectiveOfferCreation />
     </CollectiveOfferLayout>

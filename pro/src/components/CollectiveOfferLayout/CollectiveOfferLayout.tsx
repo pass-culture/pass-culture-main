@@ -1,18 +1,19 @@
 import cn from 'classnames'
 import React from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom-v5-compat'
 
 import CollectiveOfferBreadcrumb from 'components/CollectiveOfferBreadcrumb'
 import HelpLink from 'components/HelpLink'
-import useCollectiveOfferRoute from 'hooks/useCollectiveOfferRoute'
 import { getActiveStep } from 'pages/CollectiveOfferRoutes/utils/getActiveStep'
 import { Tag, Title } from 'ui-kit'
 
 import styles from './CollectiveOfferLayout.module.scss'
 
-interface ICollectiveOfferLayout {
+export interface ICollectiveOfferLayout {
   children: React.ReactNode | React.ReactNode[]
   subTitle?: string
+  isCreation?: boolean
+  isTemplate?: boolean
   isFromTemplate?: boolean
   haveStock?: boolean
 }
@@ -22,16 +23,14 @@ const CollectiveOfferLayout = ({
   subTitle,
   isFromTemplate = false,
   haveStock = false,
+  isCreation = false,
+  isTemplate = false,
 }: ICollectiveOfferLayout): JSX.Element => {
   const location = useLocation()
   const isSummaryPage = location.pathname.includes('recapitulatif')
   const { offerId: offerIdFromParams } = useParams<{
     offerId: string
   }>()
-  const { isCreation, isTemplate } = useCollectiveOfferRoute(
-    location.pathname,
-    offerIdFromParams
-  )
   let title = ''
   if (isCreation) {
     if (isFromTemplate) {
