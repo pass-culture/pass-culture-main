@@ -1,31 +1,31 @@
 import React from 'react'
 
+import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
+import PageTitle from 'components/PageTitle/PageTitle'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import {
   Mode,
   cancelCollectiveBookingAdapter,
   patchIsCollectiveOfferActiveAdapter,
   patchIsTemplateOfferActiveAdapter,
-  CollectiveOffer,
-  CollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import useNotification from 'hooks/useNotification'
 import OfferEducationalScreen from 'screens/OfferEducational'
+import {
+  MandatoryCollectiveOfferFromParamsProps,
+  withCollectiveOfferFromParams,
+} from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import useOfferEducationalFormData from 'screens/OfferEducational/useOfferEducationalFormData'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 const CollectiveOfferEdition = ({
   offer,
-  reloadCollectiveOffer,
   setOffer,
-}: {
-  offer: CollectiveOffer | CollectiveOfferTemplate
-  reloadCollectiveOffer: () => void
-  setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
-}): JSX.Element => {
+  reloadCollectiveOffer,
+}: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
   const notify = useNotification()
   const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
-    offer.venue.managingOffererId,
+    offer.venue.managingOffererId ?? null,
     offer
   )
 
@@ -66,22 +66,25 @@ const CollectiveOfferEdition = ({
   }
 
   return (
-    <OfferEducationalScreen
-      categories={offerEducationalFormData.categories}
-      userOfferers={offerEducationalFormData.offerers}
-      domainsOptions={offerEducationalFormData.domains}
-      offer={offer}
-      setOffer={setOffer}
-      cancelActiveBookings={cancelActiveBookings}
-      isOfferActive={offer?.isActive}
-      isOfferBooked={
-        offer?.isTemplate ? false : offer?.collectiveStock?.isBooked
-      }
-      mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
-      setIsOfferActive={setIsOfferActive}
-      isTemplate={offer.isTemplate}
-    />
+    <CollectiveOfferLayout subTitle={offer.name}>
+      <PageTitle title="Détails de l'offre" />
+      <OfferEducationalScreen
+        categories={offerEducationalFormData.categories}
+        userOfferers={offerEducationalFormData.offerers}
+        domainsOptions={offerEducationalFormData.domains}
+        offer={offer}
+        setOffer={setOffer}
+        cancelActiveBookings={cancelActiveBookings}
+        isOfferActive={offer?.isActive}
+        isOfferBooked={
+          offer?.isTemplate ? false : offer?.collectiveStock?.isBooked
+        }
+        mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
+        setIsOfferActive={setIsOfferActive}
+        isTemplate={offer.isTemplate}
+      />
+    </CollectiveOfferLayout>
   )
 }
 
-export default CollectiveOfferEdition
+export default withCollectiveOfferFromParams(CollectiveOfferEdition)
