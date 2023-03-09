@@ -18,7 +18,6 @@ const CollectiveOfferRoutes = (): JSX.Element => {
     <Switch>
       <Route
         path={[
-          '/offre/:offerId/collectif/edition',
           '/offre/:offerId/collectif/stocks/edition',
           '/offre/:offerId/collectif/visibilite/edition',
           '/offre/:offerId/collectif/recapitulatif',

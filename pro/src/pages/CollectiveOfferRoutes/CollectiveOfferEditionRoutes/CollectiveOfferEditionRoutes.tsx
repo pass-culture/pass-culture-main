@@ -11,7 +11,6 @@ import {
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
-import CollectiveOfferEdition from 'pages/CollectiveOfferEdition'
 import CollectiveOfferStockEdition from 'pages/CollectiveOfferStockEdition'
 import CollectiveOfferSummaryEdition from 'pages/CollectiveOfferSummaryEdition'
 import CollectiveOfferVisibility from 'pages/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
@@ -51,19 +50,6 @@ const CollectiveOfferEditionRoutes = ({
   return (
     <CollectiveOfferLayout subTitle={offer.name}>
       <Routes>
-        <Route
-          path="/offre/:offerId/collectif/edition"
-          element={
-            <>
-              <PageTitle title="Détails de l'offre" />
-              <CollectiveOfferEdition
-                offer={offer}
-                setOffer={setOffer}
-                reloadCollectiveOffer={loadCollectiveOffer}
-              />
-            </>
-          }
-        />
         <Route
           path="/offre/:offerId/collectif/recapitulatif"
           element={
