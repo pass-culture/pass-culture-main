@@ -5,14 +5,14 @@ import * as router from 'react-router-dom'
 import { api } from 'apiClient/api'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import * as useNotification from 'hooks/useNotification'
+import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import {
   collectiveOfferFactory,
   collectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOfferStockCreation from '..'
-import { OfferEducationalStockCreationProps } from '../CollectiveOfferStockCreation'
+import { CollectiveOfferStockCreation } from '../CollectiveOfferStockCreation'
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -28,7 +28,7 @@ jest.mock('react-router-dom', () => ({
 
 const renderCollectiveStockCreation = (
   path: string,
-  props: OfferEducationalStockCreationProps
+  props: MandatoryCollectiveOfferFromParamsProps
 ) => {
   renderWithProviders(<CollectiveOfferStockCreation {...props} />, {
     initialRouterEntries: [path],
@@ -38,6 +38,8 @@ const renderCollectiveStockCreation = (
 const defaultProps = {
   offer: collectiveOfferFactory(),
   setOffer: jest.fn(),
+  reloadCollectiveOffer: jest.fn(),
+  isTemplate: false,
 }
 
 describe('CollectiveOfferStockCreation', () => {
@@ -62,8 +64,8 @@ describe('CollectiveOfferStockCreation', () => {
 
   it('should render collective offer stock form from template', async () => {
     const props = {
+      ...defaultProps,
       offer: { ...defaultProps.offer, templateId: 'FM' },
-      setOffer: jest.fn(),
     }
     const offerTemplate = collectiveOfferTemplateFactory({
       educationalPriceDetail: 'Details from template',
@@ -79,8 +81,8 @@ describe('CollectiveOfferStockCreation', () => {
 
   it('should failed render collective offer stock form from template', async () => {
     const props = {
+      ...defaultProps,
       offer: { ...defaultProps.offer, templateId: 'FM' },
-      setOffer: jest.fn(),
     }
     jest.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValue({
       isOk: false,

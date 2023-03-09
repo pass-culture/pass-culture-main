@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
+import PageTitle from 'components/PageTitle/PageTitle'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   CollectiveOffer,
@@ -9,6 +10,7 @@ import {
   EducationalOfferType,
   extractInitialStockValues,
   isCollectiveOffer,
+  isCollectiveOfferTemplate,
   Mode,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
@@ -16,20 +18,19 @@ import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/ge
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useNotification from 'hooks/useNotification'
 import patchCollectiveStockAdapter from 'pages/CollectiveOfferStockEdition/adapters/patchCollectiveStockAdapter'
+import {
+  MandatoryCollectiveOfferFromParamsProps,
+  withCollectiveOfferFromParams,
+} from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'
 import postCollectiveStockAdapter from './adapters/postCollectiveStock'
 
-export interface OfferEducationalStockCreationProps {
-  offer: CollectiveOffer
-  setOffer: (offer: CollectiveOffer) => void
-}
-
-const CollectiveOfferStockCreation = ({
+export const CollectiveOfferStockCreation = ({
   offer,
   setOffer,
-}: OfferEducationalStockCreationProps): JSX.Element | null => {
+}: MandatoryCollectiveOfferFromParamsProps): JSX.Element | null => {
   const notify = useNotification()
   const history = useHistory()
 
@@ -49,6 +50,12 @@ const CollectiveOfferStockCreation = ({
     }
     fetchOfferTemplateDetails()
   }, [])
+
+  if (isCollectiveOfferTemplate(offer)) {
+    throw new Error(
+      "Impossible de mettre à jour les stocks d'une offre vitrine."
+    )
+  }
 
   const initialValues = extractInitialStockValues(offer, offerTemplate)
 
@@ -121,6 +128,7 @@ const CollectiveOfferStockCreation = ({
       subTitle={offer?.name}
       isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
     >
+      <PageTitle title="Date et prix" />
       <OfferEducationalStockScreen
         initialValues={initialValues}
         mode={Mode.CREATION}
@@ -132,4 +140,4 @@ const CollectiveOfferStockCreation = ({
   )
 }
 
-export default CollectiveOfferStockCreation
+export default withCollectiveOfferFromParams(CollectiveOfferStockCreation)
