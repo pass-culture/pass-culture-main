@@ -35,6 +35,7 @@ import { SignupJourneyRoutes } from 'pages/SignupJourneyRoutes'
 import { UserProfile } from 'pages/User'
 import { VenueCreation } from 'pages/VenueCreation'
 import { VenueEdition } from 'pages/VenueEdition'
+import CollectiveOfferSelectionDuplication from 'screens/CollectiveOfferSelectionDuplication'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 export interface ILayoutConfig {
@@ -295,6 +296,12 @@ const routes: IRoute[] = [
     exact: true,
     path: '/offres/collectives',
     title: 'Offres',
+    useV6Router: true,
+  },
+  {
+    component: CollectiveOfferSelectionDuplication,
+    path: '/offre/creation/collectif/selection',
+    title: 'Edition d’une offre collective',
     useV6Router: true,
   },
   {
