@@ -2,12 +2,11 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 import * as router from 'react-router-dom'
 
+import { OptionalCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOfferCreation, {
-  CollectiveOfferCreationProps,
-} from '../CollectiveOfferCreation'
+import { CollectiveOfferCreation } from '../CollectiveOfferCreation'
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -27,7 +26,7 @@ jest.mock('react-router-dom', () => ({
 
 const renderCollectiveOfferCreation = (
   path: string,
-  props: CollectiveOfferCreationProps
+  props: OptionalCollectiveOfferFromParamsProps
 ) => {
   renderWithProviders(<CollectiveOfferCreation {...props} />, {
     initialRouterEntries: [path],
@@ -37,6 +36,8 @@ const renderCollectiveOfferCreation = (
 const defaultProps = {
   offer: collectiveOfferFactory(),
   setOffer: jest.fn(),
+  reloadCollectiveOffer: jest.fn(),
+  isTemplate: false,
 }
 
 describe('CollectiveOfferCreation', () => {
@@ -55,6 +56,7 @@ describe('CollectiveOfferCreation', () => {
       })
     ).toBeInTheDocument()
   })
+
   it('should render with template tag', async () => {
     jest.spyOn(router, 'useParams').mockReturnValue({ offerId: 'T-A1' })
     renderCollectiveOfferCreation('/offre/creation/collectif/vitrine', {
