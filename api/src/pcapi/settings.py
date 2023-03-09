@@ -44,16 +44,12 @@ LOG_LEVEL = int(os.environ.get("LOG_LEVEL", LOG_LEVEL_INFO))
 # Default backends
 if IS_PROD or IS_INTEGRATION:
     _default_object_storage_provider = None  # it must be explicitly set
-    _default_sirene_backend = "pcapi.connectors.sirene.InseeBackend"
 elif IS_STAGING or IS_TESTING:
     _default_object_storage_provider = None  # it must be explicitly set
-    _default_sirene_backend = "pcapi.connectors.sirene.InseeBackend"
 elif IS_RUNNING_TESTS:
     _default_object_storage_provider = "local"
-    _default_sirene_backend = "pcapi.connectors.sirene.TestingBackend"
 elif IS_DEV:
     _default_object_storage_provider = "local"
-    _default_sirene_backend = "pcapi.connectors.sirene.TestingBackend"
 
 
 # API config
@@ -388,7 +384,7 @@ BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE = float(os.environ.get("BACKOFFICE_SE
 BACKOFFICE_URL = os.environ.get("BACKOFFICE_URL", "")
 
 # SIRENE
-SIRENE_BACKEND = os.environ.get("SIRENE_BACKEND", _default_sirene_backend)
+SIRENE_BACKEND = os.environ.get("SIRENE_BACKEND")
 INSEE_SIRENE_API_TOKEN = secrets_utils.get("INSEE_SIRENE_API_TOKEN", "")
 
 # GOOGLE BIG QUERY
