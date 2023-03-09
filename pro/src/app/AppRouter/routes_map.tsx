@@ -11,6 +11,7 @@ import CollectiveOfferRoutes from 'pages/CollectiveOfferRoutes'
 import CollectiveOffers from 'pages/CollectiveOffers'
 import CollectiveOfferStockEdition from 'pages/CollectiveOfferStockEdition'
 import CollectiveOfferSummaryEdition from 'pages/CollectiveOfferSummaryEdition'
+import CollectiveOfferVisibility from 'pages/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
 import CsvTable from 'pages/CsvTable'
 import Desk from 'pages/Desk'
 import { EmailChangeValidation } from 'pages/EmailChangeValidation'
@@ -311,6 +312,12 @@ const routes: IRoute[] = [
   {
     component: CollectiveOfferStockEdition,
     path: '/offre/:offerId/collectif/stocks/edition',
+    title: 'Edition d’une offre collective',
+    useV6Router: true,
+  },
+  {
+    component: CollectiveOfferVisibility,
+    path: '/offre/:offerId/collectif/visibilite/edition',
     title: 'Edition d’une offre collective',
     useV6Router: true,
   },
