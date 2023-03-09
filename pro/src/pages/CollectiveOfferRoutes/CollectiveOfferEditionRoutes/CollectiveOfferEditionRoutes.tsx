@@ -11,7 +11,6 @@ import {
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
-import CollectiveOfferStockEdition from 'pages/CollectiveOfferStockEdition'
 import CollectiveOfferVisibility from 'pages/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -51,18 +50,6 @@ const CollectiveOfferEditionRoutes = ({
       <Routes>
         {!isTemplate && isCollectiveOffer(offer) && (
           <>
-            <Route
-              path="/offre/:offerId/collectif/stocks/edition"
-              element={
-                <>
-                  <PageTitle title="Date et prix" />
-                  <CollectiveOfferStockEdition
-                    offer={offer}
-                    reloadCollectiveOffer={loadCollectiveOffer}
-                  />
-                </>
-              }
-            />
             <Route
               path="/offre/:offerId/collectif/visibilite/edition"
               element={

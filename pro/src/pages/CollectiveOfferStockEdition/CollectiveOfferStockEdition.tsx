@@ -1,6 +1,8 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
+import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
+import PageTitle from 'components/PageTitle/PageTitle'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import {
   Mode,
@@ -10,26 +12,30 @@ import {
   getStockCollectiveOfferAdapter,
   patchIsCollectiveOfferActiveAdapter,
   CollectiveOffer,
+  isCollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useNotification from 'hooks/useNotification'
+import {
+  MandatoryCollectiveOfferFromParamsProps,
+  withCollectiveOfferFromParams,
+} from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'
 
-interface OfferEducationalStockEditionProps {
-  offer: CollectiveOffer
-  reloadCollectiveOffer: () => void
-}
-
 const CollectiveOfferStockEdition = ({
   offer,
   reloadCollectiveOffer,
-}: OfferEducationalStockEditionProps): JSX.Element => {
+}: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
   const history = useHistory()
+  const notify = useNotification()
+
+  if (isCollectiveOfferTemplate(offer)) {
+    throw new Error("Impossible de mettre à jour le stock d'une offre vitrine.")
+  }
 
   const initialValues = extractInitialStockValues(offer)
-  const notify = useNotification()
 
   const handleSubmitStock = async (
     offer: CollectiveOffer,
@@ -95,19 +101,22 @@ const CollectiveOfferStockEdition = ({
   }
 
   return (
-    <OfferEducationalStockScreen
-      cancelActiveBookings={cancelActiveBookings}
-      initialValues={initialValues}
-      mode={
-        offer.collectiveStock?.isEducationalStockEditable
-          ? Mode.EDITION
-          : Mode.READ_ONLY
-      }
-      offer={offer}
-      onSubmit={handleSubmitStock}
-      setIsOfferActive={setIsOfferActive}
-    />
+    <CollectiveOfferLayout subTitle={offer.name}>
+      <PageTitle title="Date et prix" />
+      <OfferEducationalStockScreen
+        cancelActiveBookings={cancelActiveBookings}
+        initialValues={initialValues}
+        mode={
+          offer.collectiveStock?.isEducationalStockEditable
+            ? Mode.EDITION
+            : Mode.READ_ONLY
+        }
+        offer={offer}
+        onSubmit={handleSubmitStock}
+        setIsOfferActive={setIsOfferActive}
+      />
+    </CollectiveOfferLayout>
   )
 }
 
-export default CollectiveOfferStockEdition
+export default withCollectiveOfferFromParams(CollectiveOfferStockEdition)

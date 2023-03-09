@@ -16,12 +16,7 @@ const CollectiveOfferRoutes = (): JSX.Element => {
 
   return (
     <Switch>
-      <Route
-        path={[
-          '/offre/:offerId/collectif/stocks/edition',
-          '/offre/:offerId/collectif/visibilite/edition',
-        ]}
-      >
+      <Route path={['/offre/:offerId/collectif/visibilite/edition']}>
         <CollectiveOfferEditionRoutes
           offerId={offerId}
           isTemplate={isTemplate}
