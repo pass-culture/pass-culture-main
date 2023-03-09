@@ -60,16 +60,6 @@ def create_booking_with_undeletable_dependent(date_used=None, **kwargs):
     return booking
 
 
-def create_rich_user():
-    # create a rich beneficiary who can book the very expensive stocks
-    # we have in `invoice_data`.
-    user = users_factories.BeneficiaryGrant18Factory()
-    user.deposits[0].amount = 100_000
-    db.session.add(user.deposits[0])
-    db.session.commit()
-    return user
-
-
 def datetime_iterator(first):
     dt = first
     while 1:
@@ -146,7 +136,7 @@ class PriceBookingTest:
         assert pricing.revenue == 1000
 
     def test_pricing_lines(self):
-        user = create_rich_user()
+        user = users_factories.RichBeneficiaryFactory()
         booking1 = bookings_factories.UsedBookingFactory(
             amount=19_999,
             user=user,
@@ -1522,7 +1512,7 @@ class GenerateInvoiceTest:
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock1 = offers_factories.ThingStockFactory(offer=offer, price=19_850)
         stock2 = offers_factories.ThingStockFactory(offer=offer, price=160)
-        user = create_rich_user()
+        user = users_factories.RichBeneficiaryFactory()
         booking1 = bookings_factories.UsedBookingFactory(
             stock=stock1,
             user=user,
@@ -1600,7 +1590,7 @@ class GenerateInvoiceTest:
     def test_many_rules_and_rates_two_cashflows(self, invoice_data):
         reimbursement_point, stocks, _venue = invoice_data
         bookings = []
-        user = create_rich_user()
+        user = users_factories.RichBeneficiaryFactory()
         for stock in stocks:
             booking = bookings_factories.UsedBookingFactory(
                 stock=stock,
@@ -1777,7 +1767,7 @@ class PrepareInvoiceContextTest:
     def test_context(self, invoice_data):
         reimbursement_point, stocks, _venue = invoice_data
         bookings = []
-        user = create_rich_user()
+        user = users_factories.RichBeneficiaryFactory()
         for stock in stocks:
             booking = bookings_factories.UsedBookingFactory(
                 stock=stock,
@@ -1851,7 +1841,7 @@ class PrepareInvoiceContextTest:
         thing_offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=thing_offer, price=30)
 
-        user = create_rich_user()
+        user = users_factories.RichBeneficiaryFactory()
         booking = bookings_factories.UsedBookingFactory(
             stock=stock,
             user=user,
@@ -1877,7 +1867,7 @@ class GenerateInvoiceHtmlTest:
 
     def generate_and_compare_invoice(self, stocks, reimbursement_point, venue):
         bookings = []
-        user = create_rich_user()
+        user = users_factories.RichBeneficiaryFactory()
         for stock in stocks:
             booking = bookings_factories.UsedBookingFactory(
                 stock=stock,
