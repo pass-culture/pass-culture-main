@@ -40,9 +40,7 @@ import { logTo } from '../utils/logTo'
 
 import { ActivationCodeFormDialog } from './ActivationCodeFormDialog'
 import { upsertStocksThingAdapter } from './adapters'
-import stylesInfo from './StockFormInfo.module.scss'
-import styles from './StockThingForm.module.scss'
-import stylesRow from './StockThingFormRow.module.scss'
+import styles from './StockThing.module.scss'
 import { setFormReadOnlyFields } from './utils'
 
 import {
@@ -376,8 +374,8 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
             isBanner
           />
           <form onSubmit={formik.handleSubmit} data-testid="stock-thing-form">
-            <div className={stylesRow['stock-form-row']}>
-              <div className={stylesRow['stock-form']}>
+            <div className={styles['stock-form-row']}>
+              <div className={styles['stock-form']}>
                 <TextInput
                   smallLabel
                   name="price"
@@ -435,8 +433,8 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
               {mode === OFFER_WIZARD_MODE.EDITION && offer.stocks.length > 0 && (
                 <div
                   className={cn(
-                    stylesRow['stock-form-info'],
-                    stylesInfo['stock-form-info']
+                    styles['stock-form-info'],
+                    styles['stock-form-info']
                   )}
                 >
                   <TextInput
@@ -449,7 +447,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
                     readOnly
                     label="Stock restant"
                     smallLabel
-                    classNameFooter={stylesInfo['field-layout-footer']}
+                    classNameFooter={styles['field-layout-footer']}
                   />
                   <TextInput
                     name="bookingsQuantity"
@@ -457,13 +455,13 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
                     readOnly
                     label="Réservations"
                     smallLabel
-                    classNameFooter={stylesInfo['field-layout-footer']}
+                    classNameFooter={styles['field-layout-footer']}
                   />
                 </div>
               )}
 
               {actions && actions.length > 0 && (
-                <div className={stylesRow['stock-actions']}>
+                <div className={styles['stock-actions']}>
                   <StockFormActions actions={actions} />
                 </div>
               )}
