@@ -2,12 +2,11 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 import * as router from 'react-router-dom'
 
+import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOfferCreationVisibility, {
-  CollectiveOfferVisibilityProps,
-} from '../CollectiveOfferCreationVisibility'
+import { CollectiveOfferVisibility } from '../CollectiveOfferCreationVisibility'
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -24,9 +23,9 @@ jest.mock('react-router-dom', () => ({
 
 const renderCollectiveOfferCreationVisibility = (
   path: string,
-  props: CollectiveOfferVisibilityProps
+  props: MandatoryCollectiveOfferFromParamsProps
 ) => {
-  renderWithProviders(<CollectiveOfferCreationVisibility {...props} />, {
+  renderWithProviders(<CollectiveOfferVisibility {...props} />, {
     initialRouterEntries: [path],
   })
 }
@@ -34,9 +33,11 @@ const renderCollectiveOfferCreationVisibility = (
 const defaultProps = {
   offer: collectiveOfferFactory(),
   setOffer: jest.fn(),
+  reloadCollectiveOffer: jest.fn(),
+  isTemplate: false,
 }
 
-describe('CollectiveOfferCreationVisibility', () => {
+describe('CollectiveOfferVisibility', () => {
   it('should render collective offer visibility form', async () => {
     jest.spyOn(router, 'useParams').mockReturnValue({ offerId: 'A1' })
     renderCollectiveOfferCreationVisibility(

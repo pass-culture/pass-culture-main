@@ -3,28 +3,29 @@ import { useHistory } from 'react-router'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
+import PageTitle from 'components/PageTitle/PageTitle'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   CollectiveOffer,
   DEFAULT_VISIBILITY_FORM_VALUES,
   Mode,
   isCollectiveOffer,
+  isCollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
+import {
+  MandatoryCollectiveOfferFromParamsProps,
+  withCollectiveOfferFromParams,
+} from 'screens/OfferEducational/useCollectiveOfferFromParams'
 
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'
 import patchEducationalInstitutionAdapter from './adapters/patchEducationalInstitutionAdapter'
 
-export interface CollectiveOfferVisibilityProps {
-  setOffer: (offer: CollectiveOffer) => void
-  offer: CollectiveOffer
-}
-
-const CollectiveOfferVisibility = ({
+export const CollectiveOfferVisibility = ({
   setOffer,
   offer,
-}: CollectiveOfferVisibilityProps) => {
+}: MandatoryCollectiveOfferFromParamsProps) => {
   const history = useHistory()
 
   const [institutions, setInstitutions] = useState<
@@ -51,14 +52,22 @@ const CollectiveOfferVisibility = ({
     })
   }, [])
 
+  if (isCollectiveOfferTemplate(offer)) {
+    throw new Error(
+      "Impossible de mettre à jour la visibilité d'une offre vitrine."
+    )
+  }
+
   const initialValues = offer
     ? extractInitialVisibilityValues(offer.institution)
     : DEFAULT_VISIBILITY_FORM_VALUES
+
   return (
     <CollectiveOfferLayout
       subTitle={offer?.name}
       isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
     >
+      <PageTitle title="Visibilité" />
       <CollectiveOfferVisibilityScreen
         mode={Mode.CREATION}
         patchInstitution={patchEducationalInstitutionAdapter}
@@ -72,4 +81,4 @@ const CollectiveOfferVisibility = ({
   )
 }
 
-export default CollectiveOfferVisibility
+export default withCollectiveOfferFromParams(CollectiveOfferVisibility)
