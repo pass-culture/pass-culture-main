@@ -1,6 +1,5 @@
 import logging
 
-from notion_client import APIResponseError
 from notion_client import Client
 
 from pcapi import settings
@@ -37,11 +36,10 @@ def add_to_synchronization_error_database(exception: Exception, venue_provider: 
                 "Statut": {"select": {"name": "New"}},
             },
         )
-    except APIResponseError as error:
+    except Exception as error:  # pylint: disable=broad-except
         logger.exception(
-            "Could not create page to notion database",
+            "Could not create page to Notion database",
             extra={
                 "error": str(error),
-                "error_code": error.code,
             },
         )
