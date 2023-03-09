@@ -23,51 +23,61 @@ export type OptionalCollectiveOfferFromParamsProps = Omit<
 > &
   Partial<Pick<MandatoryCollectiveOfferFromParamsProps, 'offer'>>
 
-export const useCollectiveOfferFromParams =
-  (): OptionalCollectiveOfferFromParamsProps => {
-    const { offerId: offerIdFromParams } = useParams<{
-      offerId: string
-    }>()
+export const useCollectiveOfferFromParams = (
+  isOfferMandatory: boolean
+): OptionalCollectiveOfferFromParamsProps => {
+  const { offerId: offerIdFromParams } = useParams<{
+    offerId: string
+  }>()
 
-    if (offerIdFromParams === undefined) {
+  if (offerIdFromParams === undefined) {
+    if (isOfferMandatory) {
       throw new Error('useOffer hook called on a page without offerId')
-    }
-
-    const { offerId, isTemplate } =
-      extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
-
-    const [offer, setOffer] = useState<
-      CollectiveOffer | CollectiveOfferTemplate
-    >()
-
-    const loadCollectiveOffer = useCallback(async () => {
-      const adapter = isTemplate
-        ? getCollectiveOfferTemplateAdapter
-        : getCollectiveOfferAdapter
-      const response = await adapter(offerId)
-      if (response.isOk) {
-        setOffer(response.payload)
+    } else {
+      return {
+        offer: undefined,
+        setOffer: () => {},
+        reloadCollectiveOffer: () => Promise.resolve(),
+        isTemplate: false,
       }
-    }, [offerId])
-
-    useEffect(() => {
-      loadCollectiveOffer()
-    }, [])
-
-    return {
-      offer,
-      setOffer,
-      reloadCollectiveOffer: loadCollectiveOffer,
-      isTemplate,
     }
   }
+
+  const { offerId, isTemplate } =
+    extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
+
+  const [offer, setOffer] = useState<
+    CollectiveOffer | CollectiveOfferTemplate
+  >()
+
+  const loadCollectiveOffer = useCallback(async () => {
+    const adapter = isTemplate
+      ? getCollectiveOfferTemplateAdapter
+      : getCollectiveOfferAdapter
+    const response = await adapter(offerId)
+    if (response.isOk) {
+      setOffer(response.payload)
+    }
+  }, [offerId])
+
+  useEffect(() => {
+    loadCollectiveOffer()
+  }, [])
+
+  return {
+    offer,
+    setOffer,
+    reloadCollectiveOffer: loadCollectiveOffer,
+    isTemplate,
+  }
+}
 
 export const withCollectiveOfferFromParams = <T,>(
   Component: ComponentType<T & OptionalCollectiveOfferFromParamsProps>,
   isOfferMandatory = true
 ) => {
   const CollectiveOfferWrapperComponent = (props: T) => {
-    const additionalProps = useCollectiveOfferFromParams()
+    const additionalProps = useCollectiveOfferFromParams(isOfferMandatory)
 
     if (isOfferMandatory && additionalProps.offer === undefined) {
       return <Spinner />
