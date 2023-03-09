@@ -200,6 +200,7 @@ def edit_public_account(user_id: int) -> utils.BackofficeResponse:
         first_name=user.firstName,
         email=user.email,
         birth_date=user.birth_date,
+        phone_number=user.phoneNumber,
         id_piece_number=user.idPieceNumber,
         postal_address_autocomplete=f"{user.address}, {user.postalCode} {user.city}"
         if user.address is not None and user.city is not None and user.postalCode is not None
@@ -223,16 +224,21 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
         dst = url_for(".update_public_account", user_id=user_id)
         return render_template("accounts/edit.html", form=form, dst=dst, user=user), 400
 
-    users_api.update_user_information(
-        user,
-        first_name=form.first_name.data,
-        last_name=form.last_name.data,
-        validated_birth_date=form.birth_date.data,
-        id_piece_number=form.id_piece_number.data,
-        address=form.address.data,
-        postal_code=form.postal_code.data,
-        city=form.city.data,
-    )
+    try:
+        users_api.update_user_information(
+            user,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            validated_birth_date=form.birth_date.data,
+            phone_number=form.phone_number.data,
+            id_piece_number=form.id_piece_number.data,
+            address=form.address.data,
+            postal_code=form.postal_code.data,
+            city=form.city.data,
+        )
+    except phone_validation_exceptions.InvalidPhoneNumber:
+        flash("Le numéro de téléphone est invalide", "warning")
+        return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
         try:

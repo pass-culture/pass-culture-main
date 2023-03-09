@@ -555,6 +555,7 @@ class UpdatePublicAccountTest:
     def test_update_field(self, authenticated_client):
         user_to_edit = users_factories.BeneficiaryGrant18Factory()
 
+        new_phone_number = "+33836656565"
         new_email = user_to_edit.email + ".UPDATE  "
         expected_new_email = email_utils.sanitize_email(new_email)
         expected_new_postal_code = "75000"
@@ -565,6 +566,7 @@ class UpdatePublicAccountTest:
             "last_name": user_to_edit.lastName,
             "email": new_email,
             "birth_date": user_to_edit.birth_date,
+            "phone_number": new_phone_number,
             "id_piece_number": user_to_edit.idPieceNumber,
             "address": user_to_edit.address,
             "postal_code": expected_new_postal_code,
@@ -580,6 +582,7 @@ class UpdatePublicAccountTest:
 
         user_to_edit = users_models.User.query.get(user_to_edit.id)
         assert user_to_edit.email == expected_new_email
+        assert user_to_edit.phoneNumber == new_phone_number
         assert user_to_edit.idPieceNumber == user_to_edit.idPieceNumber
         assert user_to_edit.postalCode == expected_new_postal_code
         assert user_to_edit.city == expected_city
@@ -684,6 +687,29 @@ class UpdatePublicAccountTest:
 
         user_to_edit = users_models.User.query.get(user_to_edit.id)
         assert user_to_edit.idPieceNumber is None
+
+    def test_unvalid_phone_number(self, authenticated_client):
+        user_to_edit = users_factories.BeneficiaryGrant18Factory()
+        old_phone_number = user_to_edit.phoneNumber
+
+        base_form = {
+            "first_name": user_to_edit.firstName,
+            "last_name": user_to_edit.lastName,
+            "email": user_to_edit.email,
+            "phone_number": "T3L3PH0N3",
+        }
+
+        response = self.update_account(authenticated_client, user_to_edit, base_form)
+        assert response.status_code == 303
+
+        expected_url = url_for(
+            "backoffice_v3_web.public_accounts.get_public_account", user_id=user_to_edit.id, _external=True
+        )
+        response = authenticated_client.get(expected_url)
+
+        user_to_edit = users_models.User.query.get(user_to_edit.id)
+        assert user_to_edit.phoneNumber == old_phone_number
+        assert html_parser.extract_alert(response.data) == "Le numéro de téléphone est invalide"
 
     def update_account(self, authenticated_client, user_to_edit, form):
         # generate csrf token

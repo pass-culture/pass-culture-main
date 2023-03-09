@@ -58,13 +58,6 @@ def format_deposit_type(deposit_type: finance_models.DepositType) -> str:
             return "Aucune information"
 
 
-def format_phone_number(phone_number: str) -> str:
-    if not phone_number:
-        return ""
-
-    return phone_number
-
-
 def empty_string_if_null(data: typing.Any | None) -> str:
     if data is None:
         return ""
@@ -259,7 +252,6 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
     app.jinja_env.filters["filter_homologation_tags"] = filter_homologation_tags
     app.jinja_env.filters["format_fraud_check_url"] = format_fraud_check_url
-    app.jinja_env.filters["format_phone_number"] = format_phone_number
     app.jinja_env.filters["format_role"] = format_role
     app.jinja_env.filters["format_state"] = format_state
     app.jinja_env.filters["format_reason_label"] = format_reason_label

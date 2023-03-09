@@ -28,7 +28,7 @@
 
         <div class="fs-6">
             <p class="mb-1"><span class="fw-bold">E-mail :</span> {{ row.contact.email | empty_string_if_null }} </p>
-            <p><span class="fw-bold">Tél :</span> {{ row.contact.phone_number | format_phone_number }} </p>
+            <p><span class="fw-bold">Tél :</span> {{ row.contact.phone_number | empty_string_if_null }} </p>
         </div>
 
         <div class="d-flex flex-row-reverse">

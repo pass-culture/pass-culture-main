@@ -77,7 +77,7 @@
                         <div class="fs-6">
                             <p class="mb-1"><span class="fw-bold">E-mail :</span> {{ user.email }} </p>
                             <p class="mb-1"><span
-                                    class="fw-bold">Tél :</span> {{ user.phoneNumber | format_phone_number }} </p>
+                                    class="fw-bold">Tél :</span> {{ user.phoneNumber | empty_string_if_null }} </p>
                         </div>
                     </div>
 

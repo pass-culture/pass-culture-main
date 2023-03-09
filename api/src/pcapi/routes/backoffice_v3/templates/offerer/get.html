@@ -99,7 +99,7 @@
                             {% if offerer.phoneNumber %}
                                 <p class="mb-1">
                                     <span class="fw-bold">Tél :</span>
-                                    {{ offerer.phoneNumber | format_phone_number }}
+                                    {{ offerer.phoneNumber | empty_string_if_null }}
                                 </p>
                             {% endif %}
 
@@ -124,7 +124,7 @@
                             {% if offerer.first_user %}
                                 <p class="mb-1">
                                     <span class="fw-bold">Numéro d'inscription :</span>
-                                    {{ offerer.first_user.phoneNumber | format_phone_number }}
+                                    {{ offerer.first_user.phoneNumber | empty_string_if_null }}
                                 </p>
                             {% endif %}
                         </div>
