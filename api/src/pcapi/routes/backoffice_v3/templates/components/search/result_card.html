@@ -30,7 +30,7 @@
         <div class="fs-6">
             <p><span class="fw-bold">E-mail :</span> {{ row.email }} </p>
             {% if row.phoneNumber %}
-                <p><span class="fw-bold">Tél :</span> {{ row.phoneNumber | format_phone_number }} </p>
+                <p><span class="fw-bold">Tél :</span> {{ row.phoneNumber | empty_string_if_null }} </p>
             {% endif %}
         </div>
 
