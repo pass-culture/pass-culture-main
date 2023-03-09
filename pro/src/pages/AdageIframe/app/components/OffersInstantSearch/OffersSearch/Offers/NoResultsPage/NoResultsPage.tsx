@@ -6,9 +6,10 @@ import {
   AlgoliaQueryContext,
   FacetFiltersContext,
 } from 'pages/AdageIframe/app/providers'
-import { Button } from 'pages/AdageIframe/app/ui-kit'
 import { ReactComponent as MagnifyingGlassIcon } from 'pages/AdageIframe/assets/magnifying-glass-no-result.svg'
 import { ReactComponent as ResetIcon } from 'pages/AdageIframe/assets/reset.svg'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 export const NoResultsPage = ({
   handleResetFiltersAndLaunchSearch,
@@ -28,11 +29,11 @@ export const NoResultsPage = ({
         <Button
           Icon={ResetIcon}
           className="no-results-button"
-          classNameIcon="no-results-button-reset-icon"
-          label="Réinitialiser tous les filtres"
           onClick={handleResetFiltersAndLaunchSearch}
-          variant="secondary"
-        />
+          variant={ButtonVariant.SECONDARY}
+        >
+          Réinitialiser tous les filtres
+        </Button>
       )}
     </div>
   )
