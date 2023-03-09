@@ -5,8 +5,7 @@ import {
 import { IOfferIndividual } from 'core/Offers/types'
 import { isAllocineProvider } from 'core/Providers'
 
-import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
-import { IStockThingFormValues } from '../types'
+import { STOCK_THING_FORM_DEFAULT_VALUES, IStockThingFormValues } from '../'
 
 const setFormReadOnlyFields = (
   offer: IOfferIndividual,

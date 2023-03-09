@@ -1,10 +1,10 @@
 import { OfferStatus } from 'apiClient/v1'
-import { IStockThingFormValues } from 'components/StockThingForm/types'
 import {
   IOfferIndividual,
   IOfferIndividualVenueProvider,
 } from 'core/Offers/types'
 
+import { IStockThingFormValues } from '../..'
 import setFormReadOnlyFields from '../setFormReadOnlyFields'
 
 describe('StockThingForm::utils::setFormReadOnlyFields', () => {

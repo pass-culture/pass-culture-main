@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
 
@@ -5,16 +6,8 @@ import { api } from 'apiClient/api'
 import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
+import { StockFormActions } from 'components/StockFormActions'
 import { IStockFormRowAction } from 'components/StockFormActions/types'
-import {
-  buildInitialValues,
-  getValidationSchema,
-  IStockThingFormValues,
-  STOCK_THING_FORM_DEFAULT_VALUES,
-  StockThingForm,
-} from 'components/StockThingForm'
-import { setFormReadOnlyFields } from 'components/StockThingForm/utils'
-import { StockThingFormRow } from 'components/StockThingFormRow'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
@@ -33,7 +26,8 @@ import { useNavigate, useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
-import { TicketPlusFullIcon, TrashFilledIcon } from 'icons'
+import { EuroIcon, TicketPlusFullIcon, TrashFilledIcon } from 'icons'
+import { DatePicker, TextInput } from 'ui-kit'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
@@ -46,6 +40,17 @@ import { logTo } from '../utils/logTo'
 
 import { ActivationCodeFormDialog } from './ActivationCodeFormDialog'
 import { upsertStocksThingAdapter } from './adapters'
+import stylesInfo from './StockFormInfo.module.scss'
+import styles from './StockThingForm.module.scss'
+import stylesRow from './StockThingFormRow.module.scss'
+import { setFormReadOnlyFields } from './utils'
+
+import {
+  buildInitialValues,
+  getValidationSchema,
+  IStockThingFormValues,
+  STOCK_THING_FORM_DEFAULT_VALUES,
+} from './'
 
 export interface IStocksThingProps {
   offer: IOfferIndividual
@@ -245,6 +250,30 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     deleteConfirmHide()
   }
 
+  const onChangeQuantity = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const quantity = event.target.value
+    let remainingQuantity: number | string =
+      // No need to test
+      /* istanbul ignore next */
+      Number(quantity || 0) - Number(formik.values.bookingsQuantity || 0)
+
+    if (quantity === '') {
+      remainingQuantity = 'unlimited'
+    }
+
+    formik.setFieldValue(`remainingQuantity`, remainingQuantity)
+    formik.setFieldValue(`quantity`, quantity)
+  }
+
+  const getMaximumBookingDatetime = (date: Date | undefined) => {
+    if (date == undefined) {
+      return undefined
+    }
+    const result = new Date(date)
+    result.setDate(result.getDate() - 7)
+    return result
+  }
+
   const actions: IStockFormRowAction[] = [
     {
       callback: async () => {
@@ -313,6 +342,12 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     [activationCodeFormHide]
   )
 
+  const readOnlyFields = setFormReadOnlyFields(offer, formik.values)
+  const showExpirationDate =
+    formik.values.activationCodesExpirationDatetime !== null
+  const maxDateTime =
+    formik.values.activationCodesExpirationDatetime ?? undefined
+
   return (
     <FormikProvider value={formik}>
       {deleteConfirmVisible && (
@@ -341,21 +376,98 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
             isBanner
           />
           <form onSubmit={formik.handleSubmit} data-testid="stock-thing-form">
-            <StockThingFormRow
-              actions={actions}
-              actionDisabled={false}
-              showStockInfo={
-                mode === OFFER_WIZARD_MODE.EDITION && offer.stocks.length > 0
-              }
-            >
-              <StockThingForm
-                today={today}
-                readOnlyFields={setFormReadOnlyFields(offer, formik.values)}
-                showExpirationDate={
-                  formik.values.activationCodesExpirationDatetime !== null
-                }
-              />
-            </StockThingFormRow>
+            <div className={stylesRow['stock-form-row']}>
+              <div className={stylesRow['stock-form']}>
+                <TextInput
+                  smallLabel
+                  name="price"
+                  label="Prix"
+                  className={cn({
+                    [styles['input-price']]: !showExpirationDate,
+                  })}
+                  classNameFooter={styles['field-layout-footer']}
+                  disabled={readOnlyFields.includes('price')}
+                  type="number"
+                  data-testid="input-price"
+                  rightIcon={() => <EuroIcon tabIndex={-1} />}
+                  step="0.01"
+                />
+                <DatePicker
+                  smallLabel
+                  name="bookingLimitDatetime"
+                  label="Date limite de réservation"
+                  className={cn({
+                    [styles['input-booking-limit-datetime']]:
+                      !showExpirationDate,
+                  })}
+                  classNameFooter={styles['field-layout-footer']}
+                  minDateTime={today}
+                  maxDateTime={getMaximumBookingDatetime(maxDateTime)}
+                  openingDateTime={today}
+                  disabled={readOnlyFields.includes('bookingLimitDatetime')}
+                />
+
+                {showExpirationDate && (
+                  <DatePicker
+                    smallLabel
+                    name="activationCodesExpirationDatetime"
+                    label="Date d'expiration"
+                    className={styles['input-activation-code']}
+                    classNameFooter={styles['field-layout-footer']}
+                    disabled={true}
+                  />
+                )}
+                <TextInput
+                  smallLabel
+                  name="quantity"
+                  label="Quantité"
+                  placeholder="Illimité"
+                  className={cn({
+                    [styles['input-quantity']]: !showExpirationDate,
+                  })}
+                  classNameFooter={styles['field-layout-footer']}
+                  disabled={readOnlyFields.includes('quantity')}
+                  type="number"
+                  hasDecimal={false}
+                  onChange={onChangeQuantity}
+                />
+              </div>
+              {mode === OFFER_WIZARD_MODE.EDITION && offer.stocks.length > 0 && (
+                <div
+                  className={cn(
+                    stylesRow['stock-form-info'],
+                    stylesInfo['stock-form-info']
+                  )}
+                >
+                  <TextInput
+                    name="availableStock"
+                    value={
+                      formik.values.remainingQuantity === 'unlimited'
+                        ? 'Illimité'
+                        : formik.values.remainingQuantity
+                    }
+                    readOnly
+                    label="Stock restant"
+                    smallLabel
+                    classNameFooter={stylesInfo['field-layout-footer']}
+                  />
+                  <TextInput
+                    name="bookingsQuantity"
+                    value={formik.values.bookingsQuantity || 0}
+                    readOnly
+                    label="Réservations"
+                    smallLabel
+                    classNameFooter={stylesInfo['field-layout-footer']}
+                  />
+                </div>
+              )}
+
+              {actions && actions.length > 0 && (
+                <div className={stylesRow['stock-actions']}>
+                  <StockFormActions actions={actions} />
+                </div>
+              )}
+            </div>
 
             <ActionBar
               onClickNext={handleNextStep()}
