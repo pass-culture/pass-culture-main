@@ -206,7 +206,7 @@ class GetProUserHistoryTest:
             response = authenticated_client.get(url)
 
         assert response.status_code == 200
-        rows = html_parser.extract_table_rows(response.data, parent_id="history-tab-pane")
+        rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
         assert len(rows) == 2
 
         assert rows[0]["Type"] == history_models.ActionType.USER_SUSPENDED.value
@@ -229,7 +229,7 @@ class GetProUserHistoryTest:
             response = authenticated_client.get(url)
 
         assert response.status_code == 200
-        assert html_parser.count_table_rows(response.data, parent_id="history-tab-pane") == 0
+        assert html_parser.count_table_rows(response.data, parent_class="history-tab-pane") == 0
 
 
 class CommentProUserTest:

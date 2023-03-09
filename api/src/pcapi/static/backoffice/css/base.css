@@ -1,4 +1,4 @@
-#pc-header-top {
+.pc-header-top {
     background: linear-gradient(to right, rgb(var(--bs-primary-rgb)), rgb(var(--bs-secondary-rgb)));
 }
 

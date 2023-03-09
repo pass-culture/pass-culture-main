@@ -5,15 +5,15 @@
         <h2>Gestion des rôles</h2>
         {% for form in forms %}
             <div class="card mb-4">
-                <div class="card-header" data-bs-toggle="collapse" href=".{{ form.name }}">
+                <div class="card-header" data-bs-toggle="collapse" href=".pc-collapse-{{ form.name }}" role="button">
                     {{ form.name }}
                 </div>
-                <div class="collapse card-collapse p-3 shadow">
+                <div class="collapse card-collapse p-3 shadow pc-collapse-{{ form.name }}">
                     <form
                         class=".{{ form.name }}"
                         action="{{ url_for(".update_role", role_id=form.id) }}"
-                        name="{{ url_for(".update_role", role_id=form.id) | action_to_name }}"
                         method="POST"
+                        name="{{ url_for(".update_role", role_id=form.id) | action_to_name }}"
                     >
                         <div class="card-body">
                             <div class="row">

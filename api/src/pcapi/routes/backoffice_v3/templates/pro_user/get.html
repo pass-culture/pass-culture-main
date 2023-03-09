@@ -1,5 +1,5 @@
 {% from "components/badges.html" import build_pro_user_status_badge %}
-{% from "components/generic_modal.html" import build_modal_form %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/forms.html" import build_form_fields_group with context %}
 
 {% extends "layouts/pro.html" %}
@@ -32,15 +32,24 @@
                     </div>
                     <div class="col-2">
                         {% if has_permission("MANAGE_PRO_ENTITY") %}
-                            <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
-                                    data-bs-target="#edit-pro-user-modal" type="button">
+                            {% set edit_pro_user_information_label_id = random_hash() %}
+                            <button
+                                class="btn btn-outline-primary lead fw-bold mt-2"
+                                data-bs-toggle="modal"
+                                data-bs-target=".pc-edit-pro-user-modal"
+                                type="button"
+                            >
                                 Modifier les informations
                             </button>
-                            <div class="modal modal-lg fade" id="edit-pro-user-modal" tabindex="-1"
-                                aria-describedby="edit-pro-user-modal-label" aria-hidden="true">
+                            <div
+                                class="modal modal-lg fade pc-edit-pro-user-modal"
+                                tabindex="-1"
+                                aria-describedby="{{ edit_pro_user_information_label_id }}"
+                                aria-hidden="true"
+                            >
                                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                     <div class="modal-content">
-                                        <div class="modal-header fs-5" id="edit-pro-user-modal-label">
+                                        <div class="modal-header fs-5" id="{{ edit_pro_user_information_label_id }}">
                                             Modification des informations
                                             de {{ user.firstName }} {{ user.lastName | upper }}</div>
                                         <form action="{{ dst }}" name="{{ dst | action_to_name }}" method="POST">

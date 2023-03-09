@@ -1,5 +1,6 @@
 from functools import wraps
 import logging
+import random
 import typing
 
 from flask import Blueprint
@@ -106,3 +107,7 @@ def is_user_offerer_action_type(action: history_models.ActionHistory) -> bool:
         history_models.ActionType.USER_OFFERER_REJECTED,
     }
     return action.actionType in user_offerer_action_types
+
+
+def random_hash() -> str:
+    return format(random.getrandbits(128), "x")

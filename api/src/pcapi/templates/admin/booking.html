@@ -30,7 +30,7 @@
     frauduleusement) alors qu'elle a en fait été utilisée, il est
     possible de la désannuler.
 </p>
-<form action={{ url_for(".uncancel_and_mark_as_used", booking_id=booking.id) }} method="POST">
+<form action="{{ url_for(".uncancel_and_mark_as_used", booking_id=booking.id) }}" method="POST">
     {{ forms.display_form(mark_as_used_form) }}
     <input class="btn btn-danger" type="submit" value="Désannuler">
 </form>
@@ -41,7 +41,7 @@
     Annuler cette réservation manuellement.
     <br>
 </p>
-<form action={{ url_for(".cancel", booking_id=booking.id) }} method="POST">
+<form action="{{ url_for(".cancel", booking_id=booking.id) }}" method="POST">
     {{ forms.display_form(cancel_form) }}
     <input class="btn btn-danger" type="submit" value="Marquer comme annulée"{% if booking.status.value == 'USED' %}
         onclick="return confirm('Êtes-vous sûr de vouloir annuler une réservation validée ?')" {% endif %}>

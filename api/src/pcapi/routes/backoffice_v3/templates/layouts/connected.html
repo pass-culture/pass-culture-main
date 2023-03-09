@@ -33,10 +33,12 @@
 {% endmacro %}
 
 {% block content %}
-    <nav class="navbar text-bg-primary p-3" id="pc-header-top">
+    {% set pc_collapse_menu_id = random_hash() %}
+    {% set pc_collapse_menu_label_id = random_hash() %}
+    <nav class="navbar text-bg-primary p-3 pc-header-top">
         <button class="btn" type="button" data-bs-toggle="collapse"
-                data-bs-target="#collapse-menu"
-                aria-controls="collapse-menu"><i class="bi bi-list text-white h4"></i></button>
+                data-bs-target=".pc-collapse-menu"
+                aria-controls="{{ pc_collapse_menu_id }}"><i class="bi bi-list text-white h4"></i></button>
 
         <a href="{{ url_for('backoffice_v3_web.home') }}" class="card-link">
             <p class="my-0 ms-5 navbar-brand text-white btn">
@@ -63,10 +65,11 @@
     <div class="container-fluid row">
         <div class="row flex-nowrap">
             <div class="col-auto px-0">
-                <div class="collapse collapse-horizontal offcanvas-start{% if request.path == "/backofficev3/" %} show{% endif %}"
+                <div class="collapse collapse-horizontal offcanvas-start{% if request.path == "/backofficev3/" %} show{% endif %} pc-collapse-menu"
                      data-bs-scroll="true" tabindex="-1"
                      style="transition:none"
-                     id="collapse-menu" aria-labelledby="collapse-menu-label">
+                     id="{{ pc_collapse_menu_id }}"
+                     aria-labelledby="collapse-menu-label">
                     <div class="no-gutters">
                         <nav class="me-3 shadow bg-white rounded-1 rounded-start-0 rounded-top-0">
                             <div class="nav nav-pills flex-column">
