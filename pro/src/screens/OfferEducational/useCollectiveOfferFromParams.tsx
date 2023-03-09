@@ -14,6 +14,7 @@ export type MandatoryCollectiveOfferFromParamsProps = {
   offer: CollectiveOffer | CollectiveOfferTemplate
   setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
   reloadCollectiveOffer: () => Promise<void>
+  isTemplate: boolean
 }
 
 export type OptionalCollectiveOfferFromParamsProps = Omit<
@@ -57,6 +58,7 @@ export const useCollectiveOfferFromParams =
       offer,
       setOffer,
       reloadCollectiveOffer: loadCollectiveOffer,
+      isTemplate,
     }
   }
 

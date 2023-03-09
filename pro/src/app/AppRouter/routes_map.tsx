@@ -7,8 +7,8 @@ import AdageIframe from 'pages/AdageIframe/AdageIframe'
 import Bookings from 'pages/Bookings'
 import CollectiveBookings from 'pages/CollectiveBookings'
 import CollectiveOfferConfirmation from 'pages/CollectiveOfferConfirmation'
+import CollectiveOfferCreation from 'pages/CollectiveOfferCreation'
 import CollectiveOfferEdition from 'pages/CollectiveOfferEdition'
-import CollectiveOfferRoutes from 'pages/CollectiveOfferRoutes'
 import CollectiveOffers from 'pages/CollectiveOffers'
 import CollectiveOfferStockCreation from 'pages/CollectiveOfferStockCreation'
 import CollectiveOfferStockEdition from 'pages/CollectiveOfferStockEdition'
@@ -315,6 +315,30 @@ const routes: IRoute[] = [
     useV6Router: true,
   },
   {
+    component: CollectiveOfferCreation,
+    path: '/offre/creation/collectif',
+    title: 'Edition d’une offre collective',
+    useV6Router: true,
+  },
+  {
+    component: CollectiveOfferCreation,
+    path: '/offre/creation/collectif/vitrine',
+    title: 'Edition d’une offre collective',
+    useV6Router: true,
+  },
+  {
+    component: CollectiveOfferCreation,
+    path: '/offre/collectif/:offerId/creation',
+    title: 'Edition d’une offre collective',
+    useV6Router: true,
+  },
+  {
+    component: CollectiveOfferCreation,
+    path: '/offre/collectif/vitrine/:offerId/creation',
+    title: 'Edition d’une offre collective',
+    useV6Router: true,
+  },
+  {
     component: CollectiveOfferVisibilityCreation,
     path: '/offre/:offerId/collectif/visibilite',
     title: 'Edition d’une offre collective',
@@ -367,17 +391,6 @@ const routes: IRoute[] = [
     path: '/offre/:offerId/collectif/visibilite/edition',
     title: 'Edition d’une offre collective',
     useV6Router: true,
-  },
-  {
-    component: CollectiveOfferRoutes,
-    exact: false,
-    path: [
-      '/offre/:offerId/collectif',
-      '/offre/creation/collectif',
-      '/offre/collectif/:offerId/creation',
-      '/offre/collectif/vitrine/:offerId/creation',
-    ],
-    title: 'Edition d’une offre collective',
   },
   {
     component: LostPassword,
