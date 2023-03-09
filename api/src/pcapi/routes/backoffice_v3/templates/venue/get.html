@@ -49,13 +49,22 @@
                             </div>
                         {% endif %}
                         {% if has_permission("DELETE_PRO_ENTITY") %}
-                            <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
-                            data-bs-target="#delete-venue-modal" type="button">
+                            {% set delete_venue_modal_label_id = random_hash() %}
+                            <button
+                                class="btn btn-outline-primary lead fw-bold mt-2"
+                                data-bs-toggle="modal"
+                                data-bs-target=".pc-delete-venue-modal"
+                                type="button"
+                            >
                                 <i class="bi bi-trash3-fill"></i>
                                 Supprimer le lieu
                             </button>
-                            <div class="modal modal-lg fade" id="delete-venue-modal" tabindex="-1"
-                                aria-describedby="delete-venue-modal-label" aria-hidden="true">
+                            <div
+                                class="modal modal-lg fade pc-delete-venue-modal"
+                                tabindex="-1"
+                                aria-describedby="{{ delete_venue_modal_label_id }}"
+                                aria-hidden="true"
+                            >
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <form
@@ -85,13 +94,13 @@
                         {% endif %}
                     </div>
                 </div>
-                
+
                 {% if venue.publicName != venue.name %}
                     <p class="card-subtitle text-muted mb-3 h5">
                         Nom d'usage : {{ venue.publicName }}
                     </p>
                 {% endif %}
-                
+
                 <p class="card-subtitle text-muted mb-3 h5">
                     Venue ID : {{ venue.id }}
                 </p>

@@ -3,14 +3,25 @@
 {% extends "layouts/connected.html" %}
 
 {% block page %}
+    {% set create_offerer_tag_modal_label_id = random_hash() %}
+    {% set edit_offerer_tag_modal_label_id = random_hash() %}
+    {% set delete_offerer_tag_modal_label_id = random_hash() %}
     <div class="pt-3 px-5">
         <h2 class="fw-light">Tags structure</h2>
-        <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
-                data-bs-target="#create-offerer-tag-modal" type="button">
+        <button
+            class="btn btn-outline-primary lead fw-bold mt-2"
+            data-bs-toggle="modal"
+            data-bs-target=".pc-create-offerer-tag-modal"
+            type="button"
+        >
             Créer un tag structure
         </button>
-        <div class="modal modal-lg fade" id="create-offerer-tag-modal" tabindex="-1"
-                aria-describedby="create-offerer-tag-modal-label" aria-hidden="true">
+        <div
+            class="modal modal-lg fade pc-create-offerer-tag-modal"
+            tabindex="-1"
+            aria-describedby="{{ create_offerer_tag_modal_label_id }}"
+            aria-hidden="true"
+        >
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <form
@@ -19,7 +30,7 @@
                         method="POST"
                         data-turbo="false"
                     >
-                        <div class="modal-header" id="create-offerer-tag-modal-label">
+                        <div class="modal-header" id="{{ create_offerer_tag_modal_label_id }}">
                             <h5 class="modal-title">Créer un tag structure</h5>
                         </div>
                         <div class="modal-body row">
@@ -52,14 +63,21 @@
                     <tr>
                         <td>
                             <div class="dropdown">
-                                <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                                        class="btn p-0"><i
-                                        class="bi bi-three-dots-vertical"></i></button>
+                                <button
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    class="btn p-0"
+                                >
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
                                 <ul class="dropdown-menu">
                                     <li class="dropdown-item p-0">
-                                        <a class="btn btn-sm d-block w-100 text-start px-3"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#edit-offerer-tag-modal-{{ offerer_tag.id }}">
+                                        <a
+                                            class="btn btn-sm d-block w-100 text-start px-3"
+                                            data-bs-toggle="modal"
+                                            data-bs-target=".pc-edit-offerer-tag-modal-{{ offerer_tag.id }}"
+                                        >
                                                 Modifier le tag structure
                                         </a>
                                     </li>
@@ -67,14 +85,18 @@
                                         <li class="dropdown-item p-0">
                                             <a class="btn btn-sm d-block w-100 text-start px-3"
                                                     data-bs-toggle="modal"
-                                                    data-bs-target="#delete-offerer-tag-modal-{{ offerer_tag.id }}">
+                                                    data-bs-target=".pc-delete-offerer-tag-modal-{{ offerer_tag.id }}">
                                                     Supprimer le tag structure
                                             </a>
                                         </li>
                                     {% endif %}
                                 </ul>
-                                <div class="modal modal-lg fade" id="edit-offerer-tag-modal-{{ offerer_tag.id }}" tabindex="-1"
-                                    aria-labelledby="edit-offerer-tag-modal-{{ offerer_tag.id }}-label" aria-hidden="true">
+                                <div
+                                    class="modal modal-lg fade pc-edit-offerer-tag-modal-{{ offerer_tag.id }}"
+                                    tabindex="-1"
+                                    aria-labelledby="{{ edit_offerer_tag_modal_label_id }}"
+                                    aria-hidden="true"
+                                >
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
                                             <form
@@ -83,7 +105,7 @@
                                                 method="POST"
                                                 data-turbo="false"
                                             >
-                                                <div class="modal-header" id="edit-offerer-tag-modal-{{ offerer_tag.id }}-label">
+                                                <div class="modal-header" id="{{ edit_offerer_tag_modal_label_id }}">
                                                     <h5 class="modal-title">Modifier le tag {{ offerer_tag.name }}</h5>
                                                 </div>
                                                 <div class="modal-body row">
@@ -98,8 +120,12 @@
                                     </div>
                                 </div>
                                 {% if has_permission("DELETE_OFFERER_TAG") %}
-                                    <div class="modal modal-lg fade" id="delete-offerer-tag-modal-{{ offerer_tag.id }}" tabindex="-1"
-                                        aria-labelledby="delete-offerer-tag-modal-{{ offerer_tag.id }}-label" aria-hidden="true">
+                                    <div
+                                        class="modal modal-lg fade pc-delete-offerer-tag-modal-{{ offerer_tag.id }}"
+                                        tabindex="-1"
+                                        aria-labelledby="{{ delete_offerer_tag_modal_label_id }}"
+                                        aria-hidden="true"
+                                    >
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <form
@@ -108,7 +134,7 @@
                                                     method="POST"
                                                     data-turbo="false"
                                                 >
-                                                    <div class="modal-header" id="delete-offerer-tag-modal-{{ offerer_tag.id }}-label">
+                                                    <div class="modal-header" id="{{ delete_offerer_tag_modal_label_id }}">
                                                         <h5 class="modal-title">Supprimer le tag {{ offerer_tag.name }}</h5>
                                                     </div>
                                                     <div class="modal-body row">

@@ -415,7 +415,7 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
 
         response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
 
-        bookings = html_parser.extract_table_rows(response.data, parent_id="bookings-tab-pane")
+        bookings = html_parser.extract_table_rows(response.data, parent_class="bookings-tab-pane")
         assert len(bookings) == 2
 
         assert bookings[0]["Offreur"] == b2.offerer.name
@@ -443,7 +443,7 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
 
         response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
 
-        assert not html_parser.extract_table_rows(response.data, parent_id="bookings-tab-pane")
+        assert not html_parser.extract_table_rows(response.data, parent_class="bookings-tab-pane")
         assert "Aucune réservation à ce jour" in response.data.decode("utf-8")
 
     def test_fraud_check_link(self, authenticated_client):
@@ -465,15 +465,18 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
 
         parsed_html = html_parser.get_soup(response.data)
-        main_dossier_card = str(parsed_html.find(id="main-check-item"))
+
+        main_dossier_card = str(
+            parsed_html.find("div", class_="pc-script-user-accounts-additional-data-main-fraud-check")
+        )
         assert (
             f"https://www.demarches-simplifiees.fr/procedures/{old_dms.source_data().procedure_number}/dossiers/{old_dms.thirdPartyId}"
             in main_dossier_card
         )
 
-        old_ubble_card = str(parsed_html.find(id=old_ubble.thirdPartyId))
+        old_ubble_card = str(parsed_html.find("div", class_=old_ubble.thirdPartyId))
         assert f"https://dashboard.ubble.ai/identifications/{old_ubble.thirdPartyId}" in old_ubble_card
-        old_dms_card = str(parsed_html.find(id=old_dms.thirdPartyId))
+        old_dms_card = str(parsed_html.find("div", class_=old_dms.thirdPartyId))
         assert (
             f"https://www.demarches-simplifiees.fr/procedures/{old_dms.source_data().procedure_number}/dossiers/{old_dms.thirdPartyId}"
             in old_dms_card
@@ -488,12 +491,14 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
 
         parsed_html = html_parser.get_soup(response.data)
-        main_dossier_card = str(parsed_html.find(id="main-check-item"))
+        main_dossier_card = str(
+            parsed_html.find("div", class_="pc-script-user-accounts-additional-data-main-fraud-check")
+        )
         assert (
             f"https://www.demarches-simplifiees.fr/procedures/{new_dms.source_data().procedure_number}/dossiers/{new_dms.thirdPartyId}"
             in main_dossier_card
         )
-        new_dms_card = str(parsed_html.find(id=new_dms.thirdPartyId))
+        new_dms_card = str(parsed_html.find("div", class_=new_dms.thirdPartyId))
         assert (
             f"https://www.demarches-simplifiees.fr/procedures/{new_dms.source_data().procedure_number}/dossiers/{new_dms.thirdPartyId}"
             in new_dms_card
@@ -531,7 +536,7 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
 
         # then
         assert response.status_code == 200
-        history_rows = html_parser.extract_table_rows(response.data, parent_id="history-tab-pane")
+        history_rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
         assert len(history_rows) == 5
 
         assert history_rows[0]["Type"] == "Étape de vérification"

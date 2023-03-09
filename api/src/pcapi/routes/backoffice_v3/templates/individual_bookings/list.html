@@ -5,6 +5,9 @@
 
 {% extends "layouts/connected.html" %}
 
+{% set validate_booking_aria_described_by_id = random_hash() %}
+{% set cancel_booking_aria_described_by_id = random_hash() %}
+
 {% block page %}
     <div class="pt-3 px-5">
         <h2 class="fw-light">Réservations individuelles</h2>
@@ -44,15 +47,21 @@
                                     {{ build_booking_toggle_extra_row_button(booking) }}
                                     <div class="mx-2 dropdown">
                                     {% if has_permission("MANAGE_BOOKINGS") %}
-                                        <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                                                class="btn p-0"><i
-                                                class="bi bi-three-dots-vertical"></i></button>
+                                        <button
+                                            type="button"
+                                            data-bs-toggle="dropdown"
+                                            aria-expanded="false"
+                                            class="btn p-0"
+                                            {% if booking.isReimbursed %} disabled{% endif %}
+                                        >
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
                                         <ul class="dropdown-menu">
                                             {% if booking.isCancelled %}
                                                 <li class="dropdown-item p-0">
                                                     <a class="btn btn-sm d-block w-100 text-start px-3"
                                                             data-bs-toggle="modal"
-                                                            data-bs-target="#validate-booking-modal-{{ booking.id }}">
+                                                            data-bs-target=".pc-validate-booking-modal-{{ booking.id }}">
                                                             Valider la réservation
                                                     </a>
                                                 </li>
@@ -60,15 +69,15 @@
                                                 <li class="dropdown-item p-0">
                                                     <a class="btn btn-sm d-block w-100 text-start px-3"
                                                             data-bs-toggle="modal"
-                                                            data-bs-target="#cancel-booking-modal-{{ booking.id }}">
+                                                            data-bs-target=".pc-cancel-booking-modal-{{ booking.id }}">
                                                             Annuler la réservation
                                                     </a>
                                                 </li>
                                             {% endif %}
                                         </ul>
                                         {% if booking.isCancelled %}
-                                            <div class="modal modal-lg fade" id="validate-booking-modal-{{ booking.id }}" tabindex="-1"
-                                                aria-labelledby="validate-booking-modal-{{ booking.id }}-label" aria-hidden="true">
+                                            <div class="modal modal-lg fade pc-validate-booking-modal-{{ booking.id }}" tabindex="-1"
+                                                aria-labelledby="{{ validate_booking_aria_described_by_id }}" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered">
                                                     <div class="modal-content">
                                                         <form
@@ -77,7 +86,7 @@
                                                             method="POST"
                                                             data-turbo="false"
                                                         >
-                                                            <div class="modal-header" id="validate-booking-modal-{{ booking.id }}-label">
+                                                            <div class="modal-header" id="{{ validate_booking_aria_described_by_id }}">
                                                                 <h5 class="modal-title">Valider la réservation {{ booking.token }}</h5>
                                                             </div>
                                                             <div class="modal-body row">
@@ -92,8 +101,8 @@
                                                 </div>
                                             </div>
                                         {% elif not booking.isReimbursed %}
-                                            <div class="modal modal-lg fade" id="cancel-booking-modal-{{ booking.id }}" tabindex="-1"
-                                                aria-labelledby="cancel-booking-modal-{{ booking.id }}-label" aria-hidden="true">
+                                            <div class="modal modal-lg fade pc-cancel-booking-modal-{{ booking.id }}" tabindex="-1"
+                                                aria-labelledby="{{ cancel_booking_aria_described_by_id }}" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered">
                                                     <div class="modal-content">
                                                         <form
@@ -102,7 +111,7 @@
                                                             method="POST"
                                                             data-turbo="false"
                                                         >
-                                                            <div class="modal-header" id="cancel-booking-modal-{{ booking.id }}-label">
+                                                            <div class="modal-header" id="{{ cancel_booking_aria_described_by_id }}">
                                                                 <h5 class="modal-title">Annuler la réservation {{ booking.token }}</h5>
                                                             </div>
                                                             <div class="modal-body row">

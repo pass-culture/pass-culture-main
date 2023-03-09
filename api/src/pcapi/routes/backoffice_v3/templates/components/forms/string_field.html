@@ -1,13 +1,14 @@
-<div class="form-floating my-3 {% if field.type == "PCIntegerField" or field.type == "PCOptIntegerField"  %} d-inline-block {% elif field.type == "PCOptHiddenField" or field.type == "PCPostalCodeHiddenField" or field.type == "PCOptPostalCodeHiddenField" or field.type == "PCHiddenField" %} d-none {% endif %}">
+<div class="form-floating my-3 {% if field.type == "PCIntegerField" or field.type == "PCOptIntegerField" %} d-inline-block {% elif field.type == "PCOptHiddenField" or field.type == "PCPostalCodeHiddenField" or field.type == "PCOptPostalCodeHiddenField" or field.type == "PCHiddenField" %} d-none {% endif %}">
+    {% set string_field_id = random_hash() %}
     <input
         type="{% if field.type == "PCIntegerField" or field.type == "PCOptIntegerField" %}number{% else %}text{% endif %}"
-        id="{{ field.name }}"
+        id="{{ string_field_id }}"
         name="{{ field.name }}"
         class="form-control"
         value="{{ field.data | empty_string_if_null }}"
-        {% if field.flags.required %}required{% endif %}
-        {% if field.flags.pattern %}pattern="{{ field.flags.pattern }}"{% endif %}
-        {% if field.flags.minlength %}minlength="{{ field.flags.minlength }}"{% endif %}
-        {% if field.flags.maxlength %}maxlength="{{ field.flags.maxlength }}"{% endif %}/>
-    <label for="{{ field.name }}">{{ field.label }}</label>
+        {% if field.flags.required %} required{% endif %}
+        {% if field.flags.pattern %} pattern="{{ field.flags.pattern }}"{% endif %}
+        {% if field.flags.minlength %} minlength="{{ field.flags.minlength }}"{% endif %}
+        {% if field.flags.maxlength %} maxlength="{{ field.flags.maxlength }}"{% endif %}/>
+    <label for="{{ string_field_id }}">{{ field.label.text }}</label>
 </div>
