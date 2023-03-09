@@ -26,7 +26,6 @@ const CollectiveOfferRoutes = (): JSX.Element => {
           '/offre/collectif/:offerId/creation',
           '/offre/collectif/vitrine/:offerId/creation',
           '/offre/:offerId/collectif/stocks',
-          '/offre/:offerId/collectif/visibilite',
           '/offre/:offerId/collectif/confirmation',
           '/offre/:offerId/collectif/vitrine/confirmation',
         ]}
