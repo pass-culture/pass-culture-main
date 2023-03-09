@@ -9,6 +9,7 @@ import CollectiveBookings from 'pages/CollectiveBookings'
 import CollectiveOfferEdition from 'pages/CollectiveOfferEdition'
 import CollectiveOfferRoutes from 'pages/CollectiveOfferRoutes'
 import CollectiveOffers from 'pages/CollectiveOffers'
+import CollectiveOfferSummaryEdition from 'pages/CollectiveOfferSummaryEdition'
 import CsvTable from 'pages/CsvTable'
 import Desk from 'pages/Desk'
 import { EmailChangeValidation } from 'pages/EmailChangeValidation'
@@ -296,8 +297,13 @@ const routes: IRoute[] = [
   },
   {
     component: CollectiveOfferEdition,
-    exact: false,
     path: '/offre/:offerId/collectif/edition',
+    title: 'Edition d’une offre collective',
+    useV6Router: true,
+  },
+  {
+    component: CollectiveOfferSummaryEdition,
+    path: '/offre/:offerId/collectif/recapitulatif',
     title: 'Edition d’une offre collective',
     useV6Router: true,
   },

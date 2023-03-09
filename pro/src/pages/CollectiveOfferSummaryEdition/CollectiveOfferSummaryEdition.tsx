@@ -1,24 +1,23 @@
 import React, { useEffect, useState } from 'react'
 
+import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
+import PageTitle from 'components/PageTitle/PageTitle'
 import {
   getEducationalCategoriesAdapter,
   EducationalCategories,
-  CollectiveOffer,
-  CollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import useNotification from 'hooks/useNotification'
 import CollectiveOfferSummaryEditionScreen from 'screens/CollectiveOfferSummaryEdition'
+import {
+  MandatoryCollectiveOfferFromParamsProps,
+  withCollectiveOfferFromParams,
+} from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import Spinner from 'ui-kit/Spinner/Spinner'
-
-interface CollectiveOfferSummaryEditionProps {
-  offer: CollectiveOffer | CollectiveOfferTemplate
-  reloadCollectiveOffer: () => void
-}
 
 const CollectiveOfferSummaryEdition = ({
   offer,
   reloadCollectiveOffer,
-}: CollectiveOfferSummaryEditionProps) => {
+}: MandatoryCollectiveOfferFromParamsProps) => {
   const notify = useNotification()
 
   const [categories, setCategories] = useState<EducationalCategories | null>(
@@ -44,12 +43,15 @@ const CollectiveOfferSummaryEdition = ({
   return !isReady ? (
     <Spinner />
   ) : (
-    <CollectiveOfferSummaryEditionScreen
-      offer={offer}
-      categories={categories}
-      reloadCollectiveOffer={reloadCollectiveOffer}
-    />
+    <CollectiveOfferLayout subTitle={offer.name}>
+      <PageTitle title="Récapitulatif" />
+      <CollectiveOfferSummaryEditionScreen
+        offer={offer}
+        categories={categories}
+        reloadCollectiveOffer={reloadCollectiveOffer}
+      />
+    </CollectiveOfferLayout>
   )
 }
 
-export default CollectiveOfferSummaryEdition
+export default withCollectiveOfferFromParams(CollectiveOfferSummaryEdition)
