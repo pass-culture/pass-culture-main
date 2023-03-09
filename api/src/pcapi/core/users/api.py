@@ -203,6 +203,7 @@ def update_user_information(
     id_piece_number: str | None = None,
     ine_hash: str | None = None,
     married_name: str | None = None,
+    phone_number: str | None = None,
     postal_code: str | None = None,
     commit: bool = False,
 ) -> models.User:
@@ -231,6 +232,8 @@ def update_user_information(
         user.ineHash = ine_hash
     if married_name is not None:
         user.married_name = married_name
+    if phone_number is not None:
+        user.phoneNumber = phone_number  # type: ignore [assignment]
     if postal_code is not None:
         user.postalCode = postal_code
         user.departementCode = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None

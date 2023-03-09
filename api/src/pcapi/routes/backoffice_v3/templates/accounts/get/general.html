@@ -80,7 +80,7 @@
                             {% endif %}
                         </div>
                         <div class="mb-1"><span
-                                class="fw-bold">Tél :</span> {{ user.phoneNumber | format_phone_number }}
+                                class="fw-bold">Tél :</span> {{ user.phoneNumber | empty_string_if_null }}
                             <br>
                             {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
                                 <div class="d-flex">
