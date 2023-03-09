@@ -1,9 +1,6 @@
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
-import {
-  IStockThingFormValues,
-  STOCK_THING_FORM_DEFAULT_VALUES,
-} from 'components/StockThingForm'
 
+import { IStockThingFormValues, STOCK_THING_FORM_DEFAULT_VALUES } from '../..'
 import { serializeStockThingList } from '../serializers'
 
 describe('screens::StockThing::serializers:serializeStockThingList', () => {

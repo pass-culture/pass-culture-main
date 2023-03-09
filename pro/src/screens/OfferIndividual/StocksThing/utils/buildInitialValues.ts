@@ -1,9 +1,7 @@
-import {
-  STOCK_THING_FORM_DEFAULT_VALUES,
-  IStockThingFormValues,
-} from 'components/StockThingForm'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
+
+import { STOCK_THING_FORM_DEFAULT_VALUES, IStockThingFormValues } from '../'
 
 export const buildInitialValues = (
   offer: IOfferIndividual
