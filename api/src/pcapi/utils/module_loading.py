@@ -3,11 +3,13 @@ from typing import Type
 
 
 # Taken from django.utils.module_loading
-def import_string(dotted_path: str) -> Type:
+def import_string(dotted_path: str | None) -> Type:
     """
     Import a dotted module path and return the attribute/class designated by the
     last name in the path. Raise ImportError if the import failed.
     """
+    if not dotted_path:
+        raise ImportError("Import path cannot be empty")
     try:
         module_path, class_name = dotted_path.rsplit(".", 1)
     except ValueError as err:
