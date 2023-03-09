@@ -66,6 +66,7 @@ import type { PostVenueBodyModel } from '../models/PostVenueBodyModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
 import type { PriceCategoryBody } from '../models/PriceCategoryBody';
 import type { ProUserCreationBodyModel } from '../models/ProUserCreationBodyModel';
+import type { ProUserCreationBodyV2Model } from '../models/ProUserCreationBodyV2Model';
 import type { ReimbursementPointListResponseModel } from '../models/ReimbursementPointListResponseModel';
 import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel';
 import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUserResponseModel';
@@ -1895,6 +1896,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/users/validate_email',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * signup_pro_V2 <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public signupProV2(
+    requestBody?: ProUserCreationBodyV2Model,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/v2/users/signup/pro',
       body: requestBody,
       mediaType: 'application/json',
       errors: {

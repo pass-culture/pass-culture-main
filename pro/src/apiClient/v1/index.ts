@@ -145,6 +145,7 @@ export type { PostVenueProviderBody } from './models/PostVenueProviderBody';
 export type { PriceCategoryBody } from './models/PriceCategoryBody';
 export type { PriceCategoryResponseModel } from './models/PriceCategoryResponseModel';
 export type { ProUserCreationBodyModel } from './models/ProUserCreationBodyModel';
+export type { ProUserCreationBodyV2Model } from './models/ProUserCreationBodyV2Model';
 export type { ProviderResponse } from './models/ProviderResponse';
 export type { ReimbursementCsvQueryModel } from './models/ReimbursementCsvQueryModel';
 export type { ReimbursementPointListResponseModel } from './models/ReimbursementPointListResponseModel';
