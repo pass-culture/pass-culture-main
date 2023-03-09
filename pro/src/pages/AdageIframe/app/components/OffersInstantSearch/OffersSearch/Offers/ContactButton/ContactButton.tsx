@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 
 import { apiAdage } from 'apiClient/api'
-import { Button, ModalLayout } from 'pages/AdageIframe/app/ui-kit'
+import { ModalLayout } from 'pages/AdageIframe/app/ui-kit'
 import { ReactComponent as MailIcon } from 'pages/AdageIframe/assets/mail.svg'
 import './ContactButton.scss'
 import { logClickOnOffer } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
+import { Button } from 'ui-kit'
 
 const ContactButton = ({
   className,
@@ -36,12 +37,9 @@ const ContactButton = ({
   return (
     <>
       <div className={`prebooking-button-container ${className}`}>
-        <Button
-          className="prebooking-button"
-          label="Contacter"
-          onClick={handleButtonClick}
-          type="button"
-        />
+        <Button className="prebooking-button" onClick={handleButtonClick}>
+          Contacter
+        </Button>
       </div>
       <ModalLayout Icon={MailIcon} closeModal={closeModal} isOpen={isModalOpen}>
         <p className="contact-modal-text">

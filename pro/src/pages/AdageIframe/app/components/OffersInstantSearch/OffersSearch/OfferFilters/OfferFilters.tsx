@@ -14,11 +14,8 @@ import {
   FiltersContext,
 } from 'pages/AdageIframe/app/providers'
 import { Option, Filters } from 'pages/AdageIframe/app/types'
-import {
-  Button,
-  Checkbox,
-  MultiSelectAutocomplete,
-} from 'pages/AdageIframe/app/ui-kit'
+import { Checkbox, MultiSelectAutocomplete } from 'pages/AdageIframe/app/ui-kit'
+import { Button } from 'ui-kit'
 
 import OfferFiltersTags from './OfferFiltersTags'
 import { studentsOptions } from './studentsOptions'
@@ -251,11 +248,10 @@ export const OfferFilters = ({
         <div className="offer-filters-button-separator" />
         <Button
           disabled={isLoading}
-          label="Lancer la recherche"
-          onClick={() => {
-            handleLaunchSearchButton(currentFilters)
-          }}
-        />
+          onClick={() => handleLaunchSearchButton(currentFilters)}
+        >
+          Lancer la recherche
+        </Button>
       </div>
     </div>
   )
