@@ -43,22 +43,18 @@ LOG_LEVEL = int(os.environ.get("LOG_LEVEL", LOG_LEVEL_INFO))
 
 # Default backends
 if IS_PROD or IS_INTEGRATION:
-    _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.SendinblueBackend"
     _default_object_storage_provider = None  # it must be explicitly set
     _default_sirene_backend = "pcapi.connectors.sirene.InseeBackend"
 elif IS_STAGING or IS_TESTING:
-    _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.ToDevSendinblueBackend"
     _default_object_storage_provider = None  # it must be explicitly set
     _default_sirene_backend = "pcapi.connectors.sirene.InseeBackend"
 elif IS_RUNNING_TESTS:
-    _default_push_notification_backend = "pcapi.notifications.push.backends.testing.TestingBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.testing.TestingBackend"
     _default_object_storage_provider = "local"
     _default_sirene_backend = "pcapi.connectors.sirene.TestingBackend"
 elif IS_DEV:
-    _default_push_notification_backend = "pcapi.notifications.push.backends.logger.LoggerBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.logger.LoggerBackend"
     _default_object_storage_provider = "local"
     _default_sirene_backend = "pcapi.connectors.sirene.TestingBackend"
@@ -141,7 +137,7 @@ WHITELISTED_SMS_RECIPIENTS = utils.parse_phone_numbers(secrets_utils.get("WHITEL
 
 # NOTIFICATIONS
 INTERNAL_NOTIFICATION_BACKEND = os.environ.get("INTERNAL_NOTIFICATION_BACKEND")
-PUSH_NOTIFICATION_BACKEND = os.environ.get("PUSH_NOTIFICATION_BACKEND", _default_push_notification_backend)
+PUSH_NOTIFICATION_BACKEND = os.environ.get("PUSH_NOTIFICATION_BACKEND")
 SMS_NOTIFICATION_BACKEND = os.environ.get("SMS_NOTIFICATION_BACKEND", _default_sms_notification_backend)
 
 MAX_SMS_SENT_FOR_PHONE_VALIDATION = int(os.environ.get("MAX_SMS_SENT_FOR_PHONE_VALIDATION", 3))
