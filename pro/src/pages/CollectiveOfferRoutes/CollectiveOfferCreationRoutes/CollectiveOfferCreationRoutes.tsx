@@ -13,7 +13,6 @@ import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/ge
 import CollectiveOfferConfirmation from 'pages/CollectiveOfferConfirmation'
 import CollectiveOfferCreation from 'pages/CollectiveOfferCreation'
 import CollectiveOfferStockCreation from 'pages/CollectiveOfferStockCreation'
-import CollectiveOfferSummaryCreation from 'pages/CollectiveOfferSummaryCreation'
 import CollectiveOfferVisibilityCreation from 'pages/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -157,28 +156,6 @@ const CollectiveOfferCreationRoutes = ({
           </>
         }
       />
-
-      {[
-        '/offre/:offerId/collectif/creation/recapitulatif',
-        '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
-      ].map(path => (
-        <Route
-          path={path}
-          element={
-            <>
-              <PageTitle title="Récapitulatif" />
-              {offer ? (
-                <CollectiveOfferSummaryCreation
-                  offer={offer}
-                  setOffer={setOffer}
-                />
-              ) : (
-                <Spinner />
-              )}
-            </>
-          }
-        />
-      ))}
     </Routes>
   )
 }
