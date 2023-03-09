@@ -6,6 +6,7 @@ import { Navigate } from 'react-router-dom-v5-compat'
 import AdageIframe from 'pages/AdageIframe/AdageIframe'
 import Bookings from 'pages/Bookings'
 import CollectiveBookings from 'pages/CollectiveBookings'
+import CollectiveOfferEdition from 'pages/CollectiveOfferEdition'
 import CollectiveOfferRoutes from 'pages/CollectiveOfferRoutes'
 import CollectiveOffers from 'pages/CollectiveOffers'
 import CsvTable from 'pages/CsvTable'
@@ -291,6 +292,13 @@ const routes: IRoute[] = [
     exact: true,
     path: '/offres/collectives',
     title: 'Offres',
+    useV6Router: true,
+  },
+  {
+    component: CollectiveOfferEdition,
+    exact: false,
+    path: '/offre/:offerId/collectif/edition',
+    title: 'Edition d’une offre collective',
     useV6Router: true,
   },
   {
