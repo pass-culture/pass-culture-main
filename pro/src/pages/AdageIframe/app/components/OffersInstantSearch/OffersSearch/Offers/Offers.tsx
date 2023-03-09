@@ -21,8 +21,9 @@ import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
 } from 'pages/AdageIframe/app/types/offers'
-import { Button } from 'pages/AdageIframe/app/ui-kit'
 import { ResultType } from 'pages/AdageIframe/utils/types'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { LOGS_DATA } from 'utils/config'
 
 import { Spinner } from '../../../Layout/Spinner/Spinner'
@@ -167,12 +168,9 @@ export const OffersComponent = ({
                 <Spinner message="Chargement en cours" />
               </div>
             ) : (
-              <Button
-                label="Voir plus d’offres"
-                onClick={refineNext}
-                type="button"
-                variant="secondary"
-              />
+              <Button onClick={refineNext} variant={ButtonVariant.SECONDARY}>
+                Voir plus d’offres
+              </Button>
             ))}
         </div>
       </ul>

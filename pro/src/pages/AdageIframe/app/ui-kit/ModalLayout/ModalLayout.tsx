@@ -2,9 +2,9 @@ import React, { FunctionComponent, SVGProps, useState } from 'react'
 import Modal from 'react-modal'
 
 import { ReactComponent as Logo } from 'pages/AdageIframe/assets/logo-without-text.svg'
-
 import './ModalLayout.scss'
-import Button from '../Button'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 interface IModalLayout {
   closeModal: () => void
@@ -63,17 +63,21 @@ const ModalLayout = ({
       <div className="modal-buttons">
         <Button
           className="modal-button"
-          label="Fermer"
           onClick={closeModal}
-          variant={actionLabel ? 'secondary' : 'primary'}
-        />
+          variant={
+            actionLabel ? ButtonVariant.SECONDARY : ButtonVariant.PRIMARY
+          }
+        >
+          Fermer
+        </Button>
         {actionLabel && (
           <Button
             className="modal-button"
             isLoading={isLoading}
-            label={actionLabel}
             onClick={handleButtonClick}
-          />
+          >
+            {actionLabel}
+          </Button>
         )}
       </div>
     </Modal>

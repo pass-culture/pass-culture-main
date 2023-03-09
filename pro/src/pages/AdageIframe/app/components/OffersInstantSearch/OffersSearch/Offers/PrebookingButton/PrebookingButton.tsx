@@ -8,10 +8,10 @@ import {
   NotificationComponent,
   NotificationType,
 } from 'pages/AdageIframe/app/components/Layout/Notification/Notification'
-import { Button } from 'pages/AdageIframe/app/ui-kit'
 import { ReactComponent as HourGlassIcon } from 'pages/AdageIframe/assets/hourglass.svg'
 import './PrebookingButton.scss'
 import { logOfferConversion } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
+import { Button } from 'ui-kit'
 import { LOGS_DATA } from 'utils/config'
 
 import { postBookingAdapater } from './adapters/postBookingAdapter'
@@ -72,10 +72,10 @@ const PrebookingButton = ({
           <>
             <Button
               className="prebooking-button"
-              label="Préréserver"
               onClick={() => handleBookingModalButtonClick(stock.id)}
-              type="button"
-            />
+            >
+              Préréserver
+            </Button>
 
             {stock.bookingLimitDatetime && (
               <span className="prebooking-button-booking-limit">
