@@ -278,6 +278,11 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         secondary="educational_domain_venue",
         uselist=True,
     )
+    collectiveDmsApplications: Mapped[list[educational_models.CollectiveDmsApplication]] = relationship(
+        educational_models.CollectiveDmsApplication,
+        back_populates="venue",
+        uselist=True,
+    )
     collectiveInterventionArea: list[str] | None = sa.Column(
         MutableList.as_mutable(sa.dialects.postgresql.json.JSONB), nullable=True
     )

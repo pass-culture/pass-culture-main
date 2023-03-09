@@ -1,0 +1,143 @@
+from datetime import datetime
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
+from freezegun.api import freeze_time
+import pytest
+
+from pcapi.connectors.dms import factories as dms_factories
+from pcapi.connectors.dms import models as dms_models
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational.api.dms import update_dms_status
+from pcapi.core.offerers import factories as offerers_factories
+
+
+DEFAULT_API_RESULT = [
+    {
+        "id": "RG9zc2llci0xMTcxNjExNw==",
+        "number": 1,
+        "archived": False,
+        "state": "en_traitement",
+        "dateDerniereModification": "2023-04-09T16:17:38+01:00",
+        "dateDepot": "2023-03-06T16:17:37+01:00",
+        "datePassageEnConstruction": "2023-03-07T16:17:37+01:00",
+        "datePassageEnInstruction": "2023-04-08T16:17:37+01:00",
+        "dateTraitement": "2023-04-09T16:19:37+01:00",
+        "dateExpiration": "2024-03-06T16:17:37+01:00",
+        "dateSuppressionParUsager": None,
+        "demandeur": {"siret": "14171443600708"},
+    },
+    {
+        "id": "RG9zc2llci0xMXcxNjExNw==",
+        "number": 2,
+        "archived": False,
+        "state": "en_construction",
+        "dateDerniereModification": "2023-03-06T16:17:38+01:00",
+        "dateDepot": "2023-03-06T16:17:37+01:00",
+        "datePassageEnConstruction": "2023-03-06T16:17:37+01:00",
+        "datePassageEnInstruction": None,
+        "dateTraitement": None,
+        "dateExpiration": "2024-03-06T16:17:37+01:00",
+        "dateSuppressionParUsager": None,
+        "demandeur": {"siret": "50130899309201"},
+    },
+]
+
+
+@pytest.mark.usefixtures("db_session")
+@freeze_time("2023-11-26 18:29:20.891028")
+class UpdateDmsStatusTest:
+    def test_import_empty_db(self):
+        venue1 = offerers_factories.VenueFactory(siret=DEFAULT_API_RESULT[0]["demandeur"]["siret"])
+        venue2 = offerers_factories.VenueFactory(siret=DEFAULT_API_RESULT[1]["demandeur"]["siret"])
+        mock = MagicMock()
+        mock.get_eac_nodes_siret_states = MagicMock(return_value=DEFAULT_API_RESULT)
+        with patch("pcapi.connectors.dms.api.DMSGraphQLClient", return_value=mock):
+            update_dms_status(procedure_id=123)
+        mock.get_eac_nodes_siret_states.assert_called_once_with(
+            procedure_id=123,
+            since=None,
+        )
+
+        assert len(venue1.collectiveDmsApplications) == 1
+        assert venue1.collectiveDmsApplications[0].state == "en_traitement"
+        assert venue1.collectiveDmsApplications[0].procedure == 123
+        assert venue1.collectiveDmsApplications[0].application == 1
+        assert venue1.collectiveDmsApplications[0].siret == venue1.siret
+        assert venue1.collectiveDmsApplications[0].lastChangeDate == datetime(2023, 4, 9, 15, 17, 38)
+        assert venue1.collectiveDmsApplications[0].depositDate == datetime(2023, 3, 6, 15, 17, 37)
+        assert venue1.collectiveDmsApplications[0].expirationdate == datetime(2024, 3, 6, 15, 17, 37)
+        assert venue1.collectiveDmsApplications[0].buildDate == datetime(2023, 3, 7, 15, 17, 37)
+        assert venue1.collectiveDmsApplications[0].instructionDate == datetime(2023, 4, 8, 15, 17, 37)
+        assert venue1.collectiveDmsApplications[0].processingDate == datetime(2023, 4, 9, 15, 19, 37)
+        assert venue1.collectiveDmsApplications[0].userdeletiondate == None
+
+        assert len(venue2.collectiveDmsApplications) == 1
+        assert venue2.collectiveDmsApplications[0].state == "en_construction"
+        assert venue2.collectiveDmsApplications[0].procedure == 123
+        assert venue2.collectiveDmsApplications[0].application == 2
+        assert venue2.collectiveDmsApplications[0].siret == venue2.siret
+        assert venue2.collectiveDmsApplications[0].lastChangeDate == datetime(2023, 3, 6, 15, 17, 38)
+        assert venue2.collectiveDmsApplications[0].depositDate == datetime(2023, 3, 6, 15, 17, 37)
+        assert venue2.collectiveDmsApplications[0].expirationdate == datetime(2024, 3, 6, 15, 17, 37)
+        assert venue2.collectiveDmsApplications[0].buildDate == datetime(2023, 3, 6, 15, 17, 37)
+        assert venue2.collectiveDmsApplications[0].instructionDate == None
+        assert venue2.collectiveDmsApplications[0].processingDate == None
+        assert venue2.collectiveDmsApplications[0].userdeletiondate == None
+
+        latest_import = dms_models.LatestDmsImport.query.one()
+        assert latest_import.procedureId == 123
+        assert latest_import.latestImportDatetime != None
+        assert latest_import.isProcessing == False
+        assert latest_import.processedApplications == [1, 2]
+
+    def test_update_existing_data(self):
+        venue = offerers_factories.VenueFactory(siret=DEFAULT_API_RESULT[0]["demandeur"]["siret"])
+
+        educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue,
+            procedure=123,
+        )
+        mock = MagicMock()
+        mock.get_eac_nodes_siret_states = MagicMock(return_value=DEFAULT_API_RESULT)
+        with patch("pcapi.connectors.dms.api.DMSGraphQLClient", return_value=mock):
+            update_dms_status(procedure_id=123)
+
+        assert len(venue.collectiveDmsApplications) == 1
+        assert venue.collectiveDmsApplications[0].state == "en_traitement"
+        assert venue.collectiveDmsApplications[0].procedure == 123
+        assert venue.collectiveDmsApplications[0].application == 1
+        assert venue.collectiveDmsApplications[0].siret == venue.siret
+        assert venue.collectiveDmsApplications[0].lastChangeDate == datetime(2023, 4, 9, 15, 17, 38)
+        assert venue.collectiveDmsApplications[0].depositDate == datetime(2023, 3, 6, 15, 17, 37)
+        assert venue.collectiveDmsApplications[0].expirationdate == datetime(2024, 3, 6, 15, 17, 37)
+        assert venue.collectiveDmsApplications[0].buildDate == datetime(2023, 3, 7, 15, 17, 37)
+        assert venue.collectiveDmsApplications[0].instructionDate == datetime(2023, 4, 8, 15, 17, 37)
+        assert venue.collectiveDmsApplications[0].processingDate == datetime(2023, 4, 9, 15, 19, 37)
+        assert venue.collectiveDmsApplications[0].userdeletiondate == None
+
+    def test_only_call_from_last_update(self):
+        mock = MagicMock()
+        mock.get_eac_nodes_siret_states = MagicMock(return_value=DEFAULT_API_RESULT)
+
+        previous = dms_factories.LatestDmsImportFactory(procedureId=123)
+
+        with patch("pcapi.connectors.dms.api.DMSGraphQLClient", return_value=mock):
+            update_dms_status(procedure_id=123)
+        mock.get_eac_nodes_siret_states.assert_called_once_with(
+            procedure_id=123,
+            since=previous.latestImportDatetime,
+        )
+
+    def test_only_process_if_previous_ended(self):
+        mock = MagicMock()
+        mock.get_eac_nodes_siret_states = MagicMock(return_value=DEFAULT_API_RESULT)
+
+        dms_factories.LatestDmsImportFactory(
+            procedureId=123,
+            isProcessing=True,
+        )
+
+        with patch("pcapi.connectors.dms.api.DMSGraphQLClient", return_value=mock):
+            update_dms_status(procedure_id=123)
+        mock.get_eac_nodes_siret_states.assert_not_called()

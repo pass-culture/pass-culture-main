@@ -3,6 +3,7 @@ import logging
 from pcapi.core import search
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api.adage import synchronize_adage_ids_on_venues
+from pcapi.core.educational.api.dms import update_dms_status
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
@@ -49,3 +50,10 @@ def notify_pro_users_one_day() -> None:
 def handle_pending_collective_booking_j3() -> None:
     """Triggers email to be sent for events with pending booking and booking limit date in 3 days"""
     educational_api_booking.notify_pro_pending_booking_confirmation_limit_in_3_days()
+
+
+@blueprint.cli.command("eac_update_dms_status")
+@log_cron_with_transaction
+def eac_update_dms_status() -> None:
+    """Triggers email to be sent for events with pending booking and booking limit date in 3 days"""
+    update_dms_status()

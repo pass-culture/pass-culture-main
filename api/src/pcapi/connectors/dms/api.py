@@ -27,6 +27,7 @@ MAKE_ON_GOING_MUTATION_NAME = "make_on_going"
 MARK_WITHOUT_CONTINUATION_MUTATION_NAME = "mark_wihtout_continuation"
 SEND_USER_MESSAGE_QUERY_NAME = "send_user_message"
 UPDATE_TEXT_ANNOTATION_QUERY_NAME = "update_text_annotation"
+GET_EAC_APPLICATIONS_STATE_SIRET = "eac/get_applications_state_siret"
 
 
 class DMSGraphQLClient:
@@ -202,3 +203,42 @@ class DMSGraphQLClient:
             }
         }
         return self.execute_query(UPDATE_TEXT_ANNOTATION_QUERY_NAME, variables=variables)
+
+    def get_eac_nodes_siret_states(
+        self,
+        procedure_id: int,
+        state: dms_models.GraphQLApplicationStates | None = None,
+        since: datetime.datetime | None = None,
+        page_token: str | None = None,
+    ) -> Generator[dict, None, None]:
+        variables: dict[str, int | str] = {
+            "demarcheNumber": procedure_id,
+        }
+        if state:
+            variables["state"] = state.value
+        if since:
+            variables["since"] = since.isoformat()
+        if page_token:
+            variables["after"] = page_token
+        results = self.execute_query(GET_EAC_APPLICATIONS_STATE_SIRET, variables=variables)
+        # pylint: disable=unsubscriptable-object
+        nodes = results["demarche"]["dossiers"]["nodes"]
+        # pylint: enable=unsubscriptable-object
+        logger.info(
+            "[DMS] Found %s applications for procedure %d (page token :%s)",
+            len(nodes),
+            procedure_id,
+            page_token,
+        )
+        for node in nodes:
+            yield node
+
+        # pylint: disable=unsubscriptable-object
+        if results["dossier"]["pageInfo"]["hasNextPage"]:
+            yield from self.get_eac_nodes_siret_states(
+                procedure_id=procedure_id,
+                since=since,
+                state=state,
+                page_token=results["dossier"]["pageInfo"]["endCursor"],
+            )
+        # pylint: enable=unsubscriptable-object
