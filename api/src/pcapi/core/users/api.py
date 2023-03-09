@@ -203,7 +203,6 @@ def update_user_information(
     id_piece_number: str | None = None,
     ine_hash: str | None = None,
     married_name: str | None = None,
-    phone_number: str | None = None,
     postal_code: str | None = None,
     commit: bool = False,
 ) -> models.User:
@@ -232,8 +231,6 @@ def update_user_information(
         user.ineHash = ine_hash
     if married_name is not None:
         user.married_name = married_name
-    if phone_number is not None:
-        user.phoneNumber = phone_number  # type: ignore [assignment]
     if postal_code is not None:
         user.postalCode = postal_code
         user.departementCode = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
@@ -561,7 +558,11 @@ def update_user_info(
     needs_to_fill_cultural_survey: bool | T_UNCHANGED = UNCHANGED,
     phone_number: str | T_UNCHANGED = UNCHANGED,
     public_name: str | T_UNCHANGED = UNCHANGED,
+    address: str | T_UNCHANGED = UNCHANGED,
     postal_code: str | T_UNCHANGED = UNCHANGED,
+    city: str | T_UNCHANGED = UNCHANGED,
+    validated_birth_date: datetime.date | T_UNCHANGED = UNCHANGED,
+    id_piece_number: str | T_UNCHANGED = UNCHANGED,
 ) -> history_api.ObjectUpdateSnapshot:
     old_email = None
     snapshot = history_api.ObjectUpdateSnapshot(user, author)
@@ -588,11 +589,27 @@ def update_user_info(
         user.phoneNumber = phone_number  # type: ignore [assignment]
     if public_name is not UNCHANGED:
         user.publicName = public_name
+    if address is not UNCHANGED:
+        if address != user.address:
+            snapshot.set("address", old=user.address, new=address)
+        user.address = address
     if postal_code is not UNCHANGED:
         if user.postalCode != postal_code:
             snapshot.set("postalCode", old=user.postalCode, new=postal_code)
         user.postalCode = postal_code
         user.departementCode = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
+    if city is not UNCHANGED:
+        if city != user.city:
+            snapshot.set("city", old=user.city, new=city)
+        user.city = city
+    if validated_birth_date is not UNCHANGED:
+        if validated_birth_date != user.validatedBirthDate:
+            snapshot.set("validatedBirthDate", old=user.validatedBirthDate, new=validated_birth_date)
+        user.validatedBirthDate = validated_birth_date
+    if id_piece_number is not UNCHANGED:
+        if id_piece_number != user.idPieceNumber:
+            snapshot.set("idPieceNumber", old=user.idPieceNumber, new=id_piece_number)
+        user.idPieceNumber = id_piece_number
 
     repository.save(user)
 
@@ -1048,6 +1065,7 @@ def skip_phone_validation_step(user: models.User) -> None:
     repository.save(user)
 
 
+# TODO (prouzet): remove with backoffice v2 - deprecated
 EMAIL_CHANGE_ACTIONS = defaultdict(
     lambda: "action de changement d'email inconnue",
     {
@@ -1065,6 +1083,7 @@ SUSPENSION_ACTIONS = defaultdict(
 )
 
 
+# TODO (prouzet): remove with backoffice v2 - deprecated
 def get_suspension_message(suspension_action: history_models.ActionHistory) -> str:
     message = f"par {suspension_action.authorUser.full_name}" if suspension_action.authorUser else "Auteur inconnu"
     if suspension_action.extraData and suspension_action.extraData.get("reason"):
@@ -1075,6 +1094,7 @@ def get_suspension_message(suspension_action: history_models.ActionHistory) -> s
     return message
 
 
+# TODO (prouzet): remove with backoffice v2 - deprecated
 def public_account_history(user: models.User) -> list[dict]:
     # TODO (ASK, 2022-06-10): à ajouter un jour:
     #  - les commentaires sur l'utlisateur, horodatés et attribués à leur auteur
