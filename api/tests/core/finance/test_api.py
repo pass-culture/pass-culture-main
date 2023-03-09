@@ -1036,6 +1036,7 @@ class GenerateCashflowsTest:
 
 
 @clean_temporary_files
+@freezegun.freeze_time(datetime.datetime(2023, 2, 1, 12, 34, 56))
 @mock.patch("pcapi.connectors.googledrive.TestingBackend.create_file")
 def test_generate_payment_files(mocked_gdrive_create_file):
     # The contents of generated files is unit-tested in other test
@@ -1050,6 +1051,7 @@ def test_generate_payment_files(mocked_gdrive_create_file):
     factories.PricingFactory(
         status=models.PricingStatus.VALIDATED,
         booking__stock__offer__venue=venue,
+        valueDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=1),
     )
     cutoff = datetime.datetime.utcnow()
     batch_id = api.generate_cashflows(cutoff)
@@ -1063,8 +1065,8 @@ def test_generate_payment_files(mocked_gdrive_create_file):
     assert cashflow.logs[0].statusAfter == models.CashflowStatus.UNDER_REVIEW
     gdrive_file_names = {call.args[1] for call in mocked_gdrive_create_file.call_args_list}
     assert gdrive_file_names == {
-        "reimbursement_points.csv",
-        "payment_details.csv",
+        "reimbursement_points_20230201_133456.csv",
+        "payment_details_20230201_133456.csv",
     }
 
 
@@ -1320,9 +1322,12 @@ def test_generate_invoice_file():
         date=datetime.datetime(2022, 1, 1),
     )
 
-    path = api.generate_invoice_file(datetime.date.today())
+    today = datetime.date.today()
+    # Freeze time so that we can guess the timestamp of the CSV file.
+    with freezegun.freeze_time(datetime.datetime(2023, 2, 1, 12, 34, 56)):
+        path = api.generate_invoice_file(today)
     with zipfile.ZipFile(path) as zfile:
-        with zfile.open("invoices.csv") as csv_bytefile:
+        with zfile.open("invoices_20230201_133456.csv") as csv_bytefile:
             csv_textfile = io.TextIOWrapper(csv_bytefile)
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)

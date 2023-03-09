@@ -1060,15 +1060,17 @@ def _upload_files_to_google_drive(folder_name: str, paths: typing.Iterable[pathl
 
 
 def _write_csv(
-    filename: str,
+    filename_base: str,
     header: typing.Iterable,
     rows: typing.Iterable,
     row_formatter: typing.Callable[[typing.Iterable], typing.Iterable] = lambda row: row,
     compress: bool = False,
 ) -> pathlib.Path:
+    local_now = pytz.utc.localize(datetime.datetime.utcnow()).astimezone(utils.ACCOUNTING_TIMEZONE)
+    filename = filename_base + local_now.strftime("_%Y%m%d_%H%M%S") + ".csv"
     # Store file in a dedicated directory within "/tmp". It's easier
     # to clean files in tests that way.
-    path = pathlib.Path(tempfile.mkdtemp()) / f"{filename}.csv"
+    path = pathlib.Path(tempfile.mkdtemp()) / filename
     with open(path, "w+", encoding="utf-8") as fp:
         writer = csv.writer(fp, quoting=csv.QUOTE_NONNUMERIC)
         writer.writerow(header)
