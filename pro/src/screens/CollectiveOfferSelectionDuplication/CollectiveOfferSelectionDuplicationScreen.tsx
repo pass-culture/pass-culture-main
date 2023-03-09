@@ -18,13 +18,6 @@ import { pluralize } from 'utils/pluralize'
 
 import styles from './CollectiveOfferSelectionDuplication.module.scss'
 
-export interface CollectiveOfferSelectionDuplicationProps {
-  offers: Offer[]
-  isLoading: boolean
-  showAll: boolean
-  filterTemplateOfferByName: (offerName: string) => void
-}
-
 const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
   const [offers, setOffers] = useState<Offer[]>([])

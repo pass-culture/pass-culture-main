@@ -15,7 +15,6 @@ import CollectiveOfferCreation from 'pages/CollectiveOfferCreation'
 import CollectiveOfferStockCreation from 'pages/CollectiveOfferStockCreation'
 import CollectiveOfferSummaryCreation from 'pages/CollectiveOfferSummaryCreation'
 import CollectiveOfferVisibilityCreation from 'pages/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
-import CollectiveOfferSelectionDuplication from 'screens/CollectiveOfferSelectionDuplication'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface CollectiveOfferCreationRoutesProps {
@@ -74,11 +73,6 @@ const CollectiveOfferCreationRoutes = ({
           }
         />
       ))}
-
-      <Route
-        path="/offre/creation/collectif/selection"
-        element={<CollectiveOfferSelectionDuplication />}
-      />
 
       <Route
         path="/offre/creation/collectif/vitrine"
