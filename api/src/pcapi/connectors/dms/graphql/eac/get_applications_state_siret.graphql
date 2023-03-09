@@ -1,0 +1,43 @@
+query getDemarche($demarcheNumber: Int!, $state: DossierState, $order: Order, $first: Int, $after: String, $archived: Boolean, $revision: ID, $since: ISO8601DateTime) {
+  demarche(number: $demarcheNumber) {
+    dossiers(
+      state: $state
+      order: $order
+      first: $first
+      after: $after
+      archived: $archived
+      updatedSince: $since
+      revision: $revision
+    ) {
+      pageInfo {
+        hasPreviousPage
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        id
+        number
+        archived
+        state
+        dateDerniereModification
+        dateDepot
+        datePassageEnConstruction
+        datePassageEnInstruction
+        dateTraitement
+        dateExpiration
+        dateSuppressionParUsager
+        demandeur {
+          ... on PersonnePhysique {
+            civilite
+            nom
+            prenom
+            dateDeNaissance
+          }
+          ... on PersonneMorale {
+            siret
+          }
+        }
+      }
+    }
+  }
+}

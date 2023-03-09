@@ -270,3 +270,18 @@ class ConfirmedCollectiveBookingFactory(CollectiveBookingFactory):
     cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
     confirmationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
     confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=1))
+
+
+class CollectiveDmsApplicationFactory(BaseFactory):
+    class Meta:
+        model = models.CollectiveDmsApplication
+
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
+    siret = factory.SelfAttribute("venue.siret")
+    state = "en_construction"
+    procedure = 1  # could be any positive integer
+    application = factory.Sequence(int)
+    lastChangeDate = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+    depositDate = datetime.datetime.utcnow() - datetime.timedelta(days=10)
+    expirationDate = datetime.datetime.utcnow() + datetime.timedelta(days=365)
+    buildDate = factory.SelfAttribute("lastChangeDate")

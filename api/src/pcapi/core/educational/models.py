@@ -1105,6 +1105,25 @@ class EducationalDomain(PcObject, Base, Model):
     )
 
 
+class CollectiveDmsApplication(PcObject, Base, Model):
+    __tablename__ = "collective_dms_application"
+    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
+    venue: sa_orm.Mapped["Venue"] = sa.orm.relationship(
+        "Venue", foreign_keys=[venueId], back_populates="collectiveDmsApplications"
+    )
+    state: str = sa.Column(sa.String(30), nullable=False)
+    procedure: int = sa.Column(sa.BigInteger, nullable=False)
+    application: int = sa.Column(sa.BigInteger, nullable=False, index=True)
+    siret: str = sa.Column(sa.String(14), nullable=False)
+    lastChangeDate = sa.Column(sa.DateTime, nullable=False)
+    depositDate = sa.Column(sa.DateTime, nullable=False)
+    expirationDate = sa.Column(sa.DateTime, nullable=False)
+    buildDate = sa.Column(sa.DateTime, nullable=True)
+    instructionDate = sa.Column(sa.DateTime, nullable=True)
+    processingDate = sa.Column(sa.DateTime, nullable=True)
+    userDeletionDate = sa.Column(sa.DateTime, nullable=True)
+
+
 CollectiveBooking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
     CREATE OR REPLACE FUNCTION save_collective_booking_cancellation_date()
     RETURNS TRIGGER AS $$
