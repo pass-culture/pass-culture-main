@@ -3,12 +3,11 @@ import React from 'react'
 import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOfferSummaryCreation, {
-  CollectiveOfferSummaryCreationProps,
-} from '../CollectiveOfferSummaryCreation'
+import { CollectiveOfferSummaryCreation } from '../CollectiveOfferSummaryCreation'
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -25,7 +24,7 @@ jest.mock('react-router-dom', () => ({
 
 const renderCollectiveOfferSummaryCreation = async (
   path: string,
-  props: CollectiveOfferSummaryCreationProps
+  props: MandatoryCollectiveOfferFromParamsProps
 ) => {
   renderWithProviders(<CollectiveOfferSummaryCreation {...props} />, {
     initialRouterEntries: [path],
@@ -36,6 +35,8 @@ const renderCollectiveOfferSummaryCreation = async (
 const defaultProps = {
   offer: collectiveOfferFactory(),
   setOffer: jest.fn(),
+  reloadCollectiveOffer: jest.fn(),
+  isTemplate: false,
 }
 
 describe('CollectiveOfferSummaryCreation', () => {

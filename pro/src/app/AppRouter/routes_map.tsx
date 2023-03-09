@@ -10,6 +10,7 @@ import CollectiveOfferEdition from 'pages/CollectiveOfferEdition'
 import CollectiveOfferRoutes from 'pages/CollectiveOfferRoutes'
 import CollectiveOffers from 'pages/CollectiveOffers'
 import CollectiveOfferStockEdition from 'pages/CollectiveOfferStockEdition'
+import CollectiveOfferSummaryCreation from 'pages/CollectiveOfferSummaryCreation'
 import CollectiveOfferSummaryEdition from 'pages/CollectiveOfferSummaryEdition'
 import CollectiveOfferVisibility from 'pages/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
 import CsvTable from 'pages/CsvTable'
@@ -301,6 +302,18 @@ const routes: IRoute[] = [
   {
     component: CollectiveOfferSelectionDuplication,
     path: '/offre/creation/collectif/selection',
+    title: 'Edition d’une offre collective',
+    useV6Router: true,
+  },
+  {
+    component: CollectiveOfferSummaryCreation,
+    path: '/offre/:offerId/collectif/creation/recapitulatif',
+    title: 'Edition d’une offre collective',
+    useV6Router: true,
+  },
+  {
+    component: CollectiveOfferSummaryCreation,
+    path: '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
     title: 'Edition d’une offre collective',
     useV6Router: true,
   },

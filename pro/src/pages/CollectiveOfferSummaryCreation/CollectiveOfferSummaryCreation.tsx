@@ -1,27 +1,25 @@
 import React from 'react'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
+import PageTitle from 'components/PageTitle/PageTitle'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   getEducationalCategoriesAdapter,
-  CollectiveOffer,
-  CollectiveOfferTemplate,
   isCollectiveOffer,
 } from 'core/OfferEducational'
 import { useAdapter } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import CollectiveOfferSummaryCreationScreen from 'screens/CollectiveOfferSummaryCreation'
+import {
+  MandatoryCollectiveOfferFromParamsProps,
+  withCollectiveOfferFromParams,
+} from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-export interface CollectiveOfferSummaryCreationProps {
-  offer: CollectiveOffer | CollectiveOfferTemplate
-  setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
-}
-
-const CollectiveOfferSummaryCreation = ({
+export const CollectiveOfferSummaryCreation = ({
   offer,
   setOffer,
-}: CollectiveOfferSummaryCreationProps) => {
+}: MandatoryCollectiveOfferFromParamsProps) => {
   const notify = useNotification()
 
   const {
@@ -42,6 +40,7 @@ const CollectiveOfferSummaryCreation = ({
       subTitle={offer?.name}
       isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
     >
+      <PageTitle title="Récapitulatif" />
       <CollectiveOfferSummaryCreationScreen
         offer={offer}
         categories={categories}
@@ -52,4 +51,4 @@ const CollectiveOfferSummaryCreation = ({
   )
 }
 
-export default CollectiveOfferSummaryCreation
+export default withCollectiveOfferFromParams(CollectiveOfferSummaryCreation)
