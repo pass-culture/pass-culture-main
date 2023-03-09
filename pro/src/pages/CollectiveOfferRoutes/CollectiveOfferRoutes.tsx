@@ -20,7 +20,6 @@ const CollectiveOfferRoutes = (): JSX.Element => {
         path={[
           '/offre/:offerId/collectif/stocks/edition',
           '/offre/:offerId/collectif/visibilite/edition',
-          '/offre/:offerId/collectif/recapitulatif',
         ]}
       >
         <CollectiveOfferEditionRoutes

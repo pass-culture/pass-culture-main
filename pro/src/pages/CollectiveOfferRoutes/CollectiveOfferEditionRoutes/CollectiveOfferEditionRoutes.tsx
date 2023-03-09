@@ -12,7 +12,6 @@ import {
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import CollectiveOfferStockEdition from 'pages/CollectiveOfferStockEdition'
-import CollectiveOfferSummaryEdition from 'pages/CollectiveOfferSummaryEdition'
 import CollectiveOfferVisibility from 'pages/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -50,18 +49,6 @@ const CollectiveOfferEditionRoutes = ({
   return (
     <CollectiveOfferLayout subTitle={offer.name}>
       <Routes>
-        <Route
-          path="/offre/:offerId/collectif/recapitulatif"
-          element={
-            <>
-              <PageTitle title="Récapitulatif" />
-              <CollectiveOfferSummaryEdition
-                offer={offer}
-                reloadCollectiveOffer={loadCollectiveOffer}
-              />
-            </>
-          }
-        />
         {!isTemplate && isCollectiveOffer(offer) && (
           <>
             <Route
