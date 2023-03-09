@@ -13,7 +13,6 @@ import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/ge
 import CollectiveOfferConfirmation from 'pages/CollectiveOfferConfirmation'
 import CollectiveOfferCreation from 'pages/CollectiveOfferCreation'
 import CollectiveOfferStockCreation from 'pages/CollectiveOfferStockCreation'
-import CollectiveOfferVisibilityCreation from 'pages/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface CollectiveOfferCreationRoutesProps {
@@ -133,23 +132,6 @@ const CollectiveOfferCreationRoutes = ({
             <PageTitle title="Date et prix" />
             {offer && isCollectiveOffer(offer) ? (
               <CollectiveOfferStockCreation offer={offer} setOffer={setOffer} />
-            ) : (
-              <Spinner />
-            )}
-          </>
-        }
-      />
-
-      <Route
-        path="/offre/:offerId/collectif/visibilite"
-        element={
-          <>
-            <PageTitle title="Visibilité" />
-            {offer && isCollectiveOffer(offer) ? (
-              <CollectiveOfferVisibilityCreation
-                offer={offer}
-                setOffer={setOffer}
-              />
             ) : (
               <Spinner />
             )}
