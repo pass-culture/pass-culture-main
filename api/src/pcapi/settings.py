@@ -20,6 +20,10 @@ IS_INTEGRATION = ENV == "integration"
 IS_STAGING = ENV == "staging"
 IS_PROD = ENV == "production"
 IS_TESTING = ENV == "testing"
+
+if ENV not in ("development", "integration", "staging", "production", "testing"):
+    raise RuntimeError("Unknown environment")
+
 IS_RUNNING_TESTS = os.environ.get("RUN_ENV") == "tests"
 IS_PERFORMANCE_TESTS = bool(int(os.environ.get("IS_PERFORMANCE_TESTS", "0")))
 IS_E2E_TESTS = bool(int(os.environ.get("IS_E2E_TESTS", "0")))
@@ -39,8 +43,6 @@ LOG_LEVEL = int(os.environ.get("LOG_LEVEL", LOG_LEVEL_INFO))
 
 # Default backends
 if IS_PROD or IS_INTEGRATION:
-    _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
-    _default_email_backend = "pcapi.core.mails.backends.sendinblue.SendinblueBackend"
     _default_google_drive_backend = "pcapi.connectors.googledrive.GoogleDriveBackend"
     _default_google_big_query_backend = "pcapi.connectors.big_query.BaseBackend"
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.slack.SlackBackend"
@@ -49,8 +51,6 @@ if IS_PROD or IS_INTEGRATION:
     _default_object_storage_provider = None  # it must be explicitly set
     _default_sirene_backend = "pcapi.connectors.sirene.InseeBackend"
 elif IS_STAGING or IS_TESTING:
-    _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
-    _default_email_backend = "pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend"
     _default_google_drive_backend = "pcapi.connectors.googledrive.GoogleDriveBackend"
     _default_google_big_query_backend = "pcapi.connectors.big_query.BaseBackend"
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.slack.SlackBackend"
@@ -59,8 +59,6 @@ elif IS_STAGING or IS_TESTING:
     _default_object_storage_provider = None  # it must be explicitly set
     _default_sirene_backend = "pcapi.connectors.sirene.InseeBackend"
 elif IS_RUNNING_TESTS:
-    _default_search_backend = "pcapi.core.search.backends.testing.TestingBackend"
-    _default_email_backend = "pcapi.core.mails.backends.testing.TestingBackend"
     _default_google_drive_backend = "pcapi.connectors.googledrive.TestingBackend"
     _default_google_big_query_backend = "pcapi.connectors.big_query.TestingBackend"
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.testing.TestingBackend"
@@ -69,8 +67,6 @@ elif IS_RUNNING_TESTS:
     _default_object_storage_provider = "local"
     _default_sirene_backend = "pcapi.connectors.sirene.TestingBackend"
 elif IS_DEV:
-    _default_search_backend = "pcapi.core.search.backends.testing.TestingBackend"
-    _default_email_backend = "pcapi.core.mails.backends.logger.LoggerBackend"
     _default_google_drive_backend = "pcapi.connectors.googledrive.TestingBackend"
     _default_google_big_query_backend = "pcapi.connectors.big_query.TestingBackend"
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.logger.LoggerBackend"
@@ -78,8 +74,6 @@ elif IS_DEV:
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.logger.LoggerBackend"
     _default_object_storage_provider = "local"
     _default_sirene_backend = "pcapi.connectors.sirene.TestingBackend"
-else:
-    raise RuntimeError("Unknown environment")
 
 
 # API config
@@ -147,8 +141,8 @@ DEV_EMAIL_ADDRESS = secrets_utils.get("DEV_EMAIL_ADDRESS")
 END_TO_END_TESTS_EMAIL_ADDRESS = os.environ.get("END_TO_END_TESTS_EMAIL_ADDRESS", "")
 
 # When load testing, override `EMAIL_BACKEND` to avoid going over SendinBlue quota:
-#     EMAIL_BACKEND="pcapi.core.mails.backends.logger.LoggerBackend"
-EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", _default_email_backend)
+# EMAIL_BACKEND="pcapi.core.mails.backends.logger.LoggerBackend"
+EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND")
 
 REPORT_OFFER_EMAIL_ADDRESS = secrets_utils.get("REPORT_OFFER_EMAIL_ADDRESS", "")
 SUPER_ADMIN_EMAIL_ADDRESSES = utils.parse_str_to_list(secrets_utils.get("SUPER_ADMIN_EMAIL_ADDRESSES"))
@@ -343,7 +337,7 @@ APPS_FLYER_ANDROID_API_KEY = secrets_utils.get("APPS_FLYER_ANDROID_API_KEY", "")
 APPS_FLYER_IOS_API_KEY = secrets_utils.get("APPS_FLYER_IOS_API_KEY", "")
 
 # SEARCH
-SEARCH_BACKEND = os.environ.get("SEARCH_BACKEND", _default_search_backend)
+SEARCH_BACKEND = os.environ.get("SEARCH_BACKEND")
 
 # ADAGE
 ADAGE_API_KEY = secrets_utils.get("ADAGE_API_KEY", None)
