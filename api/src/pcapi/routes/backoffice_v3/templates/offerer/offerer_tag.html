@@ -79,7 +79,7 @@
                                         <div class="modal-content">
                                             <form
                                                 action="{{ url_for("backoffice_v3_web.offerer_tag.update_offerer_tag", offerer_tag_id=offerer_tag.id) }}"
-                                                action="{{ url_for("backoffice_v3_web.offerer_tag.update_offerer_tag", offerer_tag_id=offerer_tag.id) | action_to_name }}"
+                                                name="{{ url_for("backoffice_v3_web.offerer_tag.update_offerer_tag", offerer_tag_id=offerer_tag.id) | action_to_name }}"
                                                 method="POST"
                                                 data-turbo="false"
                                             >
@@ -104,7 +104,7 @@
                                             <div class="modal-content">
                                                 <form
                                                     action="{{ url_for("backoffice_v3_web.offerer_tag.delete_offerer_tag", offerer_tag_id=offerer_tag.id) }}"
-                                                    action="{{ url_for("backoffice_v3_web.offerer_tag.delete_offerer_tag", offerer_tag_id=offerer_tag.id) | action_to_name }}"
+                                                    name="{{ url_for("backoffice_v3_web.offerer_tag.delete_offerer_tag", offerer_tag_id=offerer_tag.id) | action_to_name }}"
                                                     method="POST"
                                                     data-turbo="false"
                                                 >
