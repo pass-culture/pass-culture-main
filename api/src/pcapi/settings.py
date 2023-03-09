@@ -41,17 +41,6 @@ if IS_RUNNING_TESTS:
 LOG_LEVEL = int(os.environ.get("LOG_LEVEL", LOG_LEVEL_INFO))
 
 
-# Default backends
-if IS_PROD or IS_INTEGRATION:
-    _default_object_storage_provider = None  # it must be explicitly set
-elif IS_STAGING or IS_TESTING:
-    _default_object_storage_provider = None  # it must be explicitly set
-elif IS_RUNNING_TESTS:
-    _default_object_storage_provider = "local"
-elif IS_DEV:
-    _default_object_storage_provider = "local"
-
-
 # API config
 API_URL = os.environ.get("API_URL", "")
 
@@ -237,7 +226,7 @@ DMS_INSTRUCTOR_ID = secrets_utils.get("DEMARCHES_SIMPLIFIEES_INSTRUCTOR_ID", "")
 
 # OBJECT STORAGE
 OBJECT_STORAGE_URL = os.environ.get("OBJECT_STORAGE_URL", "")
-OBJECT_STORAGE_PROVIDER = os.environ.get("OBJECT_STORAGE_PROVIDER", _default_object_storage_provider)
+OBJECT_STORAGE_PROVIDER = os.environ.get("OBJECT_STORAGE_PROVIDER")
 LOCAL_STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__))) / "static" / "object_store_data"
 
 # THUMBS
