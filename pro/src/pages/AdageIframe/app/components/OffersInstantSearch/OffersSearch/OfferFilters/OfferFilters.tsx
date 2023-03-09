@@ -14,8 +14,9 @@ import {
   FiltersContext,
 } from 'pages/AdageIframe/app/providers'
 import { Option, Filters } from 'pages/AdageIframe/app/types'
-import { Checkbox, MultiSelectAutocomplete } from 'pages/AdageIframe/app/ui-kit'
+import { MultiSelectAutocomplete } from 'pages/AdageIframe/app/ui-kit'
 import { Button } from 'ui-kit'
+import { BaseCheckbox } from 'ui-kit/form/shared'
 
 import OfferFiltersTags from './OfferFiltersTags'
 import { studentsOptions } from './studentsOptions'
@@ -40,9 +41,9 @@ const getOnlyInMyDptLabel = (user: AuthenticatedResponse) => {
   }
 
   return (
-    <>
+    <span>
       Les acteurs culturels de mon département : <b>{userInformation}</b>
-    </>
+    </span>
   )
 }
 
@@ -58,10 +59,10 @@ const getOnlyInMySchoolLabel = (user: AuthenticatedResponse) => {
   }
 
   return (
-    <>
+    <span>
       Les acteurs qui se déplacent dans mon établissement :{' '}
       <b>{userInformation}</b>
-    </>
+    </span>
   )
 }
 
@@ -147,11 +148,11 @@ export const OfferFilters = ({
 
       <div className="offer-filters-row">
         {onlyInMyDptLabel && (
-          <Checkbox
+          <BaseCheckbox
             checked={onlyInMyDpt}
             label={onlyInMyDptLabel}
             name="onlyInMyDpt"
-            onChange={event => {
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               if (event.target.checked && userDepartmentOption) {
                 dispatchCurrentFilters({
                   type: 'POPULATE_ONLY_IN_MY_DEPARTMENT',
@@ -166,11 +167,11 @@ export const OfferFilters = ({
       </div>
       {onlyInMySchoolLabel && (
         <div className="offer-filters-row">
-          <Checkbox
+          <BaseCheckbox
             checked={onlyInMySchool}
             label={onlyInMySchoolLabel}
             name="onlyInMySchool"
-            onChange={event => {
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               if (event.target.checked && userDepartmentOption) {
                 dispatchCurrentFilters({
                   type: 'POPULATE_ONLY_IN_MY_SCHOOL',

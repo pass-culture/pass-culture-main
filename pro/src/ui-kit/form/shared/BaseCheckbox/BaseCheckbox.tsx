@@ -5,7 +5,7 @@ import styles from './BaseCheckbox.module.scss'
 
 export interface IBaseCheckboxProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
-  label: string
+  label: string | React.ReactNode
   description?: string
   hasError?: boolean
   className?: string
