@@ -6,7 +6,6 @@ import PageTitle from 'components/PageTitle/PageTitle'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
-import CollectiveOfferConfirmation from 'pages/CollectiveOfferConfirmation'
 import CollectiveOfferCreation from 'pages/CollectiveOfferCreation'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -48,25 +47,6 @@ const CollectiveOfferCreationRoutes = ({
 
   return (
     <Routes>
-      {[
-        '/offre/:offerId/collectif/confirmation',
-        '/offre/:offerId/collectif/vitrine/confirmation',
-      ].map(path => (
-        <Route
-          path={path}
-          element={
-            <>
-              <PageTitle title="Confirmation" />
-              {offer ? (
-                <CollectiveOfferConfirmation offer={offer} />
-              ) : (
-                <Spinner />
-              )}
-            </>
-          }
-        />
-      ))}
-
       <Route
         path="/offre/creation/collectif/vitrine"
         element={

@@ -6,6 +6,7 @@ import { Navigate } from 'react-router-dom-v5-compat'
 import AdageIframe from 'pages/AdageIframe/AdageIframe'
 import Bookings from 'pages/Bookings'
 import CollectiveBookings from 'pages/CollectiveBookings'
+import CollectiveOfferConfirmation from 'pages/CollectiveOfferConfirmation'
 import CollectiveOfferEdition from 'pages/CollectiveOfferEdition'
 import CollectiveOfferRoutes from 'pages/CollectiveOfferRoutes'
 import CollectiveOffers from 'pages/CollectiveOffers'
@@ -328,6 +329,18 @@ const routes: IRoute[] = [
   {
     component: CollectiveOfferSummaryCreation,
     path: '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
+    title: 'Edition d’une offre collective',
+    useV6Router: true,
+  },
+  {
+    component: CollectiveOfferConfirmation,
+    path: '/offre/:offerId/collectif/confirmation',
+    title: 'Edition d’une offre collective',
+    useV6Router: true,
+  },
+  {
+    component: CollectiveOfferConfirmation,
+    path: '/offre/:offerId/collectif/vitrine/confirmation',
     title: 'Edition d’une offre collective',
     useV6Router: true,
   },

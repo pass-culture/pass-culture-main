@@ -1,16 +1,16 @@
 import React from 'react'
 
+import PageTitle from 'components/PageTitle/PageTitle'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
-import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import CollectiveOfferConfirmationScreen from 'screens/CollectiveOfferConfirmation'
-
-interface CollectiveOfferConfirmationProps {
-  offer: CollectiveOffer | CollectiveOfferTemplate
-}
+import {
+  MandatoryCollectiveOfferFromParamsProps,
+  withCollectiveOfferFromParams,
+} from 'screens/OfferEducational/useCollectiveOfferFromParams'
 
 const CollectiveOfferConfirmation = ({
   offer,
-}: CollectiveOfferConfirmationProps): JSX.Element => {
+}: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
   const getInstitutionDisplayName = () => {
     if (offer.isTemplate) {
       return ''
@@ -27,6 +27,7 @@ const CollectiveOfferConfirmation = ({
 
   return (
     <>
+      <PageTitle title="Confirmation" />
       <CollectiveOfferConfirmationScreen
         isShowcase={offer.isTemplate}
         offerStatus={offer?.status}
@@ -38,4 +39,4 @@ const CollectiveOfferConfirmation = ({
   )
 }
 
-export default CollectiveOfferConfirmation
+export default withCollectiveOfferFromParams(CollectiveOfferConfirmation)
