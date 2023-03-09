@@ -1,4 +1,11 @@
 <div class="form-floating">
-    <input type="date" id="{{ field.name }}" name="{{ field.name }}" class="form-control" value="{{ field.data if field.data else "" }}">
-    <label for="floatingInput">{{ field.label }}</label>
+    {% set date_field_id = random_hash() %}
+    <input
+        type="date"
+        id="{{ date_field_id }}"
+        name="{{ field.name }}"
+        class="form-control"
+        value="{{ field.data if field.data else "" }}"
+    >
+    <label for="{{ date_field_id }}">{{ field.label.text }}</label>
 </div>

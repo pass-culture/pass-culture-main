@@ -160,7 +160,7 @@ class PcBatchConfirm extends PcAddOn {
               data-form-name="user-offerer-validation-form-${identifier}"
               rows="3"
             ></textarea>
-            <label for=${identifier}-textarea"><label for="comment">Raison</label></label>
+            <label for="user-offerer-validation-form-textarea-${identifier}"><label for="comment">Raison</label></label>
             <div class="text-muted text-end"><small>Maj+Entrée pour ajouter une nouvelle ligne</small></div>
           </div>
         </div>

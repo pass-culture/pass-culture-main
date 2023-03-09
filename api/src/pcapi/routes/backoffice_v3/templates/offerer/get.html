@@ -4,6 +4,9 @@
 
 {% extends "layouts/pro.html" %}
 
+{% set edit_offerer_aria_described_by_id = random_hash() %}
+{% set delete_offerer_aria_described_by_id = random_hash() %}
+
 {% block pro_main_content %}
 <div class="row row-cols-1 g-4 py-3">
     <div class="col">
@@ -17,11 +20,11 @@
                     <div class="d-flex row-reverse justify-content-end flex-grow-1">
                         {% if has_permission("MANAGE_PRO_ENTITY") %}
                             <button class="btn btn-outline-primary lead fw-bold mt-2 mx-3" data-bs-toggle="modal"
-                                    data-bs-target="#edit-offerer-modal" type="button">
+                                    data-bs-target=".pc-edit-offerer-modal" type="button">
                                 Modifier les informations
                             </button>
-                            <div class="modal modal-lg fade" id="edit-offerer-modal" tabindex="-1"
-                                aria-describedby="edit-offerer-modal-label" aria-hidden="true">
+                            <div class="modal modal-lg fade pc-edit-offerer-modal" tabindex="-1"
+                                aria-describedby="{{ edit_offerer_aria_described_by_id }}" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                     <div class="modal-content">
                                         <form
@@ -29,7 +32,7 @@
                                             name="{{ url_for("backoffice_v3_web.offerer.update_offerer", offerer_id=offerer.id) | action_to_name }}"
                                             method="POST"
                                         >
-                                            <div class="modal-header">
+                                            <div class="modal-header" id="{{ edit_offerer_aria_described_by_id }}">
                                                 <h5 class="modal-title">Modifier les informations de la structure</h5>
                                             </div>
                                             <div class="modal-body pb-3">
@@ -48,12 +51,12 @@
                         {% endif %}
                         {% if has_permission("DELETE_PRO_ENTITY") %}
                             <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
-                            data-bs-target="#delete-offerer-modal" type="button">
+                            data-bs-target=".pc-delete-offerer-modal" type="button">
                                 <i class="bi bi-trash3-fill"></i>
                                 Supprimer la structure
                             </button>
-                            <div class="modal modal-lg fade" id="delete-offerer-modal" tabindex="-1"
-                                aria-describedby="delete-offerer-modal-label" aria-hidden="true">
+                            <div class="modal modal-lg fade pc-delete-offerer-modal" tabindex="-1"
+                                aria-describedby="{{ delete_offerer_aria_described_by_id }}" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <form
@@ -62,7 +65,7 @@
                                             method="POST"
                                             data-turbo="false"
                                         >
-                                            <div class="modal-header" id="delete-offerer-modal-label">
+                                            <div class="modal-header" id="{{ delete_offerer_aria_described_by_id }}">
                                                 <h5 class="modal-title">Supprimer la structure {{ offerer.name }}</h5>
                                             </div>
                                             <div class="modal-body row">

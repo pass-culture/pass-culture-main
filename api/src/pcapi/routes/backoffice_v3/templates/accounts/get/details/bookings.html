@@ -1,6 +1,5 @@
 {% import "components/links.html" as links %}
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
-{% from "components/bookings/extra_row.html" import build_booking_extra_row with context %}
 
 {% if bookings %}
     <table class="table mb-4 get-details-bookings-view">
@@ -31,7 +30,7 @@
                 <td>{{ booking.status | format_booking_status_long | safe }}</td>
                 <td>{{ booking.token | empty_string_if_null }}</td>
             </tr>
-            <tr class="collapse accordion-collapse" id="b{{ booking.id }}" data-bs-parent=".table">
+            <tr class="collapse accordion-collapse pc-booking-{{ booking.id }}" data-bs-parent=".table">
                 <td colspan="7">
                     <div class="card shadow-sm p-3">
                         {% if booking.stock.beginningDatetime %}

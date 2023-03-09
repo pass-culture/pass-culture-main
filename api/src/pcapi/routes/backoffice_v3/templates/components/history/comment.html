@@ -1,15 +1,24 @@
 {# This macro must be imported with context because of has_permission() #}
 {% macro build_comment_modal(dst, form) %}
+    {% set add_comment_modal_label_id = random_hash() %}
     {% if has_permission("MANAGE_PRO_ENTITY") %}
-        <button class="btn btn-outline-primary lead fw-bold mt-2" data-bs-toggle="modal"
-            data-bs-target="#add-comment-pro-user-modal" type="button">
+        <button
+            class="btn btn-outline-primary lead fw-bold mt-2"
+            data-bs-toggle="modal"
+            data-bs-target=".pc-add-comment-pro-user-modal"
+            type="button"
+        >
             Ajouter un commentaire
         </button>
-        <div class="modal modal-lg fade" id="add-comment-pro-user-modal" tabindex="-1"
-            aria-describedby="add-comment-pro-user-modal-label" aria-hidden="true">
+        <div
+            class="modal modal-lg fade pc-add-comment-pro-user-modal"
+            tabindex="-1"
+            aria-describedby="{{ add_comment_modal_label_id }}"
+            aria-hidden="true"
+        >
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
-                    <div class="modal-header fs-5" id="add-comment-pro-user-modal-label">
+                    <div class="modal-header fs-5" id="{{ add_comment_modal_label_id }}">
                         {{ caller() }}
                     </div>
                     <form action="{{ dst }}" name="{{ dst | action_to_name }}" method="POST">
@@ -26,8 +35,11 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-primary"
-                                    data-bs-dismiss="modal">
+                            <button
+                                type="button"
+                                class="btn btn-outline-primary"
+                                data-bs-dismiss="modal"
+                            >
                                 Annuler
                             </button>
                             <button type="submit" class="btn btn-primary">Commenter</button>

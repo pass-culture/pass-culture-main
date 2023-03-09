@@ -16,18 +16,18 @@ def content_as_text(html_content: str) -> str:
     return _filter_whitespaces(soup.text)
 
 
-def extract_table_rows(html_content: str, parent_id: str | None = None) -> list[dict[str, str]]:
+def extract_table_rows(html_content: str, parent_class: str | None = None) -> list[dict[str, str]]:
     """
     Extract data from html table (thead + tbody), so that we can compare with expected data when testing routes.
     Every row is a dictionary, in which keys are column headers.
     Note that all data is returned as a string.
 
-    Use `parent_id` parameter to filter inside a html tag id when several tables may be printed in the page.
+    Use `parent_class` parameter to filter inside an html container using a unique class name when several tables may be printed in the page.
     """
     soup = get_soup(html_content)
 
-    if parent_id:
-        soup = soup.find(id=parent_id)
+    if parent_class:
+        soup = soup.find(class_=parent_class)
         assert soup is not None
 
     thead = soup.find("thead")
@@ -46,7 +46,7 @@ def extract_table_rows(html_content: str, parent_id: str | None = None) -> list[
         headers.append(th_text)
 
     # Only main rows, skip additional rows which show more information on click
-    tbody_tr_list = tbody.find_all("tr", class_=lambda c: not c or "collapse" not in c)
+    tbody_tr_list = tbody.select("tr:not(.collapse)")
 
     for tr in tbody_tr_list:
         row_data = {}
@@ -60,11 +60,11 @@ def extract_table_rows(html_content: str, parent_id: str | None = None) -> list[
     return rows
 
 
-def count_table_rows(html_content: str, parent_id: str | None = None) -> int:
+def count_table_rows(html_content: str, parent_class: str | None = None) -> int:
     soup = get_soup(html_content)
 
-    if parent_id:
-        soup = soup.find(id=parent_id)
+    if parent_class:
+        soup = soup.find(class_=parent_class)
         assert soup is not None
 
     tbody = soup.find("tbody")
@@ -106,7 +106,10 @@ def extract(html_content: str, tag: str = "div", class_: str | None = None) -> l
     """
     soup = get_soup(html_content)
 
-    elements = soup.find_all(tag, class_=class_)
+    if class_ is None:
+        elements = soup.find_all(tag)
+    else:
+        elements = soup.select(f"{tag}.{class_.replace(' ', '.')}")
     return [_filter_whitespaces(element.text) for element in elements]
 
 

@@ -5,10 +5,21 @@
 
 {% extends "layouts/connected.html" %}
 
+{% set pc_validate_booking_modal_id = random_hash() %}
+{% set pc_cancel_booking_modal_id = random_hash() %}
+
 {% block page %}
-    <div class="pt-3 px-5">
+    <div class="pt-3 px-5" data-toggle="filters" data-toggle-id="collective-bookings">
         <h2 class="fw-light">Réservations collectives</h2>
-        <div id="filters">
+        <div class="col-2">
+            <div class="py-2">
+                <button type="submit" class="btn btn-primary filters-toggle-button" disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span class="visually-hidden">Chargement...</span>
+                </button>
+            </div>
+        </div>
+        <div class="filters-container">
             {{ forms.build_filters_form(form, dst) }}
         </div>
         <div>
@@ -49,7 +60,7 @@
                                                 <li class="dropdown-item p-0">
                                                     <a class="btn btn-sm d-block w-100 text-start px-3"
                                                             data-bs-toggle="modal"
-                                                            data-bs-target="#validate-booking-modal-{{ collective_booking.id }}">
+                                                            data-bs-target=".pc-validate-booking-modal-{{ collective_booking.id }}">
                                                             Valider la réservation
                                                     </a>
                                                 </li>
@@ -57,15 +68,15 @@
                                                 <li class="dropdown-item p-0">
                                                     <a class="btn btn-sm d-block w-100 text-start px-3"
                                                             data-bs-toggle="modal"
-                                                            data-bs-target="#cancel-booking-modal-{{ collective_booking.id }}">
+                                                            data-bs-target=".pc-cancel-booking-modal-{{ collective_booking.id }}">
                                                             Annuler la réservation
                                                     </a>
                                                 </li>
                                             {% endif %}
                                         </ul>
                                         {% if collective_booking.isCancelled %}
-                                            <div class="modal modal-lg fade" id="validate-booking-modal-{{ collective_booking.id }}" tabindex="-1"
-                                                aria-labelledby="validate-booking-modal-{{ collective_booking.id }}-label" aria-hidden="true">
+                                            <div class="modal modal-lg fade pc-validate-booking-modal-{{ collective_booking.id }}" tabindex="-1"
+                                                aria-labelledby="{{ pc_validate_booking_modal_id }}" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered">
                                                     <div class="modal-content">
                                                         <form
@@ -74,7 +85,7 @@
                                                             method="POST"
                                                             data-turbo="false"
                                                         >
-                                                            <div class="modal-header" id="validate-booking-modal-{{ collective_booking.id }}-label">
+                                                            <div class="modal-header" id="{{ pc_validate_booking_modal_id }}">
                                                                 <h5 class="modal-title">Valider la réservation {{ collective_booking.id }}</h5>
                                                             </div>
                                                             <div class="modal-body row">
@@ -89,8 +100,8 @@
                                                 </div>
                                             </div>
                                         {% elif not collective_booking.isReimbursed %}
-                                            <div class="modal modal-lg fade" id="cancel-booking-modal-{{ collective_booking.id }}" tabindex="-1"
-                                                aria-labelledby="cancel-booking-modal-{{ collective_booking.id }}-label" aria-hidden="true">
+                                            <div class="modal modal-lg fade pc-cancel-booking-modal-{{ collective_booking.id }}" tabindex="-1"
+                                                aria-labelledby="{{ pc_cancel_booking_modal_id }}" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered">
                                                     <div class="modal-content">
                                                         <form
@@ -99,7 +110,7 @@
                                                             method="POST"
                                                             data-turbo="false"
                                                         >
-                                                            <div class="modal-header" id="cancel-booking-modal-{{ collective_booking.id }}-label">
+                                                            <div class="modal-header" id="{{ pc_cancel_booking_modal_id }}">
                                                                 <h5 class="modal-title">Annuler la réservation {{ collective_booking.id }}</h5>
                                                             </div>
                                                             <div class="modal-body row">
