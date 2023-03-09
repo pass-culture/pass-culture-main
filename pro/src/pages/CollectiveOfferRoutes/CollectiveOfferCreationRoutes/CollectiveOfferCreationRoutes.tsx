@@ -3,16 +3,11 @@ import React, { useEffect, useState } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom-v5-compat'
 
 import PageTitle from 'components/PageTitle/PageTitle'
-import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
-  isCollectiveOffer,
-} from 'core/OfferEducational'
+import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import CollectiveOfferConfirmation from 'pages/CollectiveOfferConfirmation'
 import CollectiveOfferCreation from 'pages/CollectiveOfferCreation'
-import CollectiveOfferStockCreation from 'pages/CollectiveOfferStockCreation'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface CollectiveOfferCreationRoutesProps {
@@ -119,19 +114,6 @@ const CollectiveOfferCreationRoutes = ({
                 setOffer={setOffer}
                 isTemplate
               />
-            ) : (
-              <Spinner />
-            )}
-          </>
-        }
-      />
-      <Route
-        path="/offre/:offerId/collectif/stocks"
-        element={
-          <>
-            <PageTitle title="Date et prix" />
-            {offer && isCollectiveOffer(offer) ? (
-              <CollectiveOfferStockCreation offer={offer} setOffer={setOffer} />
             ) : (
               <Spinner />
             )}

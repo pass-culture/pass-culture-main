@@ -9,6 +9,7 @@ import CollectiveBookings from 'pages/CollectiveBookings'
 import CollectiveOfferEdition from 'pages/CollectiveOfferEdition'
 import CollectiveOfferRoutes from 'pages/CollectiveOfferRoutes'
 import CollectiveOffers from 'pages/CollectiveOffers'
+import CollectiveOfferStockCreation from 'pages/CollectiveOfferStockCreation'
 import CollectiveOfferStockEdition from 'pages/CollectiveOfferStockEdition'
 import CollectiveOfferSummaryCreation from 'pages/CollectiveOfferSummaryCreation'
 import CollectiveOfferSummaryEdition from 'pages/CollectiveOfferSummaryEdition'
@@ -303,6 +304,12 @@ const routes: IRoute[] = [
   {
     component: CollectiveOfferSelectionDuplication,
     path: '/offre/creation/collectif/selection',
+    title: 'Edition d’une offre collective',
+    useV6Router: true,
+  },
+  {
+    component: CollectiveOfferStockCreation,
+    path: '/offre/:offerId/collectif/stocks',
     title: 'Edition d’une offre collective',
     useV6Router: true,
   },
