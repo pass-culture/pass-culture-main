@@ -16,11 +16,15 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 import pcapi.core.permissions.models as perm_models
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models.beneficiary_import import BeneficiaryImportSources
+from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.repository import repository
+from pcapi.routes.backoffice_v3.accounts import get_public_account_history
 import pcapi.utils.email as email_utils
 
 from .helpers import accounts as accounts_helpers
@@ -495,17 +499,26 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
             in new_dms_card
         )
 
-    def test_get_public_account_history_date(self, authenticated_client):
+    def test_get_public_account_history(self, legit_user, authenticated_client):
         # given
-        user = users_factories.BeneficiaryGrant18Factory()
-        no_date_action = history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_SUSPENDED, actionDate=None, user=user, authorUser=user
+        # More than 30 days ago to have deterministic order because "Import ubble" is generated randomly between
+        # -30 days and -1 day in BeneficiaryImportStatusFactory
+        user = users_factories.BeneficiaryGrant18Factory(
+            dateCreated=datetime.datetime.utcnow() - relativedelta(days=40)
         )
-        history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_UNSUSPENDED,
-            actionDate=datetime.datetime.utcnow() - relativedelta(days=1),
+        no_date_action = history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionDate=None,
             user=user,
-            authorUser=users_factories.AdminFactory(),
+            authorUser=legit_user,
+            extraData={"reason": users_constants.SuspensionReason.FRAUD_SUSPICION},
+        )
+        admin = users_factories.AdminFactory()
+        unsuspended = history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_UNSUSPENDED,
+            actionDate=datetime.datetime.utcnow() - relativedelta(days=35),
+            user=user,
+            authorUser=admin,
         )
 
         # Here we want to check that it does not crash with None date in the history (legacy action migrated)
@@ -518,10 +531,37 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
 
         # then
         assert response.status_code == 200
-        # TODO (prouzet) <thead> is missing in account history, check rows when history is well implemented (PC-19723)
-        # history_rows = html_parser.extract_table_rows(response.data, parent_id="history-tab-pane")
-        # assert len(history_rows) >= 2
-        # assert history_rows[0]["..."] == "..."
+        history_rows = html_parser.extract_table_rows(response.data, parent_id="history-tab-pane")
+        assert len(history_rows) == 5
+
+        assert history_rows[0]["Type"] == "Étape de vérification"
+        assert history_rows[0]["Date/Heure"].startswith(datetime.date.today().strftime("Le %d/%m/%Y à"))
+        assert history_rows[0]["Commentaire"] == "ubble, age-18, ok, [raison inconnue], None"
+        assert not history_rows[0]["Auteur"]
+
+        assert history_rows[1]["Type"] == "Import ubble"
+        assert history_rows[1]["Date/Heure"].startswith("Le ")
+        assert history_rows[1]["Commentaire"].startswith("CREATED")
+        assert not history_rows[1]["Auteur"]
+
+        assert history_rows[2]["Type"] == history_models.ActionType.USER_UNSUSPENDED.value
+        assert history_rows[2]["Date/Heure"].startswith(
+            (datetime.date.today() - relativedelta(days=35)).strftime("Le %d/%m/%Y à ")
+        )
+        assert history_rows[2]["Commentaire"] == unsuspended.comment
+        assert history_rows[2]["Auteur"] == admin.full_name
+
+        assert history_rows[3]["Type"] == history_models.ActionType.USER_CREATED.value
+        assert history_rows[3]["Date/Heure"].startswith(
+            (datetime.date.today() - relativedelta(days=40)).strftime("Le %d/%m/%Y à ")
+        )
+        assert not history_rows[3]["Commentaire"]
+        assert history_rows[3]["Auteur"] == user.full_name
+
+        assert history_rows[4]["Type"] == history_models.ActionType.USER_SUSPENDED.value
+        assert not history_rows[4]["Date/Heure"]  # Empty date, at the end of the list
+        assert history_rows[4]["Commentaire"].startswith("Fraude suspicion")
+        assert history_rows[4]["Auteur"] == legit_user.full_name
 
 
 class EditPublicAccountTest(accounts_helpers.PageRendersHelper):
@@ -551,8 +591,9 @@ class UpdatePublicAccountTest:
         method = "post"
         form = {"first_name": "aaaaaaaaaaaaaaaaaaa"}
 
-    def test_update_field(self, authenticated_client):
+    def test_update_field(self, legit_user, authenticated_client):
         user_to_edit = users_factories.BeneficiaryGrant18Factory()
+        old_email = user_to_edit.email
 
         new_phone_number = "+33836656565"
         new_email = user_to_edit.email + ".UPDATE  "
@@ -569,6 +610,7 @@ class UpdatePublicAccountTest:
             "id_piece_number": user_to_edit.idPieceNumber,
             "address": user_to_edit.address,
             "postal_code": expected_new_postal_code,
+            "city": expected_city,
         }
 
         response = self.update_account(authenticated_client, user_to_edit, base_form)
@@ -585,6 +627,86 @@ class UpdatePublicAccountTest:
         assert user_to_edit.idPieceNumber == user_to_edit.idPieceNumber
         assert user_to_edit.postalCode == expected_new_postal_code
         assert user_to_edit.city == expected_city
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionDate is not None
+        assert action.authorUserId == legit_user.id
+        assert action.userId == user_to_edit.id
+        assert action.offererId is None
+        assert action.venueId is None
+        assert action.extraData["modified_info"] == {
+            "email": {"new_info": expected_new_email, "old_info": old_email},
+            "phoneNumber": {"new_info": "+33836656565", "old_info": "None"},
+            "postalCode": {"new_info": expected_new_postal_code, "old_info": "None"},
+        }
+
+    def test_update_all_fields(self, legit_user, authenticated_client):
+        date_of_birth = datetime.datetime.combine(
+            datetime.date.today() - relativedelta(years=18, months=5, days=3), datetime.time.min
+        )
+        user_to_edit = users_factories.BeneficiaryGrant18Factory(
+            firstName="Edmond",
+            lastName="Dantès",
+            address="Château d'If",
+            postalCode="13007",
+            city="Marseille",
+            dateOfBirth=date_of_birth,
+            email="ed@example.com",
+        )
+
+        base_form = {
+            "first_name": "Comte ",
+            "last_name": "de Monte-Cristo",
+            "email": "mc@example.com",
+            "birth_date": datetime.date.today() - relativedelta(years=18, months=3, days=5),
+            "phone_number": "",
+            "id_piece_number": "A123B456C\n",
+            "address": "Chemin du Haut des Ormes",
+            "postal_code": "78560\t",
+            "city": "Port-Marly",
+        }
+
+        response = self.update_account(authenticated_client, user_to_edit, base_form)
+        assert response.status_code == 303
+
+        expected_url = url_for(
+            "backoffice_v3_web.public_accounts.get_public_account", user_id=user_to_edit.id, _external=True
+        )
+        assert response.location == expected_url
+
+        user = users_models.User.query.get(user_to_edit.id)
+        assert user.firstName == base_form["first_name"].strip()
+        assert user.lastName == base_form["last_name"].strip()
+        assert user.email == base_form["email"]
+        assert user.dateOfBirth == date_of_birth
+        assert user.validatedBirthDate == base_form["birth_date"]
+        assert user.idPieceNumber == base_form["id_piece_number"].strip()
+        assert user.address == base_form["address"]
+        assert user.postalCode == base_form["postal_code"].strip()
+        assert user.departementCode == base_form["postal_code"][:2]
+        assert user.city == base_form["city"]
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionDate is not None
+        assert action.authorUserId == legit_user.id
+        assert action.userId == user_to_edit.id
+        assert action.offererId is None
+        assert action.venueId is None
+        assert action.extraData["modified_info"] == {
+            "firstName": {"new_info": "Comte", "old_info": "Edmond"},
+            "lastName": {"new_info": "de Monte-Cristo", "old_info": "Dantès"},
+            "email": {"new_info": "mc@example.com", "old_info": "ed@example.com"},
+            "validatedBirthDate": {
+                "new_info": base_form["birth_date"].isoformat(),
+                "old_info": date_of_birth.date().isoformat(),
+            },
+            "idPieceNumber": {"new_info": "A123B456C", "old_info": "None"},
+            "address": {"new_info": "Chemin du Haut des Ormes", "old_info": "Château d'If"},
+            "postalCode": {"new_info": "78560", "old_info": "13007"},
+            "city": {"new_info": "Port-Marly", "old_info": "Marseille"},
+        }
 
     def test_unknown_field(self, authenticated_client):
         user_to_edit = users_factories.BeneficiaryGrant18Factory()
@@ -1016,3 +1138,289 @@ class UpdatePublicAccountReviewTest:
 
         form["csrf_token"] = g.get("csrf_token", "")
         return authenticated_client.post(url, form=form)
+
+
+class GetPublicAccountHistoryTest:
+    def test_history_contains_creation_date(self):
+        # given
+        user = users_factories.UserFactory()
+
+        # when
+        history = get_public_account_history(user)
+
+        # then
+        assert len(history) == 1
+
+        assert history[0].actionType == history_models.ActionType.USER_CREATED
+        assert history[0].actionDate == user.dateCreated
+        assert history[0].authorUser == user
+
+    def test_history_contains_email_changes(self):
+        # given
+        user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
+        email_request = users_factories.EmailUpdateEntryFactory(
+            user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10)
+        )
+        email_validation = users_factories.EmailValidationEntryFactory(
+            user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+        )
+
+        # when
+        history = get_public_account_history(user)
+
+        # then
+        assert len(history) >= 2
+
+        assert history[0].actionType == "Validation de changement d'email"
+        assert history[0].actionDate == email_validation.creationDate
+        assert history[0].comment == (
+            f"de {email_validation.oldUserEmail}@{email_validation.oldDomainEmail} "
+            f"à {email_validation.newUserEmail}@{email_validation.newDomainEmail}"
+        )
+
+        assert history[1].actionType == "Demande de changement d'email"
+        assert history[1].actionDate == email_request.creationDate
+        assert history[1].comment == (
+            f"de {email_request.oldUserEmail}@{email_request.oldDomainEmail} "
+            f"à {email_request.newUserEmail}@{email_request.newDomainEmail}"
+        )
+
+    def test_history_contains_suspensions(self):
+        # given
+        user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3))
+        author = users_factories.UserFactory()
+        suspension_action = history_factories.SuspendedUserActionHistoryFactory(
+            user=user,
+            authorUser=author,
+            actionDate=datetime.datetime.utcnow() - relativedelta(days=2),
+            reason=users_constants.SuspensionReason.FRAUD_SUSPICION,
+        )
+        unsuspension_action = history_factories.UnsuspendedUserActionHistoryFactory(
+            user=user,
+            authorUser=author,
+            actionDate=datetime.datetime.utcnow() - relativedelta(days=1),
+        )
+
+        # when
+        history = get_public_account_history(user)
+
+        # then
+        assert len(history) >= 2
+        assert history[0] == unsuspension_action
+        assert history[1] == suspension_action
+
+    def test_history_contains_fraud_checks(self):
+        # given
+        user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
+        dms = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
+        )
+        phone = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+        )
+        honor = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
+            status=None,
+        )
+
+        # when
+        history = get_public_account_history(user)
+
+        # then
+        assert len(history) >= 3
+
+        assert history[2].actionType == "Étape de vérification"
+        assert history[2].actionDate == dms.dateCreated
+        assert (
+            history[2].comment
+            == f"{dms.type.value}, {dms.eligibilityType.value}, {dms.status.value}, [raison inconnue], {dms.reason}"
+        )
+
+        assert history[1].actionType == "Étape de vérification"
+        assert history[1].actionDate == phone.dateCreated
+        assert (
+            history[1].comment
+            == f"{phone.type.value}, {phone.eligibilityType.value}, {phone.status.value}, [raison inconnue], {phone.reason}"
+        )
+
+        assert history[0].actionType == "Étape de vérification"
+        assert history[0].actionDate == honor.dateCreated
+        assert (
+            history[0].comment
+            == f"{honor.type.value}, {honor.eligibilityType.value}, Statut inconnu, [raison inconnue], {honor.reason}"
+        )
+
+    def test_history_contains_reviews(self):
+        # given
+        user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
+        author_user = users_factories.UserFactory()
+        ko = fraud_factories.BeneficiaryFraudReviewFactory(
+            user=user,
+            author=author_user,
+            dateReviewed=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+            review=fraud_models.FraudReviewStatus.KO,
+            reason="pas glop",
+        )
+        dms = fraud_factories.BeneficiaryFraudReviewFactory(
+            user=user,
+            author=author_user,
+            dateReviewed=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
+            review=fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS,
+            reason="",
+        )
+
+        # when
+        history = get_public_account_history(user)
+
+        # then
+        assert len(history) >= 2
+
+        assert history[0].actionType == "Revue manuelle"
+        assert history[0].actionDate == ko.dateReviewed
+        assert history[0].comment == f"Revue {ko.review.value} : {ko.reason}"
+        assert history[0].authorUser == ko.author
+
+        assert history[1].actionType == "Revue manuelle"
+        assert history[1].actionDate == dms.dateReviewed
+        assert history[1].comment == f"Revue {dms.review.value} : {dms.reason}"
+        assert history[0].authorUser == dms.author
+
+    def test_history_contains_imports(self):
+        # given
+        user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
+        author_user = users_factories.UserFactory()
+        dms = users_factories.BeneficiaryImportFactory(
+            beneficiary=user,
+            source=BeneficiaryImportSources.demarches_simplifiees.value,
+            statuses=[
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.DRAFT,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=30),
+                    author=author_user,
+                    detail="c'est parti",
+                ),
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.ONGOING,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=25),
+                    author=author_user,
+                    detail="patience",
+                ),
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.REJECTED,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=20),
+                    author=author_user,
+                    detail="échec",
+                ),
+            ],
+        )
+        ubble = users_factories.BeneficiaryImportFactory(
+            beneficiary=user,
+            source=BeneficiaryImportSources.ubble.value,
+            statuses=[
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.DRAFT,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
+                    author=author_user,
+                    detail="c'est reparti",
+                ),
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.ONGOING,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+                    author=author_user,
+                    detail="loading, please wait",
+                ),
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.CREATED,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
+                    author=author_user,
+                    detail="félicitation",
+                ),
+            ],
+        )
+
+        # when
+        history = get_public_account_history(user)
+
+        # then
+        assert len(history) >= 6
+        for i, status in enumerate(dms.statuses):
+            assert history[5 - i].actionType == "Import demarches_simplifiees"
+            assert history[5 - i].actionDate == status.date
+            assert history[5 - i].comment == f"{status.status.value} ({status.detail})"
+            assert history[5 - i].authorUser == status.author
+        for i, status in enumerate(ubble.statuses):
+            assert history[2 - i].actionType == "Import ubble"
+            assert history[2 - i].actionDate == status.date
+            assert history[2 - i].comment == f"{status.status.value} ({status.detail})"
+            assert history[2 - i].authorUser == status.author
+
+    def test_history_is_sorted_antichronologically(self):
+        # given
+        user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
+        author_user = users_factories.UserFactory()
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=55),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=50),
+        )
+        users_factories.BeneficiaryImportFactory(
+            beneficiary=user,
+            source=BeneficiaryImportSources.ubble.value,
+            statuses=[
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.DRAFT,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=45),
+                    author=author_user,
+                    detail="bonne chance",
+                ),
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.ONGOING,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=40),
+                    author=author_user,
+                    detail="ça vient",
+                ),
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.REJECTED,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=20),
+                    author=author_user,
+                    detail="raté",
+                ),
+            ],
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=35),
+        )
+        users_factories.EmailUpdateEntryFactory(
+            user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=30)
+        )
+        users_factories.EmailValidationEntryFactory(
+            user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=15)
+        )
+        fraud_factories.BeneficiaryFraudReviewFactory(
+            user=user,
+            author=author_user,
+            dateReviewed=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
+            review=fraud_models.FraudReviewStatus.OK,
+        )
+
+        # when
+        history = get_public_account_history(user)
+
+        # then
+        assert len(history) == 10
+        datetimes = [item.actionDate for item in history]
+        assert datetimes == sorted(datetimes, reverse=True)

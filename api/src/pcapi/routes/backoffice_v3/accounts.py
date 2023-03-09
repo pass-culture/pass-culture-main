@@ -11,6 +11,7 @@ from flask_login import current_user
 from flask_sqlalchemy import Pagination
 import pydantic
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -32,6 +33,8 @@ import pcapi.core.users.constants as users_constants
 import pcapi.core.users.email.update as email_update
 import pcapi.core.users.utils as users_utils
 from pcapi.models import db
+from pcapi.models.beneficiary_import import BeneficiaryImport
+from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.repository import repository
 import pcapi.utils.email as email_utils
 
@@ -119,9 +122,39 @@ def render_search_template(form: search_forms.SearchForm | None = None) -> str:
 @public_accounts_blueprint.route("/<int:user_id>", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 def get_public_account(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
-    domains_credit = users_api.get_domains_credit(user) if user.is_beneficiary else None
-    history = users_api.public_account_history(user)
+    # Pre-load as many things as possible in the same request to avoid too many SQL queries
+    # Note that extra queries are made in methods called by get_eligibility_history()
+    user = (
+        users_models.User.query.filter_by(id=user_id)
+        .options(
+            sa.orm.joinedload(users_models.User.deposits),
+            sa.orm.joinedload(users_models.User.userBookings)
+            .joinedload(bookings_models.Booking.stock)
+            .joinedload(offers_models.Stock.offer),
+            sa.orm.joinedload(users_models.User.userBookings)
+            .joinedload(bookings_models.Booking.offerer)
+            .load_only(offerers_models.Offerer.name),
+            sa.orm.joinedload(users_models.User.beneficiaryFraudChecks),
+            sa.orm.joinedload(users_models.User.beneficiaryFraudReviews),
+            sa.orm.joinedload(users_models.User.beneficiaryImports)
+            .joinedload(BeneficiaryImport.statuses)
+            .joinedload(BeneficiaryImportStatus.author)
+            .load_only(users_models.User.firstName, users_models.User.lastName),
+            sa.orm.joinedload(users_models.User.action_history)
+            .joinedload(history_models.ActionHistory.authorUser)
+            .load_only(users_models.User.firstName, users_models.User.lastName),
+            sa.orm.joinedload(users_models.User.email_history),
+        )
+        .one_or_none()
+    )
+
+    if not user:
+        raise NotFound()
+
+    domains_credit = (
+        users_api.get_domains_credit(user, user_bookings=user.userBookings) if user.is_beneficiary else None
+    )
+    history = get_public_account_history(user)
     duplicate_user_id = None
     eligibility_history = get_eligibility_history(user)
     user_current_eligibility = users_api.get_eligibility_at_date(user.birth_date, datetime.datetime.utcnow())
@@ -162,17 +195,6 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
         eligibility_history, [fraud_models.FraudCheckType.UBBLE, fraud_models.FraudCheckType.DMS]
     )
 
-    bookings = (
-        bookings_models.Booking.query.filter_by(userId=user.id)
-        .options(
-            sa.orm.joinedload(bookings_models.Booking.stock)
-            .joinedload(offers_models.Stock.offer)
-            .load_only(offers_models.Offer.id, offers_models.Offer.name)
-        )
-        .options(sa.orm.joinedload(bookings_models.Booking.offerer).load_only(offerers_models.Offerer.name))
-        .order_by(bookings_models.Booking.dateCreated.desc())
-    ).all()
-
     empty_form = empty_forms.EmptyForm()
 
     return render_template(
@@ -186,7 +208,9 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
         resend_email_validation_form=empty_form,
         send_validation_code_form=empty_form,
         manual_validation_form=empty_form,
-        bookings=bookings,
+        comment_form=account_forms.CommentForm(),
+        bookings=sorted(user.userBookings, key=lambda booking: booking.dateCreated, reverse=True),
+        active_tab=request.args.get("active_tab", "registration"),
         **user_forms.get_toggle_suspension_args(user),
     )
 
@@ -225,8 +249,9 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
         return render_template("accounts/edit.html", form=form, dst=dst, user=user), 400
 
     try:
-        users_api.update_user_information(
+        snapshot = users_api.update_user_info(
             user,
+            author=current_user,
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             validated_birth_date=form.birth_date.data,
@@ -241,18 +266,23 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
         return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
+        snapshot.set("email", old=user.email, new=form.email.data)
+
         try:
             email_update.request_email_update_from_admin(user, form.email.data)
         except users_exceptions.EmailExistsError:
             form.email.errors.append("L'email est déjà associé à un autre utilisateur")
             dst = url_for(".update_public_account", user_id=user.id)
+            snapshot.log_update(save=True)
             return render_template("accounts/edit.html", form=form, dst=dst, user=user), 400
 
-    db.session.commit()
-    external_attributes_api.update_external_user(user)
+        # TODO (prouzet) old email should also be updated, but there is no update_external_user by email
+        external_attributes_api.update_external_user(user)
+
+    snapshot.log_update(save=True)
 
     flash("Informations mises à jour", "success")
-    return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
+    return redirect(get_public_account_link(user_id), code=303)
 
 
 @public_accounts_blueprint.route("/<int:user_id>/resend-validation-email", methods=["POST"])
@@ -268,7 +298,7 @@ def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
         users_api.request_email_confirmation(user)
         flash("Email de validation envoyé", "success")
 
-    return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
+    return redirect(get_public_account_link(user_id), code=303)
 
 
 @public_accounts_blueprint.route("/<int:user_id>/validate-phone-number", methods=["POST"])
@@ -277,7 +307,7 @@ def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
     if not user.phoneNumber:
         flash("L'utilisateur n'a pas de numéro de téléphone", "warning")
-        return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
+        return redirect(get_public_account_link(user_id), code=303)
 
     user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
     action = history_api.log_action(
@@ -290,7 +320,7 @@ def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
 
     flash("Le numéro a été validé avec succès", "success")
 
-    return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
+    return redirect(get_public_account_link(user_id), code=303)
 
 
 @public_accounts_blueprint.route("/<int:user_id>/send-validation-code", methods=["POST"])
@@ -300,7 +330,7 @@ def send_validation_code(user_id: int) -> utils.BackofficeResponse:
 
     if not user.phoneNumber:
         flash("L'utilisateur n'a pas de numéro de téléphone", "warning")
-        return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
+        return redirect(get_public_account_link(user_id), code=303)
 
     try:
         phone_validation_api.send_phone_validation_code(
@@ -330,7 +360,7 @@ def send_validation_code(user_id: int) -> utils.BackofficeResponse:
     else:
         flash("Le code a été envoyé", "success")
 
-    return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
+    return redirect(get_public_account_link(user_id), code=303)
 
 
 @public_accounts_blueprint.route("/<int:user_id>/review", methods=["GET"])
@@ -371,15 +401,30 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
     else:
         flash("Validation réussie", "success")
 
-    return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
+    return redirect(get_public_account_link(user_id), code=303)
+
+
+@public_accounts_blueprint.route("/<int:user_id>/comment", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def comment_public_account(user_id: int) -> utils.BackofficeResponse:
+    user = users_models.User.query.get_or_404(user_id)
+
+    form = account_forms.CommentForm()
+    if not form.validate():
+        flash("Les données envoyées comportent des erreurs", "warning")
+    else:
+        users_api.add_comment_to_user(user=user, author_user=current_user, comment=form.comment.data)
+        flash("Commentaire enregistré", "success")
+
+    return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
 
 
 def fetch_rows(search_model: search.SearchUserModel) -> Pagination:
     return search_utils.fetch_paginated_rows(users_api.search_public_account, search_model)
 
 
-def get_public_account_link(user_id: int) -> str:
-    return url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id)
+def get_public_account_link(user_id: int, **kwargs: typing.Any) -> str:
+    return url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id, **kwargs)
 
 
 def get_eligibility_history(user: users_models.User) -> dict[str, accounts.EligibilitySubscriptionHistoryModel]:
@@ -440,3 +485,28 @@ def _get_latest_fraud_check(
         check_list = sorted(check_list, key=lambda idCheckItem: idCheckItem.dateCreated, reverse=True)
         latest_fraud_check = check_list[0]
     return latest_fraud_check
+
+
+def get_public_account_history(user: users_models.User) -> list[accounts.AccountAction]:
+    # All data should have been joinloaded with user
+    history: list[history_models.ActionHistory | accounts.AccountAction] = list(user.action_history)
+
+    if history_models.ActionType.USER_CREATED not in (action.actionType for action in user.action_history):
+        history.append(accounts.AccountCreatedAction(user))
+
+    for change in user.email_history:
+        history.append(accounts.EmailChangeAction(change))
+
+    for fraud_check in user.beneficiaryFraudChecks:
+        history.append(accounts.FraudCheckAction(fraud_check))
+
+    for review in user.beneficiaryFraudReviews:
+        history.append(accounts.ReviewAction(review))
+
+    for import_ in user.beneficiaryImports:
+        for status in import_.statuses:
+            history.append(accounts.ImportStatusAction(import_, status))
+
+    history = sorted(history, key=lambda item: item.actionDate or datetime.datetime.min, reverse=True)
+
+    return history

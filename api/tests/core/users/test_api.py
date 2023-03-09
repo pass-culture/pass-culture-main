@@ -1057,6 +1057,8 @@ class SkipPhoneValidationTest:
         assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
 
 
+# TODO (prouzet): remove with backoffice v2 - deprecated
+# Has been reported in v3: accounts_test.py, GetPublicAccountHistoryTest
 class PublicAccountHistoryTest:
     def test_history_contains_email_changes(self):
         # given
@@ -1246,7 +1248,7 @@ class PublicAccountHistoryTest:
                     status=ImportStatus.CREATED,
                     date=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
                     author=author_user,
-                    detail="félicitation",
+                    detail="félicitations",
                 ),
             ],
         )
