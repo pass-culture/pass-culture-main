@@ -1,5 +1,5 @@
 import React from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
@@ -25,9 +25,10 @@ import patchEducationalInstitutionAdapter from './adapters/patchEducationalInsti
 const CollectiveOfferVisibility = ({
   offer,
   reloadCollectiveOffer,
+  isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
   const notify = useNotification()
-  const history = useHistory()
+  const navigate = useNavigate()
   const {
     error,
     data: institutionsPayload,
@@ -49,7 +50,7 @@ const CollectiveOfferVisibility = ({
   }) => {
     notify.success(message)
     reloadCollectiveOffer()
-    history.push(
+    navigate(
       `/offre/${computeURLCollectiveOfferId(
         payload.id,
         false
@@ -66,7 +67,7 @@ const CollectiveOfferVisibility = ({
   }
 
   return (
-    <CollectiveOfferLayout subTitle={offer.name}>
+    <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
       <PageTitle title="Visibilité" />
       <CollectiveOfferVisibilityScreen
         mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}

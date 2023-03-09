@@ -1,6 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
 
 import {
   EducationalInstitutionResponseModel,
@@ -49,7 +48,7 @@ export interface CollectiveOfferVisibilityProps {
   }) => void
   institutions: EducationalInstitutionResponseModel[]
   isLoadingInstitutions: boolean
-  offer?: CollectiveOffer
+  offer: CollectiveOffer
 }
 interface InstitutionOption extends SelectOption {
   postalCode?: string
@@ -75,7 +74,6 @@ const CollectiveOfferVisibility = ({
   isLoadingInstitutions,
   offer,
 }: CollectiveOfferVisibilityProps) => {
-  const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
 
   const [teachersOptions, setTeachersOptions] = useState<TeacherOption[]>([])
@@ -85,7 +83,7 @@ const CollectiveOfferVisibility = ({
   const onSubmit = async (values: VisibilityFormValues) => {
     setButtonPressed(true)
     const result = await patchInstitution({
-      offerId,
+      offerId: offer.id,
       institutionId: values.visibility === 'all' ? null : values.institution,
       teacherEmail: selectedTeacher ? selectedTeacher.email : null,
     })
@@ -94,7 +92,7 @@ const CollectiveOfferVisibility = ({
       return notify.error(result.message)
     }
     onSuccess({
-      offerId,
+      offerId: offer.id,
       message: result.message ?? '',
       payload: result.payload,
     })
@@ -315,7 +313,7 @@ const CollectiveOfferVisibility = ({
               <ButtonLink
                 variant={ButtonVariant.SECONDARY}
                 link={{
-                  to: `/offre/${offerId}/collectif/stocks`,
+                  to: `/offre/${offer.id}/collectif/stocks`,
                   isExternal: false,
                 }}
               >

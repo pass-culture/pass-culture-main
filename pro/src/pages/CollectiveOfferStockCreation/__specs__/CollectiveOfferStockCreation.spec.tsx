@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
@@ -21,11 +20,6 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: jest.fn(),
-}))
-
 const renderCollectiveStockCreation = (
   path: string,
   props: MandatoryCollectiveOfferFromParamsProps
@@ -43,10 +37,6 @@ const defaultProps = {
 }
 
 describe('CollectiveOfferStockCreation', () => {
-  beforeEach(() => {
-    jest.spyOn(router, 'useParams').mockReturnValue({ offerId: 'A1' })
-  })
-
   it('should render collective offer stock form', async () => {
     renderCollectiveStockCreation('/offre/A1/collectif/stocks', defaultProps)
 

@@ -1,12 +1,6 @@
 import '@testing-library/jest-dom'
 import { screen } from '@testing-library/react'
 import React from 'react'
-import * as router from 'react-router-dom'
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: jest.fn(),
-}))
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -17,17 +11,16 @@ jest.mock('apiClient/api', () => ({
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOfferLayout from '../CollectiveOfferLayout'
+import CollectiveOfferLayout, {
+  ICollectiveOfferLayout,
+} from '../CollectiveOfferLayout'
 
 const renderCollectiveOfferLayout = (
   path: string,
-  isFromTemplate?: boolean
+  props: Partial<ICollectiveOfferLayout>
 ) => {
   renderWithProviders(
-    <CollectiveOfferLayout
-      subTitle="Ma super offre"
-      isFromTemplate={isFromTemplate}
-    >
+    <CollectiveOfferLayout subTitle="Ma super offre" {...props}>
       Test
     </CollectiveOfferLayout>,
     { initialRouterEntries: [path] }
@@ -36,8 +29,7 @@ const renderCollectiveOfferLayout = (
 
 describe('CollectiveOfferLayout', () => {
   it('should render subtitle if provided', () => {
-    jest.spyOn(router, 'useParams').mockReturnValue({ offerId: 'A1' })
-    renderCollectiveOfferLayout('/offre/A1/collectif/edition')
+    renderCollectiveOfferLayout('/offre/A1/collectif/edition', {})
 
     const offersubTitle = screen.getByText('Ma super offre')
     const tagOfferTemplate = screen.queryByText('Offre vitrine')
@@ -45,25 +37,27 @@ describe('CollectiveOfferLayout', () => {
     expect(offersubTitle).toBeInTheDocument()
     expect(tagOfferTemplate).not.toBeInTheDocument()
   })
+
   it("should render 'Offre vitrine' tag if offer is template", () => {
-    jest.spyOn(router, 'useParams').mockReturnValue({ offerId: 'T-A1' })
-    renderCollectiveOfferLayout('/offre/T-A1/collectif/edition')
+    renderCollectiveOfferLayout('/offre/T-A1/collectif/edition', {
+      isTemplate: true,
+    })
 
     const tagOfferTemplate = screen.getByText('Offre vitrine')
 
     expect(tagOfferTemplate).toBeInTheDocument()
   })
+
   it('should render summary page layout in edition', () => {
-    jest.spyOn(router, 'useParams').mockReturnValue({ offerId: 'A1' })
-    renderCollectiveOfferLayout('/offre/A1/collectif/recapitulatif')
+    renderCollectiveOfferLayout('/offre/A1/collectif/recapitulatif', {})
 
     const title = screen.getByRole('heading', { name: 'Récapitulatif' })
 
     expect(title).toBeInTheDocument()
   })
+
   it('should display creation title', () => {
-    jest.spyOn(router, 'useParams').mockReturnValue({ offerId: 'A1' })
-    renderCollectiveOfferLayout('/offre/A1/collectif/')
+    renderCollectiveOfferLayout('/offre/A1/collectif/', { isCreation: true })
 
     const title = screen.getByRole('heading', {
       name: 'Créer une nouvelle offre collective',
@@ -71,9 +65,12 @@ describe('CollectiveOfferLayout', () => {
 
     expect(title).toBeInTheDocument()
   })
+
   it('should display creation from template title', () => {
-    jest.spyOn(router, 'useParams').mockReturnValue({ offerId: 'A1' })
-    renderCollectiveOfferLayout('/offre/A1/collectif/', true)
+    renderCollectiveOfferLayout('/offre/A1/collectif/', {
+      isFromTemplate: true,
+      isCreation: true,
+    })
 
     const title = screen.getByRole('heading', {
       name: 'Créer une offre pour un établissement scolaire',

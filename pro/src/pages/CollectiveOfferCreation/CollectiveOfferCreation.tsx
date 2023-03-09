@@ -1,5 +1,5 @@
 import React from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom-v5-compat'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
@@ -34,6 +34,8 @@ export const CollectiveOfferCreation = ({
   return (
     <CollectiveOfferLayout
       subTitle={offer?.name}
+      isCreation
+      isTemplate={isTemplate}
       isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
     >
       <PageTitle title="Détails de l'offre" />

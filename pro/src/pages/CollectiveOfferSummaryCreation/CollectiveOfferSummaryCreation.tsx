@@ -19,6 +19,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 export const CollectiveOfferSummaryCreation = ({
   offer,
   setOffer,
+  isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
   const notify = useNotification()
 
@@ -39,6 +40,8 @@ export const CollectiveOfferSummaryCreation = ({
     <CollectiveOfferLayout
       subTitle={offer?.name}
       isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+      isTemplate={isTemplate}
+      isCreation={true}
     >
       <PageTitle title="Récapitulatif" />
       <CollectiveOfferSummaryCreationScreen

@@ -1,6 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
-import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
@@ -15,11 +14,6 @@ jest.mock('apiClient/api', () => ({
     getCollectiveOffer: jest.fn(),
     getCollectiveOfferTemplate: jest.fn(),
   },
-}))
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: jest.fn(),
 }))
 
 const renderCollectiveOfferSummaryCreation = async (
@@ -41,7 +35,6 @@ const defaultProps = {
 
 describe('CollectiveOfferSummaryCreation', () => {
   it('should render collective offer summary ', async () => {
-    jest.spyOn(router, 'useParams').mockReturnValue({ offerId: 'A1' })
     jest
       .spyOn(api, 'getCategories')
       .mockResolvedValue({ categories: [], subcategories: [] })
