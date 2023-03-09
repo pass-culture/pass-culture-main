@@ -20,9 +20,6 @@ import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS } from './constants'
-import sharedRowStyles from './SharedStockEventFormRow.module.scss'
-import formStyles from './StockEventForm.module.scss'
-import rowStyles from './StockEventFormRow.module.scss'
 import styles from './StockFormList.module.scss'
 
 import { IStockEventFormValues, STOCK_EVENT_FORM_DEFAULT_VALUES } from './'
@@ -170,19 +167,19 @@ const StockFormList = ({
                   },
                 ]
                 return (
-                  <div className={rowStyles['stock-form-row']} key={index}>
-                    <div className={rowStyles['stock-form']}>
+                  <div className={styles['stock-form-row']} key={index}>
+                    <div className={styles['stock-form']}>
                       <DatePicker
                         smallLabel
                         name={`stocks[${index}]beginningDate`}
                         label="Date"
                         isLabelHidden={index !== 0}
                         className={cn(
-                          formStyles['field-layout-align-self'],
-                          formStyles['input-date']
+                          styles['field-layout-align-self'],
+                          styles['input-date']
                         )}
-                        classNameLabel={sharedRowStyles['field-layout-label']}
-                        classNameFooter={formStyles['field-layout-footer']}
+                        classNameLabel={styles['field-layout-label']}
+                        classNameFooter={styles['field-layout-footer']}
                         minDateTime={today}
                         openingDateTime={today}
                         disabled={readOnlyFields.includes('beginningDate')}
@@ -195,11 +192,11 @@ const StockFormList = ({
                         label="Horaire"
                         isLabelHidden={index !== 0}
                         className={cn(
-                          formStyles['input-beginning-time'],
-                          formStyles['field-layout-align-self']
+                          styles['input-beginning-time'],
+                          styles['field-layout-align-self']
                         )}
-                        classNameLabel={sharedRowStyles['field-layout-label']}
-                        classNameFooter={formStyles['field-layout-footer']}
+                        classNameLabel={styles['field-layout-label']}
+                        classNameFooter={styles['field-layout-footer']}
                         name={`stocks[${index}]beginningTime`}
                         disabled={readOnlyFields.includes('beginningTime')}
                         hideHiddenFooter={true}
@@ -213,11 +210,11 @@ const StockFormList = ({
                           label="Tarif"
                           isLabelHidden={index !== 0}
                           className={cn(
-                            formStyles['input-price-category'],
-                            formStyles['field-layout-align-self']
+                            styles['input-price-category'],
+                            styles['field-layout-align-self']
                           )}
-                          classNameLabel={sharedRowStyles['field-layout-label']}
-                          classNameFooter={formStyles['field-layout-footer']}
+                          classNameLabel={styles['field-layout-label']}
+                          classNameFooter={styles['field-layout-footer']}
                           defaultOption={{
                             label: 'Sélectionner un tarif',
                             value: '',
@@ -234,11 +231,11 @@ const StockFormList = ({
                           label="Tarif"
                           isLabelHidden={index !== 0}
                           className={cn(
-                            formStyles['input-price'],
-                            formStyles['field-layout-align-self']
+                            styles['input-price'],
+                            styles['field-layout-align-self']
                           )}
-                          classNameLabel={sharedRowStyles['field-layout-label']}
-                          classNameFooter={formStyles['field-layout-footer']}
+                          classNameLabel={styles['field-layout-label']}
+                          classNameFooter={styles['field-layout-footer']}
                           disabled={readOnlyFields.includes('price')}
                           rightIcon={() => <EuroIcon />}
                           type="number"
@@ -254,11 +251,11 @@ const StockFormList = ({
                         label="Date limite de réservation"
                         isLabelHidden={index !== 0}
                         className={cn(
-                          formStyles['input-booking-limit-datetime'],
-                          formStyles['field-layout-align-self']
+                          styles['input-booking-limit-datetime'],
+                          styles['field-layout-align-self']
                         )}
-                        classNameLabel={sharedRowStyles['field-layout-label']}
-                        classNameFooter={formStyles['field-layout-footer']}
+                        classNameLabel={styles['field-layout-label']}
+                        classNameFooter={styles['field-layout-footer']}
                         minDateTime={today}
                         maxDateTime={beginningDate ? beginningDate : undefined}
                         openingDateTime={today}
@@ -279,11 +276,11 @@ const StockFormList = ({
                         isLabelHidden={index !== 0}
                         placeholder="Illimité"
                         className={cn(
-                          formStyles['input-quantity'],
-                          formStyles['field-layout-align-self']
+                          styles['input-quantity'],
+                          styles['field-layout-align-self']
                         )}
-                        classNameLabel={sharedRowStyles['field-layout-label']}
-                        classNameFooter={formStyles['field-layout-footer']}
+                        classNameLabel={styles['field-layout-label']}
+                        classNameFooter={styles['field-layout-footer']}
                         disabled={readOnlyFields.includes('remainingQuantity')}
                         type="number"
                         hasDecimal={false}
@@ -297,9 +294,9 @@ const StockFormList = ({
                           label="Réservations"
                           isLabelHidden={index !== 0}
                           smallLabel
-                          className={formStyles['field-info-bookings']}
-                          classNameLabel={sharedRowStyles['field-layout-label']}
-                          classNameFooter={formStyles['field-layout-footer']}
+                          className={styles['field-info-bookings']}
+                          classNameLabel={styles['field-layout-label']}
+                          classNameFooter={styles['field-layout-footer']}
                           hideHiddenFooter
                         />
                       )}
@@ -307,8 +304,8 @@ const StockFormList = ({
 
                     {actions && actions.length > 0 && (
                       <div
-                        className={cn(rowStyles['stock-actions'], {
-                          [rowStyles['stock-first-action']]: index == 0,
+                        className={cn(styles['stock-actions'], {
+                          [styles['stock-first-action']]: index == 0,
                         })}
                       >
                         <StockFormActions

@@ -1,5 +1,24 @@
 @use "styles/mixins/_rem.scss" as rem;
 
+.input-price,
+.input-quantity {
+  flex: 1 0 rem.torem(146px);
+  max-width: 146px;
+}
+
+.input-booking-limit-datetime {
+  flex: 1 1 rem.torem(316px);
+  max-width: 316px;
+}
+
+.input-activation-code {
+  flex: 1 0 rem.torem(160px);
+}
+
+.field-layout-footer {
+  min-height: rem.torem(32px);
+}
+
 .stock-form-row {
   display: flex;
 
@@ -18,6 +37,7 @@
   }
 
   .stock-form-info {
+    display: flex;
     flex: 1 0 rem.torem(180px);
     margin-right: 0;
   }
