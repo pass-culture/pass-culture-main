@@ -1,5 +1,8 @@
 #!/bin/bash
 # Iterate over a list of commits. For each commits, grab the github commit number and update the jira ticket
+# to get all commits since last run use the command : 
+# `git log XXX..  --pretty=format:"%H" --reverse >> file.txt`
+# where XXX is the last commit
 
 JIRA_BINARY="$HOME/go/bin/jira"
 
