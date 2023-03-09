@@ -39,15 +39,14 @@ export const StocksEventCreation = ({
     }
   })
 
-  const [stocks] = useState<IStocksEvent[]>(offerStocks)
+  const [stocks, setStocks] = useState<IStocksEvent[]>(offerStocks)
 
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
 
   const onCancel = () => setIsRecurrenceModalOpen(false)
   const onConfirm = (newStocks: IStocksEvent[]) => {
     setIsRecurrenceModalOpen(false)
-    // TODO add new stocks to state
-    alert(JSON.stringify(newStocks))
+    setStocks([...stocks, ...newStocks])
   }
 
   return (
