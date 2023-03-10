@@ -163,7 +163,7 @@ def create_account(
         notificationSubscriptions=asdict(
             models.NotificationSubscriptions(marketing_email=marketing_email_subscription)
         ),
-        phoneNumber=phone_number,  # type: ignore [call-arg]
+        phoneNumber=phone_number,
         lastConnectionDate=datetime.datetime.utcnow(),
     )
 
@@ -784,7 +784,7 @@ def create_pro_user_V2(pro_user: ProUserCreationBodyV2Model) -> models.User:
 
 
 def create_pro_user(pro_user: ProUserCreationBodyModel | ProUserCreationBodyV2Model) -> models.User:
-    new_pro_user = models.User(from_dict=pro_user.dict(by_alias=True))  # type: ignore [call-arg]
+    new_pro_user = models.User(from_dict=pro_user.dict(by_alias=True))
     new_pro_user.email = email_utils.sanitize_email(new_pro_user.email)
     new_pro_user.notificationSubscriptions = asdict(
         models.NotificationSubscriptions(marketing_email=pro_user.contact_ok)
