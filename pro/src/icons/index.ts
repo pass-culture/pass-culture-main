@@ -5,7 +5,6 @@ export { ReactComponent as AddActivationCodeIcon } from 'icons/add-activation-co
 export { ReactComponent as AlertFilledIcon } from 'icons/ico-alert-filled.svg'
 export { ReactComponent as AlertGreyIcon } from 'icons/ico-alert-grey.svg'
 export { ReactComponent as ArrowDownIcon } from 'icons/ico-arrow-down.svg'
-export { ReactComponent as ArrowDownIco } from 'icons/ico-arrow-down.svg'
 export { ReactComponent as ArrowDownRIcon } from 'icons/ico-arrow-down-r.svg'
 export { ReactComponent as ArrowRightIcon } from 'icons/ico-arrow-right.svg'
 export { ReactComponent as ArrowUpBIcon } from 'icons/ico-arrow-up-b.svg'
