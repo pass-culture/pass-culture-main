@@ -119,9 +119,10 @@ def render_search_template(form: search_forms.SearchForm | None = None) -> str:
     )
 
 
-@public_accounts_blueprint.route("/<int:user_id>", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
-def get_public_account(user_id: int) -> utils.BackofficeResponse:
+def render_public_account_details(
+    user_id: int,
+    edit_account_form: account_forms.EditAccountForm | None = None,
+) -> str:
     # Pre-load as many things as possible in the same request to avoid too many SQL queries
     # Note that extra queries are made in methods called by get_eligibility_history()
     user = (
@@ -191,9 +192,27 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
                 duplicate_user = fraud_api.find_duplicate_id_piece_number_user(user.idPieceNumber, user.id)
                 if duplicate_user:
                     duplicate_user_id = duplicate_user.id
+
     latest_fraud_check = _get_latest_fraud_check(
         eligibility_history, [fraud_models.FraudCheckType.UBBLE, fraud_models.FraudCheckType.DMS]
     )
+
+    if not edit_account_form:
+        edit_account_form = account_forms.EditAccountForm(
+            last_name=user.lastName,
+            first_name=user.firstName,
+            email=user.email,
+            birth_date=user.birth_date,
+            phone_number=user.phoneNumber,
+            id_piece_number=user.idPieceNumber,
+            postal_address_autocomplete=f"{user.address}, {user.postalCode} {user.city}"
+            if user.address is not None and user.city is not None and user.postalCode is not None
+            else None,
+            address=user.address,
+            postal_code=user.postalCode,
+            city=user.city,
+        )
+    manual_review_form = account_forms.ManualReviewForm()
 
     empty_form = empty_forms.EmptyForm()
 
@@ -205,9 +224,11 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
         duplicate_user_id=duplicate_user_id,
         eligibility_history=eligibility_history,
         latest_fraud_check=latest_fraud_check,
+        edit_account_form=edit_account_form,
+        manual_review_form=manual_review_form,
         resend_email_validation_form=empty_form,
         send_validation_code_form=empty_form,
-        manual_validation_form=empty_form,
+        manual_phone_validation_form=empty_form,
         comment_form=account_forms.CommentForm(),
         bookings=sorted(user.userBookings, key=lambda booking: booking.dateCreated, reverse=True),
         active_tab=request.args.get("active_tab", "registration"),
@@ -215,27 +236,10 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
     )
 
 
-@public_accounts_blueprint.route("/<int:user_id>/edit", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def edit_public_account(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
-    form = account_forms.EditAccountForm(
-        last_name=user.lastName,
-        first_name=user.firstName,
-        email=user.email,
-        birth_date=user.birth_date,
-        phone_number=user.phoneNumber,
-        id_piece_number=user.idPieceNumber,
-        postal_address_autocomplete=f"{user.address}, {user.postalCode} {user.city}"
-        if user.address is not None and user.city is not None and user.postalCode is not None
-        else None,
-        address=user.address,
-        postal_code=user.postalCode,
-        city=user.city,
-    )
-    dst = url_for(".update_public_account", user_id=user.id)
-
-    return render_template("accounts/edit.html", form=form, dst=dst, user=user)
+@public_accounts_blueprint.route("/<int:user_id>", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
+def get_public_account(user_id: int) -> utils.BackofficeResponse:
+    return render_public_account_details(user_id)
 
 
 @public_accounts_blueprint.route("/<int:user_id>/update", methods=["POST"])
@@ -245,8 +249,8 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
 
     form = account_forms.EditAccountForm()
     if not form.validate():
-        dst = url_for(".update_public_account", user_id=user_id)
-        return render_template("accounts/edit.html", form=form, dst=dst, user=user), 400
+        flash("Le formulaire n'est pas valide", "warning")
+        return render_public_account_details(user_id, form), 400
 
     try:
         snapshot = users_api.update_user_info(
@@ -263,18 +267,17 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
         )
     except phone_validation_exceptions.InvalidPhoneNumber:
         flash("Le numéro de téléphone est invalide", "warning")
-        return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
+        return render_public_account_details(user_id, form), 400
 
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
         snapshot.set("email", old=user.email, new=form.email.data)
-
         try:
             email_update.request_email_update_from_admin(user, form.email.data)
         except users_exceptions.EmailExistsError:
             form.email.errors.append("L'email est déjà associé à un autre utilisateur")
-            dst = url_for(".update_public_account", user_id=user.id)
             snapshot.log_update(save=True)
-            return render_template("accounts/edit.html", form=form, dst=dst, user=user), 400
+            flash("L'email est déjà associé à un autre utilisateur", "warning")
+            return render_public_account_details(user_id, form), 400
 
         # TODO (prouzet) old email should also be updated, but there is no update_external_user by email
         external_attributes_api.update_external_user(user)
@@ -363,14 +366,6 @@ def send_validation_code(user_id: int) -> utils.BackofficeResponse:
     return redirect(get_public_account_link(user_id), code=303)
 
 
-@public_accounts_blueprint.route("/<int:user_id>/review", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
-def edit_public_account_review(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
-    form = account_forms.ManualReviewForm()
-    return render_template("accounts/edit_review.html", form=form, user=user)
-
-
 @public_accounts_blueprint.route("/<int:user_id>/review", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def review_public_account(user_id: int) -> utils.BackofficeResponse:
@@ -379,7 +374,7 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
     form = account_forms.ManualReviewForm()
     if not form.validate():
         flash("Les données envoyées comportent des erreurs", "warning")
-        return render_template("accounts/edit_review.html", form=form, user=user), 400
+        return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
     eligibility = None if user.eligibility is None else users_models.EligibilityType[form.eligibility.data]
 
