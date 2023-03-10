@@ -124,7 +124,11 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"},
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "ean": "12345678",
+                    "musicType": "ROCK-LO_FI",
+                },
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -135,21 +139,27 @@ class PostProductTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.name == "Le champ des possibles"
         assert created_offer.venue == venue
-        assert created_offer.subcategoryId == "LIVRE_AUDIO_PHYSIQUE"
+        assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE"
         assert created_offer.audioDisabilityCompliant is True
         assert created_offer.lastProvider.name == "Individual Offers public API"
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is True
         assert created_offer.visualDisabilityCompliant is True
         assert not created_offer.isDuo
-        assert created_offer.extraData == {}
+        assert created_offer.extraData == {"ean": "12345678", "musicType": "820", "musicSubType": "829"}
         assert created_offer.bookingEmail is None
         assert created_offer.description is None
         assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
 
         assert response.json == {
             "bookingEmail": None,
-            "categoryRelatedFields": {"author": None, "category": "LIVRE_AUDIO_PHYSIQUE", "isbn": None},
+            "categoryRelatedFields": {
+                "author": None,
+                "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                "ean": "12345678",
+                "musicType": "ROCK-LO_FI",
+                "performer": None,
+            },
             "description": None,
             "accessibility": {
                 "audioDisabilityCompliant": True,
@@ -291,7 +301,11 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": "12345678"},
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "ean": "12345678",
+                    "musicType": "ROCK-LO_FI",
+                },
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -321,7 +335,11 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": "12345678"},
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "ean": "12345678",
+                    "musicType": "ROCK-LO_FI",
+                },
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -343,7 +361,11 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": "12345678"},
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "ean": "12345678",
+                    "musicType": "ROCK-LO_FI",
+                },
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -365,7 +387,11 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": "12345678"},
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "ean": "12345678",
+                    "musicType": "ROCK-LO_FI",
+                },
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -388,7 +414,11 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "enableDoubleBookings": True,
-                "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "HUMOUR-VENTRILOQUE"},
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "ean": "12345678",
+                    "musicType": "ROCK-LO_FI",
+                },
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -419,83 +449,44 @@ class PostProductTest:
         assert response.json == {"global": ["This API is not enabled"]}
 
     @pytest.mark.usefixtures("db_session")
-    def test_digital_product(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=api_key.offerer)
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products",
-            json={
-                "categoryRelatedFields": {"category": "VOD"},
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "location": {"type": "digital", "url": "https://example.com"},
-                "name": "Le champ des possibles",
-            },
-        )
-
-        assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
-        assert created_offer.name == "Le champ des possibles"
-        assert created_offer.venue == venue
-        assert created_offer.subcategoryId == "VOD"
-        assert created_offer.audioDisabilityCompliant is True
-        assert created_offer.mentalDisabilityCompliant is True
-        assert created_offer.motorDisabilityCompliant is True
-        assert created_offer.visualDisabilityCompliant is True
-        assert created_offer.url == "https://example.com"
-        assert created_offer.extraData == {}
-
-        assert response.json == {
-            "bookingEmail": None,
-            "categoryRelatedFields": {"category": "VOD"},
-            "description": None,
-            "accessibility": {
-                "audioDisabilityCompliant": True,
-                "mentalDisabilityCompliant": True,
-                "motorDisabilityCompliant": True,
-                "visualDisabilityCompliant": True,
-            },
-            "enableDoubleBookings": False,
-            "externalTicketOfficeUrl": None,
-            "id": created_offer.id,
-            "image": None,
-            "itemCollectionDetails": None,
-            "location": {"type": "digital", "url": "https://example.com"},
-            "name": "Le champ des possibles",
-            "status": "SOLD_OUT",
-            "stock": None,
-        }
-
-    @pytest.mark.usefixtures("db_session")
     def test_extra_data_deserialization(self, client):
         api_key = offerers_factories.ApiKeyFactory()
-        offerers_factories.VirtualVenueFactory(managingOfferer=api_key.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
                 "categoryRelatedFields": {
-                    "author": "Maurice",
-                    "category": "CINE_VENTE_DISTANCE",
-                    "stageDirector": "Alfred",
+                    "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "ean": "12345678",
+                    "musicType": "ROCK-LO_FI",
+                    "performer": "Ichika Nito",
                     "isbn": "1234567891123",  # this field is not applicable and not added to extraData
                 },
                 "accessibility": ACCESSIBILITY_FIELDS,
-                "location": {"type": "digital", "url": "https://example.com"},
+                "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
             },
         )
 
+        print(response.json)
+
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
 
-        assert created_offer.extraData == {"author": "Maurice", "stageDirector": "Alfred"}
+        assert created_offer.extraData == {
+            "ean": "12345678",
+            "musicType": "820",
+            "musicSubType": "829",
+            "performer": "Ichika Nito",
+        }
 
         assert response.json["categoryRelatedFields"] == {
-            "author": "Maurice",
-            "category": "CINE_VENTE_DISTANCE",
-            "stageDirector": "Alfred",
-            "visa": None,
+            "author": None,
+            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+            "ean": "12345678",
+            "musicType": "ROCK-LO_FI",
+            "performer": "Ichika Nito",
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -522,52 +513,6 @@ class PostProductTest:
         assert offers_models.Offer.query.first() is None
 
     @pytest.mark.usefixtures("db_session")
-    def test_physical_product_with_digital_category(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products",
-            json={
-                "categoryRelatedFields": {"category": "CINE_VENTE_DISTANCE"},
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
-                "name": "Le champ des possibles",
-            },
-        )
-
-        assert response.status_code == 400
-        assert response.json == {
-            "subcategory": ['Une offre de catégorie CINE_VENTE_DISTANCE doit contenir un champ "url"']
-        }
-        assert offers_models.Offer.query.first() is None
-
-    @pytest.mark.usefixtures("db_session")
-    def test_right_isbn_format(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products",
-            json={
-                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE", "isbn": "1234567891123"},
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
-                "name": "Le champ des possibles",
-            },
-        )
-
-        assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
-
-        assert created_offer.extraData == {"isbn": "1234567891123"}
-        assert response.json["categoryRelatedFields"] == {
-            "author": None,
-            "category": "LIVRE_AUDIO_PHYSIQUE",
-            "isbn": "1234567891123",
-        }
-
-    @pytest.mark.usefixtures("db_session")
     def test_event_category_not_accepted(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
@@ -583,7 +528,7 @@ class PostProductTest:
         )
 
         assert response.status_code == 400
-        assert "categoryRelatedFields" in response.json
+        assert "categoryRelatedFields.category" in response.json
         assert offers_models.Offer.query.first() is None
 
     @pytest.mark.usefixtures("db_session")
@@ -594,7 +539,11 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"},
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "ean": "12345678",
+                    "musicType": "ROCK-LO_FI",
+                },
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": not_allowed_venue.id},
                 "name": "Le champ des possibles",
@@ -615,7 +564,11 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"},
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "ean": "12345678",
+                    "musicType": "ROCK-LO_FI",
+                },
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -638,7 +591,11 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"},
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "ean": "12345678",
+                    "musicType": "ROCK-LO_FI",
+                },
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -664,7 +621,11 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"},
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "ean": "12345678",
+                    "musicType": "ROCK-LO_FI",
+                },
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -687,7 +648,11 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"},
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                    "ean": "12345678",
+                    "musicType": "ROCK-LO_FI",
+                },
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
@@ -702,7 +667,7 @@ class PostProductTest:
         }
 
     @pytest.mark.usefixtures("db_session")
-    def test_show_type_deserialization(self, client):
+    def test_only_physical_music_is_allowed(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         offerers_factories.VirtualVenueFactory(managingOfferer=api_key.offerer)
 
@@ -716,12 +681,10 @@ class PostProductTest:
             },
         )
 
-        assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
-        assert created_offer.extraData == {
-            "showSubType": "1512",
-            "showType": "1510",
-        }
+        assert response.status_code == 400
+        assert "categoryRelatedFields.category" in response.json
+        assert "SUPPORT_PHYSIQUE_MUSIQUE" in response.json["categoryRelatedFields.category"][0]
+        assert offers_models.Offer.query.first() is None
 
     @pytest.mark.usefixtures("db_session")
     def test_books_are_not_allowed(self, client):
@@ -1826,7 +1789,10 @@ class PatchProductTest:
     def test_deactivate_offer(self, individual_offers_api_provider, client):
         api_key = offerers_factories.ApiKeyFactory()
         product_offer = offers_factories.ThingOfferFactory(
-            venue__managingOfferer=api_key.offerer, isActive=True, lastProvider=individual_offers_api_provider
+            venue__managingOfferer=api_key.offerer,
+            isActive=True,
+            lastProvider=individual_offers_api_provider,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -1845,6 +1811,7 @@ class PatchProductTest:
             withdrawalDetails="Des conditions de retrait sur la sellette",
             bookingEmail="notify@example.com",
             lastProvider=individual_offers_api_provider,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -1863,6 +1830,7 @@ class PatchProductTest:
             venue__managingOfferer=api_key.offerer,
             bookingEmail="notify@example.com",
             lastProvider=individual_offers_api_provider,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -1882,6 +1850,7 @@ class PatchProductTest:
             motorDisabilityCompliant=True,
             visualDisabilityCompliant=True,
             lastProvider=individual_offers_api_provider,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -1939,6 +1908,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=api_key.offerer,
             lastProvider=individual_offers_api_provider,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -1960,6 +1930,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=api_key.offerer,
             lastProvider=individual_offers_api_provider,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, quantity=30, price=10)
 
@@ -1983,6 +1954,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=api_key.offerer,
             lastProvider=individual_offers_api_provider,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime="2021-01-15T00:00:00Z")
 
@@ -2002,6 +1974,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=api_key.offerer,
             lastProvider=individual_offers_api_provider,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime=None)
 
@@ -2021,6 +1994,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=api_key.offerer,
             lastProvider=individual_offers_api_provider,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime=None)
         confirmed_booking = bookings_factories.BookingFactory(
@@ -2052,7 +2026,25 @@ class PatchProductTest:
             json={"categoryRelatedFields": {"category": "LIVRE_AUDIO_PHYSIQUE"}},
         )
         assert response.status_code == 400
-        assert response.json == {"categoryRelatedFields.category": ["the category cannot be changed"]}
+        assert response.json == {
+            "categoryRelatedFields.category": ["unexpected value; permitted: 'SUPPORT_PHYSIQUE_MUSIQUE'"]
+        }
+
+    def test_update_unallowed_subcategory_product_raises_error(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            bookingEmail="notify@example.com",
+            lastProvider=individual_offers_api_provider,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/{product_offer.id}",
+            json={"bookingEmail": "spam@example.com"},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"product.subcategory": ["Only SUPPORT_PHYSIQUE_MUSIQUE products can be edited"]}
 
 
 @pytest.mark.usefixtures("db_session")

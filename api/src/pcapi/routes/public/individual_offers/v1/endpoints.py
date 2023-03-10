@@ -196,9 +196,7 @@ def post_product_offer(
     individual_offers_provider: providers_models.Provider, body: serialization.ProductOfferCreation
 ) -> serialization.ProductOfferResponse:
     """
-    Create a product offer (except printed books).
-
-    To post a printed book offer, use the API Stocks (see /v2/swagger).
+    Create a CD or vinyl product.
     """
     venue = _retrieve_venue_from_location(body.location)
 
@@ -558,11 +556,27 @@ def compute_accessibility_edition_fields(accessibility_payload: dict | None) -> 
     }
 
 
+def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
+    allowed_product_subcategory_ids = [category.id for category in serialization.ALLOWED_PRODUCT_SUBCATEGORIES]
+    if offer.subcategoryId not in allowed_product_subcategory_ids:
+        raise api_errors.ApiErrors(
+            {
+                "product.subcategory": [
+                    "Only "
+                    + ", ".join((subcategory.id for subcategory in serialization.ALLOWED_PRODUCT_SUBCATEGORIES))
+                    + " products can be edited"
+                ]
+            }
+        )
+
+
 def _check_offer_subcategory(
-    body: serialization.ProductOfferEdition | serialization.EventOfferEdition, offer_subcategory: str
+    body: serialization.ProductOfferEdition | serialization.EventOfferEdition, offer_subcategory_id: str
 ) -> None:
-    if body.category_related_fields is not None and (body.category_related_fields.subcategory_id != offer_subcategory):
-        raise api_errors.ApiErrors({"categoryRelatedFields.category": ["the category cannot be changed"]})
+    if body.category_related_fields is not None and (
+        body.category_related_fields.subcategory_id != offer_subcategory_id
+    ):
+        raise api_errors.ApiErrors({"categoryRelatedFields.category": ["The category cannot be changed"]})
 
 
 @blueprint.v1_blueprint.route("/products/<int:product_id>", methods=["PATCH"])
@@ -575,7 +589,7 @@ def edit_product(
     individual_offers_provider: providers_models.Provider, product_id: int, body: serialization.ProductOfferEdition
 ) -> serialization.ProductOfferResponse:
     """
-    Edit a product offer.
+    Edit a CD or vinyl product.
 
     Leave fields undefined to keep their current value.
     """
@@ -588,6 +602,7 @@ def edit_product(
     if not offer:
         raise api_errors.ApiErrors({"product_id": ["The product offer could not be found"]}, status_code=404)
 
+    _check_offer_can_be_edited(offer)
     _check_offer_subcategory(body, offer.subcategoryId)
 
     update_body = body.dict(exclude_unset=True)
