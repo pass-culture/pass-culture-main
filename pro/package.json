@@ -129,7 +129,7 @@
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.50.0",
     "babel-eslint": "^10.1.0",
-    "babel-jest": "^29.0.3",
+    "babel-jest": "^29.0.5",
     "babel-loader": "^9.0.0",
     "babel-plugin-typescript-to-proptypes": "^2.0.0",
     "count-lines-in-file": "^1.1.0",
