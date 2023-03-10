@@ -39,7 +39,7 @@ class ZendeskError(Exception):
 class ContactFoundMoreThanOneError(ZendeskError):
     """Raised when the search returns more than one result"""
 
-    def __init__(self, items):  # type: ignore [no-untyped-def]
+    def __init__(self, items: list):
         super().__init__()
         self.items = items
 

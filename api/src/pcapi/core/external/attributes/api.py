@@ -4,6 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 from operator import attrgetter
 from typing import List
+from typing import Literal
 
 from sqlalchemy.orm import joinedload
 
@@ -200,7 +201,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         booking_venues_count=booking_venues_count,
         city=user.city,
         date_created=user.dateCreated,
-        date_of_birth=user_birth_date,  # type: ignore [arg-type]
+        date_of_birth=user_birth_date,
         departement_code=user.departementCode,
         deposits_count=len(user.deposits),
         deposit_activation_date=user.deposit_activation_date,
@@ -215,7 +216,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         is_current_beneficiary=user.is_beneficiary and has_remaining_credit,
         is_former_beneficiary=is_former_beneficiary,
         is_eligible=user.is_eligible,
-        is_email_validated=user.isEmailValidated,  # type: ignore [arg-type]
+        is_email_validated=user.isEmailValidated,
         is_phone_validated=user.is_phone_validated,  # type: ignore [arg-type]
         is_pro=is_pro_user,  # type: ignore [arg-type]
         last_booking_date=user_bookings[0].dateCreated if user_bookings else None,
@@ -314,7 +315,7 @@ def get_bookings_categories_and_subcategories(
 # Specific for "Retro" campaign in December 2022 - may become deprecated in 2023
 def get_booking_attributes_2022(
     user_bookings: list[bookings_models.Booking],
-) -> tuple[Decimal, str | None, str | None]:
+) -> tuple[Decimal | Literal[0], str | None, str | None]:
     bookings_2022 = sorted(
         filter(
             lambda booking: booking.dateCreated.year == 2022 and not booking.isCancelled,
@@ -326,7 +327,7 @@ def get_booking_attributes_2022(
     if not bookings_2022:
         return Decimal("0.00"), None, None
 
-    amount_spent: Decimal = sum(booking.amount for booking in bookings_2022)  # type: ignore [assignment]
+    amount_spent: Decimal | Literal[0] = sum(booking.amount for booking in bookings_2022)
     first_booked_offer: str = bookings_2022[0].stock.offer.name
     last_booked_offer: str = bookings_2022[-1].stock.offer.name
 
