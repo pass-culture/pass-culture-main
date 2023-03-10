@@ -15,7 +15,7 @@ class UserAttributes:
     booking_venues_count: int  # count unique venues in which user has made at least one non-canceled booking
     city: str | None
     date_created: datetime.datetime
-    date_of_birth: datetime.datetime
+    date_of_birth: datetime.datetime | None
     departement_code: str | None
     deposits_count: int  # number of granted deposits, e.g. 2 if a beneficiary got Pass 15-17 and Pass 18
     deposit_activation_date: datetime.datetime | None
@@ -30,7 +30,7 @@ class UserAttributes:
     is_current_beneficiary: bool  # Beneficiary with a non-expired remaining credit
     is_former_beneficiary: bool  # Beneficiary whose last possible credit is definitely expired or spent
     is_eligible: bool
-    is_email_validated: bool
+    is_email_validated: bool | None  # nullable in user table
     is_phone_validated: bool  # Added for Zendesk
     is_pro: bool
     last_booking_date: datetime.datetime | None
@@ -50,7 +50,7 @@ class UserAttributes:
     suspension_date: datetime.datetime | None  # Added for Zendesk
     suspension_reason: users_constants.SuspensionReason | None  # Added for Zendesk
     # Specific for Dec 2022 emailing campaign:
-    amount_spent_2022: Decimal  # Amount of credit spent in year 2022 (non-canceled offers)
+    amount_spent_2022: Decimal | typing.Literal[0]  # Amount of credit spent in year 2022 (non-canceled offers)
     first_booked_offer_2022: str | None  # First booked offer name in 2022 (non-canceled)
     last_booked_offer_2022: str | None  # Last booked offer name in 2022 (non-canceled)
 
