@@ -203,7 +203,7 @@ class PostProductTest:
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "stock": {
-                    "bookingLimitDatetime": "2022-01-01T00:00:00+04:00",
+                    "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
                     "price": 1234,
                     "quantity": 3,
                 },
@@ -238,7 +238,7 @@ class PostProductTest:
         assert created_stock.price == decimal.Decimal("12.34")
         assert created_stock.quantity == 3
         assert created_stock.offer == created_offer
-        assert created_stock.bookingLimitDatetime == datetime.datetime(2021, 12, 31, 20, 0, 0)
+        assert created_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 1, 12, 0, 0)
 
         created_mediation = offers_models.Mediation.query.one()
         assert created_mediation.offer == created_offer
@@ -277,7 +277,7 @@ class PostProductTest:
             "status": "EXPIRED",
             "stock": {
                 "bookedQuantity": 0,
-                "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+                "bookingLimitDatetime": "2022-01-01T12:00:00Z",
                 "price": 1234,
                 "quantity": 3,
             },
@@ -992,6 +992,7 @@ class PostEventTest:
 
 @pytest.mark.usefixtures("db_session")
 class PostDatesTest:
+    @freezegun.freeze_time("2022-01-01 10:00:00")
     def test_new_dates_are_added(self, individual_offers_api_provider, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(
@@ -1070,6 +1071,7 @@ class PostDatesTest:
             ],
         }
 
+    @freezegun.freeze_time("2022-01-01 10:00:00")
     def test_invalid_offer_id(self, client):
         offerers_factories.ApiKeyFactory()
 
@@ -1089,6 +1091,7 @@ class PostDatesTest:
 
         assert response.status_code == 404
 
+    @freezegun.freeze_time("2022-01-01 10:00:00")
     def test_404_price_category_id(self, individual_offers_api_provider, client):
         api_key = offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory(
@@ -1111,6 +1114,7 @@ class PostDatesTest:
 
         assert response.status_code == 404
 
+    @freezegun.freeze_time("2022-01-01 10:00:00")
     def test_404_for_other_offerer_offer(self, client):
         offerers_factories.ApiKeyFactory()
         event_offer = offers_factories.EventOfferFactory()
@@ -1132,6 +1136,7 @@ class PostDatesTest:
         assert response.status_code == 404
         assert response.json == {"event_id": ["The event could not be found"]}
 
+    @freezegun.freeze_time("2022-01-01 10:00:00")
     def test_404_for_product_offer(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         product_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)
@@ -1152,6 +1157,31 @@ class PostDatesTest:
 
         assert response.status_code == 404
         assert response.json == {"event_id": ["The event could not be found"]}
+
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_400_for_dates_in_past(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            f"/public/offers/v1/events/{product_offer.id}/dates",
+            json={
+                "dates": [
+                    {
+                        "beginningDatetime": "2022-01-01T15:59:59+04:00",
+                        "bookingLimitDatetime": "2022-01-01T10:59:59-01:00",
+                        "priceCategoryId": 0,
+                        "quantity": 10,
+                    },
+                ],
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "dates.0.beginningDatetime": ["The datetime must be in the future."],
+            "dates.0.bookingLimitDatetime": ["The datetime must be in the future."],
+        }
 
 
 @pytest.mark.usefixtures("db_session")
