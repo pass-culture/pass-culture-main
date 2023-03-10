@@ -229,12 +229,20 @@ const Offers = ({
     applyUrlFiltersAndRedirect(updatedFilters)
   }, [applyUrlFiltersAndRedirect, searchFilters, setOfferer])
 
-  /* istanbul ignore next: DEBT, TO FIX */
-  const canUpdateOffersStatus = (selectedOfferIds: string[]) => {
+  const getUpdateOffersStatusMessage = (selectedOfferIds: string[]) => {
     const selectedOffers = offers.filter(offer =>
       selectedOfferIds.includes(offer.id)
     )
-    return !selectedOffers.some(offer => offer.status === OFFER_STATUS_DRAFT)
+    if (selectedOffers.some(offer => offer.status === OFFER_STATUS_DRAFT)) {
+      return 'Vous ne pouvez pas publier des brouillons depuis cette liste'
+    }
+    if (
+      audience == Audience.COLLECTIVE &&
+      selectedOffers.some(offer => offer.hasBookingLimitDatetimesPassed)
+    ) {
+      return 'Vous ne pouvez pas publier des offres collectives dont la date de réservation est passée'
+    }
+    return ''
   }
 
   /* istanbul ignore next: DEBT, TO FIX */
@@ -324,7 +332,7 @@ const Offers = ({
           selectedOfferIds={selectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           audience={audience}
-          canUpdateOffersStatus={canUpdateOffersStatus}
+          getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
           canDeleteOffers={canDeleteOffers}
         />
       )}

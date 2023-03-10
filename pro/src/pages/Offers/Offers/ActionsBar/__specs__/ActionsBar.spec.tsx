@@ -40,7 +40,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const mockLogEvent = jest.fn()
-const mockCanUpdatedOfferStatus = jest.fn().mockReturnValue(true)
+const mockGetUpdateOffersStatusMessage = jest.fn().mockReturnValue('')
 const mockCanDeleteOffers = jest.fn().mockReturnValue(true)
 
 describe('src | components | pages | Offers | ActionsBar', () => {
@@ -48,7 +48,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
   beforeEach(() => {
     props = {
-      canUpdateOffersStatus: mockCanUpdatedOfferStatus,
+      getUpdateOffersStatusMessage: mockGetUpdateOffersStatusMessage,
       canDeleteOffers: mockCanDeleteOffers,
       refreshOffers: jest.fn(),
       selectedOfferIds: ['testId1', 'testId2'],
@@ -136,7 +136,9 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     })
     it('should not activate offers when a draft is selected', async () => {
       // given
-      mockCanUpdatedOfferStatus.mockReturnValueOnce(false)
+      mockGetUpdateOffersStatusMessage.mockReturnValueOnce(
+        'Vous ne pouvez pas publier des brouillons depuis cette liste'
+      )
 
       renderActionsBar(props)
 

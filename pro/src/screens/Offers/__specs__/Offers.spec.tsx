@@ -20,6 +20,7 @@ import {
 } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
+import * as useNotification from 'hooks/useNotification'
 import { offererFactory } from 'utils/apiFactories'
 import { individualOfferOffererFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -76,6 +77,7 @@ jest.mock('utils/date', () => ({
 jest.mock('apiClient/api', () => ({
   api: {
     listOfferersNames: jest.fn().mockReturnValue({}),
+    patchAllCollectiveOffersActiveStatus: jest.fn(),
   },
 }))
 
@@ -91,6 +93,8 @@ describe('screen Offers', () => {
   let store: any
   let offersRecap: Offer[]
 
+  const mockNotifyError = jest.fn()
+  const mockNotifyPending = jest.fn()
   beforeEach(() => {
     currentUser = {
       id: 'EY',
@@ -129,6 +133,11 @@ describe('screen Offers', () => {
         ({ id, proLabel }) => ({ id, displayName: proLabel })
       ),
     } as IOffersProps
+    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      ...jest.requireActual('hooks/useNotification'),
+      error: mockNotifyError,
+      pending: mockNotifyPending,
+    }))
   })
 
   describe('render', () => {
@@ -740,6 +749,69 @@ describe('screen Offers', () => {
         expect(
           screen.queryByLabelText('Tout désélectionner')
         ).toBeInTheDocument()
+      })
+
+      it('should display display error message when trying to activate draft offers', async () => {
+        // Given
+        const offers = [
+          individualOfferFactory({
+            isActive: false,
+            status: 'DRAFT',
+          }),
+        ]
+
+        renderOffers({ ...props, offers }, store)
+
+        // When
+        await userEvent.click(screen.getByLabelText('Tout sélectionner'))
+        await userEvent.click(screen.getByText('Publier'))
+
+        // Then
+        expect(mockNotifyError).toHaveBeenCalledWith(
+          'Vous ne pouvez pas publier des brouillons depuis cette liste'
+        )
+      })
+
+      it('should display display error message when trying to activate collective offers with booking limit date passed', async () => {
+        // Given
+        const offers = [
+          individualOfferFactory({
+            isActive: false,
+            hasBookingLimitDatePassed: true,
+          }),
+        ]
+
+        renderOffers({ ...props, audience: Audience.COLLECTIVE, offers }, store)
+
+        // When
+        await userEvent.click(screen.getByLabelText('Tout sélectionner'))
+        await userEvent.click(screen.getByText('Publier'))
+
+        // Then
+        expect(mockNotifyError).toHaveBeenCalledWith(
+          'Vous ne pouvez pas publier des offres collectives dont la date de réservation est passée'
+        )
+      })
+
+      it('should display success message activate inactive collective offer', async () => {
+        // Given
+        const offers = [
+          individualOfferFactory({
+            isActive: false,
+            hasBookingLimitDatetimesPassed: false,
+          }),
+        ]
+
+        renderOffers({ ...props, audience: Audience.COLLECTIVE, offers }, store)
+
+        // When
+        await userEvent.click(screen.getByLabelText('Tout sélectionner'))
+        await userEvent.click(screen.getByText('Publier'))
+
+        // Then
+        expect(api.patchAllCollectiveOffersActiveStatus).toHaveBeenCalledTimes(
+          1
+        )
       })
 
       it('should check all validated offers checkboxes', async () => {
