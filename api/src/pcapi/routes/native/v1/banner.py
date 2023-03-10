@@ -14,13 +14,7 @@ from pcapi.serialization.decorator import spectree_serialize
 @authenticated_and_active_user_required
 def get_banner(user: users_models.User) -> serializers.BannerResponse | None:
     is_geolocated = request.args.get("isGeolocated", "false") == "true"
-
     subscription_state = subscription_api.get_user_subscription_state(user)
 
-    banner = None
-    if subscription_state.next_step in banner_api.ACTIVATION_BANNER_NEXT_STEPS:
-        banner = banner_api.get_activation_banner(user.age)
-    elif not is_geolocated:
-        banner = banner_api.GEOLOCATION_BANNER
-
+    banner = banner_api.get_banner(subscription_state, user.age, is_geolocated)
     return serializers.BannerResponse(banner=banner)
