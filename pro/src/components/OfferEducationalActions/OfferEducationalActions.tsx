@@ -20,6 +20,7 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
+  toDateStrippedOfTimezone,
 } from 'utils/date'
 
 import { ReactComponent as IconActive } from './assets/icon-active.svg'
@@ -81,6 +82,25 @@ const OfferEducationalActions = ({
     reloadCollectiveOffer && reloadCollectiveOffer()
   }
 
+  const activateOffer = () => {
+    if (offer.isTemplate || offer.isActive) {
+      setIsOfferActive(!offer.isActive)
+      return
+    }
+
+    if (
+      !offer.collectiveStock?.bookingLimitDatetime ||
+      toDateStrippedOfTimezone(offer.collectiveStock?.bookingLimitDatetime) >
+        new Date()
+    ) {
+      setIsOfferActive(true)
+      return
+    }
+    notify.error(
+      'La date limite de réservation est dépassée. Pour publier l’offre, vous devez modifier la date limite de réservation.'
+    )
+  }
+
   const shouldShowOfferActions =
     mode === Mode.EDITION || mode === Mode.READ_ONLY
 
@@ -91,10 +111,10 @@ const OfferEducationalActions = ({
           {!isBooked && offer.status != OfferStatus.EXPIRED && (
             <Button
               Icon={offer.isActive ? IconInactive : IconActive}
+              onClick={activateOffer}
               variant={ButtonVariant.TERNARY}
               className={style['button-link']}
               iconPosition={IconPositionEnum.LEFT}
-              onClick={() => setIsOfferActive(!offer.isActive)}
             >
               {offer.isActive
                 ? 'Masquer la publication sur Adage'

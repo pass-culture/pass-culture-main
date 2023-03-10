@@ -11,12 +11,20 @@ import * as useNotification from 'hooks/useNotification'
 import {
   collectiveOfferFactory,
   collectiveOfferTemplateFactory,
+  collectiveStockFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferEducationalActions, {
   IOfferEducationalActions,
 } from '../OfferEducationalActions'
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    patchCollectiveOffersActiveStatus: jest.fn(),
+    patchCollectiveOffersTemplateActiveStatus: jest.fn(),
+  },
+}))
 
 const renderOfferEducationalActions = (props: IOfferEducationalActions) => {
   return renderWithProviders(<OfferEducationalActions {...props} />)
@@ -32,10 +40,6 @@ describe('OfferEducationalActions', () => {
   }
 
   it('should update active status value for template offer', async () => {
-    const toggle = jest
-      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
-      .mockResolvedValue()
-
     renderOfferEducationalActions({
       ...defaultValues,
       offer: collectiveOfferTemplateFactory({
@@ -49,28 +53,9 @@ describe('OfferEducationalActions', () => {
 
     await userEvent.click(activateOffer)
 
-    expect(toggle).toHaveBeenCalledTimes(1)
-    expect(defaultValues.reloadCollectiveOffer).toHaveBeenCalledTimes(1)
-  })
-
-  it('should update active status value for collective offer', async () => {
-    const toggle = jest
-      .spyOn(api, 'patchCollectiveOffersActiveStatus')
-      .mockResolvedValue()
-
-    renderOfferEducationalActions({
-      ...defaultValues,
-      offer: collectiveOfferFactory({
-        isActive: false,
-      }),
-    })
-    const activateOffer = screen.getByRole('button', {
-      name: 'Publier sur Adage',
-    })
-
-    await userEvent.click(activateOffer)
-
-    expect(toggle).toHaveBeenCalledTimes(1)
+    expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledTimes(
+      1
+    )
     expect(defaultValues.reloadCollectiveOffer).toHaveBeenCalledTimes(1)
   })
 
@@ -78,9 +63,10 @@ describe('OfferEducationalActions', () => {
     const notifyError = jest.fn()
     // @ts-expect-error
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      success: jest.fn(),
       error: notifyError,
     }))
-    const toggle = jest
+    jest
       .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
       .mockRejectedValue({ isOk: false })
 
@@ -97,7 +83,9 @@ describe('OfferEducationalActions', () => {
 
     await userEvent.click(activateOffer)
 
-    expect(toggle).toHaveBeenCalledTimes(1)
+    expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledTimes(
+      1
+    )
     await waitFor(() => expect(notifyError).toHaveBeenCalledTimes(1))
   })
 
@@ -184,5 +172,54 @@ describe('OfferEducationalActions', () => {
         from: '/',
       }
     )
+  })
+  it('should display error message when trying to activate offer with booking limit date time in the past', async () => {
+    const notifyError = jest.fn()
+    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      ...jest.requireActual('hooks/useNotification'),
+      error: notifyError,
+    }))
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: collectiveOfferFactory({
+        isActive: false,
+        collectiveStock: collectiveStockFactory({
+          bookingLimitDatetime: '1900-10-15T00:00:00Z',
+        }),
+      }),
+    })
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Publier sur Adage' })
+    )
+    expect(notifyError).toHaveBeenCalledWith(
+      'La date limite de réservation est dépassée. Pour publier l’offre, vous devez modifier la date limite de réservation.'
+    )
+  })
+  it('should activate offer with booking limit date time in the future', async () => {
+    const notifyError = jest.fn()
+    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      ...jest.requireActual('hooks/useNotification'),
+      success: jest.fn(),
+      error: notifyError,
+    }))
+    const bookingLimitDateTomorrow = new Date()
+    bookingLimitDateTomorrow.setDate(bookingLimitDateTomorrow.getDate() + 1)
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: collectiveOfferFactory({
+        id: 'AE',
+        isActive: false,
+        collectiveStock: collectiveStockFactory({
+          bookingLimitDatetime: bookingLimitDateTomorrow.toDateString(),
+        }),
+      }),
+    })
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Publier sur Adage' })
+    )
+    expect(api.patchCollectiveOffersActiveStatus).toHaveBeenCalledWith({
+      ids: ['AE'],
+      isActive: true,
+    })
   })
 })
