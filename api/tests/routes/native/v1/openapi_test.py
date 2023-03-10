@@ -1046,6 +1046,11 @@ def test_public_api(client):
                     "title": "ProfileUpdateRequest",
                     "type": "object",
                 },
+                "BannerQueryParams": {
+                    "properties": {"isGeolocated": {"default": False, "title": "Isgeolocated", "type": "boolean"}},
+                    "title": "BannerQueryParams",
+                    "type": "object",
+                },
                 "Reason": {
                     "description": "\n    Describe possible reason codes to used when reporting an offer.\n\n    The whole meta part is only consumed by the api client, it has no meaning\n    inside the whole API code.\n\n    Note: when adding a new enum symbol, do not forget to update the meta\n    method.\n    ",
                     "enum": ["IMPROPER", "PRICE_TOO_HIGH", "INAPPROPRIATE", "OTHER"],
@@ -2038,7 +2043,15 @@ def test_public_api(client):
                 "get": {
                     "description": "",
                     "operationId": "get_/native/v1/banner",
-                    "parameters": [],
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "isGeolocated",
+                            "required": False,
+                            "schema": {"default": False, "title": "Isgeolocated", "type": "boolean"},
+                        }
+                    ],
                     "responses": {
                         "200": {
                             "content": {
