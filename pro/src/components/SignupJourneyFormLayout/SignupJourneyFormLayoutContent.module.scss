@@ -1,9 +1,9 @@
 @use "styles/mixins/_rem.scss" as rem;
 
-.stepper {
+.signup-offerer-layout {
   margin-top: rem.torem(50px);
 }
 
-.content {
-  margin-top: rem.torem(40px);
+.stepper {
+  margin-bottom: rem.torem(40px);
 }
