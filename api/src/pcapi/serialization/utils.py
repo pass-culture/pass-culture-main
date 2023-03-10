@@ -135,13 +135,16 @@ def as_utc_without_timezone(d: datetime.datetime) -> datetime.datetime:
     return d.astimezone(pytz.utc).replace(tzinfo=None)
 
 
-def check_and_remove_timezone(value: datetime.datetime | None) -> datetime.datetime | None:
+def check_date_in_future_and_remove_timezone(value: datetime.datetime | None) -> datetime.datetime | None:
     if not value:
         return None
     if value.tzinfo is None:
         raise ValueError("The datetime must be timezone-aware.")
-    return as_utc_without_timezone(value)
+    no_tz_value = as_utc_without_timezone(value)
+    if no_tz_value < datetime.datetime.utcnow():
+        raise ValueError("The datetime must be in the future.")
+    return no_tz_value
 
 
 def validate_datetime(field_name: str) -> classmethod:
-    return pydantic.validator(field_name, pre=False, allow_reuse=True)(check_and_remove_timezone)
+    return pydantic.validator(field_name, pre=False, allow_reuse=True)(check_date_in_future_and_remove_timezone)
