@@ -96,7 +96,7 @@ export const serializeStockEvent = (
   return apiStock
 }
 
-export const serializeStockEventList = (
+export const serializeStockEventEdition = (
   formValuesList: IStockEventFormValues[],
   departementCode: string
 ): StockCreationBodyModel[] | StockEditionBodyModel[] => {

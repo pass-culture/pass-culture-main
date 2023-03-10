@@ -33,6 +33,7 @@ import { getSuccessMessage } from '../utils'
 import { logTo } from '../utils/logTo'
 
 import { upsertStocksEventAdapter } from './adapters'
+import { serializeStockEventEdition } from './adapters/serializers'
 import {
   getValidationSchema,
   buildInitialValues,
@@ -172,8 +173,10 @@ const StocksEventEdition = ({
 
     const { isOk, payload } = await upsertStocksEventAdapter({
       offerId: offer.id,
-      formValues: formValues.stocks,
-      departementCode: offer.venue.departmentCode,
+      stocks: serializeStockEventEdition(
+        formValues.stocks,
+        offer.venue.departmentCode
+      ),
     })
 
     /* istanbul ignore next: DEBT, TO FIX */
