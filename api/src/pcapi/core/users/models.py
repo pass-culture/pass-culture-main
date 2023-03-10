@@ -245,6 +245,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         self._add_role(UserRole.ADMIN)
 
     def add_beneficiary_role(self) -> None:
+        self.remove_underage_beneficiary_role()
         self._add_role(UserRole.BENEFICIARY)
 
     def add_pro_role(self) -> None:
