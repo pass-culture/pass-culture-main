@@ -2,6 +2,14 @@ import dataclasses
 import enum
 
 from pcapi.routes.serialization import BaseModel
+from pcapi.serialization.utils import to_camel
+
+
+class BannerQueryParams(BaseModel):
+    is_geolocated: bool = False
+
+    class Config:
+        alias_generator = to_camel
 
 
 class BannerName(enum.Enum):
