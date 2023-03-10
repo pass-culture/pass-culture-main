@@ -31,7 +31,7 @@ export interface IActionBarProps {
   selectedOfferIds: string[]
   toggleSelectAllCheckboxes: () => void
   audience: Audience
-  canUpdateOffersStatus: (selectedOfferIds: string[]) => boolean
+  getUpdateOffersStatusMessage: (selectedOfferIds: string[]) => string
   canDeleteOffers: (selectedOfferIds: string[]) => boolean
 }
 
@@ -79,7 +79,7 @@ const ActionsBar = ({
   areAllOffersSelected,
   nbSelectedOffers,
   audience,
-  canUpdateOffersStatus,
+  getUpdateOffersStatusMessage,
   canDeleteOffers,
 }: IActionBarProps): JSX.Element => {
   const searchFilters = useSelector(searchFiltersSelector)
@@ -133,12 +133,12 @@ const ActionsBar = ({
   )
 
   const handleActivate = useCallback(() => {
-    if (canUpdateOffersStatus(selectedOfferIds)) {
+    const updateOfferStatusMessage =
+      getUpdateOffersStatusMessage(selectedOfferIds)
+    if (!updateOfferStatusMessage) {
       handleUpdateOffersStatus(true)
     } else {
-      notify.error(
-        'Vous ne pouvez pas publier des brouillons depuis cette liste'
-      )
+      notify.error(updateOfferStatusMessage)
     }
   }, [handleUpdateOffersStatus])
 

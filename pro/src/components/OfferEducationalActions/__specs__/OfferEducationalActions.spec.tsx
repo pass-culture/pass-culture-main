@@ -114,6 +114,7 @@ describe('OfferEducationalActions', () => {
     )
     expect(screen.getByText('réservée')).toBeInTheDocument()
   })
+
   it('should display booking link for used booking', () => {
     renderOfferEducationalActions({
       ...defaultValues,
@@ -131,6 +132,7 @@ describe('OfferEducationalActions', () => {
     )
     expect(screen.getByText('terminée')).toBeInTheDocument()
   })
+
   it('should not display booking link for cancelled booking', async () => {
     renderOfferEducationalActions({
       ...defaultValues,
@@ -146,6 +148,7 @@ describe('OfferEducationalActions', () => {
       })
     ).not.toBeInTheDocument()
   })
+
   it('should log event when clicked on booking link', async () => {
     const mockLogEvent = jest.fn()
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -173,6 +176,7 @@ describe('OfferEducationalActions', () => {
       }
     )
   })
+
   it('should display error message when trying to activate offer with booking limit date time in the past', async () => {
     const notifyError = jest.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
@@ -195,6 +199,7 @@ describe('OfferEducationalActions', () => {
       'La date limite de réservation est dépassée. Pour publier l’offre, vous devez modifier la date limite de réservation.'
     )
   })
+
   it('should activate offer with booking limit date time in the future', async () => {
     const notifyError = jest.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
