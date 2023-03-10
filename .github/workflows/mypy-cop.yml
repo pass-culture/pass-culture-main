@@ -29,19 +29,18 @@ jobs:
           git checkout master --quiet
           master_ignore_count="$(grep "type: ignore" -r src | wc -l)"
           git checkout - --quiet
-          echo "::set-output name=this_branch_ignore_count::$this_branch_ignore_count"
-          echo "::set-output name=master_ignore_count::$master_ignore_count"
+          echo "this_branch_ignore_count=$this_branch_ignore_count" >> $GITHUB_OUTPUT
+          echo "master_ignore_count=$master_ignore_count" >> $GITHUB_OUTPUT
       - name: Create mypy cop report
         id: mypy-cop
         run: |
           cd api
           body="$(./mypy_cop.sh ${{ steps.mypy-ignore-counter.outputs.master_ignore_count }} ${{ steps.mypy-ignore-counter.outputs.this_branch_ignore_count }} )"
-          # Escape output, otherwise only its first line will be stored by `set-ouput` below.
-          # See https://github.community/t/set-output-truncates-multiline-strings/16852
-          body="${body//'%'/'%25'}"
-          body="${body//$'\n'/'%0A'}"
-          body="${body//$'\r'/'%0D'}"
-          echo "::set-output name=body::$body"
+          # See https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "body<<$EOF" >> $GITHUB_OUTPUT
+          echo "$body" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
       - name: Find Comment
         if: steps.changes.outputs.src == 'true'
         uses: peter-evans/find-comment@v1
