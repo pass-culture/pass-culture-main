@@ -61,18 +61,20 @@ const OfferEducationalActions = ({
   return (
     <>
       <div className={cn(style['actions'], className)}>
-        {!isBooked && setIsOfferActive && offer?.status != OfferStatus.EXPIRED && (
-          <Button
-            Icon={isOfferActive ? IconInactive : IconActive}
-            className={style['actions-button']}
-            onClick={() => setIsOfferActive(!isOfferActive)}
-            variant={ButtonVariant.TERNARY}
-          >
-            {isOfferActive
-              ? 'Masquer la publication sur Adage'
-              : 'Publier sur Adage'}
-          </Button>
-        )}
+        {!isBooked &&
+          setIsOfferActive &&
+          offer?.status != OfferStatus.EXPIRED && (
+            <Button
+              Icon={isOfferActive ? IconInactive : IconActive}
+              className={style['actions-button']}
+              onClick={() => setIsOfferActive(!isOfferActive)}
+              variant={ButtonVariant.TERNARY}
+            >
+              {isOfferActive
+                ? 'Masquer la publication sur Adage'
+                : 'Publier sur Adage'}
+            </Button>
+          )}
 
         {lastBookingId &&
           (lastBookingStatus != CollectiveBookingStatus.CANCELLED ||

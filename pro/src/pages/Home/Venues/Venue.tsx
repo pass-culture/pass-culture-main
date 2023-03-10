@@ -238,28 +238,30 @@ const Venue = ({
               )}
             </h3>
             <div className="button-group">
-              {hasMissingReimbursementPoint && !isVirtual && hasCreatedOffer && (
-                <>
-                  <ButtonLink
-                    className="add-rib-link tertiary-link"
-                    variant={ButtonVariant.TERNARY}
-                    link={{
-                      to: reimbursementSectionLink,
-                      isExternal: false,
-                    }}
-                    onClick={() => {
-                      logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
-                        from: location.pathname,
-                        ...venueIdTrackParam,
-                      })
-                    }}
-                    Icon={IcoPlusCircle}
-                  >
-                    Ajouter un RIB
-                  </ButtonLink>
-                  <span className="button-group-separator" />
-                </>
-              )}
+              {hasMissingReimbursementPoint &&
+                !isVirtual &&
+                hasCreatedOffer && (
+                  <>
+                    <ButtonLink
+                      className="add-rib-link tertiary-link"
+                      variant={ButtonVariant.TERNARY}
+                      link={{
+                        to: reimbursementSectionLink,
+                        isExternal: false,
+                      }}
+                      onClick={() => {
+                        logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
+                          from: location.pathname,
+                          ...venueIdTrackParam,
+                        })
+                      }}
+                      Icon={IcoPlusCircle}
+                    >
+                      Ajouter un RIB
+                    </ButtonLink>
+                    <span className="button-group-separator" />
+                  </>
+                )}
               <ButtonLink
                 variant={ButtonVariant.TERNARY}
                 link={{

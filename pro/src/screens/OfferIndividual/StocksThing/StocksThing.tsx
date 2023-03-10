@@ -430,35 +430,36 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
                   onChange={onChangeQuantity}
                 />
               </div>
-              {mode === OFFER_WIZARD_MODE.EDITION && offer.stocks.length > 0 && (
-                <div
-                  className={cn(
-                    styles['stock-form-info'],
-                    styles['stock-form-info']
-                  )}
-                >
-                  <TextInput
-                    name="availableStock"
-                    value={
-                      formik.values.remainingQuantity === 'unlimited'
-                        ? 'Illimité'
-                        : formik.values.remainingQuantity
-                    }
-                    readOnly
-                    label="Stock restant"
-                    smallLabel
-                    classNameFooter={styles['field-layout-footer']}
-                  />
-                  <TextInput
-                    name="bookingsQuantity"
-                    value={formik.values.bookingsQuantity || 0}
-                    readOnly
-                    label="Réservations"
-                    smallLabel
-                    classNameFooter={styles['field-layout-footer']}
-                  />
-                </div>
-              )}
+              {mode === OFFER_WIZARD_MODE.EDITION &&
+                offer.stocks.length > 0 && (
+                  <div
+                    className={cn(
+                      styles['stock-form-info'],
+                      styles['stock-form-info']
+                    )}
+                  >
+                    <TextInput
+                      name="availableStock"
+                      value={
+                        formik.values.remainingQuantity === 'unlimited'
+                          ? 'Illimité'
+                          : formik.values.remainingQuantity
+                      }
+                      readOnly
+                      label="Stock restant"
+                      smallLabel
+                      classNameFooter={styles['field-layout-footer']}
+                    />
+                    <TextInput
+                      name="bookingsQuantity"
+                      value={formik.values.bookingsQuantity || 0}
+                      readOnly
+                      label="Réservations"
+                      smallLabel
+                      classNameFooter={styles['field-layout-footer']}
+                    />
+                  </div>
+                )}
 
               {actions && actions.length > 0 && (
                 <div className={styles['stock-actions']}>
