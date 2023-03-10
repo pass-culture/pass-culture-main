@@ -11,11 +11,18 @@ from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import NotificationSubscriptions
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
+
+
+# 1 query on user table with joinedload
+# 1 query on venue table with joinedload
+# 2 extra SQL queries: select exists on offer and booking tables
+EXPECTED_PRO_ATTR_NUM_QUERIES = 4
 
 
 def _build_params(subs, virt, perman, draft, accep, offer, book, attach):
@@ -68,7 +75,9 @@ def test_update_external_pro_user_attributes(
     venue_label_a = offerers_factories.VenueLabelFactory(label="Cinéma d'art et d'essai")
     venue_label_b = offerers_factories.VenueLabelFactory(label="Scènes conventionnées")
 
-    offerer1 = offerers_factories.OffererFactory(siren="111222333", name="Plage Culture")
+    offerer1 = offerers_factories.OffererFactory(
+        siren="111222333", name="Plage Culture", tags=[offerers_factories.OffererTagFactory(label="Top Acteur")]
+    )
     if attached in ("one", "all"):
         offerers_factories.UserOffererFactory(user=ProFactory(), offerer=offerer1)
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer1)
@@ -124,7 +133,9 @@ def test_update_external_pro_user_attributes(
             finance_factories.BankInformationFactory(venue=venue2, status=BankInformationStatus.ACCEPTED)
 
     # Offerer not linked to user email but with the same booking email
-    offerer3 = offerers_factories.OffererFactory(siren="777888999", name="Plage Events")
+    offerer3 = offerers_factories.OffererFactory(
+        siren="777888999", name="Plage Events", tags=[offerers_factories.OffererTagFactory(label="Collectivité")]
+    )
     venue3 = offerers_factories.VenueFactory(
         managingOfferer=offerer3,
         name="Festival de la mer",
@@ -179,7 +190,12 @@ def test_update_external_pro_user_attributes(
         finance_factories.BankInformationFactory(venue=venue1, status=BankInformationStatus.REJECTED)
 
     # Create inactive offerer and its venue, linked to email, which should not be taken into account in any attribute
-    inactive_offerer = offerers_factories.OffererFactory(siren="999999999", name="Structure désactivée", isActive=False)
+    inactive_offerer = offerers_factories.OffererFactory(
+        siren="999999999",
+        name="Structure désactivée",
+        isActive=False,
+        tags=[offerers_factories.OffererTagFactory(label="Désactivé")],
+    )
     offerers_factories.UserOffererFactory(user=pro_user, offerer=inactive_offerer)
     offerers_factories.VenueFactory(
         managingOfferer=inactive_offerer,
@@ -193,7 +209,8 @@ def test_update_external_pro_user_attributes(
         venueTypeCode=VenueTypeCode.CONCERT_HALL,  # different from others
     )
 
-    attributes = get_pro_attributes(pro_user.email)
+    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES):
+        attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
     assert attributes.is_user_email is True
@@ -204,6 +221,7 @@ def test_update_external_pro_user_attributes(
         if create_virtual
         else {"Juste Libraire", "Plage Culture", "Plage Events"}
     )
+    assert attributes.offerers_tags == {"Top Acteur", "Collectivité"}
     assert len(attributes.venues_ids) == 5 if create_virtual else 4
     assert (
         attributes.venues_names
@@ -242,8 +260,11 @@ def test_update_external_pro_user_attributes(
 
 def test_update_external_pro_user_attributes_no_offerer_no_venue():
     user = ProFactory()
+    user_email = user.email
 
-    attributes = get_pro_attributes(user.email)
+    # only 2 queries: user and venue - no booking or offer to check without offerer
+    with assert_num_queries(2):
+        attributes = get_pro_attributes(user_email)
 
     assert attributes.is_pro is True
     assert attributes.is_user_email is True
@@ -285,7 +306,8 @@ def test_update_external_pro_booking_email_attributes():
         venueTypeCode=VenueTypeCode.MUSEUM,
     )
 
-    attributes = get_pro_attributes(email)
+    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES):
+        attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
     assert attributes.is_user_email is False
@@ -314,7 +336,9 @@ def test_update_external_pro_booking_email_attributes():
 
 
 def test_update_external_pro_removed_email_attributes():
-    attributes = get_pro_attributes("removed@example.net")
+    # only 2 queries: user and venue - nothing found
+    with assert_num_queries(2):
+        attributes = get_pro_attributes("removed@example.net")
 
     assert attributes.is_pro is True
     assert attributes.is_user_email is False

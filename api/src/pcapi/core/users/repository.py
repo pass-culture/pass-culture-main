@@ -4,6 +4,7 @@ import logging
 import typing
 
 from dateutil.relativedelta import relativedelta
+from flask_sqlalchemy import BaseQuery
 from sqlalchemy.sql.functions import func
 
 import pcapi.core.offerers.models as offerers_models
@@ -48,7 +49,7 @@ def get_user_by_id(user_id: int) -> models.User:
     return models.User.query.get(user_id)
 
 
-def _find_user_by_email_query(email: str):  # type: ignore [no-untyped-def]
+def _find_user_by_email_query(email: str) -> BaseQuery:
     # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
     # all emails have been sanitized in the database.
     return models.User.query.filter(func.lower(models.User.email) == email_utils.sanitize_email(email))
@@ -58,8 +59,8 @@ def find_user_by_email(email: str) -> models.User | None:
     return _find_user_by_email_query(email).one_or_none()
 
 
-def find_pro_user_by_email(email: str) -> models.User | None:
-    return _find_user_by_email_query(email).filter(models.User.has_pro_role.is_(True)).one_or_none()  # type: ignore [attr-defined]
+def find_pro_user_by_email_query(email: str) -> BaseQuery:
+    return _find_user_by_email_query(email).filter(models.User.has_pro_role.is_(True))  # type: ignore [attr-defined]
 
 
 def get_user_with_valid_token(
