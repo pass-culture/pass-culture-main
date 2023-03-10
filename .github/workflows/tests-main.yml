@@ -128,13 +128,13 @@ jobs:
             "attachments": [
               {
                 "mrkdwn_in": ["text"],
-                "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
+                "color": "#A30002",
                 "author_name": "${{github.actor}}",
                 "author_link": "https://github.com/${{github.actor}}",
                 "author_icon": "https://github.com/${{github.actor}}.png",
                 "title": "PCAPI Deployment",
                 "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Le déploiement de la version `master` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION == 'failure'] }} sur `testing` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
+                "text": "Le déploiement de la version `master` a échoué sur `testing` :boom:"
               }
             ],
             "unfurl_links": false,
