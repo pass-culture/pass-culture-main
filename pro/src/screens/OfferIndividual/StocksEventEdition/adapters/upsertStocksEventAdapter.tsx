@@ -1,17 +1,17 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { StockIdResponseModel } from 'apiClient/v1'
-import { IStockEventFormValues } from 'screens/OfferIndividual/StocksEventEdition/StockFormList'
-
-import { serializeStockEventList } from './serializers'
+import {
+  StockIdResponseModel,
+  StockCreationBodyModel,
+  StockEditionBodyModel,
+} from 'apiClient/v1'
 
 type TSuccessPayload = { stockIds: string[] }
 type TFailurePayload = { errors: Record<string, string>[] }
 export type TUpdateStocksAdapter = Adapter<
   {
     offerId: string
-    formValues: IStockEventFormValues[]
-    departementCode: string
+    stocks: Array<StockCreationBodyModel | StockEditionBodyModel>
   },
   TSuccessPayload,
   TFailurePayload
@@ -19,13 +19,12 @@ export type TUpdateStocksAdapter = Adapter<
 
 const upsertStocksEventAdapter: TUpdateStocksAdapter = async ({
   offerId,
-  formValues,
-  departementCode,
+  stocks,
 }) => {
   try {
     const response = await api.upsertStocks({
       humanizedOfferId: offerId,
-      stocks: serializeStockEventList(formValues, departementCode),
+      stocks: stocks,
     })
     return {
       isOk: true,
