@@ -1,23 +1,26 @@
-export enum SIGNUP_STEP_IDS {
+import { Step } from 'components/Breadcrumb'
+
+export enum SIGNUP_JOURNEY_STEP_IDS {
   OFFERER = 'structure',
+  OFFERERS = 'strutures',
   AUTHENTICATION = 'authentification',
   ACTIVITY = 'activite',
   VALIDATION = 'validation',
 }
 
-export const SIGNUP_JOURNEY_STEP_LIST = [
+export const SIGNUP_JOURNEY_BREADCRUMB_STEPS: Step[] = [
   {
-    id: SIGNUP_STEP_IDS.AUTHENTICATION,
+    id: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
     label: 'Authentification',
     url: '/parcours-inscription/authentification',
   },
   {
-    id: SIGNUP_STEP_IDS.ACTIVITY,
+    id: SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
     label: 'Activité',
     url: '/parcours-inscription/activite',
   },
   {
-    id: SIGNUP_STEP_IDS.VALIDATION,
+    id: SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
     label: 'Validation',
     url: '/parcours-inscription/validation',
   },
