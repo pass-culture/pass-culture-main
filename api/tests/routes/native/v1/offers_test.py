@@ -213,6 +213,17 @@ class OffersTest:
         }
         assert response.json["withdrawalDetails"] == "modalité de retrait"
 
+    def test_get_offer_with_unlimited_stock(self, client):
+        product = ProductFactory(thumbCount=1, subcategoryId=subcategories.ABO_MUSEE.id)
+        offer = OfferFactory(product=product, venue__isPermanent=True)
+        ThingStockFactory(offer=offer, price=12.34, quantity=None)
+
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v1/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert response.json["stocks"][0]["remainingQuantity"] is None
+
     def test_get_thing_offer(self, app):
         product = ProductFactory(thumbCount=1, subcategoryId=subcategories.ABO_MUSEE.id)
         offer = OfferFactory(product=product, venue__isPermanent=True)
