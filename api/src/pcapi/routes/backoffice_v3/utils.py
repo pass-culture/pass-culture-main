@@ -9,6 +9,7 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 import werkzeug
+from werkzeug.exceptions import Forbidden
 from werkzeug.wrappers import Response as WerkzeugResponse
 
 from pcapi import settings
@@ -23,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 # perhaps one day we will be able to define it as str | tuple[str, int]
-BackofficeResponse = typing.Union[str, typing.Tuple[str, int], WerkzeugResponse]
+BackofficeResponse = typing.Union[str, typing.Tuple[str, int], WerkzeugResponse, Forbidden]
 
 
 class UnauthenticatedUserError(Exception):
@@ -62,7 +63,7 @@ def permission_required(permission: perm_models.Permissions) -> typing.Callable:
 
     def wrapper(func: typing.Callable) -> typing.Callable:
         @wraps(func)
-        def wrapped(*args, **kwargs) -> tuple[FlaskResponse, int] | typing.Callable:  # type: ignore[no-untyped-def]
+        def wrapped(*args: typing.Any, **kwargs: typing.Any) -> tuple[FlaskResponse, int] | typing.Callable:
             _check_permission(permission)
 
             return func(*args, **kwargs)
@@ -88,7 +89,7 @@ def child_backoffice_blueprint(
 def custom_login_required(redirect_to: str) -> typing.Callable:
     def wrapper(func: typing.Callable) -> typing.Callable:
         @wraps(func)
-        def wrapped(*args, **kwargs) -> tuple[FlaskResponse, int] | typing.Callable:  # type: ignore[no-untyped-def]
+        def wrapped(*args: typing.Any, **kwargs: typing.Any) -> tuple[FlaskResponse, int] | typing.Callable:
             if not current_user.is_authenticated:
                 return werkzeug.utils.redirect(url_for(redirect_to))
 

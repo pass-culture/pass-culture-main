@@ -84,7 +84,7 @@ HTML_PAGINATION_CONTENT = """
 
 
 class HtmlParserTest:
-    def test_extract_table_rows(self) -> None:
+    def test_extract_table_rows(self):
         rows = html_parser.extract_table_rows(str.encode(HTML_TABLE_CONTENT))
 
         assert rows == [
@@ -92,22 +92,22 @@ class HtmlParserTest:
             {"Première colonne": "6789", "Dernière colonne": "Ligne 2"},
         ]
 
-    def test_extract_table_rows_no_table(self) -> None:
+    def test_extract_table_rows_no_table(self):
         rows = html_parser.extract_table_rows(str.encode(HTML_PAGINATION_CONTENT))
 
         assert not rows
 
-    def test_count_table_rows(self) -> None:
+    def test_count_table_rows(self):
         count = html_parser.count_table_rows(str.encode(HTML_TABLE_CONTENT))
 
         assert count == 2
 
-    def test_count_table_rows_no_table(self) -> None:
+    def test_count_table_rows_no_table(self):
         count = html_parser.count_table_rows(str.encode(HTML_PAGINATION_CONTENT))
 
         assert count == 0
 
-    def test_extract_pagination_info_single_page(self) -> None:
+    def test_extract_pagination_info_single_page(self):
         expected_page, expected_total_pages, total_items = html_parser.extract_pagination_info(
             str.encode(HTML_TABLE_CONTENT)
         )
@@ -116,7 +116,7 @@ class HtmlParserTest:
         assert expected_total_pages == 1
         assert total_items == 2
 
-    def test_extract_pagination_info_multiple_pages(self) -> None:
+    def test_extract_pagination_info_multiple_pages(self):
         current_page, total_pages, total_items = html_parser.extract_pagination_info(
             str.encode(HTML_PAGINATION_CONTENT)
         )

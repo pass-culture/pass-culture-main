@@ -33,7 +33,7 @@ class SearchUserModel(BaseModel):
     per_page: SearchPerPage = 20  # type: ignore
 
     @pydantic.validator("order_by", pre=True)
-    def validate_order_by(cls, value):  # type: ignore
+    def validate_order_by(cls, value: str) -> list[str]:
         if not value:
             return ["id"]
         return value.split(",")

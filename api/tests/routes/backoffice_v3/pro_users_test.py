@@ -79,7 +79,7 @@ class GetProUserTest:
             user = offerers_factories.UserOffererFactory(user__isActive=False).user
             return url_for("backoffice_v3_web.pro_user.get", user_id=user.id)
 
-    def test_get_pro_user(self, authenticated_client):  # type: ignore
+    def test_get_pro_user(self, authenticated_client):
         user = offerers_factories.UserOffererFactory(user__phoneNumber="+33638656565", user__postalCode="29000").user
         url = url_for("backoffice_v3_web.pro_user.get", user_id=user.id)
 
@@ -103,7 +103,7 @@ class GetProUserTest:
         assert "Validé" in badges
         assert "Suspendu" not in badges
 
-    def test_get_not_pro_user(self, authenticated_client):  # type: ignore
+    def test_get_not_pro_user(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()
         url = url_for("backoffice_v3_web.pro_user.get", user_id=user.id)
 

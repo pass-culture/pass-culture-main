@@ -15,7 +15,9 @@ class ValidationStatus(enum.Enum):
 
 @declarative_mixin
 class ValidationStatusMixin:
-    validationStatus = sqla.Column(sqla.Enum(ValidationStatus, create_constraint=False), nullable=False)
+    validationStatus: ValidationStatus = sqla.Column(
+        sqla.Enum(ValidationStatus, create_constraint=False), nullable=False
+    )
 
     @sqla_hybrid.hybrid_property
     def isNew(self) -> bool:

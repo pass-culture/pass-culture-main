@@ -50,7 +50,7 @@ def get_offerer_users(offerer_id: int) -> serialization.OffererAttachedUsersResp
                 email=user_offerer.user.email,
                 phoneNumber=user_offerer.user.phoneNumber,  # type: ignore [arg-type]
                 user_offerer_id=user_offerer.id,
-                validationStatus=user_offerer.validationStatus,  # type: ignore [arg-type]
+                validationStatus=user_offerer.validationStatus,
             )
             for user_offerer in users_offerer
         ]
