@@ -1,18 +1,18 @@
 import { api } from 'apiClient/api'
-import { VenueOfOffererFromSiretResponseModel } from 'apiClient/v1'
+import { GetVenuesOfOffererFromSiretResponseModel } from 'apiClient/v1'
 
 import { GET_DATA_ERROR_MESSAGE } from '../../../shared'
 
 export type GetVenueOfOffererProvidersAdapter = Adapter<
   string,
-  VenueOfOffererFromSiretResponseModel[],
-  VenueOfOffererFromSiretResponseModel[]
+  GetVenuesOfOffererFromSiretResponseModel,
+  null
 >
 
-const FAILING_RESPONSE = {
+const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
   message: GET_DATA_ERROR_MESSAGE,
-  payload: [],
+  payload: null,
 }
 
 const getVenuesOfOffererFromSiretAdapter: GetVenueOfOffererProvidersAdapter =
@@ -20,10 +20,11 @@ const getVenuesOfOffererFromSiretAdapter: GetVenueOfOffererProvidersAdapter =
     try {
       const venueOfOffererProvidersResponse =
         await api.getVenuesOfOffererFromSiret(siret)
+
       return {
         isOk: true,
         message: '',
-        payload: venueOfOffererProvidersResponse.venues,
+        payload: venueOfOffererProvidersResponse,
       }
     } catch (error) {
       return FAILING_RESPONSE
