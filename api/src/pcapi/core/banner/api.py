@@ -17,7 +17,19 @@ GEOLOCATION_BANNER = serializers.Banner(
 )
 
 
-def get_activation_banner(user_age: int | None) -> serializers.Banner | None:
+def get_banner(
+    user_subscription_state: subscription_models.UserSubscriptionState, user_age: int | None, is_geolocated: bool
+) -> serializers.Banner | None:
+    banner = None
+    if user_subscription_state.next_step in ACTIVATION_BANNER_NEXT_STEPS:
+        banner = _get_activation_banner(user_age)
+    elif not is_geolocated:
+        banner = GEOLOCATION_BANNER
+
+    return banner
+
+
+def _get_activation_banner(user_age: int | None) -> serializers.Banner | None:
     if not user_age:
         return None
 
