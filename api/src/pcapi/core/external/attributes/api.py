@@ -7,6 +7,7 @@ from typing import List
 from typing import Literal
 
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import load_only
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
@@ -14,6 +15,7 @@ from pcapi.core.categories import categories
 from pcapi.core.external.attributes import models
 from pcapi.core.external.batch import update_user_attributes as update_batch_user
 from pcapi.core.external.sendinblue import update_contact_attributes as update_sendinblue_user
+from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import models as offers_models
@@ -63,7 +65,8 @@ def get_user_or_pro_attributes(user: users_models.User) -> models.UserAttributes
 def get_pro_attributes(email: str) -> models.ProAttributes:
     # Offerer name attribute is the list of all offerers either managed by the user account (associated in user_offerer)
     # or the parent offerer of the venue which bookingEmail is the requested email address.
-    offerers_names = []
+    offerers_names: set[str] = set()
+    offerers_tags: set[str] = set()
 
     # All venues which are either managed by offerers associated with user account or linked to the current email as
     # booking email. A venue can be part of both sets.
@@ -71,16 +74,53 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
 
     attributes = {}
 
-    user = users_repository.find_pro_user_by_email(email)
+    user = (
+        users_repository.find_pro_user_by_email_query(email)
+        .options(
+            load_only(
+                users_models.User.firstName, users_models.User.lastName, users_models.User.notificationSubscriptions
+            ),
+            # Fetch information about offerers to which user is attached
+            joinedload(users_models.User.UserOfferers)
+            .load_only(offerers_models.UserOfferer.offererId, offerers_models.UserOfferer.validationStatus)
+            .joinedload(offerers_models.UserOfferer.offerer)
+            .load_only(offerers_models.Offerer.name, offerers_models.Offerer.isActive)
+            .joinedload(offerers_models.Offerer.tags)
+            .load_only(offerers_models.OffererTag.label),
+            # Fetch all attachments to these offerers, to check if current user is the "creator" (first user)
+            joinedload(users_models.User.UserOfferers)
+            .load_only(offerers_models.UserOfferer.id)
+            .joinedload(offerers_models.UserOfferer.offerer)
+            .load_only(offerers_models.Offerer.id)
+            .joinedload(offerers_models.Offerer.UserOfferers)
+            .load_only(offerers_models.UserOfferer.userId),
+            # Fetch useful information on all venues managed by these offerers
+            joinedload(users_models.User.UserOfferers)
+            .load_only(offerers_models.UserOfferer.id)
+            .joinedload(offerers_models.UserOfferer.offerer)
+            .load_only(offerers_models.Offerer.id)
+            .joinedload(offerers_models.Offerer.managedVenues)
+            .load_only(
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.name,
+                offerers_models.Venue.venueTypeCode,
+                offerers_models.Venue.departementCode,
+                offerers_models.Venue.postalCode,
+                offerers_models.Venue.venueLabelId,
+                offerers_models.Venue.adageId,
+            )
+            .joinedload(offerers_models.Venue.venueLabel)
+            .load_only(offerers_models.VenueLabel.label),
+        )
+        .one_or_none()
+    )
+
     if user:
         offerers = [
             user_offerer.offerer
             for user_offerer in user.UserOfferers
             if (user_offerer.isValidated and user_offerer.offerer.isActive)
         ]
-
-        if offerers:
-            offerers_names += [offerer.name for offerer in offerers]
 
         # A pro user is considered as:
         # - a creator if he is the lowest id of user_offerer association for any offerer,
@@ -91,19 +131,20 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         user_is_attached = False
         # A pro user is flagged EAC when at least one venue of his offerer has an adageId
         is_eac = False
-        if user and offerers:
-            offerer_ids = [offerer.id for offerer in offerers]
-            user_offerers = offerers_models.UserOfferer.query.filter(
-                offerers_models.UserOfferer.offererId.in_(offerer_ids)
-            ).all()
-            all_venues += offerers_repository.find_venues_by_offerers(*offerers)
-            for offerer_id in offerer_ids:
-                if min((uo.id, uo.userId) for uo in user_offerers if uo.offererId == offerer_id)[1] == user.id:
-                    user_is_creator = True
-                else:
-                    user_is_attached = True
-                if not is_eac and offerers_repository.offerer_has_venue_with_adage_id(offerer_id):
-                    is_eac = True
+
+        for offerer in offerers:
+            all_venues += offerer.managedVenues
+            offerers_names.add(offerer.name)
+            offerers_tags.update(tag.label for tag in offerer.tags)
+
+            if min((uo.id, uo.userId) for uo in offerer.UserOfferers)[1] == user.id:
+                user_is_creator = True
+            else:
+                user_is_attached = True
+
+            # Avoid offerers_repository.offerer_has_venue_with_adage_id which makes one extra request for each offerer
+            if not is_eac and any(bool(venue.adageId) for venue in offerer.managedVenues):
+                is_eac = True
 
         attributes.update(
             {
@@ -116,10 +157,36 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             }
         )
 
-    venues = offerers_repository.find_active_venues_by_booking_email(email)
+    venues = (
+        offerers_models.Venue.query.filter_by(bookingEmail=email)
+        .join(offerers_models.Offerer)
+        .filter(offerers_models.Offerer.isActive == True)
+        .options(
+            load_only(
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.name,
+                offerers_models.Venue.venueTypeCode,
+                offerers_models.Venue.departementCode,
+                offerers_models.Venue.postalCode,
+                offerers_models.Venue.venueLabelId,
+                offerers_models.Venue.isVirtual,
+                offerers_models.Venue.isPermanent,
+            ),
+            joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(offerers_models.Offerer.name)
+            .joinedload(offerers_models.Offerer.tags)
+            .load_only(offerers_models.OffererTag.label),
+            joinedload(offerers_models.Venue.bankInformation).load_only(finance_models.BankInformation.status),
+            joinedload(offerers_models.Venue.venueLabel).load_only(offerers_models.VenueLabel.label),
+        )
+        .all()
+    )
+
     if venues:
-        offerers_names += [venue.managingOfferer.name for venue in venues if venue.managingOfferer]
         all_venues += venues
+        for venue in venues:
+            offerers_names.add(venue.managingOfferer.name)
+            offerers_tags.update(tag.label for tag in venue.managingOfferer.tags)
         attributes.update(
             {
                 "dms_application_submitted": any(venue.hasPendingBankInformationApplication for venue in venues),
@@ -144,14 +211,15 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         is_user_email=bool(user),
         is_booking_email=bool(venues),
         marketing_email_subscription=marketing_email_subscription,
-        offerers_names=set(offerers_names),
+        offerers_names=offerers_names,
+        offerers_tags=offerers_tags,
         venues_ids={venue.id for venue in all_venues},
         venues_names={venue.publicName or venue.name for venue in all_venues},
         venues_types={venue.venueTypeCode.name for venue in all_venues},
         venues_labels={venue.venueLabel.label for venue in all_venues if venue.venueLabelId},  # type: ignore [misc]
         departement_code={venue.departementCode for venue in all_venues if venue.departementCode},
         postal_code={venue.postalCode for venue in all_venues if venue.postalCode},
-        **attributes,  # type: ignore [arg-type]
+        **attributes,
     )
 
 

@@ -154,6 +154,7 @@ def test_format_sendinblue_user():
         "IS_EMAIL_VALIDATED": user.isEmailValidated,
         "IS_PERMANENT": None,
         "IS_PRO": False,
+        "IS_TAGGED_COLLECTIVITE": None,
         "IS_UNDERAGE_BENEFICIARY": False,
         "IS_USER_EMAIL": None,
         "IS_VIRTUAL": None,
