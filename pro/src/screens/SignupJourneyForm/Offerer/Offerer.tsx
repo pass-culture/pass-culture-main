@@ -49,7 +49,7 @@ const Offerer = (): JSX.Element => {
 
     /* istanbul ignore next: should not happen, values.name is required */
     setOfferer({ ...formValues, name: response.payload.values?.name ?? '' })
-    if (siretExistResponse.payload.length === 0) {
+    if (siretExistResponse.payload.venues.length === 0) {
       navigate('/parcours-inscription/authentification')
     } else {
       navigate('/parcours-inscription/structures')

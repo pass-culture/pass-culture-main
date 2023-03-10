@@ -6,6 +6,7 @@ import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
 import { Activity } from 'screens/SignupJourneyForm/Activity'
 import { OffererAuthentication } from 'screens/SignupJourneyForm/Authentication'
 import { Offerer } from 'screens/SignupJourneyForm/Offerer'
+import { Offerers } from 'screens/SignupJourneyForm/Offerers'
 
 const SignupJourneyRoutes = () => {
   return (
@@ -13,6 +14,7 @@ const SignupJourneyRoutes = () => {
       <SignupJourneyFormLayout>
         <Routes>
           <Route path={'/structure'} element={<Offerer />} />
+          <Route path={'/structures'} element={<Offerers />} />
           <Route
             path={'/authentification'}
             element={<OffererAuthentication />}
