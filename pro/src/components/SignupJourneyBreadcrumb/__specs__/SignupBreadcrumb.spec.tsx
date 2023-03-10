@@ -61,4 +61,13 @@ describe('test SignupBreadcrumb', () => {
     tabValidation && (await userEvent.click(tabValidation))
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
   })
+
+  it('should not render breadcrumb when step is not include in breadcrumb step', async () => {
+    const { tabAuthentication, tabActivity, tabValidation } =
+      renderSignupBreadcrumb('/parcours-inscription/structure')
+
+    expect(tabAuthentication).not.toBeInTheDocument()
+    expect(tabActivity).not.toBeInTheDocument()
+    expect(tabValidation).not.toBeInTheDocument()
+  })
 })
