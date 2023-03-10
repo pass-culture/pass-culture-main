@@ -70,7 +70,6 @@ def activate_beneficiary_for_eligibility(
 
     elif eligibility == users_models.EligibilityType.AGE18:
         user.add_beneficiary_role()
-        user.remove_underage_beneficiary_role()
         age_at_registration = users_constants.ELIGIBILITY_AGE_18
     else:
         raise exceptions.InvalidEligibilityTypeException()

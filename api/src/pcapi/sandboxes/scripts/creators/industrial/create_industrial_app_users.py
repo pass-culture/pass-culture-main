@@ -282,7 +282,6 @@ def create_short_email_beneficiaries() -> dict[str, User]:
         fraud_factories.BeneficiaryFraudCheckFactory(user=beneficiary_and_exunderage)
     users_factories.DepositGrantFactory(user=beneficiary_and_exunderage)
     beneficiary_and_exunderage.add_beneficiary_role()
-    beneficiary_and_exunderage.remove_underage_beneficiary_role()
     users.append(beneficiary_and_exunderage)
 
     with freeze_time(datetime.utcnow() - relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, months=5)):
