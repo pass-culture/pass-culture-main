@@ -63,6 +63,7 @@ class ProAttributes:
     is_booking_email: bool  # Email address is set as bookingEmail for at least one active venue
     marketing_email_subscription: bool
     offerers_names: typing.Iterable[str]  # All active offerers associated with user account or bookingEmail
+    offerers_tags: typing.Iterable[str]  # Cumulative tags on all active offerers
     venues_ids: typing.Iterable[int]  # All active venues ids related to email (from user account or bookingEmail)
     venues_names: typing.Iterable[str]  # Distinct names of all these venues
     venues_types: typing.Iterable[str]  # Distinct types of all these venues

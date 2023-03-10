@@ -63,6 +63,7 @@ common_pro_attributes = attributes_models.ProAttributes(
     is_user_email=True,
     is_booking_email=True,
     offerers_names=["Offerer Name 1", "Offerer Name 2"],
+    offerers_tags={"Top Acteur", "Collectivité"},
     user_id=2,
     first_name="First name",
     last_name="Last name",
