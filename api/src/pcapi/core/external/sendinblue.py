@@ -89,7 +89,7 @@ class SendinblueAttributes(Enum):
     LAST_BOOKED_OFFER_2022 = "LAST_BOOKED_OFFER_2022"
 
     @classmethod
-    def list(cls):  # type: ignore [no-untyped-def]
+    def list(cls) -> list[str]:
         return list(map(lambda c: c.value, cls))
 
 
@@ -395,7 +395,7 @@ def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int) -> bool:
         # We are safe :-)
         max_emails_per_import = 200000
 
-        def chunk(it, size) -> Iterable:  # type: ignore [no-untyped-def]
+        def chunk(it: Iterable, size: int) -> Iterable:
             it = iter(it)
             return iter(lambda: tuple(islice(it, size)), ())
 
