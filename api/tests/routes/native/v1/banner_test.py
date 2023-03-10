@@ -131,3 +131,22 @@ class BannerTest:
                 "text": "à dépenser sur l'application",
             }
         }
+
+    def should_return_retry_banner_on_ubble_retry(self, client):
+        user = users_factories.EligibleGrant18Factory(
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        fraud_factories.UbbleRetryFraudCheckFactory(user=user)
+
+        client.with_token(email=user.email)
+        response = client.get("/native/v1/banner")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "banner": {
+                "name": "retry_identity_check_banner",
+                "title": "Nous n’avons pas pu vérifier ton identité",
+                "text": "Réessaie dès maintenant",
+            }
+        }
