@@ -23,7 +23,7 @@ const renderSignupJourneyRoutes = async (
     </Routes>,
     {
       storeOverrides,
-      initialRouterEntries: ['/parcours-inscription/authentification'],
+      initialRouterEntries: ['/parcours-inscription/structure'],
     }
   )
 }
@@ -49,7 +49,9 @@ describe('SignupJourneyRoutes', () => {
   it('should render component', async () => {
     renderSignupJourneyRoutes(store)
     await waitFor(() => {
-      expect(screen.getByText('Activité')).toBeInTheDocument()
+      expect(
+        screen.getByText('Renseignez le SIRET de votre structure')
+      ).toBeInTheDocument()
     })
   })
 })

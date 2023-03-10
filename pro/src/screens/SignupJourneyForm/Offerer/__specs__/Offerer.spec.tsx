@@ -128,7 +128,7 @@ describe('screens:SignupJourney::Offerer', () => {
   it('should display authentication signup journey step on submit', async () => {
     contextValue.offerer = {
       siret: '12345678933333',
-      name: '',
+      name: 'Test',
     }
 
     renderOffererScreen(contextValue)
