@@ -441,7 +441,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         postgresql.ARRAY(sa.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
         nullable=True,
     )
-    resultContent = sa.Column(sa.dialects.postgresql.JSONB(none_as_null=True))
+    resultContent: sa.orm.Mapped[dict | None] = sa.Column(sa.dialects.postgresql.JSONB(none_as_null=True))
     status = sa.Column(sa.Enum(FraudCheckStatus, create_constraint=False), nullable=True)
     thirdPartyId: str = sa.Column(sa.TEXT(), index=True, nullable=False)
     type: FraudCheckType = sa.Column(sa.Enum(FraudCheckType, create_constraint=False), nullable=False)
@@ -473,7 +473,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
             raise NotImplementedError(f"Cannot unserialize type {self.type}")
         if self.resultContent is None:
             raise ValueError("No source data associated with this fraud check")
-        return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)  # type: ignore [arg-type]
+        return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)
 
     @property
     def applicable_eligibilities(self) -> list[users_models.EligibilityType]:
