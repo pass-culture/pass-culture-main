@@ -1,3 +1,4 @@
+{% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 
 <div class="row row-cols-1 g-4 py-3">
@@ -24,13 +25,40 @@
                                 doublon : {{ duplicate_user_id }}</a></small>
                         {% endif %}
                     </h5>
-                    <div class="ms-auto">
-                        <div class="d-flex justify-content-end">
-                            <a href="{{ url_for('.edit_public_account', user_id=user.id) }}"
-                               class="btn btn-block btn-outline-primary lead fw-bold">
+                    <div class="d-flex row-reverse justify-content-end flex-grow-1">
+                        {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
+                            <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end" data-bs-toggle="modal"
+                                    data-bs-target="#edit-public-account-modal" type="button">
                                 Modifier les informations
-                            </a>
-                        </div>
+                            </button>
+                            <div class="modal modal-lg fade" id="edit-public-account-modal" tabindex="-1"
+                                aria-labelledby="edit-public-account-modal-label" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <form
+                                            action="{{ url_for(".update_public_account", user_id=user.id) }}"
+                                            name="{{ url_for(".update_public_account", user_id=user.id) | action_to_name }}"
+                                            method="POST"
+                                        >
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Modifier les informations</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="form-floating my-3">
+                                                    {{ build_form_fields_group(edit_account_form) }}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                                                    Annuler
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -103,7 +131,7 @@
                                         name="{{ url_for('.manually_validate_phone_number', user_id=user.id) | action_to_name }}"
                                         method="POST"
                                     >
-                                        {{ manual_validation_form.csrf_token }}
+                                        {{ manual_phone_validation_form.csrf_token }}
 
                                         <button class="btn btn-outline-secondary btn-sm fw-bold mt-1">
                                             Valider le numéro de téléphone
@@ -123,11 +151,36 @@
                                     {{ build_modal_form("unsuspend", suspension_dst, suspension_form, "Réactiver le compte", "Confirmer la réactivation") }}
                                 {% endif %}
                             </div>
-                            <div>
-                                <a href="{{ url_for('.edit_public_account_review', user_id=user.id) }}"
-                                   class="card-link btn btn-block btn-outline-primary lead fw-bold">
-                                    Revue manuelle
-                                </a>
+                            <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end" data-bs-toggle="modal"
+                                    data-bs-target="#review-public-account-modal" type="button">
+                                Revue manuelle
+                            </button>
+                            <div class="modal modal-lg fade" id="review-public-account-modal" tabindex="-1"
+                                aria-labelledby="review-public-account-modal-label" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <form
+                                            action="{{ url_for(".review_public_account", user_id=user.id) }}"
+                                            name="{{ url_for(".review_public_account", user_id=user.id) | action_to_name }}"
+                                            method="POST"
+                                        >
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Revue manuelle</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="form-floating my-3">
+                                                    {{ build_form_fields_group(manual_review_form) }}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                                                    Annuler
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         {% endif %}
                     </div>

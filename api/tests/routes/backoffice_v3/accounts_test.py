@@ -569,26 +569,6 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         assert history_rows[4]["Auteur"] == legit_user.full_name
 
 
-class EditPublicAccountTest(accounts_helpers.PageRendersHelper):
-    endpoint = "backoffice_v3_web.public_accounts.edit_public_account"
-
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.public_accounts.edit_public_account"
-        endpoint_kwargs = {"user_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
-
-    def test_edit_public_account(self, authenticated_client):
-        # given
-        user = users_factories.BeneficiaryGrant18Factory()
-
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-
-        # then
-        # form page is generated without exception
-        assert response.status_code == 200
-
-
 class UpdatePublicAccountTest:
     class UnauthorizedTest(unauthorized_helpers.MissingCSRFHelper):
         endpoint = "backoffice_v3_web.public_accounts.update_public_account"
@@ -766,7 +746,7 @@ class UpdatePublicAccountTest:
 
         # then
         assert response.status_code == 400
-        assert html_parser.extract_warnings(response.data) == ["Email obligatoire"]
+        assert "Le formulaire n'est pas valide" in html_parser.extract_alert(response.data)
 
     def test_email_already_exists(self, authenticated_client):
         user_to_edit = users_factories.BeneficiaryGrant18Factory()
@@ -780,7 +760,7 @@ class UpdatePublicAccountTest:
 
         response = self.update_account(authenticated_client, user_to_edit, base_form)
         assert response.status_code == 400
-        assert html_parser.extract_warnings(response.data) == ["L'email est déjà associé à un autre utilisateur"]
+        assert html_parser.extract_alert(response.data) == "L'email est déjà associé à un autre utilisateur"
 
         user_to_edit = users_models.User.query.get(user_to_edit.id)
         assert user_to_edit.email != other_user.email
@@ -814,7 +794,7 @@ class UpdatePublicAccountTest:
         user_to_edit = users_models.User.query.get(user_to_edit.id)
         assert user_to_edit.idPieceNumber is None
 
-    def test_unvalid_phone_number(self, authenticated_client):
+    def test_invalid_phone_number(self, authenticated_client):
         user_to_edit = users_factories.BeneficiaryGrant18Factory()
         old_phone_number = user_to_edit.phoneNumber
 
@@ -826,12 +806,7 @@ class UpdatePublicAccountTest:
         }
 
         response = self.update_account(authenticated_client, user_to_edit, base_form)
-        assert response.status_code == 303
-
-        expected_url = url_for(
-            "backoffice_v3_web.public_accounts.get_public_account", user_id=user_to_edit.id, _external=True
-        )
-        response = authenticated_client.get(expected_url)
+        assert response.status_code == 400
 
         user_to_edit = users_models.User.query.get(user_to_edit.id)
         assert user_to_edit.phoneNumber == old_phone_number
@@ -839,8 +814,8 @@ class UpdatePublicAccountTest:
 
     def update_account(self, authenticated_client, user_to_edit, form):
         # generate csrf token
-        edit_url = url_for("backoffice_v3_web.public_accounts.edit_public_account", user_id=user_to_edit.id)
-        authenticated_client.get(edit_url)
+        public_account_url = url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_to_edit.id)
+        authenticated_client.get(public_account_url)
 
         url = url_for("backoffice_v3_web.public_accounts.update_public_account", user_id=user_to_edit.id)
 
@@ -1022,26 +997,6 @@ class SendValidationCodeTest:
         return authenticated_client.post(url, form=form)
 
 
-class EditPublicAccountReviewTest(accounts_helpers.PageRendersHelper):
-    endpoint = "backoffice_v3_web.public_accounts.edit_public_account_review"
-
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.public_accounts.edit_public_account_review"
-        endpoint_kwargs = {"user_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
-
-    def test_edit_review(self, authenticated_client):
-        # given
-        user = users_factories.UserFactory()
-
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-
-        # then
-        # form page is generated without exception
-        assert response.status_code == 200
-
-
 class UpdatePublicAccountReviewTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
         endpoint = "backoffice_v3_web.public_accounts.review_public_account"
@@ -1088,7 +1043,7 @@ class UpdatePublicAccountReviewTest:
         }
 
         response = self.add_new_review(authenticated_client, user, base_form)
-        assert response.status_code == 400
+        assert response.status_code == 303
 
         user = users_models.User.query.get(user.id)
         assert not user.deposits
@@ -1134,8 +1089,8 @@ class UpdatePublicAccountReviewTest:
 
     def add_new_review(self, authenticated_client, user_to_edit, form):
         # generate csrf token
-        edit_url = url_for("backoffice_v3_web.public_accounts.edit_public_account", user_id=user_to_edit.id)
-        response = authenticated_client.get(edit_url)
+        public_account_url = url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_to_edit.id)
+        response = authenticated_client.get(public_account_url)
 
         assert response.status_code == 200
 
