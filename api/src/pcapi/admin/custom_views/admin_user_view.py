@@ -88,6 +88,10 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
         return self.session.query(func.count(distinct(User.id))).select_from(User).filter(User.has_admin_role.is_(True))  # type: ignore [attr-defined]
 
     def on_model_change(self, form: Form, model: User, is_created: bool) -> None:
+        if is_created:
+            # Necessary because Flask-Admin calls a function of SQLAlchemy
+            # that uses __new__, not __init__ (that sets `roles`).
+            model.roles = []
         model.publicName = f"{model.firstName} {model.lastName}"
         model.add_admin_role()
         model.hasSeenProTutorials = True

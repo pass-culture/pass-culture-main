@@ -309,6 +309,9 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         model.publicName = f"{model.firstName} {model.lastName}"
 
         if is_created:
+            # Necessary because Flask-Admin calls a function of SQLAlchemy
+            # that uses __new__, not __init__ (that sets `roles`).
+            model.roles = []
             model.add_beneficiary_role()
 
             users_api.fulfill_beneficiary_data(model, "pass-culture-admin", EligibilityType.AGE18)

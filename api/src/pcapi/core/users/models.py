@@ -1,4 +1,3 @@
-import copy
 from dataclasses import asdict
 from dataclasses import dataclass
 from datetime import date
@@ -224,16 +223,17 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     backoffice_profile = orm.relationship("BackOfficeUserProfile", uselist=False, back_populates="user")  # type: ignore [misc]
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
 
+    def __init__(self, **kwargs: typing.Any) -> None:
+        kwargs.setdefault("roles", [])
+        super().__init__(**kwargs)
+
     def _add_role(self, role: UserRole) -> None:
         from pcapi.core.users.exceptions import InvalidUserRoleException
 
-        if self.roles is None:
-            self.roles = []
-        if self.roles and role in self.roles:
+        if role in self.roles:
             return
 
-        current_roles = copy.deepcopy(self.roles) if self.roles else []
-        updated_roles = current_roles + [role]
+        updated_roles = self.roles + [role]
 
         if UserRole.BENEFICIARY in updated_roles and UserRole.ADMIN in updated_roles:
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
@@ -562,7 +562,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     @hybrid_property
     def has_admin_role(self) -> bool:
-        return UserRole.ADMIN in self.roles if self.roles else False
+        return UserRole.ADMIN in self.roles
 
     @has_admin_role.expression  # type: ignore [no-redef]
     def has_admin_role(cls) -> bool:  # pylint: disable=no-self-argument
@@ -570,7 +570,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     @hybrid_property
     def has_beneficiary_role(self) -> bool:
-        return UserRole.BENEFICIARY in self.roles if self.roles else False
+        return UserRole.BENEFICIARY in self.roles
 
     @has_beneficiary_role.expression  # type: ignore [no-redef]
     def has_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
@@ -578,7 +578,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     @hybrid_property
     def has_pro_role(self) -> bool:
-        return UserRole.PRO in self.roles if self.roles else False
+        return UserRole.PRO in self.roles
 
     @has_pro_role.expression  # type: ignore [no-redef]
     def has_pro_role(cls) -> bool:  # pylint: disable=no-self-argument
@@ -586,7 +586,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     @hybrid_property
     def has_non_attached_pro_role(self) -> bool:
-        return UserRole.NON_ATTACHED_PRO in self.roles if self.roles else False
+        return UserRole.NON_ATTACHED_PRO in self.roles
 
     @has_non_attached_pro_role.expression  # type: ignore [no-redef]
     def has_non_attached_pro_role(cls) -> bool:  # pylint: disable=no-self-argument
@@ -594,7 +594,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     @hybrid_property
     def has_underage_beneficiary_role(self) -> bool:
-        return UserRole.UNDERAGE_BENEFICIARY in self.roles if self.roles else False
+        return UserRole.UNDERAGE_BENEFICIARY in self.roles
 
     @has_underage_beneficiary_role.expression  # type: ignore [no-redef]
     def has_underage_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
@@ -602,7 +602,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     @hybrid_property
     def has_test_role(self) -> bool:
-        return UserRole.TEST in self.roles if self.roles else False
+        return UserRole.TEST in self.roles
 
     @has_test_role.expression  # type: ignore [no-redef]
     def has_test_role(cls) -> bool:  # pylint: disable=no-self-argument
