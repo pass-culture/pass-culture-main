@@ -5,7 +5,7 @@ import {
 } from 'screens/OfferIndividual/StocksEventEdition/StockFormList'
 import { stockEventFactory } from 'screens/OfferIndividual/StocksEventEdition/StockFormList/stockEventFactory'
 
-import { serializeStockEventList } from '../serializers'
+import { serializeStockEventEdition } from '../serializers'
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
@@ -14,7 +14,7 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2022-09-26T13:00:00Z')),
 }))
 
-describe('screens::StockEvent::serializers:serializeStockEventList', () => {
+describe('screens::StockEvent::serializers:serializeStockEventEdition', () => {
   let formValuesList: IStockEventFormValues[]
   let departementCode: string
 
@@ -44,7 +44,7 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
       quantity: null,
     }
 
-    const serializedData = serializeStockEventList(
+    const serializedData = serializeStockEventEdition(
       formValuesList,
       departementCode
     )
@@ -60,7 +60,7 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
       quantity: null,
     }
 
-    const serializedData = serializeStockEventList(
+    const serializedData = serializeStockEventEdition(
       [
         ...formValuesList.map((formValues: IStockEventFormValues) => ({
           ...formValues,
@@ -82,7 +82,7 @@ describe('screens::StockEvent::serializers:serializeStockEventList', () => {
       quantity: null,
     }
 
-    const serializedData = serializeStockEventList(
+    const serializedData = serializeStockEventEdition(
       [
         ...formValuesList.map((formValues: IStockEventFormValues) => ({
           ...formValues,
