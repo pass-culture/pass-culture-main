@@ -56,6 +56,11 @@ class OfferStockResponse(BaseModel):
     remainingQuantity: int | None
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
+    _convert_remainingQuantity = validator(
+        "remainingQuantity",
+        pre=True,
+        allow_reuse=True,
+    )(lambda quantity: quantity if quantity != "unlimited" else None)
 
     class Config:
         orm_mode = True
@@ -86,9 +91,6 @@ class OfferStockResponse(BaseModel):
 
         price_category = getattr(stock, "priceCategory", None)
         stock_response.priceCategoryLabel = price_category.priceCategoryLabel.label if price_category else None
-        stock_response.remainingQuantity = (
-            stock.remainingQuantity if stock.remainingQuantity != "unlimited" else None  # type: ignore [assignment]
-        )
 
         return stock_response
 
