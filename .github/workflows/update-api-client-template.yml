@@ -39,7 +39,7 @@ jobs:
           for changed_file in ${{ steps.files.outputs.all }}; do
             if [[ "$changed_file" == "pro/yarn.lock" || "$changed_file" == "adage-front/yarn.lock" || "$changed_file" == "api/requirements.txt" ]];
               then
-                echo ::set-output name=dependency-change::'true'
+                echo "dependency-change=true" >> $GITHUB_OUTPUT
             fi
           done
 
@@ -48,9 +48,9 @@ jobs:
         run: |
           if ${{ (!inputs.trigger-only-on-api-change && !inputs.trigger-only-on-dependency-change) || (inputs.trigger-only-on-api-change && steps.changes-api.outputs.src == 'true') || (inputs.trigger-only-on-dependency-change && steps.check-dependency-change.outputs.dependency-change == 'true') }};
             then
-              echo ::set-output name=should-run-cache::'true'
+              echo "should-run-cache=true" >> $GITHUB_OUTPUT
             else
-              echo ::set-output name=should-run-cache::'false'
+              echo "should-run-cache=false" >> $GITHUB_OUTPUT
           fi
 
       - uses: actions/setup-node@v2
@@ -128,9 +128,9 @@ jobs:
         run: |
           if [[ -z "$(git status --porcelain $STATUS_ARGS $PATHSPEC)" ]];
             then
-              echo ::set-output name=changed::'false'
+              echo "changed=false" >> $GITHUB_OUTPUT
             else
-              echo ::set-output name=changed::'true'
+              echo "changed=true" >> $GITHUB_OUTPUT
             fi
 
       - name: Commit
