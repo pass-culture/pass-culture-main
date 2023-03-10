@@ -239,3 +239,10 @@ class ProfileCompletionFraudCheckFactory(BeneficiaryFraudCheckFactory):
     type = models.FraudCheckType.PROFILE_COMPLETION
     resultContent = factory.SubFactory(ProfileCompletionContentFactory)
     status = models.FraudCheckStatus.OK
+
+
+class UbbleRetryFraudCheckFactory(BeneficiaryFraudCheckFactory):
+    type = models.FraudCheckType.UBBLE
+    resultContent = factory.SubFactory(UbbleContentFactory)
+    status = models.FraudCheckStatus.KO
+    reasonCodes = [models.FraudReasonCode.ID_CHECK_UNPROCESSABLE]

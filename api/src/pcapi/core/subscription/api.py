@@ -292,6 +292,20 @@ def can_retry_identity_fraud_check(identity_fraud_check: fraud_models.Beneficiar
     return False
 
 
+def should_retry_identity_check(user_subscription_state: models.UserSubscriptionState) -> bool:
+    fraud_check = user_subscription_state.identity_fraud_check
+    if not fraud_check:
+        return False
+
+    if (
+        user_subscription_state.next_step == models.SubscriptionStep.IDENTITY_CHECK
+        and _has_subscription_issues(user_subscription_state)
+        and can_retry_identity_fraud_check(fraud_check)
+    ):
+        return True
+    return False
+
+
 def get_relevant_identity_fraud_check(
     user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> fraud_models.BeneficiaryFraudCheck | None:

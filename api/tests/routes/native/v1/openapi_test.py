@@ -88,7 +88,7 @@ def test_public_api(client):
                 },
                 "BannerName": {
                     "description": "An enumeration.",
-                    "enum": ["geolocation_banner", "activation_banner"],
+                    "enum": ["geolocation_banner", "activation_banner", "retry_identity_check_banner"],
                     "title": "BannerName",
                 },
                 "BannerResponse": {
