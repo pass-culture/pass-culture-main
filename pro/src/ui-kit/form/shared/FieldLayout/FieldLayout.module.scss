@@ -9,6 +9,11 @@
   margin-bottom: rem.torem(16px);
 
   &-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap;
+    
     &-container {
       margin-bottom: rem.torem(forms.$label-space-before-input);
 
@@ -16,10 +21,6 @@
         display: none;
       }
     }
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    white-space: nowrap;
   }
 
   &-small-label &-label {

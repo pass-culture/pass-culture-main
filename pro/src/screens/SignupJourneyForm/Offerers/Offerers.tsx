@@ -19,6 +19,7 @@ const Offerers = (): JSX.Element => {
 
   const { offerer } = useSignupJourneyContext()
 
+  /* istanbul ignore next: redirect to offerer if there is no siret */
   const {
     isLoading: isLoadingVenues,
     error: venuesOfOffererError,
