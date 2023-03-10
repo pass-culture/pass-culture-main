@@ -32,7 +32,7 @@ pytestmark = [
 
 
 @pytest.fixture(scope="function", name="venue")
-def venue_fixture(offerer):  # type: ignore
+def venue_fixture(offerer) -> offerers_models.Venue:
     venue = offerers_factories.VenueReimbursementPointLinkFactory().venue
     finance_factories.BankInformationFactory(
         venue=venue,
@@ -48,7 +48,7 @@ class GetVenueTest:
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_bank_info_status")
-    def test_get_venue(self, bank_info_mock, authenticated_client, venue):  # type: ignore
+    def test_get_venue(self, bank_info_mock, authenticated_client, venue):
         bank_info_mock.return_value = {
             "dossier": {
                 "state": "en_construction",

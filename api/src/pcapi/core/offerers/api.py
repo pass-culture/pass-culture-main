@@ -1427,7 +1427,7 @@ def _apply_query_filters(
             )
 
     if status:
-        query = query.filter(cls.validationStatus.in_(status))  # type: ignore [union-attr]
+        query = query.filter(cls.validationStatus.in_(status))  # type: ignore [attr-defined]
 
     if tags:
         tagged_offerers = (

@@ -17,7 +17,7 @@ pytestmark = [
 
 
 class LoginPageTest:
-    def test_view_login_page(self, client, app):  # type: ignore
+    def test_view_login_page(self, client, app):
         response = client.get(url_for("backoffice_v3_web.login"))
 
         assert response.status_code == 302
@@ -27,7 +27,7 @@ class LoginPageTest:
 class AuthorizePageTest:
     @patch("pcapi.routes.backoffice_v3.auth.oauth.google.parse_id_token")
     @patch("pcapi.routes.backoffice_v3.auth.oauth.google.authorize_access_token")
-    def test_authorize(self, mock_authorize_access_token, mock_parse_id_token, client):  # type: ignore
+    def test_authorize(self, mock_authorize_access_token, mock_parse_id_token, client):
         mock_parse_id_token.return_value = {
             "email": "email@example.com",
             "name": "Name",
@@ -47,7 +47,7 @@ class AuthorizePageTest:
     @patch("pcapi.routes.backoffice_v3.auth.fetch_user_roles_from_google_workspace")
     @patch("pcapi.routes.backoffice_v3.auth.oauth.google.parse_id_token")
     @patch("pcapi.routes.backoffice_v3.auth.oauth.google.authorize_access_token")
-    def test_authorize_with_google_credentials(  # type: ignore
+    def test_authorize_with_google_credentials(
         self,
         mock_authorize_access_token,
         mock_parse_id_token,
@@ -84,9 +84,7 @@ class AuthorizePageTest:
     @override_settings(GOOGLE_CLIENT_SECRET="some client secret")
     @patch("pcapi.routes.backoffice_v3.auth.oauth.google.parse_id_token")
     @patch("pcapi.routes.backoffice_v3.auth.oauth.google.authorize_access_token")
-    def test_user_not_found_with_google_credentials(  # type: ignore
-        self, mock_authorize_access_token, mock_parse_id_token, client
-    ):
+    def test_user_not_found_with_google_credentials(self, mock_authorize_access_token, mock_parse_id_token, client):
         mock_parse_id_token.return_value = {
             "email": "email@example.com",
             "name": "Name",
@@ -101,7 +99,7 @@ class AuthorizePageTest:
 
 
 class LogoutTest:
-    def test_logout_success(self, client):  # type: ignore
+    def test_logout_success(self, client):
         user = users_factories.UserFactory()
 
         # fetch home page to get the logout csrf token
@@ -114,12 +112,12 @@ class LogoutTest:
         assert response.status_code == 302
         assert response.location == url_for("backoffice_v3_web.home", _external=True)
 
-    def test_no_csrf_token(self, client):  # type: ignore
+    def test_no_csrf_token(self, client):
         response = client.post(url_for("backoffice_v3_web.logout"))
         assert response.status_code == 400
 
 
 class UserNotFoundPageTest:
-    def test_renders(self, client):  # type: ignore
+    def test_renders(self, client):
         response = client.get(url_for("backoffice_v3_web.user_not_found"))
         assert response.status_code == 200

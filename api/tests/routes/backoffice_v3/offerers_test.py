@@ -36,7 +36,7 @@ pytestmark = [
 
 
 @pytest.fixture(scope="function", name="venue")
-def venue_fixture(offerer):  # type: ignore
+def venue_fixture(offerer) -> offerers_models.Venue:
     venue = offerers_factories.VenueFactory(managingOfferer=offerer)
     finance_factories.BankInformationFactory(
         venue=venue,
@@ -46,7 +46,7 @@ def venue_fixture(offerer):  # type: ignore
 
 
 @pytest.fixture(scope="function", name="offer")
-def offer_fixture(venue):  # type: ignore
+def offer_fixture(venue) -> offers_models.Offer:
     return offers_factories.OfferFactory(
         venue=venue,
         isActive=True,
@@ -55,7 +55,7 @@ def offer_fixture(venue):  # type: ignore
 
 
 @pytest.fixture(scope="function", name="booking")
-def booking_fixture(offer):  # type: ignore
+def booking_fixture(offer) -> bookings_models.Booking:
     stock = offers_factories.StockFactory(offer=offer)
     return bookings_factories.BookingFactory(
         status=bookings_models.BookingStatus.USED,
@@ -71,7 +71,7 @@ class GetOffererTest:
         endpoint_kwargs = {"offerer_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    def test_get_offerer(self, authenticated_client, offerer, top_acteur_tag):  # type: ignore
+    def test_get_offerer(self, authenticated_client, offerer, top_acteur_tag):
         offerers_factories.OffererTagMappingFactory(tagId=top_acteur_tag.id, offererId=offerer.id)
 
         url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id)
@@ -297,7 +297,7 @@ class GetOffererStatsTest:
         endpoint_kwargs = {"offerer_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    def test_get_stats(self, authenticated_client, offerer, offer, booking):  # type: ignore
+    def test_get_stats(self, authenticated_client, offerer, offer, booking):
         url = url_for("backoffice_v3_web.offerer.get_stats", offerer_id=offerer.id)
 
         # get session (1 query)

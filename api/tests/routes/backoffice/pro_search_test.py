@@ -54,7 +54,7 @@ class ProSearchUserTest:
         number: int = 12,
         first_names: list[str] = ("Alice", "Bob", "Oscar"),
         last_names: list[str] = ("Martin", "Bernard", "Durand", "Dubois"),
-    ) -> None:
+    ):
         self.pro_accounts = []
         for i in range(number):
             first_name = first_names[i % len(first_names)]
@@ -220,7 +220,7 @@ class ProSearchOffererTest:
         number: int = 12,
         name_part1: list[str] = ("Librairie", "Cinéma", "Théâtre"),
         name_part2: list[str] = ("de la Gare", "de la Plage", "du Centre", "du Centaure"),
-    ) -> None:
+    ):
         validation_statuses = list(ValidationStatus)
         self.offerers = []
         for i in range(number):
@@ -314,7 +314,7 @@ class ProSearchVenueTest:
         name_part2_admin: list[str] = ("Alpha", "Beta", "Gamma", "Delta"),
         name_part2_public: list[str] = ("de la Gare", "de la Plage", "du Centre", "du Centaure"),
         domains: list[str] = ("librairie.fr", "cinema.com", "theatre.net"),
-    ) -> None:
+    ):
         validation_statuses = list(ValidationStatus)
         self.venues = []
         for i in range(number):

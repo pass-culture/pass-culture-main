@@ -9,6 +9,6 @@ pytestmark = [
 
 
 class HomePageTest:
-    def test_view_home_page(self, client):  # type: ignore
+    def test_view_home_page(self, client):
         response = client.get(url_for("backoffice_v3_web.home"))
         assert response.status_code == 200

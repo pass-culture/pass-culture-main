@@ -13,7 +13,7 @@ pytestmark = [
 ]
 
 
-def _test_autocomplete(authenticated_client, endpoint: str, search_query: str, expected_texts: list[str]) -> None:
+def _test_autocomplete(authenticated_client, endpoint: str, search_query: str, expected_texts: list[str]):
     # when
     response = authenticated_client.get(url_for(endpoint, q=search_query))
 

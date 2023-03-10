@@ -10,6 +10,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
@@ -345,9 +346,9 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
         date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
     )
 
-    sorted_offerers = offerers.order_by(offerers_models.Offerer.dateCreated.desc())
+    sorted_offerers: BaseQuery = offerers.order_by(offerers_models.Offerer.dateCreated.desc())
 
-    paginated_offerers = sorted_offerers.paginate(  # type: ignore [attr-defined]
+    paginated_offerers = sorted_offerers.paginate(
         page=int(form.data["page"]),
         per_page=int(form.data["per_page"]),
     )
@@ -525,9 +526,9 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
         date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
     )
 
-    sorted_users_offerers = users_offerers.order_by(offerers_models.UserOfferer.id.desc())
+    sorted_users_offerers: BaseQuery = users_offerers.order_by(offerers_models.UserOfferer.id.desc())
 
-    paginated_users_offerers = sorted_users_offerers.paginate(  # type: ignore [attr-defined]
+    paginated_users_offerers = sorted_users_offerers.paginate(
         page=int(form.data["page"]),
         per_page=int(form.data["per_page"]),
     )

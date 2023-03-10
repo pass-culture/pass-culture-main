@@ -106,7 +106,7 @@ class SearchPublicAccountsUnauthorizedTest(unauthorized_helpers.UnauthorizedHelp
 class SearchPublicAccountsTest(search_helpers.SearchHelper):
     endpoint = "backoffice_v3_web.public_accounts.search_public_accounts"
 
-    def test_search_result_page(self, authenticated_client, legit_user):  # type: ignore
+    def test_search_result_page(self, authenticated_client, legit_user):
         url = url_for(self.endpoint, terms=legit_user.email, order_by="", page=1, per_page=20)
 
         response = authenticated_client.get(url)
@@ -114,7 +114,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper):
         assert response.status_code == 200, f"[{response.status}] {response.location}"
         assert legit_user.email in str(response.data)
 
-    def test_malformed_query(self, authenticated_client, legit_user):  # type: ignore
+    def test_malformed_query(self, authenticated_client, legit_user):
         url = url_for(self.endpoint, terms=legit_user.email, order_by="unknown_field")
 
         response = authenticated_client.get(url)

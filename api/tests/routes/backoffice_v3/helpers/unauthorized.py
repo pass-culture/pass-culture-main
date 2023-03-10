@@ -25,15 +25,15 @@ class UnauthorizedHelperBase(base.BaseHelper, metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def test_missing_permission(self, client):  # type: ignore
+    def test_missing_permission(self, client):
         pass
 
     @abc.abstractmethod
-    def test_no_backoffice_profile(self, client):  # type: ignore
+    def test_no_backoffice_profile(self, client):
         pass
 
     @abc.abstractmethod
-    def test_not_logged_in(self, client):  # type: ignore
+    def test_not_logged_in(self, client):
         pass
 
     def setup_user(self) -> users_models.User:
@@ -54,7 +54,7 @@ class UnauthorizedHelperBase(base.BaseHelper, metaclass=abc.ABCMeta):
 
 
 class UnauthorizedHelper(UnauthorizedHelperBase):
-    def test_missing_permission(self, client):  # type: ignore
+    def test_missing_permission(self, client):
         user = self.setup_user()
 
         authenticated_client = client.with_bo_session_auth(user)
@@ -62,7 +62,7 @@ class UnauthorizedHelper(UnauthorizedHelperBase):
 
         assert response.status_code == 403
 
-    def test_no_backoffice_profile(self, client):  # type: ignore
+    def test_no_backoffice_profile(self, client):
         user = users_factories.UserFactory(isActive=True)
 
         authenticated_client = client.with_bo_session_auth(user)
@@ -70,7 +70,7 @@ class UnauthorizedHelper(UnauthorizedHelperBase):
 
         assert response.status_code == 403
 
-    def test_not_logged_in(self, client):  # type: ignore
+    def test_not_logged_in(self, client):
         response = getattr(client, self.http_method)(self.path)
         assert response.status_code in (302, 303)
 
@@ -87,7 +87,7 @@ class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
     def form(self) -> dict:
         return {"csrf_token": g.get("csrf_token", None)}
 
-    def test_missing_permission(self, client):  # type: ignore
+    def test_missing_permission(self, client):
         user = self.setup_user()
 
         self.fetch_csrf_token(client)
@@ -99,7 +99,7 @@ class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
 
         assert response.status_code == 403
 
-    def test_no_backoffice_profile(self, client):  # type: ignore
+    def test_no_backoffice_profile(self, client):
         user = users_factories.UserFactory(isActive=True)
 
         self.fetch_csrf_token(client)
@@ -111,7 +111,7 @@ class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
 
         assert response.status_code == 403
 
-    def test_not_logged_in(self, client):  # type: ignore
+    def test_not_logged_in(self, client):
         self.fetch_csrf_token(client)
 
         client_method = getattr(client, self.method)
@@ -122,7 +122,7 @@ class UnauthorizedHelperWithCsrf(UnauthorizedHelperBase):
         expected_url = url_for("backoffice_v3_web.home", _external=True)
         assert response.location == expected_url
 
-    def fetch_csrf_token(self, client):  # type: ignore
+    def fetch_csrf_token(self, client):
         # will generate a csrf token (for the logout button)
         client.get(url_for("backoffice_v3_web.home"))
 
@@ -136,7 +136,7 @@ class MissingCSRFHelper(base.BaseHelper):
     def form(self) -> dict:
         return {}
 
-    def test_missing_csrf_token(self, client):  # type: ignore
+    def test_missing_csrf_token(self, client):
         user = users_factories.UserFactory(isActive=True)
 
         authenticated_client = client.with_bo_session_auth(user)

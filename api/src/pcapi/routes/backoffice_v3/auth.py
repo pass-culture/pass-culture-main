@@ -24,7 +24,7 @@ from . import utils
 
 
 @blueprint.backoffice_v3_web.route("/login", methods=["GET"])
-def login():  # type: ignore
+def login() -> utils.BackofficeResponse:
     is_testing_or_dev_without_google_credentials = (settings.IS_TESTING or settings.IS_DEV) and (
         not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET
     )
@@ -50,7 +50,7 @@ def login():  # type: ignore
 
 
 @blueprint.backoffice_v3_web.route("/authorize", methods=["GET"])
-def authorize():  # type: ignore
+def authorize() -> utils.BackofficeResponse:
     from pcapi.utils import login_manager
 
     token = oauth.google.authorize_access_token()
@@ -88,13 +88,13 @@ def authorize():  # type: ignore
 
 @blueprint.backoffice_v3_web.route("/logout", methods=["POST"])
 @utils.custom_login_required(redirect_to=".home")
-def logout():  # type: ignore
+def logout() -> utils.BackofficeResponse:
     logout_user()
     return redirect(url_for(".home"))
 
 
 @blueprint.backoffice_v3_web.route("/user-not-found", methods=["GET"])
-def user_not_found():  # type: ignore
+def user_not_found() -> utils.BackofficeResponse:
     return render_template("auth/user_not_found.html")
 
 

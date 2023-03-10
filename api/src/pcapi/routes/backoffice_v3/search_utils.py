@@ -14,7 +14,10 @@ def fetch_paginated_rows(search_func: SearchFunc, search_model: search.SearchUse
     return query.paginate(page=search_model.page, per_page=search_model.per_page, error_out=False)
 
 
-UrlForPartial = typing.Callable[[int], str]
+class UrlForPartial(typing.Protocol):
+    def __call__(self, page: int) -> str:
+        ...
+
 
 PAGINATION_STEPS = 7
 PAGINATION_SIDE_STEPS = PAGINATION_STEPS // 2
@@ -33,4 +36,4 @@ def pagination_links(partial_func: UrlForPartial, current_page: int, pages_total
         end_page = pages_total
         start_page = max(start_page - distance, 1)
 
-    return [(page, partial_func(page=page)) for page in range(start_page, end_page + 1)]  # type: ignore[call-arg]
+    return [(page, partial_func(page=page)) for page in range(start_page, end_page + 1)]
