@@ -282,10 +282,8 @@ const CollectiveTimeLine = ({
             `L’établissement scolaire n’a pas confirmé la préréservation avant la date limite de réservation fixée au ${cancellationLimitDate}.`}
 
           <div>
-            {bookingRecap.bookingCancellationReason !==
-            CollectiveBookingCancellationReasons.FRAUD ? (
-              'Votre réservation a été annulée. Votre offre est de nouveau visible sur ADAGE.'
-            ) : (
+            {bookingRecap.bookingCancellationReason ===
+              CollectiveBookingCancellationReasons.FRAUD && (
               <>
                 Pour plus d'informations, vous pouvez contacter{' '}
                 <a
