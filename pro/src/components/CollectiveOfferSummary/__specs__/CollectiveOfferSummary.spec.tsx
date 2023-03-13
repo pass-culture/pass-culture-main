@@ -13,11 +13,6 @@ import CollectiveOfferSummary, {
   ICollectiveOfferSummaryProps,
 } from '../CollectiveOfferSummary'
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: jest.fn(),
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     getCollectiveOffer: jest.fn(),
