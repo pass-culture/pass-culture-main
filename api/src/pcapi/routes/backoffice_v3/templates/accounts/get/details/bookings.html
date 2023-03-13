@@ -24,7 +24,7 @@
                 <td>{{ links.build_offer_name_to_pc_pro_link(booking.stock.offer) }}</td>
                 <td>
                     {{ booking.amount | format_amount }}
-                    {% if booking.stock.offer.isDuo %}(Duo){% endif %}
+                    {% if booking.stock.offer.isDuo and booking.quantity == 2 %}(Duo){% endif %}
                 </td>
                 <td>{{ booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
                 <td>{{ booking.status | format_booking_status_long | safe }}</td>
