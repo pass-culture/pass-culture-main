@@ -1,11 +1,9 @@
-import { render, screen } from '@testing-library/react'
-import type { History } from 'history'
-import { createBrowserHistory } from 'history'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Router } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel } from 'apiClient/v1'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import EACInformation from '../EACInformation'
 
@@ -16,10 +14,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 describe('EACInformation', () => {
-  let history: History
-
   beforeAll(() => {
-    history = createBrowserHistory()
     jest
       .spyOn(api, 'getEducationalPartners')
       .mockResolvedValue({ partners: [] })
@@ -27,10 +22,8 @@ describe('EACInformation', () => {
 
   describe('on venue creation', () => {
     it('should display information banner when user is creating venue and can create collective offers', async () => {
-      render(
-        <Router history={history}>
-          <EACInformation venue={null} isCreatingVenue offererId="O1" />
-        </Router>
+      renderWithProviders(
+        <EACInformation venue={null} isCreatingVenue offererId="O1" />
       )
 
       expect(
@@ -59,11 +52,7 @@ describe('EACInformation', () => {
         collectiveWebsite: undefined,
       } as unknown as GetVenueResponseModel // we only test for used fields
 
-      render(
-        <Router history={history}>
-          <EACInformation venue={venue} offererId="O1" />
-        </Router>
-      )
+      renderWithProviders(<EACInformation venue={venue} offererId="O1" />)
 
       expect(await screen.findByText(/E-mail/)).toBeInTheDocument()
       expect(
@@ -84,11 +73,7 @@ describe('EACInformation', () => {
         collectiveStudents: [],
         collectiveWebsite: undefined,
       } as unknown as GetVenueResponseModel // we only test for used fields
-      render(
-        <Router history={history}>
-          <EACInformation venue={venue} offererId="O1" />
-        </Router>
-      )
+      renderWithProviders(<EACInformation venue={venue} offererId="O1" />)
 
       expect(screen.queryByText(/E-mail/)).not.toBeInTheDocument()
       const link = screen.getByRole('link', {

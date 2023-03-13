@@ -1,23 +1,20 @@
-import { render, screen } from '@testing-library/react'
-import { createBrowserHistory } from 'history'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Router } from 'react-router'
 
 import { OfferStatus } from 'apiClient/v1'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferConfirmation from '../CollectiveOfferConfirmation'
 
 describe('CollectiveOfferConfirmation', () => {
   it('should render confirmation page when offer is pending', () => {
-    render(
-      <Router history={createBrowserHistory()}>
-        <CollectiveOfferConfirmation
-          offererId="O1"
-          offerStatus={OfferStatus.PENDING}
-          isShowcase={false}
-          institutionDisplayName="Collège Bellevue"
-        />
-      </Router>
+    renderWithProviders(
+      <CollectiveOfferConfirmation
+        offererId="O1"
+        offerStatus={OfferStatus.PENDING}
+        isShowcase={false}
+        institutionDisplayName="Collège Bellevue"
+      />
     )
 
     expect(
@@ -26,15 +23,13 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should render confirmation page when offer is active and associated to an institution', () => {
-    render(
-      <Router history={createBrowserHistory()}>
-        <CollectiveOfferConfirmation
-          offererId="O1"
-          offerStatus={OfferStatus.ACTIVE}
-          isShowcase={false}
-          institutionDisplayName="Collège Bellevue"
-        />
-      </Router>
+    renderWithProviders(
+      <CollectiveOfferConfirmation
+        offererId="O1"
+        offerStatus={OfferStatus.ACTIVE}
+        isShowcase={false}
+        institutionDisplayName="Collège Bellevue"
+      />
     )
 
     expect(
@@ -46,15 +41,13 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should render confirmation page when offer is active and associated to all institutions', () => {
-    render(
-      <Router history={createBrowserHistory()}>
-        <CollectiveOfferConfirmation
-          offererId="O1"
-          offerStatus={OfferStatus.ACTIVE}
-          isShowcase={false}
-          institutionDisplayName=""
-        />
-      </Router>
+    renderWithProviders(
+      <CollectiveOfferConfirmation
+        offererId="O1"
+        offerStatus={OfferStatus.ACTIVE}
+        isShowcase={false}
+        institutionDisplayName=""
+      />
     )
 
     expect(
@@ -71,15 +64,13 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should render confirmation page when offer is active and template', () => {
-    render(
-      <Router history={createBrowserHistory()}>
-        <CollectiveOfferConfirmation
-          offererId=""
-          offerStatus={OfferStatus.ACTIVE}
-          isShowcase={true}
-          institutionDisplayName=""
-        />
-      </Router>
+    renderWithProviders(
+      <CollectiveOfferConfirmation
+        offererId=""
+        offerStatus={OfferStatus.ACTIVE}
+        isShowcase={true}
+        institutionDisplayName=""
+      />
     )
 
     expect(
@@ -88,15 +79,13 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should render banner at the bottom of the page', () => {
-    render(
-      <Router history={createBrowserHistory()}>
-        <CollectiveOfferConfirmation
-          offererId=""
-          offerStatus={OfferStatus.ACTIVE}
-          isShowcase={true}
-          institutionDisplayName=""
-        />
-      </Router>
+    renderWithProviders(
+      <CollectiveOfferConfirmation
+        offererId=""
+        offerStatus={OfferStatus.ACTIVE}
+        isShowcase={true}
+        institutionDisplayName=""
+      />
     )
 
     expect(

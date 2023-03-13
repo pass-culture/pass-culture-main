@@ -1,18 +1,19 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
 
 import { RootState } from 'store/reducers'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
+import OfferEducational from '../'
 import {
   categoriesFactory,
   defaultCreationProps,
   managedVenueFactory,
-  renderEACOfferForm,
   subCategoriesFactory,
 } from '../__tests-utils__'
 import { userOffererFactory } from '../__tests-utils__/userOfferersFactory'
 import { IOfferEducationalProps } from '../OfferEducational'
-
 describe('screens | OfferEducational : event address step', () => {
   let props: IOfferEducationalProps
   let store: Partial<RootState>
@@ -46,7 +47,9 @@ describe('screens | OfferEducational : event address step', () => {
         ],
       }),
     ]
-    renderEACOfferForm(props, store)
+    renderWithProviders(<OfferEducational {...props} />, {
+      storeOverrides: store,
+    })
 
     const offererSelect = await screen.findByLabelText('Structure')
 
@@ -76,7 +79,9 @@ describe('screens | OfferEducational : event address step', () => {
         ],
       }),
     ]
-    renderEACOfferForm(props, store)
+    renderWithProviders(<OfferEducational {...props} />, {
+      storeOverrides: store,
+    })
 
     const offererSelect = await screen.findByLabelText('Structure')
 

@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import type { LocationDescriptor } from 'history'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
@@ -8,7 +7,12 @@ import Icon from 'ui-kit/Icon/Icon'
 import styles from './GoBackLink.module.scss'
 
 interface GoBackLinkProps {
-  to: LocationDescriptor
+  to:
+    | {
+        pathname?: string
+        state?: { scrollToElementId: string }
+      }
+    | string
   title: string
   className?: string
 }

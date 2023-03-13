@@ -1,6 +1,5 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
 import { render } from '@testing-library/react'
-import type { LocationDescriptor } from 'history'
 import React, { ReactNode } from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -14,7 +13,7 @@ export const renderWithProviders = (
   component: ReactNode,
   overrides?: {
     storeOverrides?: any
-    initialRouterEntries?: LocationDescriptor<unknown>[]
+    initialRouterEntries?: string[]
     // Some tests cannot use the Compatibility Router because they do some expects
     // on history.push or mock useHistory in some way. Those tests should be refactored
     // to not assert on history.push or assert on useNavigate
