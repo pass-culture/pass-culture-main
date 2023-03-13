@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat'
 
 import {
   GetOffererResponseModel,
@@ -50,14 +50,14 @@ const Offerers = ({
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
 
   const location = useLocation()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const hasNewOfferCreationJourney = useNewOfferCreationJourney()
   const { logEvent } = useAnalytics()
 
   const setQuery = (offererId: string) => {
     const frenchQueryString = `structure=${offererId}`
-    history.push(`${location.pathname}?${frenchQueryString}`)
+    navigate(`${location.pathname}?${frenchQueryString}`)
   }
 
   const { structure: offererId } = Object.fromEntries(
@@ -97,13 +97,13 @@ const Offerers = ({
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const newOffererId = event.target.value
       if (newOffererId === CREATE_OFFERER_SELECT_ID) {
-        history.push('/structures/creation')
+        navigate('/structures/creation')
       } else if (newOffererId !== selectedOfferer?.id) {
         onSelectedOffererChange(newOffererId)
         setQuery(newOffererId)
       }
     },
-    [history, selectedOfferer, setQuery]
+    [navigate, selectedOfferer, setQuery]
   )
 
   if (isLoading) {
@@ -121,9 +121,12 @@ const Offerers = ({
       const queryParams = new URLSearchParams(location.search)
       if (queryParams.has('success')) {
         queryParams.delete('success')
-        history.replace({
-          search: queryParams.toString(),
-        })
+        navigate(
+          {
+            search: queryParams.toString(),
+          },
+          { replace: true }
+        )
       }
     }
   }
