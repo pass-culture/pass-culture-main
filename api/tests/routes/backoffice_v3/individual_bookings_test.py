@@ -38,6 +38,7 @@ def bookings_fixture() -> tuple:
         token="WTRL00",
         stock__price="15.2",
         stock__quantity="212",
+        stock__offer__isDuo=True,
         stock__offer__product__name="Guide du Routard Sainte-Hélène",
         stock__offer__product__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
@@ -108,7 +109,7 @@ class ListIndividualBookingsTest:
         assert rows[0]["Bénéficiaire"].startswith("Napoléon Bonaparte (")
         assert rows[0]["Nom de l'offre"] == "Guide du Routard Sainte-Hélène"
         assert rows[0]["ID offre"].isdigit()
-        assert rows[0]["Offre duo"] == "Non"
+        assert rows[0]["Résa duo"] == "Oui"
         assert rows[0]["Stock"] == "212"
         assert rows[0]["Montant"] == "30,40 €"
         assert rows[0]["Statut"] == "Validée"
@@ -157,7 +158,7 @@ class ListIndividualBookingsTest:
         assert row["Contremarque"] == "ELBEIT"
         assert row["Bénéficiaire"].startswith("Napoléon Bonaparte (")
         assert row["Nom de l'offre"] == "Guide Ile d'Elbe 1814 Petit Futé"
-        assert row["Offre duo"] == "Non"
+        assert row["Résa duo"] == "Non"
         assert row["Stock"] == "2"
         assert row["Montant"] == "13,95 €"
         assert row["Statut"] == "Confirmée"

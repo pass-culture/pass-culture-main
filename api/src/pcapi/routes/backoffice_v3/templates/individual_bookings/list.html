@@ -28,7 +28,7 @@
                         <th scope="col">Bénéficiaire</th>
                         <th scope="col">Nom de l'offre</th>
                         <th scope="col">ID offre</th>
-                        <th scope="col">Offre duo</th>
+                        <th scope="col">Résa duo</th>
                         <th scope="col">Stock</th>
                         <th scope="col">Montant</th>
                         <th scope="col">Statut</th>
@@ -135,7 +135,7 @@
                             <td>{{ links.build_public_user_name_to_details_link(booking.user) }}</td>
                             <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
                             <td>{{ links.a_offer_name_to_details(offer, text_attr="id") }}</td>
-                            <td>{{ offer.isDuo | format_bool }}</td>
+                            <td>{{ (offer.isDuo and booking.quantity == 2) | format_bool }}</td>
                             <td>{{ booking.stock.quantity }}</td>
                             <td>{{ booking.total_amount | format_amount }}</td>
                             <td>{{ booking.status | format_booking_status(with_badge=True) | safe }}</td>
