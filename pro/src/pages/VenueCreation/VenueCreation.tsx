@@ -1,5 +1,5 @@
 import React from 'react'
-import { useHistory, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router-dom-v5-compat'
 
 import { setDefaultInitialFormValues } from 'components/VenueForm'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
@@ -14,7 +14,7 @@ const VenueCreation = (): JSX.Element | null => {
   const homePath = useHomePath()
   const { offererId } = useParams<{ offererId: string }>()
   const notify = useNotification()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const initialValues = setDefaultInitialFormValues()
 
@@ -44,7 +44,7 @@ const VenueCreation = (): JSX.Element | null => {
     )
     if (loadingError !== undefined) {
       notify.error(loadingError.message)
-      history.push(homePath)
+      navigate(homePath)
     }
     return null
   }

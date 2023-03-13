@@ -146,13 +146,6 @@ fetch.mockResponse(
   { status: 200 }
 )
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({
-    offererId: 'AE',
-  }),
-}))
-
 jest.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: jest.fn().mockReturnValue(false),
 }))

@@ -40,6 +40,13 @@ const renderVenueCreation = async (offererId: string) => {
   )
 }
 
+jest.mock('react-router-dom-v5-compat', () => ({
+  ...jest.requireActual('react-router-dom-v5-compat'),
+  useParams: () => ({
+    offererId: 'ABCD',
+  }),
+}))
+
 jest.mock('apiClient/api', () => ({
   api: {
     fetchVenueLabels: jest.fn(),
