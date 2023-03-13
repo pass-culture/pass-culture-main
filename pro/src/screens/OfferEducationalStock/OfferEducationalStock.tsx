@@ -28,8 +28,8 @@ import FormStock from './FormStock'
 import styles from './OfferEducationalStock.module.scss'
 import ShowcaseBannerInfo from './ShowcaseBannerInfo'
 import {
+  generateValidationSchema,
   showcaseOfferValidationSchema,
-  validationSchema,
 } from './validationSchema'
 
 export interface IOfferEducationalStockProps<
@@ -61,9 +61,10 @@ const OfferEducationalStock = <
 
   const preventPriceIncrease = Boolean(
     isCollectiveOffer(offer) &&
-      offer.lastBookingStatus === CollectiveBookingStatus.USED &&
-      beginningDatetime &&
-      isBefore(new Date(), addDays(new Date(beginningDatetime), 2))
+      (offer.lastBookingStatus === CollectiveBookingStatus.CONFIRMED ||
+        (offer.lastBookingStatus === CollectiveBookingStatus.USED &&
+          beginningDatetime &&
+          isBefore(new Date(), addDays(new Date(beginningDatetime), 2))))
   )
 
   const disablePriceAndParticipantInputs =
@@ -88,8 +89,13 @@ const OfferEducationalStock = <
     validationSchema: yup.lazy((values: OfferEducationalStockFormValues) => {
       const isShowcase =
         values.educationalOfferType === EducationalOfferType.SHOWCASE
-
-      return isShowcase ? showcaseOfferValidationSchema : validationSchema
+      /* istanbul ignore next: TO FIX remove this condition as we should not have template offer here */
+      return isShowcase
+        ? showcaseOfferValidationSchema
+        : generateValidationSchema(
+            preventPriceIncrease,
+            initialValues.totalPrice
+          )
     }),
   })
 
