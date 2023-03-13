@@ -1,7 +1,7 @@
 import { Form, Formik } from 'formik'
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
