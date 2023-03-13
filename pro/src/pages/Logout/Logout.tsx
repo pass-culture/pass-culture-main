@@ -1,15 +1,16 @@
 import { useDispatch } from 'react-redux'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { resetIsInitialized } from 'store/user/actions'
 
-const Logout = (): null => {
-  const history = useHistory()
+const Logout = () => {
+  const navigate = useNavigate()
   const dispatch = useDispatch()
+
   api.signout().then(() => {
     dispatch(resetIsInitialized())
-    history.push(`/connexion`)
+    navigate(`/connexion`)
   })
 
   return null

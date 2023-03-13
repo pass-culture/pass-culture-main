@@ -32,7 +32,7 @@ const renderOfferTypes = (storeOverrides: any) =>
       />
       <Route
         path="/offre/creation/collectif/selection"
-        element={<div>Séléction collectif</div>}
+        element={<div>Sélection collectif</div>}
       />
     </Routes>,
     {
@@ -302,7 +302,7 @@ describe('screens:OfferIndividual::OfferType', () => {
       screen.getByRole('button', { name: 'Étape suivante' })
     )
 
-    expect(screen.getByText('Séléction collectif')).toBeInTheDocument()
+    expect(screen.getByText('Sélection collectif')).toBeInTheDocument()
   })
 
   it('should display error message if trying to duplicate without template offer', async () => {
