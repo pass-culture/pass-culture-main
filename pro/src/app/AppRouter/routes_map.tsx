@@ -404,6 +404,7 @@ const routes: IRoute[] = [
         pageName: 'sign-in',
       },
     },
+    useV6Router: true,
   },
   {
     component: OfferIndividualWizard,
