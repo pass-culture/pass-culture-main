@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom-v5-compat'
 
 import { setDisplayDomainBanner } from 'store/app/actions'
 import { Banner } from 'ui-kit'
@@ -8,7 +8,7 @@ import { parse, stringify } from 'utils/query-string'
 
 export const DomainNameBanner = () => {
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
   const location = useLocation()
   const queryParams = parse(location.search)
   const shouldDisplayBanner = useSelector(
@@ -23,7 +23,7 @@ export const DomainNameBanner = () => {
 
   const closeBanner = useCallback(() => {
     delete queryParams['redirect']
-    history.replace({ search: stringify(queryParams) })
+    navigate({ search: stringify(queryParams), replace: true })
 
     dispatch(setDisplayDomainBanner(false))
   }, [dispatch, history, queryParams])
