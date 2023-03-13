@@ -1,4 +1,4 @@
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import useNotification from 'hooks/useNotification'
 
@@ -10,7 +10,7 @@ import postCollectiveOfferImageAdapter from '../adapters/postCollectiveOfferImag
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
 
 export const createOfferFromTemplate = async (
-  history: ReturnType<typeof useHistory>,
+  navigate: ReturnType<typeof useNavigate>,
   notify: ReturnType<typeof useNotification>,
   templateOfferId: string
 ) => {
@@ -69,5 +69,5 @@ export const createOfferFromTemplate = async (
       cropParams: { x: 0, y: 0, width: 1, height: 1 },
     })
   }
-  history.push(`/offre/collectif/${payload.id}/creation?structure=${offererId}`)
+  navigate(`/offre/collectif/${payload.id}/creation?structure=${offererId}`)
 }

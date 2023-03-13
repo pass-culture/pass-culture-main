@@ -1,17 +1,15 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { Offer } from 'core/Offers/types'
 import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
-import { configureTestStore } from 'store/testUtils'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferSelectionDuplication from '../CollectiveOfferSelectionDuplicationScreen'
 
@@ -27,15 +25,10 @@ const renderCollectiveOfferSelectionDuplication = ({
   initialValues: InitialValuesProps
   onSubmit: () => void
 }) => {
-  const store = configureTestStore({})
-  render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <Formik initialValues={initialValues} onSubmit={onSubmit}>
-          <CollectiveOfferSelectionDuplication />
-        </Formik>
-      </MemoryRouter>
-    </Provider>
+  renderWithProviders(
+    <Formik initialValues={initialValues} onSubmit={onSubmit}>
+      <CollectiveOfferSelectionDuplication />
+    </Formik>
   )
 }
 
