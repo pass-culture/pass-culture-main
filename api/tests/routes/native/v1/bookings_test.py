@@ -2,7 +2,6 @@ from datetime import datetime
 from datetime import timedelta
 
 from flask_jwt_extended.utils import create_access_token
-from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
@@ -101,7 +100,6 @@ class PostBookingTest:
 class GetBookingsTest:
     identifier = "pascal.ture@example.com"
 
-    @freeze_time("2023-03-12")
     def test_get_bookings(self, app):
         OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
@@ -113,7 +111,8 @@ class GetBookingsTest:
         )
 
         event_booking = booking_factories.BookingFactory(
-            user=user, stock=EventStockFactory(beginningDatetime=datetime(2023, 3, 14))
+            user=user,
+            stock=EventStockFactory(beginningDatetime=datetime.utcnow() + timedelta(days=2)),
         )
 
         digital_stock = StockWithActivationCodesFactory()
@@ -135,8 +134,8 @@ class GetBookingsTest:
         )
         used_but_in_future = booking_factories.UsedBookingFactory(
             user=user,
-            dateUsed=datetime(2023, 3, 11),
-            stock=StockFactory(beginningDatetime=datetime(2023, 3, 15)),
+            dateUsed=datetime.utcnow() - timedelta(days=1),
+            stock=StockFactory(beginningDatetime=datetime.utcnow() + timedelta(days=3)),
         )
 
         cancelled_permanent_booking = booking_factories.CancelledBookingFactory(
@@ -253,14 +252,12 @@ class GetBookingsTest:
         )
         assert response.json["ongoing_bookings"][0]["stock"]["price"] == stock.price * 100
 
-    @freeze_time("2023-03-12")
     def test_get_bookings_15_17_user(self, client):
         user = users_factories.UnderageBeneficiaryFactory(email=self.identifier)
 
         booking = booking_factories.UsedBookingFactory(
             user=user,
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
-            dateUsed=datetime(2023, 2, 3),
         )
 
         test_client = client.with_token(user.email)
