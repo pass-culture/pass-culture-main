@@ -11,6 +11,7 @@ from pcapi.core.offers import factories as offers_factories
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
+from pcapi.routes.backoffice_v3.forms import offer as offer_forms
 
 from .helpers import html_parser
 from .helpers import unauthorized as unauthorized_helpers
@@ -41,6 +42,7 @@ def offers_fixture(criteria) -> tuple:
         venue__postalCode="97400",
         venue__departementCode="974",
         product__subcategoryId=subcategories.LIVRE_AUDIO_PHYSIQUE.id,
+        extraData={"visa": "2023123456"},
     )
     offer_with_two_criteria = offers_factories.OfferFactory(
         name="A Very Specific Name That Is Longer",
@@ -48,6 +50,7 @@ def offers_fixture(criteria) -> tuple:
         venue__postalCode="74000",
         venue__departementCode="74",
         product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+        extraData={"isbn": "9781234567890"},
     )
     offers_factories.StockFactory(quantity=None, offer=offer_with_unlimited_stock)
     offers_factories.StockFactory(offer=offer_with_unlimited_stock)
@@ -80,11 +83,14 @@ class ListOffersTest:
         assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 0
 
-    def test_list_offers_by_id(self, authenticated_client, offers):
+    @pytest.mark.parametrize(
+        "where", [None, offer_forms.OfferSearchColumn.ALL.name, offer_forms.OfferSearchColumn.ID.name]
+    )
+    def test_list_offers_by_id(self, authenticated_client, offers, where):
         # when
         searched_id = str(offers[0].id)
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_id, where=where))
 
         # then
         assert response.status_code == 200
@@ -103,11 +109,24 @@ class ListOffersTest:
         assert rows[0]["Dép."] == offers[0].venue.departementCode
         assert rows[0]["Lieu"] == offers[0].venue.name
 
-    def test_list_offers_by_name(self, authenticated_client, offers):
+    def test_list_offers_by_invalid_id(self, authenticated_client, offers):
+        # when
+        response = authenticated_client.get(
+            url_for(self.endpoint, q="Cinéma", where=offer_forms.OfferSearchColumn.ID.name)
+        )
+
+        # then
+        assert response.status_code == 400
+        assert "La recherche ne correspond pas à un ID" in html_parser.extract_warnings(response.data)
+
+    @pytest.mark.parametrize(
+        "where", [None, offer_forms.OfferSearchColumn.ALL.name, offer_forms.OfferSearchColumn.NAME.name]
+    )
+    def test_list_offers_by_name(self, authenticated_client, offers, where):
         # when
         searched_name = offers[1].name
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=searched_name))
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_name, where=where))
 
         # then
         assert response.status_code == 200
@@ -125,6 +144,64 @@ class ListOffersTest:
         assert rows[0]["Dernière date de validation"] == "22/02/2022"
         assert rows[0]["Dép."] == offers[1].venue.departementCode
         assert rows[0]["Lieu"] == offers[1].venue.name
+
+    @pytest.mark.parametrize(
+        "isbn, where",
+        [
+            ("9781234567890", None),
+            (" 978-1234567890", offer_forms.OfferSearchColumn.ALL.name),
+            ("978 1234567890\t", offer_forms.OfferSearchColumn.ISBN.name),
+        ],
+    )
+    def test_list_offers_by_isbn(self, authenticated_client, offers, isbn, where):
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=isbn, where=where))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert int(rows[0]["ID"]) == offers[2].id
+
+    def test_list_offers_by_invalid_isbn(self, authenticated_client, offers):
+        # when
+        response = authenticated_client.get(
+            url_for(self.endpoint, q="1234567890", where=offer_forms.OfferSearchColumn.ISBN.name)
+        )
+
+        # then
+        assert response.status_code == 400
+        assert "La recherche ne correspond pas au format d'un ISBN" in html_parser.extract_warnings(response.data)
+
+    @pytest.mark.parametrize(
+        "visa, where",
+        [
+            ("2023123456", None),
+            (" 2023 123456 ", offer_forms.OfferSearchColumn.ALL.name),
+            ("2023-123456\t", offer_forms.OfferSearchColumn.VISA.name),
+        ],
+    )
+    def test_list_offers_by_visa(self, authenticated_client, offers, visa, where):
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=visa, where=where))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert int(rows[0]["ID"]) == offers[1].id
+
+    def test_list_offers_by_invalid_visa(self, authenticated_client, offers):
+        # when
+        response = authenticated_client.get(
+            url_for(self.endpoint, q="Visa n°12345", where=offer_forms.OfferSearchColumn.VISA.name)
+        )
+
+        # then
+        assert response.status_code == 400
+        assert "La recherche ne correspond pas au format d'un visa" in html_parser.extract_warnings(response.data)
 
     def test_list_offers_by_criteria(self, authenticated_client, criteria, offers):
         # when
