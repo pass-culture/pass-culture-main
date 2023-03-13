@@ -1,15 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
-import { MemoryRouter } from 'react-router'
+
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Logo from '../Logo'
 
 const renderLogo = props => {
-  return render(
-    <MemoryRouter>
-      <Logo {...props} />
-    </MemoryRouter>
-  )
+  return renderWithProviders(<Logo {...props} />)
 }
 
 describe('header logo', () => {
