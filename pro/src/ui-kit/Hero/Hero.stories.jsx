@@ -1,18 +1,13 @@
 import React from 'react'
-import { MemoryRouter } from 'react-router-dom'
+
+import { withRouterDecorator } from 'stories/decorators/withRouter'
 
 import Hero from './Hero'
 
 export default {
   title: 'components/Hero',
   component: Hero,
-  decorators: [
-    Story => (
-      <MemoryRouter>
-        <Story />
-      </MemoryRouter>
-    ),
-  ],
+  decorators: [withRouterDecorator],
 }
 const Template = args => <Hero {...args} />
 
