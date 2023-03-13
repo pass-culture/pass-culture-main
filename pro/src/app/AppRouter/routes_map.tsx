@@ -294,6 +294,7 @@ const routes: IRoute[] = [
     exact: true,
     path: '/offres',
     title: 'Offres',
+    useV6Router: true,
   },
   {
     component: CollectiveOffers,
