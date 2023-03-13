@@ -282,6 +282,7 @@ const routes: IRoute[] = [
     exact: true,
     path: '/structures/:offererId/lieux/:venueId/eac',
     title: 'Structures',
+    useV6Router: true,
   },
   {
     component: OfferType,
