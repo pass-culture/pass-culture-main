@@ -10,7 +10,6 @@ import { useConfigureFirebase } from '../useAnalytics'
 
 const mockSetLogEvent = jest.fn()
 
-
 jest.mock('@firebase/analytics', () => {
   return {
     getAnalytics: jest.fn().mockReturnValue('getAnalyticsReturn'),
