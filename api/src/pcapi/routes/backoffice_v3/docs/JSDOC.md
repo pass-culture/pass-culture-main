@@ -86,7 +86,7 @@ See below for how to regenerate the documentation or initialize the application.
 
 ```javascript
 // Re-generate this documentation (nodejs 6+ required)
-npx documentation build src/pcapi/static/backoffice/js/** \
+npx documentation build src/pcapi/static/backofficev3/js/** \
   --config src/pcapi/routes/backoffice_v3/docs/jsdoc-config.yml \
   --format md \
   --sort-order alpha > src/pcapi/routes/backoffice_v3/docs/JSDOC.md
