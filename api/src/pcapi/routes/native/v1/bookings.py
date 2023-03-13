@@ -16,7 +16,6 @@ from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
-from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -144,9 +143,8 @@ def get_bookings(user: User) -> BookingsResponse:
         else:
             ongoing_bookings.append(booking)
             booking.qrCodeData = bookings_api.get_qr_code_data(booking.token)
-            booking.token = None if booking.isExternal else booking.token
 
-    result = BookingsResponse(
+    return BookingsResponse(
         ended_bookings=[
             BookingReponse.from_orm(booking)
             for booking in sorted(
@@ -164,22 +162,6 @@ def get_bookings(user: User) -> BookingsResponse:
         ],
         hasBookingsAfter18=has_bookings_after_18,
     )
-    _update_booking_offer_url(result.ended_bookings)
-    _update_booking_offer_url(result.ongoing_bookings)
-
-    # TODO: some objects seem to be updated. remove rollback when this is fixed
-    db.session.rollback()
-    return result
-
-
-def _update_booking_offer_url(booking_response_list: list[BookingReponse]) -> None:
-    # TODO: remove after all AppNative client use version >= 203
-    # Native application should use `booking.completedUrl` but actually
-    # it uses booking.stock.offer.url until versions < 203
-    # So we need to update the response object not to override the database object
-    # Remove when native app stops using booking.stock.offer.url
-    for booking in booking_response_list:
-        booking.stock.offer.url = booking.completedUrl
 
 
 def is_ended_booking(booking: Booking) -> bool:

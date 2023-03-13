@@ -190,7 +190,7 @@ class GetBookingsTest:
                     "isDigital": True,
                     "isPermanent": False,
                     "name": used2.stock.offer.name,
-                    "url": f"https://demo.pass/some/path?token={used2.token}&email=pascal.ture@example.com&offerId={humanize(used2.stock.offer.id)}",
+                    "url": "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}",
                     "venue": {
                         "address": "1 boulevard Poissonnière",
                         "postalCode": "75000",
@@ -249,35 +249,6 @@ class GetBookingsTest:
         assert response.status_code == 200
         assert response.json["ongoing_bookings"][0]["id"] == booking.id
         assert response.json["hasBookingsAfter18"] is False
-
-    def test_offer_url_is_not_overrided_by_cancelled_booking_url(self, client):
-        OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
-        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        stock = StockFactory(offer__url=OFFER_URL)
-
-        cancelled_booking = booking_factories.CancelledBookingFactory(user=user, displayAsEnded=True, stock=stock)
-        ongoing_booking = booking_factories.BookingFactory(
-            user=user,
-            stock=stock,
-        )
-
-        test_client = client.with_token(user.email)
-
-        response = test_client.get("/native/v1/bookings")
-
-        assert response.status_code == 200
-
-        assert ongoing_booking.token in response.json["ongoing_bookings"][0]["stock"]["offer"]["url"]
-        assert (
-            response.json["ongoing_bookings"][0]["completedUrl"]
-            == response.json["ongoing_bookings"][0]["stock"]["offer"]["url"]
-        )
-
-        assert cancelled_booking.token in response.json["ended_bookings"][0]["stock"]["offer"]["url"]
-        assert (
-            response.json["ended_bookings"][0]["completedUrl"]
-            == response.json["ended_bookings"][0]["stock"]["offer"]["url"]
-        )
 
     def test_get_bookings_withdrawal_informations(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
