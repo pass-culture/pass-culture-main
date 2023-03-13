@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom-v5-compat'
 
 import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
@@ -81,7 +81,7 @@ const CollectiveDataEdition = (): JSX.Element | null => {
         getEducationalDomainsAdapter(),
         getVenueEducationalStatusesAdapter(),
         getCulturalPartnersAdapter(),
-        getVenueCollectiveDataAdapter(venueId),
+        getVenueCollectiveDataAdapter(venueId ?? ''),
         getEducationalCategoriesAdapter(),
       ])
 
@@ -115,10 +115,13 @@ const CollectiveDataEdition = (): JSX.Element | null => {
 
       setIsLoading(false)
     }
-
-    fetchData()
+    if (venueId && offererId) {
+      fetchData()
+    }
   }, [])
-
+  if (!venueId || !offererId) {
+    return null
+  }
   return (
     <div>
       <GoBackLink
