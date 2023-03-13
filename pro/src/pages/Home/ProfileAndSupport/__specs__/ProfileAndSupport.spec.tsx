@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom-v5-compat'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -23,35 +23,29 @@ const renderProfileAndSupport = () => {
   }
 
   return renderWithProviders(
-    <>
-      <Route path="/profil">
-        <h1>Page profil</h1>
-      </Route>
-      <Route path="/accueil">
-        <ProfileAndSupport />
-      </Route>
-    </>,
+    <Routes>
+      <Route path="/profil" element={<h1>Page profil</h1>} />
+      <Route path="/accueil" element={<ProfileAndSupport />} />
+    </Routes>,
     { storeOverrides, initialRouterEntries: ['/accueil'] }
   )
 }
 
 describe('ProfileAndSupport', () => {
-  describe('when the user click on Modifier', () => {
-    it('should redirect to /profil page', async () => {
-      // When
-      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-        logEvent: mockLogEvent,
-        setLogEvent: null,
-      }))
-      renderProfileAndSupport()
-      const editButton = screen.getByRole('link', { name: 'Modifier' })
-      expect(editButton).toHaveAttribute('href', '/profil')
-      await userEvent.click(editButton)
+  it('should redirect to /profil page when the user click on Modifier', async () => {
+    // When
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
+    renderProfileAndSupport()
+    const editButton = screen.getByRole('link', { name: 'Modifier' })
+    expect(editButton).toHaveAttribute('href', '/profil')
+    await userEvent.click(editButton)
 
-      // Then
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
-      expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_EDIT_PROFILE)
-      expect(screen.getByText('Page profil')).toBeInTheDocument()
-    })
+    // Then
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_EDIT_PROFILE)
+    expect(screen.getByText('Page profil')).toBeInTheDocument()
   })
 })

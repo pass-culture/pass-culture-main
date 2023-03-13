@@ -1,21 +1,19 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { MemoryRouter } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Support from '../Support'
 
 const mockLogEvent = jest.fn()
 
 const renderSupport = () => {
-  return render(
-    <MemoryRouter initialEntries={['/accueil']}>
-      <Support />
-    </MemoryRouter>
-  )
+  return renderWithProviders(<Support />, {
+    initialRouterEntries: ['/accueil'],
+  })
 }
 
 describe('homepage: ProfileAndSupport: Support', () => {
