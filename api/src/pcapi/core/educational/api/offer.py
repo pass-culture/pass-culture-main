@@ -505,6 +505,9 @@ def edit_collective_offer_public(
     if not (offer.isEditable and offer.collectiveStock.isEditable):
         raise exceptions.CollectiveOfferNotEditable()
 
+    if not offer.isPublicApi:
+        raise exceptions.CollectiveOfferNotEditable()
+
     offer_fields = {field for field in dir(educational_models.CollectiveOffer) if not field.startswith("_")}
     stock_fields = {field for field in dir(educational_models.CollectiveStock) if not field.startswith("_")}
 
