@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom-v5-compat'
 
 import Stepper from 'components/Stepper'
 import { ReactComponent as BreadcumbSeparator } from 'icons/ico-breadcrumb-arrow-right.svg'
