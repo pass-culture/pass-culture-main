@@ -1,6 +1,6 @@
 import { useFormikContext } from 'formik'
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import { BannerInvisibleSiren, BannerRGS } from 'components/Banner'
 import FormLayout from 'components/FormLayout'
@@ -25,7 +25,7 @@ import styles from './SignupContainer.module.scss'
 import { ISignupFormValues } from './types'
 
 const SignupForm = (): JSX.Element => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const [showAnonymousBanner, setShowAnonymousBanner] = useState(false)
   const { showModal } = useModal()
   const { values, setFieldValue, setFieldError, isSubmitting } =
@@ -126,7 +126,7 @@ const SignupForm = (): JSX.Element => {
       </div>
       <div className={styles['buttons-field']}>
         <Button
-          onClick={() => history.push('/connexion')}
+          onClick={() => navigate('/connexion')}
           variant={ButtonVariant.SECONDARY}
         >
           J’ai déjà un compte
