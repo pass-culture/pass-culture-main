@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import React, { Fragment, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { BOOKING_STATUS } from 'core/Bookings'
