@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom-v5-compat'
 
 import PageTitle from 'components/PageTitle/PageTitle'
 import Icon from 'ui-kit/Icon/Icon'
