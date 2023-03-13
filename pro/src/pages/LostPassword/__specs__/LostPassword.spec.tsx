@@ -20,7 +20,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderLostPassword = url => {
+const renderLostPassword = (url: string) => {
   renderWithProviders(<LostPassword />, {
     initialRouterEntries: [url],
   })
