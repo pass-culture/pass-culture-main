@@ -1,8 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router'
-import { Link } from 'react-router-dom'
+import { Routes, Route, Link } from 'react-router-dom-v5-compat'
 
 import * as useAnalytics from 'hooks/useAnalytics'
 import useLogNavigation from 'hooks/useLogNavigation'
@@ -26,14 +25,26 @@ describe('useLogNavigation', () => {
     renderWithProviders(
       <>
         <NavigationLogger />
-        <Route path="*">
-          <span>Main page</span>
-          <Link to="/structures">Structures</Link>
-        </Route>
-        <Route path="/structures">
-          <span>Structure page</span>
-          <Link to="/">Accueil</Link>
-        </Route>
+        <Routes>
+          <Route
+            path="*"
+            element={
+              <>
+                <span>Main page</span>
+                <Link to="/structures">Structures</Link>
+              </>
+            }
+          />
+          <Route
+            path="/structures"
+            element={
+              <>
+                <span>Structure page</span>
+                <Link to="/">Accueil</Link>
+              </>
+            }
+          />
+        </Routes>
       </>
     )
 
