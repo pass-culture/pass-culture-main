@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom-v5-compat'
 
 import type { ITableData } from 'screens/CsvTable'
 import Spinner from 'ui-kit/Spinner/Spinner'
