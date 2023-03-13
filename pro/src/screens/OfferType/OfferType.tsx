@@ -1,5 +1,5 @@
 import React, { FormEvent, useCallback, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'
@@ -45,7 +45,7 @@ import ActionsBar from './ActionsBar/ActionsBar'
 import styles from './OfferType.module.scss'
 
 const OfferType = (): JSX.Element => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const location = useLocation()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
@@ -98,8 +98,9 @@ const OfferType = (): JSX.Element => {
         from: OFFER_FORM_HOMEPAGE,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       })
+
       /* istanbul ignore next: condition will be removed when FF active in prod */
-      return history.push({
+      return navigate({
         pathname: getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           mode: OFFER_WIZARD_MODE.CREATION,
@@ -111,7 +112,7 @@ const OfferType = (): JSX.Element => {
     }
     // Offer type is EDUCATIONAL
     if (collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.TEMPLATE) {
-      return history.push({
+      return navigate({
         pathname: '/offre/creation/collectif/vitrine',
         search: location.search,
       })
@@ -126,13 +127,14 @@ const OfferType = (): JSX.Element => {
           'Vous devez créer une offre vitrine avant de pouvoir utiliser cette fonctionnalité'
         )
       }
-      return history.push({
+
+      return navigate({
         pathname: '/offre/creation/collectif/selection',
         search: location.search,
       })
     }
 
-    return history.push({
+    return navigate({
       pathname: '/offre/creation/collectif',
       search: location.search,
     })

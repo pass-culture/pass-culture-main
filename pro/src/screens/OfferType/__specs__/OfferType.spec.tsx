@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -14,19 +15,31 @@ import OfferType from '../OfferType'
 const mockLogEvent = jest.fn()
 
 const renderOfferTypes = (storeOverrides: any) =>
-  renderWithProviders(<OfferType />, {
-    storeOverrides,
-    initialRouterEntries: ['/creation'],
-    TOREFACTOR_doNotUseV6CompatRouter: true,
-  })
-
-const mockHistoryPush = jest.fn()
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: () => ({
-    push: mockHistoryPush,
-  }),
-}))
+  renderWithProviders(
+    <Routes>
+      <Route path="/creation" element={<OfferType />} />
+      <Route
+        path="/offre/creation/collectif"
+        element={<div>Création collectif</div>}
+      />
+      <Route
+        path="/offre/creation/collectif/vitrine"
+        element={<div>Création vitrine collectif</div>}
+      />
+      <Route
+        path="/offre/individuelle/creation/informations"
+        element={<div>Création individuel</div>}
+      />
+      <Route
+        path="/offre/creation/collectif/selection"
+        element={<div>Séléction collectif</div>}
+      />
+    </Routes>,
+    {
+      storeOverrides,
+      initialRouterEntries: ['/creation'],
+    }
+  )
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -117,10 +130,7 @@ describe('screens:OfferIndividual::OfferType', () => {
       screen.getByRole('button', { name: 'Étape suivante' })
     )
 
-    expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/creation/collectif',
-      search: '',
-    })
+    expect(screen.getByText('Création collectif')).toBeInTheDocument()
   })
 
   it('should select template offer', async () => {
@@ -150,10 +160,7 @@ describe('screens:OfferIndividual::OfferType', () => {
       screen.getByRole('button', { name: 'Étape suivante' })
     )
 
-    expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/creation/collectif/vitrine',
-      search: '',
-    })
+    expect(screen.getByText('Création vitrine collectif')).toBeInTheDocument()
   })
 
   it('should display non eligible banner if offerer can not create collective offer', async () => {
@@ -227,10 +234,7 @@ describe('screens:OfferIndividual::OfferType', () => {
         screen.getByRole('button', { name: 'Étape suivante' })
       )
 
-      expect(mockHistoryPush).toHaveBeenCalledWith({
-        pathname: '/offre/individuelle/creation/informations',
-        search: `?offer-type=${expectedSearch}`,
-      })
+      expect(screen.getByText('Création individuel')).toBeInTheDocument()
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,
@@ -298,10 +302,7 @@ describe('screens:OfferIndividual::OfferType', () => {
       screen.getByRole('button', { name: 'Étape suivante' })
     )
 
-    expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/offre/creation/collectif/selection',
-      search: '',
-    })
+    expect(screen.getByText('Séléction collectif')).toBeInTheDocument()
   })
 
   it('should display error message if trying to duplicate without template offer', async () => {
