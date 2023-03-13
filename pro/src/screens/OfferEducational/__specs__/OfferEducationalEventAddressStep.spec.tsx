@@ -1,23 +1,22 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
 
-import { RootState } from 'store/reducers'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   categoriesFactory,
   defaultCreationProps,
   managedVenueFactory,
-  renderEACOfferForm,
   subCategoriesFactory,
   userOfferersFactory,
 } from '../__tests-utils__'
 import { userOffererFactory } from '../__tests-utils__/userOfferersFactory'
 import { INTERVENTION_AREA_LABEL } from '../constants/labels'
-import { IOfferEducationalProps } from '../OfferEducational'
+import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : event address step', () => {
   let props: IOfferEducationalProps
-  let store: Partial<RootState>
 
   describe('when there is only one venue managed by the offerer', () => {
     beforeEach(() => {
@@ -30,16 +29,10 @@ describe('screens | OfferEducational : event address step', () => {
           ]),
         },
       }
-      store = {
-        features: {
-          initialized: true,
-          list: [],
-        },
-      }
     })
 
     it('should display venue radio buttons with pre-selected offerer venue and a disabled select', async () => {
-      renderEACOfferForm(props)
+      renderWithProviders(<OfferEducational {...props} />)
       // wait for page to be rendered
       expect(screen.getByLabelText('Structure')).toBeInTheDocument()
 
@@ -64,7 +57,7 @@ describe('screens | OfferEducational : event address step', () => {
     })
 
     it('should display text area + intervention area multiselect when user selects "other"', async () => {
-      renderEACOfferForm(props, store)
+      renderWithProviders(<OfferEducational {...props} />)
 
       await userEvent.click(await screen.findByLabelText('Autre'))
       expect(screen.getByLabelText('Autre')).toBeChecked()
@@ -83,7 +76,7 @@ describe('screens | OfferEducational : event address step', () => {
     })
 
     it('should not display neither event venue address nor text area if user selects "school"', async () => {
-      renderEACOfferForm(props, store)
+      renderWithProviders(<OfferEducational {...props} />)
 
       await userEvent.click(
         await screen.findByLabelText('Dans l’établissement scolaire')
@@ -129,7 +122,7 @@ describe('screens | OfferEducational : event address step', () => {
     })
 
     it('should require an offer venue selection from the user', async () => {
-      renderEACOfferForm(props)
+      renderWithProviders(<OfferEducational {...props} />)
 
       // wait for page to be rendered
       const offererSelect = await screen.findByLabelText('Lieu')
@@ -150,7 +143,7 @@ describe('screens | OfferEducational : event address step', () => {
     })
 
     it('should prefill the venue data when switching from one event adress type to offerer venue type', async () => {
-      renderEACOfferForm(props)
+      renderWithProviders(<OfferEducational {...props} />)
 
       // wait for page to be rendered
       const offererSelect = await screen.findByLabelText('Lieu')
@@ -170,54 +163,60 @@ describe('screens | OfferEducational : event address step', () => {
 
       expect(offerVenueSelect).toHaveValue('VENUE_1')
     })
-  })
 
-  it('should prefill intervention field with venue intervention field when selecting venue', async () => {
-    props.userOfferers = [
-      ...props.userOfferers,
-      userOffererFactory({
-        id: 'OFFERER_WITH_INTERVENTION_AREA',
-        managedVenues: [
-          managedVenueFactory({}),
-          managedVenueFactory({
-            id: 'VENUE_WITH_INTERVENTION_AREA',
-            collectiveInterventionArea: ['01', '02'],
-          }),
-        ],
-      }),
-    ]
-    renderEACOfferForm(props, store)
+    it('should prefill intervention field with venue intervention field when selecting venue', async () => {
+      renderWithProviders(
+        <OfferEducational
+          {...props}
+          userOfferers={[
+            ...props.userOfferers,
+            userOffererFactory({
+              id: 'OFFERER_WITH_INTERVENTION_AREA',
+              managedVenues: [
+                managedVenueFactory({}),
+                managedVenueFactory({
+                  id: 'VENUE_WITH_INTERVENTION_AREA',
+                  collectiveInterventionArea: ['01', '02'],
+                }),
+              ],
+            }),
+          ]}
+        />
+      )
 
-    const offererSelect = await screen.findByLabelText('Structure')
+      const offererSelect = await screen.findByLabelText('Structure')
 
-    await userEvent.selectOptions(offererSelect, [
-      'OFFERER_WITH_INTERVENTION_AREA',
-    ])
-    expect(screen.queryByLabelText('Structure')).toHaveValue(
-      'OFFERER_WITH_INTERVENTION_AREA'
-    )
+      await userEvent.selectOptions(offererSelect, [
+        'OFFERER_WITH_INTERVENTION_AREA',
+      ])
+      expect(screen.queryByLabelText('Structure')).toHaveValue(
+        'OFFERER_WITH_INTERVENTION_AREA'
+      )
 
-    const venuesSelect = await screen.findByLabelText('Lieu')
-    await userEvent.selectOptions(venuesSelect, [
-      'VENUE_WITH_INTERVENTION_AREA',
-    ])
-    expect(screen.queryByLabelText('Lieu')).toHaveValue(
-      'VENUE_WITH_INTERVENTION_AREA'
-    )
+      const venuesSelect = await screen.findByLabelText('Lieu')
 
-    await userEvent.click(await screen.findByLabelText('Autre'))
-    expect(screen.getByLabelText('Autre')).toBeChecked()
-    const interventionArea = await screen.findByLabelText(
-      INTERVENTION_AREA_LABEL
-    )
-    await userEvent.click(interventionArea)
-    await waitFor(() => {
-      const checkboxes = screen.getAllByRole('checkbox', { checked: true })
-      expect(
-        checkboxes.filter(
-          checkbox => checkbox.getAttribute('name') === 'interventionArea'
-        )
-      ).toHaveLength(2)
+      await userEvent.selectOptions(venuesSelect, [
+        'VENUE_WITH_INTERVENTION_AREA',
+      ])
+
+      expect(screen.queryByLabelText('Lieu')).toHaveValue(
+        'VENUE_WITH_INTERVENTION_AREA'
+      )
+
+      await userEvent.click(await screen.findByLabelText('Autre'))
+      expect(screen.getByLabelText('Autre')).toBeChecked()
+      const interventionArea = await screen.findByLabelText(
+        INTERVENTION_AREA_LABEL
+      )
+      await userEvent.click(interventionArea)
+      await waitFor(() => {
+        const checkboxes = screen.getAllByRole('checkbox', { checked: true })
+        expect(
+          checkboxes.filter(
+            checkbox => checkbox.getAttribute('name') === 'interventionArea'
+          )
+        ).toHaveLength(2)
+      })
     })
   })
 })

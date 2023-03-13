@@ -1,13 +1,14 @@
 import { screen, waitFor } from '@testing-library/react'
+import React from 'react'
 
 import { Mode } from 'core/OfferEducational'
-import { RootState } from 'store/reducers'
 import {
   collectiveOfferFactory,
   collectiveOfferVenueFactory,
 } from 'utils/collectiveApiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { defaultEditionProps, renderEACOfferForm } from '../__tests-utils__'
+import { defaultEditionProps } from '../__tests-utils__'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -23,20 +24,13 @@ import {
   TITLE_LABEL,
   VENUE_LABEL,
 } from '../constants/labels'
-import { IOfferEducationalProps } from '../OfferEducational'
+import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational', () => {
   let props: IOfferEducationalProps
-  let store: Partial<RootState>
 
   beforeEach(() => {
     props = defaultEditionProps
-    store = {
-      features: {
-        initialized: true,
-        list: [],
-      },
-    }
   })
 
   it('should disable all fiels when mode is READONLY', async () => {
@@ -64,7 +58,7 @@ describe('screens | OfferEducational', () => {
       ),
       mode: Mode.READ_ONLY,
     }
-    renderEACOfferForm(props, store)
+    renderWithProviders(<OfferEducational {...props} />)
 
     const inputs = [
       screen.getByLabelText(CATEGORY_LABEL),
