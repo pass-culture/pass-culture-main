@@ -101,7 +101,7 @@ class PostBookingTest:
 class GetBookingsTest:
     identifier = "pascal.ture@example.com"
 
-    @freeze_time("2021-03-12")
+    @freeze_time("2023-03-12")
     def test_get_bookings(self, app):
         OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
@@ -109,11 +109,11 @@ class GetBookingsTest:
         permanent_booking = booking_factories.UsedBookingFactory(
             user=user,
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
-            dateUsed=datetime(2021, 2, 3),
+            dateUsed=datetime(2023, 2, 3),
         )
 
         event_booking = booking_factories.BookingFactory(
-            user=user, stock=EventStockFactory(beginningDatetime=datetime(2021, 3, 14))
+            user=user, stock=EventStockFactory(beginningDatetime=datetime(2023, 3, 14))
         )
 
         digital_stock = StockWithActivationCodesFactory()
@@ -135,23 +135,23 @@ class GetBookingsTest:
         )
         used_but_in_future = booking_factories.UsedBookingFactory(
             user=user,
-            dateUsed=datetime(2021, 3, 11),
-            stock=StockFactory(beginningDatetime=datetime(2021, 3, 15)),
+            dateUsed=datetime(2023, 3, 11),
+            stock=StockFactory(beginningDatetime=datetime(2023, 3, 15)),
         )
 
         cancelled_permanent_booking = booking_factories.CancelledBookingFactory(
             user=user,
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
-            cancellation_date=datetime(2021, 3, 10),
+            cancellation_date=datetime(2023, 3, 10),
         )
-        cancelled = booking_factories.CancelledBookingFactory(user=user, cancellation_date=datetime(2021, 3, 8))
-        used1 = booking_factories.UsedBookingFactory(user=user, dateUsed=datetime(2021, 3, 1))
+        cancelled = booking_factories.CancelledBookingFactory(user=user, cancellation_date=datetime(2023, 3, 8))
+        used1 = booking_factories.UsedBookingFactory(user=user, dateUsed=datetime(2023, 3, 1))
         used2 = booking_factories.UsedBookingFactory(
             user=user,
             displayAsEnded=True,
-            dateUsed=datetime(2021, 3, 2),
+            dateUsed=datetime(2023, 3, 2),
             stock__offer__url=OFFER_URL,
-            cancellation_limit_date=datetime(2021, 3, 2),
+            cancellation_limit_date=datetime(2023, 3, 2),
         )
 
         mediation = MediationFactory(id=111, offer=used2.stock.offer, thumbCount=1, credit="street credit")
@@ -188,10 +188,10 @@ class GetBookingsTest:
             "activationCode": None,
             "cancellationDate": None,
             "cancellationReason": None,
-            "confirmationDate": "2021-03-02T00:00:00Z",
+            "confirmationDate": "2023-03-02T00:00:00Z",
             "completedUrl": f"https://demo.pass/some/path?token={used2.token}&email=pascal.ture@example.com&offerId={humanize(used2.stock.offer.id)}",
             "dateCreated": used2.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-            "dateUsed": "2021-03-02T00:00:00Z",
+            "dateUsed": "2023-03-02T00:00:00Z",
             "expirationDate": None,
             "quantity": 1,
             "qrCodeData": None,
@@ -253,14 +253,14 @@ class GetBookingsTest:
         )
         assert response.json["ongoing_bookings"][0]["stock"]["price"] == stock.price * 100
 
-    @freeze_time("2021-03-12")
+    @freeze_time("2023-03-12")
     def test_get_bookings_15_17_user(self, client):
         user = users_factories.UnderageBeneficiaryFactory(email=self.identifier)
 
         booking = booking_factories.UsedBookingFactory(
             user=user,
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
-            dateUsed=datetime(2021, 2, 3),
+            dateUsed=datetime(2023, 2, 3),
         )
 
         test_client = client.with_token(user.email)
@@ -300,7 +300,6 @@ class GetBookingsTest:
             == response.json["ended_bookings"][0]["stock"]["offer"]["url"]
         )
 
-    @freeze_time("2021-03-12")
     def test_get_bookings_withdrawal_informations(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking_factories.BookingFactory(
