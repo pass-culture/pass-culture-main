@@ -1,18 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { MemoryRouter } from 'react-router-dom'
 
 import type { Step } from 'components/Breadcrumb'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Stepper, { IStepper } from '../Stepper'
 
 const renderStepper = (props: IStepper) => {
-  return render(
-    <MemoryRouter>
-      <Stepper {...props} />
-    </MemoryRouter>
-  )
+  return renderWithProviders(<Stepper {...props} />)
 }
 
 const onClick = jest.fn()
