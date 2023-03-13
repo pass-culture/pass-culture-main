@@ -7,6 +7,8 @@ import routes, { routesWithoutLayout } from 'app/AppRouter/routes_map'
 import NotFound from 'pages/Errors/NotFound/NotFound'
 import { selectActiveFeatures } from 'store/features/selectors'
 
+import ProtectedRoute from './ProtectedRoute'
+
 const AppRouter = (): JSX.Element => {
   const activeFeatures = useSelector(selectActiveFeatures)
   const activeRoutes = routes.filter(
@@ -27,9 +29,17 @@ const AppRouter = (): JSX.Element => {
           key={route.path}
           path={route.path}
           element={
-            <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
-              <route.component />
-            </AppLayout>
+            route.meta?.public ? (
+              <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
+                <route.component />
+              </AppLayout>
+            ) : (
+              <ProtectedRoute>
+                <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
+                  <route.component />
+                </AppLayout>
+              </ProtectedRoute>
+            )
           }
         />
       ))}
@@ -38,7 +48,15 @@ const AppRouter = (): JSX.Element => {
         <Route
           key={route.path}
           path={route.path}
-          element={<route.component />}
+          element={
+            route.meta?.public ? (
+              <route.component />
+            ) : (
+              <ProtectedRoute>
+                <route.component />
+              </ProtectedRoute>
+            )
+          }
         />
       ))}
 
