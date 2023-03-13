@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import {
   Events,
@@ -23,7 +23,7 @@ const DuplicateOfferCell = ({
 }: {
   templateOfferId: string
 }) => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const notify = useNotification()
   const buttonRef = useRef<HTMLButtonElement>(null)
   const { logEvent } = useAnalytics()
@@ -38,7 +38,7 @@ const DuplicateOfferCell = ({
     if (shouldNotDisplayModalAgain) {
       localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
     }
-    createOfferFromTemplate(history, notify, templateOfferId)
+    createOfferFromTemplate(navigate, notify, templateOfferId)
   }
 
   const handleCreateOfferClick = () => {
@@ -46,7 +46,7 @@ const DuplicateOfferCell = ({
       logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
         from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS,
       })
-      createOfferFromTemplate(history, notify, templateOfferId)
+      createOfferFromTemplate(navigate, notify, templateOfferId)
     }
     buttonRef.current?.blur()
     setIsModalOpen(true)
