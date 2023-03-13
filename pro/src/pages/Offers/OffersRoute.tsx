@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { DEFAULT_SEARCH_FILTERS, hasSearchFilters } from 'core/Offers'
@@ -23,7 +23,7 @@ import { getFilteredOffersAdapter } from './adapters'
 const OffersRoute = (): JSX.Element => {
   const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()
   const notify = useNotification()
-  const history = useHistory()
+  const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
 
@@ -93,19 +93,16 @@ const OffersRoute = (): JSX.Element => {
     loadCategories()
   }, [])
 
-  const redirectWithUrlFilters = useCallback(
-    (
-      filters: TSearchFilters & {
-        page?: number
-        audience?: Audience
-      }
-    ) => {
-      const newUrl = computeOffersUrl(filters, filters.page)
+  const redirectWithUrlFilters = (
+    filters: TSearchFilters & {
+      page?: number
+      audience?: Audience
+    }
+  ) => {
+    const newUrl = computeOffersUrl(filters, filters.page)
 
-      history.push(newUrl)
-    },
-    [history]
-  )
+    navigate(newUrl)
+  }
 
   useEffect(() => {
     const filters = { ...urlSearchFilters }

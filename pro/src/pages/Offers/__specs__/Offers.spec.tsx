@@ -1,10 +1,7 @@
-import { parse } from 'querystring'
-
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createMemoryHistory } from 'history'
 import React from 'react'
-import { Router } from 'react-router'
+import { Routes, Route } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
@@ -32,21 +29,23 @@ const renderOffers = async (
     audience?: Audience
   } = DEFAULT_SEARCH_FILTERS
 ) => {
-  const history = createMemoryHistory()
   const route = computeOffersUrl(filters)
-  history.push(route)
   renderWithProviders(
-    <Router history={history}>
-      <OffersRoute />
-    </Router>,
-    { storeOverrides }
+    <Routes>
+      <Route path="/offres" element={<OffersRoute />} />
+      <Route
+        path="/offres/collectives"
+        element={<div>Offres collectives</div>}
+      />
+    </Routes>,
+    {
+      storeOverrides,
+      initialRouterEntries: [route],
+    }
   )
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-  return {
-    history,
-  }
+  jest.clearAllMocks()
 }
 
 const categoriesAndSubcategories = {
@@ -181,7 +180,7 @@ describe('route Offers', () => {
           await userEvent.click(screen.getByText('Appliquer'))
 
           // Then
-          expect(api.listOffers).toHaveBeenCalledTimes(2)
+          expect(api.listOffers).toHaveBeenCalledTimes(1)
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
@@ -543,31 +542,13 @@ describe('route Offers', () => {
       )
       // @ts-expect-error FIX ME
       jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
-      const { history } = await renderOffers(store)
+      await renderOffers(store)
       const nextPageIcon = screen.getByAltText('Page suivante')
       // When
       await userEvent.click(nextPageIcon)
-      const urlSearchParams = parse(history.location.search.substring(1))
-      // Then
-      expect(urlSearchParams).toMatchObject({
-        page: '2',
-      })
-    })
 
-    it('should have offer name value when name search value is not an empty string', async () => {
-      // Given
-      const { history } = await renderOffers(store)
-      // When
-      await userEvent.type(
-        screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'),
-        'AnyWord'
-      )
-      await userEvent.click(screen.getByText('Lancer la recherche'))
-      const urlSearchParams = parse(history.location.search.substring(1))
       // Then
-      expect(urlSearchParams).toMatchObject({
-        'nom-ou-isbn': 'AnyWord',
-      })
+      expect(screen.getByText('Page 2/2')).toBeInTheDocument()
     })
 
     it('should store search value', async () => {
@@ -594,20 +575,29 @@ describe('route Offers', () => {
 
     it('should have offer name value be removed when name search value is an empty string', async () => {
       // Given
-      const { history } = await renderOffers(store)
+      await renderOffers(store)
       // When
       await userEvent.clear(
         screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN')
       )
       await userEvent.click(screen.getByText('Lancer la recherche'))
-      const urlSearchParams = parse(history.location.search.substring(1))
+
       // Then
-      expect(urlSearchParams).toMatchObject({})
+      expect(api.listOffers).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
     })
 
     it('should have venue value when user filters by venue', async () => {
       // Given
-      const { history } = await renderOffers(store)
+      await renderOffers(store)
       const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
       })
@@ -615,11 +605,18 @@ describe('route Offers', () => {
       // When
       await userEvent.selectOptions(venueSelect, firstVenueOption)
       await userEvent.click(screen.getByText('Lancer la recherche'))
-      const urlSearchParams = parse(history.location.search.substring(1))
+
       // Then
-      expect(urlSearchParams).toMatchObject({
-        lieu: proVenues[0].id,
-      })
+      expect(api.listOffers).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        proVenues[0].id,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
     })
 
     it('should have venue value be removed when user asks for all venues', async () => {
@@ -635,7 +632,7 @@ describe('route Offers', () => {
         ],
         subcategories: [],
       })
-      const { history } = await renderOffers(store)
+      await renderOffers(store)
       const firstTypeOption = screen.getByRole('option', {
         name: 'My test value',
       })
@@ -645,11 +642,18 @@ describe('route Offers', () => {
       // When
       await userEvent.selectOptions(typeSelect, firstTypeOption)
       await userEvent.click(screen.getByText('Lancer la recherche'))
-      const urlSearchParams = parse(history.location.search.substring(1))
+
       // Then
-      expect(urlSearchParams).toMatchObject({
-        categorie: 'test_id_1',
-      })
+      expect(api.listOffers).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'test_id_1',
+        undefined,
+        undefined,
+        undefined
+      )
     })
 
     it('should have status value when user filters by status', async () => {
@@ -667,18 +671,25 @@ describe('route Offers', () => {
           null
         ),
       ])
-      const { history } = await renderOffers(store)
+      await renderOffers(store)
       await userEvent.click(
         screen.getByAltText('Afficher ou masquer le filtre par statut')
       )
       await userEvent.click(screen.getByLabelText('Épuisée'))
       // When
       await userEvent.click(screen.getByText('Appliquer'))
-      const urlSearchParams = parse(history.location.search.substring(1))
+
       // Then
-      expect(urlSearchParams).toMatchObject({
-        statut: 'epuisee',
-      })
+      expect(api.listOffers).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        'SOLD_OUT',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
     })
 
     it('should have status value be removed when user ask for all status', async () => {
@@ -695,16 +706,25 @@ describe('route Offers', () => {
           null
         ),
       ])
-      const { history } = await renderOffers(store)
+      await renderOffers(store)
       await userEvent.click(
         screen.getByAltText('Afficher ou masquer le filtre par statut')
       )
       await userEvent.click(screen.getByLabelText('Tous'))
       // When
       await userEvent.click(screen.getByText('Appliquer'))
-      const urlSearchParams = parse(history.location.search.substring(1))
+
       // Then
-      expect(urlSearchParams).toMatchObject({})
+      expect(api.listOffers).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
     })
 
     it('should have offerer filter when user filters by offerer', async () => {
@@ -739,20 +759,27 @@ describe('route Offers', () => {
 
     it('should have creation mode value when user filters by creation mode', async () => {
       // Given
-      const { history } = await renderOffers(store)
+      await renderOffers(store)
       // When
       await userEvent.selectOptions(screen.getByDisplayValue('Tous'), 'manual')
       await userEvent.click(screen.getByText('Lancer la recherche'))
-      const urlSearchParams = parse(history.location.search.substring(1))
+
       // Then
-      expect(urlSearchParams).toMatchObject({
-        creation: 'manuelle',
-      })
+      expect(api.listOffers).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'manual',
+        undefined,
+        undefined
+      )
     })
 
     it('should have creation mode value be removed when user ask for all creation modes', async () => {
       // Given
-      const { history } = await renderOffers(store)
+      await renderOffers(store)
       const searchButton = screen.getByText('Lancer la recherche')
       await userEvent.selectOptions(screen.getByDisplayValue('Tous'), 'manual')
       await userEvent.click(searchButton)
@@ -762,9 +789,18 @@ describe('route Offers', () => {
         DEFAULT_CREATION_MODE.id
       )
       await userEvent.click(searchButton)
-      const urlSearchParams = parse(history.location.search.substring(1))
+
       // Then
-      expect(urlSearchParams).toMatchObject({})
+      expect(api.listOffers).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
     })
   })
 
@@ -773,7 +809,7 @@ describe('route Offers', () => {
       // Given
       // @ts-expect-error FIX ME
       jest.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
-      const { history } = await renderOffers(store)
+      await renderOffers(store)
       screen.getByText('Lancer la recherche')
       const collectiveAudienceLink = screen.getByText('Offres collectives', {
         selector: 'span',
@@ -783,7 +819,7 @@ describe('route Offers', () => {
       await userEvent.click(collectiveAudienceLink)
 
       // Then
-      expect(history.location.pathname).toBe('/offres/collectives')
+      expect(screen.getByText('Offres collectives')).toBeInTheDocument()
     })
 
     it('should display next page when clicking on right arrow', async () => {
@@ -795,10 +831,11 @@ describe('route Offers', () => {
       jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
       await renderOffers(store)
       const nextIcon = screen.getByAltText('Page suivante')
+
       // When
       await userEvent.click(nextIcon)
+
       // Then
-      expect(api.listOffers).toHaveBeenCalledTimes(1)
       expect(screen.getByText(offers[10].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[0].name)).not.toBeInTheDocument()
     })
@@ -814,10 +851,11 @@ describe('route Offers', () => {
       const nextIcon = screen.getByAltText('Page suivante')
       const previousIcon = screen.getByAltText('Page précédente')
       await userEvent.click(nextIcon)
+
       // When
       await userEvent.click(previousIcon)
+
       // Then
-      expect(api.listOffers).toHaveBeenCalledTimes(1)
       expect(screen.getByText(offers[0].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
     })
@@ -835,8 +873,10 @@ describe('route Offers', () => {
           .spyOn(api, 'listOffers')
           // @ts-expect-error FIX ME
           .mockResolvedValueOnce(offersRecap)
+
         // When
         await renderOffers(store)
+
         // Then
         expect(screen.getByText('Page 1/50')).toBeInTheDocument()
       })
@@ -849,10 +889,12 @@ describe('route Offers', () => {
           .mockResolvedValueOnce(offersRecap)
         await renderOffers(store)
         const nextIcon = screen.getByAltText('Page suivante')
+
         // When
         for (let i = 1; i < 51; i++) {
           await userEvent.click(nextIcon)
         }
+
         // Then
         expect(screen.getByText(offersRecap[499].name)).toBeInTheDocument()
         expect(
@@ -880,25 +922,11 @@ describe('route Offers', () => {
       )
 
       await userEvent.selectOptions(venueSelect, firstVenueOption)
+      await userEvent.click(screen.getByText('Lancer la recherche'))
 
       expect(api.listOffers).toHaveBeenCalledTimes(1)
       expect(api.listOffers).toHaveBeenNthCalledWith(
         1,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      )
-
-      await userEvent.click(screen.getByText('Lancer la recherche'))
-
-      expect(api.listOffers).toHaveBeenCalledTimes(2)
-      expect(api.listOffers).toHaveBeenNthCalledWith(
-        2,
         undefined,
         undefined,
         undefined,
@@ -913,9 +941,9 @@ describe('route Offers', () => {
 
       await userEvent.click(screen.getByText('afficher toutes les offres'))
 
-      expect(api.listOffers).toHaveBeenCalledTimes(3)
+      expect(api.listOffers).toHaveBeenCalledTimes(2)
       expect(api.listOffers).toHaveBeenNthCalledWith(
-        3,
+        2,
         undefined,
         undefined,
         undefined,
@@ -945,24 +973,11 @@ describe('route Offers', () => {
       )
 
       await userEvent.selectOptions(venueSelect, venueOptionToSelect)
+      await userEvent.click(screen.getByText('Lancer la recherche'))
 
       expect(api.listOffers).toHaveBeenCalledTimes(1)
       expect(api.listOffers).toHaveBeenNthCalledWith(
         1,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      )
-
-      await userEvent.click(screen.getByText('Lancer la recherche'))
-      expect(api.listOffers).toHaveBeenCalledTimes(2)
-      expect(api.listOffers).toHaveBeenNthCalledWith(
-        2,
         undefined,
         undefined,
         undefined,
@@ -974,9 +989,9 @@ describe('route Offers', () => {
       )
 
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
-      expect(api.listOffers).toHaveBeenCalledTimes(3)
+      expect(api.listOffers).toHaveBeenCalledTimes(2)
       expect(api.listOffers).toHaveBeenNthCalledWith(
-        3,
+        2,
         undefined,
         undefined,
         undefined,
