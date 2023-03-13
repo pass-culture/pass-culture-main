@@ -13,12 +13,10 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Homepage from '../../Homepage'
 
-const mockHistoryPush = jest.fn()
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: () => ({
-    push: mockHistoryPush,
-  }),
+const mockNavigate = jest.fn()
+jest.mock('react-router-dom-v5-compat', () => ({
+  ...jest.requireActual('react-router-dom-v5-compat'),
+  useNavigate: () => mockNavigate,
 }))
 
 jest.mock('utils/config', () => ({
@@ -37,7 +35,6 @@ jest.mock('apiClient/api', () => ({
 const renderHomePage = async storeOverrides => {
   const utils = renderWithProviders(<Homepage />, {
     storeOverrides,
-    TOREFACTOR_doNotUseV6CompatRouter: true,
   })
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
@@ -440,7 +437,7 @@ describe('offererDetailsLegacy', () => {
       await selectOfferer('+ Ajouter une structure')
 
       // Then
-      expect(mockHistoryPush).toHaveBeenCalledWith('/structures/creation')
+      expect(mockNavigate).toHaveBeenCalledWith('/structures/creation')
     })
   })
 
