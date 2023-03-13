@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useMemo, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
@@ -55,7 +55,8 @@ const VenueFormScreen = ({
   venue,
   providers,
 }: IVenueEditionProps): JSX.Element => {
-  const history = useHistory()
+  const navigate = useNavigate()
+  const location = useLocation()
   const notify = useNotification()
   const [isSiretValued, setIsSiretValued] = useState(
     isCreatingVenue || !!venue?.siret
@@ -90,15 +91,14 @@ const VenueFormScreen = ({
 
         savedSuccess = true
 
-        history.push(
+        navigate(
           venueSubmitRedirectUrl(
             hasNewOfferCreationJourney,
             isCreatingVenue,
             offerer.id,
             response.id,
             currentUser
-          ),
-          true
+          )
         )
       })
       .catch(error => {

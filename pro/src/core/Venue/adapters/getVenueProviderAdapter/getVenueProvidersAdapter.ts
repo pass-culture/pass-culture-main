@@ -16,6 +16,9 @@ const FAILING_RESPONSE = {
 }
 
 const getVenueProvidersAdapter: GetVenueProvidersAdapter = async venueId => {
+  if (!venueId) {
+    return FAILING_RESPONSE
+  }
   try {
     // @ts-expect-error string is not assignable to type number
     const venueProvidersResponse = await api.listVenueProviders(venueId)

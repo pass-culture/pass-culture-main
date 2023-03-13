@@ -1,6 +1,6 @@
 import { useFormikContext } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom-v5-compat'
 
 import { VenueProviderResponse } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'

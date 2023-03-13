@@ -1,5 +1,6 @@
 import React from 'react'
-import { useParams, Redirect } from 'react-router'
+import { Redirect } from 'react-router'
+import { useParams } from 'react-router-dom-v5-compat'
 
 import { setInitialFormValues } from 'components/VenueForm'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
@@ -16,8 +17,10 @@ import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdap
 
 const VenueEdition = (): JSX.Element | null => {
   const homePath = useHomePath()
-  const { offererId } = useParams<{ offererId: string }>()
-  const { venueId } = useParams<{ venueId: string }>()
+  const { offererId, venueId } = useParams<{
+    offererId: string
+    venueId: string
+  }>()
   const notify = useNotification()
   const {
     isLoading: isLoadingVenue,

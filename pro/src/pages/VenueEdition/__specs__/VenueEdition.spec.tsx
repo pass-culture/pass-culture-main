@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
-import { Route } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import {
@@ -30,14 +30,13 @@ const renderVenueEdition = (venueId: string, offererId: string) => {
   }
 
   return renderWithProviders(
-    <>
-      <Route exact path={'/accueil'}>
-        <h1>Home</h1>
-      </Route>
-      <Route exact path={'/structures/:offererId/lieux/:venueId'}>
-        <VenueEdition />
-      </Route>
-    </>,
+    <Routes>
+      <Route
+        path="/structures/:offererId/lieux/:venueId"
+        element={<VenueEdition />}
+      />
+      <Route path="/accueil" element={<h1>Home</h1>} />
+    </Routes>,
     {
       storeOverrides,
       initialRouterEntries: [`/structures/${offererId}/lieux/${venueId}`],
@@ -57,6 +56,14 @@ jest.mock('apiClient/api', () => ({
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
+}))
+
+jest.mock('react-router-dom-v5-compat', () => ({
+  ...jest.requireActual('react-router-dom-v5-compat'),
+  useParams: () => ({
+    offererId: 'ABCD',
+    venueId: 'AE',
+  }),
 }))
 
 describe('route VenueEdition', () => {

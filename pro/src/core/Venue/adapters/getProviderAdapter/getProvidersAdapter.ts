@@ -17,6 +17,9 @@ const FAILING_RESPONSE: AdapterFailure<IProviders[]> = {
 }
 
 const getProvidersAdapter: GetProvidersAdapter = async venueId => {
+  if (!venueId) {
+    return FAILING_RESPONSE
+  }
   try {
     const providersResponse = await pcapi.loadProviders(venueId)
 
