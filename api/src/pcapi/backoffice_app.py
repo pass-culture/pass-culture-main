@@ -38,12 +38,12 @@ with app.app_context():
     import pcapi.routes.backoffice_v3.error_handlers  # pylint: disable=unused-import
     import pcapi.utils.login_manager
 
+    preprocess_scss(settings.IS_DEV)
     install_routes(app)
     app.register_blueprint(backoffice_v3_web, url_prefix="/backofficev3")
 
 
 if __name__ == "__main__":
-    preprocess_scss(settings.IS_DEV)
     port = settings.FLASK_PORT
     if settings.IS_DEV and settings.DEBUG_ACTIVATED:
         import debugpy
