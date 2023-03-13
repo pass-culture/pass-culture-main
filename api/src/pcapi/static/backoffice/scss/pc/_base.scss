@@ -1,0 +1,24 @@
+:root {
+  --bs-body-bg: #f9f9f9;
+}
+
+.pc-header-top {
+  background: linear-gradient(to right, $primary, $secondary);
+}
+
+a {
+  &.hover-text-underline:hover {
+    text-decoration: underline;
+  }
+  &.link-primary {
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+pre:has(code) {
+  padding: 0.5rem;
+  font-family: Consolas, "courier new", serif;
+}

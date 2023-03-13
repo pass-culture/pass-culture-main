@@ -5,7 +5,6 @@
         id="{{ select_field_id }}"
         name="{{ field.name }}"
         aria-label="{{ field.name }}"
-        style="flex-grow: 1!important;"
         {% if field.flags.required %} required{% endif %}
     >
         {% if not field.default %}

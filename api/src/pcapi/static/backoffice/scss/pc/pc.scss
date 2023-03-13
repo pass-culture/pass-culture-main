@@ -1,0 +1,15 @@
+// Bootstrap 5 requirements
+@import "../bootstrap/functions";
+@import "../bootstrap/variables";
+
+// Base css
+@import "./_base";
+@import "./_forms";
+@import "./_utilities";
+
+// Modules css
+@import "./_collapse";
+@import "./_nav";
+
+// Templates css
+@import "./templates/_login";

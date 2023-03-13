@@ -1,0 +1,10 @@
+.pc-login-container {
+  margin-top: 10vh;
+}
+
+.pc-login-background {
+  position: absolute;
+  top: 3vh;
+  left: 25vw;
+  z-index: map-get($zindex-levels, "n1");
+}
