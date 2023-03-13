@@ -1,13 +1,11 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createBrowserHistory } from 'history'
 import fetch from 'jest-fetch-mock'
 import React from 'react'
-import { Router } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel } from 'apiClient/v1'
-import Notification from 'components/Notification/Notification'
 import { IVenueFormValues } from 'components/VenueForm'
 import {
   Events,
@@ -84,19 +82,27 @@ const renderForm = (isCreation: boolean) => {
   }
 
   renderWithProviders(
-    <Router history={createBrowserHistory()}>
-      <VenueFormScreen
-        initialValues={formValues}
-        isCreatingVenue={isCreation}
-        offerer={{ id: 'AE', siren: '881457238' } as IOfferer}
-        venueTypes={venueTypes}
-        venueLabels={venueLabels}
-        providers={[]}
-        venueProviders={[]}
+    <Routes>
+      <Route
+        path="/structures/AE/lieux/creation"
+        element={
+          <VenueFormScreen
+            initialValues={formValues}
+            isCreatingVenue={isCreation}
+            offerer={{ id: 'AE', siren: '881457238' } as IOfferer}
+            venueTypes={venueTypes}
+            venueLabels={venueLabels}
+            providers={[]}
+            venueProviders={[]}
+          />
+        }
       />
-      <Notification />
-    </Router>,
-    { storeOverrides }
+      <Route
+        path="/structures/AE/lieux/:venueId"
+        element={<div>Lieu créé</div>}
+      />
+    </Routes>,
+    { storeOverrides, initialRouterEntries: ['/structures/AE/lieux/creation'] }
   )
 }
 
@@ -159,7 +165,7 @@ describe('venue form trackers', () => {
     await userEvent.click(screen.getByText(/Enregistrer/))
 
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_SAVE_VENUE, {
-      from: `/structures/AE/lieux/ID`,
+      from: `/structures/AE/lieux/creation`,
       saved: true,
     })
   })
@@ -171,7 +177,7 @@ describe('venue form trackers', () => {
     await userEvent.click(screen.getByText(/Enregistrer/))
 
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_SAVE_VENUE, {
-      from: `/structures/AE/lieux/ID`,
+      from: `/structures/AE/lieux/creation`,
       saved: false,
     })
   })

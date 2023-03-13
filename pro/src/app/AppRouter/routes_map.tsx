@@ -269,12 +269,14 @@ const routes: IRoute[] = [
     exact: true,
     path: '/structures/:offererId/lieux/creation',
     title: 'Structures',
+    useV6Router: true,
   },
   {
     component: VenueEdition,
     exact: true,
     path: '/structures/:offererId/lieux/:venueId',
     title: 'Structures',
+    useV6Router: true,
   },
 
   {
