@@ -1,18 +1,15 @@
 // react-testing-library doc: https://testing-library.com/docs/react-testing-library/api
 
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { MemoryRouter } from 'react-router'
+
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { EmailChangeValidationScreen } from '../'
 
 describe('screens:EmailChangeValidation', () => {
   it('renders component successfully when success', async () => {
-    render(
-      <MemoryRouter>
-        <EmailChangeValidationScreen isSuccess={true} />
-      </MemoryRouter>
-    )
+    renderWithProviders(<EmailChangeValidationScreen isSuccess={true} />)
 
     expect(
       screen.getByText('Et voilà !', {
@@ -21,11 +18,7 @@ describe('screens:EmailChangeValidation', () => {
     ).toBeInTheDocument()
   })
   it('renders component successfully when not success', () => {
-    render(
-      <MemoryRouter>
-        <EmailChangeValidationScreen isSuccess={false} />
-      </MemoryRouter>
-    )
+    renderWithProviders(<EmailChangeValidationScreen isSuccess={false} />)
     expect(
       screen.getByText('Votre lien a expiré !', {
         selector: 'h1',
