@@ -1,7 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
 
-from flask_jwt_extended.utils import create_access_token
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
@@ -23,8 +22,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.utils.human_ids import humanize
 
-from tests.conftest import TestClient
-
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
@@ -32,15 +29,12 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class PostBookingTest:
     identifier = "pascal.ture@example.com"
 
-    def test_post_bookings(self, app):
+    def test_post_bookings(self, client):
         stock = StockFactory()
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
+        client = client.with_token(self.identifier)
+        response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 200
 
@@ -48,39 +42,30 @@ class PostBookingTest:
         assert booking.userId == user.id
         assert response.json["bookingId"] == booking.id
 
-    def test_no_stock_found(self, app):
+    def test_no_stock_found(self, client):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/bookings", json={"stockId": 400, "quantity": 1})
+        client = client.with_token(self.identifier)
+        response = client.post("/native/v1/bookings", json={"stockId": 400, "quantity": 1})
 
         assert response.status_code == 400
 
-    def test_insufficient_credit(self, app):
+    def test_insufficient_credit(self, client):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         stock = StockFactory(price=501)
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
+        client = client.with_token(self.identifier)
+        response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
         assert response.json["code"] == "INSUFFICIENT_CREDIT"
 
-    def test_already_booked(self, app):
+    def test_already_booked(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory(user=user)
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/bookings", json={"stockId": booking.stock.id, "quantity": 1})
+        client = client.with_token(self.identifier)
+        response = client.post("/native/v1/bookings", json={"stockId": booking.stock.id, "quantity": 1})
 
         assert response.status_code == 400
         assert response.json["code"] == "ALREADY_BOOKED"
@@ -100,7 +85,7 @@ class PostBookingTest:
 class GetBookingsTest:
     identifier = "pascal.ture@example.com"
 
-    def test_get_bookings(self, app):
+    def test_get_bookings(self, client):
         OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
@@ -155,12 +140,9 @@ class GetBookingsTest:
 
         mediation = MediationFactory(id=111, offer=used2.stock.offer, thumbCount=1, credit="street credit")
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
+        client = client.with_token(self.identifier)
         with assert_no_duplicated_queries():
-            response = test_client.get("/native/v1/bookings")
+            response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
         assert [b["id"] for b in response.json["ongoing_bookings"]] == [
@@ -268,7 +250,7 @@ class GetBookingsTest:
         assert response.json["ongoing_bookings"][0]["id"] == booking.id
         assert response.json["hasBookingsAfter18"] is False
 
-    def test_offer_url_is_not_overrided_by_cancelled_booking_url(self, app, client):
+    def test_offer_url_is_not_overrided_by_cancelled_booking_url(self, client):
         OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         stock = StockFactory(offer__url=OFFER_URL)
@@ -337,15 +319,12 @@ class GetBookingsTest:
 class CancelBookingTest:
     identifier = "pascal.ture@example.com"
 
-    def test_cancel_booking(self, app):
+    def test_cancel_booking(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory(user=user)
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post(f"/native/v1/bookings/{booking.id}/cancel")
+        client = client.with_token(self.identifier)
+        response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 204
 
@@ -354,29 +333,23 @@ class CancelBookingTest:
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
         assert len(mails_testing.outbox) == 1
 
-    def test_cancel_others_booking(self, app):
+    def test_cancel_others_booking(self, client):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory()
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post(f"/native/v1/bookings/{booking.id}/cancel")
+        client = client.with_token(self.identifier)
+        response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 404
 
-    def test_cancel_confirmed_booking(self, app):
+    def test_cancel_confirmed_booking(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory(
             user=user, cancellation_limit_date=datetime.utcnow() - timedelta(days=1)
         )
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post(f"/native/v1/bookings/{booking.id}/cancel")
+        client = client.with_token(self.identifier)
+        response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 400
         assert response.json == {
@@ -402,31 +375,27 @@ class CancelBookingTest:
 class ToggleBookingVisibilityTest:
     identifier = "pascal.ture@example.com"
 
-    def test_toggle_visibility(self, app):
+    def test_toggle_visibility(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        access_token = create_access_token(identity=self.identifier)
 
         booking = booking_factories.BookingFactory(user=user, displayAsEnded=None)
         booking_id = booking.id
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post(f"/native/v1/bookings/{booking_id}/toggle_display", json={"ended": True})
+        client = client.with_token(self.identifier)
+        response = client.post(f"/native/v1/bookings/{booking_id}/toggle_display", json={"ended": True})
 
         assert response.status_code == 204
         db.session.refresh(booking)
         assert booking.displayAsEnded
 
-        response = test_client.post(f"/native/v1/bookings/{booking_id}/toggle_display", json={"ended": False})
+        response = client.post(f"/native/v1/bookings/{booking_id}/toggle_display", json={"ended": False})
 
         assert response.status_code == 204
         db.session.refresh(booking)
         assert not booking.displayAsEnded
 
-    def test_integration_toggle_visibility(self, app):
+    def test_integration_toggle_visibility(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        access_token = create_access_token(identity=self.identifier)
 
         stock = StockWithActivationCodesFactory()
         activation_code = stock.activationCodes[0]
@@ -438,30 +407,28 @@ class ToggleBookingVisibilityTest:
             activationCode=activation_code,
         )
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.get("/native/v1/bookings")
+        client = client.with_token(self.identifier)
+        response = client.get("/native/v1/bookings")
         assert response.status_code == 200
 
         assert [b["id"] for b in response.json["ongoing_bookings"]] == [booking.id]
         assert [b["id"] for b in response.json["ended_bookings"]] == []
 
-        response = test_client.post(f"/native/v1/bookings/{booking.id}/toggle_display", json={"ended": True})
+        response = client.post(f"/native/v1/bookings/{booking.id}/toggle_display", json={"ended": True})
 
         assert response.status_code == 204
 
-        response = test_client.get("/native/v1/bookings")
+        response = client.get("/native/v1/bookings")
         assert response.status_code == 200
 
         assert [b["id"] for b in response.json["ongoing_bookings"]] == []
         assert [b["id"] for b in response.json["ended_bookings"]] == [booking.id]
 
-        response = test_client.post(f"/native/v1/bookings/{booking.id}/toggle_display", json={"ended": False})
+        response = client.post(f"/native/v1/bookings/{booking.id}/toggle_display", json={"ended": False})
 
         assert response.status_code == 204
 
-        response = test_client.get("/native/v1/bookings")
+        response = client.get("/native/v1/bookings")
         assert response.status_code == 200
 
         assert [b["id"] for b in response.json["ongoing_bookings"]] == [booking.id]
