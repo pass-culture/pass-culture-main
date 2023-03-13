@@ -127,7 +127,10 @@ class BookingReponse(BaseModel):
     @classmethod
     def from_orm(cls: Any, booking: bookings_models.Booking) -> "BookingReponse":
         booking.confirmationDate = booking.cancellationLimitDate
-        return super().from_orm(booking)
+        serialized = super().from_orm(booking)
+        if booking.isExternal:
+            serialized.token = None
+        return serialized
 
     class Config:
         orm_mode = True
