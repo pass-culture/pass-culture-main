@@ -112,3 +112,17 @@ def is_user_offerer_action_type(action: history_models.ActionHistory) -> bool:
 
 def random_hash() -> str:
     return format(random.getrandbits(128), "x")
+
+
+def format_isbn_or_visa(isbn: str) -> str:
+    return isbn.replace("-", "").replace(" ", "")
+
+
+def is_isbn_valid(isbn: str) -> bool:
+    isbn = format_isbn_or_visa(isbn)
+    return isbn.isdigit() and len(isbn) == 13
+
+
+def is_visa_valid(visa: str) -> bool:
+    visa = format_isbn_or_visa(visa)
+    return visa.isdigit() and len(visa) <= 10
