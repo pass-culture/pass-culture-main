@@ -23,9 +23,8 @@ export interface IFormStockProps {
 const FormStock = ({
   mode,
   disablePriceAndParticipantInputs,
-  preventPriceIncrease,
 }: IFormStockProps): JSX.Element => {
-  const { values, setFieldValue, initialValues } =
+  const { values, setFieldValue } =
     useFormikContext<OfferEducationalStockFormValues>()
 
   return (
@@ -63,7 +62,6 @@ const FormStock = ({
         smallLabel
         step={0.01} // allow user to enter a price with cents
         type="number"
-        {...(preventPriceIncrease ? { max: initialValues.totalPrice } : {})}
         rightIcon={() => <EuroIcon />}
       />
       <DatePicker

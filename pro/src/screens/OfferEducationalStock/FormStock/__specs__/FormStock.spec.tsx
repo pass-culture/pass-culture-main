@@ -10,7 +10,7 @@ import {
   Mode,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
-import { validationSchema } from 'screens/OfferEducationalStock/validationSchema'
+import { generateValidationSchema } from 'screens/OfferEducationalStock/validationSchema'
 import { SubmitButton } from 'ui-kit'
 
 import FormStock, { IFormStockProps } from '../FormStock'
@@ -28,7 +28,10 @@ const renderFormStock = ({
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
-      validationSchema={validationSchema}
+      validationSchema={generateValidationSchema(
+        props.preventPriceIncrease,
+        initialValues.totalPrice
+      )}
     >
       <Form>
         <FormStock {...props} />
@@ -123,7 +126,13 @@ describe('TimePicker', () => {
     const priceInput = screen.getByLabelText('Prix global TTC')
     await userEvent.clear(priceInput)
     await userEvent.type(priceInput, '10000')
+    const saveButton = screen.getByText('Enregistrer')
+
+    await userEvent.click(saveButton)
 
     expect(priceInput).toBeInvalid()
+    expect(
+      screen.getByText('Vous ne pouvez pas définir un prix plus élevé.')
+    ).toBeInTheDocument()
   })
 })
