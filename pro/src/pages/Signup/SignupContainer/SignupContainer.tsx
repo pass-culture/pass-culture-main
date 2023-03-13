@@ -1,6 +1,6 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useRef } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -21,7 +21,7 @@ import { ISignupApiErrorResponse, ISignupFormValues } from './types'
 import { validationSchema } from './validationSchema'
 
 const SignupContainer = (): JSX.Element => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const notification = useNotification()
   const { visible, hideModal } = useModal()
   const { logEvent } = useAnalytics()
@@ -70,7 +70,7 @@ const SignupContainer = (): JSX.Element => {
 
   const onHandleSuccess = () => {
     logEvent?.(Events.SIGNUP_FORM_SUCCESS, {})
-    history.replace('/inscription/confirmation')
+    navigate('/inscription/confirmation', { replace: true })
   }
 
   const onHandleFail = (errors: ISignupApiErrorResponse) => {
