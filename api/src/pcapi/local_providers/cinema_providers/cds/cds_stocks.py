@@ -8,11 +8,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.external_bookings.models import Movie
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import PriceCategory
-from pcapi.core.offers.models import PriceCategoryLabel
-from pcapi.core.offers.models import Product
-from pcapi.core.offers.models import Stock
+import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.repository import get_next_product_id_from_database
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.repository import get_cds_cinema_details
@@ -38,10 +34,10 @@ class CDSStocks(LocalProvider):
         self.movies: Iterator[Movie] = iter(self._get_cds_movies())
         self.shows = self._get_cds_shows()
         self.filtered_movie_showtimes = None
-        self.price_category_labels: list[PriceCategoryLabel] = PriceCategoryLabel.query.filter(
-            PriceCategoryLabel.venue == self.venue
-        ).all()
-        self.price_category_lists_by_offer: dict[Offer, list[PriceCategory]] = {}
+        self.price_category_labels: list[
+            offers_models.PriceCategoryLabel
+        ] = offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
+        self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
 
     def __next__(self) -> list[ProvidableInfo]:
         movie_infos = next(self.movies)
@@ -56,7 +52,7 @@ class CDSStocks(LocalProvider):
         # The Product ID must be unique
         provider_movie_unique_id = _build_movie_uuid(self.movie_information.id, self.venue)
         product_providable_info = self.create_providable_info(
-            pc_object=Product,
+            pc_object=offers_models.Product,
             id_at_providers=provider_movie_unique_id,
             date_modified_at_provider=datetime.utcnow(),
             new_id_at_provider=provider_movie_unique_id,
@@ -65,7 +61,7 @@ class CDSStocks(LocalProvider):
 
         venue_movie_unique_id = _build_movie_uuid(self.movie_information.id, self.venue)
         offer_providable_info = self.create_providable_info(
-            Offer, venue_movie_unique_id, datetime.utcnow(), venue_movie_unique_id
+            offers_models.Offer, venue_movie_unique_id, datetime.utcnow(), venue_movie_unique_id
         )
         providable_information_list.append(offer_providable_info)
 
@@ -74,23 +70,23 @@ class CDSStocks(LocalProvider):
                 self.movie_information.id, self.venue, show["show_information"]
             )
             stock_providable_info = self.create_providable_info(
-                Stock, stock_showtime_unique_id, datetime.utcnow(), stock_showtime_unique_id
+                offers_models.Stock, stock_showtime_unique_id, datetime.utcnow(), stock_showtime_unique_id
             )
             providable_information_list.append(stock_providable_info)
 
         return providable_information_list
 
     def fill_object_attributes(self, pc_object: Model) -> None:
-        if isinstance(pc_object, Product):
+        if isinstance(pc_object, offers_models.Product):
             self.fill_product_attributes(pc_object)
 
-        if isinstance(pc_object, Offer):
+        if isinstance(pc_object, offers_models.Offer):
             self.fill_offer_attributes(pc_object)
 
-        if isinstance(pc_object, Stock):
+        if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
-    def fill_product_attributes(self, cds_product: Product) -> None:
+    def fill_product_attributes(self, cds_product: offers_models.Product) -> None:
         cds_product.name = self.movie_information.title
         cds_product.subcategoryId = subcategories.SEANCE_CINE.id
 
@@ -102,7 +98,7 @@ class CDSStocks(LocalProvider):
 
         self.last_product = cds_product
 
-    def fill_offer_attributes(self, cds_offer: Offer) -> None:
+    def fill_offer_attributes(self, cds_offer: offers_models.Offer) -> None:
         cds_offer.venueId = self.venue.id
         cds_offer.bookingEmail = self.venue.bookingEmail
         cds_offer.withdrawalDetails = self.venue.withdrawalDetails
@@ -122,7 +118,7 @@ class CDSStocks(LocalProvider):
 
         self.last_offer = cds_offer
 
-    def fill_stock_attributes(self, cds_stock: Stock):  # type: ignore [no-untyped-def]
+    def fill_stock_attributes(self, cds_stock: offers_models.Stock):  # type: ignore [no-untyped-def]
         cds_stock.offer = self.last_offer
 
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(cds_stock.idAtProviders)  # type: ignore [arg-type]
@@ -159,10 +155,12 @@ class CDSStocks(LocalProvider):
             else:
                 cds_stock.quantity = show.remaining_place + cds_stock.dnBookedQuantity
 
-    def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> PriceCategory:
+    def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
         if self.last_offer not in self.price_category_lists_by_offer:
             self.price_category_lists_by_offer[self.last_offer] = (
-                PriceCategory.query.filter(PriceCategory.offer == self.last_offer).order_by(PriceCategory.price).all()
+                offers_models.PriceCategory.query.filter(offers_models.PriceCategory.offer == self.last_offer)
+                .order_by(offers_models.PriceCategory.price)
+                .all()
                 if self.last_offer.id
                 else []
             )
@@ -174,20 +172,24 @@ class CDSStocks(LocalProvider):
         )
         if not price_category:
             price_category_label = self.get_or_create_price_category_label(price_label)
-            price_category = PriceCategory(price=price, priceCategoryLabel=price_category_label, offer=self.last_offer)
+            price_category = offers_models.PriceCategory(
+                price=price, priceCategoryLabel=price_category_label, offer=self.last_offer
+            )
             price_categories.append(price_category)
 
         return price_category
 
-    def get_or_create_price_category_label(self, price_label: str) -> PriceCategoryLabel:
+    def get_or_create_price_category_label(self, price_label: str) -> offers_models.PriceCategoryLabel:
         price_category_label = next((label for label in self.price_category_labels if label.label == price_label), None)
         if not price_category_label:
-            price_category_label = PriceCategoryLabel(label=price_label, venue=self.venue)
+            price_category_label = offers_models.PriceCategoryLabel(label=price_label, venue=self.venue)
             self.price_category_labels.append(price_category_label)
 
         return price_category_label
 
-    def update_from_movie_information(self, obj: Offer | Product, movie_information: Movie) -> None:
+    def update_from_movie_information(
+        self, obj: offers_models.Offer | offers_models.Product, movie_information: Movie
+    ) -> None:
         if movie_information.description:
             obj.description = movie_information.description
         if self.movie_information.duration:
