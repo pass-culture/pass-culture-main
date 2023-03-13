@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router'
+import { Routes, Route } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
@@ -24,15 +24,20 @@ const renderSignIn = storeOverrides =>
   renderWithProviders(
     <>
       <SignIn />
-      <Route path="/accueil">
-        <span>I'm logged standard user redirect route</span>
-      </Route>
-      <Route path="/structures">
-        <span>I'm logged admin redirect route</span>
-      </Route>
-      <Route path="/inscription">
-        <span>I'm the inscription page</span>
-      </Route>
+      <Routes>
+        <Route
+          path="/accueil"
+          element={<span>I'm logged standard user redirect route</span>}
+        />
+        <Route
+          path="/structures"
+          element={<span>I'm logged admin redirect route</span>}
+        />
+        <Route
+          path="/inscription"
+          element={<span>I'm the inscription page</span>}
+        />
+      </Routes>
       <Notification />
     </>,
     { storeOverrides, initialRouterEntries: ['/connexion'] }
