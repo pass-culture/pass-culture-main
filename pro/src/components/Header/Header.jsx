@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react'
-import { useDispatch } from 'react-redux'
-import { NavLink, useHistory, useLocation } from 'react-router-dom'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom-v5-compat'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -17,16 +16,15 @@ import Logo from 'ui-kit/Logo/Logo'
 
 const Header = () => {
   const { currentUser } = useCurrentUser()
-  const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
 
   const onSignoutClick = useCallback(() => {
     logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
-    history.push('/logout')
-  }, [dispatch, history, logEvent, location.pathname])
+    navigate('/logout')
+  }, [navigate, logEvent, location.pathname])
   return (
     <header className="menu-v2">
       <nav>
