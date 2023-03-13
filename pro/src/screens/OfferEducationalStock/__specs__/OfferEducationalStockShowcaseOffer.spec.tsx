@@ -1,10 +1,24 @@
 import { screen } from '@testing-library/react'
+import React from 'react'
 
-import { EducationalOfferType, Mode } from 'core/OfferEducational'
+import {
+  DEFAULT_EAC_STOCK_FORM_VALUES,
+  EducationalOfferType,
+  Mode,
+} from 'core/OfferEducational'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { defaultProps, renderOfferEducationalStock } from '../__tests-utils__'
-import { IOfferEducationalStockProps } from '../OfferEducationalStock'
+import OfferEducationalStock, {
+  IOfferEducationalStockProps,
+} from '../OfferEducationalStock'
+
+const defaultProps: IOfferEducationalStockProps = {
+  initialValues: DEFAULT_EAC_STOCK_FORM_VALUES,
+  offer: collectiveOfferFactory({}),
+  onSubmit: jest.fn(),
+  mode: Mode.CREATION,
+}
 
 describe('screens | OfferEducationalStock : showcase offer', () => {
   it('should render for offer with a stock', () => {
@@ -23,7 +37,7 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
       },
       mode: Mode.EDITION,
     }
-    renderOfferEducationalStock(testProps)
+    renderWithProviders(<OfferEducationalStock {...testProps} />)
 
     screen.getByText('Date et prix')
   })
@@ -35,7 +49,7 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
       offer,
       mode: Mode.EDITION,
     }
-    renderOfferEducationalStock(testProps)
+    renderWithProviders(<OfferEducationalStock {...testProps} />)
 
     expect(
       screen.getByText('Offre importée automatiquement')
@@ -50,7 +64,7 @@ describe('screens | OfferEducationalStock : showcase offer', () => {
       offer,
       mode: Mode.READ_ONLY,
     }
-    renderOfferEducationalStock(testProps)
+    renderWithProviders(<OfferEducationalStock {...testProps} />)
 
     const priceInput = screen.getByLabelText('Prix global TTC')
     const placeInput = screen.getByLabelText('Nombre de places')

@@ -1,9 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createMemoryHistory } from 'history'
 import fetch from 'jest-fetch-mock'
 import React from 'react'
-import { Router } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { apiAdresse } from 'apiClient/adresse'
 import { api } from 'apiClient/api'
@@ -52,23 +51,44 @@ const renderForm = (
 
   renderWithProviders(
     <>
-      <Router history={createMemoryHistory()}>
-        <VenueFormScreen
-          initialValues={initialValues}
-          isCreatingVenue={isCreatingVenue}
-          offerer={{ id: 'AE', siren: '881457238' } as IOfferer}
-          venueTypes={venueTypes}
-          venueLabels={venueLabels}
-          providers={[]}
-          venue={venue}
-          venueProviders={[]}
+      <Routes>
+        <Route
+          path="/structures/AE/lieux/creation"
+          element={
+            <>
+              <VenueFormScreen
+                initialValues={initialValues}
+                isCreatingVenue={isCreatingVenue}
+                offerer={{ id: 'AE', siren: '881457238' } as IOfferer}
+                venueTypes={venueTypes}
+                venueLabels={venueLabels}
+                providers={[]}
+                venue={venue}
+                venueProviders={[]}
+              />
+            </>
+          }
         />
-      </Router>
+        <Route
+          path="/structures/AE/lieux/:venueId"
+          element={
+            <>
+              <div>Lieu créé</div>
+            </>
+          }
+        />
+      </Routes>
       <Notification />
     </>,
-    { storeOverrides }
+    { storeOverrides, initialRouterEntries: ['/structures/AE/lieux/creation'] }
   )
 }
+
+const mockNavigate = jest.fn()
+jest.mock('react-router-dom-v5-compat', () => ({
+  ...jest.requireActual('react-router-dom-v5-compat'),
+  useNavigate: () => mockNavigate,
+}))
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -341,6 +361,7 @@ describe('screen | VenueForm', () => {
       })
 
       it('User should be redirected with the new creation journey', async () => {
+        jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: '56' })
         renderForm(
           {
             id: 'EY',
@@ -351,7 +372,6 @@ describe('screen | VenueForm', () => {
           true,
           undefined
         )
-        jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: '56' })
 
         await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
         await waitFor(() => {

@@ -1,14 +1,16 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
 
+import { renderWithProviders } from 'utils/renderWithProviders'
+
+import OfferEducational from '../'
 import {
   defaultCreationProps,
   managedVenuesFactory,
-  renderEACOfferForm,
   userOfferersFactory,
 } from '../__tests-utils__'
 import { IOfferEducationalProps } from '../OfferEducational'
-
 const eligibilityResponse = (
   eligible: boolean,
   override: Record<string, unknown> = {}
@@ -35,7 +37,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
     })
 
     it('should display offerer select with pre-selected options', async () => {
-      renderEACOfferForm(props)
+      renderWithProviders(<OfferEducational {...props} />)
       const offererSelect = await screen.findByLabelText('Structure')
 
       expect(offererSelect).toHaveValue('OFFERER_ID')
@@ -44,7 +46,12 @@ describe('screens | OfferEducational : creation offerer step', () => {
     })
 
     it('should test eligibility and display venue input if offerer is eligible', async () => {
-      renderEACOfferForm({ ...props, getIsOffererEligible })
+      renderWithProviders(
+        <OfferEducational
+          {...props}
+          getIsOffererEligible={getIsOffererEligible}
+        />
+      )
 
       expect(getIsOffererEligible).toHaveBeenCalledTimes(1)
       expect(await screen.findByLabelText('Lieu')).toBeInTheDocument()
@@ -55,7 +62,12 @@ describe('screens | OfferEducational : creation offerer step', () => {
         .fn()
         .mockResolvedValue(eligibilityResponse(false))
 
-      renderEACOfferForm({ ...props, getIsOffererEligible })
+      renderWithProviders(
+        <OfferEducational
+          {...props}
+          getIsOffererEligible={getIsOffererEligible}
+        />
+      )
 
       expect(
         await screen.findByText(
@@ -87,7 +99,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
     })
 
     it('should display specific banner instead of place and referencing banner', async () => {
-      renderEACOfferForm({ ...props, userOfferers: [] })
+      renderWithProviders(<OfferEducational {...props} userOfferers={[]} />)
       expect(
         await screen.findByText(
           /Vous ne pouvez pas créer d’offre collective tant que votre structure n’est pas validée./
@@ -122,7 +134,8 @@ describe('screens | OfferEducational : creation offerer step', () => {
     })
 
     it('should pre-select both selects and display the next step', async () => {
-      renderEACOfferForm(props)
+      renderWithProviders(<OfferEducational {...props} />)
+
       const offerTypeTitle = await screen.findByRole('heading', {
         name: 'Type d’offre',
       })
@@ -162,7 +175,12 @@ describe('screens | OfferEducational : creation offerer step', () => {
     })
 
     it('should require an offerer selection from the user and trigger eligibility check at selection', async () => {
-      renderEACOfferForm({ ...props, getIsOffererEligible })
+      renderWithProviders(
+        <OfferEducational
+          {...props}
+          getIsOffererEligible={getIsOffererEligible}
+        />
+      )
       const offererSelect = await screen.findByLabelText('Structure')
 
       expect(offererSelect).toBeInTheDocument()
@@ -195,7 +213,12 @@ describe('screens | OfferEducational : creation offerer step', () => {
     })
 
     it('should check eligibility every time a diferent offerer is selected', async () => {
-      renderEACOfferForm({ ...props, getIsOffererEligible })
+      renderWithProviders(
+        <OfferEducational
+          {...props}
+          getIsOffererEligible={getIsOffererEligible}
+        />
+      )
 
       const offererSelect = await screen.findByLabelText('Structure')
 
@@ -230,7 +253,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
     })
 
     it('should require a venue selection from the user', async () => {
-      renderEACOfferForm(props)
+      renderWithProviders(<OfferEducational {...props} />)
       const venueSelect = await screen.findByLabelText('Lieu')
 
       expect(venueSelect).toHaveValue('')
@@ -268,7 +291,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
     })
 
     it('should display venues by alphabeticall order', async () => {
-      renderEACOfferForm(props)
+      renderWithProviders(<OfferEducational {...props} />)
       const venueSelect = await screen.findByLabelText('Lieu')
       const venuesOptions = venueSelect.children
       expect(venuesOptions[0].textContent).toEqual('Sélectionner un lieu')

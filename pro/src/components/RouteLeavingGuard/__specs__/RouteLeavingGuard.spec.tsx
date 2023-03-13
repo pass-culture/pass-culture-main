@@ -1,11 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import type { History } from 'history'
-import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Router } from 'react-router'
 import { Link } from 'react-router-dom'
-import { Route, Routes, CompatRouter } from 'react-router-dom-v5-compat'
+import { Route, Routes } from 'react-router-dom-v5-compat'
+
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import RouteLeavingGuard, {
   IRouteLeavingGuardProps,
@@ -24,26 +23,19 @@ const MiniAppTest = () => (
   </div>
 )
 
-const renderRouteLeavingGuard = async (
-  props: IRouteLeavingGuardProps,
-  history: History
-) => {
-  render(
-    <Router history={history}>
-      <CompatRouter>
-        <MiniAppTest />
-        <RouteLeavingGuard {...props}>{props.children}</RouteLeavingGuard>
-      </CompatRouter>
-    </Router>
+const renderRouteLeavingGuard = async (props: IRouteLeavingGuardProps) => {
+  renderWithProviders(
+    <>
+      <MiniAppTest />
+      <RouteLeavingGuard {...props}>{props.children}</RouteLeavingGuard>
+    </>
   )
 }
 
 describe('components | RouteLeavingGuardCollectiveOfferCreation | RouteLeavingGuard', () => {
   let props: IRouteLeavingGuardProps
-  const history = createBrowserHistory()
 
   beforeEach(() => {
-    history.push('/')
     const shouldBlockReturnValue = { redirectPath: '', shouldBlock: true }
     props = {
       shouldBlockNavigation: () => shouldBlockReturnValue,
@@ -55,7 +47,7 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation | RouteLeavingGu
 
   it('should always display the confirmation modal before redirection', async () => {
     // Given
-    renderRouteLeavingGuard(props, history)
+    renderRouteLeavingGuard(props)
 
     // When
     const aboutPageLink = screen.getByText('About')
@@ -72,7 +64,7 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation | RouteLeavingGu
     props.when = false
 
     //When
-    renderRouteLeavingGuard(props, history)
+    renderRouteLeavingGuard(props)
     const aboutPageLink = screen.getByText('About')
     await userEvent.click(aboutPageLink)
 
@@ -85,7 +77,7 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation | RouteLeavingGu
 
   it('should be redirected after confirm on dialog', async () => {
     //Given
-    renderRouteLeavingGuard(props, history)
+    renderRouteLeavingGuard(props)
 
     // When
     const aboutPageLink = screen.getByText('About')
@@ -100,7 +92,7 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation | RouteLeavingGu
 
   it('should not be redirected after cancel on dialog', async () => {
     //Given
-    renderRouteLeavingGuard(props, history)
+    renderRouteLeavingGuard(props)
     // When
     const aboutPageLink = screen.getByText('About')
     await userEvent.click(aboutPageLink)
@@ -123,7 +115,7 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation | RouteLeavingGu
     }
 
     // When
-    renderRouteLeavingGuard(props, history)
+    renderRouteLeavingGuard(props)
     const contactPageLink = screen.getByText('Contact')
     await userEvent.click(contactPageLink)
 

@@ -1,10 +1,13 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
 
+import { renderWithProviders } from 'utils/renderWithProviders'
+
+import OfferEducational from '../'
 import {
   categoriesFactory,
   defaultCreationProps,
-  renderEACOfferForm,
   subCategoriesFactory,
 } from '../__tests-utils__'
 import { IOfferEducationalProps } from '../OfferEducational'
@@ -18,7 +21,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
   })
 
   it('should display the right fields and titles', async () => {
-    renderEACOfferForm(props)
+    renderWithProviders(<OfferEducational {...props} />)
 
     const categorySelect = await screen.findByLabelText('Catégorie')
     expect(categorySelect).toBeInTheDocument()
@@ -72,7 +75,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
       }
     })
     it('should require user to select a category before displaying subcategories', async () => {
-      renderEACOfferForm(props)
+      renderWithProviders(<OfferEducational {...props} />)
 
       const categorySelect = await screen.findByLabelText('Catégorie')
       expect(categorySelect).toBeInTheDocument()
@@ -102,7 +105,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
     })
 
     it('should require user to select a subcategory', async () => {
-      renderEACOfferForm(props)
+      renderWithProviders(<OfferEducational {...props} />)
       const categorySelect = await screen.findByLabelText('Catégorie')
       await userEvent.selectOptions(categorySelect, 'CAT_1')
 
@@ -139,8 +142,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
     })
 
     it('should require user to select a domain', async () => {
-      renderEACOfferForm(props, store)
-
+      renderWithProviders(<OfferEducational {...props} />, {
+        storeOverrides: store,
+      })
       await userEvent.click(
         await screen.findByLabelText(/Domaine artistique et culturel/)
       )
@@ -153,7 +157,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
     })
 
     it('should enable user to select domains', async () => {
-      renderEACOfferForm(props, store)
+      renderWithProviders(<OfferEducational {...props} />, {
+        storeOverrides: store,
+      })
 
       await userEvent.click(
         await screen.findByLabelText(/Domaine artistique et culturel/)
@@ -171,7 +177,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
   describe('title, description and duration inputs', () => {
     it('should require a title with less than 110 chars (and truncate longer strings)', async () => {
-      renderEACOfferForm(props)
+      renderWithProviders(<OfferEducational {...props} />)
 
       const titleMaxLength = 110
 
@@ -204,7 +210,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
     })
 
     it('should require a description with less than 1000 chars (and truncate longer strings)', async () => {
-      renderEACOfferForm(props)
+      renderWithProviders(<OfferEducational {...props} />)
 
       const descMaxLength = 1000
 
@@ -232,7 +238,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
     })
 
     it('should have a duration field with a format of hh:mm', async () => {
-      renderEACOfferForm(props)
+      renderWithProviders(<OfferEducational {...props} />)
 
       const duration = await screen.findByLabelText(/Durée/)
       expect(duration).toHaveValue('')

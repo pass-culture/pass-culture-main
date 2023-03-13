@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import React from 'react'
 
 import { CollectiveBookingStatus } from 'apiClient/v1'
 import { Mode } from 'core/OfferEducational'
@@ -6,14 +7,14 @@ import {
   collectiveOfferFactory,
   collectiveOfferVenueFactory,
 } from 'utils/collectiveApiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   defaultEditionProps,
   managedVenuesFactory,
-  renderEACOfferForm,
   userOfferersFactory,
 } from '../__tests-utils__'
-import { IOfferEducationalProps } from '../OfferEducational'
+import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : edition offerer step', () => {
   let props: IOfferEducationalProps
@@ -47,7 +48,8 @@ describe('screens | OfferEducational : edition offerer step', () => {
         collectiveOfferVenueFactory({ managingOffererId: 'OFFERER_2' })
       ),
     }
-    renderEACOfferForm(props)
+
+    renderWithProviders(<OfferEducational {...props} />)
 
     const offerTypeTitle = await screen.findByRole('heading', {
       name: 'Type d’offre',
@@ -92,7 +94,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
         collectiveOfferVenueFactory({ managingOffererId: 'OFFERER_2' })
       ),
     }
-    renderEACOfferForm(props)
+    renderWithProviders(<OfferEducational {...props} />)
 
     const venueSelect = await screen.findByLabelText('Lieu')
 
@@ -104,7 +106,9 @@ describe('screens | OfferEducational : edition offerer step', () => {
   it('should show banner if generate from publicApi', () => {
     const offer = collectiveOfferFactory({ isPublicApi: true })
 
-    renderEACOfferForm({ ...props, mode: Mode.EDITION, offer })
+    renderWithProviders(
+      <OfferEducational {...props} mode={Mode.EDITION} offer={offer} />
+    )
     expect(
       screen.getByText('Offre importée automatiquement')
     ).toBeInTheDocument()
