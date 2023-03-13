@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router'
+import { Routes, Route } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
@@ -26,20 +26,21 @@ jest.mock('apiClient/api', () => ({
 
 const renderSignUp = (storeOverrides: any) =>
   renderWithProviders(
-    <>
-      <Route path="/inscription">
-        <SignupContainer />
-      </Route>
-      <Route path="/accueil">
-        <span>I'm logged in as a pro user</span>
-      </Route>
-      <Route path="/structures">
-        <span>I'm logged in as an Admin</span>
-      </Route>
-      <Route path="/inscription/confirmation">
-        <span>I'm the confirmation page</span>
-      </Route>
-    </>,
+    <Routes>
+      <Route path="/inscription" element={<SignupContainer />} />
+      <Route
+        path="/accueil"
+        element={<span>I'm logged in as a pro user</span>}
+      />
+      <Route
+        path="/structures"
+        element={<span>I'm logged in as an Admin</span>}
+      />
+      <Route
+        path="/inscription/confirmation"
+        element={<span>I'm the confirmation page</span>}
+      />
+    </Routes>,
     { storeOverrides, initialRouterEntries: ['/inscription'] }
   )
 
