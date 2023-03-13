@@ -7,7 +7,7 @@ import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { mainlandOptions, domtomOptions } from 'core/shared/interventionOptions'
+import { domtomOptions, mainlandOptions } from 'core/shared/interventionOptions'
 import * as useNotification from 'hooks/useNotification'
 import {
   collectiveCategoryFactory,
@@ -69,18 +69,14 @@ jest.mock('apiClient/api', () => ({
     getCategories: jest.fn(),
   },
 }))
-
-const mockHistoryPush = jest.fn()
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+const mockedUsedNavigate = jest.fn()
+jest.mock('react-router-dom-v5-compat', () => ({
+  ...jest.requireActual('react-router-dom-v5-compat'),
   useParams: () => ({
     offererId: 'O1',
     venueId: 'V1',
   }),
-  useHistory: () => ({
-    push: mockHistoryPush,
-  }),
+  useNavigate: () => mockedUsedNavigate,
 }))
 
 jest.mock('hooks/useNotification')
@@ -91,9 +87,7 @@ const waitForLoader = () =>
   })
 
 const renderCollectiveDataEdition = () =>
-  renderWithProviders(<CollectiveDataEdition />, {
-    TOREFACTOR_doNotUseV6CompatRouter: true,
-  })
+  renderWithProviders(<CollectiveDataEdition />)
 
 describe('CollectiveDataEdition', () => {
   const notifyErrorMock = jest.fn()
@@ -468,8 +462,7 @@ describe('CollectiveDataEdition', () => {
     const submitButton = screen.getByRole('button', { name: 'Enregistrer' })
     await userEvent.click(submitButton)
 
-    expect(mockHistoryPush).toHaveBeenCalledWith({
-      pathname: '/structures/O1/lieux/V1',
+    expect(mockedUsedNavigate).toHaveBeenCalledWith('/structures/O1/lieux/V1', {
       state: {
         collectiveDataEditionSuccess:
           'Vos informations ont bien été enregistrées',

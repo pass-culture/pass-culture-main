@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom-v5-compat'
 
 import { GetCollectiveVenueResponseModel, StudentLevels } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
@@ -97,7 +97,7 @@ const CollectiveDataForm = ({
   categories,
 }: CollectiveDataFormProps): JSX.Element | null => {
   const notify = useNotification()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const [previousInterventionValues, setPreviousInterventionValues] = useState<
     string[] | null
@@ -131,8 +131,7 @@ const CollectiveDataForm = ({
       values: extractInitialValuesFromVenue(response.payload, categories),
     })
 
-    history.push({
-      pathname: `/structures/${offererId}/lieux/${venueId}`,
+    navigate(`/structures/${offererId}/lieux/${venueId}`, {
       state: {
         collectiveDataEditionSuccess: response.message,
         scrollToElementId: 'venue-collective-data',
@@ -316,10 +315,8 @@ const CollectiveDataForm = ({
           <FormLayout.Actions>
             <Link
               className="secondary-link"
-              to={{
-                pathname: `/structures/${offererId}/lieux/${venueId}`,
-                state: { scrollToElementId: 'venue-collective-data' },
-              }}
+              state={{ scrollToElementId: 'venue-collective-data' }}
+              to={`/structures/${offererId}/lieux/${venueId}`}
             >
               Annuler et quitter
             </Link>
