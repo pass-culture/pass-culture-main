@@ -1279,7 +1279,8 @@ class GetPublicAccountHistoryTest:
 
     def test_history_contains_imports(self):
         # given
-        user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
+        now = datetime.datetime.utcnow()
+        user = users_factories.UserFactory(dateCreated=now - datetime.timedelta(days=1))
         author_user = users_factories.UserFactory()
         dms = users_factories.BeneficiaryImportFactory(
             beneficiary=user,
@@ -1287,19 +1288,19 @@ class GetPublicAccountHistoryTest:
             statuses=[
                 users_factories.BeneficiaryImportStatusFactory(
                     status=ImportStatus.DRAFT,
-                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=30),
+                    date=now - datetime.timedelta(minutes=30),
                     author=author_user,
                     detail="c'est parti",
                 ),
                 users_factories.BeneficiaryImportStatusFactory(
                     status=ImportStatus.ONGOING,
-                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=25),
+                    date=now - datetime.timedelta(minutes=25),
                     author=author_user,
                     detail="patience",
                 ),
                 users_factories.BeneficiaryImportStatusFactory(
                     status=ImportStatus.REJECTED,
-                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=20),
+                    date=now - datetime.timedelta(minutes=20),
                     author=author_user,
                     detail="échec",
                 ),
@@ -1311,19 +1312,19 @@ class GetPublicAccountHistoryTest:
             statuses=[
                 users_factories.BeneficiaryImportStatusFactory(
                     status=ImportStatus.DRAFT,
-                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
+                    date=now - datetime.timedelta(minutes=15),
                     author=author_user,
                     detail="c'est reparti",
                 ),
                 users_factories.BeneficiaryImportStatusFactory(
                     status=ImportStatus.ONGOING,
-                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+                    date=now - datetime.timedelta(minutes=10),
                     author=author_user,
                     detail="loading, please wait",
                 ),
                 users_factories.BeneficiaryImportStatusFactory(
                     status=ImportStatus.CREATED,
-                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
+                    date=now - datetime.timedelta(minutes=5),
                     author=author_user,
                     detail="félicitation",
                 ),
@@ -1335,12 +1336,12 @@ class GetPublicAccountHistoryTest:
 
         # then
         assert len(history) >= 6
-        for i, status in enumerate(dms.statuses):
+        for i, status in enumerate(sorted(dms.statuses, key=lambda s: s.date)):
             assert history[5 - i].actionType == "Import demarches_simplifiees"
             assert history[5 - i].actionDate == status.date
             assert history[5 - i].comment == f"{status.status.value} ({status.detail})"
             assert history[5 - i].authorUser == status.author
-        for i, status in enumerate(ubble.statuses):
+        for i, status in enumerate(sorted(ubble.statuses, key=lambda s: s.date)):
             assert history[2 - i].actionType == "Import ubble"
             assert history[2 - i].actionDate == status.date
             assert history[2 - i].comment == f"{status.status.value} ({status.detail})"
@@ -1348,18 +1349,19 @@ class GetPublicAccountHistoryTest:
 
     def test_history_is_sorted_antichronologically(self):
         # given
-        user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
+        now = datetime.datetime.utcnow()
+        user = users_factories.UserFactory(dateCreated=now - datetime.timedelta(days=1))
         author_user = users_factories.UserFactory()
 
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=55),
+            dateCreated=now - datetime.timedelta(minutes=55),
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=50),
+            dateCreated=now - datetime.timedelta(minutes=50),
         )
         users_factories.BeneficiaryImportFactory(
             beneficiary=user,
@@ -1367,19 +1369,19 @@ class GetPublicAccountHistoryTest:
             statuses=[
                 users_factories.BeneficiaryImportStatusFactory(
                     status=ImportStatus.DRAFT,
-                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=45),
+                    date=now - datetime.timedelta(minutes=45),
                     author=author_user,
                     detail="bonne chance",
                 ),
                 users_factories.BeneficiaryImportStatusFactory(
                     status=ImportStatus.ONGOING,
-                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=40),
+                    date=now - datetime.timedelta(minutes=40),
                     author=author_user,
                     detail="ça vient",
                 ),
                 users_factories.BeneficiaryImportStatusFactory(
                     status=ImportStatus.REJECTED,
-                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=20),
+                    date=now - datetime.timedelta(minutes=20),
                     author=author_user,
                     detail="raté",
                 ),
@@ -1388,18 +1390,14 @@ class GetPublicAccountHistoryTest:
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=35),
+            dateCreated=now - datetime.timedelta(minutes=35),
         )
-        users_factories.EmailUpdateEntryFactory(
-            user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=30)
-        )
-        users_factories.EmailValidationEntryFactory(
-            user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=15)
-        )
+        users_factories.EmailUpdateEntryFactory(user=user, creationDate=now - datetime.timedelta(minutes=30))
+        users_factories.EmailValidationEntryFactory(user=user, creationDate=now - datetime.timedelta(minutes=15))
         fraud_factories.BeneficiaryFraudReviewFactory(
             user=user,
             author=author_user,
-            dateReviewed=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
+            dateReviewed=now - datetime.timedelta(minutes=5),
             review=fraud_models.FraudReviewStatus.OK,
         )
 
