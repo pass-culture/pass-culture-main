@@ -11,9 +11,9 @@ from pcapi import settings
 
 
 def preprocess_scss(watch: bool) -> None:
-    source = Path("src/pcapi/static/backoffice/scss")
-    destination = Path("src/pcapi/static/backoffice/css/compiled")
-    configuration = Path("src/pcapi/static/backoffice/scss/boussole.yml")
+    source = Path("src/pcapi/static/backofficev3/scss")
+    destination = Path("src/pcapi/static/backofficev3/css/compiled")
+    configuration = Path("src/pcapi/static/backofficev3/scss/boussole.yml")
 
     Path(destination).mkdir(parents=True, exist_ok=True)
 
