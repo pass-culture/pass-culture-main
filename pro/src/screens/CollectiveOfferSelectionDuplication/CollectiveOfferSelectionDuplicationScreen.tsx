@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom-v5-compat'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import PageTitle from 'components/PageTitle/PageTitle'
@@ -23,7 +23,7 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const [offers, setOffers] = useState<Offer[]>([])
   const [showAll, setShowAll] = useState(true)
   const notify = useNotification()
-  const history = useHistory()
+  const navigate = useNavigate()
   const formikSearch = useFormik({
     initialValues: { searchFilter: '' },
     onSubmit: formValues => filterTemplateOfferByName(formValues.searchFilter),
@@ -77,7 +77,7 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         'Vous devez séléctionner une offre vitrine à dupliquer'
       )
     }
-    createOfferFromTemplate(history, notify, templateOfferId)
+    createOfferFromTemplate(navigate, notify, templateOfferId)
   }
 
   return (
