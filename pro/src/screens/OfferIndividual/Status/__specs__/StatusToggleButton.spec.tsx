@@ -9,13 +9,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StatusToggleButton, { IStatusToggleButton } from '../StatusToggleButton'
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({
-    offerId: 'BQ',
-  }),
-}))
-
 const renderStatusToggleButton = (props: IStatusToggleButton) =>
   renderWithProviders(<StatusToggleButton {...props} />)
 
