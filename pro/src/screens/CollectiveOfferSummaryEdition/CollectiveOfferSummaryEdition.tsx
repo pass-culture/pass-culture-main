@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
@@ -39,7 +39,7 @@ const CollectiveOfferSummaryEdition = ({
 }: CollectiveOfferSummaryEditionProps) => {
   const [isActive, setIsActive] = useState(offer.isActive)
   const notify = useNotification()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
     offer.id,
@@ -119,7 +119,7 @@ const CollectiveOfferSummaryEdition = ({
               logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
                 from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
               })
-              createOfferFromTemplate(history, notify, offer.id)
+              createOfferFromTemplate(navigate, notify, offer.id)
             }}
           >
             Créer une offre réservable pour un établissement scolaire
