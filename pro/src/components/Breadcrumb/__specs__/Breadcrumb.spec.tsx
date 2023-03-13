@@ -1,18 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { MemoryRouter } from 'react-router-dom'
 
 import type { Step } from 'components/Breadcrumb'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Breadcrumb, { BreadcrumbStyle, IBreadcrumb } from '../Breadcrumb'
 
 const renderBreadcrumb = (props: IBreadcrumb) => {
-  return render(
-    <MemoryRouter>
-      <Breadcrumb {...props} />
-    </MemoryRouter>
-  )
+  renderWithProviders(<Breadcrumb {...props} />)
 }
 
 const onClick = jest.fn()
