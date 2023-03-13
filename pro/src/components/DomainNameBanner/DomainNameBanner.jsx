@@ -23,7 +23,7 @@ export const DomainNameBanner = () => {
 
   const closeBanner = useCallback(() => {
     delete queryParams['redirect']
-    navigate({ search: stringify(queryParams), replace: true })
+    navigate({ search: stringify(queryParams) }, { replace: true })
 
     dispatch(setDisplayDomainBanner(false))
   }, [dispatch, history, queryParams])
