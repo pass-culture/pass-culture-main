@@ -85,7 +85,7 @@ describe('PriceCategories', () => {
     expect(freeCheckboxes[1]).toBeChecked()
     expect(freeCheckboxes[2]).toBeChecked()
 
-    const tarifFields = screen.getAllByLabelText('Tarif par personne')
+    const tarifFields = screen.getAllByLabelText('Prix par personne')
     expect(tarifFields[0]).toHaveValue(0)
     expect(tarifFields[1]).toHaveValue(0)
     expect(tarifFields[2]).toHaveValue(0)
@@ -127,9 +127,8 @@ describe('PriceCategories', () => {
     await userEvent.click(
       screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
     )
-    expect(
-      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
-    ).toBeDisabled()
+    expect(screen.getAllByTestId('delete-button')[0]).toBeDisabled()
+
     expect(api.deletePriceCategory).not.toHaveBeenCalled()
   })
 
@@ -192,9 +191,7 @@ describe('PriceCategories', () => {
     })
 
     // one price category line : label is default and field is disable
-    expect(
-      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
-    ).toBeDisabled()
+    expect(screen.getByTestId('delete-button')).toBeDisabled()
     expect(screen.getByDisplayValue('Tarif unique')).toBeDisabled()
 
     // I add a price category line
