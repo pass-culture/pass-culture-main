@@ -76,6 +76,21 @@ class SubscriptionStepperResponse(BaseModel):
         allow_population_by_field_name = True
 
 
+class ProfileResponse(BaseModel):
+    activity: profile_options.ACTIVITY_ID_ENUM
+    address: str
+    city: str
+    first_name: str
+    last_name: str
+    postal_code: str
+    school_type: profile_options.SCHOOL_TYPE_ID_ENUM | None
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        use_enum_values = True
+
+
 class ProfileUpdateRequest(BaseModel):
     activity_id: profile_options.ACTIVITY_ID_ENUM
     address: str
