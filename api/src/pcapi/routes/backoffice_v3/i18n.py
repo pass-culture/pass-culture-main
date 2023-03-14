@@ -75,6 +75,8 @@ def i18n_column_name(term: str) -> str:
             return "Nom juridique"
         case "publicname":
             return "Nom d'usage"
+        case "criteria":
+            return "Tags"
         case _:
             return term.replace("_", " ").capitalize()
 
