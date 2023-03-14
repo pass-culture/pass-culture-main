@@ -629,7 +629,9 @@ class CreateOffererTest:
                 head_office_siret="41816609600001",
                 ape_code="90.03A",
                 legal_category_code="1000",
-                address=sirene._Address(street="3 RUE DE VALOIS", postal_code="75001", city="Paris"),
+                address=sirene._Address(
+                    street="3 RUE DE VALOIS", postal_code="75001", city="Paris", insee_code="75101"
+                ),
             ),
         )
 

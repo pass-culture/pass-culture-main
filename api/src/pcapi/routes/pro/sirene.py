@@ -20,10 +20,12 @@ from . import blueprint
 def get_siren_info(siren: str) -> sirene_serializers.SirenInfo:
     info = sirene.get_siren(siren, with_address=True)
     assert info.address  # helps mypy
+    info_address_dict = info.address.dict()
+    info_address_dict.pop("insee_code")
     return sirene_serializers.SirenInfo(
         siren=siren,
         name=info.name,
-        address=sirene_serializers.Address(**info.address.dict()),
+        address=sirene_serializers.Address(**info_address_dict),
         ape_code=info.ape_code,
     )
 
@@ -38,9 +40,11 @@ def get_siren_info(siren: str) -> sirene_serializers.SirenInfo:
 def get_siret_info(siret: str) -> sirene_serializers.SiretInfo:
     info = sirene.get_siret(siret)
     assert info.address  # helps mypy
+    info_address_dict = info.address.dict()
+    info_address_dict.pop("insee_code")
     return sirene_serializers.SiretInfo(
         siret=siret,
         name=info.name,
         active=info.active,
-        address=sirene_serializers.Address(**info.address.dict()),
+        address=sirene_serializers.Address(**info_address_dict),
     )
