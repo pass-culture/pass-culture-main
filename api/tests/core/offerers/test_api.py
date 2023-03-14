@@ -9,6 +9,7 @@ import jwt
 import pytest
 import sqlalchemy as sa
 
+from pcapi.connectors import api_adresse
 from pcapi.connectors import sirene
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -1381,3 +1382,40 @@ class UpdateOffererTagTest:
         assert offerer_tag.name == "not-so-serious-tag-name"
         assert offerer_tag.label == "Taggy McTagface"
         assert offerer_tag.description == "Why so serious ?"
+
+
+class GetAdditionalInfoFromOnboardingDataTest:
+    def test_simple(self):
+        siret = "12345678901234"
+        info = offerers_api.get_additional_info_from_onboarding_data(siret)
+
+        assert info == offerers_api.AdditionalInfo(
+            address="3 RUE DE VALOIS",
+            city="Paris",
+            name="MINISTERE DE LA CULTURE",
+            latitude=2.308289,
+            longitude=48.87171,
+            postalCode="75001",
+            siren="123456789",
+        )
+
+    @patch("pcapi.connectors.sirene.get_siret", side_effect=sirene.SireneApiException)
+    def test_no_siret_info(self, _mocked_get_siret):
+        siret = "12345678901234"
+        info = offerers_api.get_additional_info_from_onboarding_data(siret)
+
+        assert info is None
+
+    @patch("pcapi.connectors.api_adresse.get_address", side_effect=api_adresse.NoResultException)
+    def test_no_address_info(self, _mocked_get_address):
+        siret = "12345678901234"
+        info = offerers_api.get_additional_info_from_onboarding_data(siret)
+
+        assert info is None
+
+    @patch("pcapi.connectors.api_adresse.get_address", side_effect=api_adresse.AdresseApiException)
+    def test_api_adresse_error(self, _mocked_get_address):
+        siret = "12345678901234"
+        info = offerers_api.get_additional_info_from_onboarding_data(siret)
+
+        assert info is None

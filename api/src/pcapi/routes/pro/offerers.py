@@ -86,7 +86,7 @@ def get_offerers(query: offerers_serialize.GetOffererListQueryModel) -> offerers
             venue_ids = {venue.id for venue in offerer.managedVenues}
         offer_counts.update(repository.get_offer_counts_by_venue(venue_ids))
 
-    return offerers_serialize.GetOfferersListResponseModel(
+    return offerers_serialize.GetOfferersListResponseModel(  # type: ignore [call-arg]
         offerers=[
             offerers_serialize.GetOfferersResponseModel.from_orm(
                 offerer,
@@ -248,3 +248,33 @@ def get_offerer_stats_dashboard_url(
     check_user_has_access_to_offerer(current_user, offerer.id)
     url = api.get_metabase_stats_iframe_url(offerer, venues=offerer.managedVenues)
     return offerers_serialize.OffererStatsResponseModel(dashboardUrl=url)
+
+
+# FIXME(fseguin): return 201 HTTP response code when the Offerer and Venue are created
+@private_api.route("/offerers/new", methods=["POST"])
+@login_required
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+def save_new_onboarding_data(
+    body: offerers_serialize.SaveNewOnboardingDataQueryModel,
+) -> None:
+    additional_info = api.get_additional_info_from_onboarding_data(body.siret)
+    if not additional_info:
+        raise ApiErrors({"additional_info": "Could not retrieve necessary info"})
+
+    offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
+        address=additional_info.address,
+        city=additional_info.city,
+        latitude=additional_info.latitude,
+        longitude=additional_info.longitude,
+        name=additional_info.name,
+        postalCode=additional_info.postalCode,
+        siren=body.siret[:9],
+        venueType=body.venueType,
+        webPresence=body.webPresence,
+    )
+
+    # TODO(fseguin): implement each use case of Offerer and Venue creation
+    extra = offerer_creation_info.dict()
+    # `name` is a reserved attribute
+    extra["offerer_name"] = extra.pop("name")
+    logger.info("WIP - offerer_creation_info", extra=extra)
