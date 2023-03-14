@@ -283,7 +283,6 @@ class Returns201Test:
                     media=IdObjectCDS(id=123),
                 ),
                 "price": 5,
-                "price_label": "pass Culture",
             },
             {
                 "show_information": ShowCDS(
@@ -300,7 +299,6 @@ class Returns201Test:
                     media=IdObjectCDS(id=51),
                 ),
                 "price": 6,
-                "price_label": "pass Culture",
             },
         ]
         mock_get_shows.return_value = mocked_shows
