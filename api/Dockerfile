@@ -5,6 +5,7 @@ FROM python:3.10-slim AS builder
 RUN apt-get update \
 	&& apt-get -y install \
 		gcc \
+		g++ \
 		libpq-dev  && \
         apt-get clean && \
         rm -rf /var/lib/apt/lists*
