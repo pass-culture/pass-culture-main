@@ -164,12 +164,13 @@ class ProfileCompletionContentFactory(factory.Factory):
     class Meta:
         model = models.ProfileCompletionContent
 
-    activity = "Étudiant"
+    activity = "STUDENT"
+    address = factory.Faker("address")
     city = factory.Faker("city")
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
     origin = "In app"
-    postalCode = factory.Faker("postcode")
+    postal_code = factory.Faker("postcode")
     school_type = None
 
 

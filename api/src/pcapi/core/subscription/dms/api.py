@@ -348,24 +348,32 @@ def _create_profile_completion_fraud_check_from_dms(
     application_id: str,
 ) -> None:
     """Creates a PROFILE_COMPLETION fraud check from a DMS content, provided that all necessary fields are filled."""
-    activity = content.get_activity()
-    city = content.get_city()
-    first_name = content.get_first_name()
-    last_name = content.get_last_name()
-    postal_code = content.get_postal_code()
-    if all(elem is not None for elem in [activity, city, first_name, last_name, postal_code]):
-        fraud_api.create_profile_completion_fraud_check(
-            user,
-            eligibility,
-            fraud_models.ProfileCompletionContent(  # type: ignore [call-arg]
-                activity=activity,  # type: ignore [arg-type]
-                city=city,  # type: ignore [arg-type]
-                first_name=first_name,
-                last_name=last_name,
-                origin=f"Completed in DMS application {application_id}",
-                postalCode=content.postal_code,  # type: ignore [arg-type]
-            ),
-        )
+    if not all(
+        [
+            activity := content.get_activity(),
+            address := content.get_address(),
+            city := content.get_city(),
+            first_name := content.get_first_name(),
+            last_name := content.get_last_name(),
+            postal_code := content.get_postal_code(),
+        ]
+    ):
+        return
+
+    fraud_api.create_profile_completion_fraud_check(
+        user,
+        eligibility,
+        fraud_models.ProfileCompletionContent(
+            activity=activity,  # type: ignore [arg-type]
+            address=address,
+            city=city,  # type: ignore [arg-type]
+            first_name=first_name,
+            last_name=last_name,
+            origin=f"Completed in DMS application {application_id}",
+            postal_code=postal_code,  # type: ignore [arg-type]
+            school_type=None,
+        ),
+    )
 
 
 def _process_user_not_found_error(

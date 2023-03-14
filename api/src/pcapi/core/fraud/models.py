@@ -324,12 +324,16 @@ class PhoneValidationFraudData(pydantic.BaseModel):
 
 class ProfileCompletionContent(pydantic.BaseModel):
     activity: str
+    address: str | None  # Optional because it was not saved up until now
     city: str
     first_name: str
     last_name: str
     origin: str  # Where the profile was completed by the user. Can be the APP or DMS
-    postalCode: str
+    postal_code: str = pydantic.Field(..., alias="postalCode")  # keep alias for old data
     school_type: users_models.SchoolTypeEnum | None
+
+    class Config:
+        allow_population_by_field_name = True
 
 
 FRAUD_CHECK_CONTENT_MAPPING = {
