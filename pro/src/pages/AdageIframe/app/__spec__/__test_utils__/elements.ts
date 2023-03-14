@@ -28,7 +28,7 @@ export const findLaunchSearchButton = (): Promise<HTMLElement> =>
     name: 'Lancer la recherche',
   })
 export const queryTag = (tagName: string): HTMLElement | null =>
-  screen.queryByText(tagName, { selector: 'div' })
+  screen.queryByText(tagName, { selector: 'button' })
 
 export const findSearchBox = (): Promise<HTMLElement> =>
   screen.findByPlaceholderText(placeholder)
