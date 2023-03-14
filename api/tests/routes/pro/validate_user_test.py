@@ -29,7 +29,7 @@ def test_validate_user_token(mocked_maybe_send_offerer_validation_email, app):
             head_office_siret=f"{user_offerer.offerer.siren}00001",
             ape_code="90.03A",
             legal_category_code="1000",
-            address=sirene._Address(street="3 RUE DE VALOIS", postal_code="75001", city="Paris"),
+            address=sirene._Address(street="3 RUE DE VALOIS", postal_code="75001", city="Paris", insee_code="75101"),
         ),
     )
 
