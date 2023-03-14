@@ -244,8 +244,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary="venue_criterion"
     )
 
-    # TODO(fseguin,2022-06-20): Make column non-nullable when column is populated on all envs
-    dmsToken = Column(Text, nullable=True, unique=True)
+    dmsToken: str = Column(Text, nullable=False, unique=True)
 
     venueEducationalStatusId = Column(BigInteger, ForeignKey("venue_educational_status.id"), nullable=True)
     venueEducationalStatus: Mapped["VenueEducationalStatus"] = relationship(

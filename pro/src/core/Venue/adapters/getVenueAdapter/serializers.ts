@@ -46,7 +46,7 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
     fieldsUpdated: venue.fieldsUpdated || '',
     isVirtual: venue.isVirtual || false,
     managingOffererId: venue.managingOffererId || '',
-    dmsToken: venue.dmsToken || '',
+    dmsToken: venue.dmsToken,
     id: venue.id,
     isPermanent: venue.isPermanent || false,
     isVenueVirtual: venue.isVirtual,

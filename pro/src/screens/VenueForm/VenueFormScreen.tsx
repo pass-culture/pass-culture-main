@@ -201,8 +201,7 @@ const VenueFormScreen = ({
         </Title>
         {
           /* istanbul ignore next: DEBT, TO FIX */ !isCreatingVenue &&
-            venue &&
-            venue.dmsToken && (
+            venue && (
               <>
                 {/* For the screen reader to spell-out the id, we add a
                 visually hidden span with a space between each character.
