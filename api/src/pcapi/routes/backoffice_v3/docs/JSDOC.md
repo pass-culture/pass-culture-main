@@ -474,6 +474,7 @@ Within the `.btn-group` container, you can add as many buttons as needed, and yo
 *   `[data-batch-confirm-id]`: this value must be a unique identifier,
 *   `[data-modal-button-text]`: this value is used as the button text,
 *   `[data-user-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly.
+*   `[data-input-ids-name]`: this value is used as the input name for storing `selectedIds`
 
 ### Examples
 
@@ -483,6 +484,7 @@ Within the `.btn-group` container, you can add as many buttons as needed, and yo
   data-toggle="pc-batch-confirm-btn-group"
   data-toggle-id="table-container-user-offerer-validation-btn-group"
   data-pc-table-multi-select-id="table-container-user-offerer-validation"
+  data-input-ids-name="object_ids"
 >
   <button
     disabled
