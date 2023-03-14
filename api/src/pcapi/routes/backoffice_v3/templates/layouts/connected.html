@@ -65,9 +65,8 @@
     <div class="container-fluid row">
         <div class="row flex-nowrap">
             <div class="col-auto px-0">
-                <div class="collapse collapse-horizontal offcanvas-start{% if request.path == "/backofficev3/" %} show{% endif %} pc-collapse-menu"
+                <div class="collapse collapse-horizontal offcanvas-start{% if request.path == "/backofficev3/" %} show{% endif %} pc-collapse-menu no-transition"
                      data-bs-scroll="true" tabindex="-1"
-                     style="transition:none"
                      id="{{ pc_collapse_menu_id }}"
                      aria-labelledby="collapse-menu-label">
                     <div class="no-gutters">

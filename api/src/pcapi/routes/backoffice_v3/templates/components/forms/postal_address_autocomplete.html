@@ -16,7 +16,7 @@
         {% if field.latitude %} data-latitude-input-name="{{ field.latitude }}"{% endif %}
         {% if field.longitude %} data-longitude-input-name="{{ field.longitude }}"{% endif %}
     />
-    <label for="{{ field.name }}" style="z-index: 5">{{ field.label.text }}</label>
+    <label for="{{ field.name }}">{{ field.label.text }}</label>
     {% if field.has_reset %}
         <button
             data-bs-toggle="tooltip"
