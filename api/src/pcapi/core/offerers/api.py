@@ -16,6 +16,7 @@ from pcapi.connectors import sirene
 import pcapi.connectors.thumb_storage as storage
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
@@ -80,6 +81,7 @@ def update_venue(
     venue: models.Venue,
     author: users_models.User,
     contact_data: serialize_base.VenueContactModel | None = None,
+    criteria: list[criteria_models.Criterion] | T_UNCHANGED = UNCHANGED,
     admin_update: bool = False,
     **attrs: typing.Any,
 ) -> models.Venue:
@@ -101,6 +103,10 @@ def update_venue(
         target = venue.contact if venue.contact is not None else offerers_models.VenueContact()
         venue_snapshot.trace_update(contact_data.dict(), target=target, field_name_template="contact.{}")
         upsert_venue_contact(venue, contact_data)
+
+    if criteria is not UNCHANGED:
+        if set(venue.criteria) != set(criteria):
+            modifications["criteria"] = criteria
 
     if not modifications and reimbursement_point_id == UNCHANGED:
         # avoid any contact information update loss

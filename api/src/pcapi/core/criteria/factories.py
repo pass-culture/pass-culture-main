@@ -15,3 +15,8 @@ class CriterionFactory(BaseFactory):
 class OfferCriterionFactory(BaseFactory):
     class Meta:
         model = models.OfferCriterion
+
+
+class VenueCriterionFactory(BaseFactory):
+    class Meta:
+        model = models.VenueCriterion

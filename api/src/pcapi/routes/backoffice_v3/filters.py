@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
 from flask import Flask
+from markupsafe import Markup
 import pytz
 
 from pcapi.core.bookings import models as bookings_models
@@ -204,7 +205,8 @@ def filter_homologation_tags(tags: list[offerers_models.OffererTag]) -> list[off
 
 def format_criteria(criteria: list[criteria_models.OfferCriterion]) -> str:
     return " ".join(
-        '<span class="badge text-bg-light shadow-sm">' + criterion.name + "</span>" for criterion in criteria
+        Markup('<span class="badge text-bg-light shadow-sm">{name}</span>').format(name=criterion.name)
+        for criterion in criteria
     )
 
 
@@ -218,6 +220,12 @@ def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemMode
 
 def format_adage_referred(venues: list[offerers_models.Venue]) -> str:
     return f"{len([venue for venue in venues if venue.adageId])}/{len(venues)}"
+
+
+def format_modified_info_value(value: typing.Any) -> str:
+    if isinstance(value, list):
+        return format_string_list(value)
+    return str(value)
 
 
 def parse_referrer(url: str) -> str:
@@ -269,6 +277,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_state"] = format_state
     app.jinja_env.filters["format_reason_label"] = format_reason_label
     app.jinja_env.filters["format_adage_referred"] = format_adage_referred
+    app.jinja_env.filters["format_modified_info_value"] = format_modified_info_value
     app.jinja_env.filters["parse_referrer"] = parse_referrer
     app.jinja_env.filters["action_to_name"] = action_to_name
     app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link
