@@ -41,5 +41,6 @@ pro-packed-staging/
 # storybook build
 docs-build/
 
-# Backoffice compiled css
+# Backoffice scss to css tmp assets
 /api/src/pcapi/static/backofficev3/css/compiled/
+/api/src/pcapi/static/backofficev3/scss/boussole.pid
