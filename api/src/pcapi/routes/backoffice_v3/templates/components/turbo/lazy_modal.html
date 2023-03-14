@@ -7,11 +7,11 @@
     </p>
 {% endmacro %}
 
-{% macro build_lazy_modal(url, div_id) %}
+{% macro build_lazy_modal(url, div_id, loading = "lazy") %}
     <div class="modal fade" id="{{ div_id }}" tabindex="-1" aria-labelledby="{{ div_id }}-label" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <turbo-frame id="turbo-{{ div_id }}" src="{{ url }}" loading="lazy">
+                <turbo-frame id="turbo-{{ div_id }}" src="{{ url }}" loading="{{ loading }}">
                     <div class="modal-body row">
                         {{ build_loading_spinner() }}
                     </div>
