@@ -7,8 +7,8 @@ import {
   FiltersContext,
 } from 'pages/AdageIframe/app/providers'
 import { Option } from 'pages/AdageIframe/app/types'
-import { Tag } from 'pages/AdageIframe/app/ui-kit'
 import { ReactComponent as ResetIcon } from 'pages/AdageIframe/assets/reset.svg'
+import { Tag } from 'ui-kit'
 
 export const OfferFiltersTags = ({
   venueFilter,
@@ -76,41 +76,48 @@ export const OfferFiltersTags = ({
     <div className="offer-filters-tags-container">
       <div className="offer-filters-tags">
         {queryTag ? (
-          <Tag label={queryTag} onClick={handleRemoveQueryFilter} />
+          <Tag
+            label={queryTag}
+            closeable={{ onClose: handleRemoveQueryFilter }}
+          />
         ) : null}
         {venueFilter?.id ? (
           <Tag
             key={venueFilter.id}
             label={`Lieu : ${venueFilter.publicName || venueFilter.name}`}
-            onClick={removeVenueFilter}
+            closeable={{ onClose: removeVenueFilter }}
           />
         ) : null}
         {departments.map(department => (
           <Tag
             key={department.value}
             label={department.label}
-            onClick={() => handleRemoveDepartmentFilter(department)}
+            closeable={{
+              onClose: () => handleRemoveDepartmentFilter(department),
+            }}
           />
         ))}
         {categories.map(category => (
           <Tag
             key={category.value.join(',')}
             label={category.label}
-            onClick={() => handleRemoveCategoriesFilter(category)}
+            closeable={{
+              onClose: () => handleRemoveCategoriesFilter(category),
+            }}
           />
         ))}
         {domains.map(domain => (
           <Tag
             key={domain.value}
             label={domain.label}
-            onClick={() => handleRemoveDomainsFilter(domain)}
+            closeable={{ onClose: () => handleRemoveDomainsFilter(domain) }}
           />
         ))}
         {students.map(student => (
           <Tag
             key={student.value}
             label={student.label}
-            onClick={() => handleRemoveStudentsFilter(student)}
+            closeable={{ onClose: () => handleRemoveStudentsFilter(student) }}
           />
         ))}
       </div>

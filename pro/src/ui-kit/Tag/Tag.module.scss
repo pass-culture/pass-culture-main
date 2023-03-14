@@ -5,6 +5,10 @@
 .tag {
   @include fonts.highlight;
 
+  &:hover {
+    background-color: colors.$grey-medium;
+  }
+
   white-space: nowrap;
   justify-content: center;
   border: solid rem.torem(1px) colors.$tertiary;

@@ -10,12 +10,13 @@ import {
   HydratedCollectiveOfferTemplate,
   isCollectiveOffer,
 } from 'pages/AdageIframe/app/types/offers'
-import { ModalLayout, Tag } from 'pages/AdageIframe/app/ui-kit'
+import { ModalLayout } from 'pages/AdageIframe/app/ui-kit'
 import { ReactComponent as ChevronIcon } from 'pages/AdageIframe/assets/chevron.svg'
 import { ReactComponent as LikeIcon } from 'pages/AdageIframe/assets/like.svg'
 import { ReactComponent as LikedIcon } from 'pages/AdageIframe/assets/liked.svg'
 import { ReactComponent as Logo } from 'pages/AdageIframe/assets/logo-without-text.svg'
 import { ReactComponent as ImagePlaceholder } from 'pages/AdageIframe/assets/offer-image-placeholder.svg'
+import { Tag } from 'ui-kit'
 import { LOGS_DATA } from 'utils/config'
 
 import ContactButton from './ContactButton'

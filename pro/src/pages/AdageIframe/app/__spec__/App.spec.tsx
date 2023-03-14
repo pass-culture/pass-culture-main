@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
@@ -348,11 +348,10 @@ describe('app', () => {
       renderApp()
 
       const venueFilter = await screen.findByText(`Lieu : ${venue?.publicName}`)
-      const removeFilterButton = within(venueFilter).getByRole('button')
       const launchSearchButton = await findLaunchSearchButton()
 
       // When
-      userEvent.click(removeFilterButton)
+      userEvent.click(venueFilter)
       userEvent.click(launchSearchButton)
 
       // Then
