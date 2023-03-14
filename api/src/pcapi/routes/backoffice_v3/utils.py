@@ -74,14 +74,15 @@ def permission_required(permission: perm_models.Permissions) -> typing.Callable:
 
 
 def child_backoffice_blueprint(
-    name: str, import_name: str, url_prefix: str, permission: perm_models.Permissions
+    name: str, import_name: str, url_prefix: str, permission: perm_models.Permissions | None = None
 ) -> Blueprint:
     child_blueprint = Blueprint(name, import_name, url_prefix=url_prefix)
     blueprint.backoffice_v3_web.register_blueprint(child_blueprint)
 
     @child_blueprint.before_request
     def check_permission() -> None:
-        _check_permission(permission)
+        if permission:
+            _check_permission(permission)
 
     return child_blueprint
 

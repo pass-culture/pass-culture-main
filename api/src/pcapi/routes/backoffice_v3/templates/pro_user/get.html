@@ -68,12 +68,10 @@
                                 </div>
                             </div>
                         {% endif %}
-                        {% if has_permission("SUSPEND_USER") %}
-                            {% if user.isActive %}
-                                {{ build_modal_form("suspend", suspension_dst, suspension_form, "Suspendre le compte", "Confirmer la suspension") }}
-                            {% else %}
-                                {{ build_modal_form("unsuspend", suspension_dst, suspension_form, "Réactiver le compte", "Confirmer la réactivation") }}
-                            {% endif %}
+                        {% if has_permission("SUSPEND_USER") and user.isActive %}
+                            {{ build_modal_form("suspend", suspension_dst, suspension_form, "Suspendre le compte", "Confirmer la suspension") }}
+                        {% elif has_permission("UNSUSPEND_USER") and not user.isActive %}
+                            {{ build_modal_form("unsuspend", suspension_dst, suspension_form, "Réactiver le compte", "Confirmer la réactivation") }}
                         {% endif %}
                     </div>
                 </div>

@@ -21,7 +21,6 @@ pytestmark = [
 class PostUserTestHelper(unauthorized_helpers.UnauthorizedHelperWithCsrf):
     method = "post"
     endpoint_kwargs = {"user_id": 1}
-    needed_permission = perm_models.Permissions.SUSPEND_USER
 
     def _post_request(self, authenticated_client, user_id, form):
         # generate csrf token before request
@@ -32,6 +31,7 @@ class PostUserTestHelper(unauthorized_helpers.UnauthorizedHelperWithCsrf):
 
 class SuspendUserTest(PostUserTestHelper):
     endpoint = "backoffice_v3_web.users.suspend_user"
+    needed_permission = perm_models.Permissions.SUSPEND_USER
 
     def test_suspend_beneficiary_user(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -104,6 +104,7 @@ class SuspendUserTest(PostUserTestHelper):
 
 class UnsuspendUserTest(PostUserTestHelper):
     endpoint = "backoffice_v3_web.users.unsuspend_user"
+    needed_permission = perm_models.Permissions.UNSUSPEND_USER
 
     def test_unsuspend_beneficiary_user(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)

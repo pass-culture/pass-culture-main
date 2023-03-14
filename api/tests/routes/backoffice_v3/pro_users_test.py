@@ -71,7 +71,7 @@ class GetProUserTest:
             return url_for("backoffice_v3_web.pro_user.get", user_id=user.id)
 
     class UnsuspendButtonTest(button_helpers.ButtonHelper):
-        needed_permission = perm_models.Permissions.SUSPEND_USER
+        needed_permission = perm_models.Permissions.UNSUSPEND_USER
         button_label = "Réactiver le compte"
 
         @property
