@@ -3054,6 +3054,24 @@ def test_public_api(client):
                 }
             },
             "/native/v1/subscription/profile": {
+                "get": {
+                    "description": "",
+                    "operationId": "get_/native/v1/subscription/profile",
+                    "parameters": [],
+                    "responses": {
+                        "200": {"description": "OK"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "get_profile <GET>",
+                    "tags": [],
+                },
                 "post": {
                     "description": "",
                     "operationId": "post_/native/v1/subscription/profile",
@@ -3076,7 +3094,7 @@ def test_public_api(client):
                     "security": [{"JWTAuth": []}],
                     "summary": "complete_profile <POST>",
                     "tags": [],
-                }
+                },
             },
             "/native/v1/subscription/profile_options": {
                 "get": {
