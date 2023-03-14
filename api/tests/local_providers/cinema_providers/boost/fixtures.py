@@ -272,7 +272,7 @@ class ShowtimeDetailsEndpointResponse:
     PCU_PRICING = {
         "id": 1117628,
         "title": "PASS CULTURE",
-        "amountTaxesIncluded": 6,
+        "amountTaxesIncluded": 6.9,
         "idSequencePresale": 0,
         "idSequenceImmediate": 0,
         "idConcessionCountermark": 0,

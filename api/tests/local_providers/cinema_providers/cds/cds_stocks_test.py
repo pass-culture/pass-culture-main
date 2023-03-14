@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from pathlib import Path
 from unittest.mock import patch
 
@@ -578,6 +579,66 @@ class CDSStocksTest:
 
         assert cds_stocks.erroredObjects == 0
         assert cds_stocks.erroredThumbs == 0
+
+    @patch(
+        "pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_internet_sale_gauge",
+        return_value=False,
+    )
+    @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
+    def should_reuse_price_category(
+        self, mock_get_venue_movies, mock_get_shows, mock_get_internet_sale_gauge, requests_mock
+    ):
+        # Given
+        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
+        venue_provider = VenueProviderFactory(provider=cds_provider, isDuoOffers=True)
+        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+        mocked_movies = [
+            Movie(
+                id="123",
+                title="Coupez !",
+                duration=120,
+                description="Ca tourne mal",
+                visa="123456",
+                posterpath="http://fakeUrl/coupez.png",
+            )
+        ]
+        mock_get_venue_movies.return_value = mocked_movies
+        mocked_shows = [
+            {
+                "show_information": ShowCDS(
+                    id=1,
+                    is_cancelled=False,
+                    is_deleted=False,
+                    is_disabled_seatmap=False,
+                    is_empty_seatmap=False,
+                    remaining_place=77,
+                    internet_remaining_place=10,
+                    showtime=datetime(2022, 6, 20, 11, 00, 00),
+                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
+                    screen=IdObjectCDS(id=1),
+                    media=IdObjectCDS(id=123),
+                ),
+                "price": 6.9,
+                "price_label": "pass Culture",
+            },
+        ]
+        mock_get_shows.return_value = mocked_shows
+
+        requests_mock.get("http://fakeUrl/coupez.png", content=bytes())
+
+        # When
+        CDSStocks(venue_provider=venue_provider).updateObjects()
+        CDSStocks(venue_provider=venue_provider).updateObjects()
+
+        # Then
+        created_price_category = PriceCategory.query.one()
+        assert created_price_category.price == Decimal("6.9")
+        assert PriceCategoryLabel.query.count() == 1
 
     @patch(
         "pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_internet_sale_gauge",
