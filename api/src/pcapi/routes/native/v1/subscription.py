@@ -151,7 +151,13 @@ def start_identification_session(
 
     fraud_check = ubble_fraud_api.get_restartable_identity_checks(user)
     if fraud_check:
-        return serializers.IdentificationSessionResponse(identificationUrl=fraud_check.source_data().identification_url)  # type: ignore [union-attr]
+        source_data = typing.cast(ubble_fraud_models.UbbleContent, fraud_check.source_data())
+        if not source_data.identification_url:
+            raise api_errors.ApiErrors(
+                {"code": "IDENTIFICATION_URL_NOT_FOUND", "message": "L'url d'identification n'a pas été trouvée"},
+                status_code=400,
+            )
+        return serializers.IdentificationSessionResponse(identificationUrl=source_data.identification_url)
 
     declared_names = subscription_api.get_declared_names(user)
 

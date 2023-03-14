@@ -132,7 +132,7 @@ def get_declared_names(user: users_models.User) -> typing.Tuple[str, str] | None
 
     dms_filled_check = _get_filled_dms_fraud_check(user, user.eligibility)
     if dms_filled_check:
-        dms_data = typing.cast(fraud_models.DMSContent, dms_filled_check.source_data())
+        dms_data = dms_filled_check.source_data()
         return dms_data.first_name, dms_data.last_name
 
     return None
@@ -744,7 +744,7 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
 ) -> fraud_models.BeneficiaryFraudCheck:
-    identity_content: common_fraud_models.IdentityCheckContent = fraud_check.source_data()  # type: ignore [assignment]
+    identity_content: common_fraud_models.IdentityCheckContent = fraud_check.source_data()
 
     declared_eligibility = fraud_check.eligibilityType
     id_provider_detected_eligibility = get_id_provider_detected_eligibility(user, identity_content)
