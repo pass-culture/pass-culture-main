@@ -57,7 +57,7 @@ SEANCE_177182 = {
     "Relief": "2D",
     "Version": "VF",
     "bAVP": False,
-    "PrixUnitaire": 11,
+    "PrixUnitaire": 6.9,
 }
 
 FILM_138473 = {
@@ -80,7 +80,7 @@ SEANCE_182019 = {
     "bAvecPlacement": True,
     "bAvecDuo": True,
     "bICE": True,
-    "Relief": "2D",
+    "Relief": "3D",
     "Version": "VF",
     "bAVP": False,
     "PrixUnitaire": 11,
@@ -96,4 +96,45 @@ FILM_234099 = {
     "Affiche": "https://example.com/82382.jpg",
     "TypeFilm": "CNC",
     "Seances": [SEANCE_182019],
+}
+
+SEANCE_182020 = {
+    "IDSeance": 182020,
+    "Date": "2023-03-05",
+    "Heure": "16:00:00.000",
+    "NbPlacesRestantes": 56,
+    "bAvecPlacement": True,
+    "bAvecDuo": True,
+    "bICE": False,
+    "Relief": "2D",
+    "Version": "VF",
+    "bAVP": True,
+    "PrixUnitaire": 7.2,
+}
+
+SEANCE_182021 = {
+    "IDSeance": 182021,
+    "Date": "2023-03-06",
+    "Heure": "16:00:00.000",
+    "NbPlacesRestantes": 132,
+    "bAvecPlacement": True,
+    "bAvecDuo": True,
+    "bICE": True,
+    "Relief": "2D",
+    "Version": "VF",
+    "bAVP": True,
+    "PrixUnitaire": 11,
+}
+
+
+FILM_234099_WITH_THREE_SEANCES = {
+    "IDFilm": 234099,
+    "IDFilmAlloCine": 234099,
+    "Titre": "Super Mario Bros, Le Film",
+    "NumVisa": 82382,
+    "Duree": 92,
+    "Synopsis": "Un film basé sur l'univers du célèbre jeu : Super Mario Bros.",
+    "Affiche": "https://example.com/82382.jpg",
+    "TypeFilm": "CNC",
+    "Seances": [SEANCE_182019, SEANCE_182020, SEANCE_182021],
 }
