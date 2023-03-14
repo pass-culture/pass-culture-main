@@ -68,12 +68,13 @@ APE_TAG_MAPPING = {"84.11Z": "Collectivité"}
 
 
 def create_digital_venue(offerer: models.Offerer) -> models.Venue:
+    dms_token = generate_dms_token()
     digital_venue = models.Venue()
     digital_venue.isVirtual = True
     digital_venue.name = "Offre numérique"
     digital_venue.venueTypeCode = models.VenueTypeCode.DIGITAL
     digital_venue.managingOfferer = offerer
-    digital_venue.dmsToken = generate_dms_token()
+    digital_venue.dmsToken = dms_token
     return digital_venue
 
 
@@ -202,11 +203,11 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
     data = venue_data.dict(by_alias=True)
     validation.check_venue_creation(data)
     venue = models.Venue()
+    data["dmsToken"] = generate_dms_token()
     venue.populate_from_dict(data, skipped_keys=("contact",))
 
     if venue_data.contact:
         upsert_venue_contact(venue, venue_data.contact)
-    venue.dmsToken = generate_dms_token()
     repository.save(venue)
 
     if venue.siret:

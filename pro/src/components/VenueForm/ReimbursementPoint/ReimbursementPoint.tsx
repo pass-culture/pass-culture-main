@@ -175,7 +175,7 @@ const ReimbursementPoint = ({
           {isDmsDialogOpen && (
             <ReimbursmentPointDialog
               closeDialog={closeDmsDialog}
-              dmsToken={venue.dmsToken || ''}
+              dmsToken={venue.dmsToken}
             />
           )}
           {!!reimbursementPointOptions?.length && (

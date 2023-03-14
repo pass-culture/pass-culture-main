@@ -76,6 +76,7 @@ describe('route VenueEdition', () => {
     venue = {
       id: 'AE',
       publicName: 'Cinéma des iles',
+      dmsToken: 'dms-token-12345',
     } as GetVenueResponseModel
 
     venueProviders = [

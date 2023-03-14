@@ -30,6 +30,7 @@ describe('useGetVenue', () => {
         website: 'http://test.com',
       },
       dateCreated: '2022-07-29T12:18:43.087097Z',
+      dmsToken: 'dms-token-12345',
       fieldsUpdated: [],
       id: 'AE',
       isVirtual: false,
@@ -114,7 +115,7 @@ describe('useGetVenue', () => {
       publicName: 'Cinéma des iles',
       departmentCode: '',
       description: 'description du lieu',
-      dmsToken: '',
+      dmsToken: 'dms-token-12345',
       fieldsUpdated: [],
       isVirtual: false,
       managingOfferer: {

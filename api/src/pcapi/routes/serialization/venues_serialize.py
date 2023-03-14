@@ -184,7 +184,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     dateModifiedAtLastProvider: datetime | None
     demarchesSimplifieesApplicationId: str | None
     departementCode: str | None
-    dmsToken: str | None
+    dmsToken: str
     fieldsUpdated: list[str]
     hasPendingBankInformationApplication: bool | None
     iban: str | None
@@ -251,8 +251,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
                 venue.reimbursementPointId = reimbursement_link.reimbursementPointId
 
         venue.collectiveLegalStatus = venue.venueEducationalStatus
-        if venue.dmsToken:
-            venue.dmsToken = DMS_TOKEN_PRO_PREFIX + venue.dmsToken
+        venue.dmsToken = DMS_TOKEN_PRO_PREFIX + venue.dmsToken
         return super().from_orm(venue)
 
 
