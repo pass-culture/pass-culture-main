@@ -36,7 +36,9 @@ class UpdateEducationalInstitutionsDepositsTest:
         )
 
         # When
-        update_educational_institutions_deposits("update_deposits.csv", "tests/scripts/educational/fixtures")
+        update_educational_institutions_deposits(
+            "update_deposits.csv", models.Ministry.EDUCATION_NATIONALE, "tests/scripts/educational/fixtures"
+        )
 
         # Then
         educational_institutions = models.EducationalInstitution.query.all()
@@ -73,7 +75,8 @@ class UpdateEducationalInstitutionsDepositsTest:
             [
                 {"UAICode": "0790032L", "depositAmount": 3000},
                 {"UAICode": "1790032L", "depositAmount": 3000},
-            ]
+            ],
+            models.Ministry.EDUCATION_NATIONALE,
         )
 
         # Then
@@ -105,7 +108,8 @@ class UpdateEducationalInstitutionsDepositsTest:
             [
                 {"UAICode": "4790032L", "depositAmount": 5000},
                 {"UAICode": "1790032L", "depositAmount": 3000},
-            ]
+            ],
+            models.Ministry.EDUCATION_NATIONALE,
         )
 
         # Then
@@ -131,7 +135,9 @@ class UpdateEducationalInstitutionsDepositsTest:
         )
 
         # When
-        update_educational_institutions_deposits("update_deposits.csv", "tests/scripts/educational/fixtures")
+        update_educational_institutions_deposits(
+            "update_deposits.csv", models.Ministry.EDUCATION_NATIONALE, "tests/scripts/educational/fixtures"
+        )
 
         # Then
         deposit1 = models.EducationalDeposit.query.get(educational_deposit.id)
@@ -154,7 +160,9 @@ class UpdateEducationalInstitutionsDepositsTest:
         )
 
         # When
-        update_educational_institutions_deposits("invalid.csv", "tests/scripts/educational/fixtures")
+        update_educational_institutions_deposits(
+            "invalid.csv", models.Ministry.EDUCATION_NATIONALE, "tests/scripts/educational/fixtures"
+        )
 
         # Then
         deposit = models.EducationalDeposit.query.get(educational_deposit.id)
