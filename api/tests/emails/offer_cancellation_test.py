@@ -49,9 +49,8 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
             email.subject
             == f"Confirmation de votre annulation de réservation pour {stock.offer.name}, proposé par {venue.name}"
         )
-        # FIXME (tgabin, 2022-01-27): test below should work but html_no_recap return None
-        # html_no_recap = str(email_html.find("p", {"id": "no-recap"}))
-        # assert "Aucune réservation" in html_no_recap
+        html_no_recap = str(email_html.find("p", {"id": "no-recap"}))
+        assert "Aucune réservation" in html_no_recap
 
     @pytest.mark.usefixtures("db_session")
     def test_offer_cancellation_confirmation_by_offerer_event_when_other_booking(self, app):

@@ -47,6 +47,12 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
         stock_name, venue.name
     )
     ongoing_stock_bookings = find_ongoing_bookings_by_stock(booking.stock.id)
+    try:
+        # Booking is (being) cancelled, but the query here may still
+        # return it if changes have not been saved yet.
+        ongoing_stock_bookings.remove(booking)
+    except ValueError:
+        pass
     stock_date_time = None
     booking_is_on_event = booking.stock.beginningDatetime is not None
     if booking_is_on_event:
