@@ -625,7 +625,7 @@ def handle_ok_manual_review(
     if not fraud_check:
         raise FraudCheckError("Pas de vérification d'identité effectuée")
 
-    source_data: IdentityCheckContent = fraud_check.source_data()  # type: ignore[assignment]
+    source_data: IdentityCheckContent = fraud_check.source_data()
     try:
         _check_id_piece_number_unicity(user, source_data.get_id_piece_number())
         _check_ine_hash_unicity(user, source_data.get_ine_hash())
