@@ -295,7 +295,9 @@ def retrieve_showtime_information(showtime_information: dict) -> dict:
 def _filter_only_digital_and_non_experience_showtimes(showtimes_information: list[dict]) -> list[dict]:
     return list(
         filter(
-            lambda showtime: showtime["projection"][0] == DIGITAL_PROJECTION and showtime["experience"] is None,
+            lambda showtime: showtime["projection"]
+            and showtime["projection"][0] == DIGITAL_PROJECTION
+            and showtime["experience"] is None,
             showtimes_information,
         )
     )
