@@ -13,14 +13,11 @@ const SignupJourneyRoutes = () => {
     <SignupJourneyContextProvider>
       <SignupJourneyFormLayout>
         <Routes>
-          <Route path={'/structure'} element={<Offerer />} />
-          <Route path={'/structures'} element={<Offerers />} />
-          <Route
-            path={'/authentification'}
-            element={<OffererAuthentication />}
-          />
-          <Route path={'/activite'} element={<Activity />} />
-          <Route path={'/validation'} element={<div>Validation</div>} />
+          <Route path="/structure" element={<Offerer />} />
+          <Route path="/structures" element={<Offerers />} />
+          <Route path="/authentification" element={<OffererAuthentication />} />
+          <Route path="/activite" element={<Activity />} />
+          <Route path="/validation" element={<div>Validation</div>} />
         </Routes>
       </SignupJourneyFormLayout>
     </SignupJourneyContextProvider>

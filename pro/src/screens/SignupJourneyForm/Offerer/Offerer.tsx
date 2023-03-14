@@ -70,7 +70,7 @@ const Offerer = (): JSX.Element => {
           <OffererForm />
           <Banner type="notification-info" className={styles['siret-banner']}>
             <strong>Votre structure n’a pas de SIRET propre ?</strong>
-            <p className="banner-content-info">
+            <p className={styles['banner-content-info']}>
               Renseignez le SIRET de la collectivité, de la régie ou de
               l’établissement public auquel vous êtes rattaché.
             </p>
