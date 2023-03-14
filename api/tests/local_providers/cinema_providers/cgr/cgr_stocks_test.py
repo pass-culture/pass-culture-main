@@ -1,4 +1,5 @@
 import datetime
+import decimal
 from decimal import Decimal
 from pathlib import Path
 
@@ -77,9 +78,15 @@ class CGRStocksTest:
         created_offers = offers_models.Offer.query.order_by(offers_models.Offer.id).all()
         created_products = offers_models.Product.query.order_by(offers_models.Product.id).all()
         created_stocks = offers_models.Stock.query.order_by(offers_models.Stock.id).all()
+        created_price_categories = offers_models.PriceCategory.query.order_by(offers_models.PriceCategory.id).all()
+        created_price_categories_labels = offers_models.PriceCategoryLabel.query.order_by(
+            offers_models.PriceCategoryLabel.id
+        ).all()
         assert len(created_offers) == 2
         assert len(created_products) == 2
         assert len(created_stocks) == 2
+        assert len(created_price_categories) == 2
+        assert len(created_price_categories_labels) == 2
 
         assert created_offers[0].name == "Venom"
         assert created_offers[0].product == created_products[0]
@@ -103,11 +110,13 @@ class CGRStocksTest:
         assert created_products[0].extraData == {"visa": "149341"}
 
         assert created_stocks[0].quantity == 99
-        assert created_stocks[0].price == Decimal(11)
+        assert created_stocks[0].price == Decimal("6.9")
         assert created_stocks[0].dateCreated is not None
         assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2023, 1, 29, 14)
         assert created_stocks[0].offer == created_offers[0]
         assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 1, 29, 14)
+        assert created_stocks[0].priceCategory.price == Decimal("6.9")
+        assert created_stocks[0].priceCategory.priceCategoryLabel.label == "Tarif 2D salle ICE"
 
         assert created_offers[1].name == "Super Mario Bros, Le Film"
         assert created_offers[1].product == created_products[1]
@@ -130,6 +139,108 @@ class CGRStocksTest:
         assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2023, 3, 4, 16)
         assert created_stocks[1].offer == created_offers[1]
         assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 3, 4, 16)
+        assert created_stocks[1].priceCategory.price == Decimal(11.00)
+        assert created_stocks[1].priceCategory.priceCategoryLabel.label == "Tarif 3D salle ICE"
+
+    def should_fill_stocks_and_price_categories_for_a_movie(self, requests_mock):
+        requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
+
+        cgr_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
+        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service",
+            text=fixtures.cgr_response_template([fixtures.FILM_234099_WITH_THREE_SEANCES]),
+        )
+
+        cgr_stocks = CGRStocks(venue_provider=venue_provider)
+        cgr_stocks.updateObjects()
+
+        created_offer = offers_models.Offer.query.one()
+        created_product = offers_models.Product.query.one()
+        created_stocks = offers_models.Stock.query.order_by(offers_models.Stock.id).all()
+        created_price_categories = offers_models.PriceCategory.query.order_by(offers_models.PriceCategory.id).all()
+        created_price_category_labels = offers_models.PriceCategoryLabel.query.order_by(
+            offers_models.PriceCategoryLabel.id
+        ).all()
+
+        assert len(created_stocks) == 3
+        assert len(created_price_categories) == 3
+        assert len(created_price_category_labels) == 3
+
+        assert created_offer.name == "Super Mario Bros, Le Film"
+        assert created_offer.product == created_product
+        assert created_offer.venue == venue_provider.venue
+        assert created_offer.description == "Un film basé sur l'univers du célèbre jeu : Super Mario Bros."
+        assert created_offer.durationMinutes == 92
+        assert created_offer.isDuo
+        assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
+
+        assert created_product.name == "Super Mario Bros, Le Film"
+        assert created_product.description == "Un film basé sur l'univers du célèbre jeu : Super Mario Bros."
+        assert created_product.durationMinutes == 92
+        assert created_product.extraData == {"visa": "82382"}
+
+        assert created_stocks[0].quantity == 168
+        assert created_stocks[0].price == 11.0
+        assert created_stocks[0].priceCategory == created_price_categories[0]
+        assert created_stocks[0].dateCreated is not None
+        assert created_stocks[0].offer == created_offer
+        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2023, 3, 4, 16)
+        assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 3, 4, 16)
+        assert created_price_categories[0].price == 11.0
+        assert created_price_categories[0].priceCategoryLabel == created_price_category_labels[0]
+        assert created_price_category_labels[0].label == "Tarif 3D salle ICE"
+
+        assert created_stocks[1].quantity == 56
+        assert created_stocks[1].price == Decimal("7.2")
+        assert created_stocks[1].priceCategory == created_price_categories[1]
+        assert created_stocks[1].dateCreated is not None
+        assert created_stocks[1].offer == created_offer
+        assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2023, 3, 5, 16)
+        assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 3, 5, 16)
+        assert created_price_categories[1].price == Decimal("7.2")
+        assert created_price_categories[1].priceCategoryLabel == created_price_category_labels[1]
+        assert created_price_category_labels[1].label == "Tarif 2D avant première"
+
+        assert created_stocks[2].quantity == 132
+        assert created_stocks[2].price == 11.00
+        assert created_stocks[2].priceCategory == created_price_categories[2]
+        assert created_stocks[2].dateCreated is not None
+        assert created_stocks[2].offer == created_offer
+        assert created_stocks[2].bookingLimitDatetime == datetime.datetime(2023, 3, 6, 16)
+        assert created_stocks[2].beginningDatetime == datetime.datetime(2023, 3, 6, 16)
+        assert created_price_categories[2].price == 11.00
+        assert created_price_categories[2].priceCategoryLabel == created_price_category_labels[2]
+        assert created_price_category_labels[2].label == "Tarif 2D avant première salle ICE"
+
+    def should_reuse_price_category(self, requests_mock):
+        requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
+
+        cgr_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
+        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
+        )
+
+        CGRStocks(venue_provider=venue_provider).updateObjects()
+        CGRStocks(venue_provider=venue_provider).updateObjects()
+
+        created_price_category = offers_models.PriceCategory.query.one()
+        assert created_price_category.price == decimal.Decimal("6.9")
 
     def should_update_stock_with_the_correct_stock_quantity(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
