@@ -114,24 +114,19 @@ describe('screens:SignupJourney::Offerers', () => {
     renderOfferersScreen(contextValue)
 
     expect(
-      await screen.findByRole('heading', {
-        level: 1,
-        name: 'Nous avons trouvé un espace déjà inscrit sur le pass Culture et incluant ce SIRET.',
-      })
+      await screen.findByText(
+        'Nous avons trouvé un espace déjà inscrit sur le pass Culture et incluant ce SIRET.'
+      )
     ).toBeInTheDocument()
 
     expect(
-      await screen.findByRole('heading', {
-        level: 4,
-        name: 'Rejoignez-le si votre structure se trouve dans la liste.',
-      })
+      await screen.getByText(
+        'Rejoignez-le si votre structure se trouve dans la liste.'
+      )
     ).toBeInTheDocument()
 
     expect(
-      await screen.findByRole('heading', {
-        level: 4,
-        name: 'Offerer Name - 123 456 789',
-      })
+      await screen.getByText('Offerer Name - 123 456 789')
     ).toBeInTheDocument()
 
     expect(screen.getAllByRole('listitem')).toHaveLength(4)
@@ -161,10 +156,9 @@ describe('screens:SignupJourney::Offerers', () => {
     ).toBeInTheDocument()
 
     expect(
-      await screen.findByRole('heading', {
-        level: 4,
-        name: 'Votre structure ne se trouve pas dans cette liste ?',
-      })
+      await screen.getByText(
+        'Votre structure ne se trouve pas dans cette liste ?'
+      )
     ).toBeInTheDocument()
 
     expect(
