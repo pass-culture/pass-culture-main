@@ -6,18 +6,38 @@
 
 {% block page %}
     <div class="pt-3 px-5">
-        <h2 class="fw-light">Offres individuelles</h2>
+        <h2 class="fw-light">Rechercher des offres</h2>
         {{ build_filters_form(form, dst) }}
         <div>
             {% if rows %}
                 <div class="d-flex justify-content-between">
                     <p class="lead num-results">
-                        {{ rows | length }}{{ "+" if rows | length > 100 else "" }} résultat{{ "s" if rows | length > 1 else "" }}
+                        {{ rows | length }}{{ "+" if rows | length > 100 else "" }}
+                        résultat{{ "s" if rows | length > 1 else "" }}
                     </p>
+                    <div class="btn-group btn-group-sm"
+                         data-toggle="pc-batch-confirm-btn-group"
+                         data-toggle-id="table-container-individual-offer-edit-btn-group"
+                         data-pc-multi-select-id="table-individual-offers-multiselect"
+                         data_input_ids_name="object_ids"
+                    >
+                        <button disabled
+                                type="button"
+                                class="btn btn-outline-primary"
+                                data-url="{{ url_for("backoffice_v3_web.offer.batch_edit_offer") }}"
+                                data-title="Éditer les offres"
+                                data-batch-confirm-id="batch-edit-modal"
+                                data-modal-button-text="Sauvegarder"
+                                data-use-confirmation-modal="true">
+                            Éditer les
+                            offres
+                        </button>
+                    </div>
                 </div>
-                <table class="table mb-4">
+                <table class="table mb-4" data-table-multi-select-id="table-individual-offers-multiselect">
                     <thead>
                     <tr>
+                        <th scope="col"><input type="checkbox" class="form-check-input" name="pc-table-multi-select-check-all"></th>
                         <th scope="col"></th>
                         <th scope="col">ID</th>
                         <th scope="col">Nom de l'offre</th>
@@ -36,6 +56,14 @@
                     <tbody>
                     {% for offer in rows %}
                         <tr>
+                        <td>
+                            <input
+                                type="checkbox"
+                                class="form-check-input"
+                                name="pc-table-multi-select-check-{{ offer.id }}"
+                                data-id="{{ offer.id }}"
+                            >
+                        </td>
                             <td>
                                 <div class="dropdown">
                                     <button type="button" data-bs-toggle="dropdown" aria-expanded="false"

@@ -341,7 +341,7 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
             return url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user.id)
 
     class UnsuspendButtonTest(button_helpers.ButtonHelper):
-        needed_permission = perm_models.Permissions.UNSUSPEND_USER
+        needed_permission = perm_models.Permissions.SUSPEND_USER
         button_label = "Réactiver le compte"
 
         @property

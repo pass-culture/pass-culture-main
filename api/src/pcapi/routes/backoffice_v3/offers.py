@@ -19,6 +19,8 @@ from . import utils
 from .forms import offer as offer_forms
 
 
+MAX_OFFERS = 101
+
 list_offers_blueprint = utils.child_backoffice_blueprint(
     "offer",
     __name__,
@@ -27,8 +29,11 @@ list_offers_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer]:
-    base_query = offers_models.Offer.query.options(
+def _get_offers(
+    form: offer_forms.GetOffersListForm,
+    limit: int,
+) -> list[offers_models.Offer]:
+    query = offers_models.Offer.query.options(
         sa.orm.load_only(
             offers_models.Offer.id,
             offers_models.Offer.name,
@@ -57,13 +62,23 @@ def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer
         ),
     )
 
+    if form.q.data:
+        search_query = form.q.data
+
+        if search_query.isnumeric():
+            query = query.filter(offers_models.Offer.id == int(search_query))
+        else:
+            name_query = search_query.replace(" ", "%").replace("-", "%")
+            name_query = clean_accents(name_query)
+            query = query.filter(sa.func.unaccent(offers_models.Offer.name).ilike(f"%{name_query}%"))
+
     if form.criteria.data:
-        base_query = base_query.outerjoin(offers_models.Offer.criteria).filter(
+        query = query.outerjoin(offers_models.Offer.criteria).filter(
             criteria_models.Criterion.id.in_(form.criteria.data)
         )
 
     if form.category.data:
-        base_query = base_query.filter(
+        query = query.filter(
             offers_models.Offer.subcategoryId.in_(
                 subcategory.id
                 for subcategory in subcategories_v2.ALL_SUBCATEGORIES
@@ -72,53 +87,14 @@ def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer
         )
 
     if form.department.data:
-        base_query = base_query.join(offers_models.Offer.venue).filter(
+        query = query.join(offers_models.Offer.venue).filter(
             offerers_models.Venue.departementCode.in_(form.department.data)
         )
 
     if form.venue.data:
-        base_query = base_query.filter(offers_models.Offer.venueId.in_(form.venue.data))
+        query = query.filter(offers_models.Offer.venueId.in_(form.venue.data))
 
-    if form.q.data:
-        search_query = form.q.data
-        or_filters = []
-
-        if form.where.data == offer_forms.OfferSearchColumn.ISBN.name or (
-            form.where.data == offer_forms.OfferSearchColumn.ALL.name and utils.is_isbn_valid(search_query)
-        ):
-            or_filters.append(offers_models.Offer.extraData["isbn"].astext == utils.format_isbn_or_visa(search_query))
-
-        if form.where.data == offer_forms.OfferSearchColumn.VISA.name or (
-            form.where.data == offer_forms.OfferSearchColumn.ALL.name and utils.is_visa_valid(search_query)
-        ):
-            or_filters.append(offers_models.Offer.extraData["visa"].astext == utils.format_isbn_or_visa(search_query))
-
-        if (
-            form.where.data in (offer_forms.OfferSearchColumn.ALL.name, offer_forms.OfferSearchColumn.ID.name)
-            and search_query.isnumeric()
-        ):
-            or_filters.append(offers_models.Offer.id == int(search_query))
-
-        if form.where.data == offer_forms.OfferSearchColumn.NAME.name or (
-            form.where.data == offer_forms.OfferSearchColumn.ALL.name and not or_filters
-        ):
-            name_query = search_query.replace(" ", "%").replace("-", "%")
-            name_query = clean_accents(name_query)
-            or_filters.append(sa.func.unaccent(offers_models.Offer.name).ilike(f"%{name_query}%"))
-
-        if or_filters:
-            query = base_query.filter(or_filters[0])
-            if len(or_filters) > 1:
-                # Same as for bookings, where union has better performance than or_
-                query = query.union(*(base_query.filter(f) for f in or_filters[1:]))
-        else:
-            # Fallback, no result -- this should not happen when validate_q() checks searched string
-            query = base_query.filter(False)
-    else:
-        query = base_query
-
-    # +1 to check if there are more results than requested
-    return query.limit(form.limit.data + 1).all()
+    return query.limit(limit).all()
 
 
 def _get_initial_stock(offer: offers_models.Offer) -> int | str:
@@ -166,6 +142,33 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     )
 
 
+@list_offers_blueprint.route("/batch-edit", methods=["POST"])
+def batch_edit_offer() -> utils.BackofficeResponse:
+    form = offer_forms.BatchEditOfferForm()
+    try:
+        offer_ids = [int(id) for id in form.object_ids.data.split(",")]
+    except ValueError:
+        flash("Identifiant(s) invalide(s)", "error")
+        return redirect(request.referrer, 400)
+    offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids)).all()
+    criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
+
+    for offer in offers:
+        if offer.criteria:
+            existing_criteria = offer.criteria
+            new_criteria_list = existing_criteria.extend(criteria)  # Add not already there criteria
+        else:
+            new_criteria_list = criteria
+
+        offer.criteria = new_criteria_list
+        offer.rankingWeight = form.rankingWeight.data
+
+        repository.save(offer)
+
+    flash("Les offres ont été modifiées avec succès", "success")
+    return redirect(request.environ.get("HTTP_REFERER", url_for("backoffice_v3_web.offer.list_offers")), 303)
+
+
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["POST"])
 def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.get_or_404(offer_id)
@@ -194,15 +197,14 @@ def list_offers() -> utils.BackofficeResponse:
     if form.is_empty():
         return render_template("offer/list.html", rows=[], form=form)
 
-    offers = _get_offers(form)
+    offers = _get_offers(form, limit=MAX_OFFERS)
 
-    if len(offers) > form.limit.data:
+    if len(offers) >= MAX_OFFERS:
         flash(
-            f"Il y a plus de {form.limit.data} résultats dans la base de données, la liste ci-dessous n'en donne donc "
+            f"Il y a plus de {MAX_OFFERS - 1} résultats dans la base de données, la liste ci-dessous n'en donne donc "
             "qu'une partie. Veuillez affiner les filtres de recherche.",
             "info",
         )
-        offers = offers[: form.limit.data]
 
     autocomplete.prefill_criteria_choices(form.criteria)
     autocomplete.prefill_venues_choices(form.venue)

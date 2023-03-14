@@ -9,10 +9,8 @@ from flask import url_for
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
-from pcapi.core.history import models as history_models
 import pcapi.core.history.factories as history_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
@@ -452,21 +450,6 @@ class UpdateVenueTest:
         endpoint_kwargs = {"venue_id": 1}
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
-    def _get_current_data(self, venue: offerers_models.Venue) -> dict:
-        return {
-            "tags": [criteria.id for criteria in venue.criteria],
-            "name": venue.name,
-            "public_name": venue.publicName,
-            "siret": venue.siret,
-            "city": venue.city,
-            "postal_code": venue.postalCode,
-            "address": venue.address,
-            "email": venue.contact.email,
-            "phone_number": venue.contact.phone_number,
-            "longitude": venue.longitude,
-            "latitude": venue.latitude,
-        }
-
     def test_update_venue(self, authenticated_client, offerer):
         website = "update.venue@example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
@@ -528,13 +511,16 @@ class UpdateVenueTest:
         )
 
         url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
-        data = self._get_current_data(venue)
-        data.update(
-            {
-                "email": venue.contact.email + ".update",
-                "phone_number": "+33102030456",
-            }
-        )
+        data = {
+            "name": venue.name,
+            "siret": venue.siret,
+            "city": venue.city,
+            "postal_code": venue.postalCode,
+            "address": venue.address,
+            "email": venue.contact.email + ".update",
+            "phone_number": "+33102030456",
+            "is_permanent": venue.isPermanent,
+        }
 
         response = send_request(authenticated_client, venue.id, url, data)
 
@@ -559,8 +545,15 @@ class UpdateVenueTest:
         venue = offerers_factories.VenueFactory()
 
         url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
-        data = self._get_current_data(venue)
-        data["phone_number"] = ""
+        data = {
+            "name": venue.name,
+            "siret": venue.siret,
+            "city": venue.city,
+            "postal_code": venue.postalCode,
+            "address": venue.address,
+            "email": venue.contact.email,
+            "phone_number": "",
+        }
 
         response = send_request(authenticated_client, venue.id, url, data)
 
@@ -572,7 +565,18 @@ class UpdateVenueTest:
         venue = offerers_factories.VenueFactory()
 
         url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
-        data = self._get_current_data(venue)
+        data = {
+            "name": venue.name,
+            "public_name": venue.publicName,
+            "siret": venue.siret,
+            "city": venue.city,
+            "postal_code": venue.postalCode,
+            "address": venue.address,
+            "email": venue.contact.email,
+            "phone_number": venue.contact.phone_number,
+            "longitude": venue.longitude,
+            "latitude": venue.latitude,
+        }
 
         response = send_request(authenticated_client, venue.id, url, data)
         assert response.status_code == 303
@@ -610,32 +614,6 @@ class UpdateVenueTest:
 
         assert response.status_code == 200
         assert "Les données envoyées comportent des erreurs" in response.data.decode("utf-8")
-
-    def test_update_venue_tags(self, legit_user, authenticated_client):
-        venue = offerers_factories.VenueFactory()
-        tag1 = criteria_factories.CriterionFactory(name="Premier")
-        tag2 = criteria_factories.CriterionFactory(name="Deuxième")
-        tag3 = criteria_factories.CriterionFactory(name="Troisième")
-        criteria_factories.VenueCriterionFactory(venueId=venue.id, criterionId=tag1.id)
-        criteria_factories.VenueCriterionFactory(venueId=venue.id, criterionId=tag2.id)
-
-        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
-        data = self._get_current_data(venue)
-        data["tags"] = [tag2.id, tag3.id]
-
-        response = send_request(authenticated_client, venue.id, url, data)
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_v3_web.venue.get", venue_id=venue.id, _external=True)
-
-        db.session.refresh(venue)
-
-        assert set(venue.criteria) == {tag2, tag3}
-        assert len(venue.action_history) == 1
-        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
-        assert venue.action_history[0].authorUser == legit_user
-        assert venue.action_history[0].extraData == {
-            "modified_info": {"criteria": {"old_info": ["Premier", "Deuxième"], "new_info": ["Deuxième", "Troisième"]}}
-        }
 
 
 def send_request(authenticated_client, venue_id, url, form_data=None):
