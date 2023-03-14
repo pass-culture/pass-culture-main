@@ -346,3 +346,39 @@ class EditOfferFormTest:
         with assert_num_queries(3):  # session + user + tested_query
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
+
+
+class BatchEditOfferTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.offer.batch_edit_offer"
+        endpoint_kwargs = {"offer_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+
+    def test_batch_edit_offer(self, legit_user, authenticated_client, criteria):
+        offers = offers_factories.OfferFactory.create_batch(10)
+        parameter_ids = ",".join(str(offer.id) for offer in offers)
+        choosenRankingWeight = 2
+        base_form = {
+            "criteria": [criteria[0].id, criteria[1].id],
+            "rankingWeight": choosenRankingWeight,
+            "object_ids": parameter_ids,
+        }
+
+        response = self._update_offers(authenticated_client, base_form)
+        assert response.status_code == 303
+
+        for offer in offers:
+            assert offer.rankingWeight == choosenRankingWeight
+            assert len(offer.criteria) == 2
+            assert criteria[0] in offer.criteria
+            assert criteria[2] not in offer.criteria
+
+    def _update_offers(self, authenticated_client, form):
+        edit_url = url_for("backoffice_v3_web.offer.list_offers")
+        authenticated_client.get(edit_url)
+
+        url = url_for("backoffice_v3_web.offer.batch_edit_offer")
+        form["csrf_token"] = g.get("csrf_token", "")
+
+        return authenticated_client.post(url, form=form)
