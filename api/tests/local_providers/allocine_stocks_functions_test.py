@@ -279,6 +279,12 @@ class FilterOnlyDigitalAndNonExperiencedShowtimesTest:
                 "projection": ["NON DIGITAL"],
                 "experience": None,
             },
+            {
+                "startsAt": "2019-12-03T22:00:00",
+                "diffusionVersion": "LOCAL",
+                "projection": None,
+                "experience": None,
+            },
         ]
 
         # When
