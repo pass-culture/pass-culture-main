@@ -48,10 +48,12 @@ class _Address(pydantic.BaseModel):
         street: str
         postal_code: str
         city: str
+        insee_code: str
     else:
         street: pydantic.constr(strip_whitespace=True)
         postal_code: pydantic.constr(strip_whitespace=True)
         city: pydantic.constr(strip_whitespace=True)
+        insee_code: pydantic.constr(strip_whitespace=True)
 
 
 class SirenInfo(pydantic.BaseModel):
@@ -129,6 +131,7 @@ class TestingBackend(BaseBackend):
         street="3 RUE DE VALOIS",
         postal_code="75001",
         city="Paris",
+        insee_code="75101",
     )
 
     def get_siren(self, siren: str, with_address: bool = True) -> SirenInfo:
@@ -234,6 +237,7 @@ class InseeBackend(BaseBackend):
             ).strip(),
             postal_code=block["codePostalEtablissement"] or "",
             city=city,
+            insee_code=block["codeCommuneEtablissement"] or "",
         )
 
     def get_siren(self, siren: str, with_address: bool = True) -> SirenInfo:
