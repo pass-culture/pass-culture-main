@@ -7,7 +7,8 @@
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='backofficev3/favicon.ico' ) }}">
 
     <!-- Bootstrap CSS -->
-    <link href="{{ url_for('static', filename='backofficev3/css/compiled/bootstrap/bootstrap.css') }}" rel="stylesheet" type="text/css">
+{#    <link href="{{ url_for('static', filename='backofficev3/css/compiled/bootstrap/bootstrap.css') }}" rel="stylesheet" type="text/css">#}
+    <link href="{{ url_for('static', filename='backofficev3/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
 
     <!-- Bootstrap icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
@@ -17,8 +18,8 @@
     <link href="{{ url_for('static', filename='backofficev3/css/tom-select-bootstrap-5.min.css') }}" rel="stylesheet" type="text/css">
 
     <!-- Our css needs to be imported after Bootstrap to have a stronger weight -->
-    <link href="{{ url_for('static', filename='backofficev3/css/compiled/pc/base.css') }}" rel="stylesheet" type="text/css"/>
-
+{#    <link href="{{ url_for('static', filename='backofficev3/css/compiled/pc/base.css') }}" rel="stylesheet" type="text/css"/>#}
+    <link href="{{ url_for('static', filename='backofficev3/css/base.css') }}" rel="stylesheet" type="text/css">
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
