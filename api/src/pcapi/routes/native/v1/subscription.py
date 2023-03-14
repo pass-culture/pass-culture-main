@@ -1,8 +1,10 @@
 import logging
+import typing
 
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
+from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
@@ -76,6 +78,16 @@ def get_subscription_stepper(user: users_models.User) -> serializers.Subscriptio
             else None
         ),
     )
+
+
+@blueprint.native_v1.route("/subscription/profile", methods=["GET"])
+@spectree_serialize(on_success_status=200, api=blueprint.api)
+@authenticated_and_active_user_required
+def get_profile(user: users_models.User) -> serializers.ProfileResponse:
+    if (profile_data := subscription_api.get_profile_data(user)) is not None:
+        return serializers.ProfileResponse(**profile_data.dict())
+
+    raise api_errors.ResourceNotFoundError()
 
 
 @blueprint.native_v1.route("/subscription/profile", methods=["POST"])

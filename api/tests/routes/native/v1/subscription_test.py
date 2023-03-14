@@ -777,6 +777,26 @@ class StepperTest:
         ]
 
 
+class GetProfileTest:
+    def test_get_profile(self, client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/profile")
+
+        content: fraud_models.ProfileCompletionContent = fraud_check.source_data()
+
+        assert response.status_code == 200
+        assert response.json["firstName"] == content.first_name
+        assert response.json["lastName"] == content.last_name
+        assert response.json["address"] == content.address
+        assert response.json["city"] == content.city
+        assert response.json["postalCode"] == content.postal_code
+        assert response.json["activity"] == content.activity
+        assert response.json["schoolType"] == content.school_type
+
+
 class UpdateProfileTest:
     @override_features(ENABLE_UBBLE=True)
     def test_fulfill_profile(self, client):
