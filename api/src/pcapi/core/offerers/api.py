@@ -1,3 +1,4 @@
+import dataclasses
 from datetime import date
 from datetime import datetime
 import enum
@@ -12,6 +13,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
+from pcapi.connectors import api_adresse
 from pcapi.connectors import sirene
 import pcapi.connectors.thumb_storage as storage
 from pcapi.core import search
@@ -1614,3 +1616,49 @@ def get_metabase_stats_iframe_url(
     }
     token = jwt.encode(payload, settings.METABASE_SECRET_KEY, algorithm="HS256")
     return f"{settings.METABASE_SITE_URL}/embed/dashboard/{token}#bordered=false&titled=false"
+
+
+@dataclasses.dataclass
+class AdditionalInfo:
+    address: str
+    city: str
+    name: str
+    latitude: float
+    longitude: float
+    postalCode: str
+    siren: str
+
+
+def get_additional_info_from_onboarding_data(siret: str) -> AdditionalInfo | None:
+    try:
+        siret_info = sirene.get_siret(siret)
+    except sirene.SireneException as exc:
+        logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
+        return None
+
+    try:
+        address_info = api_adresse.get_address(
+            address=siret_info.address.street,
+            city=siret_info.address.city,
+            insee_code=siret_info.address.insee_code,
+        )
+    except api_adresse.AdresseException as exc:
+        logger.warning(
+            "Error on Adresse API when retrieving address",
+            extra={
+                "exc": exc,
+                "queried_address": siret_info.address.street,
+                "insee_code": siret_info.address.insee_code,
+            },
+        )
+        return None
+
+    return AdditionalInfo(
+        address=siret_info.address.street,
+        city=siret_info.address.city,
+        name=siret_info.name,
+        latitude=address_info.latitude,
+        longitude=address_info.longitude,
+        postalCode=siret_info.address.postal_code,
+        siren=siret[:9],
+    )

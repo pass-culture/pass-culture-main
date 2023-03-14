@@ -216,6 +216,16 @@ class CreateOffererQueryModel(BaseModel):
     name: str
     postalCode: str
     siren: str
+    # For new onboarding:
+    venueType: str | None
+    webPresence: str | None
+
+
+class SaveNewOnboardingDataQueryModel(BaseModel):
+    name: str
+    siret: str
+    venueType: str
+    webPresence: str
 
     class Config:
         extra = "forbid"
