@@ -19,7 +19,6 @@ users_blueprint = utils.child_backoffice_blueprint(
     "users",
     __name__,
     url_prefix="/users/<int:user_id>",
-    permission=perm_models.Permissions.SUSPEND_USER,
 )
 
 
@@ -36,6 +35,7 @@ def _redirect_to_user_page(user: users_models.User) -> utils.BackofficeResponse:
 
 
 @users_blueprint.route("/suspend", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.SUSPEND_USER)
 def suspend_user(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
 
@@ -52,6 +52,7 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
 
 
 @users_blueprint.route("/unsuspend", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.UNSUSPEND_USER)
 def unsuspend_user(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
 
