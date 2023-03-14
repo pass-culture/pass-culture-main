@@ -7,9 +7,7 @@ import { useActiveStep } from './hooks'
 
 const SignupJourneyBreadcrumb = () => {
   const activeStep = useActiveStep()
-  const breadcrumbStepIds = SIGNUP_JOURNEY_BREADCRUMB_STEPS.map(
-    step => step.id
-  ) as Array<string>
+  const breadcrumbStepIds = SIGNUP_JOURNEY_BREADCRUMB_STEPS.map(step => step.id)
 
   if (!breadcrumbStepIds.includes(activeStep)) {
     return <></>
