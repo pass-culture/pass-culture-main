@@ -18,6 +18,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
@@ -853,6 +854,21 @@ class ValidateOffererTest:
         assert user_offerer.offerer.isValidated
         assert user_offerer.offerer.dateValidated == datetime.datetime.utcnow()
         assert user_offerer.offerer.validationStatus == ValidationStatus.VALIDATED
+
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_offerer_is_validated_mail_sent(self, mocked_async_index_offers_of_venue_ids):
+        # Given
+        admin = users_factories.AdminFactory()
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+        venue1 = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, adageId="11")
+        mails = get_emails_by_venue(venue1)
+
+        # When
+        with patch("pcapi.core.offerers.api.send_eac_offerer_activation_email") as mock_activation_mail:
+            offerers_api.validate_offerer(user_offerer.offerer, admin)
+
+        # Then
+        mock_activation_mail.assert_called_with(venue1, list(mails))
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_pro_role_is_added_to_user(self, mocked_async_index_offers_of_venue_ids):
