@@ -33,3 +33,12 @@
     #{forms.$label-small-space-before-input} + #{fonts.$caption-line-height}
   );
 }
+
+.delete-icon {
+  margin-left: rem.torem(20px);
+
+  svg {
+    width: rem.torem(24px);
+    height: rem.torem(24px);
+  }
+}

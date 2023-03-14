@@ -79,7 +79,7 @@ describe('trackers for PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Étape suivante'))
 
@@ -124,7 +124,7 @@ describe('trackers for PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
@@ -158,7 +158,7 @@ describe('trackers for PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Étape suivante'))
 
@@ -221,7 +221,7 @@ describe('trackers for PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
@@ -255,7 +255,7 @@ describe('trackers for PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
@@ -309,7 +309,7 @@ describe('trackers for PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Étape précédente'))
 

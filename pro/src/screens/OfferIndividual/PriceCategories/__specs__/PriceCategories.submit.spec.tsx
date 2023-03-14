@@ -68,7 +68,7 @@ describe('PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Étape suivante'))
 
@@ -85,7 +85,7 @@ describe('PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
@@ -111,7 +111,7 @@ describe('PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Étape suivante'))
 
@@ -137,7 +137,7 @@ describe('PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
@@ -170,7 +170,7 @@ describe('PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Étape suivante'))
 
@@ -215,7 +215,7 @@ describe('PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Étape suivante'))
 
@@ -266,7 +266,7 @@ describe('PriceCategories', () => {
       screen.getAllByLabelText('Intitulé du tarif')[1],
       'a label'
     )
-    await userEvent.type(screen.getAllByLabelText('Tarif par personne')[1], '1')
+    await userEvent.type(screen.getAllByLabelText('Prix par personne')[1], '1')
     await userEvent.click(screen.getByText('Étape suivante'))
     expect(
       screen.getByText(
@@ -294,7 +294,7 @@ describe('PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
@@ -322,7 +322,7 @@ describe('PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Tarif par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 

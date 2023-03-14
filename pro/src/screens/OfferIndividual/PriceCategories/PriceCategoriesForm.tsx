@@ -58,6 +58,8 @@ export const PriceCategoriesForm = ({
     (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.checked) {
         setFieldValue(`priceCategories[${index}].price`, 0)
+      } else {
+        setFieldValue(`priceCategories[${index}].price`, '')
       }
     }
 
@@ -154,12 +156,12 @@ export const PriceCategoriesForm = ({
                 />
               )}
               {values.priceCategories.map((priceCategory, index) => (
-                <FormLayout.Row key={index} inline>
+                <FormLayout.Row key={index} inline smSpaceAfter>
                   <TextInput
                     smallLabel
                     name={`priceCategories[${index}].label`}
                     label="Intitulé du tarif"
-                    placeholder="Ex : catégorie 1, orchestre..."
+                    placeholder="Ex : catégorie 2, moins de 18 ans, pass 3 jours..."
                     maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
                     countCharacters
                     className={styles['label-input']}
@@ -170,8 +172,7 @@ export const PriceCategoriesForm = ({
                   <TextInput
                     smallLabel
                     name={`priceCategories[${index}].price`}
-                    label="Tarif par personne"
-                    placeholder="Ex : 25 €"
+                    label="Prix par personne"
                     type="number"
                     step="0.01"
                     max={PRICE_CATEGORY_PRICE_MAX}
@@ -195,6 +196,8 @@ export const PriceCategoriesForm = ({
                     />
                     {mode !== OFFER_WIZARD_MODE.EDITION && (
                       <Button
+                        className={styles['delete-icon']}
+                        data-testid={'delete-button'}
                         variant={ButtonVariant.TERNARY}
                         Icon={TrashFilledIcon}
                         iconPosition={IconPositionEnum.CENTER}
@@ -209,9 +212,13 @@ export const PriceCategoriesForm = ({
                             values.priceCategories[index].id
                           )
                         }
-                        hasTooltip
+                        hasTooltip={
+                          values.priceCategories.length > 1 && !isDisabled
+                        }
                       >
-                        Supprimer le tarif
+                        {values.priceCategories.length > 1 &&
+                          !isDisabled &&
+                          'Supprimer le tarif'}
                       </Button>
                     )}
                   </div>
