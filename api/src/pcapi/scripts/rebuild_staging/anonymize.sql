@@ -131,6 +131,9 @@ SET
     "newDomainEmail" = 'anonymized.email'
 ;
 
+UPDATE venue
+SET "dmsToken" = 'dms-token-' || id
+;
 
 -- Anonymize beneficiary_fraud_check table content
 UPDATE beneficiary_fraud_check
