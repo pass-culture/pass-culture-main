@@ -188,11 +188,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         server_default=expression.false(),
     )
 
-    isPermanent = Column(
-        Boolean,
-        nullable=True,
-        default=False,
-    )
+    isPermanent = Column(Boolean, nullable=False, default=False)
 
     comment = Column(
         TEXT,
