@@ -116,7 +116,8 @@ def synchronize_adage_ids_on_venues() -> None:
             emails = get_emails_by_venue(venue)
             for email in emails:
                 update_external_pro(email)
-            send_eac_offerer_activation_email(venue, list(emails))
+            if venue.managingOfferer.isValidated:
+                send_eac_offerer_activation_email(venue, list(emails))
 
         venue.adageId = str(filtered_cultural_partner_by_ids[venue.id].id)
 
