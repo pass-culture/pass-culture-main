@@ -171,7 +171,7 @@ export const PriceCategoriesForm = ({
                     smallLabel
                     name={`priceCategories[${index}].price`}
                     label="Tarif par personne"
-                    placeholder="Ex : 25€"
+                    placeholder="Ex : 25 €"
                     type="number"
                     step="0.01"
                     max={PRICE_CATEGORY_PRICE_MAX}
