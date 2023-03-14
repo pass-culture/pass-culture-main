@@ -12,11 +12,7 @@
 .offer-filters-tags {
   display: flex;
   flex-wrap: wrap;
-
-  .tag {
-    margin-bottom: rem(8px);
-    margin-right: rem(8px);
-  }
+  gap: rem(8px);
 }
 
 .offer-filters-reset {
