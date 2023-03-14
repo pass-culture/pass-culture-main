@@ -125,7 +125,7 @@ class CDSStocks(LocalProvider):
         showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)  # type: ignore [arg-type]
         if showtime:
             price_label = showtime["price_label"]
-            show_price = showtime["price"]
+            show_price = decimal.Decimal(str(showtime["price"]))
             show: ShowCDS = showtime["show_information"]
 
         local_tz = utils_date.get_department_timezone(self.venue.departementCode)
@@ -158,9 +158,7 @@ class CDSStocks(LocalProvider):
     def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
         if self.last_offer not in self.price_category_lists_by_offer:
             self.price_category_lists_by_offer[self.last_offer] = (
-                offers_models.PriceCategory.query.filter(offers_models.PriceCategory.offer == self.last_offer)
-                .order_by(offers_models.PriceCategory.price)
-                .all()
+                offers_models.PriceCategory.query.filter(offers_models.PriceCategory.offer == self.last_offer).all()
                 if self.last_offer.id
                 else []
             )
