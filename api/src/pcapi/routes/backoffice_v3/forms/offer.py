@@ -68,3 +68,7 @@ class EditOfferForm(FlaskForm):
         "Tags", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_criteria"
     )
     rankingWeight = fields.PCOptIntegerField("Pondération")
+
+
+class BatchEditOfferForm(EditOfferForm):
+    object_ids = wtforms.HiddenField("Identifiants à traiter")

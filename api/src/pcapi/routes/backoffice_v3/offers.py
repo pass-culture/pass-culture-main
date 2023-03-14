@@ -166,6 +166,46 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     )
 
 
+@list_offers_blueprint.route("/batch/edit", methods=["GET"])
+def get_batch_edit_offer_form() -> utils.BackofficeResponse:
+    form = offer_forms.BatchEditOfferForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.offer.batch_edit_offer"),
+        div_id="batch-edit-offer-modal",
+        title="Édition des offres",
+        button_text="Enregistrer les modifications",
+    )
+
+
+@list_offers_blueprint.route("/batch-edit", methods=["POST"])
+def batch_edit_offer() -> utils.BackofficeResponse:
+    form = offer_forms.BatchEditOfferForm()
+
+    try:
+        offer_ids = [int(id) for id in form.object_ids.data.split(",")]
+    except ValueError:
+        flash("L'un des identifiants sélectionnés est invalide", "error")
+        return redirect(request.referrer, 400)
+    offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids)).all()
+    criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
+
+    for offer in offers:
+        if offer.criteria:
+            offer.criteria.extend(criterion for criterion in criteria if criterion not in offer.criteria)
+        else:
+            offer.criteria = criteria
+
+        offer.rankingWeight = form.rankingWeight.data
+
+        repository.save(offer)
+
+    flash("Les offres ont été modifiées avec succès", "success")
+    return redirect(request.environ.get("HTTP_REFERER", url_for("backoffice_v3_web.offer.list_offers")), 303)
+
+
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["POST"])
 def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.get_or_404(offer_id)

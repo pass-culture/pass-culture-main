@@ -12,12 +12,29 @@
             {% if rows %}
                 <div class="d-flex justify-content-between">
                     <p class="lead num-results">
-                        {{ rows | length }}{{ "+" if rows | length > 100 else "" }} résultat{{ "s" if rows | length > 1 else "" }}
+                        {{ rows | length }}{{ "+" if rows | length > 100 else "" }}
+                        résultat{{ "s" if rows | length > 1 else "" }}
                     </p>
+                    <div class="btn-group btn-group-sm"
+                         data-toggle="pc-batch-confirm-btn-group"
+                         data-toggle-id="table-container-individual-offer-edit-btn-group"
+                         data-pc-table-multi-select-id="table-individual-offers-multiselect"
+                         data-input-ids-name="object_ids"
+                    >
+                        <button disabled
+                                type="button"
+                                class="btn btn-outline-primary"
+                                data-modal-selector="#batch-edit-offer-modal"
+                                data-use-confirmation-modal="true"
+                        >
+                            Éditer les offres
+                        </button>
+                    </div>
                 </div>
-                <table class="table mb-4">
+                <table class="table mb-4" data-table-multi-select-id="table-individual-offers-multiselect">
                     <thead>
                     <tr>
+                        <th scope="col"><input type="checkbox" class="form-check-input" name="pc-table-multi-select-check-all"></th>
                         <th scope="col"></th>
                         <th scope="col">ID</th>
                         <th scope="col">Nom de l'offre</th>
@@ -36,6 +53,14 @@
                     <tbody>
                     {% for offer in rows %}
                         <tr>
+                        <td>
+                            <input
+                                type="checkbox"
+                                class="form-check-input"
+                                name="pc-table-multi-select-check-{{ offer.id }}"
+                                data-id="{{ offer.id }}"
+                            >
+                        </td>
                             <td>
                                 <div class="dropdown">
                                     <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
@@ -71,6 +96,7 @@
                 {% for offer in rows %}
                     {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_edit_offer_form', offer_id=offer.id), "edit-offer-modal-" + offer.id|string) }}
                 {% endfor %}
+                {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_batch_edit_offer_form'), "batch-edit-offer-modal", "true") }}
             {% endif %}
         </div>
     </div>

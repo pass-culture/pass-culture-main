@@ -591,6 +591,32 @@ def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
     return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
 
+@validation_blueprint.route("/user-offerer/batch-reject", methods=["GET"])
+def get_batch_reject_user_offerer_form() -> utils.BackofficeResponse:
+    form = offerer_forms.BatchOptionalCommentForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.validation.batch_reject_user_offerer"),
+        div_id="batch-reject-modal",
+        title="Rejeter le rattachement",
+        button_text="Rejeter le rattachement",
+    )
+
+
+@validation_blueprint.route("/user-offerer/batch-pending", methods=["GET"])
+def get_batch_user_offerer_pending_form() -> utils.BackofficeResponse:
+    form = offerer_forms.BatchOptionalCommentForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.validation.batch_set_user_offerer_pending"),
+        div_id="batch-pending-modal",
+        title="Mettre en attente le rattachement",
+        button_text="Mettre en attente le rattachement",
+    )
+
+
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/reject", methods=["GET"])
 def get_reject_user_offerer_form(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = offerers_models.UserOfferer.query.filter_by(id=user_offerer_id).one_or_none()
