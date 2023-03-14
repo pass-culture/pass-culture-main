@@ -1,7 +1,6 @@
 import datetime
 import hashlib
 import logging
-import typing
 
 from pcapi import settings
 from pcapi.analytics.amplitude.events import identity_check_events
@@ -57,7 +56,7 @@ def _is_fraud_check_up_to_date(
     if not fraud_check.resultContent:
         return False
 
-    fraud_check_content = typing.cast(fraud_models.DMSContent, fraud_check.source_data())
+    fraud_check_content = fraud_check.source_data()
     return compute_dms_checksum(new_content) == compute_dms_checksum(fraud_check_content)
 
 
@@ -231,7 +230,7 @@ def _update_application_annotations(
         )
         return
     new_annotation = fraud_models.DmsAnnotation(id=annotation.id, label=annotation.label, text=new_annotation_value)
-    fraud_check_content = typing.cast(fraud_models.DMSContent, fraud_check.source_data())
+    fraud_check_content = fraud_check.source_data()
     fraud_check_content.annotation = new_annotation
     fraud_check.resultContent = fraud_check_content.dict()
 
@@ -425,7 +424,7 @@ def _process_accepted_application(
         )
         return
 
-    dms_content: fraud_models.DMSContent = fraud_check.source_data()  # type: ignore [assignment]
+    dms_content: fraud_models.DMSContent = fraud_check.source_data()
 
     try:
         fraud_api.on_dms_fraud_result(user, fraud_check)
@@ -503,7 +502,7 @@ def get_dms_subscription_message(
         application_content = None
         birth_date_error = None
     else:
-        application_content = typing.cast(fraud_models.DMSContent, dms_fraud_check.source_data())
+        application_content = dms_fraud_check.source_data()
         birth_date_error = _compute_birth_date_error_details(dms_fraud_check, application_content)
 
     if dms_fraud_check.status == fraud_models.FraudCheckStatus.STARTED:

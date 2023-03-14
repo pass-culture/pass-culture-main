@@ -308,16 +308,6 @@ class UserProfilingFraudData(pydantic.BaseModel):
     unknown_session: str | None
 
 
-IdCheckContent = typing.TypeVar(
-    "IdCheckContent",
-    DMSContent,
-    EduconnectContent,
-    JouveContent,
-    ubble_fraud_models.UbbleContent,
-    UserProfilingFraudData,
-)
-
-
 class InternalReviewSource(enum.Enum):
     BLACKLISTED_PHONE_NUMBER = "blacklisted_phone_number"
     DOCUMENT_VALIDATION_ERROR = "document_validation_error"
@@ -342,7 +332,7 @@ class ProfileCompletionContent(pydantic.BaseModel):
     school_type: users_models.SchoolTypeEnum | None
 
 
-FRAUD_CHECK_MAPPING = {
+FRAUD_CHECK_CONTENT_MAPPING = {
     FraudCheckType.DMS: DMSContent,
     FraudCheckType.EDUCONNECT: EduconnectContent,
     FraudCheckType.HONOR_STATEMENT: HonorStatementContent,
@@ -354,7 +344,16 @@ FRAUD_CHECK_MAPPING = {
     FraudCheckType.USER_PROFILING: UserProfilingFraudData,
 }
 
-FRAUD_CONTENT_MAPPING = {type: cls for cls, type in FRAUD_CHECK_MAPPING.items()}
+
+FraudCheckContent = typing.TypeVar(
+    "FraudCheckContent",
+    DMSContent,
+    EduconnectContent,
+    JouveContent,
+    ubble_fraud_models.UbbleContent,
+    UserProfilingFraudData,
+    ProfileCompletionContent,
+)
 
 
 class FraudReasonCode(enum.Enum):
@@ -460,7 +459,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         if self.type not in IDENTITY_CHECK_TYPES or not self.resultContent:
             return self.dateCreated
         try:
-            registration_datetime = self.source_data().get_registration_datetime()  # type: ignore [union-attr]
+            registration_datetime = self.source_data().get_registration_datetime()
         except ValueError:
             # TODO(viconnex) migrate Educonnect fraud checks that do not have registration date in their content
             return self.dateCreated
@@ -468,12 +467,13 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
             return min(self.dateCreated, registration_datetime)
         return self.dateCreated
 
-    def source_data(self) -> common_models.IdentityCheckContent | UserProfilingFraudData:
-        if self.type not in FRAUD_CHECK_MAPPING:
+    def source_data(self) -> FraudCheckContent:
+        cls = FRAUD_CHECK_CONTENT_MAPPING[self.type]
+        if not cls:
             raise NotImplementedError(f"Cannot unserialize type {self.type}")
-        if self.resultContent is None:
+        if self.resultContent is None or not isinstance(self.resultContent, dict):
             raise ValueError("No source data associated with this fraud check")
-        return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)
+        return cls(**self.resultContent)
 
     @property
     def applicable_eligibilities(self) -> list[users_models.EligibilityType]:

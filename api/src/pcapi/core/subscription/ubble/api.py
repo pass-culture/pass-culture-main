@@ -141,11 +141,13 @@ def handle_validation_errors(
         transactional_mails.send_subscription_document_error_email(user.email, relevant_error_code)
     else:
         if fraud_models.FraudReasonCode.DUPLICATE_USER in error_codes:
-            transactional_mails.send_duplicate_beneficiary_email(user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_USER)  # type: ignore [arg-type]
+            transactional_mails.send_duplicate_beneficiary_email(
+                user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_USER
+            )
 
         elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in error_codes:
             transactional_mails.send_duplicate_beneficiary_email(
-                user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER  # type: ignore [arg-type]
+                user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
             )
 
 
