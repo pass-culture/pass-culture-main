@@ -212,6 +212,13 @@
                                 </a>
                             </p>
                         {% endif %}
+
+                        {% if venue.criteria %}
+                            <p class="mb-1">
+                                <span class="fw-bold">Tags :</span>
+                                {{ venue.criteria | format_criteria | safe }}
+                            </p>
+                        {% endif %}
                     </div>
 
                     <div class="col-4">

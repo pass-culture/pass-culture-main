@@ -12,6 +12,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.connectors.dms.api import DMSGraphQLClient
+from pcapi.core.criteria import models as criteria_models
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.history.models as history_models
 from pcapi.core.offerers import api as offerers_api
@@ -26,7 +27,6 @@ import pcapi.utils.regions as regions_utils
 from pcapi.utils.string import to_camelcase
 
 from . import utils
-from ...utils.string import to_camelcase
 from .forms import empty as empty_forms
 from .forms import venue as forms
 from .serialization import offerers as offerers_serialization
@@ -49,6 +49,7 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
             sa.orm.joinedload(offerers_models.Venue.contact),
             sa.orm.joinedload(offerers_models.Venue.bankInformation),
             sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links),
+            sa.orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
         )
         .one_or_none()
     )
@@ -123,6 +124,8 @@ def render_venue_details(
                 latitude=venue.latitude,
                 longitude=venue.longitude,
             )
+        edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
+
     delete_venue_form = empty_forms.EmptyForm()
 
     return render_template(
@@ -280,8 +283,12 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         social_medias=venue.contact.social_medias if venue.contact else None,
     )
 
+    criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.tags.data)).all()
+
     try:
-        offerers_api.update_venue(venue, author=current_user, contact_data=contact_data, admin_update=True, **attrs)
+        offerers_api.update_venue(
+            venue, author=current_user, contact_data=contact_data, criteria=criteria, admin_update=True, **attrs
+        )
     except ApiErrors as api_errors:
         for error_key, error_details in api_errors.errors.items():
             for error_detail in error_details:
