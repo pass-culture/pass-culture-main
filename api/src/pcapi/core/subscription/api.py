@@ -580,11 +580,12 @@ def complete_profile(
         user.eligibility,
         fraud_models.ProfileCompletionContent(
             activity=activity,
+            address=address,
             city=city,
             first_name=first_name,
             last_name=last_name,
             origin="Completed in application step",
-            postalCode=postal_code,
+            postal_code=postal_code,
             school_type=school_type,
         ),
     )
