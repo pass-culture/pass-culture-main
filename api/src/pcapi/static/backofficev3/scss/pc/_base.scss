@@ -1,0 +1,24 @@
+:root {
+  --bs-body-bg: $pc-body-body-bg-color;
+}
+
+.pc-header-top {
+  background: linear-gradient(to right, $primary, $secondary);
+}
+
+a {
+  &.hover-text-underline:hover {
+    text-decoration: underline;
+  }
+  &.link-primary {
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+pre:has(code) {
+  padding: $pc-code-padding;
+  font-family: $pc-code-font-family;
+}

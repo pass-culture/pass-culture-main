@@ -1,0 +1,41 @@
+select {
+  &.pc-select-multiple-field {
+    height: 1em;
+    overflow: hidden;
+    border-radius: 1rem;
+
+    &:not(.tomselected):not(.pc-select-multiple-autocomplete-field) > option {
+      display: none;
+    }
+  }
+
+  &.dropdown-menu {
+    & > option.dropdown-item {
+      &:checked {
+        background-color: $primary;
+        color: white;
+      }
+    }
+  }
+}
+
+
+input {
+  &[data-toggle="postal-address-autocomplete"] {
+    & + label {
+      z-index: map-get($zindex-levels, 5);
+    }
+  }
+
+  &[aria-describedby="search-icon"] {
+    flex-grow: 3 !important;
+  }
+
+  &[type="checkbox"] {
+    &[role="switch"] {
+      height: 1.7rem;
+      width: 3rem;
+      margin-right: .5rem;
+    }
+  }
+}

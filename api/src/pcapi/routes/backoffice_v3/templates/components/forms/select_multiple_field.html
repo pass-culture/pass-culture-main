@@ -1,13 +1,3 @@
-<style>
-    select.form-select.pc-select-multiple-field:not(.pc-select-multiple-autocomplete-field) {
-        height: 1em;
-        overflow: hidden;
-        border-radius: 1rem;
-    }
-    select.form-select.pc-select-multiple-field:not(.tomselected):not(.pc-select-multiple-autocomplete-field) > option {
-        display: none;
-    }
-</style>
 <div class="form-floating {{ field.name }}-container">
     {% set select_multiple_field_id = random_hash() %}
     <select
