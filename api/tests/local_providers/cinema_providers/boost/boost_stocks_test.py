@@ -1,4 +1,5 @@
 import datetime
+import decimal
 from pathlib import Path
 
 import pytest
@@ -136,7 +137,7 @@ class BoostStocksTest:
         assert created_products[0].extraData == {"visa": "158026"}
 
         assert created_stocks[0].quantity == 96
-        assert created_stocks[0].price == 6.0
+        assert created_stocks[0].price == decimal.Decimal("6.9")
         assert created_stocks[0].priceCategory == created_price_categories[0]
         assert created_stocks[0].dateCreated is not None
         assert created_stocks[0].offer == created_offers[0]
@@ -158,14 +159,14 @@ class BoostStocksTest:
         assert created_products[1].extraData == {"visa": "149489"}
 
         assert created_stocks[1].quantity == 177
-        assert created_stocks[1].price == 6.0
+        assert created_stocks[1].price == decimal.Decimal("6.9")
         assert created_stocks[1].priceCategory == created_price_categories[1]
         assert created_stocks[1].dateCreated is not None
         assert created_stocks[1].offer == created_offers[1]
         assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2022, 11, 28, 8)
         assert created_stocks[1].beginningDatetime == datetime.datetime(2022, 11, 28, 8)
 
-        assert all((category.price == 6.0 for category in created_price_categories))
+        assert all((category.price == decimal.Decimal("6.9") for category in created_price_categories))
         assert all(
             (category.priceCategoryLabel == created_price_category_label for category in created_price_categories)
         )
@@ -221,7 +222,7 @@ class BoostStocksTest:
         assert created_product.extraData == {"visa": "158026"}
 
         assert created_stocks[0].quantity == 96
-        assert created_stocks[0].price == 6.0
+        assert created_stocks[0].price == decimal.Decimal("6.9")
         assert created_stocks[0].priceCategory == created_price_categories[0]
         assert created_stocks[0].dateCreated is not None
         assert created_stocks[0].offer == created_offer
@@ -236,7 +237,7 @@ class BoostStocksTest:
         assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2022, 11, 29, 8)
         assert created_stocks[1].beginningDatetime == datetime.datetime(2022, 11, 29, 8)
 
-        assert created_price_categories[0].price == 6.0
+        assert created_price_categories[0].price == decimal.Decimal("6.9")
         assert created_price_categories[0].label == "PASS CULTURE"
         assert created_price_categories[0].priceCategoryLabel == created_price_category_labels[0]
 
@@ -246,6 +247,31 @@ class BoostStocksTest:
 
         assert boost_stocks.erroredObjects == 0
         assert boost_stocks.erroredThumbs == 0
+
+    def should_reuse_price_category(self, requests_mock):
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
+        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
+        )
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/36683",
+            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
+        )
+        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
+
+        BoostStocks(venue_provider=venue_provider).updateObjects()
+        BoostStocks(venue_provider=venue_provider).updateObjects()
+
+        created_price_category = PriceCategory.query.one()
+        assert created_price_category.price == decimal.Decimal("6.9")
+        assert PriceCategoryLabel.query.count() == 1
 
     def should_not_create_stock_when_showtime_does_not_have_pass_culture_pricing(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")

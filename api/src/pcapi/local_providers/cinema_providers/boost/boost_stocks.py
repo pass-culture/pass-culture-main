@@ -133,9 +133,7 @@ class BoostStocks(LocalProvider):
     def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
         if self.last_offer not in self.price_category_lists_by_offer:
             self.price_category_lists_by_offer[self.last_offer] = (
-                offers_models.PriceCategory.query.filter(offers_models.PriceCategory.offer == self.last_offer)
-                .order_by(offers_models.PriceCategory.price)
-                .all()
+                offers_models.PriceCategory.query.filter(offers_models.PriceCategory.offer == self.last_offer).all()
                 if self.last_offer.id
                 else []
             )
