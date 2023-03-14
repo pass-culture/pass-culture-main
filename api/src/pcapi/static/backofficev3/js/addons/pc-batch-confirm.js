@@ -12,6 +12,7 @@
  * - `[data-batch-confirm-id]`: this value must be a unique identifier,
  * - `[data-modal-button-text]`: this value is used as the button text,
  * - `[data-user-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly.
+ * - `[data-input-ids-name]`: this value is used as the input name for storing `selectedIds`
  *
  * @example
  * <div
@@ -19,6 +20,7 @@
  *   data-toggle="pc-batch-confirm-btn-group"
  *   data-toggle-id="table-container-user-offerer-validation-btn-group"
  *   data-pc-table-multi-select-id="table-container-user-offerer-validation"
+ *   data-input-ids-name="object_ids"
  * >
  *   <button
  *     disabled
@@ -74,13 +76,14 @@ class PcBatchConfirm extends PcAddOn {
   initialize = () => {
     this.$batchConfirmBtnGroups.forEach(($batchConfirmBtnGroup) => {
       // create modal
-      const { toggleId, pcTableMultiSelectId } = $batchConfirmBtnGroup.dataset
+      const { toggleId, pcTableMultiSelectId, inputIdsName } = $batchConfirmBtnGroup.dataset
       const modalIdentifier = `${PcBatchConfirm.BATCH_CONFIRM_MODAL_CLASS_PREFIX}${toggleId}`
       const hasModalInDom = $batchConfirmBtnGroup.parentElement.querySelector(modalIdentifier)
 
       if (!hasModalInDom) {
         const { $modal, $modalContent } = this.#appendNewModalInDom($batchConfirmBtnGroup.parentElement, modalIdentifier)
         this.state[toggleId] = {
+          inputIdsName,
           $modalContent,
           modalIdentifier,
           modal: new bootstrap.Modal($modal, {})
@@ -139,11 +142,12 @@ class PcBatchConfirm extends PcAddOn {
   }
 
   #onBatchButtonClick = (event) => {
-    const { url, title, identifier, modalButtonText, useConfirmationModal, pcTableMultiSelectId, toggleId } = event.target.dataset
+    const { url, title, batchConfirmId, modalButtonText, useConfirmationModal, pcTableMultiSelectId, toggleId } = event.target.dataset
     const { csrfToken, addons } = this.app
+    const { inputIdsName } = this.state[toggleId]
 
     this.state[toggleId].$modalContent.innerHTML = `
-      <form action="${url}" method="POST" class="modal-content" data-turbo="false" name="user-offerer-validation-form-${identifier}">
+      <form action="${url}" method="POST" class="modal-content" data-turbo="false" name="${pcTableMultiSelectId}-form-${batchConfirmId}">
         ${csrfToken}
         <div class="modal-header">
           <h5 class="modal-title">${title}</h5>
@@ -151,16 +155,16 @@ class PcBatchConfirm extends PcAddOn {
         </div>
         <div class="modal-body row">
           <div class="form-floating my-3 col">
-            <input name="object_ids" type="hidden" value="${Array.from(addons.pcTableMultiSelect.state[pcTableMultiSelectId].selectedRowsIds).join(',')}">
+            <input name="${inputIdsName}" type="hidden" value="${Array.from(addons.pcTableMultiSelect.state[pcTableMultiSelectId].selectedRowsIds).join(',')}">
             <textarea
               name="comment"
               class="h-100 form-control pc-override-custom-textarea-enter"
-              id="user-offerer-validation-form-textarea-${identifier}"
-              data-id="${identifier}"
-              data-form-name="user-offerer-validation-form-${identifier}"
+              id="${pcTableMultiSelectId}-form-textarea-${batchConfirmId}"
+              data-id="${batchConfirmId}"
+              data-form-name="${pcTableMultiSelectId}-form-${batchConfirmId}"
               rows="3"
             ></textarea>
-            <label for="user-offerer-validation-form-textarea-${identifier}"><label for="comment">Raison</label></label>
+            <label for="${pcTableMultiSelectId}-form-textarea-${batchConfirmId}"><label for="comment">Raison</label></label>
             <div class="text-muted text-end"><small>Maj+Entrée pour ajouter une nouvelle ligne</small></div>
           </div>
         </div>
