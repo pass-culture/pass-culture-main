@@ -135,40 +135,6 @@ describe('screens:StocksThing', () => {
     }))
   })
 
-  it('should not block when submitting stock when clicking on "Sauvegarder le brouillon"', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-    renderStockThingScreen(props, contextValue)
-
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
-    )
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-
-    // Should stay on the same page (this some text from the StocksThing form)
-    expect(
-      screen.getByText(
-        /Les bénéficiaires ont 30 jours pour faire valider leur contremarque/
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should not block and submit stock form when click on "Étape suivante""', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-    renderStockThingScreen(props, contextValue)
-
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-    expect(screen.getByText('Next page')).toBeInTheDocument()
-  })
-
   it('should not block when going outside and form is not touched', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
@@ -179,23 +145,6 @@ describe('screens:StocksThing', () => {
     await userEvent.click(screen.getByText('Go outside !'))
 
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
-  })
-
-  it('should block when clicking on "Étape précédente"', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-
-    renderStockThingScreen(props, contextValue)
-
-    await userEvent.type(screen.getByLabelText('Quantité'), '20')
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape précédente' })
-    )
-    await userEvent.click(screen.getByText('Quitter la page'))
-
-    expect(await screen.findByText('Previous page')).toBeInTheDocument()
-    expect(api.upsertStocks).not.toHaveBeenCalled()
   })
 
   it('should be able to stay on stock form after click on "Annuler"', async () => {

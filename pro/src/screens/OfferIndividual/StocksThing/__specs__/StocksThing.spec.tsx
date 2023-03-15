@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import {
@@ -54,40 +54,40 @@ const renderStockThingScreen = (
 ) =>
   renderWithProviders(
     <>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        })}
-      >
-        <OfferIndividualContext.Provider value={contextValue}>
-          <StocksThing {...props} />
-        </OfferIndividualContext.Provider>
-      </Route>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        })}
-      >
-        <div>Next page</div>
-      </Route>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        })}
-      >
-        <div>Save draft page</div>
-      </Route>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        })}
-      >
-        <div>Previous page</div>
-      </Route>
+      <Routes>
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+          element={
+            <OfferIndividualContext.Provider value={contextValue}>
+              <StocksThing {...props} />
+            </OfferIndividualContext.Provider>
+          }
+        />
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+          element={<div>Next page</div>}
+        />
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+          element={<div>Save draft page</div>}
+        />
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+          element={<div>Previous page</div>}
+        />
+      </Routes>
       <Notification />
     </>,
     {
@@ -179,6 +179,7 @@ describe('screens:StocksThing', () => {
       screen.queryByText('Comment gérer les codes d’activation')
     ).not.toBeInTheDocument()
   })
+
   it('should render digital book', async () => {
     props.offer = {
       ...(offer as IOfferIndividual),
@@ -213,7 +214,11 @@ describe('screens:StocksThing', () => {
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
-    expect(screen.getByText('Save draft page')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        /Les bénéficiaires ont 30 jours pour faire valider leur contremarque/
+      )
+    ).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })
 
@@ -291,6 +296,7 @@ describe('screens:StocksThing', () => {
       screen.getByText('API bookingLimitDatetime ERROR')
     ).toBeInTheDocument()
   })
+
   describe('activation codes', () => {
     it('should submit activation codes and freeze quantity when a csv is provided', async () => {
       jest.spyOn(api, 'upsertStocks').mockResolvedValue({

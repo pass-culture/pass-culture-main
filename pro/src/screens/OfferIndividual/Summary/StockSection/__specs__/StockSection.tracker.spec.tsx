@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { OfferStatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -18,17 +18,17 @@ const mockLogEvent = jest.fn()
 
 const renderStockSection = (props: IStockSection, url = '/recapitulatif') =>
   renderWithProviders(
-    <>
-      <Route path="/recapitulatif">
-        <StockSection {...props} />
-      </Route>
-      <Route path="/creation/recapitulatif">
-        <StockSection {...props} />
-      </Route>
-      <Route path="/brouillon/recapitulatif">
-        <StockSection {...props} />
-      </Route>
-    </>,
+    <Routes>
+      <Route path="/recapitulatif" element={<StockSection {...props} />} />
+      <Route
+        path="/creation/recapitulatif"
+        element={<StockSection {...props} />}
+      />
+      <Route
+        path="/brouillon/recapitulatif"
+        element={<StockSection {...props} />}
+      />
+    </Routes>,
     { initialRouterEntries: [url] }
   )
 
