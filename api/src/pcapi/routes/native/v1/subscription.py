@@ -101,7 +101,7 @@ def complete_profile(user: users_models.User, body: serializers.ProfileUpdateReq
         address=body.address,
         city=body.city,
         postal_code=body.postal_code,
-        activity=users_models.ActivityEnum[body.activity_id.value].value,
+        activity=users_models.ActivityEnum[body.activity_id.value],
         school_type=users_models.SchoolTypeEnum[body.school_type_id.value] if body.school_type_id is not None else None,
     )
     is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
