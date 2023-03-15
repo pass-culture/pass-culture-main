@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import {
@@ -56,48 +56,50 @@ const renderStockEventScreen = (
 ) =>
   renderWithProviders(
     <>
-      <Route
-        path={Object.values(OFFER_WIZARD_MODE).map(mode =>
-          getOfferIndividualPath({
+      <Routes>
+        {Object.values(OFFER_WIZARD_MODE).map(mode => (
+          <Route
+            key={mode}
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.STOCKS,
+              mode,
+            })}
+            element={
+              <OfferIndividualContext.Provider value={contextValue}>
+                <StocksEventEdition {...props} />
+                <ButtonLink link={{ to: '/outside', isExternal: false }}>
+                  Go outside !
+                </ButtonLink>
+              </OfferIndividualContext.Provider>
+            }
+          />
+        ))}
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+          element={<div>Next page</div>}
+        />
+        <Route
+          path={getOfferIndividualPath({
             step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode,
-          })
-        )}
-      >
-        <OfferIndividualContext.Provider value={contextValue}>
-          <StocksEventEdition {...props} />
-          <ButtonLink link={{ to: '/outside', isExternal: false }}>
-            Go outside !
-          </ButtonLink>
-        </OfferIndividualContext.Provider>
-      </Route>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        })}
-      >
-        <div>Next page</div>
-      </Route>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        })}
-      >
-        <div>Save draft page</div>
-      </Route>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        })}
-      >
-        <div>Previous page</div>
-      </Route>
-      <Route path="/outside">
-        <div>This is outside stock form</div>
-      </Route>
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+          element={<div>Save draft page</div>}
+        />
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+          element={<div>Previous page</div>}
+        />
+        <Route
+          path="/outside"
+          element={<div>This is outside stock form</div>}
+        />
+      </Routes>
       <Notification />
     </>,
     { initialRouterEntries: [url] }
@@ -158,7 +160,12 @@ describe('screens:StocksEventEdition', () => {
       screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
     )
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-    expect(screen.getByText('Save draft page')).toBeInTheDocument()
+    // Should stay on the same page (text from the stocks event form)
+    expect(
+      screen.getByText(
+        /Les utilisateurs ont un délai de 48h pour annuler leur réservation/
+      )
+    ).toBeInTheDocument()
   })
 
   it('should not block and submit stock form when click on "Étape suivante"', async () => {

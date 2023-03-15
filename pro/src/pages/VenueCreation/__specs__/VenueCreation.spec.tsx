@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
@@ -29,9 +28,7 @@ const renderVenueCreation = async (offererId: string) => {
 
   return renderWithProviders(
     <AppLayout>
-      <Route exact path={'/structures/:offererId/lieux/creation'}>
-        <VenueCreation />
-      </Route>
+      <VenueCreation />
     </AppLayout>,
     {
       storeOverrides,
@@ -71,6 +68,7 @@ describe('route VenueCreation', () => {
     jest.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     jest.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
   })
+
   it('should display venue form screen with creation title', async () => {
     // When
     await renderVenueCreation(offerer.id)
@@ -79,6 +77,7 @@ describe('route VenueCreation', () => {
     const venueCreationTitle = await screen.findByText('Création d’un lieu')
     expect(venueCreationTitle).toBeInTheDocument()
   })
+
   it('should display modal when user try to quite venue creation', async () => {
     // When
     await renderVenueCreation(offerer.id)
@@ -94,6 +93,7 @@ describe('route VenueCreation', () => {
     await userEvent.click(cancelModalButton)
     expect(modal).not.toBeInTheDocument()
   })
+
   it('should display modal when user cancel venue creation', async () => {
     // When
     await renderVenueCreation(offerer.id)
@@ -109,6 +109,7 @@ describe('route VenueCreation', () => {
     await userEvent.click(cancelButton)
     expect(modal).not.toBeInTheDocument()
   })
+
   it('should not display modal when user submit venue creation', async () => {
     // When
     await renderVenueCreation(offerer.id)

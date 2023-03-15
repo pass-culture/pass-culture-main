@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import {
@@ -49,11 +49,19 @@ const renderStockEventScreen = (
 ) =>
   renderWithProviders(
     <>
-      <Route path={['/creation/stocks', '/brouillon/stocks', '/stocks']}>
-        <OfferIndividualContext.Provider value={contextValue}>
-          <StocksEventEdition {...props} />
-        </OfferIndividualContext.Provider>
-      </Route>
+      <Routes>
+        {['/creation/stocks', '/brouillon/stocks', '/stocks'].map(path => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <OfferIndividualContext.Provider value={contextValue}>
+                <StocksEventEdition {...props} />
+              </OfferIndividualContext.Provider>
+            }
+          />
+        ))}
+      </Routes>
       <Notification />
     </>,
     { initialRouterEntries: [url] }

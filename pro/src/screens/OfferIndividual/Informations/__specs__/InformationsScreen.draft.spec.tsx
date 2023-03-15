@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import {
@@ -71,24 +71,26 @@ const renderInformationsScreen = (
   }
   return renderWithProviders(
     <>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        })}
-      >
-        <OfferIndividualContext.Provider value={contextValue}>
-          <InformationsScreen {...props} />
-        </OfferIndividualContext.Provider>
-      </Route>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        })}
-      >
-        <div>There is the stock route content</div>
-      </Route>
+      <Routes>
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.DRAFT,
+          })}
+          element={
+            <OfferIndividualContext.Provider value={contextValue}>
+              <InformationsScreen {...props} />
+            </OfferIndividualContext.Provider>
+          }
+        />
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.DRAFT,
+          })}
+          element={<div>There is the stock route content</div>}
+        />
+      </Routes>
       <Notification />
     </>,
     {

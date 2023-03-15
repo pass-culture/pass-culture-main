@@ -33,6 +33,7 @@ export default [
       'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/OffersSearch.tsx',
       'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/Offers.tsx',
       'pages/AdageIframe/app/providers/AnalyticsContextProvider.tsx',
+      'context/OfferIndividualContext/OfferIndividualContext.tsx',
       '',
     ],
   },

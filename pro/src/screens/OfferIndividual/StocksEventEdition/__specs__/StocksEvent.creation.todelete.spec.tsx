@@ -2,7 +2,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import {
@@ -55,32 +55,33 @@ const renderStockEventScreen = (
 ) =>
   renderWithProviders(
     <>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        })}
-      >
-        <OfferIndividualContext.Provider value={contextValue}>
-          <StocksEvent {...props} />
-        </OfferIndividualContext.Provider>
-      </Route>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        })}
-      >
-        <div>Next page</div>
-      </Route>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        })}
-      >
-        <div>Previous page</div>
-      </Route>
+      <Routes>
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+          element={
+            <OfferIndividualContext.Provider value={contextValue}>
+              <StocksEvent {...props} />
+            </OfferIndividualContext.Provider>
+          }
+        />
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+          element={<div>Next page</div>}
+        />
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+          element={<div>Previous page</div>}
+        />
+      </Routes>
       <Notification />
     </>,
     {

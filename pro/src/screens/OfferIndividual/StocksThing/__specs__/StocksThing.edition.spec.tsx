@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import {
@@ -44,40 +44,43 @@ jest.mock('utils/date', () => ({
 const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
   renderWithProviders(
     <>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.EDITION,
-        })}
-      >
-        <OfferIndividualContextProvider isUserAdmin={false} offerId="OFFER_ID">
-          <Stocks />
-        </OfferIndividualContextProvider>
-      </Route>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode: OFFER_WIZARD_MODE.EDITION,
-        })}
-      >
-        <div>Next page</div>
-      </Route>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        })}
-      >
-        <div>Save draft page</div>
-      </Route>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode: OFFER_WIZARD_MODE.EDITION,
-        })}
-      >
-        <div>Previous page</div>
-      </Route>
+      <Routes>
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          })}
+          element={
+            <OfferIndividualContextProvider
+              isUserAdmin={false}
+              offerId="OFFER_ID"
+            >
+              <Stocks />
+            </OfferIndividualContextProvider>
+          }
+        />
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          })}
+          element={<div>Next page</div>}
+        />
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.DRAFT,
+          })}
+          element={<div>Save draft page</div>}
+        />
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          })}
+          element={<div>Previous page</div>}
+        />
+      </Routes>
       <Notification />
     </>,
     {
