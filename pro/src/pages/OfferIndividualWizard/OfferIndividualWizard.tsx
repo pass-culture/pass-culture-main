@@ -1,6 +1,10 @@
 import React from 'react'
-import { useLocation } from 'react-router'
-import { Route, Routes, useParams } from 'react-router-dom-v5-compat'
+import {
+  useLocation,
+  Route,
+  Routes,
+  useParams,
+} from 'react-router-dom-v5-compat'
 
 import PageTitle from 'components/PageTitle/PageTitle'
 import { OfferIndividualContextProvider } from 'context/OfferIndividualContext'
