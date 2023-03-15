@@ -1,16 +1,13 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { MemoryRouter } from 'react-router'
+
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { DeskScreen, IDeskProps } from '..'
 
 const renderDeskScreen = (props: IDeskProps) => {
-  const rtlReturns = render(
-    <MemoryRouter>
-      <DeskScreen {...props} />
-    </MemoryRouter>
-  )
+  const rtlReturns = renderWithProviders(<DeskScreen {...props} />)
 
   const pageTitle = screen.getByRole('heading', { name: 'Guichet' })
 
