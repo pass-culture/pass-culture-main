@@ -9,13 +9,13 @@ import TutorialDialog from 'components/TutorialDialog'
 
 import { ILayoutConfig } from './AppRouter/routes_map'
 
-interface Props {
-  children: React.ReactNode
+export interface AppLayoutProps {
+  children?: React.ReactNode
   layoutConfig?: ILayoutConfig
   className?: string
 }
 
-const AppLayout = ({ children, layoutConfig, className }: Props) => {
+const AppLayout = ({ children, layoutConfig, className }: AppLayoutProps) => {
   const defaultConfig: ILayoutConfig = {
     backTo: null,
     fullscreen: false,
