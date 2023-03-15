@@ -1,6 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import React from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
+import { useLocation } from 'react-router-dom-v5-compat'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import OfferEducationalActions from 'components/OfferEducationalActions'

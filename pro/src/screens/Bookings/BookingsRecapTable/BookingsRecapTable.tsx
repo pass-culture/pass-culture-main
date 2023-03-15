@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { useLocation } from 'react-router'
+import { useLocation } from 'react-router-dom-v5-compat'
 import type { Column } from 'react-table'
 
 import {
