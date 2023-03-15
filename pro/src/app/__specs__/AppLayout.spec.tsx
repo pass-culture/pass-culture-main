@@ -3,9 +3,13 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import AppLayout from '../AppLayout'
+import AppLayout, { AppLayoutProps } from '../AppLayout'
 
-const renderApp = async (props, storeOverrides, url = '/') =>
+const renderApp = async (
+  props: AppLayoutProps,
+  storeOverrides: any,
+  url = '/'
+) =>
   renderWithProviders(
     <AppLayout {...props}>
       <p>Sub component</p>
@@ -14,8 +18,8 @@ const renderApp = async (props, storeOverrides, url = '/') =>
   )
 
 describe('src | AppLayout', () => {
-  let props
-  let storeOverrides
+  let props: AppLayoutProps
+  let storeOverrides: any
 
   beforeEach(() => {
     props = {}
