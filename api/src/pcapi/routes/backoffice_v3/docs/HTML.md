@@ -1,14 +1,20 @@
-## PcBackofficeApp
+## Backoffice HTML code convention
 
 In our HTML templates, **we have forbidden** the usage of the `id` attributes.
 
-In general, we will always prefer a css class name. CSS class names have their own standard, read [./CSS.md](CSS.md) for all details.
+In general, we will always prefer a css class name. CSS class names have their own standard that can be read on [CSS.md](CSS.md).
 
 There are some case where you must set an `id` attributes, those are exceptions, and we must generate the id using:
 
 ```html
 {% set some_id = random_hash() %}
 ```
+
+In some very rare case, you might be certain to have non-conflicting id, such as a table of entity.
+
+In this case, it is fine to use the id, as long as you prefix it with a unique identifier that would not clash with id of another table entities.
+
+Keep in mind: It is better to avoid using `id` attributes when it's possible.
 
 ## Required by forms
 
