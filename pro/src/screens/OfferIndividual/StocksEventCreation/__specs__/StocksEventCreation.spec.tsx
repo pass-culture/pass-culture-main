@@ -209,13 +209,15 @@ describe('deletion', () => {
     await userEvent.click(screen.getByLabelText('Horaire 1'))
     await userEvent.click(screen.getByText('12:00'))
     await userEvent.click(screen.getByText('Ajouter cette date'))
+    // stock line are here
+    expect(screen.queryByText('Date')).toBeInTheDocument()
 
     await userEvent.click(
       screen.getAllByRole('button', { name: 'Supprimer le stock' })[0]
     )
 
     // stock line is not here anymore
-    expect(screen.queryByText('15/10/2021')).not.toBeInTheDocument()
+    expect(screen.queryByText('Date')).not.toBeInTheDocument()
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
     expect(
