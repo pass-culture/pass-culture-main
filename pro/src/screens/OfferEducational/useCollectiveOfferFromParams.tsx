@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, ComponentType } from 'react'
-import { useParams } from 'react-router-dom-v5-compat'
+import { useLocation, useParams } from 'react-router-dom-v5-compat'
 
 import {
   CollectiveOffer,
@@ -29,7 +29,8 @@ export const useCollectiveOfferFromParams = (
   const { offerId: offerIdFromParams } = useParams<{
     offerId: string
   }>()
-
+  const location = useLocation()
+  const pathNameIncludesTemplate = location.pathname.includes('vitrine')
   if (offerIdFromParams === undefined) {
     if (isOfferMandatory) {
       throw new Error('useOffer hook called on a page without offerId')
@@ -38,14 +39,14 @@ export const useCollectiveOfferFromParams = (
         offer: undefined,
         setOffer: () => {},
         reloadCollectiveOffer: () => Promise.resolve(),
-        isTemplate: false,
+        isTemplate: false || pathNameIncludesTemplate,
       }
     }
   }
 
-  const { offerId, isTemplate } =
+  const { offerId, isTemplateId } =
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
-
+  const isTemplate = isTemplateId || pathNameIncludesTemplate
   const [offer, setOffer] = useState<
     CollectiveOffer | CollectiveOfferTemplate
   >()
