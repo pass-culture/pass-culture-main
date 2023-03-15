@@ -7,6 +7,16 @@ export default [
     files: [''],
   },
   {
+    error:
+      'Warning: Cannot update during an existing state transition (such as within `render`). Render methods should be a pure function of props and state.%s',
+    files: ['pages/VenueEdition/VenueEdition.tsx'],
+  },
+  {
+    error:
+      'Warning: Cannot update a component (`%s`) while rendering a different component (`%s`). To locate the bad setState() call inside `%s`, follow the stack trace as described in https://reactjs.org/link/setstate-in-render%s',
+    files: ['pages/VenueEdition/VenueEdition.tsx'],
+  },
+  {
     error: 'Error: Not implemented: navigation (except hash changes)',
     files: [''],
   },

@@ -1,11 +1,10 @@
-import cn from 'classnames'
 import React from 'react'
-import { Link } from 'react-router-dom'
 
 import { OfferStatus } from 'apiClient/v1'
 import { ReactComponent as PendingIcon } from 'icons/pending.svg'
 import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
-import { Banner, Title } from 'ui-kit'
+import { Banner, ButtonLink, Title } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './CollectiveOfferConfirmation.module.scss'
 
@@ -107,18 +106,25 @@ const CollectiveOfferConfirmation = ({
           </p>
         </div>
         <div className={styles['confirmation-actions']}>
-          <Link
-            className={cn(styles['confirmation-action'], 'secondary-link')}
-            to="/offres/collectives"
+          <ButtonLink
+            variant={ButtonVariant.SECONDARY}
+            className={styles['confirmation-action']}
+            link={{ to: '/offres/collectives', isExternal: false }}
           >
             Voir mes offres
-          </Link>
-          <Link
-            className={cn('primary-button', styles['confirmation-action'])}
-            to={`/offre/creation${offererId ? `?structure=${offererId}` : ''}`}
+          </ButtonLink>
+          <ButtonLink
+            variant={ButtonVariant.PRIMARY}
+            className={styles['confirmation-action']}
+            link={{
+              to: `/offre/creation${
+                offererId ? `?structure=${offererId}` : ''
+              }`,
+              isExternal: false,
+            }}
           >
             Créer une nouvelle offre
-          </Link>
+          </ButtonLink>
         </div>
       </div>
       <Banner
