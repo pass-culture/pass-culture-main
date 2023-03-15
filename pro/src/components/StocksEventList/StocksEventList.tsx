@@ -3,12 +3,15 @@ import React, { useState } from 'react'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import { ClearIcon } from 'icons'
+import { Button } from 'ui-kit'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { formatPrice } from 'utils/formatPrice'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 import styles from './StocksEventList.module.scss'
 
 export interface IStocksEvent {
+  id?: string
   beginningDatetime: string
   bookingLimitDatetime: string
   priceCategoryId: number
@@ -20,6 +23,7 @@ interface IStocksEventListProps {
   priceCategories: PriceCategoryResponseModel[]
   className?: string
   departmentCode?: string
+  setStocks: (stocks: IStocksEvent[]) => void
 }
 
 const StocksEventList = ({
@@ -27,6 +31,7 @@ const StocksEventList = ({
   priceCategories,
   className,
   departmentCode,
+  setStocks,
 }: IStocksEventListProps): JSX.Element => {
   const [isCheckedArray, setIsCheckedArray] = useState(stocks.map(() => false))
   const areAllChecked = isCheckedArray.every(isChecked => isChecked)
@@ -43,6 +48,11 @@ const StocksEventList = ({
     } else {
       setIsCheckedArray(stocks.map(() => true))
     }
+  }
+
+  const onDeleteStock = (index: number) => {
+    stocks.splice(index, 1)
+    setStocks([...stocks])
   }
 
   return (
@@ -125,7 +135,15 @@ const StocksEventList = ({
                 {bookingLimitDate}
               </td>
               <td className={cn(styles['data'], styles['clear-icon'])}>
-                <ClearIcon />
+                <Button
+                  variant={ButtonVariant.TERNARY}
+                  onClick={() => onDeleteStock(index)}
+                  Icon={ClearIcon}
+                  iconPosition={IconPositionEnum.CENTER}
+                  hasTooltip
+                >
+                  Supprimer le stock
+                </Button>
               </td>
             </tr>
           )
