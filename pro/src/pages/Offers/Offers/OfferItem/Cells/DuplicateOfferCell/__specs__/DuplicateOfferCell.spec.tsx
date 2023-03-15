@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -27,20 +27,24 @@ const renderDuplicateOfferCell = () => {
   }
 
   renderWithProviders(
-    <>
-      <Route path="/offres">
-        <table>
-          <tbody>
-            <tr>
-              <DuplicateOfferCell templateOfferId="AE" />
-            </tr>
-          </tbody>
-        </table>
-      </Route>
-      <Route path="/offre/duplication/collectif/AE">
-        <div>Parcours de duplication d’offre</div>
-      </Route>
-    </>,
+    <Routes>
+      <Route
+        path="/offres"
+        element={
+          <table>
+            <tbody>
+              <tr>
+                <DuplicateOfferCell templateOfferId="AE" />
+              </tr>
+            </tbody>
+          </table>
+        }
+      />
+      <Route
+        path="/offre/duplication/collectif/AE"
+        element={<div>Parcours de duplication d’offre</div>}
+      />
+    </Routes>,
     { storeOverrides, initialRouterEntries: ['/offres'] }
   )
 }
