@@ -27,3 +27,8 @@
     fill: colors.$black;
   }
 }
+
+// RomainC: needed because there could be 2 actions bar on this page
+.actions {
+  z-index: 1;
+}
