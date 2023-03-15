@@ -250,17 +250,18 @@ def test_serialize_venue():
         "tags": [],
         "banner_url": venue.bannerUrl,
         "_geoloc": {"lng": float(venue.longitude), "lat": float(venue.latitude)},
-        "is_eligible_for_strict_search": False,
         "has_at_least_one_bookable_offer": False,
     }
 
 
 def test_serialize_venue_with_one_bookable_offer():
     venue = offerers_factories.VenueFactory(isPermanent=True)
-    offers_factories.EventStockFactory(offer__venue=venue)
 
     serialized = algolia.AlgoliaBackend().serialize_venue(venue)
-    assert serialized["is_eligible_for_strict_search"]
+    assert not serialized["has_at_least_one_bookable_offer"]
+
+    offers_factories.EventStockFactory(offer__venue=venue)
+    serialized = algolia.AlgoliaBackend().serialize_venue(venue)
     assert serialized["has_at_least_one_bookable_offer"]
 
 
