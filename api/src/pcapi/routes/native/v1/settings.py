@@ -42,7 +42,6 @@ def get_settings() -> serializers.SettingsResponse:
         enable_phone_validation=features[FeatureToggle.ENABLE_PHONE_VALIDATION],
         id_check_address_autocompletion=features[FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION],
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],
-        # TODO(antoinewg): remove this after next forced release (> v1.166.3)
         object_storage_url=OBJECT_STORAGE_URL,
         pro_disable_events_qrcode=features[FeatureToggle.PRO_DISABLE_EVENTS_QRCODE],
         account_unsuspension_limit=constants.ACCOUNT_UNSUSPENSION_DELAY,
