@@ -18,7 +18,6 @@
     ],
     "attributesForFaceting": [
         "filterOnly(has_at_least_one_bookable_offer)",
-        "filterOnly(is_eligible_for_strict_search)",
         "filterOnly(tags)",
         "filterOnly(venue_type)"
     ],

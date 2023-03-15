@@ -492,8 +492,6 @@ class AlgoliaBackend(base.SearchBackend):
             "tags": [criterion.name for criterion in venue.criteria],
             "banner_url": venue.bannerUrl,
             "_geoloc": position(venue),
-            # TODO: remove "is_eligible_for_strict_search" key when the app does not use it anymore
-            "is_eligible_for_strict_search": has_at_least_one_bookable_offer,
             "has_at_least_one_bookable_offer": has_at_least_one_bookable_offer,
         }
 
