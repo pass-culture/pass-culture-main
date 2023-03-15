@@ -46,8 +46,10 @@
               <th scope="col">Tag</th>
               <th scope="col">Pondération</th>
               <th scope="col">État</th>
+              <th scope="col">Date de création</th>
               <th scope="col">Dernière date de validation</th>
               <th scope="col">Dép.</th>
+              <th scope="col">Structure</th>
               <th scope="col">Lieu</th>
             </tr>
           </thead>
@@ -76,6 +78,20 @@
                           Modifier
                         </a>
                       </li>
+                      <li class="dropdown-item">
+                        <a class="btn btn-sm d-block w-100 text-start px-3"
+                           data-bs-toggle="modal"
+                           data-bs-target="#validate-offer-modal-{{ offer.id }}">
+                          Valider l'offre
+                        </a>
+                      </li>
+                      <li class="dropdown-item">
+                        <a class="btn btn-sm d-block w-100 text-start px-3"
+                           data-bs-toggle="modal"
+                           data-bs-target="#reject-offer-modal-{{ offer.id }}">
+                          Rejeter l'offre
+                        </a>
+                      </li>
                     </ul>
                   </div>
                 </td>
@@ -85,12 +101,26 @@
                 <td>{{ offer.subcategory_v2.pro_label }}</td>
                 <td>{{ get_initial_stock(offer) }}</td>
                 <td>{{ get_remaining_stock(offer) }}</td>
-                <td>{{ offer.criteria | format_criteria | safe }}</td>
-                <td>{{ offer.rankingWeight | empty_string_if_null }}</td>
-                <td>{{ offer.validation | format_offer_validation_status }}</td>
-                <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
                 <td>
-                  {{ offer.venue.departementCode }}
+                  {{ offer.criteria | format_criteria | safe }}
+                </td>
+                <td>
+                  {{ offer.rankingWeight | empty_string_if_null }}
+                </td>
+                <td>
+                  {{ offer.validation | format_offer_validation_status }}
+                </td>
+                <td>
+                  {{ offer.dateCreated | format_date("%d/%m/%Y") }}
+                </td>
+                <td>
+                  {{ offer.lastValidationDate | format_date("%d/%m/%Y") }}
+                </td>
+                <td>
+                  {{ offer.venue.departementCode | empty_string_if_null }}
+                </td>
+                <td>
+                  {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
                 </td>
                 <td>
                   {{ links.build_venue_name_to_details_link(offer.venue) }}
@@ -101,6 +131,8 @@
         </table>
         {% for offer in rows %}
           {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_edit_offer_form', offer_id=offer.id), "edit-offer-modal-" + offer.id|string) }}
+          {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_validate_offer_form', offer_id=offer.id), "validate-offer-modal-" + offer.id|string) }}
+          {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_reject_offer_form', offer_id=offer.id), "reject-offer-modal-" + offer.id|string) }}
         {% endfor %}
         {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_batch_edit_offer_form'), "batch-edit-offer-modal", "true") }}
       {% endif %}

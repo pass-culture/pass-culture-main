@@ -5,11 +5,13 @@ from flask_wtf import FlaskForm
 import wtforms
 
 from pcapi.core.categories import categories
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice_v3 import utils as bo_utils
 
 from . import constants
 from . import fields
 from . import utils
+from .. import filters
 
 
 class OfferSearchColumn(enum.Enum):
@@ -38,9 +40,18 @@ class GetOffersListForm(FlaskForm):
         "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
     )
     department = fields.PCSelectMultipleField("Départements", choices=constants.area_choices)
+    offerer = fields.PCAutocompleteSelectMultipleField(
+        "Structures", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_offerers"
+    )
     venue = fields.PCAutocompleteSelectMultipleField(
         "Lieux", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_venues"
     )
+    status = fields.PCSelectMultipleField(
+        "États",
+        choices=utils.choices_from_enum(OfferValidationStatus, formatter=filters.format_offer_validation_status),
+    )
+    from_date = fields.PCDateField("Créées à partir du", validators=(wtforms.validators.Optional(),))
+    to_date = fields.PCDateField("Jusqu'au", validators=(wtforms.validators.Optional(),))
     limit = fields.PCSelectField(
         "Nombre maximum",
         choices=((100, "100"), (500, "500"), (1000, "1000"), (3000, "3000")),
@@ -61,7 +72,19 @@ class GetOffersListForm(FlaskForm):
         return q
 
     def is_empty(self) -> bool:
-        return not any((self.q.data, self.criteria.data, self.category.data, self.department.data, self.venue.data))
+        return not any(
+            (
+                self.q.data,
+                self.criteria.data,
+                self.category.data,
+                self.department.data,
+                self.venue.data,
+                self.offerer.data,
+                self.status.data,
+                self.from_date.data,
+                self.to_date.data,
+            )
+        )
 
 
 class EditOfferForm(FlaskForm):
