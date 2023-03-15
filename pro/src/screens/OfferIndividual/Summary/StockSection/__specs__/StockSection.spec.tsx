@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { generatePath, Route } from 'react-router'
+import { generatePath, Route, Routes } from 'react-router-dom-v5-compat'
 
 import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
@@ -27,56 +27,50 @@ const renderStockSection = (
   })
 ) =>
   renderWithProviders(
-    <>
+    <Routes>
       <Route
         path={getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.EDITION,
         })}
-      >
-        <StockSection {...props} />
-      </Route>
+        element={<StockSection {...props} />}
+      />
       <Route
         path={getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
-      >
-        <StockSection {...props} />
-      </Route>
+        element={<StockSection {...props} />}
+      />
       <Route
         path={getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.DRAFT,
         })}
-      >
-        <StockSection {...props} />
-      </Route>
+        element={<StockSection {...props} />}
+      />
       <Route
         path={getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
-      >
-        <div>Offer V3 creation: page stocks</div>
-      </Route>
+        element={<div>Offer V3 creation: page stocks</div>}
+      />
       <Route
         path={getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.EDITION,
         })}
-      >
-        <div>Offer V3 edition: page stocks</div>
-      </Route>
+        element={<div>Offer V3 edition: page stocks</div>}
+      />
       <Route
         path={getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.DRAFT,
         })}
-      >
-        <div>Offer V3 brouillon: page stocks</div>
-      </Route>
-    </>,
+        element={<div>Offer V3 brouillon: page stocks</div>}
+      />
+    </Routes>,
     { initialRouterEntries: [url] }
   )
 
