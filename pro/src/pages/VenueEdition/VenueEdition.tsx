@@ -1,5 +1,4 @@
 import React from 'react'
-import { Redirect } from 'react-router'
 import { useParams } from 'react-router-dom-v5-compat'
 
 import { setInitialFormValues } from 'components/VenueForm'
@@ -7,7 +6,6 @@ import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { useGetVenue } from 'core/Venue'
 import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
-import { useHomePath } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import { VenueFormScreen } from 'screens/VenueForm'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -16,7 +14,6 @@ import useGetProviders from '../../core/Venue/adapters/getProviderAdapter/useGet
 import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdapter/useGetVenueProvider'
 
 const VenueEdition = (): JSX.Element | null => {
-  const homePath = useHomePath()
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
@@ -79,11 +76,7 @@ const VenueEdition = (): JSX.Element | null => {
     ].find(error => error !== undefined)
     if (loadingError !== undefined) {
       notify.error(loadingError.message)
-      // RomainC Redirect fix this warning here :
-      // Warning: Cannot update during an existing state transition (such as within `render`). Render methods should be a pure function of props and state.
-      // which was caused by the setState in useGetVenue
-      // push is used to keep history of navigation
-      return <Redirect push to={homePath} />
+      return null
     }
     return null
   }

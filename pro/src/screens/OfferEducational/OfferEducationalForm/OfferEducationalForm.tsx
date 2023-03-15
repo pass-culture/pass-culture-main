@@ -1,6 +1,5 @@
 import { useFormikContext } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
@@ -16,7 +15,8 @@ import {
 import { computeOffersUrl } from 'core/Offers/utils'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useNotification from 'hooks/useNotification'
-import { Banner, SubmitButton } from 'ui-kit'
+import { Banner, ButtonLink, SubmitButton } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { sortByLabel } from 'utils/strings'
 
 import { IOfferEducationalProps } from '../OfferEducational'
@@ -189,9 +189,12 @@ const OfferEducationalForm = ({
       ) : null}
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          <Link className="secondary-link" to={computeOffersUrl({})}>
+          <ButtonLink
+            variant={ButtonVariant.SECONDARY}
+            link={{ to: computeOffersUrl({}), isExternal: false }}
+          >
             Annuler et quitter
-          </Link>
+          </ButtonLink>
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right>
           <SubmitButton
