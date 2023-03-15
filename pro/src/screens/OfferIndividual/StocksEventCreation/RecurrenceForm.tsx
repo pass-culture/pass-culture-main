@@ -92,6 +92,7 @@ export const RecurrenceForm = ({
                 value={RecurrenceType.WEEKLY}
                 withBorder
                 disabled
+                className={styles['coming-soon']}
               />
 
               <RadioButton
@@ -101,6 +102,7 @@ export const RecurrenceForm = ({
                 value={RecurrenceType.MONTHLY}
                 withBorder
                 disabled
+                className={styles['coming-soon']}
               />
             </div>
 
