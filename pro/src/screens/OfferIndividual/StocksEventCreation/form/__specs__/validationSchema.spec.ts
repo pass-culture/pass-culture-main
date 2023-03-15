@@ -56,7 +56,7 @@ describe('validationSchema', () => {
       expectedErrors: [
         'recurrenceType is a required field',
         'recurrenceType must be one of the following values: UNIQUE, DAILY, WEEKLY, MONTHLY',
-        'Veuillez renseigner une date',
+        'Veuillez renseigner une date de début',
         'Veuillez renseigner un horaire',
         '"666 " n’est pas une valeur valide de la liste',
         'quantityPerPriceCategories[1].quantity must be a `number` type, but the final value was: `NaN` (cast from the value `""`).',
@@ -71,7 +71,7 @@ describe('validationSchema', () => {
         recurrenceType: RecurrenceType.DAILY,
         endingDate: null,
       },
-      expectedErrors: ['Veuillez renseigner une date'],
+      expectedErrors: ['Veuillez renseigner une date de fin'],
     },
   ]
 

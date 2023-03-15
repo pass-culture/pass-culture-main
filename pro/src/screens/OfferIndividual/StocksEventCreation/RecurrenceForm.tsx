@@ -115,6 +115,11 @@ export const RecurrenceForm = ({
                     : 'Du'
                 }
                 className={styles['date-input']}
+                minDateTime={
+                  values.recurrenceType === RecurrenceType.UNIQUE
+                    ? new Date()
+                    : undefined
+                }
               />
 
               {values.recurrenceType !== RecurrenceType.UNIQUE && (
@@ -122,6 +127,7 @@ export const RecurrenceForm = ({
                   name="endingDate"
                   label="Au"
                   className={styles['date-input']}
+                  minDateTime={new Date()}
                 />
               )}
             </FormLayout.Row>
@@ -252,7 +258,7 @@ export const RecurrenceForm = ({
             <div className={styles['booking-date-limit-container']}>
               <TextInput
                 name="bookingLimitDateInterval"
-                label="Nombre de jours avant le début de l’évènement"
+                label="Date limite de réservation (en nombre de jours avant le début de l’évènement)"
                 isLabelHidden
                 type="number"
                 step="1"

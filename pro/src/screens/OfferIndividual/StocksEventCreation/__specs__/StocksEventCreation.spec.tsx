@@ -100,12 +100,12 @@ describe('StocksEventCreation', () => {
       />
     )
     expect(
-      screen.queryByRole('heading', { name: 'Ajouter une récurrence' })
+      screen.queryByRole('heading', { name: 'Ajouter une ou plusieurs dates' })
     ).not.toBeInTheDocument()
 
-    await userEvent.click(screen.getByText('Ajouter une récurrence'))
+    await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
     expect(
-      screen.getByRole('heading', { name: 'Ajouter une récurrence' })
+      screen.getByRole('heading', { name: 'Ajouter une ou plusieurs dates' })
     ).toBeInTheDocument()
   })
 })
@@ -154,7 +154,9 @@ describe('navigation and submit', () => {
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
-    expect(screen.getByText('Ajouter une récurrence')).toBeInTheDocument()
+    expect(
+      screen.getByText('Ajouter une ou plusieurs dates')
+    ).toBeInTheDocument()
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
   })
 
@@ -174,7 +176,10 @@ describe('navigation and submit', () => {
         "Une erreur est survenue lors de l'enregistrement de vos stocks."
       )
     ).toBeInTheDocument()
-    expect(screen.getByText('Ajouter une récurrence')).toBeInTheDocument()
+
+    expect(
+      screen.getByText('Ajouter une ou plusieurs dates')
+    ).toBeInTheDocument()
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
   })
 })
@@ -195,7 +200,7 @@ describe('deletion', () => {
       }),
     })
 
-    await userEvent.click(screen.getByText('Ajouter une récurrence'))
+    await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
 
     await userEvent.click(
       screen.getByLabelText('Date de l’évènement', { exact: true })
