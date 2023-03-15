@@ -560,7 +560,7 @@ def complete_profile(
     address: str,
     city: str,
     postal_code: str,
-    activity: str,
+    activity: users_models.ActivityEnum,
     first_name: str,
     last_name: str,
     school_type: users_models.SchoolTypeEnum | None = None,
@@ -570,7 +570,7 @@ def complete_profile(
         "city": city,
         "postalCode": postal_code,
         "departementCode": postal_code_utils.PostalCode(postal_code).get_departement_code(),
-        "activity": activity,
+        "activity": activity.value,
         "schoolType": school_type,
     }
 
@@ -587,7 +587,7 @@ def complete_profile(
         user,
         user.eligibility,
         fraud_models.ProfileCompletionContent(
-            activity=activity,
+            activity=activity.value,
             address=address,
             city=city,
             first_name=first_name,
