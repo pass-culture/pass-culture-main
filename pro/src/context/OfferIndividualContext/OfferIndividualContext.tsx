@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import { TOffererName } from 'core/Offerers/types'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
@@ -9,7 +10,7 @@ import {
 } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
-import { useHomePath, useNavigate } from 'hooks'
+import { useHomePath } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
