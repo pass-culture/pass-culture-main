@@ -3,7 +3,7 @@ from pcapi.tasks.decorator import task
 from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailRequest
 
 
-@task("withdrawal_details_changed_notification", "/mails/withdrawal_notif")
+@task("withdrawal_details_changed_notification", "/mails/withdrawal_notification")
 def send_withdrawal_detail_changed_emails(payload: WithdrawalChangedMailRequest) -> None:
     for booker in payload.bookers:
         transactional_mails.send_booking_withdrawal_updated(

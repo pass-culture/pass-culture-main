@@ -145,7 +145,7 @@ class Returns200Test:
         assert venue.withdrawalDetails == "Ceci est un texte de modalités de retrait"
 
         mocked_update_all_venue_offers_withdrawal_details_job.assert_called_once_with(
-            venue, "Ceci est un texte de modalités de retrait", send_email_notif=True
+            venue, "Ceci est un texte de modalités de retrait", send_email_notification=True
         )
 
         assert len(external_testing.sendinblue_requests) == 1
@@ -178,7 +178,7 @@ class Returns200Test:
         assert venue.withdrawalDetails == "Ceci est un texte de modalités de retrait"
 
         mocked_update_all_venue_offers_withdrawal_details_job.assert_called_once_with(
-            venue, "Ceci est un texte de modalités de retrait", send_email_notif=False
+            venue, "Ceci est un texte de modalités de retrait", send_email_notification=False
         )
 
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_accessibility_job.delay")

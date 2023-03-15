@@ -349,7 +349,7 @@ def _update_collective_offer(
     return updated_fields
 
 
-def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notif: bool = False) -> None:
+def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notification: bool = False) -> None:
     query = query.filter(models.Offer.validation == models.OfferValidationStatus.APPROVED)
     raw_results = query.with_entities(models.Offer.id, models.Offer.venueId).all()
     offer_ids, venue_ids = [], []
@@ -385,7 +385,11 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notif:
         withdrawal_updated = {"withdrawalDetails", "withdrawalType", "withdrawalDelay"}.intersection(
             update_fields.keys()
         )
-        if send_email_notif and withdrawal_updated and FeatureToggle.WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL.is_active():
+        if (
+            send_email_notification
+            and withdrawal_updated
+            and FeatureToggle.WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL.is_active()
+        ):
             for offer in query_to_update.all():
                 transactional_mails.send_email_for_each_ongoing_booking(offer)
 

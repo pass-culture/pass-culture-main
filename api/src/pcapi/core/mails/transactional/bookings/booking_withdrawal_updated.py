@@ -1,7 +1,7 @@
-from sqlalchemy.orm import joinedload
+import sqlalchemy as sqla
 
 from pcapi.core import mails
-from pcapi.core.bookings.models import Booking
+import pcapi.core.bookings.models as bookings_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers.models import Venue
@@ -17,20 +17,24 @@ from pcapi.utils.date import format_time_in_second_to_human_readable
 
 def send_email_for_each_ongoing_booking(offer: Offer) -> None:
     ongoing_bookings = (
-        Booking.query.join(Booking.stock, Stock.offer)
+        bookings_models.Booking.query.join(bookings_models.Booking.stock, Stock.offer)
         .filter(
             Offer.id == offer.id,
             Stock.isSoftDeleted.is_(False),
-            Booking.isCancelled.is_(False),  # type: ignore [attr-defined]
-            Booking.is_used_or_reimbursed.is_(False),  # type: ignore [attr-defined]
+            Stock.beginningDatetime.is_(None) | (Stock.beginningDatetime > sqla.func.now()),
+            bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
         )
         .options(
-            joinedload(Booking.user).load_only(User.firstName, User.email),
-            joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.venue).load_only(Venue.address),
-            joinedload(Booking.activationCode).load_only(ActivationCode.code),
+            sqla.orm.joinedload(bookings_models.Booking.user).load_only(User.firstName, User.email),
+            sqla.orm.joinedload(bookings_models.Booking.stock)
+            .joinedload(Stock.offer)
+            .joinedload(Offer.venue)
+            .load_only(Venue.address),
+            sqla.orm.joinedload(bookings_models.Booking.activationCode).load_only(ActivationCode.code),
         )
     )
 
+    venue_address = " ".join(filter(None, (offer.venue.address, offer.venue.postalCode, offer.venue.city)))
     mails_request = WithdrawalChangedMailRequest(
         offer_withdrawal_delay=(
             format_time_in_second_to_human_readable(offer.withdrawalDelay) if offer.withdrawalDelay else None
@@ -38,7 +42,7 @@ def send_email_for_each_ongoing_booking(offer: Offer) -> None:
         offer_withdrawal_details=offer.withdrawalDetails,
         offer_withdrawal_type=getattr(offer.withdrawalType, "value", None),
         offerer_name=offer.venue.managingOfferer.name,
-        venue_address=offer.venue.address,
+        venue_address=venue_address,
         bookers=[],
     )
     for booking in ongoing_bookings:
