@@ -32,7 +32,7 @@ describe('RecurrenceForm', () => {
     await userEvent.type(screen.getByLabelText('Nombre de places'), '10')
     await userEvent.type(screen.getByLabelText('Tarif'), '21')
     await userEvent.type(
-      screen.getByLabelText('Date limite de réservation'),
+      screen.getByLabelText('Date limite de réservation', { exact: false }),
       '2'
     )
 
