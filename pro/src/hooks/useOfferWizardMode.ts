@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router'
+import { useLocation } from 'react-router-dom-v5-compat'
 
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 

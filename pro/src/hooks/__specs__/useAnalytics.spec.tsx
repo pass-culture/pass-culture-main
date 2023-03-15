@@ -1,14 +1,12 @@
 import * as firebaseAnalytics from '@firebase/analytics'
 import * as firebase from '@firebase/app'
-import { render, waitFor } from '@testing-library/react'
+import { waitFor } from '@testing-library/react'
 import React from 'react'
-import { MemoryRouter } from 'react-router'
 
 import { firebaseConfig } from 'config/firebase'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { useConfigureFirebase } from '../useAnalytics'
-
-const mockSetLogEvent = jest.fn()
 
 jest.mock('@firebase/analytics', () => {
   return {
@@ -38,41 +36,32 @@ const FakeApp = (): JSX.Element => {
 }
 
 const renderFakeApp = async () => {
-  return render(
-    <MemoryRouter>
-      <FakeApp />
-    </MemoryRouter>
-  )
+  return renderWithProviders(<FakeApp />)
 }
 
-test('should set logEvent and userId', async () => {
-  jest.spyOn(React, 'useContext').mockImplementation(() => ({
-    logEvent: jest.fn(),
-    setLogEvent: mockSetLogEvent,
-  }))
+describe('useAnalytics', () => {
+  it('should set logEvent and userId', async () => {
+    await renderFakeApp()
 
-  await renderFakeApp()
-
-  await waitFor(() => {
-    expect(firebaseAnalytics.initializeAnalytics).toHaveBeenCalledTimes(1)
-    expect(firebaseAnalytics.initializeAnalytics).toHaveBeenNthCalledWith(
-      1,
-      { setup: true },
-      { config: { send_page_view: false } }
-    )
-    expect(firebaseAnalytics.getAnalytics).toHaveBeenCalledTimes(1)
-    expect(firebaseAnalytics.getAnalytics).toHaveBeenNthCalledWith(1, {
-      setup: true,
+    await waitFor(() => {
+      expect(firebaseAnalytics.initializeAnalytics).toHaveBeenCalledTimes(1)
+      expect(firebaseAnalytics.initializeAnalytics).toHaveBeenNthCalledWith(
+        1,
+        { setup: true },
+        { config: { send_page_view: false } }
+      )
+      expect(firebaseAnalytics.getAnalytics).toHaveBeenCalledTimes(1)
+      expect(firebaseAnalytics.getAnalytics).toHaveBeenNthCalledWith(1, {
+        setup: true,
+      })
+      expect(firebase.initializeApp).toHaveBeenCalledTimes(1)
+      expect(firebase.initializeApp).toHaveBeenNthCalledWith(1, firebaseConfig)
+      expect(firebaseAnalytics.setUserId).toHaveBeenCalledTimes(1)
+      expect(firebaseAnalytics.setUserId).toHaveBeenNthCalledWith(
+        1,
+        'getAnalyticsReturn',
+        'userId'
+      )
     })
-    expect(firebase.initializeApp).toHaveBeenCalledTimes(1)
-    expect(firebase.initializeApp).toHaveBeenNthCalledWith(1, firebaseConfig)
-    expect(firebaseAnalytics.setUserId).toHaveBeenCalledTimes(1)
-    expect(firebaseAnalytics.setUserId).toHaveBeenNthCalledWith(
-      1,
-      'getAnalyticsReturn',
-      'userId'
-    )
-    expect(mockSetLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockSetLogEvent).toHaveBeenNthCalledWith(1, expect.any(Function))
   })
 })

@@ -1,12 +1,12 @@
 import { renderHook } from '@testing-library/react-hooks'
 import React from 'react'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter } from 'react-router-dom-v5-compat'
 
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 
 import useOfferWizardMode from '../useOfferWizardMode'
 
-const renderUseOfferWizardMode = ({ url }: { url: string }) => {
+const renderUseOfferWizardMode = (url: string) => {
   const wrapper = ({ children }: { children: any }) => (
     <MemoryRouter initialEntries={[url]}>{children}</MemoryRouter>
   )
@@ -18,21 +18,17 @@ const renderUseOfferWizardMode = ({ url }: { url: string }) => {
 
 describe('useOfferWizardMode', () => {
   it('should return mode "creation"', async () => {
-    const { result } = renderUseOfferWizardMode({
-      url: 'test/creation/test',
-    })
+    const { result } = renderUseOfferWizardMode('/test/creation/test')
     expect(result.current).toEqual(OFFER_WIZARD_MODE.CREATION)
   })
+
   it('should return mode "creation"', async () => {
-    const { result } = renderUseOfferWizardMode({
-      url: 'test/brouillon/test',
-    })
+    const { result } = renderUseOfferWizardMode('/test/brouillon/test')
     expect(result.current).toEqual(OFFER_WIZARD_MODE.DRAFT)
   })
+
   it('should return mode "creation"', async () => {
-    const { result } = renderUseOfferWizardMode({
-      url: 'test/test',
-    })
+    const { result } = renderUseOfferWizardMode('/test/test')
     expect(result.current).toEqual(OFFER_WIZARD_MODE.EDITION)
   })
 })

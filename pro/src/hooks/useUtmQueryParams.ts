@@ -1,6 +1,7 @@
-import { useLocation } from 'react-router'
+import { useLocation } from 'react-router-dom-v5-compat'
 
 import { parse } from 'utils/query-string'
+
 const useUtmQueryParams = () => {
   const location = useLocation()
   const parsedParams = parse(location.search)
@@ -16,4 +17,5 @@ const useUtmQueryParams = () => {
       }
     : {}
 }
+
 export default useUtmQueryParams
