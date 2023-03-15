@@ -44,7 +44,7 @@ def test_update_all_venue_offers_withdrawal_with_email_notif():
     withdrawal_details = "Ceci est un exemple de modalités de retrait d'un bien"
 
     with mock.patch("pcapi.core.mails.transactional.send_booking_withdrawal_updated") as mailer_mock:
-        update_all_venue_offers_withdrawal_details_job(venue, withdrawal_details, send_email_notif=True)
+        update_all_venue_offers_withdrawal_details_job(venue, withdrawal_details, send_email_notification=True)
 
     assert offer1.withdrawalDetails == withdrawal_details
     assert offer2.withdrawalDetails == withdrawal_details
