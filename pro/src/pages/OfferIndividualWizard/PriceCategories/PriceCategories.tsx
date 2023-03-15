@@ -1,10 +1,10 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
-import { useNavigate } from 'hooks'
 import {
   PriceCategories as PriceCategoriesScreen,
   Template as WizardTemplate,

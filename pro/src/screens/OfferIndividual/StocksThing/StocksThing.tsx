@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
@@ -22,7 +23,7 @@ import {
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
-import { useNavigate, useOfferWizardMode } from 'hooks'
+import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
