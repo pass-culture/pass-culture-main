@@ -178,3 +178,64 @@ describe('navigation and submit', () => {
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
   })
 })
+
+describe('deletion', () => {
+  beforeEach(() => {
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'AA' })
+    jest
+      .spyOn(api, 'getOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+  })
+
+  it('should delete new stocks', async () => {
+    renderStockEventCreation({
+      offer: individualOfferFactory({
+        stocks: [],
+      }),
+    })
+
+    await userEvent.click(screen.getByText('Ajouter une récurrence'))
+
+    await userEvent.click(
+      screen.getByLabelText('Date de l’évènement', { exact: true })
+    )
+    await userEvent.click(screen.getByText(new Date().getDate()))
+    await userEvent.click(screen.getByLabelText('Horaire 1'))
+    await userEvent.click(screen.getByText('12:00'))
+    await userEvent.click(screen.getByText('Ajouter cette date'))
+
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer le stock' })[0]
+    )
+
+    // stock line is not here anymore
+    expect(screen.queryByText('15/10/2021')).not.toBeInTheDocument()
+    await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
+
+    expect(
+      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+    ).toBeInTheDocument()
+    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+    expect(api.deleteStock).toHaveBeenCalledTimes(0)
+  })
+
+  it('should delete already created stocks', async () => {
+    renderStockEventCreation({
+      offer: individualOfferFactory({
+        stocks: [individualStockFactory({ id: 'AA', priceCategoryId: 1 })],
+      }),
+    })
+
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer le stock' })[0]
+    )
+    await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
+
+    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+    expect(api.deleteStock).toHaveBeenCalledTimes(1)
+    expect(
+      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+    ).toBeInTheDocument()
+  })
+})

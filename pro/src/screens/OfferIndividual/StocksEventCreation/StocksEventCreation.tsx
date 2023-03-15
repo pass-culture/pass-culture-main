@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom-v5-compat'
 
+import { api } from 'apiClient/api'
 import DialogBox from 'components/DialogBox'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import StocksEventList from 'components/StocksEventList'
@@ -44,6 +45,7 @@ export const StocksEventCreation = ({
       throw 'Error: this stock is not a stockEvent'
     }
     return {
+      id: stock.id,
       beginningDatetime: stock.beginningDatetime,
       bookingLimitDatetime: stock.bookingLimitDatetime,
       priceCategoryId: stock.priceCategoryId,
@@ -74,14 +76,21 @@ export const StocksEventCreation = ({
       })
     )
   }
-
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     async () => {
+      const stocksToCreate = stocks.filter(s => s.id === undefined)
+      const stocksToDelete = offer.stocks.filter(
+        s => !stocks.find(stock => stock.id === s.id)
+      )
       const { isOk } = await upsertStocksEventAdapter({
         offerId: offer.id,
-        stocks: stocks,
+        stocks: stocksToCreate,
       })
+
+      if (stocksToDelete.length > 0) {
+        await Promise.all(stocksToDelete.map(s => api.deleteStock(s.id)))
+      }
 
       if (isOk) {
         notify.success(getSuccessMessage(mode))
@@ -124,6 +133,7 @@ export const StocksEventCreation = ({
         <StocksEventList
           className={styles['stock-section']}
           stocks={stocks}
+          setStocks={setStocks}
           priceCategories={offer.priceCategories}
           departmentCode="75"
         />
