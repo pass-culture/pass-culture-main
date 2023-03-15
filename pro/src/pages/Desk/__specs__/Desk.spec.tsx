@@ -1,7 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React, { useState } from 'react'
-import { MemoryRouter } from 'react-router'
 
 import { apiContremarque } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
@@ -15,6 +14,7 @@ import { ApiRequestOptions } from 'apiClient/v2/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v2/core/ApiResult'
 import { IDeskProps, MESSAGE_VARIANT } from 'screens/Desk'
 import { Button } from 'ui-kit'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Desk from '../Desk'
 
@@ -54,11 +54,7 @@ jest.mock('screens/Desk/Desk', () => ({
 const testToken = 'AAAAAA'
 
 const renderDeskRoute = async () => {
-  const rtlReturns = render(
-    <MemoryRouter>
-      <Desk />
-    </MemoryRouter>
-  )
+  const rtlReturns = renderWithProviders(<Desk />)
   await screen.findByText('Test Screen loaded')
   return {
     ...rtlReturns,
