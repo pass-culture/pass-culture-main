@@ -1,7 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React from 'react'
-import { useHistory } from 'react-router-dom'
-import { useLocation } from 'react-router-dom-v5-compat'
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import OfferEducationalActions from 'components/OfferEducationalActions'
@@ -59,7 +58,7 @@ const OfferEducational = ({
   reloadCollectiveOffer,
 }: IOfferEducationalProps): JSX.Element => {
   const notify = useNotification()
-  const history = useHistory()
+  const navigate = useNavigate()
   const location = useLocation()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useCollectiveOfferImageUpload(offer, isTemplate)
@@ -128,7 +127,7 @@ const OfferEducational = ({
     }
 
     if (mode === Mode.EDITION && offer !== undefined) {
-      return history.push(
+      return navigate(
         `/offre/${computeURLCollectiveOfferId(
           offer.id,
           offer.isTemplate
@@ -136,7 +135,7 @@ const OfferEducational = ({
       )
     }
 
-    history.push(
+    navigate(
       isTemplate
         ? `/offre/${payload.id}/collectif/vitrine/creation/recapitulatif`
         : `/offre/${payload.id}/collectif/stocks`

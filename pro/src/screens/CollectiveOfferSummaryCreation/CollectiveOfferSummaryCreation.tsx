@@ -1,5 +1,5 @@
 import React from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
@@ -29,7 +29,7 @@ const CollectiveOfferSummaryCreation = ({
   setOffer,
 }: CollectiveOfferSummaryCreationProps) => {
   const notify = useNotification()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const publishOffer = async () => {
     const confirmationUrl = offer.isTemplate
@@ -45,7 +45,7 @@ const CollectiveOfferSummaryCreation = ({
         return notify.error(response.message)
       }
       setOffer(response.payload)
-      return history.push(confirmationUrl)
+      return navigate(confirmationUrl)
     }
 
     const response = await publishCollectiveOfferAdapter(offer.id)
@@ -53,7 +53,7 @@ const CollectiveOfferSummaryCreation = ({
       return notify.error(response.message)
     }
     setOffer(response.payload)
-    return history.push(confirmationUrl)
+    return navigate(confirmationUrl)
   }
   const backRedirectionUrl = offer.isTemplate
     ? `/offre/collectif/vitrine/${offer.id}/creation`
