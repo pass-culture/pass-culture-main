@@ -21,6 +21,7 @@ const renderStocksEventList = ({ stocks }: IrenderStocksEventList) =>
         priceCategoryFactory({ label: 'Label', price: 12.38, id: 1 }),
       ]}
       departmentCode="78"
+      setStocks={jest.fn()}
     />
   )
 
