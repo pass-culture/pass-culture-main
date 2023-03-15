@@ -1,11 +1,10 @@
 from datetime import datetime
-from operator import itemgetter
-from unittest import mock
 
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
+import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
@@ -76,29 +75,35 @@ class Returns200Test:
             "withdrawalType": "no_ticket",
             "shouldSendMail": "true",
         }
-        with mock.patch("pcapi.core.mails.transactional.send_booking_withdrawal_updated") as mailer_mock:
-            # when
-            response = client.with_session_auth("user@example.com").patch(f"/offers/{humanize(offer.id)}", json=data)
+
+        # when
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{humanize(offer.id)}", json=data)
 
         # then
         assert response.status_code == 200
-        assert mailer_mock.call_count == 3
-        args_list = sorted([call.kwargs for call in mailer_mock.call_args_list], key=itemgetter("offer_token"))
+        assert len(mails_testing.outbox) == 3
+
+        outbox = sorted(mails_testing.outbox, key=lambda mail: mail.sent_data["params"]["OFFER_TOKEN"])
         bookings.sort(key=lambda b: b.activationCode.code if getattr(b, "activationCode") else b.token)
-        assert [args["recipients"] for args in args_list] == [[b.user.email] for b in bookings]
-        assert [args["user_first_name"] for args in args_list] == [b.user.firstName for b in bookings]
-        assert [args["offer_name"] for args in args_list] == [b.stock.offer.name for b in bookings]
-        assert [args["offer_token"] for args in args_list] == [
+        assert [mail.sent_data["To"] for mail in outbox] == [b.user.email for b in bookings]
+        assert [mail.sent_data["params"]["USER_FIRST_NAME"] for mail in outbox] == [b.user.firstName for b in bookings]
+        assert [mail.sent_data["params"]["OFFER_NAME"] for mail in outbox] == [b.stock.offer.name for b in bookings]
+        assert [mail.sent_data["params"]["OFFER_TOKEN"] for mail in outbox] == [
             b.activationCode.code if b.activationCode else b.token for b in bookings
         ]
-        assert [args["offer_withdrawal_delay"] for args in args_list] == [None] * 3
-        assert [args["offer_withdrawal_details"] for args in args_list] == ["conditions de retrait"] * 3
-        assert [args["offer_withdrawal_type"] for args in args_list] == ["no_ticket"] * 3
-        assert [args["offerer_name"] for args in args_list] == [offer.venue.managingOfferer.name] * 3
-        assert [args["venue_address"] for args in args_list] == [offer.venue.address] * 3
+        assert [mail.sent_data["params"]["OFFER_WITHDRAWAL_DELAY"] for mail in outbox] == [None] * 3
+        assert [mail.sent_data["params"]["OFFER_WITHDRAWAL_DETAILS"] for mail in outbox] == [
+            "conditions de retrait"
+        ] * 3
+        assert [mail.sent_data["params"]["OFFER_WITHDRAWAL_TYPE"] for mail in outbox] == ["no_ticket"] * 3
+        assert [mail.sent_data["params"]["OFFERER_NAME"] for mail in outbox] == [offer.venue.managingOfferer.name] * 3
+        assert [mail.sent_data["params"]["VENUE_ADDRESS"] for mail in outbox] == [
+            f"{offer.venue.address} {offer.venue.postalCode} {offer.venue.city}"
+        ] * 3
 
     @override_features(WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL=True)
     def test_withdrawal_update_does_not_send_email_if_not_specified_so(self, client):
+        # given
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         stock = offers_factories.StockFactory(offer=offer)
@@ -109,11 +114,13 @@ class Returns200Test:
             "withdrawalType": "no_ticket",
             "shouldSendMail": "false",
         }
-        with mock.patch("pcapi.core.mails.transactional.send_booking_withdrawal_updated") as mailer_mock:
-            response = client.with_session_auth("user@example.com").patch(f"/offers/{humanize(offer.id)}", json=data)
 
+        # when
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{humanize(offer.id)}", json=data)
+
+        # then
         assert response.status_code == 200
-        assert not mailer_mock.called
+        assert len(mails_testing.outbox) == 0
 
 
 class Returns400Test:

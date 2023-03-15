@@ -141,7 +141,7 @@ def edit_venue(venue_id: str, body: venues_serialize.EditVenueBodyModel) -> venu
 
     if have_withdrawal_details_changes and body.isWithdrawalAppliedOnAllOffers:
         update_all_venue_offers_withdrawal_details_job.delay(
-            venue, body.withdrawalDetails, send_email_notif=body.shouldSendMail
+            venue, body.withdrawalDetails, send_email_notification=body.shouldSendMail
         )
 
     if body.bookingEmail and body.isEmailAppliedOnAllOffers:
