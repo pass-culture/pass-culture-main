@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import React, { MouseEventHandler } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom-v5-compat'
 
 import { ReactComponent as IcoArrowRight } from 'icons/ico-mini-arrow-right.svg'
 import Tooltip from 'ui-kit/Tooltip'
@@ -80,6 +80,13 @@ const ButtonLink = ({
 
   const { to, isExternal, ...linkProps } = link
 
+  // react-router v6 accepts relative links
+  // That is, if you use "offers" as link, it will be relative to the current path
+  // If you want a link to be absolute you must start it with a slash
+  // As this behavior can be quite confusing, we decided to enforce absolute links
+  // for internal links so that developers can't make mistakes/forget to add the slash
+  const absoluteUrl = isExternal || to.startsWith('/') ? to : `/${to}`
+
   const callback: MouseEventHandler<HTMLAnchorElement> = e =>
     isDisabled ? e.preventDefault() : onClick?.(e)
 
@@ -95,7 +102,7 @@ const ButtonLink = ({
   body = isExternal ? (
     <a
       className={classNames}
-      href={to}
+      href={absoluteUrl}
       onClick={callback}
       {...disabled}
       {...linkProps}
@@ -107,7 +114,7 @@ const ButtonLink = ({
     /* istanbul ignore next: graphic variation */ <Link
       className={classNames}
       onClick={callback}
-      to={to}
+      to={absoluteUrl}
       {...disabled}
       {...tooltipProps}
       aria-label={linkProps['aria-label']}
