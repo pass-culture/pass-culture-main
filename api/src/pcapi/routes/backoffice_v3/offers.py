@@ -1,3 +1,4 @@
+import datetime
 import re
 
 from flask import flash
@@ -8,16 +9,24 @@ from flask import url_for
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
+from pcapi.core import search
+from pcapi.core.bookings import api as bookings_api
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import models as criteria_models
+from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.domain import admin_emails
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
+from pcapi.utils import date as date_utils
 from pcapi.utils.clean_accents import clean_accents
+from pcapi.workers import push_notification_job
 
 from . import autocomplete
 from . import utils
+from .forms import empty as empty_forms
 from .forms import offer as offer_forms
 
 
@@ -36,8 +45,10 @@ def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer
             offers_models.Offer.name,
             offers_models.Offer.subcategoryId,
             offers_models.Offer.rankingWeight,
+            offers_models.Offer.dateCreated,
             offers_models.Offer.validation,
             offers_models.Offer.lastValidationDate,
+            offers_models.Offer.lastValidationType,
             offers_models.Offer.isActive,
         ),
         sa.orm.joinedload(offers_models.Offer.stocks).load_only(
@@ -55,9 +66,16 @@ def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer
         )
         # needed to check if stock is bookable and compute initial/remaining stock:
         .joinedload(offerers_models.Venue.managingOfferer).load_only(
-            offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
+            offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
         ),
     )
+    if form.from_date.data:
+        from_datetime = date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time())
+        base_query = base_query.filter(offers_models.Offer.dateCreated >= from_datetime)
+
+    if form.to_date.data:
+        to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time())
+        base_query = base_query.filter(offers_models.Offer.dateCreated <= to_datetime)
 
     if form.criteria.data:
         base_query = base_query.outerjoin(offers_models.Offer.criteria).filter(
@@ -80,6 +98,14 @@ def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer
 
     if form.venue.data:
         base_query = base_query.filter(offers_models.Offer.venueId.in_(form.venue.data))
+
+    if form.offerer.data:
+        base_query = base_query.join(offers_models.Offer.venue).filter(
+            offerers_models.Venue.managingOffererId.in_(form.offerer.data)
+        )
+
+    if form.status.data:
+        base_query = base_query.filter(offers_models.Offer.validation.in_(form.status.data))
 
     if form.q.data:
         search_query = form.q.data
@@ -229,6 +255,103 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     return redirect(request.environ.get("HTTP_REFERER", url_for("backoffice_v3_web.offer.list_offers")), 303)
 
 
+@list_offers_blueprint.route("/<int:offer_id>/validate", methods=["GET"])
+def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
+    offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
+
+    if not offer:
+        raise NotFound()
+
+    form = empty_forms.EmptyForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.offer.validate_offer", offer_id=offer.id),
+        div_id=f"validate-offer-modal-{offer.id}",
+        title=f"Validation de l'offre {offer.name}",
+        button_text="Valider l'offre",
+    )
+
+
+@list_offers_blueprint.route("/<int:offer_id>/validate", methods=["POST"])
+def validate_offer(offer_id: int) -> utils.BackofficeResponse:
+    offer = offers_models.Offer.query.get_or_404(offer_id)
+
+    new_validation = offers_models.OfferValidationStatus.APPROVED
+    if offer.validation != new_validation:
+        offer.validation = new_validation
+        offer.lastValidationDate = datetime.datetime.utcnow()
+        offer.lastValidationType = OfferValidationType.MANUAL
+        offer.isActive = True
+
+        repository.save(offer)
+
+        recipients = (
+            [offer.venue.bookingEmail]
+            if offer.venue.bookingEmail
+            else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
+        )
+        transactional_mails.send_offer_validation_status_update_email(offer, new_validation, recipients)
+        admin_emails.send_offer_validation_notification_to_administration(new_validation, offer)
+        flash("L'offre a été validée avec succès", "success")
+        search.async_index_offer_ids([offer.id])
+
+    return redirect(request.environ.get("HTTP_REFERER", url_for("backoffice_v3_web.offer.list_offers")), 303)
+
+
+@list_offers_blueprint.route("/<int:offer_id>/reject", methods=["GET"])
+def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
+    offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
+
+    if not offer:
+        raise NotFound()
+
+    form = empty_forms.EmptyForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.offer.reject_offer", offer_id=offer.id),
+        div_id=f"reject-offer-modal-{offer.id}",
+        title=f"Rejet de l'offre {offer.name}",
+        button_text="Rejeter l'offre",
+    )
+
+
+@list_offers_blueprint.route("/<int:offer_id>/reject", methods=["POST"])
+def reject_offer(offer_id: int) -> utils.BackofficeResponse:
+    offer = offers_models.Offer.query.get_or_404(offer_id)
+
+    new_validation = offers_models.OfferValidationStatus.REJECTED
+    if offer.validation != new_validation:
+        offer.validation = new_validation
+        offer.lastValidationDate = datetime.datetime.utcnow()
+        offer.lastValidationType = OfferValidationType.MANUAL
+        offer.isActive = False
+        # cancel_bookings_from_rejected_offer can raise handled exceptions that drop the
+        # modifications of the offer; we save them here first
+        repository.save(offer)
+
+        cancelled_bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
+        if cancelled_bookings:
+            push_notification_job.send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
+
+        repository.save(offer)
+
+        recipients = (
+            [offer.venue.bookingEmail]
+            if offer.venue.bookingEmail
+            else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
+        )
+        transactional_mails.send_offer_validation_status_update_email(offer, new_validation, recipients)
+        admin_emails.send_offer_validation_notification_to_administration(new_validation, offer)
+        flash("L'offre a été rejetée avec succès", "success")
+        search.async_index_offer_ids([offer.id])
+
+    return redirect(request.environ.get("HTTP_REFERER", url_for("backoffice_v3_web.offer.list_offers")), 303)
+
+
 @list_offers_blueprint.route("", methods=["GET"])
 def list_offers() -> utils.BackofficeResponse:
     form = offer_forms.GetOffersListForm(request.args)
@@ -249,6 +372,7 @@ def list_offers() -> utils.BackofficeResponse:
         offers = offers[: form.limit.data]
 
     autocomplete.prefill_criteria_choices(form.criteria)
+    autocomplete.prefill_offerers_choices(form.offerer)
     autocomplete.prefill_venues_choices(form.venue)
 
     return render_template(

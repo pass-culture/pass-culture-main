@@ -8,9 +8,11 @@ from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice_v3.forms import offer as offer_forms
 
 from .helpers import html_parser
@@ -47,6 +49,8 @@ def offers_fixture(criteria) -> tuple:
     offer_with_two_criteria = offers_factories.OfferFactory(
         name="A Very Specific Name That Is Longer",
         criteria=[criteria[0], criteria[1]],
+        dateCreated=datetime.date.today() - datetime.timedelta(days=2),
+        validation=offers_models.OfferValidationStatus.REJECTED,
         venue__postalCode="74000",
         venue__departementCode="74",
         product__subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -105,8 +109,10 @@ class ListOffersTest:
         assert rows[0]["Tag"] == offers[0].criteria[0].name
         assert rows[0]["Pondération"] == ""
         assert rows[0]["État"] == "Validée"
+        assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
         assert rows[0]["Dernière date de validation"] == ""
         assert rows[0]["Dép."] == offers[0].venue.departementCode
+        assert rows[0]["Structure"] == offers[0].venue.managingOfferer.name
         assert rows[0]["Lieu"] == offers[0].venue.name
 
     @pytest.mark.parametrize(
@@ -156,8 +162,10 @@ class ListOffersTest:
         assert rows[0]["Tag"] == ""
         assert rows[0]["Pondération"] == ""
         assert rows[0]["État"] == "Validée"
+        assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
         assert rows[0]["Dernière date de validation"] == "22/02/2022"
         assert rows[0]["Dép."] == offers[1].venue.departementCode
+        assert rows[0]["Structure"] == offers[1].venue.managingOfferer.name
         assert rows[0]["Lieu"] == offers[1].venue.name
 
     @pytest.mark.parametrize(
@@ -218,6 +226,22 @@ class ListOffersTest:
         assert response.status_code == 400
         assert "La recherche ne correspond pas au format d'un visa" in html_parser.extract_warnings(response.data)
 
+    def test_list_offers_by_date(self, authenticated_client, offers):
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    from_date=(datetime.date.today() - datetime.timedelta(days=3)).isoformat(),
+                    to_date=(datetime.date.today() - datetime.timedelta(days=1)).isoformat(),
+                )
+            )
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+
     def test_list_offers_by_criteria(self, authenticated_client, criteria, offers):
         # when
         criterion_id = criteria[0].id
@@ -262,6 +286,29 @@ class ListOffersTest:
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[1].id}
 
+    def test_list_offers_by_offerer(self, authenticated_client, offers):
+        # when
+        offerer_id = offers[1].venue.managingOffererId
+        with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected offerer in the form
+            response = authenticated_client.get(url_for(self.endpoint, offerer=[offerer_id]))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+
+    def test_list_offers_by_status(self, authenticated_client, offers):
+        # when
+        status = offers[2].validation
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, status=[status.value]))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+        assert rows[0]["État"] == "Rejetée"
+
     def test_list_offers_by_all_filters(self, authenticated_client, criteria, offers):
         # when
         criterion_id = criteria[1].id
@@ -302,7 +349,7 @@ class EditOffersTest:
         choosenRankingWeight = 22
         base_form = {"criteria": [criteria[0].id, criteria[1].id], "rankingWeight": choosenRankingWeight}
 
-        response = self._update_offerer(authenticated_client, offer_to_edit, base_form)
+        response = self._update_offer(authenticated_client, offer_to_edit, base_form)
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_v3_web.offer.list_offers", _external=True)
@@ -321,7 +368,7 @@ class EditOffersTest:
 
         # New Update without rankingWeight
         base_form = {"criteria": [criteria[2].id, criteria[1].id], "rankingWeight": ""}
-        response = self._update_offerer(authenticated_client, offer_to_edit, base_form)
+        response = self._update_offer(authenticated_client, offer_to_edit, base_form)
         assert response.status_code == 303
 
         offer_list_url = url_for("backoffice_v3_web.offer.list_offers", q=offer_to_edit.id, _external=True)
@@ -336,7 +383,7 @@ class EditOffersTest:
         assert criteria[0].name not in row[0]["Tag"]
         assert criteria[3].name not in row[0]["Tag"]
 
-    def _update_offerer(self, authenticated_client, offer, form):
+    def _update_offer(self, authenticated_client, offer, form):
         edit_url = url_for("backoffice_v3_web.offer.list_offers")
         authenticated_client.get(edit_url)
 
@@ -397,3 +444,115 @@ class BatchEditOfferTest:
         form["csrf_token"] = g.get("csrf_token", "")
 
         return authenticated_client.post(url, form=form)
+
+
+class ValidateOfferTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.offer.validate_offer"
+        endpoint_kwargs = {"offer_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+
+    def test_validate_offer(self, legit_user, authenticated_client):
+        offer_to_validate = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.REJECTED)
+        base_form = {}
+
+        response = self._validate_offer(authenticated_client, offer_to_validate, base_form)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_v3_web.offer.list_offers", _external=True)
+        assert response.location == expected_url
+
+        offer_list_url = url_for("backoffice_v3_web.offer.list_offers", q=offer_to_validate.id, _external=True)
+        response = authenticated_client.get(offer_list_url)
+
+        assert response.status_code == 200
+        row = html_parser.extract_table_rows(response.data)
+        assert len(row) == 1
+        assert row[0]["État"] == "Validée"
+        assert row[0]["Dernière date de validation"] == (datetime.date.today()).strftime("%d/%m/%Y")
+
+        assert offer_to_validate.isActive is True
+        assert offer_to_validate.lastValidationType == OfferValidationType.MANUAL
+
+    def _validate_offer(self, authenticated_client, offer, form):
+        edit_url = url_for("backoffice_v3_web.offer.list_offers")
+        authenticated_client.get(edit_url)
+
+        url = url_for("backoffice_v3_web.offer.validate_offer", offer_id=offer.id)
+        form["csrf_token"] = g.get("csrf_token", "")
+
+        return authenticated_client.post(url, form=form)
+
+
+class ValidateOfferFormTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.offer.get_validate_offer_form"
+        endpoint_kwargs = {"offer_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+
+    def test_get_validate_form_test(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        form_url = url_for("backoffice_v3_web.offer.get_validate_offer_form", offer_id=offer.id, _external=True)
+
+        with assert_num_queries(3):  # session + user + tested_query
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+
+class RejectOfferTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.offer.reject_offer"
+        endpoint_kwargs = {"offer_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+
+    def test_reject_offer(self, legit_user, authenticated_client):
+        offer_to_reject = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.APPROVED)
+        base_form = {}
+
+        response = self._reject_offer(authenticated_client, offer_to_reject, base_form)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_v3_web.offer.list_offers", _external=True)
+        assert response.location == expected_url
+
+        offer_list_url = url_for("backoffice_v3_web.offer.list_offers", q=offer_to_reject.id, _external=True)
+        response = authenticated_client.get(offer_list_url)
+
+        assert response.status_code == 200
+        row = html_parser.extract_table_rows(response.data)
+        assert len(row) == 1
+        assert row[0]["État"] == "Rejetée"
+        assert row[0]["Dernière date de validation"] == (datetime.date.today()).strftime("%d/%m/%Y")
+
+        assert offer_to_reject.isActive is False
+        assert offer_to_reject.lastValidationType == OfferValidationType.MANUAL
+
+    def _reject_offer(self, authenticated_client, offer, form):
+        edit_url = url_for("backoffice_v3_web.offer.list_offers")
+        authenticated_client.get(edit_url)
+
+        url = url_for("backoffice_v3_web.offer.reject_offer", offer_id=offer.id)
+        form["csrf_token"] = g.get("csrf_token", "")
+
+        return authenticated_client.post(url, form=form)
+
+
+class RejectOfferFormTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.offer.get_reject_offer_form"
+        endpoint_kwargs = {"offer_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+
+    def test_get_edit_form_test(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        form_url = url_for("backoffice_v3_web.offer.get_reject_offer_form", offer_id=offer.id, _external=True)
+
+        with assert_num_queries(3):  # session + user + tested_query
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
