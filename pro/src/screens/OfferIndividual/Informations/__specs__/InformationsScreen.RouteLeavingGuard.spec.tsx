@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { generatePath, Route } from 'react-router'
+import { generatePath, Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import {
@@ -78,37 +78,39 @@ const renderInformationsScreen = (
 
   return renderWithProviders(
     <>
-      <Route
-        path={Object.values(OFFER_WIZARD_MODE).map(mode =>
-          getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode,
-          })
-        )}
-      >
-        <OfferIndividualContext.Provider value={contextValue}>
-          <InformationsScreen {...props} />
-          <ButtonLink link={{ to: '/outside', isExternal: false }}>
-            Go outside !
-          </ButtonLink>
-          <ButtonLink link={{ to: '/stocks', isExternal: false }}>
-            Go to stocks !
-          </ButtonLink>
-        </OfferIndividualContext.Provider>
-      </Route>
-      <Route
-        path={getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        })}
-      >
-        <div>There is the stock route content</div>
-      </Route>
-      <Route path="/outside">
-        <>
-          <div>This is outside offer creation</div>
-        </>
-      </Route>
+      <Routes>
+        {Object.values(OFFER_WIZARD_MODE).map(mode => (
+          <Route
+            key={mode}
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+              mode,
+            })}
+            element={
+              <OfferIndividualContext.Provider value={contextValue}>
+                <InformationsScreen {...props} />
+                <ButtonLink link={{ to: '/outside', isExternal: false }}>
+                  Go outside !
+                </ButtonLink>
+                <ButtonLink link={{ to: '/stocks', isExternal: false }}>
+                  Go to stocks !
+                </ButtonLink>
+              </OfferIndividualContext.Provider>
+            }
+          />
+        ))}
+        <Route
+          path={getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })}
+          element={<div>There is the stock route content</div>}
+        />
+        <Route
+          path="/outside"
+          element={<div>This is outside offer creation</div>}
+        />
+      </Routes>
       <Notification />
     </>,
     { storeOverrides, initialRouterEntries: [url] }
