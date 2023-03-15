@@ -52,7 +52,7 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
 
 
 @users_blueprint.route("/unsuspend", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.UNSUSPEND_USER)
+# @utils.permission_required(perm_models.Permissions.UNSUSPEND_USER)
 def unsuspend_user(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
 

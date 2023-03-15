@@ -36,10 +36,6 @@
                             disabled
                             type="button"
                             class="btn btn-outline-primary"
-                            data-url="{{ url_for("backoffice_v3_web.validation.batch_validate_user_offerer") }}"
-                            data-title="Valider le(s) rattachement(s)"
-                            data-batch-confirm-id="validating-modal"
-                            data-modal-button-text="Valider"
                             data-user-confirmation-modal="false"
                         >
                             Valider
@@ -48,11 +44,8 @@
                             disabled
                             type="button"
                             class="btn btn-outline-primary"
-                            data-url="{{ url_for("backoffice_v3_web.validation.batch_set_user_offerer_pending") }}"
-                            data-title="Mettre en attente le(s) rattachement(s)"
-                            data-batch-confirm-id="pending-modal"
-                            data-modal-button-text="Mettre en attente"
                             data-use-confirmation-modal="true"
+                            data-modal-selector="#batch-pending-modal"
                         >
                             Mettre en attente
                         </button>
@@ -60,11 +53,8 @@
                             disabled
                             type="button"
                             class="btn btn-outline-primary"
-                            data-url="{{ url_for("backoffice_v3_web.validation.batch_reject_user_offerer") }}"
-                            data-title="Rejeter le(s) rattachement(s)"
-                            data-batch-confirm-id="rejecting-modal"
-                            data-modal-button-text="Rejeter"
                             data-use-confirmation-modal="true"
+                            data-modal-selector="#batch-reject-modal"
                         >
                             Rejeter
                         </button>
@@ -175,6 +165,8 @@
                         url_for("backoffice_v3_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer.id),
                         "pending-modal-" + user_offerer.id|string) }}
                 {% endfor %}
+                {{ build_lazy_modal(url_for("backoffice_v3_web.validation.get_batch_reject_user_offerer_form"), "batch-reject-modal", "true") }}
+                {{ build_lazy_modal(url_for("backoffice_v3_web.validation.get_batch_user_offerer_pending_form"), "batch-pending-modal", "true") }}
             {% else %}
                 Aucun rattachement ne correspond à la requête
             {% endif %}

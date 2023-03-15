@@ -142,9 +142,25 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     )
 
 
+@list_offers_blueprint.route("/batch/edit", methods=["GET"])
+def get_batch_edit_offer_form() -> utils.BackofficeResponse:
+    form = offer_forms.BatchEditOfferForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.offer.batch_edit_offer"),
+        div_id=f"batch-edit-offer-modal",
+        title=f"Édition des offres",
+        button_text="Enregistrer les modifications",
+    )
+
+
 @list_offers_blueprint.route("/batch-edit", methods=["POST"])
 def batch_edit_offer() -> utils.BackofficeResponse:
     form = offer_forms.BatchEditOfferForm()
+
+    print(form.criteria.data)
     try:
         offer_ids = [int(id) for id in form.object_ids.data.split(",")]
     except ValueError:
@@ -155,8 +171,10 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 
     for offer in offers:
         if offer.criteria:
-            existing_criteria = offer.criteria
-            new_criteria_list = existing_criteria.extend(criteria)  # Add not already there criteria
+            new_criteria_list = offer.criteria
+            new_criteria_list.extend(
+                criterion for criterion in criteria if criterion not in new_criteria_list
+            )  # Add not already there criteria
         else:
             new_criteria_list = criteria
 

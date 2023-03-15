@@ -39,7 +39,7 @@
     <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-select-multiple-field.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-override-custom-textarea-enter.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-table-multi-select.js') }}"></script>
-    <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-batch-confirm.js') }}"></script>
+    <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-batch-action-form.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-postal-address-autocomplete.js') }}"></script>
 
     <!-- Our app -->
@@ -47,7 +47,6 @@
 
     <script>
       const app = new PcBackofficeApp({
-        csrfToken: '{{ csrf_token }}',
         addOns: [
           BsTooltips,
           PcFormsCheckValidity,
@@ -55,7 +54,7 @@
           PcSelectMultipleField,
           PcOverrideCustomTextareaEnter,
           PcTableMultiSelect,
-          PcBatchConfirm,
+          PcBatchActionForm,
           PcPostalAddressAutocomplete,
         ]
       })

@@ -9,64 +9,63 @@
     *   [appState][5]
     *   [bindEvents][6]
         *   [Examples][7]
-    *   [csrfToken][8]
-    *   [initialize][9]
-        *   [Examples][10]
-    *   [unbindEvents][11]
-        *   [Examples][12]
-    *   [LOCALSTORAGE\_KEY][13]
-*   [Core features][14]
-*   [PcUtils][15]
-    *   [addLoadEvent][16]
-        *   [Parameters][17]
-    *   [debounce][18]
-        *   [Parameters][19]
-*   [KeyboardKeyCode][20]
-    *   [Examples][21]
-*   [NonConstructableUtils][22]
-    *   [Examples][23]
-*   [PcEventHandler][24]
-    *   [Examples][25]
-    *   [off][26]
-        *   [Parameters][27]
-        *   [Examples][28]
-    *   [on][29]
-        *   [Parameters][30]
-        *   [Examples][31]
-    *   [one][32]
-        *   [Parameters][33]
-        *   [Examples][34]
-    *   [trigger][35]
-        *   [Parameters][36]
-        *   [Examples][37]
-*   [PcAddOn][38]
-    *   [Parameters][39]
-    *   [Examples][40]
-    *   [\_preventDefault][41]
-        *   [Parameters][42]
-    *   [bindEvents][43]
-        *   [Examples][44]
-    *   [initialize][45]
-    *   [saveState][46]
-        *   [Parameters][47]
-        *   [Examples][48]
-    *   [unbindEvents][49]
-        *   [Examples][50]
-*   [Add Ons features][51]
-*   [BsTooltips][52]
-*   [PcBatchConfirm][53]
-    *   [Examples][54]
-*   [PcFormsCheckValidity][55]
-*   [PcOverrideCustomTextareaEnter][56]
-    *   [Examples][57]
-*   [PcPostalAddressAutocomplete][58]
-    *   [Examples][59]
-*   [PcSelectMultipleField][60]
-    *   [Examples][61]
-*   [PcTableMultiSelect][62]
-    *   [Examples][63]
-*   [PcValidationFilters][64]
-    *   [Examples][65]
+    *   [initialize][8]
+        *   [Examples][9]
+    *   [unbindEvents][10]
+        *   [Examples][11]
+    *   [LOCALSTORAGE\_KEY][12]
+*   [Core features][13]
+*   [PcUtils][14]
+    *   [addLoadEvent][15]
+        *   [Parameters][16]
+    *   [debounce][17]
+        *   [Parameters][18]
+*   [KeyboardKeyCode][19]
+    *   [Examples][20]
+*   [NonConstructableUtils][21]
+    *   [Examples][22]
+*   [PcEventHandler][23]
+    *   [Examples][24]
+    *   [off][25]
+        *   [Parameters][26]
+        *   [Examples][27]
+    *   [on][28]
+        *   [Parameters][29]
+        *   [Examples][30]
+    *   [one][31]
+        *   [Parameters][32]
+        *   [Examples][33]
+    *   [trigger][34]
+        *   [Parameters][35]
+        *   [Examples][36]
+*   [PcAddOn][37]
+    *   [Parameters][38]
+    *   [Examples][39]
+    *   [\_preventDefault][40]
+        *   [Parameters][41]
+    *   [bindEvents][42]
+        *   [Examples][43]
+    *   [initialize][44]
+    *   [saveState][45]
+        *   [Parameters][46]
+        *   [Examples][47]
+    *   [unbindEvents][48]
+        *   [Examples][49]
+*   [Add Ons features][50]
+*   [BsTooltips][51]
+*   [PcBatchActionForm][52]
+    *   [Examples][53]
+*   [PcFormsCheckValidity][54]
+*   [PcOverrideCustomTextareaEnter][55]
+    *   [Examples][56]
+*   [PcPostalAddressAutocomplete][57]
+    *   [Examples][58]
+*   [PcSelectMultipleField][59]
+    *   [Examples][60]
+*   [PcTableMultiSelect][61]
+    *   [Examples][62]
+*   [PcValidationFilters][63]
+    *   [Examples][64]
 
 ## PcBackofficeApp
 
@@ -77,10 +76,9 @@ See below for how to regenerate the documentation or initialize the application.
 
 ### Parameters
 
-*   `config` **{addOns: [Array][66]<[PcAddOn][38]>, csrfToken: [string][67]}** the application configuration.
+*   `config` **{addOns: [Array][65]<[PcAddOn][37]>}** the application configuration.
 
     *   `config.addOns` &#x20;
-    *   `config.csrfToken` &#x20;
 
 ### Examples
 
@@ -126,11 +124,6 @@ app.bindEvents()
 // To manually bind a specific addon
 app.addons.bsTooltips.unbindEvents()
 ```
-
-### csrfToken
-
-To pass csrf security when submitting a form, the backend provides a string which holds `<input />` with the csrf token.
-We store the string in `app.csrfToken` in case you need it to generate a form with JavaScript.
 
 ### initialize
 
@@ -187,7 +180,7 @@ Push a callback function to window.onload
 
 #### Parameters
 
-*   `callback` **[function][68]** the function to be called on `window.onload`
+*   `callback` **[function][66]** the function to be called on `window.onload`
 
 ### debounce
 
@@ -195,10 +188,10 @@ Debounce a function (prevents function to be called until a certain delay. Can b
 
 #### Parameters
 
-*   `callback` **[function][68]** the function to debounce
-*   `ms` **[number][69]** the debounce delay in milliseconds
+*   `callback` **[function][66]** the function to debounce
+*   `ms` **[number][67]** the debounce delay in milliseconds
 
-Returns **[function][68]** the debounced function
+Returns **[function][66]** the debounced function
 
 ## KeyboardKeyCode
 
@@ -242,7 +235,7 @@ This singleton utility class can be used to bind/unbind event in the style of `j
 
 It is heavily inspired from Bootstrap (v5.3.0-alpha1): `dom/event-handler.js`
 
-Original source: [https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js][70]
+Original source: [https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js][68]
 
 As the original source, this addon is licensed as MIT.
 
@@ -277,14 +270,14 @@ class PcLoggingOnImage extend PcAddOn {
 
 ### off
 
-Read more: [https://api.jquery.com/off/#off-events-selector-data][71]
+Read more: [https://api.jquery.com/off/#off-events-selector-data][69]
 
 #### Parameters
 
-*   `element` **[element][72]** the parent element to unbind from
-*   `originalTypeEvent` **[string][67]** the event name to unbind
-*   `handler` **[string][67]** the selector for element bind apply
-*   `delegationFunction` **[function][68]** the event method to unbind
+*   `element` **[element][70]** the parent element to unbind from
+*   `originalTypeEvent` **[string][71]** the event name to unbind
+*   `handler` **[string][71]** the selector for element bind apply
+*   `delegationFunction` **[function][66]** the event method to unbind
 
 #### Examples
 
@@ -294,14 +287,14 @@ EventHandler.off(document.body, 'click', '.nav-link', onNavLinkClick)
 
 ### on
 
-Read more: [https://api.jquery.com/on/#on-events-selector-data][73]
+Read more: [https://api.jquery.com/on/#on-events-selector-data][72]
 
 #### Parameters
 
-*   `element` **[element][72]** the parent element to apply bind
-*   `event` **[string][67]** the event name to bind
-*   `handler` **[string][67]** the selector for elements bind apply
-*   `delegationFunction` **[function][68]** the event method to bind
+*   `element` **[element][70]** the parent element to apply bind
+*   `event` **[string][71]** the event name to bind
+*   `handler` **[string][71]** the selector for elements bind apply
+*   `delegationFunction` **[function][66]** the event method to bind
 
 #### Examples
 
@@ -311,14 +304,14 @@ EventHandler.on(document.body, 'click', '.nav-link', onNavLinkClick)
 
 ### one
 
-Read more: [https://api.jquery.com/one/#one-events-selector-data][74]
+Read more: [https://api.jquery.com/one/#one-events-selector-data][73]
 
 #### Parameters
 
-*   `element` **[element][72]** the parent element to apply bind
-*   `event` **[string][67]** the event name to bind
-*   `handler` **[string][67]** the selector for element bind apply
-*   `delegationFunction` **[function][68]** the event method to bind
+*   `element` **[element][70]** the parent element to apply bind
+*   `event` **[string][71]** the event name to bind
+*   `handler` **[string][71]** the selector for element bind apply
+*   `delegationFunction` **[function][66]** the event method to bind
 
 #### Examples
 
@@ -328,12 +321,12 @@ EventHandler.one(document.body, 'click', '.nav-link#something', onNavLinkClick)
 
 ### trigger
 
-Read more: [https://api.jquery.com/trigger/#trigger-events-selector-data][75]
+Read more: [https://api.jquery.com/trigger/#trigger-events-selector-data][74]
 
 #### Parameters
 
-*   `element` **[element][72]** DOM element to trigger event on
-*   `event` **[string][67]** The event to trigger
+*   `element` **[element][70]** DOM element to trigger event on
+*   `event` **[string][71]** The event to trigger
 *   `args` **any** Arguments to be passed to the event
 
 #### Examples
@@ -342,7 +335,7 @@ Read more: [https://api.jquery.com/trigger/#trigger-events-selector-data][75]
 EventHandler.trigger(document.querySelectorAll('.nav-link')[2], 'click')
 ```
 
-Returns **(null | [Event][76])** null if element is undefined or event is not a string, the triggered event otherwise
+Returns **(null | [Event][75])** null if element is undefined or event is not a string, the triggered event otherwise
 
 ## PcAddOn
 
@@ -352,7 +345,7 @@ This abstract class can be extended to create new addon for new JavaScript featu
 
 ### Parameters
 
-*   `config` **{name: [string][67], app: [PcBackofficeApp][1], addOnState: any}** the addon configuration
+*   `config` **{name: [string][71], app: [PcBackofficeApp][1], addOnState: any}** the addon configuration
 
     *   `config.name` &#x20;
     *   `config.app` &#x20;
@@ -393,7 +386,7 @@ Can be useful to prevent code duplication between addons when you only need to p
 
 #### Parameters
 
-*   `event` **[event][76]** the event
+*   `event` **[event][75]** the event
 
 ### bindEvents
 
@@ -453,28 +446,29 @@ Below addons are created using PcAddOn class.
 
 This adds PcAddOn support for bootstrap 5 tooltips.
 It works using bootstrap 5 html markup.
-Read documentation: [https://getbootstrap.com/docs/5.0/components/tooltips/#examples][77]
+Read documentation: [https://getbootstrap.com/docs/5.0/components/tooltips/#examples][76]
 
-## PcBatchConfirm
+## PcBatchActionForm
 
 **Extends PcAddOn**
 
-Add support for button group actions that use the table multi select selections.
+Add batch submit form to selection done using one `selectedRowsIds` within [PcTableMultiSelect][61].
+
+Form is renderer through a turbo frame which must be loaded with `loading="true"`.
+
+> Current integration does not yet support modal rendered with turbo `loading="lazy"`.
 
 To work, each `.btn-group` must set the following attributes:
 
 *   `[data-toggle="pc-batch-confirm-btn-group"]`: this value is fixed,
 *   `[data-toggle-id]`: this value must be a unique identifier,
-*   `[data-pc-table-multi-select-id]`: this value must be a valid pc table multi select identifier.
+*   `[data-pc-table-multi-select-id]`: this value must be a valid pc table multi select identifier,
+*   `[data-input-ids-name]`: this value is used as the input name for storing `selectedIds`.
 
 Within the `.btn-group` container, you can add as many buttons as needed, and you must set some attributes too:
 
-*   `[data-url]`: this value must be a valid endpoint for the form submit,
-*   `[data-title]`: this value is used as a title by the modal opening form,
-*   `[data-batch-confirm-id]`: this value must be a unique identifier,
-*   `[data-modal-button-text]`: this value is used as the button text,
+*   \`\[data-modal-selector]: this value must be the modal selector that contain the form,
 *   `[data-user-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly.
-*   `[data-input-ids-name]`: this value is used as the input name for storing `selectedIds`
 
 ### Examples
 
@@ -490,10 +484,6 @@ Within the `.btn-group` container, you can add as many buttons as needed, and yo
     disabled
     type="button"
     class="btn btn-outline-primary"
-    data-url="/backofficev3/pro/validation/user-offerer/batch-validate"
-    data-title="Valider le(s) rattachement(s)"
-    data-batch-confirm-id="validating-modal"
-    data-modal-button-text="Valider"
     data-user-confirmation-modal="false"
   >
     Valider
@@ -502,11 +492,8 @@ Within the `.btn-group` container, you can add as many buttons as needed, and yo
     disabled
     type="button"
     class="btn btn-outline-primary"
-    data-url="/backofficev3/pro/validation/user-offerer/batch-pending"
-    data-title="Mettre en attente le(s) rattachement(s)"
-    data-batch-confirm-id="pending-modal"
-    data-modal-button-text="Mettre en attente"
     data-use-confirmation-modal="true"
+    data-modal-selector="#batch-pending-modal"
   >
     Mettre en attente
   </button>
@@ -514,11 +501,8 @@ Within the `.btn-group` container, you can add as many buttons as needed, and yo
     disabled
     type="button"
     class="btn btn-outline-primary"
-    data-url="/backofficev3/pro/validation/user-offerer/batch-reject"
-    data-title="Rejeter le(s) rattachement(s)"
-    data-batch-confirm-id="rejecting-modal"
-    data-modal-button-text="Rejeter"
     data-use-confirmation-modal="true"
+    data-modal-selector="#batch-reject-modal"
   >
     Rejeter
   </button>
@@ -694,142 +678,140 @@ Addon to add filters toggling using a button and make their state persistent.
 
 [7]: #examples-1
 
-[8]: #csrftoken
+[8]: #initialize
 
-[9]: #initialize
+[9]: #examples-2
 
-[10]: #examples-2
+[10]: #unbindevents
 
-[11]: #unbindevents
+[11]: #examples-3
 
-[12]: #examples-3
+[12]: #localstorage_key
 
-[13]: #localstorage_key
+[13]: #core-features
 
-[14]: #core-features
+[14]: #pcutils
 
-[15]: #pcutils
+[15]: #addloadevent
 
-[16]: #addloadevent
+[16]: #parameters-1
 
-[17]: #parameters-1
+[17]: #debounce
 
-[18]: #debounce
+[18]: #parameters-2
 
-[19]: #parameters-2
+[19]: #keyboardkeycode
 
-[20]: #keyboardkeycode
+[20]: #examples-4
 
-[21]: #examples-4
+[21]: #nonconstructableutils
 
-[22]: #nonconstructableutils
+[22]: #examples-5
 
-[23]: #examples-5
+[23]: #pceventhandler
 
-[24]: #pceventhandler
+[24]: #examples-6
 
-[25]: #examples-6
+[25]: #off
 
-[26]: #off
+[26]: #parameters-3
 
-[27]: #parameters-3
+[27]: #examples-7
 
-[28]: #examples-7
+[28]: #on
 
-[29]: #on
+[29]: #parameters-4
 
-[30]: #parameters-4
+[30]: #examples-8
 
-[31]: #examples-8
+[31]: #one
 
-[32]: #one
+[32]: #parameters-5
 
-[33]: #parameters-5
+[33]: #examples-9
 
-[34]: #examples-9
+[34]: #trigger
 
-[35]: #trigger
+[35]: #parameters-6
 
-[36]: #parameters-6
+[36]: #examples-10
 
-[37]: #examples-10
+[37]: #pcaddon
 
-[38]: #pcaddon
+[38]: #parameters-7
 
-[39]: #parameters-7
+[39]: #examples-11
 
-[40]: #examples-11
+[40]: #_preventdefault
 
-[41]: #_preventdefault
+[41]: #parameters-8
 
-[42]: #parameters-8
+[42]: #bindevents-1
 
-[43]: #bindevents-1
+[43]: #examples-12
 
-[44]: #examples-12
+[44]: #initialize-1
 
-[45]: #initialize-1
+[45]: #savestate
 
-[46]: #savestate
+[46]: #parameters-9
 
-[47]: #parameters-9
+[47]: #examples-13
 
-[48]: #examples-13
+[48]: #unbindevents-1
 
-[49]: #unbindevents-1
+[49]: #examples-14
 
-[50]: #examples-14
+[50]: #add-ons-features
 
-[51]: #add-ons-features
+[51]: #bstooltips
 
-[52]: #bstooltips
+[52]: #pcbatchactionform
 
-[53]: #pcbatchconfirm
+[53]: #examples-15
 
-[54]: #examples-15
+[54]: #pcformscheckvalidity
 
-[55]: #pcformscheckvalidity
+[55]: #pcoverridecustomtextareaenter
 
-[56]: #pcoverridecustomtextareaenter
+[56]: #examples-16
 
-[57]: #examples-16
+[57]: #pcpostaladdressautocomplete
 
-[58]: #pcpostaladdressautocomplete
+[58]: #examples-17
 
-[59]: #examples-17
+[59]: #pcselectmultiplefield
 
-[60]: #pcselectmultiplefield
+[60]: #examples-18
 
-[61]: #examples-18
+[61]: #pctablemultiselect
 
-[62]: #pctablemultiselect
+[62]: #examples-19
 
-[63]: #examples-19
+[63]: #pcvalidationfilters
 
-[64]: #pcvalidationfilters
+[64]: #examples-20
 
-[65]: #examples-20
+[65]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[66]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[66]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[67]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[67]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[68]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[68]: https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js
 
-[69]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[69]: https://api.jquery.com/off/#off-events-selector-data
 
-[70]: https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js
+[70]: https://developer.mozilla.org/docs/Web/API/Element
 
-[71]: https://api.jquery.com/off/#off-events-selector-data
+[71]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[72]: https://developer.mozilla.org/docs/Web/API/Element
+[72]: https://api.jquery.com/on/#on-events-selector-data
 
-[73]: https://api.jquery.com/on/#on-events-selector-data
+[73]: https://api.jquery.com/one/#one-events-selector-data
 
-[74]: https://api.jquery.com/one/#one-events-selector-data
+[74]: https://api.jquery.com/trigger/#trigger-events-selector-data
 
-[75]: https://api.jquery.com/trigger/#trigger-events-selector-data
+[75]: https://developer.mozilla.org/docs/Web/API/Event
 
-[76]: https://developer.mozilla.org/docs/Web/API/Event
-
-[77]: https://getbootstrap.com/docs/5.0/components/tooltips/#examples
+[76]: https://getbootstrap.com/docs/5.0/components/tooltips/#examples
