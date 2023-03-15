@@ -10,10 +10,12 @@ import Right from './ActionsBarStickyRight'
 
 export interface IActionsBarStickyProps {
   children: React.ReactNode
+  className?: string
 }
 
 const ActionsBarSticky = ({
   children,
+  className,
 }: IActionsBarStickyProps): JSX.Element => {
   const dispatch = useDispatch()
   useEffect(() => {
@@ -23,7 +25,10 @@ const ActionsBarSticky = ({
     }
   }, [])
   return (
-    <div className={classnames(style['actions-bar'])} data-testid="actions-bar">
+    <div
+      className={classnames(style['actions-bar'], className)}
+      data-testid="actions-bar"
+    >
       <div className={style['actions-bar-content']}>{children}</div>
     </div>
   )

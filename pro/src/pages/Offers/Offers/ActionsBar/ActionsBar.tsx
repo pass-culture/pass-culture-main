@@ -186,6 +186,9 @@ const ActionsBar = ({
 
   const Right = () => (
     <>
+      <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
+        Annuler
+      </Button>
       <Button onClick={() => showConfirmDialog()} Icon={StatusInactiveIcon}>
         Désactiver
       </Button>
@@ -196,9 +199,6 @@ const ActionsBar = ({
       )}
       <Button onClick={handleActivate} Icon={StatusValidatedIcon}>
         Publier
-      </Button>
-      <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
-        Annuler
       </Button>
     </>
   )
