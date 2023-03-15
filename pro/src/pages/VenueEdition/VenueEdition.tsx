@@ -1,11 +1,12 @@
 import React from 'react'
-import { useParams } from 'react-router-dom-v5-compat'
+import { useNavigate, useParams } from 'react-router-dom-v5-compat'
 
 import { setInitialFormValues } from 'components/VenueForm'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { useGetVenue } from 'core/Venue'
 import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
+import { useHomePath } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import { VenueFormScreen } from 'screens/VenueForm'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -14,6 +15,8 @@ import useGetProviders from '../../core/Venue/adapters/getProviderAdapter/useGet
 import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdapter/useGetVenueProvider'
 
 const VenueEdition = (): JSX.Element | null => {
+  const homePath = useHomePath()
+  const navigate = useNavigate()
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
@@ -76,6 +79,7 @@ const VenueEdition = (): JSX.Element | null => {
     ].find(error => error !== undefined)
     if (loadingError !== undefined) {
       notify.error(loadingError.message)
+      navigate(homePath)
       return null
     }
     return null
