@@ -85,3 +85,25 @@
   width: rem.torem(72px);
   margin-bottom: 0;
 }
+
+// Temporary code
+.coming-soon {
+  position: relative;
+
+  &::before {
+    @include fonts.mini-highlight;
+
+    line-height: rem.torem(12px);
+    content: "Bientôt";
+    background-color: colors.$tertiary;
+    color: colors.$white;
+    border-radius: rem.torem(2px);
+    padding: rem.torem(2px) rem.torem(4px);
+    transform: rotate(-6deg) translateY(-50%);
+
+    // Magic values to make the label looks good
+    position: absolute;
+    top: 0;
+    right: rem.torem(20px);
+  }
+}
