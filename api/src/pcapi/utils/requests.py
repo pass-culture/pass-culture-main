@@ -7,6 +7,7 @@ import requests
 from requests import Response
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+import zeep
 
 
 # fmt: off
@@ -102,3 +103,11 @@ class Session(requests.Session):
 
     def request(self, method: str | bytes, url: str | bytes, *args: Any, **kwargs: Any) -> Response:
         return _wrapper(super().request, method, url, *args, **kwargs)
+
+
+class CustomZeepTransport(zeep.Transport):
+    """A Transport class for zeep that uses our wrapper that logs."""
+
+    def __init__(self, *args: Any, **kwargs: Any):
+        kwargs.setdefault("session", Session())
+        super().__init__(*args, **kwargs)

@@ -3,7 +3,6 @@ import logging
 
 from pydantic import parse_obj_as
 from zeep import Client
-from zeep import Transport
 from zeep.proxy import ServiceProxy
 
 from pcapi import settings
@@ -17,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_cgr_service_proxy(cinema_url: str) -> ServiceProxy:
-    transport = Transport(timeout=10, operation_timeout=10)
+    transport = requests.CustomZeepTransport(timeout=10, operation_timeout=10)
     client = Client(wsdl=f"{cinema_url}?wsdl", transport=transport)
     service = client.create_service(binding_name="{urn:GestionCinemaWS}GestionCinemaWSSOAPBinding", address=cinema_url)
     return service
@@ -32,7 +31,6 @@ def get_seances_pass_culture(
     cinema_url = cinema_details.cinemaUrl or settings.CGR_API_URL
     service = get_cgr_service_proxy(cinema_url)
     response = service.GetSeancesPassCulture(User=user, mdp=password)
-    # TODO(yacine-pc, 2023-02-23): add a log external service called with request duration
     response = json.loads(response)
     _check_response_is_ok(response, "GetSeancesPassCulture")
     return parse_obj_as(cgr_serializers.GetSancesPassCultureResponse, response)
