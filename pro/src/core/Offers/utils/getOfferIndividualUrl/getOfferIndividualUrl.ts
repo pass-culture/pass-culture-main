@@ -1,4 +1,4 @@
-import { generatePath } from 'react-router'
+import { generatePath } from 'react-router-dom-v5-compat'
 
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { OFFER_WIZARD_MODE } from 'core/Offers'

@@ -1,8 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { generatePath } from 'react-router'
-import { Route, Routes } from 'react-router-dom-v5-compat'
+import { generatePath, Route, Routes } from 'react-router-dom-v5-compat'
 
 import {
   IOfferIndividualContext,

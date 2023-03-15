@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
-import { generatePath } from 'react-router'
-import { Route, Routes } from 'react-router-dom-v5-compat'
+import { generatePath, Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import {

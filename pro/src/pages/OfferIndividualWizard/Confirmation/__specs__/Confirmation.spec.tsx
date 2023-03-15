@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { generatePath, Route } from 'react-router'
+import { Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
@@ -59,11 +59,16 @@ const renderOffer = (
 
   return renderWithProviders(
     <>
-      <Route path="/confirmation">
-        <OfferIndividualContext.Provider value={contextValue}>
-          <Confirmation />
-        </OfferIndividualContext.Provider>
-      </Route>
+      <Routes>
+        <Route
+          path="/confirmation"
+          element={
+            <OfferIndividualContext.Provider value={contextValue}>
+              <Confirmation />
+            </OfferIndividualContext.Provider>
+          }
+        />
+      </Routes>
       <Notification />
     </>,
     { storeOverrides, initialRouterEntries: ['/confirmation'] }
@@ -121,7 +126,7 @@ describe('Confirmation', () => {
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
     ).toHaveAttribute(
       'href',
-      generatePath('/offre/creation?structure=OFID&lieu=VID physical')
+      '/offre/creation?structure=OFID&lieu=VID physical'
     )
     expect(
       screen.getByText('Voir la liste des offres', { selector: 'a' })
@@ -140,7 +145,7 @@ describe('Confirmation', () => {
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
     ).toHaveAttribute(
       'href',
-      generatePath('/offre/creation?structure=OFID&lieu=VID physical')
+      '/offre/creation?structure=OFID&lieu=VID physical'
     )
   })
 

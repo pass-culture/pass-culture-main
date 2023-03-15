@@ -1,5 +1,5 @@
 import React from 'react'
-import { generatePath, useLocation } from 'react-router'
+import { generatePath, useLocation } from 'react-router-dom-v5-compat'
 
 import Breadcrumb, {
   BreadcrumbStyle,

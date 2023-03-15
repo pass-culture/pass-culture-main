@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { generatePath, Route } from 'react-router'
+import { generatePath, Route, Routes } from 'react-router-dom-v5-compat'
 
 import { api } from 'apiClient/api'
 import {
@@ -78,64 +78,59 @@ const renderSummary = (
   return renderWithProviders(
     <>
       <OfferIndividualContext.Provider value={contextValues}>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-        >
-          <Summary />
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <Summary />
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          })}
-        >
-          <Summary />
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          })}
-        >
-          <div>Confirmation page: draft</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-        >
-          <div>Confirmation page: creation</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-            isV2: true,
-          })}
-        >
-          <div>Confirmation page: draft V2</div>
-        </Route>
-        <Route
-          path={getOfferIndividualPath({
-            step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-            mode: OFFER_WIZARD_MODE.CREATION,
-            isV2: true,
-          })}
-        >
-          <div>Confirmation page: creation V2</div>
-        </Route>
+        <Routes>
+          <Route
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode: OFFER_WIZARD_MODE.EDITION,
+            })}
+            element={<Summary />}
+          />
+          <Route
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            })}
+            element={<Summary />}
+          />
+          <Route
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              mode: OFFER_WIZARD_MODE.DRAFT,
+            })}
+            element={<Summary />}
+          />
+          <Route
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+              mode: OFFER_WIZARD_MODE.DRAFT,
+            })}
+            element={<div>Confirmation page: draft</div>}
+          />
+          <Route
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            })}
+            element={<div>Confirmation page: creation</div>}
+          />
+          <Route
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+              mode: OFFER_WIZARD_MODE.DRAFT,
+              isV2: true,
+            })}
+            element={<div>Confirmation page: draft V2</div>}
+          />
+          <Route
+            path={getOfferIndividualPath({
+              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+              mode: OFFER_WIZARD_MODE.CREATION,
+              isV2: true,
+            })}
+            element={<div>Confirmation page: creation V2</div>}
+          />
+        </Routes>
       </OfferIndividualContext.Provider>
       <Notification />
     </>,
