@@ -22,7 +22,10 @@
   &-icon {
     width: rem.torem(24px);
     height: rem.torem(24px);
-    fill: colors.$tertiary;
+
+    path {
+      fill: colors.$tertiary;
+    }
   }
 }
 
