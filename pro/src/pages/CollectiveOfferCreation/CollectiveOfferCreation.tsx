@@ -30,7 +30,6 @@ export const CollectiveOfferCreation = ({
   if (!isReady) {
     return <Spinner />
   }
-
   return (
     <CollectiveOfferLayout
       subTitle={offer?.name}
@@ -47,7 +46,7 @@ export const CollectiveOfferCreation = ({
         setOffer={setOffer}
         getIsOffererEligible={canOffererCreateCollectiveOfferAdapter}
         mode={Mode.CREATION}
-        isTemplate={isTemplate || location.pathname.includes('vitrine')}
+        isTemplate={isTemplate}
       />
       <RouteLeavingGuardCollectiveOfferCreation />
     </CollectiveOfferLayout>
