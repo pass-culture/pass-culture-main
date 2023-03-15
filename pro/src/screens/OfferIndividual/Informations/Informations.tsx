@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom-v5-compat'
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat'
 
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
@@ -30,7 +30,7 @@ import {
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { FORM_ERROR_MESSAGE } from 'core/shared'
-import { useNavigate, useOfferWizardMode } from 'hooks'
+import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -216,15 +216,15 @@ const Informations = ({
     const queryOffererId = queryParams.get('structure')
     const queryVenueId = queryParams.get('lieu')
     /* istanbul ignore next: DEBT, TO FIX */
-    navigate(
-      '/offre/creation',
-      undefined,
-      queryOffererId && queryVenueId
-        ? `lieu=${queryVenueId}&structure=${queryOffererId}`
-        : queryOffererId && !queryVenueId
-        ? `structure=${queryOffererId}`
-        : ''
-    )
+    navigate({
+      pathname: '/offre/creation',
+      search:
+        queryOffererId && queryVenueId
+          ? `lieu=${queryVenueId}&structure=${queryOffererId}`
+          : queryOffererId && !queryVenueId
+          ? `structure=${queryOffererId}`
+          : '',
+    })
   }
 
   return (

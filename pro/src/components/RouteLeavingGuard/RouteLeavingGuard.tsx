@@ -1,8 +1,8 @@
 import React, { ReactNode, useCallback, useState } from 'react'
 import { Redirect, Prompt } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom-v5-compat'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import { useNavigate } from 'hooks'
 
 export interface IShouldBlockNavigationReturnValue {
   redirectPath?: string | null
