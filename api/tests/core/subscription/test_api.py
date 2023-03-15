@@ -1237,7 +1237,7 @@ class CompleteProfileTest:
     def test_when_profile_was_proviously_cancelled(self):
         """
         This was a bug when a user previously completed profile but the BeneficiaryCancelled
-        was cancelled because of "eligibility_changed" scenaria
+        was cancelled because of "eligibility_changed" scenario
         """
         user = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=18),
@@ -1250,9 +1250,11 @@ class CompleteProfileTest:
             reasonCodes=[fraud_models.FraudReasonCode.ELIGIBILITY_CHANGED],
         )
 
-        subscription_api.complete_profile(user, "address", "city", "12400", "étudiant", "harry", "cover")
+        subscription_api.complete_profile(
+            user, "address", "city", "12400", users_models.ActivityEnum.STUDENT, "harry", "cover"
+        )
 
-        assert subscription_repository.get_completed_profile_check(user, EligibilityType.AGE18)
+        assert subscription_repository.get_completed_profile_check(user, users_models.EligibilityType.AGE18)
         assert (
             fraud_models.BeneficiaryFraudCheck.query.filter_by(
                 userId=user.id,
