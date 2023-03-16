@@ -679,7 +679,7 @@ class OfferValidationConfig(PcObject, Base, Model):
     __tablename__ = "offer_validation_config"
 
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    user = sa.orm.relationship("User", backref="offer_validation_configs")  # type: ignore [misc]
+    user: sa_orm.Mapped["User"] = sa.orm.relationship("User", backref="offer_validation_configs")
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"))
     specs: dict = sa.Column("specs", postgresql.JSONB, nullable=False)
 

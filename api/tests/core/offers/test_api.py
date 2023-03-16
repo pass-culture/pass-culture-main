@@ -1310,7 +1310,7 @@ class ComputeOfferValidationTest:
     def test_matching_keyword_in_name(self):
         offer = factories.OfferFactory(name="A suspicious offer")
         factories.StockFactory(price=10, offer=offer)
-        api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
+        api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG, users_factories.UserFactory())
         assert api.set_offer_status_based_on_fraud_criteria(offer) == models.OfferValidationStatus.PENDING
 
 
@@ -1375,8 +1375,8 @@ class ImportOfferValidationConfigTest:
                     comparated: 100
         """
         with pytest.raises(exceptions.WrongFormatInFraudConfigurationFile) as error:
-            api.import_offer_validation_config(config_yaml)
-        assert str(error.value) == "\"'Wrong key: WRONG_KEY'\""
+            api.import_offer_validation_config(config_yaml, users_factories.UserFactory())
+        assert error.value.__dict__ == {"errors": {"KeyError": "'Wrong key: WRONG_KEY'"}}
 
     def test_raise_a_WrongFormatInFraudConfigurationFile_error_for_wrong_type(self):
         config_yaml = """
@@ -1400,7 +1400,7 @@ class ImportOfferValidationConfigTest:
                         comparated: 100
             """
         with pytest.raises(exceptions.WrongFormatInFraudConfigurationFile) as error:
-            api.import_offer_validation_config(config_yaml)
+            api.import_offer_validation_config(config_yaml, users_factories.UserFactory())
         assert "0" in str(error.value)
 
     def test_raise_a_WrongFormatInFraudConfigurationFile_error_for_wrong_leaf_value(self):
@@ -1424,7 +1424,7 @@ class ImportOfferValidationConfigTest:
                         comparated: 100
             """
         with pytest.raises(exceptions.WrongFormatInFraudConfigurationFile) as error:
-            api.import_offer_validation_config(config_yaml)
+            api.import_offer_validation_config(config_yaml, users_factories.UserFactory())
         assert "namme" in str(error.value)
 
     def test_raise_if_contains_comparated_not_a_list(self):
@@ -1442,7 +1442,7 @@ class ImportOfferValidationConfigTest:
             """
 
         with pytest.raises(TypeError) as exc:
-            api.import_offer_validation_config(config_yaml)
+            api.import_offer_validation_config(config_yaml, users_factories.UserFactory())
 
         assert str(exc.value) == "The `comparated` argument `danger` for the `contains` operator is not a list"
 
@@ -1467,7 +1467,7 @@ class ImportOfferValidationConfigTest:
                     operator: ">"
                     comparated: 100
         """
-        api.import_offer_validation_config(config_yaml)
+        api.import_offer_validation_config(config_yaml, users_factories.UserFactory())
 
         current_config = models.OfferValidationConfig.query.one()
         assert current_config is not None
@@ -1496,7 +1496,7 @@ class ParseOfferValidationConfigTest:
                  - "à domicile"
                  - "Envoi"
             """
-        offer_validation_config = api.import_offer_validation_config(config_yaml)
+        offer_validation_config = api.import_offer_validation_config(config_yaml, users_factories.UserFactory())
         min_score, validation_rules = offer_validation.parse_offer_validation_config(offer, offer_validation_config)
         assert min_score == 0.6
         assert len(validation_rules) == 1

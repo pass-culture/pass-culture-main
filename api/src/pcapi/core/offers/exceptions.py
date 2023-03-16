@@ -186,7 +186,9 @@ class StockDoesNotExist(ApiErrors):
 
 
 class WrongFormatInFraudConfigurationFile(ApiErrors):
-    pass
+    def __init__(self, error: Exception):
+        super().__init__()
+        self.errors = {type(error).__name__: str(error)}
 
 
 class OfferReportError(Exception):
