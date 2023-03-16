@@ -11,6 +11,7 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.exceptions import UnapplicableModel
 from pcapi.core.offers.offer_validation import _get_model
 from pcapi.core.offers.offer_validation import parse_offer_validation_config
+from pcapi.core.users import factories as users_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -128,8 +129,11 @@ class GetModelTest:
 
 
 class ParseOfferValidationConfigTest:
+    def setup_method(self):
+        self.user = users_factories.UserFactory()
+        offers_api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG, self.user)
+
     def test_parse_offer_validation_config(self):
-        offers_api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
         offer = offers_factories.OfferFactory()
         config = offers_repository.get_current_offer_validation_config()
         minimum_score, rule_items = parse_offer_validation_config(offer, config)
@@ -140,7 +144,6 @@ class ParseOfferValidationConfigTest:
         assert rule_items[0].offer_validation_items[0].condition["comparated"] == ["offer ?"]
 
     def test_parse_collective_offer_template_validation_config(self):
-        offers_api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
         offer = educational_factories.CollectiveOfferTemplateFactory()
         config = offers_repository.get_current_offer_validation_config()
         minimum_score, rule_items = parse_offer_validation_config(offer, config)
@@ -151,7 +154,6 @@ class ParseOfferValidationConfigTest:
         assert rule_items[0].offer_validation_items[0].condition["comparated"] == ["templates ?"]
 
     def test_parse_collective_offer_validation_config(self):
-        offers_api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
         offer = educational_factories.CollectiveOfferFactory()
         config = offers_repository.get_current_offer_validation_config()
         minimum_score, rule_items = parse_offer_validation_config(offer, config)

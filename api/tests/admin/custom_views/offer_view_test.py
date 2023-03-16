@@ -411,8 +411,8 @@ class OfferValidationViewTest:
                                 operator: "not in"
                                 comparated: "REJECTED"
                     """
-        import_offer_validation_config(config_yaml)
-        users_factories.AdminFactory(email="admin@example.com")
+        admin = users_factories.AdminFactory(email="admin@example.com")
+        import_offer_validation_config(config_yaml, admin)
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
 
@@ -453,8 +453,8 @@ class OfferValidationViewTest:
                                 operator: "not in"
                                 comparated: "REJECTED"
                     """
-        import_offer_validation_config(config_yaml)
-        users_factories.AdminFactory(email="admin@example.com")
+        admin = users_factories.AdminFactory(email="admin@example.com")
+        import_offer_validation_config(config_yaml, admin)
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
         data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
@@ -645,8 +645,8 @@ class OfferValidationViewTest:
                                 operator: "not in"
                                 comparated: "REJECTED"
                     """
-        import_offer_validation_config(config_yaml)
-        users_factories.AdminFactory(email="admin@example.com")
+        admin = users_factories.AdminFactory(email="admin@example.com")
+        import_offer_validation_config(config_yaml, admin)
         offer = educational_factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.PENDING, isActive=True
         )
@@ -689,8 +689,8 @@ class OfferValidationViewTest:
                                 operator: "not in"
                                 comparated: "REJECTED"
                     """
-        import_offer_validation_config(config_yaml)
-        users_factories.AdminFactory(email="admin@example.com")
+        admin = users_factories.AdminFactory(email="admin@example.com")
+        import_offer_validation_config(config_yaml, admin)
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=OfferValidationStatus.PENDING)
 
         data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
@@ -856,8 +856,8 @@ class OfferValidationViewTest:
                                 operator: "not in"
                                 comparated: "REJECTED"
                     """
-        import_offer_validation_config(config_yaml)
-        users_factories.AdminFactory(email="admin@example.com")
+        admin = users_factories.AdminFactory(email="admin@example.com")
+        import_offer_validation_config(config_yaml, admin)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveStockFactory(
             collectiveOffer__validation=OfferValidationStatus.PENDING,
@@ -907,8 +907,8 @@ class OfferValidationViewTest:
                                 operator: "not in"
                                 comparated: "REJECTED"
                     """
-        import_offer_validation_config(config_yaml)
-        users_factories.AdminFactory(email="admin@example.com")
+        admin = users_factories.AdminFactory(email="admin@example.com")
+        import_offer_validation_config(config_yaml, admin)
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
 
         data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")

@@ -47,6 +47,10 @@ def create_industrial_offer_validation_config() -> None:
                         - "REJECTED"
                         - "PENDING"
     """
+
+    if not super_admin:
+        logger.info("super_admin not found")
+        return
     import_offer_validation_config(previous_config_yaml, super_admin)
     import_offer_validation_config(config_yaml, super_admin)
 

@@ -44,7 +44,7 @@ class Returns204Test:
         user_offerer = offerers_factories.UserOffererFactory(offerer=offer.venue.managingOfferer)
 
         url = f"/collective/offers-template/{humanize(offer.id)}/publish"
-        offers_api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
+        offers_api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG, user_offerer.user)
 
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
