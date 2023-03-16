@@ -18,6 +18,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import repository as subscription_repository
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -2642,3 +2643,23 @@ class StepperTest:
                 subscription_models.SubscriptionStepCompletionState.COMPLETED,
             ),
         ]
+
+
+class TestQueriesTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_num_queries(self):
+        user = users_factories.EligibleGrant18Factory(
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.KO,
+            type=fraud_models.FraudCheckType.UBBLE,
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
+        )
+
+        with assert_num_queries(1):
+            subscription_api.get_user_subscription_state(user)
