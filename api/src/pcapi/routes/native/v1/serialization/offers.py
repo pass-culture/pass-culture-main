@@ -226,7 +226,7 @@ class OfferReportRequest(BaseModel):
     class Config:
         alias_generator = to_camel
 
-    reason: str
+    reason: Reason
     custom_reason: str | None
 
     @validator("custom_reason")
@@ -238,12 +238,6 @@ class OfferReportRequest(BaseModel):
             raise ValueError("custom reason is too long")
 
         return content
-
-    @validator("reason")
-    def reason_is_valid_enum_value(cls, reason: str) -> str:
-        if reason not in {r.value for r in Reason}:
-            raise ValueError("unknown reason")
-        return reason
 
 
 class OfferReportReasons(BaseModel):
