@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
     api=blueprint.api,
 )
 def cookies_consent(body: serializers.CookieConsentRequest) -> None:
-    logger.info(  # type: ignore [call-arg]
+    logger.info(
         "Cookies consent",
         extra={"analyticsSource": "app-native", **body.dict()},
         technical_message_id="cookies_consent",

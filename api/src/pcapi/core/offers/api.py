@@ -182,7 +182,7 @@ def create_offer(
 
     repository.add_to_session(offer)
 
-    logger.info(  # type: ignore [call-arg]
+    logger.info(
         "models.Offer has been created",
         extra={"offer_id": offer.id, "venue_id": venue.id, "product_id": offer.productId},
         technical_message_id="offer.created",
@@ -268,7 +268,7 @@ def update_offer(
     else:
         product_has_been_updated = False
 
-    logger.info("Offer has been updated", extra={"offer_id": offer.id}, technical_message_id="offer.updated")  # type: ignore [call-arg]
+    logger.info("Offer has been updated", extra={"offer_id": offer.id}, technical_message_id="offer.updated")
     if product_has_been_updated:
         logger.info("Product has been updated", extra={"product": offer.product.id})
 
@@ -364,7 +364,7 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
     if "isActive" in update_fields.keys():
         message = "Offers has been activated" if update_fields["isActive"] else "Offers has been deactivated"
         technical_message_id = "offers.activated" if update_fields["isActive"] else "offers.deactivated"
-        logger.info(  # type: ignore [call-arg]
+        logger.info(
             message,
             extra={"offer_ids": offer_ids, "venue_id": venue_ids},
             technical_message_id=technical_message_id,
@@ -626,7 +626,7 @@ def publish_offer(offer: models.Offer, user: users_models.User | None) -> models
     offer.isActive = True
     update_offer_fraud_information(offer, user)
     search.async_index_offer_ids([offer.id])
-    logger.info(  # type: ignore [call-arg]
+    logger.info(
         "Offer has been published",
         extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
         technical_message_id="offer.published",
@@ -991,7 +991,11 @@ def update_pending_offer_validation(offer: models.Offer, validation_status: mode
     elif isinstance(offer, educational_models.CollectiveOfferTemplate):
         search.async_index_collective_offer_template_ids([offer.id])
     template = f"{type(offer)} validation status updated"
-    logger.info(template, extra={"offer": offer.id, "offer_validation": offer.validation}, technical_message_id="offers.validation_updated")  # type: ignore [call-arg]
+    logger.info(
+        template,
+        extra={"offer": offer.id, "offer_validation": offer.validation},
+        technical_message_id="offers.validation_updated",
+    )
     return True
 
 
