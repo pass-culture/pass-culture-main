@@ -1,103 +1,109 @@
 {% from "components/forms.html" import build_filters_form with context %}
 {% import "components/links.html" as links %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-
 {% extends "layouts/connected.html" %}
-
 {% block page %}
-    <div class="pt-3 px-5">
-        <h2 class="fw-light">Offres individuelles</h2>
-        {{ build_filters_form(form, dst) }}
-        <div>
-            {% if rows %}
-                <div class="d-flex justify-content-between">
-                    <p class="lead num-results">
-                        {{ rows | length }}{{ "+" if rows | length > 100 else "" }}
-                        résultat{{ "s" if rows | length > 1 else "" }}
-                    </p>
-                    <div class="btn-group btn-group-sm"
-                         data-toggle="pc-batch-confirm-btn-group"
-                         data-toggle-id="table-container-individual-offer-edit-btn-group"
-                         data-pc-table-multi-select-id="table-individual-offers-multiselect"
-                         data-input-ids-name="object_ids"
-                    >
-                        <button disabled
-                                type="button"
-                                class="btn btn-outline-primary"
-                                data-modal-selector="#batch-edit-offer-modal"
-                                data-use-confirmation-modal="true"
-                        >
-                            Éditer les offres
-                        </button>
-                    </div>
-                </div>
-                <table class="table mb-4" data-table-multi-select-id="table-individual-offers-multiselect">
-                    <thead>
-                    <tr>
-                        <th scope="col"><input type="checkbox" class="form-check-input" name="pc-table-multi-select-check-all"></th>
-                        <th scope="col"></th>
-                        <th scope="col">ID</th>
-                        <th scope="col">Nom de l'offre</th>
-                        <th scope="col">Catégorie</th>
-                        <th scope="col">Sous-catégorie</th>
-                        <th scope="col">Stock initial</th>
-                        <th scope="col">Stock restant</th>
-                        <th scope="col">Tag</th>
-                        <th scope="col">Pondération</th>
-                        <th scope="col">État</th>
-                        <th scope="col">Dernière date de validation</th>
-                        <th scope="col">Dép.</th>
-                        <th scope="col">Lieu</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for offer in rows %}
-                        <tr>
-                        <td>
-                            <input
-                                type="checkbox"
-                                class="form-check-input"
-                                name="pc-table-multi-select-check-{{ offer.id }}"
-                                data-id="{{ offer.id }}"
-                            >
-                        </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                                            class="btn p-0"><i
-                                            class="bi bi-three-dots-vertical"></i></button>
-                                    <ul class="dropdown-menu">
-                                        <li class="dropdown-item">
-                                            <a class="btn btn-sm d-block w-100 text-start px-3"
-                                               data-bs-toggle="modal"
-                                               data-bs-target="#edit-offer-modal-{{ offer.id }}">
-                                                Modifier
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </td>
-                            <td>{{ offer.id }}</td>
-                            <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
-                            <td>{{ offer.category.pro_label }}</td>
-                            <td>{{ offer.subcategory_v2.pro_label }}</td>
-                            <td>{{ get_initial_stock(offer) }}</td>
-                            <td>{{ get_remaining_stock(offer) }}</td>
-                            <td>{{ offer.criteria | format_criteria | safe}}</td>
-                            <td>{{ offer.rankingWeight | empty_string_if_null }}</td>
-                            <td>{{ offer.validation | format_offer_validation_status }}</td>
-                            <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
-                            <td>{{ offer.venue.departementCode }}</td>
-                            <td>{{ links.build_venue_name_to_details_link(offer.venue) }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                {% for offer in rows %}
-                    {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_edit_offer_form', offer_id=offer.id), "edit-offer-modal-" + offer.id|string) }}
-                {% endfor %}
-                {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_batch_edit_offer_form'), "batch-edit-offer-modal", "true") }}
-            {% endif %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Offres individuelles</h2>
+    {{ build_filters_form(form, dst) }}
+    <div>
+      {% if rows %}
+        <div class="d-flex justify-content-between">
+          <p class="lead num-results">
+            {{ rows | length }}{{ "+" if rows | length > 100 else "" }}
+            résultat{{ "s" if rows | length > 1 else "" }}
+          </p>
+          <div class="btn-group btn-group-sm"
+               data-toggle="pc-batch-confirm-btn-group"
+               data-toggle-id="table-container-individual-offer-edit-btn-group"
+               data-pc-table-multi-select-id="table-individual-offers-multiselect"
+               data-input-ids-name="object_ids">
+            <button disabled
+                    type="button"
+                    class="btn btn-outline-primary"
+                    data-modal-selector="#batch-edit-offer-modal"
+                    data-use-confirmation-modal="true">
+              Éditer les offres
+            </button>
+          </div>
         </div>
+        <table class="table mb-4"
+               data-table-multi-select-id="table-individual-offers-multiselect">
+          <thead>
+            <tr>
+              <th scope="col">
+                <input type="checkbox"
+                       class="form-check-input"
+                       name="pc-table-multi-select-check-all"/>
+              </th>
+              <th scope="col"></th>
+              <th scope="col">ID</th>
+              <th scope="col">Nom de l'offre</th>
+              <th scope="col">Catégorie</th>
+              <th scope="col">Sous-catégorie</th>
+              <th scope="col">Stock initial</th>
+              <th scope="col">Stock restant</th>
+              <th scope="col">Tag</th>
+              <th scope="col">Pondération</th>
+              <th scope="col">État</th>
+              <th scope="col">Dernière date de validation</th>
+              <th scope="col">Dép.</th>
+              <th scope="col">Lieu</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for offer in rows %}
+              <tr>
+                <td>
+                  <input type="checkbox"
+                         class="form-check-input"
+                         name="pc-table-multi-select-check-{{ offer.id }}"
+                         data-id="{{ offer.id }}"/>
+                </td>
+                <td>
+                  <div class="dropdown">
+                    <button type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            class="btn p-0">
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li class="dropdown-item">
+                        <a class="btn btn-sm d-block w-100 text-start px-3"
+                           data-bs-toggle="modal"
+                           data-bs-target="#edit-offer-modal-{{ offer.id }}">
+                          Modifier
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+                <td>{{ offer.id }}</td>
+                <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
+                <td>{{ offer.category.pro_label }}</td>
+                <td>{{ offer.subcategory_v2.pro_label }}</td>
+                <td>{{ get_initial_stock(offer) }}</td>
+                <td>{{ get_remaining_stock(offer) }}</td>
+                <td>{{ offer.criteria | format_criteria | safe }}</td>
+                <td>{{ offer.rankingWeight | empty_string_if_null }}</td>
+                <td>{{ offer.validation | format_offer_validation_status }}</td>
+                <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
+                <td>
+                  {{ offer.venue.departementCode }}
+                </td>
+                <td>
+                  {{ links.build_venue_name_to_details_link(offer.venue) }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% for offer in rows %}
+          {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_edit_offer_form', offer_id=offer.id), "edit-offer-modal-" + offer.id|string) }}
+        {% endfor %}
+        {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_batch_edit_offer_form'), "batch-edit-offer-modal", "true") }}
+      {% endif %}
     </div>
-{% endblock %}
+  </div>
+{% endblock page %}

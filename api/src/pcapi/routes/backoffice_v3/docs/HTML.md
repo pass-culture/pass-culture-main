@@ -1,5 +1,19 @@
 ## Backoffice HTML code convention
 
+### No leading white space
+
+We use [djlint](https://www.djlint.com) to automatically format and indent our HTML templates.
+
+Our configuration will trim white spaces. 
+
+If you use white space for styling, you are doing it wrong, instead, use spacing utilities on your `HTMLElement`: https://getbootstrap.com/docs/5.0/utilities/spacing
+
+### No `<br />`
+
+If you use `<br />` for styling, you are doing it wrong, instead, use styling.
+
+### `HTMLElement` attribute `id` convention 
+
 In our HTML templates, **we have forbidden** the usage of the `id` attributes.
 
 In general, we will always prefer a css class name. CSS class names have their own standard that can be read on [CSS.md](CSS.md).
@@ -16,7 +30,7 @@ In this case, it is fine to use the id, as long as you prefix it with a unique i
 
 Keep in mind: It is better to avoid using `id` attributes when it's possible.
 
-## Required by forms
+#### Required by forms
 
 If `<label />` is not parent of the input, it won't be controlling the form element on click.
 
@@ -42,7 +56,7 @@ In this case, we **must** generate the id dynamically:
 </div>
 ```
 
-## Required by accessibility
+#### Required by accessibility
 
 The `aria-describedby` attribute:
 
@@ -71,7 +85,7 @@ This is :heavy_check_mark::
 </p>
 ```
 
-## Required by Turbo Frame
+#### Required by Turbo Frame
 
 You can use the attribute `id` to identify `<turbo-frame />`, this is the only case where you don't want to generate the `id` with, ex:
 

@@ -1,53 +1,52 @@
 {% macro build_filters_form(form, action) %}
-    <form action="{{ action }}" name="{{ action | action_to_name }}" method="GET" class="mb-4 mt-3">
-        <div class="row">
-            <div class="col-10">
-                {% set select_multiple = [] %}
-                {% for form_field in form %}
-                    {% if form_field.type == "HiddenField" %}
-                        {{ form_field }}
-                    {% elif form_field.type in ('PCSelectMultipleField', "PCQuerySelectMultipleField", "PCAutocompleteSelectMultipleField") %}
-                        {% set _ = select_multiple.append(form_field) %}
-                    {% endif %}
-                {% endfor %}
-                <div class="input-group mb-3 px-1">
-                    {% for form_field in form %}
-                        {% if form_field.type not in ("HiddenField", "PCSelectMultipleField", "PCQuerySelectMultipleField", "PCAutocompleteSelectMultipleField") %}
-                            {{ form_field }}
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                <div class="input-group mb-1 ">
-                    {% for form_field in select_multiple %}
-                        <div class="col-{{ [(12/(select_multiple|length))|round|int, 6] | min }} p-1"> {{ form_field }}</div>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="col-2">
-                <div class="py-2">
-                    <button type="submit" class="btn btn-primary">Appliquer</button>
-                </div>
-            </div>
-        </div>
-        <div class="w-100 my-4">
-            {% for form_field in form %}
-                {% for error in form_field.errors %}
-                    <p class="text-warning lead">{{ error }}</p>
-                {% endfor %}
-            {% endfor %}
-        </div>
-    </form>
-{% endmacro %}
-
-{% macro build_form_fields_group(form) %}
-    <div class="form-group">
+  <form action="{{ action }}"
+        name="{{ action | action_to_name }}"
+        method="get"
+        class="mb-4 mt-3">
+    <div class="row">
+      <div class="col-10">
+        {% set select_multiple = [] %}
         {% for form_field in form %}
-            <div class="w-100 my-4">
-                {% for error in form_field.errors %}
-                    <p class="text-warning lead">{{ error }}</p>
-                {% endfor %}
-            </div>
+          {% if form_field.type == "HiddenField" %}
             {{ form_field }}
+          {% elif form_field.type in ('PCSelectMultipleField', "PCQuerySelectMultipleField", "PCAutocompleteSelectMultipleField") %}
+            {% set _ = select_multiple.append(form_field) %}
+          {% endif %}
         {% endfor %}
+        <div class="input-group mb-3 px-1">
+          {% for form_field in form %}
+            {% if form_field.type not in ("HiddenField", "PCSelectMultipleField", "PCQuerySelectMultipleField", "PCAutocompleteSelectMultipleField") %}
+              {{ form_field }}
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div class="input-group mb-1 ">
+          {% for form_field in select_multiple %}
+            <div class="col-{{ [(12/(select_multiple|length))|round|int, 6] | min }} p-1">{{ form_field }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-2">
+        <div class="py-2">
+          <button type="submit"
+                  class="btn btn-primary">Appliquer</button>
+        </div>
+      </div>
     </div>
+    <div class="w-100 my-4">
+      {% for form_field in form %}
+        {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
+      {% endfor %}
+    </div>
+  </form>
+{% endmacro %}
+{% macro build_form_fields_group(form) %}
+  <div class="form-group">
+    {% for form_field in form %}
+      <div class="w-100 my-4">
+        {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
+      </div>
+      {{ form_field }}
+    {% endfor %}
+  </div>
 {% endmacro %}

@@ -1,25 +1,24 @@
 {% from "components/badges.html" import build_user_offerer_status_badge %}
 {% import "components/links.html" as links %}
-
 <table class="table table-hover my-4">
-    <thead>
-        <tr>
-            <th scope="col"></th>
-            <th scope="col">ID de la structure</th>
-            <th scope="col">Statut du rattachement</th>
-            <th scope="col">Nom</th>
-            <th scope="col">SIREN</th>
-        </tr>
-    </thead>
-    <tbody class="table-group-divider">
-        {% for user_offerer in user_offerers %}
-            <tr>
-                <th scope="row"></th>
-                <td>{{ user_offerer.offererId}}</td>
-                <td>{{ build_user_offerer_status_badge(user_offerer) }}</td>
-                <td class="text-break">{{ links.build_offerer_name_to_details_link(user_offerer.offerer) }}</td>
-                <td>{{ links.build_siren_to_external_link(user_offerer.offerer) }}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
+  <thead>
+    <tr>
+      <th scope="col"></th>
+      <th scope="col">ID de la structure</th>
+      <th scope="col">Statut du rattachement</th>
+      <th scope="col">Nom</th>
+      <th scope="col">SIREN</th>
+    </tr>
+  </thead>
+  <tbody class="table-group-divider">
+    {% for user_offerer in user_offerers %}
+      <tr>
+        <th scope="row"></th>
+        <td>{{ user_offerer.offererId }}</td>
+        <td>{{ build_user_offerer_status_badge(user_offerer) }}</td>
+        <td class="text-break">{{ links.build_offerer_name_to_details_link(user_offerer.offerer) }}</td>
+        <td>{{ links.build_siren_to_external_link(user_offerer.offerer) }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
 </table>

@@ -1,25 +1,23 @@
 {% import "components/links.html" as links %}
-
 <table class="table table-hover my-4">
-    <thead>
-        <tr>
-            <th scope="col"></th>
-            <th scope="col">Id du Lieu</th>
-            <th scope="col">Lieu</th>
-            <th scope="col">Identifiant cinéma (CGR)</th>
-            <th scope="col">Url du cinéma (CGR)</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        {% for provider in cgr_provider_list %}
-            <tr>
-                <th scope="row"></th>
-                <td class="fw-bolder">{{ provider.cinemaProviderPivot.venue.id }}</td>
-                <td>{{ links.build_venue_name_to_details_link(provider.cinemaProviderPivot.venue, text_attr="name") }}</td>
-                <td>{{ provider.cinemaProviderPivot.idAtProvider }}</td>
-                <td>{{ provider.cinemaUrl }}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
+  <thead>
+    <tr>
+      <th scope="col"></th>
+      <th scope="col">Id du Lieu</th>
+      <th scope="col">Lieu</th>
+      <th scope="col">Identifiant cinéma (CGR)</th>
+      <th scope="col">Url du cinéma (CGR)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for provider in cgr_provider_list %}
+      <tr>
+        <th scope="row"></th>
+        <td class="fw-bolder">{{ provider.cinemaProviderPivot.venue.id }}</td>
+        <td>{{ links.build_venue_name_to_details_link(provider.cinemaProviderPivot.venue, text_attr="name") }}</td>
+        <td>{{ provider.cinemaProviderPivot.idAtProvider }}</td>
+        <td>{{ provider.cinemaUrl }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
 </table>
