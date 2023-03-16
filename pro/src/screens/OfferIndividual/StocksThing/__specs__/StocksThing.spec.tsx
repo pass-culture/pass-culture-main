@@ -313,7 +313,9 @@ describe('screens:StocksThing', () => {
       await userEvent.click(
         screen.getByTestId('stock-form-actions-button-open')
       )
-      await userEvent.click(screen.getByText("Ajouter des codes d'activation"))
+      await userEvent.dblClick(
+        screen.getByText("Ajouter des codes d'activation")
+      )
       const uploadButton = screen.getByText(
         "Importer un fichier .csv depuis l'ordinateur"
       )
@@ -377,7 +379,9 @@ describe('screens:StocksThing', () => {
       await userEvent.click(
         screen.getByTestId('stock-form-actions-button-open')
       )
-      await userEvent.click(screen.getByText("Ajouter des codes d'activation"))
+      await userEvent.dblClick(
+        screen.getByText("Ajouter des codes d'activation")
+      )
       const uploadButton = screen.getByText(
         "Importer un fichier .csv depuis l'ordinateur"
       )

@@ -325,7 +325,7 @@ describe('screens:StocksEventEdition', () => {
     }
     renderStockEventScreen(props, contextValue)
     expect(screen.getByTestId('stock-event-form')).toBeInTheDocument()
-    await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
+    await userEvent.dblClick(screen.getAllByTitle('Supprimer le stock')[1])
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')
     ).not.toBeInTheDocument()
