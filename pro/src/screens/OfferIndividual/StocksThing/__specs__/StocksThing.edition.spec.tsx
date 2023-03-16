@@ -297,7 +297,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
     renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
-    await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
+    await userEvent.dblClick(screen.getAllByTitle('Supprimer le stock')[1])
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
@@ -336,7 +336,7 @@ describe('screens:StocksThing', () => {
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
     )
-    await userEvent.click(screen.getAllByText('Supprimer le stock')[0])
+    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
@@ -361,7 +361,7 @@ describe('screens:StocksThing', () => {
     await screen.findByTestId('stock-thing-form')
 
     await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
-    await userEvent.click(screen.getByText('Supprimer le stock'))
+    await userEvent.dblClick(screen.getByText('Supprimer le stock'))
     await userEvent.click(
       await screen.findByText('Supprimer', { selector: 'button' })
     )
