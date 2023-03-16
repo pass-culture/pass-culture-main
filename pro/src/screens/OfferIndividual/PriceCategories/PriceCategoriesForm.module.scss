@@ -12,6 +12,7 @@
 }
 
 .duo-section {
+  margin-top: rem.torem(12px);
   margin-bottom: rem.torem(40px);
 }
 
@@ -34,9 +35,11 @@
   );
 }
 
-.delete-icon {
-  margin-left: rem.torem(20px);
+.free-checkbox {
+  margin-right: rem.torem(20px);
+}
 
+.delete-icon {
   svg {
     width: rem.torem(24px);
     height: rem.torem(24px);
