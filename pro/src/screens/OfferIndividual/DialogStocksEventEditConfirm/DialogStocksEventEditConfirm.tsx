@@ -24,8 +24,7 @@ const DialogStocksEventEditConfirm = ({
         ayant déjà réservé en seront automatiquement informés par e-mail.
       </p>
       <p>
-        Ils disposeront alors à nouveau de 48h pour annuler leur réservation
-        (sauf si ce report a lieu dans moins de 48h).
+        Ils disposeront alors à nouveau de 48h pour annuler leur réservation.
       </p>
       <br />
       <p>
