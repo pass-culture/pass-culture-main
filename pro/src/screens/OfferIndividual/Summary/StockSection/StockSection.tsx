@@ -11,8 +11,10 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 
+import { RecurrenceSection } from './RecurrenceSection'
 import { StockEventSection } from './StockEventSection'
 import styles from './StockSection.module.scss'
 import { StockThingSection } from './StockThingSection'
@@ -24,6 +26,7 @@ export interface IStockSection {
 const StockSection = ({ offer }: IStockSection): JSX.Element => {
   const mode = useOfferWizardMode()
   const { logEvent } = useAnalytics()
+  const isRecurrenceActive = useActiveFeature('WIP_RECURRENCE')
 
   const logEditEvent = () => {
     /* istanbul ignore next: DEBT, TO FIX */
@@ -69,7 +72,11 @@ const StockSection = ({ offer }: IStockSection): JSX.Element => {
         )}
 
         {offer.isEvent ? (
-          <StockEventSection offer={offer} />
+          isRecurrenceActive ? (
+            <RecurrenceSection offer={offer} />
+          ) : (
+            <StockEventSection offer={offer} />
+          )
         ) : (
           <StockThingSection offer={offer} />
         )}
