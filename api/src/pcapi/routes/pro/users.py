@@ -8,7 +8,6 @@ import pydantic
 
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.users import api as users_api
-from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_user_password
@@ -116,29 +115,31 @@ def patch_validate_email(body: users_serializers.ChangeProEmailBody) -> None:
 def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
     errors = ApiErrors()
     errors.status_code = 400
-    user = current_user._get_current_object()
-    if not user.has_pro_role and not user.has_admin_role:
-        errors.add_error(
-            "email", "Vos modifications ne peuvent pas être acceptées tant que votre compte n’a pas été validé "
-        )
-        raise errors
-    try:
-        email_api.request_email_update_from_pro(user, body.email, body.password)
-    except users_exceptions.EmailUpdateTokenExists as exc:
-        errors.add_error("email", "Une demande de modification d'adresse e-mail est déjà en cours")
-        raise errors from exc
-    except users_exceptions.EmailUpdateInvalidPassword as exc:
-        errors.add_error("password", "Votre mot de passe est incorrect")
-        raise errors from exc
-    except users_exceptions.InvalidEmailError as exc:
-        errors.add_error("email", "Votre adresse e-mail est invalide")
-        raise errors from exc
-    except users_exceptions.EmailUpdateLimitReached as exc:
-        errors.add_error("email", "Trop de tentatives, réessayez dans 24 heures")
-        raise errors from exc
-    except users_exceptions.EmailExistsError as exc:
-        errors.add_error("email", "Un compte lié à cet e-mail existe déjà")
-        raise errors from exc
+    errors.add_error("email", "Désactivation temporaire")
+    raise errors
+    # user = current_user._get_current_object()
+    # if not user.has_pro_role and not user.has_admin_role:
+    #     errors.add_error(
+    #         "email", "Vos modifications ne peuvent pas être acceptées tant que votre compte n’a pas été validé "
+    #     )
+    #     raise errors
+    # try:
+    #     email_api.request_email_update_from_pro(user, body.email, body.password)
+    # except users_exceptions.EmailUpdateTokenExists as exc:
+    #     errors.add_error("email", "Une demande de modification d'adresse e-mail est déjà en cours")
+    #     raise errors from exc
+    # except users_exceptions.EmailUpdateInvalidPassword as exc:
+    #     errors.add_error("password", "Votre mot de passe est incorrect")
+    #     raise errors from exc
+    # except users_exceptions.InvalidEmailError as exc:
+    #     errors.add_error("email", "Votre adresse e-mail est invalide")
+    #     raise errors from exc
+    # except users_exceptions.EmailUpdateLimitReached as exc:
+    #     errors.add_error("email", "Trop de tentatives, réessayez dans 24 heures")
+    #     raise errors from exc
+    # except users_exceptions.EmailExistsError as exc:
+    #     errors.add_error("email", "Un compte lié à cet e-mail existe déjà")
+    #     raise errors from exc
 
 
 @blueprint.pro_private_api.route("/users/email_pending_validation", methods=["GET"])
