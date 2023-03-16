@@ -21,7 +21,7 @@ class ReportedOfferByUserEmailTest:
         # Given
         user = BeneficiaryGrant18Factory()
         offer = OfferFactory()
-        reason = Reason.OTHER.value
+        reason = Reason.OTHER
 
         # When
         send_email_reported_offer_by_user(user, offer, reason, "blabla")
@@ -36,7 +36,7 @@ class ReportedOfferByUserEmailTest:
         # Given
         user = BeneficiaryGrant18Factory()
         offer = OfferFactory()
-        reason = Reason.INAPPROPRIATE.value
+        reason = Reason.INAPPROPRIATE
 
         # When
         send_email_reported_offer_by_user(user, offer, reason, "blabla")
@@ -48,7 +48,7 @@ class ReportedOfferByUserEmailTest:
         # Given
         user = BeneficiaryGrant18Factory()
         offer = OfferFactory()
-        reason = Reason.INAPPROPRIATE.value
+        reason = Reason.INAPPROPRIATE
 
         # when
         email_data = get_reported_offer_email_data(user, offer, reason)

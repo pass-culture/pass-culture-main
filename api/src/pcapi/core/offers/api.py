@@ -1031,7 +1031,9 @@ def unindex_expired_offers(process_all_expired: bool = False) -> None:
         page += 1
 
 
-def report_offer(user: users_models.User, offer: models.Offer, reason: str, custom_reason: str | None) -> None:
+def report_offer(
+    user: users_models.User, offer: models.Offer, reason: models.Reason, custom_reason: str | None
+) -> None:
     try:
         # transaction() handles the commit/rollback operations
         #
@@ -1043,7 +1045,7 @@ def report_offer(user: users_models.User, offer: models.Offer, reason: str, cust
         #
         # Other errors are unexpected and are therefore re-raised as is.
         with transaction():
-            report = models.OfferReport(user=user, offer=offer, reason=reason, customReasonContent=custom_reason)  # type: ignore [arg-type]
+            report = models.OfferReport(user=user, offer=offer, reason=reason, customReasonContent=custom_reason)
             db.session.add(report)
     except sqla_exc.IntegrityError as error:
         if error.orig.pgcode == UNIQUE_VIOLATION:

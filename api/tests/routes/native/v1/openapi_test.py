@@ -840,7 +840,7 @@ def test_public_api(client):
                 "OfferReportRequest": {
                     "properties": {
                         "customReason": {"nullable": True, "title": "Customreason", "type": "string"},
-                        "reason": {"title": "Reason", "type": "string"},
+                        "reason": {"$ref": "#/components/schemas/Reason"},
                     },
                     "required": ["reason"],
                     "title": "OfferReportRequest",

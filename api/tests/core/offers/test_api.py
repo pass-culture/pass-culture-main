@@ -1132,18 +1132,20 @@ class UpdateStockIdAtProvidersTest:
 @pytest.mark.usefixtures("db_session")
 class OfferExpenseDomainsTest:
     def test_offer_expense_domains(self):
-        assert api.get_expense_domains(factories.OfferFactory(subcategoryId=subcategories.EVENEMENT_JEU.id)) == ["all"]
+        assert api.get_expense_domains(factories.OfferFactory(subcategoryId=subcategories.EVENEMENT_JEU.id)) == [
+            users_models.ExpenseDomain.ALL
+        ]
         assert set(
             api.get_expense_domains(
                 factories.OfferFactory(subcategoryId=subcategories.JEU_EN_LIGNE.id, url="https://example.com")
             )
         ) == {
-            "all",
-            "digital",
+            users_models.ExpenseDomain.ALL,
+            users_models.ExpenseDomain.DIGITAL,
         }
         assert set(api.get_expense_domains(factories.OfferFactory(subcategoryId=subcategories.OEUVRE_ART.id))) == {
-            "all",
-            "physical",
+            users_models.ExpenseDomain.ALL,
+            users_models.ExpenseDomain.PHYSICAL,
         }
 
 
