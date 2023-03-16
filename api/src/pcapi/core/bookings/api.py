@@ -217,7 +217,7 @@ def _cancel_booking(
         stock.dnBookedQuantity -= booking.quantity
         repository.save(booking, stock)
 
-    logger.info(  # type: ignore [call-arg]
+    logger.info(
         "Booking has been cancelled",
         extra={"booking_id": booking.id, "reason": str(reason)},
         technical_message_id="booking.cancelled",
@@ -325,7 +325,7 @@ def mark_as_used(booking: Booking) -> None:
     booking.mark_as_used()
     repository.save(booking)
 
-    logger.info("Booking was marked as used", extra={"booking_id": booking.id}, technical_message_id="booking.used")  # type: ignore [call-arg]
+    logger.info("Booking was marked as used", extra={"booking_id": booking.id}, technical_message_id="booking.used")
 
     update_external_user(booking.user)
 
@@ -381,7 +381,7 @@ def mark_as_unused(booking: Booking) -> None:
     booking.mark_as_unused_set_confirmed()
     repository.save(booking)
 
-    logger.info("Booking was marked as unused", extra={"booking_id": booking.id}, technical_message_id="booking.unused")  # type: ignore [call-arg]
+    logger.info("Booking was marked as unused", extra={"booking_id": booking.id}, technical_message_id="booking.unused")
 
     update_external_user(booking.user)
     update_external_pro(booking.venue.bookingEmail)

@@ -62,7 +62,7 @@ def create_venue_provider(
         venue.isPermanent = True
         repository.save(venue)
 
-    logger.info(  # type: ignore [call-arg]
+    logger.info(
         "La synchronisation d'offre a été activée",
         extra={"venue_id": venue_id, "provider_id": provider_id},
         technical_message_id="offer.sync.activated",
@@ -135,7 +135,7 @@ def delete_venue_provider(venue_provider: providers_models.VenueProvider) -> Non
     venue_id = venue_provider.venueId
     provider_name = venue_provider.provider.name
     repository.delete(venue_provider)
-    logger.info(  # type: ignore [call-arg]
+    logger.info(
         "Deleted VenueProvider for venue %d",
         venue_id,
         extra={"venue_id": venue_id, "provider_name": provider_name},
@@ -153,7 +153,7 @@ def update_venue_provider(
         update_venue_synchronized_offers_active_status_job.delay(
             venue_provider.venueId, venue_provider.providerId, venue_provider.isActive
         )
-        logger.info(  # type: ignore [call-arg]
+        logger.info(
             "Updated VenueProvider %s isActive attribut to %s",
             venue_provider.id,
             venue_provider.isActive,

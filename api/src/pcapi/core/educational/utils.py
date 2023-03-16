@@ -47,7 +47,7 @@ def log_information_for_data_purpose(
         user_id = get_hashed_user_id(user_email)
         extra_data["userId"] = user_id
 
-    logger.info(  # type: ignore [call-arg]
+    logger.info(
         event_name,
         extra={"analyticsSource": "adage", **extra_data},
         technical_message_id="collective_analytics_event",
