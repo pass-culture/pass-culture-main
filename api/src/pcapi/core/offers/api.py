@@ -974,7 +974,7 @@ def update_pending_offer_validation(offer: models.Offer, validation_status: mode
     return True
 
 
-def import_offer_validation_config(config_as_yaml: str, user: users_models.User = None) -> models.OfferValidationConfig:
+def import_offer_validation_config(config_as_yaml: str, user: users_models.User) -> models.OfferValidationConfig:
     try:
         config_as_dict = yaml.safe_load(config_as_yaml)
         validation.check_validation_config_parameters(config_as_dict, validation.KEY_VALIDATION_CONFIG["init"])
@@ -984,9 +984,9 @@ def import_offer_validation_config(config_as_yaml: str, user: users_models.User 
             error,
             extra={"exc": str(error)},
         )
-        raise exceptions.WrongFormatInFraudConfigurationFile(str(error))  # type: ignore [arg-type]
+        raise exceptions.WrongFormatInFraudConfigurationFile(error)
 
-    config = models.OfferValidationConfig(specs=config_as_dict, user=user)  # type: ignore [arg-type]
+    config = models.OfferValidationConfig(specs=config_as_dict, user=user)
     repository.save(config)
     return config
 
