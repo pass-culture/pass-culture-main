@@ -24,11 +24,9 @@ export type OptionalCollectiveOfferFromParamsProps = Omit<
   Partial<Pick<MandatoryCollectiveOfferFromParamsProps, 'offer'>>
 
 export const useCollectiveOfferFromParams = (
-  isOfferMandatory: boolean
+  isOfferMandatory: boolean,
+  offerIdFromParams?: string
 ): OptionalCollectiveOfferFromParamsProps => {
-  const { offerId: offerIdFromParams } = useParams<{
-    offerId: string
-  }>()
   const location = useLocation()
   const pathNameIncludesTemplate = location.pathname.includes('vitrine')
   if (offerIdFromParams === undefined) {
@@ -78,9 +76,18 @@ export const withCollectiveOfferFromParams = <T,>(
   isOfferMandatory = true
 ) => {
   const CollectiveOfferWrapperComponent = (props: T) => {
-    const additionalProps = useCollectiveOfferFromParams(isOfferMandatory)
+    const { offerId: offerIdFromParams } = useParams<{
+      offerId: string
+    }>()
+    const additionalProps = useCollectiveOfferFromParams(
+      isOfferMandatory,
+      offerIdFromParams
+    )
 
-    if (isOfferMandatory && additionalProps.offer === undefined) {
+    if (
+      (isOfferMandatory || offerIdFromParams) &&
+      additionalProps.offer === undefined
+    ) {
       return <Spinner />
     }
 
