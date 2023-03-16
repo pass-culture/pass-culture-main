@@ -1,38 +1,34 @@
 {% extends "layouts/admin.html" %}
-
 {% block roles_management %}
-    <div class="container">
-        <h2>Gestion des rôles</h2>
-        {% for form in forms %}
-            <div class="card mb-4">
-                <div class="card-header" data-bs-toggle="collapse" href=".pc-collapse-{{ form.name }}" role="button">
-                    {{ form.name }}
+  <div class="container">
+    <h2>Gestion des rôles</h2>
+    {% for form in forms %}
+      <div class="card mb-4">
+        <div class="card-header"
+             data-bs-toggle="collapse"
+             href=".pc-collapse-{{ form.name }}"
+             role="button">
+          {{ form.name }}
+        </div>
+        <div class="collapse card-collapse p-3 shadow pc-collapse-{{ form.name }}">
+          <form class=".{{ form.name }}"
+                action="{{ url_for(".update_role", role_id=form.id) }}"
+                method="post"
+                name="{{ url_for(".update_role", role_id=form.id) | action_to_name }}">
+            <div class="card-body">
+              <div class="row">
+                {% for form_field in forms[form] %}{{ form_field }}{% endfor %}
+              </div>
+              <div class="row">
+                <div class="my-3">
+                  <button type="submit"
+                          class="btn btn-sm py-2 btn-primary">Sauvegarder les modifications</button>
                 </div>
-                <div class="collapse card-collapse p-3 shadow pc-collapse-{{ form.name }}">
-                    <form
-                        class=".{{ form.name }}"
-                        action="{{ url_for(".update_role", role_id=form.id) }}"
-                        method="POST"
-                        name="{{ url_for(".update_role", role_id=form.id) | action_to_name }}"
-                    >
-                        <div class="card-body">
-                            <div class="row">
-                                {% for form_field in forms[form] %}
-                                    {{ form_field }}
-                                {% endfor %}
-                            </div>
-                            <div class="row">
-                                <div class="my-3">
-                                    <button type="submit" class="btn btn-sm py-2 btn-primary">
-                                        Sauvegarder les modifications
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+              </div>
             </div>
-        {% endfor %}
-    </div>
-{% endblock %}
-
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock roles_management %}

@@ -1,39 +1,30 @@
 {% from "components/badges.html" import build_offerer_badges %}
-
 <div class="card shadow">
-    <div class="card-body">
-        <h5 class="mb-3">
-            {{ build_offerer_badges(row) }}
-        </h5>
-
-        <h5 class="card-title">
-            <a href="{{ get_link_to_detail(row.id) }}" class="link-primary">
-                {{ row.name | upper }}
-            </a>
-        </h5>
-
-        <h6 class="card-subtitle mt-4 mb-3 text-muted">
-            Offerer ID : {{ row.id }}
-        </h6>
-
-        <h6 class="card-subtitle mb-4 text-muted">
-            SIREN : {{ row.siren | empty_string_if_null }}
-        </h6>
-
-        <div class="fs-6">
-            {% if row.email %}
-                <p class="mb-1"><span class="fw-bold">Email :</span> {{ row.email }} </p>
-            {% endif %}
-
-            {% if row.phoneNumber %}
-                <p><span class="fw-bold">Tél :</span> {{ row.phoneNumber | empty_string_if_null }} </p>
-            {% endif %}
-        </div>
-
-        <div class="d-flex flex-row-reverse">
-            <a href="{{ get_link_to_detail(row.id) }}" class="btn btn-md btn-outline-primary fw-bold">
-                CONSULTER CE PROFIL <i class="bi bi-arrow-right"></i>
-            </a>
-        </div>
+  <div class="card-body">
+    <h5 class="mb-3">{{ build_offerer_badges(row) }}</h5>
+    <h5 class="card-title">
+      <a href="{{ get_link_to_detail(row.id) }}"
+         class="link-primary">{{ row.name | upper }}</a>
+    </h5>
+    <h6 class="card-subtitle mt-4 mb-3 text-muted">Offerer ID : {{ row.id }}</h6>
+    <h6 class="card-subtitle mb-4 text-muted">SIREN : {{ row.siren | empty_string_if_null }}</h6>
+    <div class="fs-6">
+      {% if row.email %}
+        <p class="mb-1">
+          <span class="fw-bold">Email :</span> {{ row.email }}
+        </p>
+      {% endif %}
+      {% if row.phoneNumber %}
+        <p>
+          <span class="fw-bold">Tél :</span> {{ row.phoneNumber | empty_string_if_null }}
+        </p>
+      {% endif %}
     </div>
+    <div class="d-flex flex-row-reverse">
+      <a href="{{ get_link_to_detail(row.id) }}"
+         class="btn btn-md btn-outline-primary fw-bold">
+        CONSULTER CE PROFIL <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
 </div>
