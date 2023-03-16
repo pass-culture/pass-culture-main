@@ -1,45 +1,41 @@
-<div class="form-floating input-group{%  if field.has_manual_editing %} mt-3{% else %} my-3{% endif %}">
-    <input
-        type="{% if field.type == "PCIntegerField" %}number{% else %}text{% endif %}"
-        name="{{ field.name }}"
-        class="form-control {% if not field.has_reset %} rounded-end{% endif %}"
-        value="{{ field.data | empty_string_if_null }}"
-        data-toggle="postal-address-autocomplete"
-        data-limit="{{ field.limit }}"
-        {% if field.required %} required{% endif %}
-        {% if field.has_reset %} data-has-reset="true"{% endif %}
-        {% if field.has_manual_editing %} data-has-manual-editing="true"{% endif %}
-        {# Bellow data are necessary to tell add on PcPostalAddressAutocomplete which field in the form to set on selection #}
-        {% if field.address %} data-address-input-name="{{ field.address }}"{% endif %}
-        {% if field.city %} data-city-input-name="{{ field.city }}"{% endif %}
-        {% if field.postal_code %} data-postal-code-input-name="{{ field.postal_code }}"{% endif %}
-        {% if field.latitude %} data-latitude-input-name="{{ field.latitude }}"{% endif %}
-        {% if field.longitude %} data-longitude-input-name="{{ field.longitude }}"{% endif %}
+<div class="form-floating input-group{% if field.has_manual_editing %} mt-3{% else %} my-3{% endif %}">
+  <input
+    {% if field.type == "PCIntegerField" %}type="number"{% else %}type="text"{% endif %}
+    name="{{ field.name }}"
+    class="form-control{% if not field.has_reset %} rounded-end{% endif %}"
+    value="{{ field.data | empty_string_if_null }}"
+    data-toggle="postal-address-autocomplete"
+    data-limit="{{ field.limit }}"
+    {% if field.required %} required{% endif %}
+    {% if field.has_reset %} data-has-reset="true"{% endif %}
+    {% if field.has_manual_editing %} data-has-manual-editing="true"{% endif %}
+    {# Bellow data are necessary to tell add on PcPostalAddressAutocomplete which field in the form to set on selection #}
+    {% if field.address %} data-address-input-name="{{ field.address }}"{% endif %}
+    {% if field.city %} data-city-input-name="{{ field.city }}"{% endif %}
+    {% if field.postal_code %} data-postal-code-input-name="{{ field.postal_code }}"{% endif %}
+    {% if field.latitude %} data-latitude-input-name="{{ field.latitude }}"{% endif %}
+    {% if field.longitude %} data-longitude-input-name="{{ field.longitude }}"{% endif %}
     />
     <label for="{{ field.name }}">{{ field.label.text }}</label>
     {% if field.has_reset %}
-        <button
-            data-bs-toggle="tooltip"
-            data-bs-placement="top"
-            title="Réinitialiser l'adresse"
-            class="btn btn-outline-secondary rounded-end postal-address-autocomplete-reset"
-            type="button"
-            disabled
-        >
-            <i class="bi bi-x-circle-fill"></i>
-        </button>
+      <button data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="Réinitialiser l'adresse"
+              class="btn btn-outline-secondary rounded-end postal-address-autocomplete-reset"
+              type="button"
+              disabled>
+        <i class="bi bi-x-circle-fill"></i>
+      </button>
     {% endif %}
-</div>
-{%  if field.has_manual_editing %}
+  </div>
+  {% if field.has_manual_editing %}
     <div class="d-flex flex-row-reverse">
-        <button
-            data-bs-toggle="tooltip"
-            data-bs-placement="top"
-            title="Basculer le mode d'édition"
-            class="btn btn-sm btn-link postal-address-autocomplete-manual"
-            type="button"
-        >
-            Édition manuelle
-        </button>
+      <button data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="Basculer le mode d'édition"
+              class="btn btn-sm btn-link postal-address-autocomplete-manual"
+              type="button">
+        Édition manuelle
+      </button>
     </div>
-{% endif %}
+  {% endif %}

@@ -1,17 +1,16 @@
 {% from "components/forms.html" import build_form_fields_group with context %}
-
 {% extends "layouts/connected.html" %}
-
 {% block page %}
-    <div class="pt-3 px-5">
-        <h2 class="fw-light">Déplacer un SIRET d’un lieu à un autre</h2>
-        <div class="col-12 py-4">
-            <form action="{{ dst }}" name={{ dst | action_to_name }} method="POST">
-                {{ build_form_fields_group(form) }}
-                <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary">Continuer</button>
-                </div>
-            </form>
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Déplacer un SIRET d’un lieu à un autre</h2>
+    <div class="col-12 py-4">
+      <form action="{{ dst }}" name={{ dst | action_to_name }} method="post">
+        {{ build_form_fields_group(form) }}
+        <div class="d-flex justify-content-end">
+          <button type="submit"
+                  class="btn btn-primary">Continuer</button>
         </div>
+      </form>
     </div>
-{% endblock %}
+  </div>
+{% endblock page %}

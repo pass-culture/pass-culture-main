@@ -1,17 +1,16 @@
 <div class="form-floating {{ field.name }}-container">
-    {% set select_multiple_field_id = random_hash() %}
-    <select
-        multiple
-        class="form-select pc-select-multiple-field"
-        id="{{ select_multiple_field_id }}"
-        name="{{ field.name }}"
-        size="2"
-    >
-        {% for value, label, selected in field.iter_choices() %}
-            <option value="{{ value }}" {{ "selected" if selected else "" }}>
-                {{ label | i18n_public_account }}
-            </option>
-        {% endfor %}
-    </select>
-    <label class="pc-select-label" for="{{ select_multiple_field_id }}"> {{ field.label.text }}</label>
+  {% set select_multiple_field_id = random_hash() %}
+  <select multiple
+          class="form-select pc-select-multiple-field"
+          id="{{ select_multiple_field_id }}"
+          name="{{ field.name }}"
+          size="2">
+    {% for value, label, selected in field.iter_choices() %}
+      <option value="{{ value }}" {{ "selected" if selected else "" }}>
+        {{ label | i18n_public_account }}
+      </option>
+    {% endfor %}
+  </select>
+  <label class="pc-select-label"
+         for="{{ select_multiple_field_id }}">{{ field.label.text }}</label>
 </div>

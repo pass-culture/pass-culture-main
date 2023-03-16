@@ -1,40 +1,29 @@
 {% from "components/badges.html" import build_venue_badges %}
-
 <div class="card shadow">
-    <div class="card-body">
-        <h5 class="mb-3">
-            {{ build_venue_badges(row) }}
-        </h5>
-
-        <h5 class="card-title">
-            <a href="{{ get_link_to_detail(row.id) }}" class="link-primary">
-                {{ row.name | upper }}
-            </a>
-        </h5>
-
-        {% if row.publicName and row.publicName != row.name %}
-            <h6 class="card-subtitle mt-4 mb-3 text-muted">
-                Nom d'usage : {{ row.publicName }}
-            </h6>
-        {% endif %}
-
-        <h6 class="card-subtitle mt-4 mb-3 text-muted">
-            Venue ID : {{ row.id }}
-        </h6>
-
-        <h6 class="card-subtitle mb-4 text-muted">
-            SIRET : {{ row.siret | empty_string_if_null }}
-        </h6>
-
-        <div class="fs-6">
-            <p class="mb-1"><span class="fw-bold">E-mail :</span> {{ row.contact.email | empty_string_if_null }} </p>
-            <p><span class="fw-bold">Tél :</span> {{ row.contact.phone_number | empty_string_if_null }} </p>
-        </div>
-
-        <div class="d-flex flex-row-reverse">
-            <a href="{{ get_link_to_detail(row.id) }}" class="btn btn-md btn-outline-primary fw-bold">
-                CONSULTER CE PROFIL <i class="bi bi-arrow-right"></i>
-            </a>
-        </div>
+  <div class="card-body">
+    <h5 class="mb-3">{{ build_venue_badges(row) }}</h5>
+    <h5 class="card-title">
+      <a href="{{ get_link_to_detail(row.id) }}"
+         class="link-primary">{{ row.name | upper }}</a>
+    </h5>
+    {% if row.publicName and row.publicName != row.name %}
+      <h6 class="card-subtitle mt-4 mb-3 text-muted">Nom d'usage : {{ row.publicName }}</h6>
+    {% endif %}
+    <h6 class="card-subtitle mt-4 mb-3 text-muted">Venue ID : {{ row.id }}</h6>
+    <h6 class="card-subtitle mb-4 text-muted">SIRET : {{ row.siret | empty_string_if_null }}</h6>
+    <div class="fs-6">
+      <p class="mb-1">
+        <span class="fw-bold">E-mail :</span> {{ row.contact.email | empty_string_if_null }}
+      </p>
+      <p>
+        <span class="fw-bold">Tél :</span> {{ row.contact.phone_number | empty_string_if_null }}
+      </p>
     </div>
+    <div class="d-flex flex-row-reverse">
+      <a href="{{ get_link_to_detail(row.id) }}"
+         class="btn btn-md btn-outline-primary fw-bold">
+        CONSULTER CE PROFIL <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
 </div>

@@ -2,23 +2,17 @@
 {% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
 {% from "components/presentation/details/tabs.html" import build_details_tab_content %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
-
 <turbo-frame data-turbo="false" id="pro_user_details_frame">
-
-    {% call build_details_tabs_wrapper() %}
-        {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
-
-        {{ build_details_tab("user_offerers", "Rattachements aux structures", active_tab == 'user_offerers') }}
-    {% endcall %}
-
-    {% call build_details_tabs_content_wrapper() %}
-        {% call build_details_tab_content("history", active_tab == 'history') %}
-            {% include "pro_user/get/details/history.html" %}
-        {% endcall %}
-
-        {% call build_details_tab_content("user_offerers", active_tab == 'user_offerers') %}
-            {% include "pro_user/get/details/user_offerer.html" %}
-        {% endcall %}
-    {% endcall %}
-
+{% call build_details_tabs_wrapper() %}
+  {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
+  {{ build_details_tab("user_offerers", "Rattachements aux structures", active_tab == 'user_offerers') }}
+{% endcall %}
+{% call build_details_tabs_content_wrapper() %}
+  {% call build_details_tab_content("history", active_tab == 'history') %}
+    {% include "pro_user/get/details/history.html" %}
+  {% endcall %}
+  {% call build_details_tab_content("user_offerers", active_tab == 'user_offerers') %}
+    {% include "pro_user/get/details/user_offerer.html" %}
+  {% endcall %}
+{% endcall %}
 </turbo-frame>
