@@ -2674,4 +2674,4 @@ class TestQueriesTest:
         )
 
         with assert_num_queries(1):
-            subscription_api.get_user_subscription_state(user)
+            subscription_api.get_user_subscription_state(user.id)

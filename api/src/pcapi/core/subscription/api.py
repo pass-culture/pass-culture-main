@@ -369,7 +369,19 @@ def get_next_subscription_step(user: users_models.User) -> models.SubscriptionSt
     return get_user_subscription_state(user).next_step
 
 
-def get_user_subscription_state(user: users_models.User) -> subscription_models.UserSubscriptionState:
+import sqlalchemy.orm as sa_orm
+
+
+def get_user_subscription_state(user_id: int) -> subscription_models.UserSubscriptionState:
+    user = (
+        users_models.User.query.filter_by(id=user_id)
+        .options(
+            sa_orm.joinedload(users_models.User.beneficiaryFraudChecks),
+            sa_orm.joinedload(users_models.User.beneficiaryFraudReviews),
+        )
+        .one()
+    )
+
     # Step 1: email validation
     if not user.isEmailValidated:
         return subscription_models.UserSubscriptionState(
