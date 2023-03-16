@@ -33,7 +33,7 @@ def check_user_and_credentials(user: models.User | None, password: str, allow_in
         crypto.check_password(password, HASHED_PLACEHOLDER)
         raise exceptions.InvalidIdentifier()
     if not (user.checkPassword(password) and (user.isActive or allow_inactive)):
-        logging.info(  # type: ignore [call-arg]
+        logger.info(  # type: ignore [call-arg]
             "Failed authentication attempt",
             extra={"user": user.id, "avoid_current_user": True, "success": False},
             technical_message_id="users.login",
@@ -47,7 +47,7 @@ def get_user_with_credentials(identifier: str, password: str, allow_inactive: bo
     user = find_user_by_email(identifier)
     check_user_and_credentials(user, password, allow_inactive)
     if user:
-        logging.info(  # type: ignore [call-arg]
+        logger.info(  # type: ignore [call-arg]
             "Successful authentication attempt",
             extra={"user": user.id, "avoid_current_user": True, "success": True},
             technical_message_id="users.login",
