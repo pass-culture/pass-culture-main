@@ -1,6 +1,7 @@
 import { Step } from 'components/Breadcrumb'
 
 export enum SIGNUP_JOURNEY_STEP_IDS {
+  WELCOME = 'inscription',
   OFFERER = 'structure',
   OFFERERS = 'strutures',
   AUTHENTICATION = 'authentification',
