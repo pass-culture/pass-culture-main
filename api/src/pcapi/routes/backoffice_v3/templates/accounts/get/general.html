@@ -115,58 +115,58 @@
                 {% endif %}
               </div>
             </div>
-            <div class="d-flex flex-column ms-auto align-items-end justify-content-around">
-              {% if has_permission("SUSPEND_USER") and user.isActive %}
-                <div>
-                  {{ build_modal_form("suspend", suspension_dst, suspension_form, "Suspendre le compte", "Confirmer la suspension") }}
-                </div>
-              {% elif has_permission("UNSUSPEND_USER") and not user.isActive %}
-                <div>
-                  {{ build_modal_form("unsuspend", suspension_dst, suspension_form, "Réactiver le compte", "Confirmer la réactivation") }}
-                </div>
-              {% endif %}
-              {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
-                <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end"
-                        data-bs-toggle="modal"
-                        data-bs-target="#review-public-account-modal"
-                        type="button">
-                  Revue manuelle
-                </button>
-                <div class="modal modal-lg fade"
-                     id="review-public-account-modal"
-                     tabindex="-1"
-                     aria-labelledby="review-public-account-modal-label"
-                     aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <form action="{{ url_for(".review_public_account", user_id=user.id) }}"
-                            name="{{ url_for(".review_public_account", user_id=user.id) | action_to_name }}"
-                            method="post">
-                        <div class="modal-header">
-                          <h5 class="modal-title">Revue manuelle</h5>
+          </div>
+          <div class="d-flex flex-column ms-auto align-items-end justify-content-around">
+            {% if has_permission("SUSPEND_USER") and user.isActive %}
+              <div>
+                {{ build_modal_form("suspend", suspension_dst, suspension_form, "Suspendre le compte", "Confirmer la suspension") }}
+              </div>
+            {% elif has_permission("UNSUSPEND_USER") and not user.isActive %}
+              <div>
+                {{ build_modal_form("unsuspend", suspension_dst, suspension_form, "Réactiver le compte", "Confirmer la réactivation") }}
+              </div>
+            {% endif %}
+            {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
+              <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end"
+                      data-bs-toggle="modal"
+                      data-bs-target="#review-public-account-modal"
+                      type="button">
+                Revue manuelle
+              </button>
+              <div class="modal modal-lg fade"
+                   id="review-public-account-modal"
+                   tabindex="-1"
+                   aria-labelledby="review-public-account-modal-label"
+                   aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <form action="{{ url_for(".review_public_account", user_id=user.id) }}"
+                          name="{{ url_for(".review_public_account", user_id=user.id) | action_to_name }}"
+                          method="post">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Revue manuelle</h5>
+                      </div>
+                      <div class="modal-body">
+                        <div class="form-floating my-3">
+                          {{ build_form_fields_group(manual_review_form) }}
                         </div>
-                        <div class="modal-body">
-                          <div class="form-floating my-3">
-                            {{ build_form_fields_group(manual_review_form) }}
-                          </div>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button"
-                                  class="btn btn-outline-primary"
-                                  data-bs-dismiss="modal">
-                            Annuler
-                          </button>
-                          <button type="submit"
-                                  class="btn btn-primary">
-                            Enregistrer
-                          </button>
-                        </div>
-                      </form>
-                    </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                data-bs-dismiss="modal">
+                          Annuler
+                        </button>
+                        <button type="submit"
+                                class="btn btn-primary">
+                          Enregistrer
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 </div>
-              {% endif %}
-            </div>
+              </div>
+            {% endif %}
           </div>
         </div>
       </div>
