@@ -357,6 +357,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
           offerId={offer.id}
         />
       </form>
+
       <RouteLeavingGuardOfferIndividual
         when={formik.dirty && !isClickingFromActionBar}
         tracking={nextLocation =>

@@ -4,14 +4,20 @@ import { useNavigate } from 'react-router-dom-v5-compat'
 import { api } from 'apiClient/api'
 import DialogBox from 'components/DialogBox'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
+import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import StocksEventList from 'components/StocksEventList'
 import { IStocksEvent } from 'components/StocksEventList/StocksEventList'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
-import { isOfferDisabled } from 'core/Offers'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_OUT,
+} from 'core/FirebaseEvents/constants'
+import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { PlusCircleIcon } from 'icons'
 import { Button } from 'ui-kit'
@@ -20,6 +26,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { ActionBar } from '../ActionBar'
 import { upsertStocksEventAdapter } from '../StocksEventEdition/adapters'
 import { getSuccessMessage } from '../utils'
+import { logTo } from '../utils/logTo'
 
 import { HelpSection } from './HelpSection/HelpSection'
 import { RecurrenceForm } from './RecurrenceForm'
@@ -29,10 +36,8 @@ export interface IStocksEventCreationProps {
   offer: IOfferIndividual
 }
 
-export const StocksEventCreation = ({
-  offer,
-}: IStocksEventCreationProps): JSX.Element => {
-  const offerStocks = offer.stocks.map((stock): IStocksEvent => {
+const getInitialStocks = (offer: IOfferIndividual) =>
+  offer.stocks.map((stock): IStocksEvent => {
     if (
       stock.beginningDatetime === null ||
       stock.beginningDatetime === undefined ||
@@ -52,7 +57,14 @@ export const StocksEventCreation = ({
       quantity: stock.quantity,
     }
   })
-  const [stocks, setStocks] = useState<IStocksEvent[]>(offerStocks)
+
+export const StocksEventCreation = ({
+  offer,
+}: IStocksEventCreationProps): JSX.Element => {
+  const [isClickingFromActionBar, setIsClickingFromActionBar] =
+    useState<boolean>(false)
+  const { logEvent } = useAnalytics()
+  const [stocks, setStocks] = useState<IStocksEvent[]>(getInitialStocks(offer))
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
   const { setOffer } = useOfferIndividualContext()
@@ -76,13 +88,17 @@ export const StocksEventCreation = ({
       })
     )
   }
+
+  const stocksToCreate = stocks.filter(stock => stock.id === undefined)
+  const stocksToDelete = offer.stocks.filter(
+    s => !stocks.find(stock => stock.id === s.id)
+  )
+
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     async () => {
-      const stocksToCreate = stocks.filter(s => s.id === undefined)
-      const stocksToDelete = offer.stocks.filter(
-        s => !stocks.find(stock => stock.id === s.id)
-      )
+      setIsClickingFromActionBar(true)
+
       const { isOk } = await upsertStocksEventAdapter({
         offerId: offer.id,
         stocks: stocksToCreate,
@@ -108,12 +124,16 @@ export const StocksEventCreation = ({
             mode,
           })
         )
+        setIsClickingFromActionBar(false)
       } else {
         notify.error(
           "Une erreur est survenue lors de l'enregistrement de vos stocks."
         )
       }
     }
+
+  const hasUnsavedStocks =
+    stocksToCreate.length > 0 || stocksToDelete.length > 0
 
   return (
     <div className={styles['container']}>
@@ -162,6 +182,20 @@ export const StocksEventCreation = ({
         onClickSaveDraft={handleNextStep({ saveDraft: true })}
         step={OFFER_WIZARD_STEP_IDS.STOCKS}
         offerId={offer.id}
+      />
+
+      <RouteLeavingGuardOfferIndividual
+        when={hasUnsavedStocks && !isClickingFromActionBar}
+        tracking={nextLocation =>
+          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            from: OFFER_WIZARD_STEP_IDS.STOCKS,
+            to: logTo(nextLocation),
+            used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
+            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+            isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+            offerId: offer?.id,
+          })
+        }
       />
     </div>
   )
