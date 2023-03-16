@@ -30,6 +30,7 @@ export default [
       'screens/OfferIndividual/Informations/Informations.tsx',
       'screens/OfferIndividual/StocksEvent/StocksEvent.tsx',
       'screens/OfferIndividual/StocksThing/StocksThing.tsx',
+      'screens/OfferIndividual/StocksEventCreation/StocksEventCreation.tsx',
       'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/OffersSearch.tsx',
       'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/Offers.tsx',
       'pages/AdageIframe/app/providers/AnalyticsContextProvider.tsx',
