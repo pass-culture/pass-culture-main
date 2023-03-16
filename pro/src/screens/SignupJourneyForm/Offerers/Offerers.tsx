@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom-v5-compat'
 
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { humanizeSiren } from 'core/Offerers/utils'
-import useGetVenuesOfOffererFromSiretAdapter from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter/useGetVenuesOfOffererFromSiretAdapter'
+import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter'
+import { useAdapter } from 'hooks'
 import { ArrowUpBIcon } from 'icons'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -25,7 +26,7 @@ const Offerers = (): JSX.Element => {
     isLoading: isLoadingVenues,
     error: venuesOfOffererError,
     data: venuesOfOfferer,
-  } = useGetVenuesOfOffererFromSiretAdapter(offerer?.siret ?? '')
+  } = useAdapter(() => getVenuesOfOffererFromSiretAdapter(offerer?.siret ?? ''))
 
   const formatedSiret = humanizeSiren(venuesOfOfferer?.offererSiren)
   const displayToggleVenueList =
