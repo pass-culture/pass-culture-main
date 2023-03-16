@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
@@ -328,9 +328,9 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
     )
-    await userEvent.click(screen.getAllByText('Supprimer le stock')[0])
+    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
     expect(
-      screen.getByText('Voulez-vous supprimer cette occurrence ?')
+      await screen.findByText('Voulez-vous supprimer cette occurrence ?')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
     expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
@@ -357,7 +357,7 @@ describe('screens:StocksEventEdition', () => {
       screen.getAllByTestId('stock-form-actions-button-open')[0]
     )
     // delete just created stock
-    await userEvent.click(screen.getAllByText('Supprimer le stock')[0])
+    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
 
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
     expect(screen.getAllByLabelText('Tarif').length).toBe(1)
@@ -407,7 +407,7 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[2]
     )
-    await userEvent.click(screen.getAllByText('Supprimer le stock')[2])
+    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[2])
     expect(
       screen.getByText('Voulez-vous supprimer cette occurrence ?')
     ).toBeInTheDocument()
@@ -469,7 +469,7 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
     )
-    await userEvent.click(screen.getAllByText('Supprimer le stock')[0])
+    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
     expect(
       screen.getByText('Voulez-vous supprimer cette occurrence ?')
     ).toBeInTheDocument()
@@ -534,7 +534,8 @@ describe('screens:StocksEventEdition', () => {
     await screen.findByTestId('stock-event-form')
 
     await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
-    await userEvent.click(screen.getByText('Supprimer le stock'))
+    await userEvent.dblClick(await screen.findByText('Supprimer le stock'))
+
     await userEvent.click(
       await screen.findByText('Supprimer', { selector: 'button' })
     )
