@@ -120,7 +120,7 @@ def render_venue_details(
                 address=venue.address,
                 email=venue.contact.email if venue.contact else None,
                 phone_number=venue.contact.phone_number if venue.contact else None,
-                isPermanent=venue.isPermanent,
+                is_permanent=venue.isPermanent,
                 latitude=venue.latitude,
                 longitude=venue.longitude,
             )
