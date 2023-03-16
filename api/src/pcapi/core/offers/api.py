@@ -103,6 +103,7 @@ def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | 
 
     for field_name in subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].conditional_fields.keys():
         if extra_data.get(field_name):
+            # FIXME (2023-03-16): Currently not supported by mypy https://github.com/python/mypy/issues/7178
             formatted_extra_data[field_name] = extra_data.get(field_name)  # type: ignore[literal-required]
 
     return formatted_extra_data
@@ -236,8 +237,8 @@ def update_offer(
 
     validation.check_validation_status(offer)
     if extraData is not UNCHANGED:
-        extraData: models.OfferExtraData = _format_extra_data(offer.subcategoryId, extraData)  # type: ignore [no-redef]
-        validation.check_offer_extra_data(offer.subcategoryId, extraData)  # type: ignore [arg-type]
+        formatted_extra_data = _format_extra_data(offer.subcategoryId, extraData)
+        validation.check_offer_extra_data(offer.subcategoryId, formatted_extra_data)
     if isDuo is not UNCHANGED:
         validation.check_is_duo_compliance(isDuo, offer.subcategory)
 
@@ -807,14 +808,14 @@ def update_stock_id_at_providers(venue: offerers_models.Venue, old_siret: str) -
 
 
 def get_expense_domains(offer: models.Offer) -> list[users_models.ExpenseDomain]:
-    domains = {users_models.ExpenseDomain.ALL.value}
+    domains = {users_models.ExpenseDomain.ALL}
 
     if finance_conf.digital_cap_applies_to_offer(offer):
-        domains.add(users_models.ExpenseDomain.DIGITAL.value)
+        domains.add(users_models.ExpenseDomain.DIGITAL)
     if finance_conf.physical_cap_applies_to_offer(offer):
-        domains.add(users_models.ExpenseDomain.PHYSICAL.value)
+        domains.add(users_models.ExpenseDomain.PHYSICAL)
 
-    return list(domains)  # type: ignore [arg-type]
+    return list(domains)
 
 
 def add_criteria_to_offers(
