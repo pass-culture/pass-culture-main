@@ -7,11 +7,14 @@ import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
+import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import {
   getOfferIndividualPath,
   getOfferIndividualUrl,
 } from 'core/Offers/utils/getOfferIndividualUrl'
+import * as useAnalytics from 'hooks/useAnalytics'
+import { ButtonLink } from 'ui-kit'
 import {
   individualOfferFactory,
   individualStockFactory,
@@ -34,6 +37,9 @@ const renderStockEventCreation = (props: IStocksEventCreationProps) =>
         element={
           <>
             <StocksEventCreation {...props} />
+            <ButtonLink link={{ to: '/outside', isExternal: false }}>
+              Go outside !
+            </ButtonLink>
             <Notification />
           </>
         }
@@ -57,6 +63,7 @@ const renderStockEventCreation = (props: IStocksEventCreationProps) =>
         })}
         element={<div>Previous page</div>}
       />
+      <Route path="/outside" element={<div>This is outside stock form</div>} />
     </Routes>,
     {
       initialRouterEntries: [
@@ -110,12 +117,17 @@ describe('StocksEventCreation', () => {
   })
 })
 
+const mockLogEvent = jest.fn()
 describe('navigation and submit', () => {
   beforeEach(() => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
   })
 
   it('should redirect to previous page on click to Étape précédente', async () => {
@@ -181,6 +193,36 @@ describe('navigation and submit', () => {
       screen.getByText('Ajouter une ou plusieurs dates')
     ).toBeInTheDocument()
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+  })
+
+  it('should track when quitting without submit from RouteLeavingGuard', async () => {
+    jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
+
+    const offer = individualOfferFactory({
+      stocks: [individualStockFactory({ id: undefined, priceCategoryId: 1 })],
+    })
+    renderStockEventCreation({
+      offer,
+    })
+
+    await userEvent.click(screen.getByText('Go outside !'))
+    expect(api.upsertStocks).not.toHaveBeenCalled()
+
+    await userEvent.click(screen.getByText('Quitter la page'))
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'stocks',
+        isDraft: true,
+        isEdition: false,
+        offerId: offer.id,
+        to: '/outside',
+        used: 'RouteLeavingGuard',
+      }
+    )
   })
 })
 
