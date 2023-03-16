@@ -9,6 +9,7 @@ export interface IActivity {
   isVenueVirtual?: boolean
   isCreatingVenue: boolean
   isNewOfferCreationJourney: boolean
+  isNewOnboardingActive: boolean
 }
 
 const Activity = ({
@@ -17,6 +18,7 @@ const Activity = ({
   isCreatingVenue,
   isVenueVirtual = false,
   isNewOfferCreationJourney,
+  isNewOnboardingActive,
 }: IActivity) => {
   return (
     <>
@@ -38,7 +40,11 @@ const Activity = ({
                   text: 'En savoir plus',
                   to: 'https://aide.passculture.app/hc/fr/articles/5411407159196--Acteurs-Culturels-Dans-quel-cas-et-comment-cr%C3%A9er-un-lieu-administratif-rattach%C3%A9-%C3%A0-ma-structure-',
                   isExternal: true,
-                  'aria-label': 'en savoir plus sur le type de lieu',
+                  'aria-label': `en savoir plus sur ${
+                    isNewOnboardingActive
+                      ? 'l’activité principale'
+                      : 'le type de lieu'
+                  }`,
                   target: '_blank',
                   rel: 'noopener noreferrer',
                 }}
@@ -55,7 +61,9 @@ const Activity = ({
               ...venueTypes,
             ]}
             name="venueType"
-            label="Type de lieu"
+            label={
+              isNewOnboardingActive ? 'Activité principale' : 'Type de lieu'
+            }
             disabled={isVenueVirtual}
           />
         </FormLayout.Row>
