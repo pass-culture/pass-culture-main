@@ -29,10 +29,10 @@ def upload_file(user_id: str, file_path: str, file_name: str) -> bool:
         )
 
     except FileNotFoundError as e:
-        logging.warning(e)
+        logger.warning(e)
         return False
     except ClientError as e:
-        logging.exception(
+        logger.exception(
             "Could not upload file to Outscale bucket",
             extra={
                 "original_error_msg": e.msg,

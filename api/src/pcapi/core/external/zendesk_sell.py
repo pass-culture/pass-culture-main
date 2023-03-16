@@ -598,7 +598,7 @@ def do_update_offerer(offerer_id: int) -> None:
         try:
             zendesk_offerer_data = get_offerer_by_id(offerer)
         except ContactFoundMoreThanOneError as err:
-            logging.warning("Error while updating offerer in Zendesk Sell: %s", err, extra={"offerer_id": offerer.id})
+            logger.warning("Error while updating offerer in Zendesk Sell: %s", err, extra={"offerer_id": offerer.id})
         except ContactNotFoundError:
             if FeatureToggle.ENABLE_ZENDESK_SELL_CREATION.is_active():
                 zendesk_create_offerer(offerer)
