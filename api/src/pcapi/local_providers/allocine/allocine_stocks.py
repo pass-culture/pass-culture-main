@@ -143,6 +143,7 @@ class AllocineStocks(LocalProvider):
             "cast",
         ):
             if field in movie_information:
+                # FIXME (2023-03-16): Currently not supported by mypy https://github.com/python/mypy/issues/7178
                 obj.extraData[field] = movie_information[field]  # type: ignore [literal-required]
 
     def fill_product_attributes(self, allocine_product: offers_models.Product) -> None:
