@@ -15,6 +15,7 @@ export interface IInformations {
   setIsSiretValued: (value: boolean) => void
   isVenueVirtual: boolean
   siren: string
+  isNewOnboardingActive: boolean
 }
 
 const Informations = ({
@@ -24,6 +25,7 @@ const Informations = ({
   isVenueVirtual,
   setIsSiretValued,
   siren,
+  isNewOnboardingActive,
 }: IInformations) => {
   const { initialValues } = useFormikContext<IVenueFormValues>()
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
@@ -48,7 +50,7 @@ const Informations = ({
         <FormLayout.Row>
           <TextInput
             name="name"
-            label="Nom juridique"
+            label={isNewOnboardingActive ? 'Raison sociale' : 'Nom juridique'}
             disabled={readOnly || isFieldNameFrozen || isVenueVirtual}
           />
         </FormLayout.Row>
@@ -57,11 +59,19 @@ const Informations = ({
             sideComponent={
               <InfoBox
                 type="info"
-                text="À remplir si différent du nom juridique. En le remplissant, c’est ce dernier qui sera utilisé comme nom principal."
+                text={`À remplir si différent ${
+                  isNewOnboardingActive
+                    ? 'de la raison sociale'
+                    : 'du nom juridique'
+                }. En le remplissant, c’est ce dernier qui sera utilisé comme nom principal.`}
               />
             }
           >
-            <TextInput name="publicName" label="Nom d’affichage" isOptional />
+            <TextInput
+              name="publicName"
+              label={isNewOnboardingActive ? 'Nom public' : 'Nom d’affichage'}
+              isOptional
+            />
           </FormLayout.Row>
         )}
       </FormLayout.Section>

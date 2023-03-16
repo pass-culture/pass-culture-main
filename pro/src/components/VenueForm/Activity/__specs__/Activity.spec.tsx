@@ -20,7 +20,9 @@ const renderInformations = ({
   onSubmit: () => void
   props: IActivity
 }) => {
-  const validationSchema = yup.object().shape(informationsValidationSchema)
+  const validationSchema = yup
+    .object()
+    .shape(informationsValidationSchema(false))
 
   render(
     <Formik
@@ -48,6 +50,7 @@ describe('Activity', () => {
       venueTypes: [{ value: 'CINEMA', label: 'Cinéma, salle de projection' }],
       isCreatingVenue: true,
       isNewOfferCreationJourney: false,
+      isNewOnboardingActive: false,
     }
   })
 

@@ -20,6 +20,7 @@ import {
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
 import { useNewOfferCreationJourney } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -63,6 +64,8 @@ const VenueFormScreen = ({
   )
 
   const hasNewOfferCreationJourney = useNewOfferCreationJourney()
+
+  const isNewOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
 
   const { currentUser } = useCurrentUser()
 
@@ -144,7 +147,7 @@ const VenueFormScreen = ({
     [offerer.siren, isSiretValued]
   )
 
-  const formValidationSchema = validationSchema.concat(
+  const formValidationSchema = validationSchema(isNewOnboardingActive).concat(
     generateSiretOrCommentValidationSchema
   )
 
@@ -228,6 +231,7 @@ const VenueFormScreen = ({
             venue={venue}
             offerer={offerer}
             initialIsVirtual={initialIsVirtual}
+            isNewOnboardingActive={isNewOnboardingActive}
           />
         </form>
       </FormikProvider>

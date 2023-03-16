@@ -6,12 +6,17 @@ import { validationSchema as addressValidationSchema } from './Address'
 import { validationSchema as contactValidationSchema } from './Contact'
 import { validationSchema as informationsValidationSchema } from './Informations'
 
-const validationSchema = {
-  ...informationsValidationSchema,
-  ...addressValidationSchema,
-  ...activitySchema,
-  ...accessibilityValidationSchema,
-  ...contactValidationSchema,
+const validationSchemaConcat = (newOnboardingActive: boolean) => {
+  return {
+    ...informationsValidationSchema(newOnboardingActive),
+    ...addressValidationSchema,
+    ...activitySchema(newOnboardingActive),
+    ...accessibilityValidationSchema,
+    ...contactValidationSchema,
+  }
 }
 
-export default yup.object().shape(validationSchema)
+const validationSchema = (newOnboardingActive: boolean) =>
+  yup.object().shape(validationSchemaConcat(newOnboardingActive))
+
+export default validationSchema

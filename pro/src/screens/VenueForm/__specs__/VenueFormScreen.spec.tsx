@@ -40,13 +40,15 @@ const renderForm = (
   currentUser: SharedCurrentUserResponseModel,
   initialValues: IVenueFormValues,
   isCreatingVenue: boolean,
-  venue?: IVenue | undefined
+  venue?: IVenue | undefined,
+  features?: { list: { isActive: true; nameKey: string }[] }
 ) => {
   const storeOverrides = {
     user: {
       initialized: true,
       currentUser,
     },
+    features: features,
   }
 
   renderWithProviders(
@@ -558,6 +560,8 @@ describe('screen | VenueForm', () => {
           screen.queryByTestId('wrapper-publicName')
         ).not.toBeInTheDocument()
       })
+      expect(screen.getByText('Type de lieu')).toBeInTheDocument()
+
       expect(screen.queryByText('Adresse du lieu')).not.toBeInTheDocument()
       expect(
         screen.queryByTestId('wrapper-description')
@@ -575,6 +579,73 @@ describe('screen | VenueForm', () => {
           'Cette adresse s’appliquera par défaut à toutes vos offres, vous pourrez la modifier à l’échelle de chaque offre.'
         )
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Displaying with new onboarding', () => {
+    let features: { list: { isActive: true; nameKey: string }[] }
+
+    beforeEach(() => {
+      features = {
+        list: [{ isActive: true, nameKey: 'WIP_ENABLE_NEW_ONBOARDING' }],
+      }
+    })
+
+    it('should display new onboarding wording labels', async () => {
+      venue.isVirtual = false
+
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: false,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        venue,
+        features
+      )
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('wrapper-publicName')).toBeInTheDocument()
+      })
+
+      expect(await screen.getByText('Raison sociale')).toBeInTheDocument()
+      expect(await screen.getByText('Nom public')).toBeInTheDocument()
+      expect(await screen.getByText('Activité principale')).toBeInTheDocument()
+      expect(
+        await screen.getByText(
+          'À remplir si différent de la raison sociale. En le remplissant, c’est ce dernier qui sera utilisé comme nom principal.'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should render errors on creation', async () => {
+      formValues.venueType = ''
+      formValues.name = ''
+      formValues.publicName = ''
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: false,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        true,
+        undefined,
+        features
+      )
+
+      await userEvent.click(screen.getByText(/Enregistrer et continuer/))
+
+      expect(
+        await screen.findByText(
+          'Veuillez renseigner la raison sociale de votre lieu'
+        )
+      ).toBeInTheDocument()
+      expect(
+        await screen.getByText('Veuillez sélectionner une activité principale')
+      ).toBeInTheDocument()
     })
   })
 })

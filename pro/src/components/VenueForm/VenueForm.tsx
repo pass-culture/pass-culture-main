@@ -42,6 +42,7 @@ interface IVenueForm {
   venueProvider?: VenueProviderResponse[]
   venue?: IVenue
   initialIsVirtual?: boolean
+  isNewOnboardingActive: boolean
 }
 
 const VenueForm = ({
@@ -54,6 +55,7 @@ const VenueForm = ({
   venueProvider,
   venue,
   initialIsVirtual = false,
+  isNewOnboardingActive,
 }: IVenueForm) => {
   const {
     values: { isPermanent },
@@ -123,6 +125,7 @@ const VenueForm = ({
           isVenueVirtual={initialIsVirtual}
           setIsSiretValued={setIsSiretValued}
           siren={offerer.siren}
+          isNewOnboardingActive={isNewOnboardingActive}
         />
         {
           /* istanbul ignore next: DEBT, TO FIX */
@@ -135,6 +138,7 @@ const VenueForm = ({
           isVenueVirtual={initialIsVirtual}
           isCreatingVenue={isCreatingVenue}
           isNewOfferCreationJourney={isNewOfferCreationJourney}
+          isNewOnboardingActive={isNewOnboardingActive}
         />
         {!initialIsVirtual && (
           <>
