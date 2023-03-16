@@ -188,6 +188,7 @@ export const PriceCategoriesForm = ({
                     })}
                   >
                     <BaseCheckbox
+                      className={styles['free-checkbox']}
                       label="Gratuit"
                       checked={isFreeCheckboxSelectedArray[index]}
                       name={`priceCategories[${index}].free`}
