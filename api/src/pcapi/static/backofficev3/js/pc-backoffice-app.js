@@ -45,6 +45,7 @@ class PcBackofficeApp {
         addOnState: this.appState[name],
       })
     })
+    PcUtils.addLoadEvent(this.bindTurboFrameEvents)
     PcUtils.addLoadEvent(this.initialize)
     PcUtils.addLoadEvent(this.bindEvents)
   }
@@ -61,6 +62,21 @@ class PcBackofficeApp {
    */
   initialize = () => {
     Object.values(this.addons).forEach(({ initialize }) => initialize())
+  }
+
+  /**
+   * This method is automatically called on window `load` event and will bind turbo frame events.
+   * We have 3 turbo events binding at the moments:
+   * 1. `turbo:before-frame-render`: trigger `app.unbindEvents` on XHR response right before frame render,
+   * 1. `turbo:frame-render`: trigger `app.bindEvents` on XHR response right after frame render,
+   * 1. `turbo:frame-missing`: trigger `app.onTurboFrameMissing` on XHR response if the `id` of the turbo frame doesn't exist.
+   *
+   * Read more: https://turbo.hotwired.dev/reference/events
+   */
+  bindTurboFrameEvents = () => {
+    addEventListener('turbo:before-frame-render', this.unbindEvents)
+    addEventListener('turbo:frame-render', this.bindEvents)
+    addEventListener("turbo:frame-missing", this.onTurboFrameMissing)
   }
 
   /**
@@ -90,6 +106,22 @@ class PcBackofficeApp {
    */
   unbindEvents = () => {
     Object.values(this.addons).forEach(({ unbindEvents }) => unbindEvents())
+  }
+
+  /**
+   * Handle server-side errors without a turbo-frame..
+   * Default behaviour since turbo 7.2 is to display a full page with the error content.
+   * For example, if nginx throws a 504 error because the flask controller did not respond in time,
+   * the whole page will be replaced by a generic 504 error message, which is not great in terms of UX.
+   * @param {Event} event
+   * @example
+   * addEventListener("turbo:frame-missing", app.onTurboFrameMissing)
+   */
+  onTurboFrameMissing = (event) => {
+    event.preventDefault()
+    const error = new Error(`turbo:frame-missing with status code: ${event.detail.response.status}`)
+    console.error(error)
+    event.target.textContent = 'Une erreur est survenue'
   }
 
   /**
