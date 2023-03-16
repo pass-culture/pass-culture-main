@@ -568,7 +568,9 @@ class ReportOfferTest:
             data = {"reason": "UNKNOWN"}
             response = client.post(f"/native/v1/offer/{offer_id}/report", json=data)
             assert response.status_code == 400
-            assert response.json["reason"] == ["unknown reason"]
+            assert response.json["reason"] == [
+                "value is not a valid enumeration member; permitted: 'IMPROPER', 'PRICE_TOO_HIGH', 'INAPPROPRIATE', 'OTHER'"
+            ]
 
         assert OfferReport.query.count() == 0  # no new report
         assert not mails_testing.outbox
