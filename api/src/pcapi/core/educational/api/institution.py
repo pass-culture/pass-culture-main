@@ -85,7 +85,7 @@ def synchronise_adage_and_institution(
             institution.city = adage_institution.communeLibelle
             institution.postalCode = adage_institution.codePostal
             institution.email = adage_institution.courriel
-            institution.phoneNumber = adage_institution.telephone
+            institution.phoneNumber = adage_institution.telephone or ""
             institution.institutionType = INSTITUTION_TYPES.get(adage_institution.sigle, institution.institutionType)
         else:
             institution.isActive = False
