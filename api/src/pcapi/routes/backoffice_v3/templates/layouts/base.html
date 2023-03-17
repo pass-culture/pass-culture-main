@@ -55,6 +55,7 @@
     <script src="{{ url_for('static', filename='backofficev3/js/pc-backoffice-app.js') }}"></script>
     <script>
       const app = new PcBackofficeApp({
+        csrfToken: '{{ csrf_token }}',
         addOns: [
           BsTooltips,
           PcFormsCheckValidity,
