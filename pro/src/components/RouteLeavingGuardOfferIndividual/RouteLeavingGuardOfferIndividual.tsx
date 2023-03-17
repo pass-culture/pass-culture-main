@@ -1,6 +1,8 @@
 import React from 'react'
 
-import RouteLeavingGuard from 'components/RouteLeavingGuard'
+import RouteLeavingGuard, {
+  BlockerFunction,
+} from 'components/RouteLeavingGuard'
 
 export interface IRouteLeavingGuardOfferIndividual {
   tracking?: (p: string) => void
@@ -11,15 +13,11 @@ const RouteLeavingGuardOfferIndividual = ({
   tracking,
   when,
 }: IRouteLeavingGuardOfferIndividual): JSX.Element => {
-  const shouldBlockNavigation = (chosenLocation: Location) => ({
-    shouldBlock: true,
-    redirectPath: chosenLocation.pathname,
-  })
+  const shouldBlockNavigation: BlockerFunction = () => when
 
   return (
     <RouteLeavingGuard
       shouldBlockNavigation={shouldBlockNavigation}
-      when={when}
       dialogTitle="Les informations non sauvegardées seront perdues"
       leftButton="Quitter la page"
       rightButton="Rester sur la page"

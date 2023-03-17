@@ -1,4 +1,4 @@
-import { IShouldBlockNavigationReturnValue } from 'components/RouteLeavingGuard'
+import { BlockerFunction } from 'components/RouteLeavingGuard'
 
 const STEP_OFFER = 'offer'
 const STEP_OFFER_EDITION = 'offer_edition'
@@ -20,14 +20,10 @@ const collectiveUrlPatterns: { [key: string]: RegExp } = {
     /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif(\/vitrine)?(\/[A-Z,0-9]+)?\/confirmation/g,
 }
 
-export const shouldBlockNavigation = ({
+export const shouldBlockNavigation: BlockerFunction = ({
   currentLocation,
   nextLocation,
-}: {
-  currentLocation: { pathname: string }
-  nextLocation: { pathname: string }
-}): IShouldBlockNavigationReturnValue => {
-  let redirectPath = null
+}) => {
   // when multiples url match (example: offer and stocks),
   // we're keeping the last one (example: stocks)
   let from
@@ -59,14 +55,11 @@ export const shouldBlockNavigation = ({
     (from === STEP_RECAP && to === STEP_OFFER_EDITION) ||
     (from === STEP_RECAP && to === STEP_OFFER)
   ) {
-    return { shouldBlock: false }
+    return false
   }
   // going from confirmation to stock
   if (from === STEP_CONFIRMATION) {
-    if (to === STEP_RECAP) {
-      redirectPath = '/offres/collectives'
-    }
-    return { redirectPath, shouldBlock: false }
+    return false
   }
   if (
     // going to stocks
@@ -80,8 +73,8 @@ export const shouldBlockNavigation = ({
     // or from collective to individual or reverse
     (from === STEP_OFFER && to === STEP_OFFER)
   ) {
-    return { shouldBlock: false }
+    return false
   }
 
-  return { shouldBlock: true }
+  return true
 }

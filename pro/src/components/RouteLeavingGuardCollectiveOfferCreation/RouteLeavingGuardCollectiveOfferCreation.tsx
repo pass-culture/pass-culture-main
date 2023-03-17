@@ -1,31 +1,13 @@
-import React, { useCallback } from 'react'
-import { useLocation } from 'react-router-dom-v5-compat'
+import React from 'react'
 
-import RouteLeavingGuard, {
-  IShouldBlockNavigationReturnValue,
-} from 'components/RouteLeavingGuard/RouteLeavingGuard'
+import RouteLeavingGuard from 'components/RouteLeavingGuard/RouteLeavingGuard'
 
 import { shouldBlockNavigation } from './utils'
-export interface RouteLeavingGuardCollectiveOfferCreationProps {
-  when?: boolean
-}
 
-const RouteLeavingGuardCollectiveOfferCreation = ({
-  when = true,
-}: RouteLeavingGuardCollectiveOfferCreationProps): JSX.Element => {
-  const location = useLocation()
-
-  const shouldBlock = useCallback(
-    (nextLocation: Location): IShouldBlockNavigationReturnValue => {
-      return shouldBlockNavigation({ currentLocation: location, nextLocation })
-    },
-    [location]
-  )
-
+const RouteLeavingGuardCollectiveOfferCreation = (): JSX.Element => {
   return (
     <RouteLeavingGuard
-      shouldBlockNavigation={shouldBlock}
-      when={when}
+      shouldBlockNavigation={shouldBlockNavigation}
       dialogTitle="Voulez-vous quitter la création d’offre ?"
     >
       <p>
