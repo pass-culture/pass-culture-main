@@ -69,6 +69,7 @@ import type { ProUserCreationBodyModel } from '../models/ProUserCreationBodyMode
 import type { ProUserCreationBodyV2Model } from '../models/ProUserCreationBodyV2Model';
 import type { ReimbursementPointListResponseModel } from '../models/ReimbursementPointListResponseModel';
 import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel';
+import type { SaveNewOnboardingDataQueryModel } from '../models/SaveNewOnboardingDataQueryModel';
 import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUserResponseModel';
 import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResponseModel';
 import type { SirenInfo } from '../models/SirenInfo';
@@ -1052,6 +1053,27 @@ export class DefaultService {
         'validated_for_user': validatedForUser,
         'offerer_id': offererId,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * save_new_onboarding_data <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public saveNewOnboardingData(
+    requestBody?: SaveNewOnboardingDataQueryModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offerers/new',
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
