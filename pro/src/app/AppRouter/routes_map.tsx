@@ -54,12 +54,11 @@ interface IRouteMeta {
 }
 
 export interface IRoute {
-  component: any
+  element: any
   path: string
   title?: string
   meta?: IRouteMeta
   featureName?: string
-  disabledFeatureName?: string
 }
 
 const RedirectToConnexionComponent = () => {
@@ -69,22 +68,22 @@ const RedirectToConnexionComponent = () => {
 
 export const routesWithoutLayout: IRoute[] = [
   {
-    component: RedirectToConnexionComponent,
+    element: RedirectToConnexionComponent,
     path: '/',
   },
   {
-    component: Logout,
+    element: Logout,
     path: '/logout',
   },
   {
-    component: AdageIframe,
+    element: AdageIframe,
     path: '/adage-iframe',
     meta: {
       public: true,
     },
   },
   {
-    component: Signup,
+    element: Signup,
     path: '/inscription',
     title: 'Inscription',
     meta: {
@@ -92,7 +91,7 @@ export const routesWithoutLayout: IRoute[] = [
     },
   },
   {
-    component: Signup,
+    element: Signup,
     path: '/inscription/*',
     title: 'Inscription',
     meta: {
@@ -100,17 +99,17 @@ export const routesWithoutLayout: IRoute[] = [
     },
   },
   {
-    component: CsvTable,
+    element: CsvTable,
     path: '/reservations/detail',
     title: 'Réservations',
   },
   {
-    component: CsvTable,
+    element: CsvTable,
     path: '/remboursements-details',
     title: 'Remboursements',
   },
   {
-    component: Unavailable,
+    element: Unavailable,
     path: UNAVAILABLE_ERROR_PAGE,
     title: 'Page indisponible',
     meta: {
@@ -122,27 +121,27 @@ export const routesWithoutLayout: IRoute[] = [
 // Routes wrapped with app layout
 const routes: IRoute[] = [
   {
-    component: Homepage,
+    element: Homepage,
     path: '/accueil',
     title: 'Accueil',
   },
   {
-    component: Desk,
+    element: Desk,
     path: '/guichet',
     title: 'Guichet',
   },
   {
-    component: Bookings,
+    element: Bookings,
     path: '/reservations',
     title: 'Réservations',
   },
   {
-    component: CollectiveBookings,
+    element: CollectiveBookings,
     path: '/reservations/collectives',
     title: 'Réservations',
   },
   {
-    component: SetPassword,
+    element: SetPassword,
     path: '/creation-de-mot-de-passe',
     title: 'Création de mot de passe',
     meta: {
@@ -154,7 +153,7 @@ const routes: IRoute[] = [
     },
   },
   {
-    component: SetPassword,
+    element: SetPassword,
     path: '/creation-de-mot-de-passe/:token',
     title: 'Création de mot de passe',
     meta: {
@@ -166,7 +165,7 @@ const routes: IRoute[] = [
     },
   },
   {
-    component: SetPasswordConfirm,
+    element: SetPasswordConfirm,
     path: '/creation-de-mot-de-passe-confirmation',
     title: 'Confirmation création de mot de passe',
     meta: {
@@ -178,7 +177,7 @@ const routes: IRoute[] = [
     },
   },
   {
-    component: SetPasswordConfirm,
+    element: SetPasswordConfirm,
     path: '/creation-de-mot-de-passe-erreur',
     title: 'Erreur de création de mot de passe',
     meta: {
@@ -190,7 +189,7 @@ const routes: IRoute[] = [
     },
   },
   {
-    component: SignIn,
+    element: SignIn,
     path: '/connexion',
     title: 'Connexion',
     meta: {
@@ -202,7 +201,7 @@ const routes: IRoute[] = [
     },
   },
   {
-    component: EmailChangeValidation,
+    element: EmailChangeValidation,
     path: '/email_validation',
     title: 'Validation changement adresse e-mail',
     meta: {
@@ -214,127 +213,127 @@ const routes: IRoute[] = [
     },
   },
   {
-    component: Offerers,
+    element: Offerers,
     path: '/structures',
     title: 'Structures',
   },
   {
-    component: OffererCreation,
+    element: OffererCreation,
     path: '/structures/creation',
     title: 'Structures',
   },
   {
-    component: OffererDetails,
+    element: OffererDetails,
     path: '/structures/:offererId',
     title: 'Structures',
   },
   {
-    component: VenueCreation,
+    element: VenueCreation,
     path: '/structures/:offererId/lieux/creation',
     title: 'Structures',
   },
   {
-    component: VenueEdition,
+    element: VenueEdition,
     path: '/structures/:offererId/lieux/:venueId',
     title: 'Structures',
   },
   {
-    component: CollectiveDataEdition,
+    element: CollectiveDataEdition,
     path: '/structures/:offererId/lieux/:venueId/eac',
     title: 'Structures',
   },
   {
-    component: OfferType,
+    element: OfferType,
     path: '/offre/creation',
     title: 'Selection du type d’offre',
   },
   {
-    component: OffersRoute,
+    element: OffersRoute,
     path: '/offres',
     title: 'Offres',
   },
   {
-    component: CollectiveOffers,
+    element: CollectiveOffers,
     path: '/offres/collectives',
     title: 'Offres',
   },
   {
-    component: CollectiveOfferSelectionDuplication,
+    element: CollectiveOfferSelectionDuplication,
     path: '/offre/creation/collectif/selection',
     title: 'Edition d’une offre collective',
   },
   {
-    component: CollectiveOfferStockCreation,
+    element: CollectiveOfferStockCreation,
     path: '/offre/:offerId/collectif/stocks',
     title: 'Edition d’une offre collective',
   },
   {
-    component: CollectiveOfferCreation,
+    element: CollectiveOfferCreation,
     path: '/offre/creation/collectif',
     title: 'Edition d’une offre collective',
   },
   {
-    component: CollectiveOfferCreation,
+    element: CollectiveOfferCreation,
     path: '/offre/creation/collectif/vitrine',
     title: 'Edition d’une offre collective',
   },
   {
-    component: CollectiveOfferCreation,
+    element: CollectiveOfferCreation,
     path: '/offre/collectif/:offerId/creation',
     title: 'Edition d’une offre collective',
   },
   {
-    component: CollectiveOfferCreation,
+    element: CollectiveOfferCreation,
     path: '/offre/collectif/vitrine/:offerId/creation',
     title: 'Edition d’une offre collective',
   },
   {
-    component: CollectiveOfferVisibilityCreation,
+    element: CollectiveOfferVisibilityCreation,
     path: '/offre/:offerId/collectif/visibilite',
     title: 'Edition d’une offre collective',
   },
   {
-    component: CollectiveOfferSummaryCreation,
+    element: CollectiveOfferSummaryCreation,
     path: '/offre/:offerId/collectif/creation/recapitulatif',
     title: 'Edition d’une offre collective',
   },
   {
-    component: CollectiveOfferSummaryCreation,
+    element: CollectiveOfferSummaryCreation,
     path: '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
     title: 'Edition d’une offre collective',
   },
   {
-    component: CollectiveOfferConfirmation,
+    element: CollectiveOfferConfirmation,
     path: '/offre/:offerId/collectif/confirmation',
     title: 'Edition d’une offre collective',
   },
   {
-    component: CollectiveOfferConfirmation,
+    element: CollectiveOfferConfirmation,
     path: '/offre/:offerId/collectif/vitrine/confirmation',
     title: 'Edition d’une offre collective',
   },
   {
-    component: CollectiveOfferEdition,
+    element: CollectiveOfferEdition,
     path: '/offre/:offerId/collectif/edition',
     title: 'Edition d’une offre collective',
   },
   {
-    component: CollectiveOfferSummaryEdition,
+    element: CollectiveOfferSummaryEdition,
     path: '/offre/:offerId/collectif/recapitulatif',
     title: 'Edition d’une offre collective',
   },
   {
-    component: CollectiveOfferStockEdition,
+    element: CollectiveOfferStockEdition,
     path: '/offre/:offerId/collectif/stocks/edition',
     title: 'Edition d’une offre collective',
   },
   {
-    component: CollectiveOfferVisibility,
+    element: CollectiveOfferVisibility,
     path: '/offre/:offerId/collectif/visibilite/edition',
     title: 'Edition d’une offre collective',
   },
   {
-    component: LostPassword,
+    element: LostPassword,
     path: '/mot-de-passe-perdu',
     title: 'Mot de passe perdu',
     meta: {
@@ -346,12 +345,12 @@ const routes: IRoute[] = [
     },
   },
   {
-    component: OfferIndividualWizard,
+    element: OfferIndividualWizard,
     path: '/offre/individuelle/:offerId/*',
     title: 'Offre étape par étape',
   },
   {
-    component: Reimbursements,
+    element: Reimbursements,
     path: '/remboursements/*',
     title: 'Remboursements',
     meta: {
@@ -361,18 +360,18 @@ const routes: IRoute[] = [
     },
   },
   {
-    component: UserProfile,
+    element: UserProfile,
     path: '/profil',
     title: 'Profil',
   },
   {
-    component: OffererStats,
+    element: OffererStats,
     path: '/statistiques',
     title: 'Statistiques',
     featureName: 'ENABLE_OFFERER_STATS',
   },
   {
-    component: SignupJourneyRoutes,
+    element: SignupJourneyRoutes,
     path: '/parcours-inscription/*',
     title: 'Parcours de souscription',
     featureName: 'WIP_ENABLE_NEW_ONBOARDING',
