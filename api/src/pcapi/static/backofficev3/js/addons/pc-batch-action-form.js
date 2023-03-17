@@ -12,8 +12,8 @@
  * - `[data-input-ids-name]`: this value is used as the input name for storing `selectedIds`.
  *
  * Within the `.btn-group` container, you can add as many buttons as needed, and you must set some attributes too:
- * - `[data-modal-selector]: this value must be the modal selector that contain the form,
- * - `[data-user-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly.
+ * - `[data-use-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly, (required)
+ * - `[data-modal-selector]: this value must be the modal selector that contain the form. (optional)
  *
  * @example
  * <div
@@ -56,7 +56,7 @@
  */
 class PcBatchActionForm extends PcAddOn {
   static BATCH_CONFIRM_BTN_GROUP_SELECTOR = '[data-toggle="pc-batch-confirm-btn-group"]'
-  static BATCH_CONFIRM_BTN_SELECTOR = 'button[data-modal-selector]'
+  static BATCH_CONFIRM_BTN_SELECTOR = 'button[data-use-confirmation-modal]'
 
   state = {}
 
