@@ -35,7 +35,10 @@
             <button disabled
                     type="button"
                     class="btn btn-outline-primary"
-                    data-use-confirmation-modal="false">Valider</button>
+                    data-url="{{ url_for("backoffice_v3_web.validation.batch_validate_user_offerer") }}"
+                    data-use-confirmation-modal="false">
+              Valider
+            </button>
             <button disabled
                     type="button"
                     class="btn btn-outline-primary"
