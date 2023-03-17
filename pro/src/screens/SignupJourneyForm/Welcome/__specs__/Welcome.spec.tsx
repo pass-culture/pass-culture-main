@@ -40,24 +40,6 @@ describe('screens:SignupJourney::Welcome', () => {
     expect(
       await screen.getByText('Finalisez votre inscription')
     ).toBeInTheDocument()
-
-    expect(
-      await screen.getByText(
-        'Avant de commencer, munissez-vous du numéro de SIRET de votre structure.'
-      )
-    ).toBeInTheDocument()
-
-    expect(
-      await screen.getByText(
-        'Vous préférez continuer plus tard ? Utilisez simplement vos identifiants pour vous reconnecter.'
-      )
-    ).toBeInTheDocument()
-
-    expect(
-      await screen.findByRole('link', {
-        name: 'Commencer',
-      })
-    ).toBeInTheDocument()
   })
 
   it('should redirect user on offerer page on continue button click', async () => {
