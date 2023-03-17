@@ -12,6 +12,7 @@ from sqlalchemy.orm import load_only
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.categories import categories
+from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import models
 from pcapi.core.external.batch import update_user_attributes as update_batch_user
 from pcapi.core.external.sendinblue import update_contact_attributes as update_sendinblue_user
@@ -22,6 +23,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
+from pcapi.models.offer_mixin import OfferStatus
 
 
 # make sure values are in [a-z0-9_] (no uppercase characters, no '-')
@@ -115,6 +117,8 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         .one_or_none()
     )
 
+    has_collective_offers = False
+
     if user:
         offerers = [
             user_offerer.offerer
@@ -132,8 +136,11 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         # A pro user is flagged EAC when at least one venue of his offerer has an adageId
         is_eac = False
 
+        has_collective_offers = _check_if_pro_attribute_has_collective_offers(user=user)
+
         for offerer in offerers:
             all_venues += offerer.managedVenues
+
             offerers_names.add(offerer.name)
             offerers_tags.update(tag.label for tag in offerer.tags)
 
@@ -219,8 +226,46 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         venues_labels={venue.venueLabel.label for venue in all_venues if venue.venueLabelId},  # type: ignore [misc]
         departement_code={venue.departementCode for venue in all_venues if venue.departementCode},
         postal_code={venue.postalCode for venue in all_venues if venue.postalCode},
+        has_collective_offers=bool(has_collective_offers),
         **attributes,
     )
+
+
+def _check_if_pro_attribute_has_collective_offers(user: users_models.User) -> bool:
+    collective_offer_query = db.session.query(educational_models.CollectiveOffer.id)
+    collective_offer_query = collective_offer_query.join(
+        offerers_models.Venue, educational_models.CollectiveOffer.venue
+    )
+    collective_offer_query = collective_offer_query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+    collective_offer_query = collective_offer_query.join(
+        offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers
+    )
+    collective_offer_query = collective_offer_query.filter(
+        offerers_models.UserOfferer.isValidated,
+        offerers_models.UserOfferer.user == user,
+        educational_models.CollectiveOffer.status.in_([OfferStatus.ACTIVE, OfferStatus.SOLD_OUT]),  # type: ignore [attr-defined]
+    )
+    collective_offer_query = collective_offer_query.limit(1)
+
+    collective_offer_template_query = db.session.query(educational_models.CollectiveOfferTemplate.id)
+    collective_offer_template_query = collective_offer_template_query.join(
+        offerers_models.Venue, educational_models.CollectiveOfferTemplate.venue
+    )
+    collective_offer_template_query = collective_offer_template_query.join(
+        offerers_models.Offerer, offerers_models.Venue.managingOfferer
+    )
+    collective_offer_template_query = collective_offer_template_query.join(
+        offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers
+    )
+    collective_offer_template_query = collective_offer_template_query.filter(
+        offerers_models.UserOfferer.isValidated,
+        offerers_models.UserOfferer.user == user,
+        educational_models.CollectiveOfferTemplate.status == OfferStatus.ACTIVE,
+    )
+    collective_offer_template_query = collective_offer_template_query.limit(1)
+
+    result = bool(collective_offer_query.union(collective_offer_template_query).one_or_none())
+    return result
 
 
 def get_user_attributes(user: users_models.User) -> models.UserAttributes:

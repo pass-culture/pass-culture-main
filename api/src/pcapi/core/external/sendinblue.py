@@ -88,6 +88,7 @@ class SendinblueAttributes(Enum):
     AMOUNT_SPENT_2022 = "AMOUNT_SPENT_2022"
     FIRST_BOOKED_OFFER_2022 = "FIRST_BOOKED_OFFER_2022"
     LAST_BOOKED_OFFER_2022 = "LAST_BOOKED_OFFER_2022"
+    HAS_COLLECTIVE_OFFERS = "HAS_COLLECTIVE_OFFERS"
 
     @classmethod
     def list(cls) -> list[str]:
@@ -209,6 +210,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.AMOUNT_SPENT_2022.value: _get_attr(attributes, "amount_spent_2022"),
         SendinblueAttributes.FIRST_BOOKED_OFFER_2022.value: _get_attr(attributes, "first_booked_offer_2022"),
         SendinblueAttributes.LAST_BOOKED_OFFER_2022.value: _get_attr(attributes, "last_booked_offer_2022"),
+        SendinblueAttributes.HAS_COLLECTIVE_OFFERS.value: _get_attr(attributes, "has_collective_offers"),
     }
 
 

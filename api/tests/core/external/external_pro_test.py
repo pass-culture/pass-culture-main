@@ -3,6 +3,7 @@ from dataclasses import asdict
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.external.attributes.api import get_pro_attributes
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformationStatus
@@ -22,7 +23,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 # 1 query on user table with joinedload
 # 1 query on venue table with joinedload
 # 2 extra SQL queries: select exists on offer and booking tables
-EXPECTED_PRO_ATTR_NUM_QUERIES = 4
+EXPECTED_PRO_ATTR_NUM_QUERIES = 5
 
 
 def _build_params(subs, virt, perman, draft, accep, offer, book, attach):
@@ -92,6 +93,7 @@ def test_update_external_pro_user_attributes(
         isPermanent=create_permanent,
         venueTypeCode=VenueTypeCode.MOVIE,
         venueLabelId=venue_label_a.id,
+        collectiveOffers=[educational_factories.CollectiveOfferFactory(isActive=True)],
     )
     venue1b = offerers_factories.VenueFactory(
         managingOfferer=offerer1,
@@ -162,7 +164,6 @@ def test_update_external_pro_user_attributes(
         finance_factories.BankInformationFactory(venue=venue3, status=BankInformationStatus.DRAFT)
     elif create_dms_accepted:
         finance_factories.BankInformationFactory(venue=venue3, status=BankInformationStatus.ACCEPTED)
-
     # This offerer is managed by pro user but venue has a different email address
     offerer4 = offerers_factories.OffererFactory(siren="001002003", name="Juste Libraire")
     if attached == "all":
@@ -256,6 +257,7 @@ def test_update_external_pro_user_attributes(
     assert attributes.isPermanent is create_permanent
     assert attributes.has_offers is create_offer
     assert attributes.has_bookings is create_booking
+    assert attributes.has_collective_offers == True
 
 
 def test_update_external_pro_user_attributes_no_offerer_no_venue():
@@ -263,7 +265,7 @@ def test_update_external_pro_user_attributes_no_offerer_no_venue():
     user_email = user.email
 
     # only 2 queries: user and venue - no booking or offer to check without offerer
-    with assert_num_queries(2):
+    with assert_num_queries(3):
         attributes = get_pro_attributes(user_email)
 
     assert attributes.is_pro is True
@@ -290,6 +292,7 @@ def test_update_external_pro_user_attributes_no_offerer_no_venue():
     assert attributes.isPermanent is None
     assert attributes.has_offers is None
     assert attributes.has_bookings is None
+    assert attributes.has_collective_offers == False
 
 
 def test_update_external_pro_booking_email_attributes():
@@ -306,7 +309,7 @@ def test_update_external_pro_booking_email_attributes():
         venueTypeCode=VenueTypeCode.MUSEUM,
     )
 
-    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES):
+    with assert_num_queries(4):
         attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
