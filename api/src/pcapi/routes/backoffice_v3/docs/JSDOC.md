@@ -500,7 +500,8 @@ To work, each `.btn-group` must set the following attributes:
 Within the `.btn-group` container, you can add as many buttons as needed, and you must set some attributes too:
 
 *   `[data-use-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly, (required)
-*   \`\[data-modal-selector]: this value must be the modal selector that contain the form. (optional)
+*   \`\[data-modal-selector]: this value must be the modal selector that contain the form, (optional)
+*   `[data-mode]`: set this attributes to `fetch` if you want to use a form data (**not supported by turboframe**).
 
 ### Examples
 

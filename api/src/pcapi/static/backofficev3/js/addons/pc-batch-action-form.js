@@ -13,7 +13,8 @@
  *
  * Within the `.btn-group` container, you can add as many buttons as needed, and you must set some attributes too:
  * - `[data-use-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly, (required)
- * - `[data-modal-selector]: this value must be the modal selector that contain the form. (optional)
+ * - `[data-modal-selector]: this value must be the modal selector that contain the form, (optional)
+ * - `[data-mode]`: set this attributes to `fetch` if you want to use a form data (**not supported by turboframe**).
  *
  * @example
  * <div
@@ -111,8 +112,8 @@ class PcBatchActionForm extends PcAddOn {
     })
   }
 
-  #onBatchButtonClick = (event) => {
-    const { useConfirmationModal, pcTableMultiSelectId, toggleId } = event.target.dataset
+  #onBatchButtonClick = async (event) => {
+    const { useConfirmationModal, pcTableMultiSelectId, toggleId, mode } = event.target.dataset
     const { inputIdsName } = this.state[toggleId]
 
     const $modal = document.querySelector(event.target.dataset.modalSelector)
@@ -122,11 +123,31 @@ class PcBatchActionForm extends PcAddOn {
 
     $objectIds.value = [...tableMultiSelectState.selectedRowsIds].join(',')
 
+    const $turboFrame = $modal.querySelector('turbo-frame')
+
+    if (mode === 'fetch') {
+      try {
+        const response = await fetch($turboFrame.src, {
+          method: 'GET',
+          headers: new Headers({
+            inputIdsName,
+            selectedRowsIds: [...tableMultiSelectState.selectedRowsIds].join(','),
+          }),
+        })
+        if (response.ok) {
+          throw new Error(`Bad response code (${response.status}): ${response.statusText}`)
+        }
+        $turboFrame.parentElement.innerHTML = await response.text()
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    
     if (useConfirmationModal === "true") {
       bootstrap.Modal.getOrCreateInstance($modal).show()
       return
     }
-
-    $form.submit()
+    // we have to requery the form in case of mode fetch, as it will be rerended
+    $modal.querySelector('form').submit()
   }
 }
