@@ -99,10 +99,10 @@ export function OfferIndividualContextProvider({
         setOffer(response.payload)
         setVenueId(response.payload.venueId)
       } else {
+        navigate(homePath)
         notify.error(
           'Une erreur est survenue lors de la récupération de votre offre'
         )
-        navigate(homePath)
       }
     }
     offerId ? loadOffer() : setOffer(null)
@@ -132,8 +132,8 @@ export function OfferIndividualContextProvider({
         setSubCategories([])
         setOffererNames([])
         setVenueList([])
-        notify.error(GET_DATA_ERROR_MESSAGE)
         navigate(homePath)
+        notify.error(GET_DATA_ERROR_MESSAGE)
       }
       setIsLoading(false)
     }

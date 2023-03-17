@@ -95,13 +95,13 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
     /* istanbul ignore next: DEBT, TO FIX */
     if (isOk) {
-      notify.success(message)
       const response = await getOfferIndividualAdapter(offer.id)
       if (response.isOk) {
         setOffer && setOffer(response.payload)
         formik.resetForm({ values: buildInitialValues(response.payload) })
       }
       navigate(afterSubmitUrl)
+      notify.success(message)
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.STOCKS,
         to: isSubmittingDraft
@@ -178,8 +178,8 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
           notify.success('Brouillon sauvegardé dans la liste des offres')
           return
         } else {
-          notify.success(getSuccessMessage(mode))
           navigate(nextStepUrl)
+          notify.success(getSuccessMessage(mode))
         }
       }
       // tested but coverage don't see it.
@@ -189,10 +189,10 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
       const hasSavedStock = formik.values.stockId !== undefined
       if (hasSavedStock && !formik.dirty) {
-        notify.success(getSuccessMessage(mode))
         if (!saveDraft) {
           navigate(nextStepUrl)
         }
+        notify.success(getSuccessMessage(mode))
         setIsClickingFromActionBar(false)
       } else {
         if (saveDraft) {

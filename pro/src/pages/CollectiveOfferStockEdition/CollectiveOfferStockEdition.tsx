@@ -59,7 +59,6 @@ const CollectiveOfferStockEdition = ({
       return notify.error(offerResponse.message)
     }
 
-    notify.success(stockResponse.message)
     reloadCollectiveOffer()
     navigate(
       `/offre/${computeURLCollectiveOfferId(
@@ -67,6 +66,7 @@ const CollectiveOfferStockEdition = ({
         false
       )}/collectif/recapitulatif`
     )
+    notify.success(stockResponse.message)
   }
 
   return (
