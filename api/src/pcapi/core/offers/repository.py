@@ -100,22 +100,6 @@ def get_offers_by_ids(user: User, offer_ids: list[int]) -> BaseQuery:
     return query
 
 
-def get_collective_offers_by_offer_ids(user: User, offer_ids: list[int]) -> BaseQuery:
-    query = CollectiveOffer.query
-    if not user.has_admin_role:
-        query = query.join(Venue, Offerer, UserOfferer).filter(UserOfferer.userId == user.id, UserOfferer.isValidated)
-    query = query.filter(CollectiveOffer.offerId.in_(offer_ids))
-    return query
-
-
-def get_collective_offers_template_by_offer_ids(user: User, offer_ids: list[int]) -> BaseQuery:
-    query = CollectiveOfferTemplate.query
-    if not user.has_admin_role:
-        query = query.join(Venue, Offerer, UserOfferer).filter(UserOfferer.userId == user.id, UserOfferer.isValidated)
-    query = query.filter(CollectiveOfferTemplate.offerId.in_(offer_ids))
-    return query
-
-
 def get_offers_by_filters(
     user_id: int,
     user_is_admin: bool,
