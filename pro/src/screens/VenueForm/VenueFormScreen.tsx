@@ -88,10 +88,6 @@ const VenueFormScreen = ({
     let savedSuccess: boolean
     request
       .then(response => {
-        if (!hasNewOfferCreationJourney || currentUser.isAdmin) {
-          notify.success('Vos modifications ont bien été enregistrées')
-        }
-
         savedSuccess = true
 
         navigate(
@@ -103,6 +99,10 @@ const VenueFormScreen = ({
             currentUser
           )
         )
+
+        if (!hasNewOfferCreationJourney || currentUser.isAdmin) {
+          notify.success('Vos modifications ont bien été enregistrées')
+        }
       })
       .catch(error => {
         savedSuccess = false

@@ -78,8 +78,8 @@ const VenueEdition = (): JSX.Element | null => {
       errorVenueLabels,
     ].find(error => error !== undefined)
     if (loadingError !== undefined) {
-      notify.error(loadingError.message)
       navigate(homePath)
+      notify.error(loadingError.message)
       return null
     }
     return null

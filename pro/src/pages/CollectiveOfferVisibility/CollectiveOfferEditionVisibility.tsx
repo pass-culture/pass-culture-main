@@ -48,7 +48,6 @@ const CollectiveOfferVisibility = ({
     message: string
     payload: CollectiveOffer
   }) => {
-    notify.success(message)
     reloadCollectiveOffer()
     navigate(
       `/offre/${computeURLCollectiveOfferId(
@@ -56,6 +55,7 @@ const CollectiveOfferVisibility = ({
         false
       )}/collectif/recapitulatif`
     )
+    notify.success(message)
   }
 
   if (isLoading) {

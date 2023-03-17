@@ -149,11 +149,6 @@ const Informations = ({
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }
-      notify.success(
-        mode === OFFER_WIZARD_MODE.EDITION
-          ? 'Vos modifications ont bien été enregistrées'
-          : 'Brouillon sauvegardé dans la liste des offres'
-      )
       // replace url to fix back button
       navigate(
         getOfferIndividualUrl({
@@ -181,6 +176,12 @@ const Informations = ({
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
         offerId: receivedOfferId,
       })
+
+      notify.success(
+        mode === OFFER_WIZARD_MODE.EDITION
+          ? 'Vos modifications ont bien été enregistrées'
+          : 'Brouillon sauvegardé dans la liste des offres'
+      )
     } else {
       formik.setErrors(payload.errors)
     }

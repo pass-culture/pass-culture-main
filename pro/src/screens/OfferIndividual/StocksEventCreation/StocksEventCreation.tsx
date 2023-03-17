@@ -109,7 +109,6 @@ export const StocksEventCreation = ({
       }
 
       if (isOk) {
-        notify.success(getSuccessMessage(mode))
         const response = await getOfferIndividualAdapter(offer.id)
         if (response.isOk) {
           const updatedOffer = response.payload
@@ -125,6 +124,7 @@ export const StocksEventCreation = ({
           })
         )
         setIsClickingFromActionBar(false)
+        notify.success(getSuccessMessage(mode))
       } else {
         notify.error(
           "Une erreur est survenue lors de l'enregistrement de vos stocks."
