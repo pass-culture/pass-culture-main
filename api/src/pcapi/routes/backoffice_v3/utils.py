@@ -37,6 +37,10 @@ def has_current_user_permission(permission: perm_models.Permissions | str) -> bo
     return permission in current_user.backoffice_profile.permissions or settings.IS_TESTING
 
 
+def read_setting(settingKey: str) -> bool | str | int:
+    return getattr(settings, settingKey)
+
+
 def _check_permission(permission: perm_models.Permissions) -> None:
     if not current_user.is_authenticated:
         raise UnauthenticatedUserError()

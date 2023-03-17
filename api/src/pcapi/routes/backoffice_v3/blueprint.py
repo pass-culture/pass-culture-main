@@ -46,4 +46,5 @@ def extra_funcs() -> dict:
         "has_permission": utils.has_current_user_permission,
         "is_user_offerer_action_type": utils.is_user_offerer_action_type,
         "random_hash": utils.random_hash,
+        "read_setting": utils.read_setting,
     }

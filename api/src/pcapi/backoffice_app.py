@@ -4,6 +4,7 @@ import typing
 from flask import render_template
 from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
+from livereload import Server
 from sentry_sdk import set_tag
 
 from pcapi import settings
@@ -55,4 +56,11 @@ if __name__ == "__main__":
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
     set_tag("pcapi.app_type", "app")
-    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=True)
+    if settings.BACKOFFICE_LIVE_RELOAD_SERVER:
+        # remember to use DEBUG mode for templates auto reload
+        # https://github.com/lepture/python-livereload/issues/144
+        app.debug = True
+        live_server = Server(app.wsgi_app)
+        live_server.serve(host="0.0.0.0", port=port, debug=True)
+    else:
+        app.run(host="0.0.0.0", port=port, debug=True, use_reloader=True)
