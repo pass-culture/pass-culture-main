@@ -151,6 +151,7 @@ export type { ReimbursementCsvQueryModel } from './models/ReimbursementCsvQueryM
 export type { ReimbursementPointListResponseModel } from './models/ReimbursementPointListResponseModel';
 export type { ReimbursementPointResponseModel } from './models/ReimbursementPointResponseModel';
 export type { ResetPasswordBodyModel } from './models/ResetPasswordBodyModel';
+export type { SaveNewOnboardingDataQueryModel } from './models/SaveNewOnboardingDataQueryModel';
 export type { SharedCurrentUserResponseModel } from './models/SharedCurrentUserResponseModel';
 export type { SharedLoginUserResponseModel } from './models/SharedLoginUserResponseModel';
 export type { SirenInfo } from './models/SirenInfo';
