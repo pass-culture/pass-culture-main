@@ -1,5 +1,5 @@
 import React from 'react'
-import { useLocation } from 'react-router-dom-v5-compat'
+import { useLocation } from 'react-router-dom'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'

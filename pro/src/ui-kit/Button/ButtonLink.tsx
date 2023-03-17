@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import React, { MouseEventHandler } from 'react'
-import { Link } from 'react-router-dom-v5-compat'
+import { Link } from 'react-router-dom'
 
 import { ReactComponent as IcoArrowRight } from 'icons/ico-mini-arrow-right.svg'
 import Tooltip from 'ui-kit/Tooltip'

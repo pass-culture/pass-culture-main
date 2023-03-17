@@ -1,7 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom-v5-compat'
+import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import FormLayout, { FormLayoutDescription } from 'components/FormLayout'

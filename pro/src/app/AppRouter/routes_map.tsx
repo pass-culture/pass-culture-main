@@ -1,6 +1,6 @@
 /* No need to test this file */
 /* istanbul ignore file */
-import { Navigate, useLocation } from 'react-router-dom-v5-compat'
+import { Navigate, useLocation } from 'react-router-dom'
 
 import AdageIframe from 'pages/AdageIframe/AdageIframe'
 import Bookings from 'pages/Bookings'

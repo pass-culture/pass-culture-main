@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import type { FormRenderProps, FormSpyRenderProps } from 'react-final-form'
 import { FormSpy } from 'react-final-form'
-import { Link } from 'react-router-dom-v5-compat'
+import { Link } from 'react-router-dom'
 
 import { CreateOffererQueryModel } from 'apiClient/v1'
 import { SirenField } from 'ui-kit/form_rff/fields/SirenField'

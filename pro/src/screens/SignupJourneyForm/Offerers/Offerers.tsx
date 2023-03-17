@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom-v5-compat'
+import { useNavigate } from 'react-router-dom'
 
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { humanizeSiren } from 'core/Offerers/utils'

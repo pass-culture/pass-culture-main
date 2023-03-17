@@ -1,6 +1,6 @@
 import { useFormikContext } from 'formik'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom-v5-compat'
+import { useNavigate } from 'react-router-dom'
 
 import { BannerInvisibleSiren, BannerRGS } from 'components/Banner'
 import FormLayout from 'components/FormLayout'

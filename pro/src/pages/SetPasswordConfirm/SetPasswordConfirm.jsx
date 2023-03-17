@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-import { Link, useLocation } from 'react-router-dom-v5-compat'
+import { Link, useLocation } from 'react-router-dom'
 
 import PageTitle from 'components/PageTitle/PageTitle'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'

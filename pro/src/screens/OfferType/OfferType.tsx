@@ -1,5 +1,5 @@
 import React, { FormEvent, useCallback, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'

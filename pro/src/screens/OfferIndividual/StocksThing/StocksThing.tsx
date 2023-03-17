@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom-v5-compat'
+import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
