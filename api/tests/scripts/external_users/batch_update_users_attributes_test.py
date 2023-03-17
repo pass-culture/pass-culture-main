@@ -180,4 +180,5 @@ def test_format_sendinblue_user():
         "AMOUNT_SPENT_2022": Decimal("10.00"),
         "FIRST_BOOKED_OFFER_2022": booking.stock.offer.name,
         "LAST_BOOKED_OFFER_2022": booking.stock.offer.name,
+        "HAS_COLLECTIVE_OFFERS": None,
     }
