@@ -35,10 +35,8 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation | RouteLeavingGu
   let props: IRouteLeavingGuardProps
 
   beforeEach(() => {
-    const shouldBlockReturnValue = { redirectPath: '', shouldBlock: true }
     props = {
-      shouldBlockNavigation: () => shouldBlockReturnValue,
-      when: true,
+      shouldBlockNavigation: () => true,
       children: 'Voulez-vous quitter la page actuelle ?',
       dialogTitle: 'title',
     }
@@ -60,7 +58,7 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation | RouteLeavingGu
 
   it("should not display the confirmation modal before redirection when it's not activated", async () => {
     // Given
-    props.when = false
+    props.shouldBlockNavigation = () => false
 
     //When
     renderRouteLeavingGuard(props)
@@ -105,12 +103,12 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation | RouteLeavingGu
 
   it('should display the redirection confirmation modal only when the next location is About page', async () => {
     // Given
-    props.shouldBlockNavigation = nextLocation => {
+    props.shouldBlockNavigation = ({ nextLocation }) => {
       // to fix - no-conditional-in-test
       if (nextLocation.pathname === '/about') {
-        return { redirectPath: '', shouldBlock: true }
+        return true
       }
-      return { redirectPath: '', shouldBlock: false }
+      return false
     }
 
     // When

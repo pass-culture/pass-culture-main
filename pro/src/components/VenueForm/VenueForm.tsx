@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom-v5-compat'
 
 import { VenueProviderResponse } from 'apiClient/v1'
@@ -15,9 +15,7 @@ import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/Reimburse
 import { venueSubmitRedirectUrl } from 'screens/VenueForm/utils/venueSubmitRedirectUrl'
 
 import useCurrentUser from '../../hooks/useCurrentUser'
-import RouteLeavingGuard, {
-  IShouldBlockNavigationReturnValue,
-} from '../RouteLeavingGuard'
+import RouteLeavingGuard, { BlockerFunction } from '../RouteLeavingGuard'
 
 import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
@@ -79,29 +77,27 @@ const VenueForm = ({
 
   const isNewOfferCreationJourney = useNewOfferCreationJourney()
 
-  const shouldBlockNavigation = useCallback(
-    (nextLocation: Location): IShouldBlockNavigationReturnValue => {
-      const url = venueSubmitRedirectUrl(
-        isNewOfferCreationJourney,
-        isCreatingVenue,
-        offerer.id,
-        venue?.id,
-        user.currentUser
-      )
-      if (
-        venue != null
-          ? nextLocation.pathname + nextLocation.search === url
-          : (nextLocation.pathname + nextLocation.search).startsWith(url)
-      ) {
-        return {
-          shouldBlock: false,
-        }
-      } else {
-        return { shouldBlock: true }
-      }
-    },
-    [location, isNewOfferCreationJourney]
-  )
+  const shouldBlockNavigation: BlockerFunction = ({ nextLocation }) => {
+    if (!isCreatingVenue) {
+      return false
+    }
+    const url = venueSubmitRedirectUrl(
+      isNewOfferCreationJourney,
+      isCreatingVenue,
+      offerer.id,
+      venue?.id,
+      user.currentUser
+    )
+    if (
+      venue != null
+        ? nextLocation.pathname + nextLocation.search === url
+        : (nextLocation.pathname + nextLocation.search).startsWith(url)
+    ) {
+      return false
+    } else {
+      return true
+    }
+  }
 
   return (
     <div>
@@ -170,7 +166,6 @@ const VenueForm = ({
         )}
         <RouteLeavingGuard
           shouldBlockNavigation={shouldBlockNavigation}
-          when={isCreatingVenue}
           dialogTitle="Voulez-vous quitter la création de lieu ?"
         >
           <p>Les informations non enregistrées seront perdues.</p>
