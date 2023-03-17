@@ -499,8 +499,8 @@ To work, each `.btn-group` must set the following attributes:
 
 Within the `.btn-group` container, you can add as many buttons as needed, and you must set some attributes too:
 
-*   \`\[data-modal-selector]: this value must be the modal selector that contain the form,
-*   `[data-user-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly.
+*   `[data-use-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly, (required)
+*   \`\[data-modal-selector]: this value must be the modal selector that contain the form. (optional)
 
 ### Examples
 
