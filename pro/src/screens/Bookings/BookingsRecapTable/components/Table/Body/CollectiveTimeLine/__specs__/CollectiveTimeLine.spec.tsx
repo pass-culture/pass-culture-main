@@ -95,6 +95,24 @@ describe('collective timeline', () => {
       screen.getByText('Le pass Culture a annulé la réservation')
     ).toBeInTheDocument()
   })
+  it('should render steps for cancelled booking expired', () => {
+    const bookingRecap = collectiveBookingRecapFactory({
+      bookingStatus: BOOKING_STATUS.CANCELLED,
+      bookingConfirmationDate: null,
+      bookingConfirmationLimitDate: '01/01/2023',
+      bookingCancellationReason: CollectiveBookingCancellationReasons.EXPIRED,
+      bookingStatusHistory: [
+        { date: new Date().toISOString(), status: BOOKING_STATUS.PENDING },
+        { date: new Date().toISOString(), status: BOOKING_STATUS.CANCELLED },
+      ],
+    })
+    renderCollectiveTimeLine(bookingRecap, bookingDetails)
+    expect(
+      screen.getByText(
+        /L’établissement scolaire n’a pas confirmé la préréservation avant la date limite de réservation fixée au 01 janvier 2023./
+      )
+    ).toBeInTheDocument()
+  })
 
   it('should log event when clicking modify booking limit date', async () => {
     const mockLogEvent = jest.fn()

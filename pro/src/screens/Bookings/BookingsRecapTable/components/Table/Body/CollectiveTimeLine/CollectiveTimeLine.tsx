@@ -279,7 +279,7 @@ const CollectiveTimeLine = ({
           <br />
           {bookingRecap.bookingCancellationReason ===
             CollectiveBookingCancellationReasons.EXPIRED &&
-            `L’établissement scolaire n’a pas confirmé la préréservation avant la date limite de réservation fixée au ${cancellationLimitDate}.`}
+            `L’établissement scolaire n’a pas confirmé la préréservation avant la date limite de réservation fixée au ${confirmationLimitDate}.`}
 
           <div>
             {bookingRecap.bookingCancellationReason ===
