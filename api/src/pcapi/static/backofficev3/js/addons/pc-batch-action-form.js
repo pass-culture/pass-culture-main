@@ -13,7 +13,8 @@
  *
  * Within the `.btn-group` container, you can add as many buttons as needed, and you must set some attributes too:
  * - `[data-use-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly, (required)
- * - `[data-modal-selector]: this value must be the modal selector that contain the form. (optional)
+ * - `[data-modal-selector]: this value must be the modal selector that contains the form, (optional)
+ * - `[data-url]`: this value is required when you do not use confirmation modal (`[data-use-confirmation-modal]`) and should be the `POST` endpoint.
  *
  * @example
  * <div
@@ -112,21 +113,30 @@ class PcBatchActionForm extends PcAddOn {
   }
 
   #onBatchButtonClick = (event) => {
-    const { useConfirmationModal, pcTableMultiSelectId, toggleId } = event.target.dataset
+    const { useConfirmationModal, pcTableMultiSelectId, toggleId, url } = event.target.dataset
     const { inputIdsName } = this.state[toggleId]
+    const tableMultiSelectState = this.app.addons.pcTableMultiSelect.state[pcTableMultiSelectId]
+    const idsStr = [...tableMultiSelectState.selectedRowsIds].join(',')
 
+    if (url && useConfirmationModal !== 'true') {
+      const $form = document.createElement('form')
+      $form.classList.add('d-none')
+      $form.method = 'post'
+      $form.action = url
+      $form.innerHTML = this.app.csrfToken
+      const $input = document.createElement('input')
+      $input.type = 'hidden'
+      $input.value = idsStr
+      $input.name = inputIdsName
+      $form.appendChild($input)
+      document.body.appendChild($form)
+      $form.submit()
+      return
+    }
     const $modal = document.querySelector(event.target.dataset.modalSelector)
     const $form = $modal.querySelector('form') // no support for turbo loading="lazy" yet
     const $objectIds = $form.querySelector(`input[name="${inputIdsName}"]`)
-    const tableMultiSelectState = this.app.addons.pcTableMultiSelect.state[pcTableMultiSelectId]
-
-    $objectIds.value = [...tableMultiSelectState.selectedRowsIds].join(',')
-
-    if (useConfirmationModal === "true") {
-      bootstrap.Modal.getOrCreateInstance($modal).show()
-      return
-    }
-
-    $form.submit()
+    $objectIds.value = idsStr
+    bootstrap.Modal.getOrCreateInstance($modal).show()
   }
 }
