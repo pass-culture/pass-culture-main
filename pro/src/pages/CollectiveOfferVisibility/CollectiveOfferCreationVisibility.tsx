@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'

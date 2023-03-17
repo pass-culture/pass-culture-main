@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { NavLink, useNavigate, useLocation } from 'react-router-dom-v5-compat'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'

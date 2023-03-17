@@ -1,7 +1,7 @@
 import './Reimbursement.scss'
 
 import React, { useCallback, useEffect, useState } from 'react'
-import { Route, Routes } from 'react-router-dom-v5-compat'
+import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { BannerReimbursementsInfo } from 'components/Banner'

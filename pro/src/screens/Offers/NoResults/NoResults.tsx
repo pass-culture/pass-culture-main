@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom-v5-compat'
+import { Link } from 'react-router-dom'
 
 import { Audience } from 'core/shared/types'
 import Icon from 'ui-kit/Icon/Icon'

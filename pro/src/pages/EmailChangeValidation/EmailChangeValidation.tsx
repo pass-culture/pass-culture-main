@@ -1,7 +1,7 @@
 // react hooks and usages doc : https://reactjs.org/docs/hooks-intro.html
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useLocation } from 'react-router-dom-v5-compat'
+import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { EmailChangeValidationScreen } from 'screens/EmailChangeValidation'

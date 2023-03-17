@@ -1,7 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import * as router from 'react-router-dom-v5-compat'
+import * as router from 'react-router-dom'
 import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
@@ -19,8 +19,8 @@ import { collectiveOfferFactory } from '../utils/collectiveOffersFactories'
 
 //FIX ME : extract inital values and constant to reduce code duplication with CollectiveOffers.spec.tsx
 
-jest.mock('react-router-dom-v5-compat', () => ({
-  ...jest.requireActual('react-router-dom-v5-compat'),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
 }))
 

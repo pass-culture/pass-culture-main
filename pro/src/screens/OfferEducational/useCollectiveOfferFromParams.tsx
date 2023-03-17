@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, ComponentType } from 'react'
-import { useLocation, useParams } from 'react-router-dom-v5-compat'
+import { useLocation, useParams } from 'react-router-dom'
 
 import {
   CollectiveOffer,

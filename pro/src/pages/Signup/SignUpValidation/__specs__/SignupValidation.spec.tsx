@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import { Route, Routes } from 'react-router-dom-v5-compat'
+import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'

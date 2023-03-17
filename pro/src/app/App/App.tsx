@@ -1,7 +1,7 @@
 import { setUser as setSentryUser } from '@sentry/browser'
 import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom-v5-compat'
+import { useLocation } from 'react-router-dom'
 
 import Notification from 'components/Notification/Notification'
 import { useConfigureFirebase } from 'hooks/useAnalytics'

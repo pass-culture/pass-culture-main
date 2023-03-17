@@ -14,8 +14,8 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import Homepage from '../../Homepage'
 
 const mockNavigate = jest.fn()
-jest.mock('react-router-dom-v5-compat', () => ({
-  ...jest.requireActual('react-router-dom-v5-compat'),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
 }))
 

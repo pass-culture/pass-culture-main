@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom-v5-compat'
+import { Link, useNavigate } from 'react-router-dom'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import PageTitle from 'components/PageTitle/PageTitle'
