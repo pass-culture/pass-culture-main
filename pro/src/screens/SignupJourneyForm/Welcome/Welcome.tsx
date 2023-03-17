@@ -15,7 +15,7 @@ const Welcome = (): JSX.Element => {
       <ButtonLink
         className={styles['continue-button']}
         variant={ButtonVariant.PRIMARY}
-        link={{ isExternal: false, to: 'parcours-inscription/structure' }}
+        link={{ isExternal: false, to: '/parcours-inscription/structure' }}
       >
         Commencer
       </ButtonLink>
