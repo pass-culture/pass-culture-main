@@ -72,7 +72,8 @@ def _process_educational_csv(
                 city=adage_institution.communeLibelle,
                 postalCode=adage_institution.codePostal,
                 email=adage_institution.courriel,
-                phoneNumber=adage_institution.telephone,
+                phoneNumber=adage_institution.telephone or "",
+                institutionId=adage_institution.uai,
                 institutionType=INSTITUTION_TYPES.get(adage_institution.sigle, ""),
             )
             db.session.add(educational_institution)
