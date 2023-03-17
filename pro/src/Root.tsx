@@ -1,9 +1,6 @@
 import React from 'react'
-import { BrowserRouter } from 'react-router-dom'
-import { CompatRouter } from 'react-router-dom-v5-compat'
 
-import { App, AppRouter } from 'app'
-import Notification from 'components/Notification/Notification'
+import { AppRouter } from 'app'
 import { AnalyticsContextProvider } from 'context/analyticsContext'
 import StoreProvider from 'store/StoreProvider/StoreProvider'
 
@@ -14,18 +11,7 @@ const Root = (): JSX.Element => {
     <StoreProvider>
       <AnalyticsContextProvider>
         <RemoteContextProvider>
-          <BrowserRouter>
-            {/* Temporary router for react-router v6 migration */}
-            {/* https://www.npmjs.com/package/react-router-dom-v5-compat */}
-            <CompatRouter>
-              <App>
-                <>
-                  <AppRouter />
-                  <Notification />
-                </>
-              </App>
-            </CompatRouter>
-          </BrowserRouter>
+          <AppRouter />
         </RemoteContextProvider>
       </AnalyticsContextProvider>
     </StoreProvider>

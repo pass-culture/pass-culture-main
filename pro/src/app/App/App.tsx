@@ -1,8 +1,9 @@
 import { setUser as setSentryUser } from '@sentry/browser'
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom-v5-compat'
 
+import Notification from 'components/Notification/Notification'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useLogNavigation from 'hooks/useLogNavigation'
@@ -33,7 +34,12 @@ const App = ({ children }: IAppProps): JSX.Element | null => {
     return null
   }
 
-  return children
+  return (
+    <>
+      {children}
+      <Notification />
+    </>
+  )
 }
 
 export default App
