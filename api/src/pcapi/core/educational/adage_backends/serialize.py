@@ -100,6 +100,6 @@ class AdageEducationalInstitution(AdageBaseResponseModel):
     sigle: str
     libelle: str
     communeLibelle: str
-    courriel: str
-    telephone: str
+    courriel: str | None
+    telephone: str | None
     codePostal: str

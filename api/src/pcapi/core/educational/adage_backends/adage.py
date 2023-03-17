@@ -208,7 +208,7 @@ class AdageHttpClient(AdageClient):
             if api_response.status_code != 200:
                 raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
-            response_json = api_response.json()
+            response_json = api_response.json().get("etablissements", [])
             if not response_json:
                 break
 
