@@ -139,7 +139,7 @@ const Bookings = <
   useEffect(() => {
     checkUserHasBookings()
   }, [checkUserHasBookings])
-  const dateFilterFormat = (date: Date | string) =>
+  const dateFilterFormat = (date: Date | number) =>
     formatBrowserTimezonedDateAsUTC(date, FORMAT_ISO_DATE_ONLY)
 
   const location = useLocation()
@@ -200,7 +200,7 @@ const Bookings = <
   const updateUrl = (filter: TPreFilters) => {
     const partialUrlInfo = {
       ...(filter.offerEventDate && filter.offerEventDate !== 'all'
-        ? { offerEventDate: dateFilterFormat(filter.offerEventDate) }
+        ? { offerEventDate: dateFilterFormat(new Date(filter.offerEventDate)) }
         : {}),
       ...(filter.bookingBeginningDate
         ? {

@@ -23,7 +23,7 @@ export const buildBookingsRecapQuery = ({
   }
   if (offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate) {
     params.eventDate = formatBrowserTimezonedDateAsUTC(
-      offerEventDate,
+      new Date(offerEventDate),
       FORMAT_ISO_DATE_ONLY
     )
   }
