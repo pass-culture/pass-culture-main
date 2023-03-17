@@ -1,11 +1,21 @@
 import React, { useState } from 'react'
 
 import { apiAdage } from 'apiClient/api'
-import { ModalLayout } from 'pages/AdageIframe/app/ui-kit'
+import DialogBox from 'components/DialogBox/DialogBox'
 import { ReactComponent as MailIcon } from 'pages/AdageIframe/assets/mail.svg'
-import './ContactButton.scss'
 import { logClickOnOffer } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit'
+
+import styles from './ContactButton.module.scss'
+
+export interface IContactButtonProps {
+  className?: string
+  contactEmail?: string
+  contactPhone?: string | null
+  offerId: number
+  position: number
+  queryId: string
+}
 
 const ContactButton = ({
   className,
@@ -14,14 +24,7 @@ const ContactButton = ({
   offerId,
   position,
   queryId,
-}: {
-  className?: string
-  contactEmail?: string
-  contactPhone?: string | null
-  offerId: number
-  position: number
-  queryId: string
-}): JSX.Element => {
+}: IContactButtonProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleButtonClick = () => {
@@ -41,23 +44,36 @@ const ContactButton = ({
           Contacter
         </Button>
       </div>
-      <ModalLayout Icon={MailIcon} closeModal={closeModal} isOpen={isModalOpen}>
-        <p className="contact-modal-text">
-          Afin de personnaliser cette offre, nous vous invitons à entrer en
-          contact avec votre partenaire culturel :
-        </p>
-        <ul className="contact-modal-list">
-          <li>
-            <a
-              className="contact-modal-list-item-link"
-              href={`mailto:${contactEmail}`}
-            >
-              {contactEmail}
-            </a>
-          </li>
-          <li>{contactPhone}</li>
-        </ul>
-      </ModalLayout>
+      {isModalOpen && (
+        <DialogBox
+          onDismiss={closeModal}
+          labelledBy={'contacter le partenaire culturel'}
+          extraClassNames={styles['contact-modal-dialog']}
+        >
+          <MailIcon className={styles['contact-modal-icon']} />
+          <p className={styles['contact-modal-text']}>
+            Afin de personnaliser cette offre, nous vous invitons à entrer en
+            contact avec votre partenaire culturel :
+          </p>
+          <ul className={styles['contact-modal-list']}>
+            <li>
+              <a
+                className={styles['contact-modal-list-item-link']}
+                href={`mailto:${contactEmail}`}
+              >
+                {contactEmail}
+              </a>
+            </li>
+            <li>{contactPhone}</li>
+          </ul>
+          <Button
+            onClick={closeModal}
+            className={styles['contact-modal-button']}
+          >
+            Fermer
+          </Button>
+        </DialogBox>
+      )}
     </>
   )
 }
