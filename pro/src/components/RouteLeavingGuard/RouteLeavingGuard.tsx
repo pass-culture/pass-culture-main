@@ -1,21 +1,18 @@
-import React, { ReactNode, useCallback, useState } from 'react'
-import { Redirect, Prompt } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom-v5-compat'
+import React, { ReactNode } from 'react'
+import { unstable_useBlocker } from 'react-router-dom-v5-compat'
+import type { Location } from 'react-router-dom-v5-compat'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 
-export interface IShouldBlockNavigationReturnValue {
-  redirectPath?: string | null
-  shouldBlock: boolean
-}
+export type BlockerFunction = (args: {
+  currentLocation: Location
+  nextLocation: Location
+}) => boolean
 
 export interface IRouteLeavingGuardProps {
   children?: ReactNode | ReactNode[]
   extraClassNames?: string
-  shouldBlockNavigation: (
-    location: Location
-  ) => IShouldBlockNavigationReturnValue
-  when: boolean
+  shouldBlockNavigation: BlockerFunction
   dialogTitle: string
   tracking?: (p: string) => void
   rightButton?: string
@@ -29,76 +26,47 @@ const RouteLeavingGuard = ({
   children,
   extraClassNames = '',
   shouldBlockNavigation,
-  when,
   dialogTitle,
   tracking,
   rightButton = 'Quitter',
   leftButton = 'Annuler',
   closeModalOnRightButton = false,
-}: IRouteLeavingGuardProps): JSX.Element => {
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  // FIX ME no any
-  const [nextLocation, setNextLocation] = useState<any>('')
-  const [isConfirmedNavigation, setIsConfirmedNavigation] = useState(false)
-  const navigate = useNavigate()
-
-  const handleBlockedNavigation = useCallback(
-    (chosenLocation: any) => {
-      const { redirectPath, shouldBlock } =
-        shouldBlockNavigation(chosenLocation)
-      setNextLocation(redirectPath ? redirectPath : chosenLocation)
-
-      if (!isConfirmedNavigation && shouldBlock) {
-        setIsModalVisible(true)
-        return false
-      }
-      if (redirectPath) {
-        navigate(redirectPath)
-        return false
-      }
-      return true
-    },
-    [isConfirmedNavigation, navigate, shouldBlockNavigation]
-  )
+}: IRouteLeavingGuardProps) => {
+  const blocker = unstable_useBlocker(shouldBlockNavigation)
 
   const closeModal = () => {
-    setIsModalVisible(false)
+    if (blocker.state !== 'blocked') {
+      return
+    }
+    blocker.reset()
   }
 
   const confirmNavigation = () => {
-    setIsModalVisible(false)
-    setIsConfirmedNavigation(true)
+    if (blocker.state !== 'blocked') {
+      return
+    }
 
-    tracking &&
-      tracking(
-        Object.keys(nextLocation).includes('pathname')
-          ? nextLocation.pathname
-          : nextLocation
-      )
+    if (tracking) {
+      tracking(blocker.location.pathname)
+    }
+    blocker.proceed()
   }
 
-  return isConfirmedNavigation && nextLocation ? (
-    <Redirect push to={nextLocation} />
-  ) : (
-    <>
-      <Prompt message={handleBlockedNavigation} when={when} />
-      {isModalVisible && (
-        <ConfirmDialog
-          extraClassNames={extraClassNames}
-          onCancel={closeModal}
-          leftButtonAction={
-            closeModalOnRightButton ? confirmNavigation : closeModal
-          }
-          onConfirm={closeModalOnRightButton ? closeModal : confirmNavigation}
-          title={dialogTitle}
-          confirmText={rightButton}
-          cancelText={leftButton}
-        >
-          {children}
-        </ConfirmDialog>
-      )}
-    </>
-  )
+  return blocker.state === 'blocked' ? (
+    <ConfirmDialog
+      extraClassNames={extraClassNames}
+      onCancel={closeModal}
+      leftButtonAction={
+        closeModalOnRightButton ? confirmNavigation : closeModal
+      }
+      onConfirm={closeModalOnRightButton ? closeModal : confirmNavigation}
+      title={dialogTitle}
+      confirmText={rightButton}
+      cancelText={leftButton}
+    >
+      {children}
+    </ConfirmDialog>
+  ) : null
 }
 
 export default RouteLeavingGuard

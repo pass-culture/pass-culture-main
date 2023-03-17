@@ -1,2 +1,2 @@
 export { default } from './RouteLeavingGuard'
-export type { IShouldBlockNavigationReturnValue } from './RouteLeavingGuard'
+export type { BlockerFunction } from './RouteLeavingGuard'

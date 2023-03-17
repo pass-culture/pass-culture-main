@@ -1,7 +1,7 @@
 import React from 'react'
 
 import RouteLeavingGuard, {
-  IShouldBlockNavigationReturnValue,
+  BlockerFunction,
 } from 'components/RouteLeavingGuard'
 
 export interface RouteLeavingGuardCollectiveOfferCreationProps {
@@ -11,14 +11,11 @@ export interface RouteLeavingGuardCollectiveOfferCreationProps {
 const RouteLeavingGuardVenueCollectiveDataEdition = ({
   isFormDirty,
 }: RouteLeavingGuardCollectiveOfferCreationProps): JSX.Element => {
-  const shouldBlockNavigation = (): IShouldBlockNavigationReturnValue => ({
-    shouldBlock: isFormDirty,
-  })
+  const shouldBlockNavigation: BlockerFunction = () => isFormDirty
 
   return (
     <RouteLeavingGuard
       shouldBlockNavigation={shouldBlockNavigation}
-      when
       dialogTitle="Voulez vous quitter la page d’informations pour les enseignants ?"
     >
       <p>
