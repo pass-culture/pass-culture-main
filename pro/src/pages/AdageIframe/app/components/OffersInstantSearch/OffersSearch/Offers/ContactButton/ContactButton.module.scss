@@ -1,6 +1,14 @@
-@import 'sass-rem';
+@import "sass-rem";
 
 .contact-modal {
+  &-dialog {
+    width: rem(450px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: rem(16px);
+  }
+
   &-text,
   &-list {
     text-align: center;
@@ -17,5 +25,9 @@
       color: inherit;
       word-break: break-all;
     }
+  }
+
+  &-button {
+    margin-top: rem(16px);
   }
 }
