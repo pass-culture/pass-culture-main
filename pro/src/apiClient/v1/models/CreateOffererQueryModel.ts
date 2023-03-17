@@ -10,5 +10,7 @@ export type CreateOffererQueryModel = {
   name: string;
   postalCode: string;
   siren: string;
+  venueType?: string | null;
+  webPresence?: string | null;
 };
 
