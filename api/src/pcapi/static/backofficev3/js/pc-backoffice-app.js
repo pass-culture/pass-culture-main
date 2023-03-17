@@ -31,12 +31,18 @@ class PcBackofficeApp {
   /** This is the JS application state. It is used by PcAddOn and allow partial persistence of any addon state using `addon.saveState(state)` */
   appState = {}
 
+  /** To pass csrf security when submitting a form, the backend provides a string which holds `<input />` with the csrf token.
+   * We store the string in `app.csrfToken` in case you need it to generate a form with JavaScript.
+   */
+  csrfToken
+
   /**
    * @constructor
-   * @param {{ addOns: Array<PcAddOn> }} config - the application configuration.
+   * @param {{ addOns: Array<PcAddOn>, csrfToken: string }} config - the application configuration.
    */
-  constructor({ addOns: AddOns }) {
+  constructor({ addOns: AddOns, csrfToken }) {
     this.#rehydrateState()
+    this.csrfToken = csrfToken
     AddOns.forEach((AddOn) => {
       const name = `${AddOn.name[0].toLowerCase()}${AddOn.name.slice(1)}`
       this.addons[name] = new AddOn({
