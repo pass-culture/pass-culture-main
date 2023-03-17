@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Routes, Route, Link } from 'react-router-dom-v5-compat'
+import { Routes, Route, Link } from 'react-router-dom'
 
 import * as useAnalytics from 'hooks/useAnalytics'
 import useLogNavigation from 'hooks/useLogNavigation'

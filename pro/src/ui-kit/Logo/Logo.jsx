@@ -1,7 +1,7 @@
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { NavLink } from 'react-router-dom-v5-compat'
+import { NavLink } from 'react-router-dom'
 
 import { ROOT_PATH } from 'utils/config'
 

@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom-v5-compat'
+import { useNavigate } from 'react-router-dom'
 
 import useNotification from 'hooks/useNotification'
 

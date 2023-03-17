@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { Field, Form } from 'react-final-form'
-import { useNavigate, useParams } from 'react-router-dom-v5-compat'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'

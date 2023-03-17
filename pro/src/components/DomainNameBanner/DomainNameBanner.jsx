@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate, useLocation } from 'react-router-dom-v5-compat'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 import { setDisplayDomainBanner } from 'store/app/actions'
 import { Banner } from 'ui-kit'

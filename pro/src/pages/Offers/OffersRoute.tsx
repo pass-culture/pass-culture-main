@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom-v5-compat'
+import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { DEFAULT_SEARCH_FILTERS, hasSearchFilters } from 'core/Offers'

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom-v5-compat'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import App from 'app/App/App'
 import AppLayout from 'app/AppLayout'

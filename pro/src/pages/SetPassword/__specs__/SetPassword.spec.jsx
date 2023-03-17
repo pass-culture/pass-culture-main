@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import reactRouter, { Route, Routes } from 'react-router-dom-v5-compat'
+import reactRouter, { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
@@ -13,8 +13,8 @@ import SetPassword from '../SetPassword'
 jest.mock('apiClient/api', () => ({
   api: { postNewPassword: jest.fn() },
 }))
-jest.mock('react-router-dom-v5-compat', () => ({
-  ...jest.requireActual('react-router-dom-v5-compat'),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useParams: () => ({
     token: 'AT3VXY5EB',
   }),

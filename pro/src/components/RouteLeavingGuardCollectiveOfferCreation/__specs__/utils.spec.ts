@@ -1,4 +1,4 @@
-import type { Location } from 'react-router-dom-v5-compat'
+import type { Location } from 'react-router-dom'
 
 import { shouldBlockNavigation } from '../utils'
 

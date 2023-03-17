@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
-import { useLocation, useParams } from 'react-router-dom-v5-compat'
+import { useLocation, useParams } from 'react-router-dom'
 
 import CollectiveOfferBreadcrumb from 'components/CollectiveOfferBreadcrumb'
 import HelpLink from 'components/HelpLink'

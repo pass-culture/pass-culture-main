@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom-v5-compat'
+import { useParams } from 'react-router-dom'
 
 import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'

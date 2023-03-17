@@ -1,7 +1,7 @@
 import { setUser } from '@sentry/browser'
 import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import { Routes, Route } from 'react-router-dom-v5-compat'
+import { Routes, Route } from 'react-router-dom'
 
 import ProtectedRoute from 'app/AppRouter/ProtectedRoute'
 import { URL_FOR_MAINTENANCE } from 'utils/config'

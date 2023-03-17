@@ -1,6 +1,6 @@
 import React from 'react'
 import { Form } from 'react-final-form'
-import { useNavigate } from 'react-router-dom-v5-compat'
+import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { CreateOffererQueryModel } from 'apiClient/v1'

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { generatePath, Route, Routes } from 'react-router-dom-v5-compat'
+import { generatePath, Route, Routes } from 'react-router-dom'
 
 import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'

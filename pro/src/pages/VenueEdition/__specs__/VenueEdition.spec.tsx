@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
-import { Route, Routes } from 'react-router-dom-v5-compat'
+import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -58,8 +58,8 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
 }))
 
-jest.mock('react-router-dom-v5-compat', () => ({
-  ...jest.requireActual('react-router-dom-v5-compat'),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useParams: () => ({
     offererId: 'ABCD',
     venueId: 'AE',

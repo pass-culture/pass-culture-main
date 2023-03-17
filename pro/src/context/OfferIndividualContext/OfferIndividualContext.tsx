@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom-v5-compat'
+import { useNavigate } from 'react-router-dom'
 
 import { TOffererName } from 'core/Offerers/types'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'

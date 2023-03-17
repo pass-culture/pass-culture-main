@@ -3,7 +3,7 @@ import '@testing-library/jest-dom'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { generatePath, Route, Routes } from 'react-router-dom-v5-compat'
+import { generatePath, Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'

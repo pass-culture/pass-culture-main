@@ -2,7 +2,7 @@
 import { render } from '@testing-library/react'
 import React, { ReactNode } from 'react'
 import { Provider } from 'react-redux'
-import { createMemoryRouter, RouterProvider } from 'react-router-dom-v5-compat'
+import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 
 import { configureTestStore } from 'store/testUtils'
 

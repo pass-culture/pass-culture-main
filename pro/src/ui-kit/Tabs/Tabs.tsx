@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import React, { FunctionComponent, SVGProps } from 'react'
-import { Link } from 'react-router-dom-v5-compat'
+import { Link } from 'react-router-dom'
 
 import styles from './Tabs.module.scss'
 

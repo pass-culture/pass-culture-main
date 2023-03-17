@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom-v5-compat'
+import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import PageTitle from 'components/PageTitle/PageTitle'
