@@ -205,7 +205,6 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
   }
 
   const afterSubmitCallback = () => {
-    notify.success(getSuccessMessage(mode))
     const afterSubmitUrl = getOfferIndividualUrl({
       offerId: offer.id,
       step:
@@ -231,6 +230,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
       offerId: offer.id,
     })
     navigate(afterSubmitUrl)
+    notify.success(getSuccessMessage(mode))
     setIsClickingDraft(false)
   }
 
@@ -282,7 +282,6 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
           notify.success(getSuccessMessage(OFFER_WIZARD_MODE.DRAFT))
           return
         } else {
-          notify.success(getSuccessMessage(OFFER_WIZARD_MODE.EDITION))
           navigate(
             getOfferIndividualUrl({
               offerId: offer.id,
@@ -290,6 +289,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
               mode,
             })
           )
+          notify.success(getSuccessMessage(OFFER_WIZARD_MODE.EDITION))
         }
       }
 

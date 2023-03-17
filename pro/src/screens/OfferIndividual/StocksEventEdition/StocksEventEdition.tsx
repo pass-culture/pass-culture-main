@@ -182,7 +182,6 @@ const StocksEventEdition = ({
 
     /* istanbul ignore next: DEBT, TO FIX */
     if (isOk) {
-      notify.success(getSuccessMessage(mode))
       const response = await getOfferIndividualAdapter(offer.id)
       if (response.isOk) {
         const updatedOffer = response.payload
@@ -212,6 +211,7 @@ const StocksEventEdition = ({
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
         offerId: offer.id,
       })
+      notify.success(getSuccessMessage(mode))
     } else {
       /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors({ stocks: payload.errors })
@@ -327,8 +327,8 @@ const StocksEventEdition = ({
           notify.success('Brouillon sauvegardé dans la liste des offres')
           return
         } else {
-          notify.success(getSuccessMessage(mode))
           navigate(nextStepUrl)
+          notify.success(getSuccessMessage(mode))
         }
       }
       // tested but coverage don't see it.
@@ -344,11 +344,11 @@ const StocksEventEdition = ({
       if (hasSavedStock && !formik.dirty) {
         setIsClickingFromActionBar(false)
         /* istanbul ignore next: DEBT to fix */
-        notify.success(getSuccessMessage(mode))
-        /* istanbul ignore next: DEBT to fix */
         if (!saveDraft) {
           navigate(nextStepUrl)
         }
+        /* istanbul ignore next: DEBT to fix */
+        notify.success(getSuccessMessage(mode))
         setIsClickingFromActionBar(false)
       } else {
         if (saveDraft) {
