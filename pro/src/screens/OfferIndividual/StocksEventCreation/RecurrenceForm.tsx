@@ -56,7 +56,12 @@ export const RecurrenceForm = ({
     onSubmit: handleSubmit,
     validationSchema: getValidationSchema(priceCategoryOptions),
   })
-  const { values } = formik
+  const { values, setFieldValue } = formik
+
+  const onRecurrenceTypeChange = () => {
+    setFieldValue('startingDate', '')
+    setFieldValue('endingDate', '')
+  }
 
   return (
     <FormikProvider value={formik}>
@@ -75,6 +80,7 @@ export const RecurrenceForm = ({
                 name="recurrenceType"
                 value={RecurrenceType.UNIQUE}
                 withBorder
+                onChange={onRecurrenceTypeChange}
               />
 
               <RadioButton
@@ -83,6 +89,7 @@ export const RecurrenceForm = ({
                 name="recurrenceType"
                 value={RecurrenceType.DAILY}
                 withBorder
+                onChange={onRecurrenceTypeChange}
               />
 
               <RadioButton
@@ -93,6 +100,7 @@ export const RecurrenceForm = ({
                 withBorder
                 disabled
                 className={styles['coming-soon']}
+                onChange={onRecurrenceTypeChange}
               />
 
               <RadioButton
@@ -103,6 +111,7 @@ export const RecurrenceForm = ({
                 withBorder
                 disabled
                 className={styles['coming-soon']}
+                onChange={onRecurrenceTypeChange}
               />
             </div>
 
