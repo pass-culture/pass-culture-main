@@ -1,4 +1,5 @@
 from datetime import datetime
+import enum
 from typing import Iterable
 
 import sqlalchemy.orm as sqla_orm
@@ -11,6 +12,12 @@ from pcapi.routes.native.v1.serialization.common_models import AccessibilityComp
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import humanize_field
 import pcapi.utils.date as date_utils
+
+
+class Target(enum.Enum):
+    EDUCATIONAL = "EDUCATIONAL"
+    INDIVIDUAL_AND_EDUCATIONAL = "INDIVIDUAL_AND_EDUCATIONAL"
+    INDIVIDUAL = "INDIVIDUAL"
 
 
 class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
@@ -217,6 +224,7 @@ class CreateOffererQueryModel(BaseModel):
     postalCode: str
     siren: str
     # For new onboarding:
+    target: Target | None
     venueType: str | None
     webPresence: str | None
 
@@ -224,6 +232,7 @@ class CreateOffererQueryModel(BaseModel):
 class SaveNewOnboardingDataQueryModel(BaseModel):
     name: str
     siret: str
+    target: Target
     venueType: str
     webPresence: str
 
