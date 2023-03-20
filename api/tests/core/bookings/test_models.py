@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 
+from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 
@@ -69,6 +70,55 @@ def test_too_many_bookings_postgresql_exception():
         with pytest.raises(ApiErrors) as exc:
             repository.save(booking2)
         assert exc.value.errors["global"] == ["La quantité disponible pour cette offre est atteinte."]
+
+
+def test_email_at_booking_date_without_mail_history():
+    user = users_factories.BeneficiaryGrant18Factory(
+        dateCreated=datetime.utcnow() - relativedelta(days=8), email="first@example.com"
+    )
+    booking = factories.BookingFactory(user=user, dateCreated=datetime.utcnow())
+    assert booking.emailAtDateCreated == "first@example.com"
+
+
+@pytest.mark.parametrize(
+    "booking_date_created, email_at_booking_created_date",
+    [
+        (datetime.utcnow() - relativedelta(days=7), "first@example.com"),
+        (datetime.utcnow() - relativedelta(days=5), "second@example.fr"),
+        (datetime.utcnow() - relativedelta(days=3), "third@example.team"),
+        (datetime.utcnow() - relativedelta(days=1), "fourth@example.app"),
+    ],
+)
+def test_email_at_booking_date_with_mail_history(booking_date_created, email_at_booking_created_date):
+    user = users_factories.BeneficiaryGrant18Factory(
+        dateCreated=datetime.utcnow() - relativedelta(days=8), email="fourth@example.app"
+    )
+    users_factories.EmailValidationEntryFactory(
+        user=user,
+        oldUserEmail="first",
+        oldDomainEmail="example.com",
+        newUserEmail="second",
+        newDomainEmail="example.fr",
+        creationDate=datetime.utcnow() - relativedelta(days=6),
+    )
+    users_factories.EmailValidationEntryFactory(
+        user=user,
+        oldUserEmail="second",
+        oldDomainEmail="example.fr",
+        newUserEmail="third",
+        newDomainEmail="example.team",
+        creationDate=datetime.utcnow() - relativedelta(days=4),
+    )
+    users_factories.EmailValidationEntryFactory(
+        user=user,
+        oldUserEmail="third",
+        oldDomainEmail="example.team",
+        newUserEmail="fourth",
+        newDomainEmail="example.app",
+        creationDate=datetime.utcnow() - relativedelta(days=2),
+    )
+    booking = factories.BookingFactory(user=user, dateCreated=booking_date_created)
+    assert booking.emailAtDateCreated == email_at_booking_created_date
 
 
 class BookingIsConfirmedPropertyTest:

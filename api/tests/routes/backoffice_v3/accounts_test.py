@@ -425,8 +425,20 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
             assert "Crédit restant" not in html_parser.content_as_text(response.data)
 
     def test_get_beneficiary_bookings(self, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory()
-        b1 = bookings_factories.CancelledBookingFactory(user=user, amount=12.5)
+        user_initial_email = "first@example.com"
+        user_current_email = "second@example.com"
+        user = users_factories.BeneficiaryGrant18Factory(email=user_current_email)
+        users_factories.EmailValidationEntryFactory(
+            user=user,
+            oldUserEmail=user_initial_email.split("@", maxsplit=1)[0],
+            oldDomainEmail=user_initial_email.split("@", maxsplit=1)[1],
+            newUserEmail=user_current_email.split("@", maxsplit=1)[0],
+            newDomainEmail=user_current_email.split("@", maxsplit=1)[1],
+            creationDate=datetime.date.today() - relativedelta(days=1),
+        )
+        b1 = bookings_factories.CancelledBookingFactory(
+            user=user, amount=12.5, dateCreated=datetime.date.today() - relativedelta(days=2)
+        )
         b2 = bookings_factories.UsedBookingFactory(user=user, amount=20)
         bookings_factories.UsedBookingFactory()
 
@@ -438,14 +450,16 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         assert bookings[0]["Offreur"] == b2.offerer.name
         assert bookings[0]["Nom de l'offre"] == b2.stock.offer.name
         assert bookings[0]["Prix"] == "20,00 €"
-        assert bookings[1]["Date de résa"].startswith(datetime.date.today().strftime("Le %d/%m/%Y"))
+        assert bookings[0]["Date de résa"].startswith(datetime.date.today().strftime("Le %d/%m/%Y"))
         assert bookings[0]["État"] == "Le jeune a consommé l'offre"
         assert bookings[0]["Contremarque"] == b2.token
 
         assert bookings[1]["Offreur"] == b1.offerer.name
         assert bookings[1]["Nom de l'offre"] == b1.stock.offer.name
         assert bookings[1]["Prix"] == "12,50 €"
-        assert bookings[1]["Date de résa"].startswith(datetime.date.today().strftime("Le %d/%m/%Y"))
+        assert bookings[1]["Date de résa"].startswith(
+            (datetime.date.today() - relativedelta(days=2)).strftime("Le %d/%m/%Y")
+        )
         assert bookings[1]["État"] == "L'offre n'a pas eu lieu"
         assert bookings[1]["Contremarque"] == b1.token
 
@@ -453,6 +467,8 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         assert f"Utilisée le : {datetime.date.today().strftime('%d/%m/%Y')}" in text
         assert f"Annulée le : {datetime.date.today().strftime('%d/%m/%Y')}" in text
         assert "Motif d'annulation : Annulée par le bénéficiaire" in text
+        assert f"E-mail à la réservation : {user_current_email}" in text  # extra row for bookings[1]
+        assert f"E-mail à la réservation : {user_initial_email}" in text  # extra row for bookings[0]
 
     def test_get_beneficiary_bookings_empty(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()
