@@ -325,6 +325,8 @@ describe('screens:StocksEventEdition', () => {
     }
     renderStockEventScreen(props, contextValue)
     expect(screen.getByTestId('stock-event-form')).toBeInTheDocument()
+
+    // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
     await userEvent.dblClick(screen.getAllByTitle('Supprimer le stock')[1])
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')
