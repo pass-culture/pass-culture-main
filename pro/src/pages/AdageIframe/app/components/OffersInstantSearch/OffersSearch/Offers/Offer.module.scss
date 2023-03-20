@@ -143,4 +143,20 @@ $offer-image-width: rem(176px);
       }
     }
   }
+
+  &-like-modal {
+    width: rem(450px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: rem(16px);
+
+    &-text {
+      text-align: center;
+    }
+
+    &-button {
+      margin-top: rem(16px);
+    }
+  }
 }

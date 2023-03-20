@@ -1,5 +1,4 @@
 import {
-  render,
   screen,
   waitFor,
   waitForElementToBeRemoved,
@@ -21,6 +20,7 @@ import {
   FacetFiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
 import { ResultType } from 'pages/AdageIframe/utils/types'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffersComponent, OffersComponentProps } from '../Offers'
 
@@ -62,7 +62,7 @@ const searchFakeResults: Hit<ResultType>[] = [
 ]
 
 const renderOffers = (props: OffersComponentProps) => {
-  return render(
+  return renderWithProviders(
     <AlgoliaQueryContextProvider>
       <FacetFiltersContextProvider>
         <OffersComponent {...props} />

@@ -1,9 +1,10 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { OfferAddressType, StudentLevels } from 'apiClient/adage'
 import { HydratedCollectiveOffer } from 'pages/AdageIframe/app/types/offers'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offer, { OfferProps } from '../Offer'
 
@@ -11,6 +12,7 @@ jest.mock('apiClient/api', () => ({
   apiAdage: {
     logOfferDetailsButtonClick: jest.fn(),
     logOfferTemplateDetailsButtonClick: jest.fn(),
+    logFavOfferButtonClick: jest.fn(),
   },
 }))
 
@@ -30,7 +32,21 @@ jest.mock('react-instantsearch-dom', () => {
   }
 })
 
-const renderOffers = (props: OfferProps) => render(<Offer {...props} />)
+const renderOffers = (props: OfferProps) => {
+  renderWithProviders(<Offer {...props} />, {
+    storeOverrides: {
+      features: {
+        list: [
+          {
+            nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE',
+            isActive: true,
+          },
+        ],
+        initialized: true,
+      },
+    },
+  })
+}
 
 describe('offer', () => {
   let offerInParis: HydratedCollectiveOffer
@@ -278,6 +294,37 @@ describe('offer', () => {
       expect((links[3] as HTMLLinkElement).href).toBe('https://')
       expect((links[4] as HTMLLinkElement).href).toBe('http://unlien/')
       expect((links[5] as HTMLLinkElement).href).toBe('mailto:toto@toto.com')
+    })
+
+    it('should display modal when clicking like button', async () => {
+      renderOffers({
+        ...offerProps,
+        offer: { ...offerInParis, domains: [{ id: 1, name: 'CINEMA' }] },
+      })
+
+      const likeButton = await screen.getByTitle("bouton j'aime")
+      await userEvent.click(likeButton)
+
+      expect(
+        screen.getByText(
+          /Lʼéquipe du pass Culture a bien noté votre intérêt pour cette fonctionnalité. Elle arrivera bientôt !/
+        )
+      ).toBeInTheDocument()
+    })
+    it('should close modal when clicking close button', async () => {
+      renderOffers(offerProps)
+
+      const likeButton = await screen.getByTitle("bouton j'aime")
+      await userEvent.click(likeButton)
+
+      const closeButton = await screen.getByRole('button', { name: 'Fermer' })
+      await userEvent.click(closeButton)
+
+      expect(
+        screen.queryByText(
+          /Lʼéquipe du pass Culture a bien noté votre intérêt pour cette fonctionnalité. Elle arrivera bientôt !/
+        )
+      ).not.toBeInTheDocument()
     })
   })
 })
