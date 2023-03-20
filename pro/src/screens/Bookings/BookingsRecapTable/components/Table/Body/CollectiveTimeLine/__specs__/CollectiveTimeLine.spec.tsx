@@ -158,7 +158,7 @@ describe('collective timeline', () => {
         screen.getByRole('link', { name: 'Voir le dossier en cours' })
       ).toHaveAttribute(
         'href',
-        'https://www.demarches-simplifiees.fr/dossiers/1'
+        'https://www.demarches-simplifiees.fr/dossiers/1/messagerie'
       )
     })
 
