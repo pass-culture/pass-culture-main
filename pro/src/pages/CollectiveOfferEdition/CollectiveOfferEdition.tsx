@@ -2,13 +2,12 @@ import React from 'react'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
-import {
-  Mode,
-  CollectiveOffer,
-  CollectiveOfferTemplate,
-} from 'core/OfferEducational'
+import { Mode } from 'core/OfferEducational'
 import OfferEducationalScreen from 'screens/OfferEducational'
-import { withCollectiveOfferFromParams } from 'screens/OfferEducational/useCollectiveOfferFromParams'
+import {
+  MandatoryCollectiveOfferFromParamsProps,
+  withCollectiveOfferFromParams,
+} from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import useOfferEducationalFormData from 'screens/OfferEducational/useOfferEducationalFormData'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -17,12 +16,7 @@ const CollectiveOfferEdition = ({
   setOffer,
   reloadCollectiveOffer,
   isTemplate,
-}: {
-  offer: CollectiveOffer | CollectiveOfferTemplate
-  reloadCollectiveOffer: () => void
-  setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
-  isTemplate: boolean
-}): JSX.Element => {
+}: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
   const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
     offer.venue.managingOffererId ?? null,
     offer

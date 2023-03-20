@@ -44,7 +44,7 @@ describe('src | AppRouter', () => {
           routes={[
             {
               path: '/',
-              element: () => (
+              element: (
                 <p>
                   Sub component{' '}
                   <Link to={{ pathname: '/offers' }}>Go to private page</Link>
@@ -54,10 +54,10 @@ describe('src | AppRouter', () => {
             },
             {
               path: '/connexion',
-              element: () => <p>Login page</p>,
+              element: <p>Login page</p>,
               meta: { public: true, withoutLayout: true },
             },
-            { path: '/offers', element: () => <p>Offers page</p> },
+            { path: '/offers', element: <p>Offers page</p> },
           ]}
         />
       </Provider>

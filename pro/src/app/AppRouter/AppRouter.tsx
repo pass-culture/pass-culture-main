@@ -18,7 +18,7 @@ const RouteWrapper = ({ route }: { route: IRoute }) => {
   const { currentUser } = useCurrentUser()
   const location = useLocation()
   const fromUrl = encodeURIComponent(`${location.pathname}${location.search}`)
-  let jsx = <route.element />
+  let jsx: JSX.Element = route.element
 
   if (!route.meta?.withoutLayout) {
     jsx = (
