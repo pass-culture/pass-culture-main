@@ -5,6 +5,7 @@ import typing
 import sentry_sdk
 import sqlalchemy as sa
 
+from pcapi.analytics.amplitude.events import booking_events
 from pcapi.core import search
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -141,6 +142,7 @@ def book_offer(
             "used": booking.is_used_or_reimbursed,
         },
     )
+    booking_events.track_book_offer_event(booking)
 
     if not transactional_mails.send_user_new_booking_to_pro_email(booking, first_venue_booking):
         logger.warning(
