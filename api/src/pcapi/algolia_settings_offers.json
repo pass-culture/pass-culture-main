@@ -4,6 +4,16 @@
     "hitsPerPage": 20,
     "maxValuesPerFacet": 100,
     "version": 2,
+    "searchableAttributes": [
+        "unordered(offer.name)",
+        "unordered(venue.publicName)",
+        "unordered(offer.artist)",
+        "unordered(offer.subcategoryId)",
+        "unordered(venue.name)",
+        "unordered(offerer.name)",
+        "unordered(offer.description)",
+        "unordered(distinct)"
+    ],
     "attributesToRetrieve": null,
     "ignorePlurals": [
         "fr"
@@ -20,7 +30,9 @@
     "queryLanguages": [
         "fr"
     ],
-    "replicas": [],
+    "replicas": [
+        "virtual(PRODUCTION Top offres)"
+    ],
     "attributesForFaceting": [
         "offer.bookMacroSection",
         "filterOnly(offer.category)",
@@ -70,7 +82,6 @@
         "custom"
     ],
     "customRanking": [
-        "desc(offer.last30DaysBookings)",
         "desc(offer.rankingWeight)",
         "desc(offer.isEvent)"
     ],
@@ -96,16 +107,6 @@
         [
             "offer.searchGroupName:-CINEMA"
         ]
-    ],
-    "searchableAttributes": [
-        "unordered(offer.name)",
-        "unordered(venue.publicName)",
-        "unordered(offer.artist)",
-        "unordered(offer.subcategoryId)",
-        "unordered(venue.name)",
-        "unordered(offerer.name)",
-        "unordered(offer.description)",
-        "unordered(distinct)"
     ],
     "numericAttributesForFiltering": null
 }
