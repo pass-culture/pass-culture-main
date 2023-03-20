@@ -17,6 +17,27 @@ WEB_SERVICE_DEFINITION = """<?xml version="1.0" encoding="UTF-8"?>
                 </xsd:sequence>
             </xsd:complexType>
             <xsd:element name="GetSeancesPassCultureResponse" type="s0:tGetSeancesPassCultureResponse"/>
+            <xsd:complexType name="tReservationPassCulture">
+                <xsd:sequence>
+                    <xsd:element name="User" type="xsd:string"/>
+                    <xsd:element name="mdp" type="xsd:string"/>
+                    <xsd:element name="pIDSeances" type="xsd:int"/>
+                    <xsd:element name="pNumCinema" type="xsd:int"/>
+                    <xsd:element name="pPUTTC" type="xsd:string"/>
+                    <xsd:element name="pNBPlaces" type="xsd:int"/>
+                    <xsd:element name="pNom" type="xsd:string"/>
+                    <xsd:element name="pPrenom" type="xsd:string"/>
+                    <xsd:element name="pEmail" type="xsd:string"/>
+                    <xsd:element name="pToken" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="ReservationPassCulture" type="s0:tReservationPassCulture"/>
+            <xsd:complexType name="tReservationPassCultureResponse">
+                <xsd:sequence>
+                    <xsd:element name="ReservationPassCultureResult" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="ReservationPassCultureResponse" type="s0:tReservationPassCultureResponse"/>
         </xsd:schema>
     </types>
     <message name="GestionCinemaWS_GetSeancesPassCulture_MessageIn">
@@ -25,16 +46,35 @@ WEB_SERVICE_DEFINITION = """<?xml version="1.0" encoding="UTF-8"?>
     <message name="GestionCinemaWS_GetSeancesPassCulture_MessageOut">
         <part name="parameters" element="s0:GetSeancesPassCultureResponse"/>
     </message>
+    <message name="GestionCinemaWS_ReservationPassCulture_MessageIn">
+        <part name="parameters" element="s0:ReservationPassCulture"/>
+    </message>
+    <message name="GestionCinemaWS_ReservationPassCulture_MessageOut">
+        <part name="parameters" element="s0:ReservationPassCultureResponse"/>
+    </message>
     <portType name="GestionCinemaWSSOAPPortType">
         <operation name="GetSeancesPassCulture">
             <input message="s0:GestionCinemaWS_GetSeancesPassCulture_MessageIn"/>
             <output message="s0:GestionCinemaWS_GetSeancesPassCulture_MessageOut"/>
+        </operation>
+        <operation name="ReservationPassCulture">
+            <input message="s0:GestionCinemaWS_ReservationPassCulture_MessageIn"/>
+            <output message="s0:GestionCinemaWS_ReservationPassCulture_MessageOut"/>
         </operation>
     </portType>
     <binding name="GestionCinemaWSSOAPBinding" type="s0:GestionCinemaWSSOAPPortType">
         <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
         <operation name="GetSeancesPassCulture">
             <soap:operation soapAction="urn:GestionCinemaWS/GetSeancesPassCulture" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="ReservationPassCulture">
+        <soap:operation soapAction="urn:GestionCinemaWS/ReservationPassCulture" style="document"/>
             <input>
                 <soap:body use="literal"/>
             </input>
