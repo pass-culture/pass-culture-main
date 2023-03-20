@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Routes, Route } from 'react-router-dom-v5-compat'
@@ -328,6 +328,7 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
     )
+    // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
     await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
     expect(
       await screen.findByText('Voulez-vous supprimer cette occurrence ?')

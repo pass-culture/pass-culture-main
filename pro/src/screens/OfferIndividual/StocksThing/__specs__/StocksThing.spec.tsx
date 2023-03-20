@@ -313,6 +313,8 @@ describe('screens:StocksThing', () => {
       await userEvent.click(
         screen.getByTestId('stock-form-actions-button-open')
       )
+
+      // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
       await userEvent.dblClick(
         screen.getByText("Ajouter des codes d'activation")
       )
