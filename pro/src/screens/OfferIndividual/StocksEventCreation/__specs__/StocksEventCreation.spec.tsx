@@ -131,19 +131,34 @@ describe('navigation and submit', () => {
   })
 
   it('should redirect to previous page on click to Étape précédente', async () => {
-    renderStockEventCreation({ offer: individualOfferFactory({ stocks: [] }) })
+    const offer = individualOfferFactory({
+      stocks: [],
+    })
+    renderStockEventCreation({ offer })
 
     await userEvent.click(screen.getByText('Étape précédente'))
 
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'stocks',
+        isDraft: true,
+        isEdition: false,
+        offerId: offer.id,
+        to: 'tarifs',
+        used: 'StickyButtons',
+      }
+    )
     expect(screen.getByText('Previous page')).toBeInTheDocument()
   })
 
   it('should submit and redirect to next page on clik to Étape suivante', async () => {
-    renderStockEventCreation({
-      offer: individualOfferFactory({
-        stocks: [individualStockFactory({ id: undefined, priceCategoryId: 1 })],
-      }),
+    const offer = individualOfferFactory({
+      stocks: [individualStockFactory({ id: undefined, priceCategoryId: 1 })],
     })
+    renderStockEventCreation({ offer })
 
     await userEvent.click(screen.getByText('Étape suivante'))
 
@@ -152,14 +167,26 @@ describe('navigation and submit', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Next page')).toBeInTheDocument()
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'stocks',
+        isDraft: true,
+        isEdition: false,
+        offerId: offer.id,
+        to: 'recapitulatif',
+        used: 'StickyButtons',
+      }
+    )
   })
 
   it('should submit and stay to stocks page on clik to Sauvegarder le brouillon', async () => {
-    renderStockEventCreation({
-      offer: individualOfferFactory({
-        stocks: [individualStockFactory({ id: undefined, priceCategoryId: 1 })],
-      }),
+    const offer = individualOfferFactory({
+      stocks: [individualStockFactory({ id: undefined, priceCategoryId: 1 })],
     })
+    renderStockEventCreation({ offer })
 
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
@@ -170,16 +197,28 @@ describe('navigation and submit', () => {
       screen.getByText('Ajouter une ou plusieurs dates')
     ).toBeInTheDocument()
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'stocks',
+        isDraft: true,
+        isEdition: false,
+        offerId: offer.id,
+        to: 'stocks',
+        used: 'DraftButtons',
+      }
+    )
   })
 
   it('should notify when an error occur', async () => {
     jest.spyOn(api, 'upsertStocks').mockRejectedValue({})
 
-    renderStockEventCreation({
-      offer: individualOfferFactory({
-        stocks: [individualStockFactory({ id: undefined, priceCategoryId: 1 })],
-      }),
+    const offer = individualOfferFactory({
+      stocks: [individualStockFactory({ id: undefined, priceCategoryId: 1 })],
     })
+    renderStockEventCreation({ offer })
 
     await userEvent.click(screen.getByText('Étape suivante'))
 
@@ -193,6 +232,7 @@ describe('navigation and submit', () => {
       screen.getByText('Ajouter une ou plusieurs dates')
     ).toBeInTheDocument()
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenCalledTimes(0)
   })
 
   it('should track when quitting without submit from RouteLeavingGuard', async () => {
