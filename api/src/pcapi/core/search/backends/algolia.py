@@ -502,6 +502,14 @@ class AlgoliaBackend(base.SearchBackend):
         date_created = collective_offer.dateCreated.timestamp()
         beginning_datetime = collective_offer.collectiveStock.beginningDatetime.timestamp()
 
+        # hack to fix seach in adage_iframe for Corse
+        department_code = venue.departementCode
+        if department_code == "20":
+            if venue.postalCode.startswith("200") or venue.postalCode.startswith("201"):
+                department_code = "2A"
+            else:
+                department_code = "2B"
+
         return {
             "objectID": collective_offer.id,
             "offer": {
@@ -524,7 +532,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": offerer.name,
             },
             "venue": {
-                "departmentCode": venue.departementCode,
+                "departmentCode": department_code,
                 "id": venue.id,
                 "name": venue.name,
                 "publicName": venue.publicName,
@@ -539,6 +547,14 @@ class AlgoliaBackend(base.SearchBackend):
         venue = collective_offer_template.venue
         offerer = venue.managingOfferer
         date_created = collective_offer_template.dateCreated.timestamp()
+
+        # hack to fix seach in adage_iframe for Corse
+        department_code = venue.departementCode
+        if department_code == "20":
+            if venue.postalCode.startswith("200") or venue.postalCode.startswith("201"):
+                department_code = "2A"
+            else:
+                department_code = "2B"
 
         return {
             "objectID": _transform_collective_offer_template_id(collective_offer_template.id),
@@ -560,7 +576,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": offerer.name,
             },
             "venue": {
-                "departmentCode": venue.departementCode,
+                "departmentCode": department_code,
                 "id": venue.id,
                 "name": venue.name,
                 "publicName": venue.publicName,
