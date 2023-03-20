@@ -174,6 +174,8 @@ def patch_publish_offer(body: offers_serialize.PatchOfferPublishBodyModel) -> No
 )
 def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBodyModel) -> None:
     query = offers_repository.get_offers_by_ids(current_user, body.ids)
+    if body.is_active:
+        query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
     offers_api.batch_update_offers(query, {"isActive": body.is_active})
 
 
