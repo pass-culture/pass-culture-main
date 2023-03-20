@@ -40,6 +40,7 @@
               <th scope="col">Montant</th>
               <th scope="col">Statut</th>
               <th scope="col">Date de réservation</th>
+              <th scope="col">Date de l'événement</th>
               <th scope="col">Structure</th>
               <th scope="col">Lieu</th>
             </tr>
@@ -126,7 +127,9 @@
                                             class="btn btn-outline-primary"
                                             data-bs-dismiss="modal">Annuler</button>
                                     <button type="submit"
-                                            class="btn btn-primary">Confirmer</button>
+                                            class="btn btn-primary">
+                                      Confirmer
+                                    </button>
                                   </div>
                                 </form>
                               </div>
@@ -161,6 +164,9 @@
                 </td>
                 <td>
                   {{ collective_booking.dateCreated | format_date_time }}
+                </td>
+                <td>
+                  {{ collective_booking.collectiveStock.beginningDatetime | format_date_time }}
                 </td>
                 <td>
                   {{ links.build_offerer_name_to_details_link(collective_booking.offerer) }}
