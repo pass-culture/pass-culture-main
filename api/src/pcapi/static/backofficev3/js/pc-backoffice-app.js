@@ -32,17 +32,23 @@ class PcBackofficeApp {
   appState = {}
 
   /** To pass csrf security when submitting a form, the backend provides a string which holds `<input />` with the csrf token.
-   * We store the string in `app.csrfToken` in case you need it to generate a form with JavaScript.
+   * We store the string in `app.csrfTokenValue` in case you need it to post a FormData with JavaScript.
    */
-  csrfToken
+  csrfTokenValue
+
+  /** To pass csrf security when submitting a form, the backend provides a string which holds `<input />` with the csrf token.
+   * We store the string in `app.csrfTokenInput` in case you need it to render a form with JavaScript.
+   */
+  csrfTokenInput
 
   /**
    * @constructor
-   * @param {{ addOns: Array<PcAddOn>, csrfToken: string }} config - the application configuration.
+   * @param {{ addOns: Array<PcAddOn>, csrfTokenInput: string }} config - the application configuration.
    */
-  constructor({ addOns: AddOns, csrfToken }) {
+  constructor({ addOns: AddOns, csrfTokenInput }) {
     this.#rehydrateState()
-    this.csrfToken = csrfToken
+    this.csrfTokenInput = csrfTokenInput
+    this.csrfTokenValue = csrfTokenInput.match(/value="(.*)"/)[1]
     AddOns.forEach((AddOn) => {
       const name = `${AddOn.name[0].toLowerCase()}${AddOn.name.slice(1)}`
       this.addons[name] = new AddOn({
@@ -101,7 +107,7 @@ class PcBackofficeApp {
 
   /**
    * This method is not called automatically.
-   * It run each addon's unbindEvents method.
+   * It runs each addon's unbindEvents method.
    * When using XHR, it can be useful to run the unbindEvents method prior XHR request to edit the DOM.
    * @example
    * // To manually unbind all addons
@@ -115,7 +121,7 @@ class PcBackofficeApp {
   }
 
   /**
-   * Handle server-side errors without a turbo-frame..
+   * Handle server-side errors without a turbo-frame.
    * Default behaviour since turbo 7.2 is to display a full page with the error content.
    * For example, if nginx throws a 504 error because the flask controller did not respond in time,
    * the whole page will be replaced by a generic 504 error message, which is not great in terms of UX.

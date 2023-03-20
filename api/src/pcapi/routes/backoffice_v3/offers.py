@@ -1,4 +1,5 @@
 import datetime
+from functools import reduce
 import re
 
 from flask import flash
@@ -196,9 +197,28 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     )
 
 
-@list_offers_blueprint.route("/batch/edit", methods=["GET"])
+@list_offers_blueprint.route("/batch/edit", methods=["GET", "POST"])
 def get_batch_edit_offer_form() -> utils.BackofficeResponse:
     form = offer_forms.BatchEditOfferForm()
+    if form.object_ids.data:
+        try:
+            offer_ids = [int(id) for id in form.object_ids.data.split(",")]
+        except ValueError:
+            flash("L'un des identifiants sélectionnés est invalide", "error")
+            return redirect(request.referrer, 400)
+        offers = (
+            offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids))
+            .options(
+                sa.orm.joinedload(offers_models.Offer.criteria).load_only(
+                    criteria_models.Criterion.id, criteria_models.Criterion.name
+                )
+            )
+            .all()
+        )
+        criteria = list(reduce(set.intersection, [set(offer.criteria) for offer in offers]))  # type: ignore
+
+        if len(criteria) > 0:
+            form.criteria.choices = [(criterion.id, criterion.name) for criterion in criteria]
 
     return render_template(
         "components/turbo/modal_form.html",
@@ -222,18 +242,26 @@ def batch_edit_offer() -> utils.BackofficeResponse:
     offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids)).all()
     criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
 
+    previous_criteria = list(reduce(set.intersection, [set(offer.criteria) for offer in offers]))  # type: ignore
+    deleted_criteria = list(set(previous_criteria).difference(criteria))
+
     for offer in offers:
         if offer.criteria:
             offer.criteria.extend(criterion for criterion in criteria if criterion not in offer.criteria)
+            for criterion in deleted_criteria:
+                offer.criteria.remove(criterion)
         else:
             offer.criteria = criteria
 
-        offer.rankingWeight = form.rankingWeight.data
+        if form.rankingWeight.data == 0:
+            offer.rankingWeight = None
+        elif form.rankingWeight.data:
+            offer.rankingWeight = form.rankingWeight.data
 
         repository.save(offer)
 
     flash("Les offres ont été modifiées avec succès", "success")
-    return redirect(request.environ.get("HTTP_REFERER", url_for("backoffice_v3_web.offer.list_offers")), 303)
+    return redirect(request.referrer or url_for("backoffice_v3_web.offer.list_offers"), 303)
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["POST"])
@@ -252,7 +280,7 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     repository.save(offer)
 
     flash("L'offre a été modifiée avec succès", "success")
-    return redirect(request.environ.get("HTTP_REFERER", url_for("backoffice_v3_web.offer.list_offers")), 303)
+    return redirect(request.referrer or url_for("backoffice_v3_web.offer.list_offers"), 303)
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["GET"])
@@ -297,7 +325,7 @@ def validate_offer(offer_id: int) -> utils.BackofficeResponse:
         flash("L'offre a été validée avec succès", "success")
         search.async_index_offer_ids([offer.id])
 
-    return redirect(request.environ.get("HTTP_REFERER", url_for("backoffice_v3_web.offer.list_offers")), 303)
+    return redirect(request.referrer or url_for("backoffice_v3_web.offer.list_offers"), 303)
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["GET"])
@@ -349,7 +377,7 @@ def reject_offer(offer_id: int) -> utils.BackofficeResponse:
         flash("L'offre a été rejetée avec succès", "success")
         search.async_index_offer_ids([offer.id])
 
-    return redirect(request.environ.get("HTTP_REFERER", url_for("backoffice_v3_web.offer.list_offers")), 303)
+    return redirect(request.referrer or url_for("backoffice_v3_web.offer.list_offers"), 303)
 
 
 @list_offers_blueprint.route("", methods=["GET"])
