@@ -46,6 +46,8 @@ def collective_bookings_fixture() -> tuple:
         collectiveStock__price=1234,
         collectiveStock__collectiveOffer__name="Visite des locaux primitifs du pass Culture",
         collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.VISITE_GUIDEE.id,
+        collectiveStock__bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=4),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
     )
     # 2
@@ -54,6 +56,8 @@ def collective_bookings_fixture() -> tuple:
         educationalRedactor=educational_factories.EducationalRedactorFactory(firstName="Louis", lastName="Le Pieux"),
         collectiveStock__price=567.8,
         collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.DECOUVERTE_METIERS.id,
+        collectiveStock__bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
         venue=venue,
     )
@@ -123,6 +127,9 @@ class ListCollectiveBookingsTest:
         assert row["Date de réservation"].startswith(
             (datetime.date.today() - datetime.timedelta(days=3)).strftime("%d/%m/%Y à ")
         )
+        assert row["Date de l'événement"].startswith(
+            (datetime.date.today() + datetime.timedelta(days=4)).strftime("%d/%m/%Y à ")
+        )
         assert row["Structure"] == collective_bookings[1].offerer.name
         assert row["Lieu"] == collective_bookings[1].venue.name
 
@@ -135,7 +142,7 @@ class ListCollectiveBookingsTest:
             in extra_data
         )
         assert (
-            f"Date limite de réservation : {(datetime.date.today() + datetime.timedelta(days=1)).strftime('%d/%m/%Y')} à "
+            f"Date limite de réservation : {(datetime.date.today() + datetime.timedelta(days=2)).strftime('%d/%m/%Y')} à "
             in extra_data
         )
         assert "Date d'annulation" not in extra_data
@@ -178,6 +185,9 @@ class ListCollectiveBookingsTest:
         assert row["Date de réservation"].startswith(
             (datetime.date.today() - datetime.timedelta(days=2)).strftime("%d/%m/%Y à ")
         )
+        assert row["Date de l'événement"].startswith(
+            (datetime.date.today() + datetime.timedelta(days=5)).strftime("%d/%m/%Y à ")
+        )
         assert row["Structure"] == collective_bookings[2].offerer.name
         assert row["Lieu"] == collective_bookings[2].venue.name
 
@@ -190,7 +200,7 @@ class ListCollectiveBookingsTest:
             in extra_data
         )
         assert (
-            f"Date limite de réservation : {(datetime.date.today() + datetime.timedelta(days=1)).strftime('%d/%m/%Y')} à "
+            f"Date limite de réservation : {(datetime.date.today() + datetime.timedelta(days=3)).strftime('%d/%m/%Y')} à "
             in extra_data
         )
         assert f"Date d'annulation : {datetime.date.today().strftime('%d/%m/%Y')} à " in extra_data
