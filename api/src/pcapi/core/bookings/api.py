@@ -224,6 +224,7 @@ def _cancel_booking(
         extra={"booking_id": booking.id, "reason": str(reason)},
         technical_message_id="booking.cancelled",
     )
+    booking_events.track_cancel_booking_event(booking, reason)
 
     update_external_user(booking.user)
     update_external_pro(booking.venue.bookingEmail)

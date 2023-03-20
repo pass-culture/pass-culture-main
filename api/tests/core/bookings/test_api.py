@@ -660,6 +660,24 @@ class CancelByBeneficiaryTest:
 
         mocked_cancel_booking.assert_called()
 
+    def test_cancel_booking_tracked_in_amplitude(self):
+        booking = bookings_factories.BookingFactory()
+
+        api.cancel_booking_by_beneficiary(booking.user, booking)
+
+        assert amplitude_testing.requests[0] == {
+            "event_name": "BOOKING_CANCELLED",
+            "event_properties": {
+                "booking_id": booking.id,
+                "category": "FILM",
+                "offer_id": booking.stock.offerId,
+                "price": 10.00,
+                "reason": BookingCancellationReasons.BENEFICIARY,
+                "subcategory": "SUPPORT_PHYSIQUE_FILM",
+            },
+            "user_id": str(booking.userId),
+        }
+
 
 @pytest.mark.usefixtures("db_session")
 class CancelByOffererTest:
