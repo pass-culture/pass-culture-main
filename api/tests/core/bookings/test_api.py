@@ -12,6 +12,8 @@ from sqlalchemy import create_engine
 import sqlalchemy.exc
 from sqlalchemy.sql import text
 
+from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
+import pcapi.analytics.amplitude.testing as amplitude_testing
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories as bookings_factories
@@ -325,6 +327,28 @@ class BookOfferTest:
                 stock_id=offers_factories.StockFactory().id,
                 quantity=2,
             )
+
+    def test_logs_event_to_amplitude(self):
+        # Given
+        stock = offers_factories.StockFactory(price=10)
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+
+        # When
+        api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+
+        # Then
+        assert len(amplitude_testing.requests) == 1
+        assert amplitude_testing.requests[0] == {
+            "event_name": AmplitudeEventType.OFFER_BOOKED.value,
+            "event_properties": {
+                "booking_id": stock.bookings[0].id,
+                "category": "FILM",
+                "offer_id": stock.offer.id,
+                "price": 10.00,
+                "subcategory": "SUPPORT_PHYSIQUE_FILM",
+            },
+            "user_id": str(beneficiary.id),
+        }
 
     class WhenBookingWithActivationCodeTest:
         def test_book_offer_with_first_activation_code_available(self):
