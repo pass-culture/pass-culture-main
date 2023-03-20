@@ -709,7 +709,7 @@ jobs:
             cd pro
             nvm install
             yarn install
-            yarn start
+            npx --yes start-server-and-test http://localhost:3001
           background: true
       - run:
           name: Running Sandbox
@@ -721,7 +721,6 @@ jobs:
           command: |
             cd pro
             nvm use
-            dockerize -wait http://localhost:3001 -timeout 5m -wait-retry-interval 5s
             yarn test:cafe
       - run:
           name: Step for measure to know if e2e tests have been run
