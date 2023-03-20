@@ -19,7 +19,7 @@ const BannerRGS = ({ closable = false, onClose }: Props): JSX.Element => (
     ]}
     type="attention"
   >
-    <strong>Soyez vraiment vigilant !</strong>
+    <strong>Soyez trop vigilant !</strong>
     <br />
     Vos identifiants de connexion sont personnels et ne doivent pas être
     partagés. Pour assurer la protection de votre compte, découvrez nos
