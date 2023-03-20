@@ -109,6 +109,21 @@ class ListOffersTest:
         assert rows[0]["Dép."] == offers[0].venue.departementCode
         assert rows[0]["Lieu"] == offers[0].venue.name
 
+    @pytest.mark.parametrize(
+        "where", [None, offer_forms.OfferSearchColumn.ALL.name, offer_forms.OfferSearchColumn.ID.name]
+    )
+    def test_list_offers_by_ids_list(self, authenticated_client, offers, where):
+        # when
+        searched_ids = f"{offers[0].id}, {offers[2].id}\n"
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_ids, where=where))
+
+            # then
+            assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert set(int(row["ID"]) for row in rows) == {offers[0].id, offers[2].id}
+
     def test_list_offers_by_invalid_id(self, authenticated_client, offers):
         # when
         response = authenticated_client.get(
@@ -117,7 +132,7 @@ class ListOffersTest:
 
         # then
         assert response.status_code == 400
-        assert "La recherche ne correspond pas à un ID" in html_parser.extract_warnings(response.data)
+        assert "La recherche ne correspond pas à un ID ou une liste d'ID" in html_parser.extract_warnings(response.data)
 
     @pytest.mark.parametrize(
         "where", [None, offer_forms.OfferSearchColumn.ALL.name, offer_forms.OfferSearchColumn.NAME.name]
