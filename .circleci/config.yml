@@ -721,7 +721,7 @@ jobs:
           command: |
             cd pro
             nvm use
-            CI=true yarn test:cafe
+            yarn test:cafe
       - run:
           name: Step for measure to know if e2e tests have been run
           command: |
