@@ -62,6 +62,7 @@ class VenueProviderFactory(BaseFactory):
 
     venue = factory.SubFactory(VenueFactory)
     provider = factory.SubFactory(APIProviderFactory)
+    isActive = True
 
     venueIdAtOfferProvider = factory.SelfAttribute("venue.siret")
 
