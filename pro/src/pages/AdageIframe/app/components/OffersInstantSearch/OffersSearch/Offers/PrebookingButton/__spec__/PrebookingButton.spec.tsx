@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { OfferStockResponse } from 'apiClient/adage'
@@ -54,6 +55,25 @@ describe('offer', () => {
       )
       // When - Then
       expect(screen.getByText('Préréserver')).toBeInTheDocument()
+    })
+    it('should display modal on click', async () => {
+      // Given
+      render(
+        <PrebookingButton
+          canPrebookOffers
+          offerId={1}
+          queryId="aez"
+          stock={stock}
+        />
+      )
+      // When
+      const preBookButton = screen.getByRole('button', { name: 'Préréserver' })
+      await userEvent.click(preBookButton)
+
+      // Then
+      expect(
+        screen.getByText('Êtes-vous sûr de vouloir préréserver ?')
+      ).toBeInTheDocument()
     })
   })
 })
