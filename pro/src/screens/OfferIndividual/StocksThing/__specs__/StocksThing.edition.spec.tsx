@@ -297,6 +297,8 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
     renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
+
+    // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
     await userEvent.dblClick(screen.getAllByTitle('Supprimer le stock')[1])
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
