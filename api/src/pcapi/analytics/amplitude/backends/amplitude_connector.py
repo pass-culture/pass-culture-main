@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 class AmplitudeEventType(enum.Enum):
     BOOKING_CANCELLED = "BOOKING_CANCELLED"
+    BOOKING_USED = "BOOKING_USED"
     DMS_ERROR = "DMS_ERROR"
     EDUCONNECT_ERROR = "EDUCONNECT_ERROR"
     OFFER_BOOKED = "OFFER_BOOKED"

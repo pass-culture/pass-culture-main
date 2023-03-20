@@ -329,6 +329,7 @@ def mark_as_used(booking: Booking) -> None:
     repository.save(booking)
 
     logger.info("Booking was marked as used", extra={"booking_id": booking.id}, technical_message_id="booking.used")
+    booking_events.track_mark_as_used_event(booking)
 
     update_external_user(booking.user)
 
