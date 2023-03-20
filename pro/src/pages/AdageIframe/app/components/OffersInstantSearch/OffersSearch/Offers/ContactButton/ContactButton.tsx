@@ -49,6 +49,7 @@ const ContactButton = ({
           onDismiss={closeModal}
           labelledBy={'contacter le partenaire culturel'}
           extraClassNames={styles['contact-modal-dialog']}
+          hasCloseButton
         >
           <MailIcon className={styles['contact-modal-icon']} />
           <p className={styles['contact-modal-text']}>

@@ -88,11 +88,12 @@ const PrebookingButton = ({
       </div>
 
       {notification && <NotificationComponent notification={notification} />}
-      <PrebookingModal
-        closeModal={closeModal}
-        isOpen={isModalOpen}
-        preBookCurrentStock={preBookCurrentStock}
-      />
+      {isModalOpen && (
+        <PrebookingModal
+          closeModal={closeModal}
+          preBookCurrentStock={preBookCurrentStock}
+        />
+      )}
     </>
   ) : null
 }
