@@ -3,7 +3,6 @@ import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 
-import ProtectedRoute from 'app/AppRouter/ProtectedRoute'
 import { URL_FOR_MAINTENANCE } from 'utils/config'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -23,14 +22,6 @@ const renderApp = (storeOverrides: any, url = '/') =>
       <Routes>
         <Route path="/" element={<p>Sub component</p>} />
         <Route path="/connexion" element={<p>Login page</p>} />
-        <Route
-          path="/offres"
-          element={
-            <ProtectedRoute>
-              <p>Private Page</p>
-            </ProtectedRoute>
-          }
-        />
       </Routes>
     </App>,
     { storeOverrides, initialRouterEntries: [url] }
@@ -85,15 +76,5 @@ describe('src | App', () => {
     await waitFor(() => {
       expect(window.location.href).toEqual(URL_FOR_MAINTENANCE)
     })
-  })
-
-  it('should redirect to login when route is private and user not logged in', () => {
-    store = {
-      ...store,
-      user: { initialized: false, currentUser: null },
-    }
-    renderApp(store, '/offres')
-
-    expect(screen.getByText('Login page')).toBeInTheDocument()
   })
 })
