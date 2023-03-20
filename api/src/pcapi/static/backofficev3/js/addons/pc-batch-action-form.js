@@ -14,7 +14,9 @@
  * Within the `.btn-group` container, you can add as many buttons as needed, and you must set some attributes too:
  * - `[data-use-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly, (required)
  * - `[data-modal-selector]: this value must be the modal selector that contains the form, (optional)
- * - `[data-url]`: this value is required when you do not use confirmation modal (`[data-use-confirmation-modal]`) and should be the `POST` endpoint.
+ * - `[data-url]`: this value is required when you do not use confirmation modal (`[data-use-confirmation-modal]`) and should be the `POST` endpoint,
+ * - `[data-mode]`: set this attributes to `fetch` if you want to use a form data (requires a POST controller),
+ * - `[data-fetch-url]`: URL that renders the form, it uses `POST` with the `selectedRowsIds` from table multi select.
  *
  * @example
  * <div
@@ -28,6 +30,7 @@
  *     disabled
  *     type="button"
  *     class="btn btn-outline-primary"
+ *     data-url="{{ url_for("backoffice_v3_web.validation.batch_validate_user_offerer") }}"
  *     data-user-confirmation-modal="false"
  *   >
  *     Valider
@@ -112,8 +115,8 @@ class PcBatchActionForm extends PcAddOn {
     })
   }
 
-  #onBatchButtonClick = (event) => {
-    const { useConfirmationModal, pcTableMultiSelectId, toggleId, url } = event.target.dataset
+  #onBatchButtonClick = async (event) => {
+    const { useConfirmationModal, pcTableMultiSelectId, toggleId, url, mode, fetchUrl } = event.target.dataset
     const { inputIdsName } = this.state[toggleId]
     const tableMultiSelectState = this.app.addons.pcTableMultiSelect.state[pcTableMultiSelectId]
     const idsStr = [...tableMultiSelectState.selectedRowsIds].join(',')
@@ -123,7 +126,7 @@ class PcBatchActionForm extends PcAddOn {
       $form.classList.add('d-none')
       $form.method = 'post'
       $form.action = url
-      $form.innerHTML = this.app.csrfToken
+      $form.innerHTML = this.app.csrfTokenInput
       const $input = document.createElement('input')
       $input.type = 'hidden'
       $input.value = idsStr
@@ -137,6 +140,27 @@ class PcBatchActionForm extends PcAddOn {
     const $form = $modal.querySelector('form') // no support for turbo loading="lazy" yet
     const $objectIds = $form.querySelector(`input[name="${inputIdsName}"]`)
     $objectIds.value = idsStr
+
+    if (mode === 'fetch' && fetchUrl) {
+      try {
+        const $turboFrame = $modal.querySelector('turbo-frame')
+        const formData = new FormData()
+        formData.append(inputIdsName, idsStr)
+        formData.append('csrf_token', app.csrfTokenValue)
+        const response = await fetch(fetchUrl, {
+          method: 'POST',
+          body: formData,
+        })
+        if (!response.ok) {
+          throw new Error(`Bad response code (${response.status}): ${response.statusText}`)
+        }
+        this.app.addons.pcSelectMultipleField.unbindEvents()
+        $turboFrame.parentElement.innerHTML = await response.text()
+        this.app.addons.pcSelectMultipleField.bindEvents()
+      } catch (error) {
+        throw new Error(error)
+      }
+    }
     bootstrap.Modal.getOrCreateInstance($modal).show()
   }
 }
