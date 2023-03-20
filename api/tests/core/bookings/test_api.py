@@ -672,7 +672,7 @@ class CancelByBeneficiaryTest:
                 "category": "FILM",
                 "offer_id": booking.stock.offerId,
                 "price": 10.00,
-                "reason": BookingCancellationReasons.BENEFICIARY,
+                "reason": BookingCancellationReasons.BENEFICIARY.value,
                 "subcategory": "SUPPORT_PHYSIQUE_FILM",
             },
             "user_id": str(booking.userId),
