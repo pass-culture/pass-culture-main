@@ -29,6 +29,30 @@ def cgr_response_template(films_info: List[Dict]) -> str:
         """.strip()
 
 
+def cgr_reservation_response_template(ticket_response: Dict) -> str:
+    return f"""
+       <?xml version="1.0" encoding="UTF-8"?>
+        <SOAP-ENV:Envelope
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+            <SOAP-ENV:Header/>
+            <SOAP-ENV:Body>
+                <ns1:ReservationPassCultureResponse xmlns:ns1="urn:GestionCinemaWS">
+                    <ReservationPassCultureResult>
+                        {json.dumps({
+                            "CodeErreur": 0,
+                            "IntituleErreur": "",
+                            "QrCode": ticket_response["QrCode"],
+                            "Placement": ticket_response["Placement"]
+                        })}
+                    </ReservationPassCultureResult>
+                </ns1:ReservationPassCultureResponse>
+            </SOAP-ENV:Body>
+        </SOAP-ENV:Envelope>
+        """.strip()
+
+
 def film(films_info: List[Dict]) -> List[Dict]:
     return [
         {
@@ -137,4 +161,15 @@ FILM_234099_WITH_THREE_SEANCES = {
     "Affiche": "https://example.com/82382.jpg",
     "TypeFilm": "CNC",
     "Seances": [SEANCE_182019, SEANCE_182020, SEANCE_182021],
+}
+
+
+ONE_TICKET_RESPONSE = {
+    "QrCode": "CINE999508637111",
+    "Placement": "D8",
+}
+
+TWO_TICKETS_RESPONSE = {
+    "QrCode": "CINE999508637111",
+    "Placement": "F7,F8",
 }
