@@ -508,7 +508,8 @@ Within the `.btn-group` container, you can add as many buttons as needed, and yo
 
 *   `[data-use-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly, (required)
 *   \`\[data-modal-selector]: this value must be the modal selector that contains the form, (optional)
-*   `[data-url]`: this value is required when you do not use confirmation modal (`[data-use-confirmation-modal]`) and should be the `POST` endpoint.
+*   `[data-url]`: this value is required when you do not use confirmation modal (`[data-use-confirmation-modal]`) and should be the `POST` endpoint,
+*   `[data-mode]`: set this attributes to `fetch` if you want to use a form data (requires a POST controller).
 
 ### Examples
 
@@ -524,6 +525,7 @@ Within the `.btn-group` container, you can add as many buttons as needed, and yo
     disabled
     type="button"
     class="btn btn-outline-primary"
+    data-url="{{ url_for("backoffice_v3_web.validation.batch_validate_user_offerer") }}"
     data-user-confirmation-modal="false"
   >
     Valider

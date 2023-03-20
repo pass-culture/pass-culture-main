@@ -166,9 +166,31 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     )
 
 
-@list_offers_blueprint.route("/batch/edit", methods=["GET"])
+@list_offers_blueprint.route("/batch/edit", methods=["GET", "POST"])
 def get_batch_edit_offer_form() -> utils.BackofficeResponse:
     form = offer_forms.BatchEditOfferForm()
+    if request.method == "POST":
+        criteria = []
+        try:
+            offer_ids = [int(id) for id in form.object_ids.data.split(",")]
+        except ValueError:
+            flash("L'un des identifiants sélectionnés est invalide", "error")
+            return redirect(request.referrer, 400)
+        offers = (
+            offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids))
+            .options(
+                sa.orm.joinedload(offers_models.Offer.criteria).load_only(
+                    criteria_models.Criterion.id, criteria_models.Criterion.name
+                )
+            )
+            .all()
+        )
+        for offer in offers:
+            if len(offer.criteria) > 0:
+                criteria.extend(offer.criteria)
+
+        if len(criteria) > 0:
+            form.criteria.choices = [(criterion.id, criterion.name) for criterion in criteria]
 
     return render_template(
         "components/turbo/modal_form.html",
