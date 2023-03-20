@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import App from 'app/App/App'
 import AppLayout from 'app/AppLayout'
-import routes, { IRoute, routesWithoutLayout } from 'app/AppRouter/routes_map'
+import routes, { IRoute } from 'app/AppRouter/routes_map'
 import NotFound from 'pages/Errors/NotFound/NotFound'
 import { selectActiveFeatures } from 'store/features/selectors'
 
@@ -35,17 +35,13 @@ const AppRouter = (): JSX.Element => {
     .filter(
       route => !route.featureName || activeFeatures.includes(route.featureName)
     )
-    .map(route => ({ ...route, element: renderRouteComponent(route, true) }))
-
-  const activeRoutesWithoutLayout = routesWithoutLayout
-    .filter(
-      route => !route.featureName || activeFeatures.includes(route.featureName)
-    )
-    .map(route => ({ ...route, element: renderRouteComponent(route, false) }))
+    .map(route => ({
+      ...route,
+      element: renderRouteComponent(route, !route.meta?.withoutLayout),
+    }))
 
   const router = createBrowserRouter([
     ...activeRoutes,
-    ...activeRoutesWithoutLayout,
     { path: '*', element: <NotFound /> },
   ])
 
