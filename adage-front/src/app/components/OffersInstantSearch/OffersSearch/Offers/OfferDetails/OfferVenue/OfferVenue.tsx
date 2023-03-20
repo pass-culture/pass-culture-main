@@ -16,7 +16,7 @@ const OfferVenue = ({ offerVenue }: IOfferVenue): JSX.Element => {
 
   return (
     <div>
-      <div>{offerVenue.name ?? offerVenue.publicName}</div>
+      <div>{offerVenue.publicName || offerVenue.name}</div>
       <div>
         {offerVenue.address}, {offerVenue.postalCode} {offerVenue.city}
       </div>
