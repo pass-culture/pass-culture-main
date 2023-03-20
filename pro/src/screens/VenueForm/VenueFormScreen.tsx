@@ -69,6 +69,9 @@ const VenueFormScreen = ({
   const hasNewOfferCreationJourney = useNewOfferCreationJourney()
 
   const isNewOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
+  const isWithdrawalUpdatedMailActive = useActiveFeature(
+    'WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL'
+  )
 
   const { currentUser } = useCurrentUser()
 
@@ -106,6 +109,7 @@ const VenueFormScreen = ({
 
   const onSubmit = async (value: IVenueFormValues) => {
     if (
+      isWithdrawalUpdatedMailActive &&
       !isCreatingVenue &&
       value.isWithdrawalAppliedOnAllOffers &&
       hasBookingQuantity &&
@@ -129,7 +133,7 @@ const VenueFormScreen = ({
             {
               hideSiret: venue?.siret.length === 0,
             },
-            shouldSendMail
+            isWithdrawalUpdatedMailActive ? shouldSendMail : false
           )
         )
 
@@ -282,7 +286,7 @@ const VenueFormScreen = ({
             isNewOnboardingActive={isNewOnboardingActive}
           />
         </form>
-        {isWithdrawalDialogOpen && (
+        {isWithdrawalUpdatedMailActive && isWithdrawalDialogOpen && (
           <WithdrawalConfirmDialog
             hideDialog={() => setIsWithdrawalDialogOpen(false)}
             handleCancel={handleCancelWithdrawalDialog}

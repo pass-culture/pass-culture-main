@@ -111,9 +111,6 @@ def post_create_venue(body: venues_serialize.PostVenueBodyModel) -> venues_seria
 def edit_venue(venue_id: str, body: venues_serialize.EditVenueBodyModel) -> venues_serialize.GetVenueResponseModel:
     venue = load_or_404(Venue, venue_id)
 
-    # TODO: remove shouldSendMail from body
-    del body.shouldSendMail
-
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     not_venue_fields = {
         "isAccessibilityAppliedOnAllOffers",
