@@ -26,7 +26,7 @@ export type OptionalCollectiveOfferFromParamsProps = Omit<
 export const useCollectiveOfferFromParams = (
   isOfferMandatory: boolean,
   offerIdFromParams?: string
-): OptionalCollectiveOfferFromParamsProps => {
+) => {
   const location = useLocation()
   const pathNameIncludesTemplate = location.pathname.includes('vitrine')
   if (offerIdFromParams === undefined) {
@@ -71,23 +71,48 @@ export const useCollectiveOfferFromParams = (
   }
 }
 
+// Could be refactored with a react-router-v6 loader function
 export const withCollectiveOfferFromParams = <T,>(
-  Component: ComponentType<T & OptionalCollectiveOfferFromParamsProps>,
-  isOfferMandatory = true
+  Component: ComponentType<T & MandatoryCollectiveOfferFromParamsProps>
 ) => {
   const CollectiveOfferWrapperComponent = (props: T) => {
     const { offerId: offerIdFromParams } = useParams<{
       offerId: string
     }>()
     const additionalProps = useCollectiveOfferFromParams(
-      isOfferMandatory,
+      true,
       offerIdFromParams
     )
 
-    if (
-      (isOfferMandatory || offerIdFromParams) &&
-      additionalProps.offer === undefined
-    ) {
+    if (additionalProps.offer === undefined) {
+      return <Spinner />
+    }
+
+    return (
+      <Component
+        {...props}
+        {...additionalProps}
+        offer={additionalProps.offer}
+      />
+    )
+  }
+
+  return CollectiveOfferWrapperComponent
+}
+
+export const withOptionalCollectiveOfferFromParams = <T,>(
+  Component: ComponentType<T & OptionalCollectiveOfferFromParamsProps>
+) => {
+  const CollectiveOfferWrapperComponent = (props: T) => {
+    const { offerId: offerIdFromParams } = useParams<{
+      offerId: string
+    }>()
+    const additionalProps = useCollectiveOfferFromParams(
+      false,
+      offerIdFromParams
+    )
+
+    if (offerIdFromParams && additionalProps.offer === undefined) {
       return <Spinner />
     }
 
