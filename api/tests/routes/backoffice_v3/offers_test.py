@@ -346,8 +346,8 @@ class EditOffersTest:
             venue__departementCode="74",
             product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
-        choosenRankingWeight = 22
-        base_form = {"criteria": [criteria[0].id, criteria[1].id], "rankingWeight": choosenRankingWeight}
+        choosen_ranking_weight = 22
+        base_form = {"criteria": [criteria[0].id, criteria[1].id], "rankingWeight": choosen_ranking_weight}
 
         response = self._update_offer(authenticated_client, offer_to_edit, base_form)
         assert response.status_code == 303
@@ -361,7 +361,7 @@ class EditOffersTest:
         assert response.status_code == 200
         row = html_parser.extract_table_rows(response.data)
         assert len(row) == 1
-        assert row[0]["Pondération"] == str(choosenRankingWeight)
+        assert row[0]["Pondération"] == str(choosen_ranking_weight)
         assert criteria[0].name in row[0]["Tag"]
         assert criteria[1].name in row[0]["Tag"]
         assert criteria[2].name not in row[0]["Tag"]
@@ -410,6 +410,103 @@ class EditOfferFormTest:
             assert response.status_code == 200
 
 
+class BatchEditOfferFormTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        method = "post"
+        endpoint = "backoffice_v3_web.offer.get_batch_edit_offer_form"
+        endpoint_kwargs = {"offer_ids": "1,2"}
+        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+
+    def test_get_empty_edit_form_test(self, legit_user, authenticated_client):
+        form_url = url_for("backoffice_v3_web.offer.get_batch_edit_offer_form", _external=True)
+
+        with assert_num_queries(2):  # session + user
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+    def test_get_edit_form_with_values_test(self, legit_user, authenticated_client, criteria):
+        offers = offers_factories.OfferFactory.create_batch(
+            3, product__subcategoryId=subcategories.LIVRE_PAPIER.id, criteria=[criteria[2]], rankingWeight=22
+        )
+        selected_offers = offers[:-1]  # select all but the last offer
+
+        offer_ids = ",".join(str(offer.id) for offer in selected_offers)
+        base_form = {
+            "object_ids": offer_ids,
+            "criteria": [criteria[2].id],
+            "rankingWeight": "0",
+        }  # as it is already get in the modal form
+
+        response = self._update_offers_form(authenticated_client, base_form)
+        assert response.status_code == 200
+
+        # Edit N°1 - The two first offers
+        base_form["criteria"].extend([criteria[0].id, criteria[1].id])
+        response = self._update_offers(authenticated_client, base_form)
+        assert response.status_code == 303
+        for offer in offers[:-1]:
+            assert set(offer.criteria) == set(criteria[:3])
+            assert offer.rankingWeight is None
+
+        # Edit N°2 - Only the last offer
+        choosen_ranking_weight = 12
+        base_form = {
+            "criteria": [criteria[2].id, criteria[3].id],
+            "rankingWeight": choosen_ranking_weight,
+        }  # new set of criteria
+        response = self._update_offer(authenticated_client, offers[-1], base_form)
+        assert response.status_code == 303
+
+        offer_list_url = url_for(
+            "backoffice_v3_web.offer.list_offers", category=subcategories.LIVRE_PAPIER.category.id, _external=True
+        )
+        response = authenticated_client.get(offer_list_url)
+        assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == len(offers)
+        assert rows[0]["Pondération"] == ""
+        assert rows[1]["Pondération"] == ""
+        assert rows[2]["Pondération"] == str(choosen_ranking_weight)
+
+        assert criteria[2].name in rows[0]["Tag"]
+        assert criteria[2].name in rows[1]["Tag"]
+        assert criteria[2].name in rows[2]["Tag"]
+
+        assert criteria[0].name in rows[0]["Tag"]
+        assert criteria[0].name in rows[1]["Tag"]
+        assert criteria[0].name not in rows[2]["Tag"]
+
+        assert criteria[1].name in rows[0]["Tag"]
+        assert criteria[1].name in rows[1]["Tag"]
+        assert criteria[1].name not in rows[2]["Tag"]
+
+        assert criteria[3].name not in rows[0]["Tag"]
+        assert criteria[3].name not in rows[1]["Tag"]
+        assert criteria[3].name in rows[2]["Tag"]
+
+    def _update_offers_form(self, authenticated_client, form):
+        edit_url = url_for("backoffice_v3_web.offer.list_offers")
+        authenticated_client.get(edit_url)
+
+        url = url_for("backoffice_v3_web.offer.get_batch_edit_offer_form")
+        form["csrf_token"] = g.get("csrf_token", "")
+
+        return authenticated_client.post(url, form=form)
+
+    def _update_offers(self, authenticated_client, form):
+        url = url_for("backoffice_v3_web.offer.batch_edit_offer")
+        form["csrf_token"] = g.get("csrf_token", "")
+
+        return authenticated_client.post(url, form=form)
+
+    def _update_offer(self, authenticated_client, offer, form):
+        url = url_for("backoffice_v3_web.offer.edit_offer", offer_id=offer.id)
+        form["csrf_token"] = g.get("csrf_token", "")
+
+        return authenticated_client.post(url, form=form)
+
+
 class BatchEditOfferTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
         method = "post"
@@ -420,10 +517,10 @@ class BatchEditOfferTest:
     def test_batch_edit_offer(self, legit_user, authenticated_client, criteria):
         offers = offers_factories.OfferFactory.create_batch(10)
         parameter_ids = ",".join(str(offer.id) for offer in offers)
-        choosenRankingWeight = 2
+        chosen_ranking_weight = 2
         base_form = {
             "criteria": [criteria[0].id, criteria[1].id],
-            "rankingWeight": choosenRankingWeight,
+            "rankingWeight": chosen_ranking_weight,
             "object_ids": parameter_ids,
         }
 
@@ -431,7 +528,7 @@ class BatchEditOfferTest:
         assert response.status_code == 303
 
         for offer in offers:
-            assert offer.rankingWeight == choosenRankingWeight
+            assert offer.rankingWeight == chosen_ranking_weight
             assert len(offer.criteria) == 2
             assert criteria[0] in offer.criteria
             assert criteria[2] not in offer.criteria
