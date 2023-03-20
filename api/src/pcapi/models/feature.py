@@ -116,6 +116,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_LIKE_IN_ADAGE = "Active la possibilité de liker une offre sur adage"
     WIP_RECURRENCE = "Active l'ajout de dates récurrentes pour événements sur les offres individuelles"
     WIP_ENABLE_NEW_ONBOARDING = "Active le nouvel onboarding sans SIREN"
+    WIP_ENABLE_COLLECTIVE_DMS_TRACKING = "Active le suivi du référencement DMS pour les acteurs EAC"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -177,6 +178,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_LIKE_IN_ADAGE,
     FeatureToggle.WIP_RECURRENCE,
     FeatureToggle.WIP_ENABLE_NEW_ONBOARDING,
+    FeatureToggle.WIP_ENABLE_COLLECTIVE_DMS_TRACKING,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
