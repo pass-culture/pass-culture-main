@@ -170,14 +170,16 @@ def _book_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> 
         case "CDSStocks":
             if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
                 raise feature.DisabledFeatureError("ENABLE_CDS_IMPLEMENTATION is inactive")
-            show_id = cinema_providers_utils.get_cds_show_id_from_uuid(stock.idAtProviders)
         case "BoostStocks":
             if not FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
                 raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
-            show_id = cinema_providers_utils.get_boost_showtime_id_from_uuid(stock.idAtProviders)
+        case "CGRStocks":
+            if not FeatureToggle.ENABLE_CGR_INTEGRATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_CGR_INTEGRATION is inactive")
         case _:
             raise ValueError(f"Unknown Provider: {venue_provider_name}")
 
+    show_id = cinema_providers_utils.get_showtime_id_from_uuid(stock.idAtProviders, venue_provider_name)
     if not show_id:
         raise ValueError("Could not retrieve show_id")
 

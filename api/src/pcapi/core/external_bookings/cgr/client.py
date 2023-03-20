@@ -1,6 +1,7 @@
 import logging
 
 from pcapi.connectors.cgr.cgr import get_seances_pass_culture
+from pcapi.connectors.cgr.cgr import reservation_pass_culture
 from pcapi.connectors.serialization import cgr_serializers
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.models as external_bookings_models
@@ -23,7 +24,26 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
     ) -> list[external_bookings_models.Ticket]:
-        raise NotImplementedError
+        book_show_body = cgr_serializers.ReservationPassCultureBody(
+            pIDSeances=show_id,
+            pNumCinema=self.cgr_cinema_details.numCinema,
+            pPUTTC=booking.amount,
+            pNBPlaces=booking.quantity,
+            pNom=beneficiary.lastName if beneficiary.lastName else "",
+            pPrenom=beneficiary.firstName if beneficiary.firstName else "",
+            pEmail=beneficiary.email,
+            pToken=booking.token,
+        )
+        response = reservation_pass_culture(self.cgr_cinema_details, book_show_body)
+        logger.info("Booked CGR Ticket", extra={"barcode": response.QrCode, "seat_number": response.Placement})
+        if booking.quantity == 2:
+            tickets = [
+                external_bookings_models.Ticket(barcode=response.QrCode, seat_number=response.Placement.split(",")[0]),
+                external_bookings_models.Ticket(barcode=response.QrCode, seat_number=response.Placement.split(",")[1]),
+            ]
+        else:
+            tickets = [external_bookings_models.Ticket(barcode=response.QrCode, seat_number=response.Placement)]
+        return tickets
 
     def cancel_booking(self, barcodes: list[str]) -> None:
         raise NotImplementedError

@@ -2,6 +2,7 @@ from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
+from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
@@ -43,6 +44,8 @@ def _get_external_bookings_client_api(venue_id: int) -> external_bookings_models
             return CineDigitalServiceAPI(cinema_id, account_id, api_url, cinema_api_token)
         case "BoostStocks":
             return BoostClientAPI(cinema_id)
+        case "CGRStocks":
+            return CGRClientAPI(cinema_id)
         case _:
             raise ValueError(f"Unknown Provider: {cinema_venue_provider.provider.localClass}")
 
