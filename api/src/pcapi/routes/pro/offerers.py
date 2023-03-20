@@ -269,6 +269,7 @@ def save_new_onboarding_data(
         name=additional_info.name,
         postalCode=additional_info.postalCode,
         siren=body.siret[:9],
+        target=body.target,
         venueType=body.venueType,
         webPresence=body.webPresence,
     )
