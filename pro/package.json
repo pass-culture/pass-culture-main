@@ -134,7 +134,6 @@
     "eslint-config-prettier": "^8.7.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
-    "history": "^4.7.2",
     "jest-axe": "^7.0.0",
     "jest-canvas-mock": "^2.4.0",
     "jest-fetch-mock": "^3.0.3",
