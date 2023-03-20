@@ -2,21 +2,19 @@ import cn from 'classnames'
 import { FieldArray, useFormikContext } from 'formik'
 import React from 'react'
 
+import { Target } from 'apiClient/v1/models/Target'
 import FormLayout from 'components/FormLayout'
 import { PlusCircleIcon, TrashFilledIcon } from 'icons'
 import { Button, RadioGroup, Select, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 import styles from './ActivityForm.module.scss'
-import {
-  activityTargetCustomerTypeRadios,
-  TargetCustomerTypeEnum,
-} from './constants'
+import { activityTargetCustomerTypeRadios } from './constants'
 
 export interface IActivityFormValues {
   venueType: string
   socialUrls: string[]
-  targetCustomer: TargetCustomerTypeEnum | undefined | null
+  targetCustomer: Target | undefined | null
 }
 
 export interface IActivityFormProps {

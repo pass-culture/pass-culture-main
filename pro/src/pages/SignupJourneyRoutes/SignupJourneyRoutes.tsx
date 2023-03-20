@@ -8,6 +8,7 @@ import { OffererAuthentication } from 'screens/SignupJourneyForm/Authentication'
 import { ConfirmedAttachment } from 'screens/SignupJourneyForm/ConfirmedAttachment'
 import { Offerer } from 'screens/SignupJourneyForm/Offerer'
 import { Offerers } from 'screens/SignupJourneyForm/Offerers'
+import { Validation } from 'screens/SignupJourneyForm/Validation'
 import { Welcome } from 'screens/SignupJourneyForm/Welcome'
 
 const SignupJourneyRoutes = () => {
@@ -24,7 +25,7 @@ const SignupJourneyRoutes = () => {
           />
           <Route path="/authentification" element={<OffererAuthentication />} />
           <Route path="/activite" element={<Activity />} />
-          <Route path="/validation" element={<div>Validation</div>} />
+          <Route path="/validation" element={<Validation />} />
         </Routes>
       </SignupJourneyFormLayout>
     </SignupJourneyContextProvider>
