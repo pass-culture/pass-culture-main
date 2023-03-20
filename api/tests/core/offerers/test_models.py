@@ -1,4 +1,5 @@
 import datetime
+import pathlib
 from unittest.mock import patch
 
 import pytest
@@ -120,6 +121,53 @@ class VenueTimezoneSqlQueryTest:
     def test_return_managing_offerer_timezone_when_venue_is_virtual(self):
         factories.VirtualVenueFactory(managingOfferer__postalCode="97300")
         assert models.Venue.query.filter_by(timezone="America/Cayenne").count() == 1
+
+
+class VenueBannerUrlTest:
+    def test_can_set_banner_url_when_none(self, db_session):
+        expected_banner_url = "http://example.com/banner_url"
+        venue = factories.VenueFactory()
+
+        venue.bannerUrl = expected_banner_url
+        repository.save(venue)
+        db_session.refresh(venue)
+
+        assert venue.bannerUrl == expected_banner_url
+        assert venue._bannerUrl == expected_banner_url
+
+    def test_can_update_existing_banner_url(self, db_session):
+        expected_banner_url = "http://example.com/banner_url"
+        venue = factories.VenueFactory(bannerUrl="http://example.com/legacy_url")
+
+        venue.bannerUrl = expected_banner_url
+        repository.save(venue)
+        db_session.refresh(venue)
+
+        assert venue.bannerUrl == expected_banner_url
+        assert venue._bannerUrl == expected_banner_url
+
+    @pytest.mark.parametrize(
+        "venue_type_code", (type_code for type_code, banners in models.VENUE_TYPE_DEFAULT_BANNERS.items() if banners)
+    )
+    def test_can_get_category_default_banner_url_when_exists(self, venue_type_code):
+        venue = factories.VenueFactory(venueTypeCode=venue_type_code)
+
+        assert pathlib.Path(venue.bannerUrl).name in models.VENUE_TYPE_DEFAULT_BANNERS[venue_type_code]
+
+    @pytest.mark.parametrize(
+        "venue_type_code",
+        (type_code for type_code, banners in models.VENUE_TYPE_DEFAULT_BANNERS.items() if not banners),
+    )
+    def test_cannot_get_category_default_banner_if_not_available(self, venue_type_code):
+        venue = factories.VenueFactory(venueTypeCode=venue_type_code)
+
+        assert venue.bannerUrl is None
+
+    def test_can_get_user_defined_banner_if_exists(self):
+        expected_banner_url = "http://example.com/banner_url"
+        venue = factories.VenueFactory(bannerUrl=expected_banner_url)
+
+        assert venue.bannerUrl == expected_banner_url
 
 
 class OffererDepartementCodePropertyTest:
