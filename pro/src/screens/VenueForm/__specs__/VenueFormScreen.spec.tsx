@@ -11,6 +11,7 @@ import {
   EditVenueBodyModel,
   GetVenueResponseModel,
   SharedCurrentUserResponseModel,
+  VenueTypeCode,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -802,7 +803,9 @@ describe('screen | VenueForm', () => {
       }
 
       features = {
-        list: [],
+        list: [
+          { isActive: true, nameKey: 'WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL' },
+        ],
       }
     })
 

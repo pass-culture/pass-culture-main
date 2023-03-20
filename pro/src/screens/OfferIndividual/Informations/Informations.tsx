@@ -80,6 +80,12 @@ const Informations = ({
   const isPriceCategoriesActive = useActiveFeature(
     'WIP_ENABLE_MULTI_PRICE_STOCKS'
   )
+
+  const isWithdrawalUpdatedMailActive = useActiveFeature(
+    'WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL'
+  )
+  console.log(isWithdrawalUpdatedMailActive)
+
   const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
@@ -176,7 +182,7 @@ const Informations = ({
   const handleNextStep =
     ({ saveDraft = false, shouldSendMail = false } = {}) =>
     async () => {
-      if (mode === OFFER_WIZARD_MODE.EDITION) {
+      if (isWithdrawalUpdatedMailActive && mode === OFFER_WIZARD_MODE.EDITION) {
         await handleSendMail(shouldSendMail)
       }
 
@@ -344,7 +350,7 @@ const Informations = ({
           />
         </form>
       </FormLayout>
-      {isWithdrawalDialogOpen && (
+      {isWithdrawalUpdatedMailActive && isWithdrawalDialogOpen && (
         <WithdrawalConfirmDialog
           hideDialog={handleCloseWidthdrawalDialog}
           handleCancel={handleNextStep({ saveDraft: true })}
