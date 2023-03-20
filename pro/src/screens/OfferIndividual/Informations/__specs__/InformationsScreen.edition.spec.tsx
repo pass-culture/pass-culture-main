@@ -47,7 +47,8 @@ jest.mock('repository/pcapi/pcapi', () => ({
 
 const renderInformationsScreen = (
   props: IInformationsProps,
-  contextOverride: Partial<IOfferIndividualContext>
+  contextOverride: Partial<IOfferIndividualContext>,
+  features: { list: { isActive: true; nameKey: string }[] } = { list: [] }
 ) => {
   const storeOverrides = {
     user: {
@@ -58,6 +59,7 @@ const renderInformationsScreen = (
         email: 'email@example.com',
       },
     },
+    features: features,
   }
   const contextValue: IOfferIndividualContext = {
     offerId: null,

@@ -89,6 +89,7 @@ export const serializeEditVenueBodyModel = (
       // @ts-expect-error string is not assignable to type number
       venueLabelId: !formValues.venueLabel ? null : formValues.venueLabel,
       isEmailAppliedOnAllOffers: true,
+      isWithdrawalAppliedOnAllOffers: formValues.isWithdrawalAppliedOnAllOffers,
       reimbursementPointId: formValues.reimbursementPointId,
       shouldSendMail: shouldSendMail,
     }

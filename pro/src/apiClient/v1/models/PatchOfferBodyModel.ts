@@ -21,7 +21,6 @@ export type PatchOfferBodyModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;
-  shouldSendMail?: boolean | null;
   url?: string | null;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDelay?: number | null;
@@ -29,4 +28,3 @@ export type PatchOfferBodyModel = {
   withdrawalType?: WithdrawalTypeEnum | null;
   shouldSendMail?: boolean | null;
 };
-
