@@ -4,6 +4,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { Target } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import {
   ISignupJourneyContext,
@@ -12,10 +13,7 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Activity from '../Activity'
-import {
-  DEFAULT_ACTIVITY_FORM_VALUES,
-  TargetCustomerTypeEnum,
-} from '../constants'
+import { DEFAULT_ACTIVITY_FORM_VALUES } from '../constants'
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -122,7 +120,7 @@ describe('screens:SignupJourney::Activity', () => {
     contextValue.activity = {
       venueType: 'venue1',
       socialUrls: [],
-      targetCustomer: TargetCustomerTypeEnum.ALL,
+      targetCustomer: Target.INDIVIDUAL_AND_EDUCATIONAL,
     }
     renderActivityScreen(contextValue)
     expect(await screen.findByText('Activité')).toBeInTheDocument()

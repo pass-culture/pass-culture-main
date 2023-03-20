@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { TargetCustomerTypeEnum } from './constants'
+import { Target } from 'apiClient/v1'
 
 export const validationSchema = yup.object().shape({
   venueType: yup
@@ -17,7 +17,7 @@ export const validationSchema = yup.object().shape({
   targetCustomer: yup
     .string()
     .oneOf(
-      Object.values(TargetCustomerTypeEnum),
+      Object.values(Target),
       'Veuillez sélectionner une des réponses ci-dessus'
     )
     .required('Veuillez sélectionner une des réponses ci-dessus'),

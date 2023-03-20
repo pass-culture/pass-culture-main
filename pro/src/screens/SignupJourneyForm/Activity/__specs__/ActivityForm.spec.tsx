@@ -4,6 +4,7 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { Target } from 'apiClient/v1'
 import {
   ISignupJourneyContext,
   SignupJourneyContext,
@@ -15,10 +16,7 @@ import ActivityForm, {
   IActivityFormProps,
   IActivityFormValues,
 } from '../ActivityForm'
-import {
-  DEFAULT_ACTIVITY_FORM_VALUES,
-  TargetCustomerTypeEnum,
-} from '../constants'
+import { DEFAULT_ACTIVITY_FORM_VALUES } from '../constants'
 import { validationSchema } from '../validationSchema'
 
 jest.mock('apiClient/api', () => ({
@@ -126,7 +124,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
     initialValues = {
       venueType: venueTypes[0].value,
       socialUrls: ['https://example.com', 'https://exampleTwo.fr'],
-      targetCustomer: TargetCustomerTypeEnum.ALL,
+      targetCustomer: Target.INDIVIDUAL_AND_EDUCATIONAL,
     }
     renderActivityForm({
       initialValues: initialValues,

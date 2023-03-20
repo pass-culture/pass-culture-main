@@ -13,7 +13,7 @@ export interface IActionBarProps {
   nextStepTitle?: string
   previousStepTitle?: string
   hideRightButton?: boolean
-  shouldTrack?: boolean
+  withRightIcon?: boolean
 }
 
 const ActionBar = ({
@@ -23,6 +23,7 @@ const ActionBar = ({
   hideRightButton = false,
   nextStepTitle = 'Étape suivante',
   previousStepTitle = 'Étape précédente',
+  withRightIcon = true,
 }: IActionBarProps) => {
   const Left = (): JSX.Element => {
     if (!onClickPrevious) {
@@ -48,7 +49,7 @@ const ActionBar = ({
 
     return (
       <SubmitButton
-        Icon={IcoMiniArrowRight}
+        Icon={withRightIcon ? IcoMiniArrowRight : undefined}
         iconPosition={IconPositionEnum.RIGHT}
         disabled={isDisabled}
         onClick={onClickNext}
