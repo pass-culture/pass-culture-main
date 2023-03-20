@@ -3,6 +3,14 @@ import React, { useState } from 'react'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
+import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { useOfferWizardMode } from 'hooks'
+import useAnalytics from 'hooks/useAnalytics'
 import { ClearIcon } from 'icons'
 import { Button } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -24,6 +32,7 @@ interface IStocksEventListProps {
   priceCategories: PriceCategoryResponseModel[]
   className?: string
   departmentCode?: string
+  offerId: string
   setStocks: (stocks: IStocksEvent[]) => void
 }
 
@@ -32,8 +41,11 @@ const StocksEventList = ({
   priceCategories,
   className,
   departmentCode,
+  offerId,
   setStocks,
 }: IStocksEventListProps): JSX.Element => {
+  const mode = useOfferWizardMode()
+  const { logEvent } = useAnalytics()
   const [isCheckedArray, setIsCheckedArray] = useState(stocks.map(() => false))
   const areAllChecked = isCheckedArray.every(isChecked => isChecked)
 
@@ -54,10 +66,27 @@ const StocksEventList = ({
   const onDeleteStock = (index: number) => {
     stocks.splice(index, 1)
     setStocks([...stocks])
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OFFER_WIZARD_STEP_IDS.STOCKS,
+      to: OFFER_WIZARD_STEP_IDS.STOCKS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.STOCK_EVENT_DELETE,
+      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      offerId: offerId,
+    })
   }
 
   const onBulkDelete = () => {
     const newStocks = stocks.filter((stock, index) => !isCheckedArray[index])
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OFFER_WIZARD_STEP_IDS.STOCKS,
+      to: OFFER_WIZARD_STEP_IDS.STOCKS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.STOCK_EVENT_BULK_DELETE,
+      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      offerId: offerId,
+      deletionCount: `${stocks.length - newStocks.length}`,
+    })
     setIsCheckedArray(stocks.map(() => false))
     setStocks([...newStocks])
   }

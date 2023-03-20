@@ -2,6 +2,8 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
+import { Events } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import {
   individualStockEventListFactory,
   priceCategoryFactory,
@@ -9,6 +11,8 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksEventList, { IStocksEvent } from '../StocksEventList'
+
+const mockLogEvent = jest.fn()
 
 const mockSetSotcks = jest.fn()
 interface IrenderStocksEventList {
@@ -24,10 +28,18 @@ const renderStocksEventList = ({ stocks }: IrenderStocksEventList) =>
       ]}
       departmentCode="78"
       setStocks={mockSetSotcks}
+      offerId={'AA'}
     />
   )
 
 describe('StocksEventList', () => {
+  beforeEach(() => {
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
+  })
+
   it('should render a table with header and data', () => {
     renderStocksEventList({
       stocks: [individualStockEventListFactory({ priceCategoryId: 1 })],
@@ -110,5 +122,19 @@ describe('StocksEventList', () => {
     expect(mockSetSotcks).toHaveBeenNthCalledWith(1, [])
 
     expect(screen.queryByText('2 dates sélectionnées')).not.toBeInTheDocument()
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'stocks',
+        deletionCount: '2',
+        isDraft: false,
+        isEdition: true,
+        offerId: 'AA',
+        used: 'StockEventBulkDelete',
+        to: 'stocks',
+      }
+    )
   })
 })

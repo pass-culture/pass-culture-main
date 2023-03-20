@@ -96,6 +96,9 @@ export enum OFFER_FORM_NAVIGATION_MEDIUM {
   IMAGE_CREATION = 'ImageCreation',
   VENUE_OFFER_STEPS = 'VenueOfferSteps',
   CREATE_OFFER_POPIN = 'CreateVenuePopin',
+  RECURRENCE_POPIN = 'RecurrencePopin',
+  STOCK_EVENT_DELETE = 'StockEventDelete',
+  STOCK_EVENT_BULK_DELETE = 'StockEventBulkDelete',
 }
 
 export enum OFFER_FORM_NAVIGATION_OUT {

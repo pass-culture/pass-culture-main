@@ -10,6 +10,7 @@ import { IStocksEvent } from 'components/StocksEventList/StocksEventList'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
@@ -79,6 +80,16 @@ export const StocksEventCreation = ({
   }
 
   const handlePreviousStep = () => {
+    if (!hasUnsavedStocks) {
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.STOCKS,
+        to: OFFER_WIZARD_STEP_IDS.TARIFS,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        offerId: offer.id,
+      })
+    }
     /* istanbul ignore next: DEBT, TO FIX */
     navigate(
       getOfferIndividualUrl({
@@ -123,6 +134,18 @@ export const StocksEventCreation = ({
             mode,
           })
         )
+        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+          from: OFFER_WIZARD_STEP_IDS.STOCKS,
+          to: saveDraft
+            ? OFFER_WIZARD_STEP_IDS.STOCKS
+            : OFFER_WIZARD_STEP_IDS.SUMMARY,
+          used: saveDraft
+            ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
+            : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+          isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+          isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+          offerId: offer.id,
+        })
         setIsClickingFromActionBar(false)
         notify.success(getSuccessMessage(mode))
       } else {
@@ -158,6 +181,7 @@ export const StocksEventCreation = ({
           setStocks={setStocks}
           priceCategories={offer.priceCategories}
           departmentCode="75"
+          offerId={offer.id}
         />
       )}
 
