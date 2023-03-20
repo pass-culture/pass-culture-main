@@ -4,22 +4,20 @@ import type { CountryCode } from 'libphonenumber-js'
 import React, { ChangeEvent, FocusEvent, useEffect, useState } from 'react'
 
 import { BaseInput, FieldLayout } from '../shared'
+import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import CodeCountrySelect from './CodeCountrySelect/CountryCodeSelect'
 import { PHONE_CODE_COUNTRY_CODE_OPTIONS, PLACEHOLDER_MAP } from './constants'
 import styles from './PhoneNumberInput.module.scss'
 import { getPhoneNumberInputAndCountryCode } from './utils/getPhoneNumberInputAndCountryCode'
 
-export interface PhoneNumberInputProps {
-  name: string
-  label?: string
+export type PhoneNumberInputProps = FieldLayoutBaseProps & {
   disabled?: boolean
-  isOptional?: boolean
 }
 
 const PhoneNumberInput = ({
   name,
-  label = 'Téléphone',
+  label,
   disabled,
   isOptional = false,
 }: PhoneNumberInputProps) => {

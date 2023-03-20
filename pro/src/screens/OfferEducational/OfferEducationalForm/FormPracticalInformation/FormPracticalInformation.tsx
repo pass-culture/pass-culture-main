@@ -189,7 +189,7 @@ const FormPracticalInformation = ({
           <MultiSelectAutocomplete
             hideTags
             options={offerInterventionOptions}
-            fieldName="interventionArea"
+            name="interventionArea"
             pluralLabel={INTERVENTION_AREA_PLURAL_LABEL}
             label={INTERVENTION_AREA_LABEL}
             className={styles.row}

@@ -14,7 +14,7 @@ jest.mock('libphonenumber-js', () => {
   }
 })
 
-const renderPhoneNumberInput = (label?: string) => {
+const renderPhoneNumberInput = (label = 'Téléphone') => {
   render(
     <Formik initialValues={{}} onSubmit={() => {}}>
       <PhoneNumberInput name="phone" label={label} />

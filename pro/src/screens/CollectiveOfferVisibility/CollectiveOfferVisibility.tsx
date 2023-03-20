@@ -238,7 +238,7 @@ const CollectiveOfferVisibility = ({
                   ) : (
                     <>
                       <SelectAutocomplete
-                        fieldName="institution"
+                        name="institution"
                         options={institutionsOptions}
                         label="Nom de l’établissement scolaire"
                         placeholder="Saisir l’établissement scolaire ou le code UAI"
@@ -282,7 +282,7 @@ const CollectiveOfferVisibility = ({
                   </fieldset>
                   <>
                     <SelectAutocomplete
-                      fieldName="teacher"
+                      name="teacher"
                       options={teachersOptions}
                       label="Prénom et nom de l’enseignant (au moins 3 caractères)"
                       isOptional

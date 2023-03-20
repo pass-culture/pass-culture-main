@@ -4,21 +4,15 @@ import React from 'react'
 import Textarea from 'react-autosize-textarea'
 
 import { FieldLayout } from '../shared'
+import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import styles from './TextArea.module.scss'
 
-interface ITextAreaProps {
-  name: string
-  className?: string
-  disabled?: boolean
-  placeholder?: string
-  label: string
-  rows?: number
-  maxLength?: number
-  countCharacters?: boolean
-  isOptional?: boolean
-  smallLabel?: boolean
-}
+type TextAreaProps = React.InputHTMLAttributes<HTMLTextAreaElement> &
+  FieldLayoutBaseProps & {
+    rows?: number
+    countCharacters?: boolean
+  }
 
 const TextArea = ({
   name,
@@ -31,7 +25,7 @@ const TextArea = ({
   isOptional,
   smallLabel,
   rows = 7,
-}: ITextAreaProps): JSX.Element => {
+}: TextAreaProps): JSX.Element => {
   const [field, meta] = useField({ name })
 
   return (
