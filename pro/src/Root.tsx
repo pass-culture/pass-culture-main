@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { AppRouter } from 'app'
+import routes from 'app/AppRouter/routes_map'
 import { AnalyticsContextProvider } from 'context/analyticsContext'
 import StoreProvider from 'store/StoreProvider/StoreProvider'
 
@@ -11,7 +12,7 @@ const Root = (): JSX.Element => {
     <StoreProvider>
       <AnalyticsContextProvider>
         <RemoteContextProvider>
-          <AppRouter />
+          <AppRouter routes={routes} />
         </RemoteContextProvider>
       </AnalyticsContextProvider>
     </StoreProvider>
