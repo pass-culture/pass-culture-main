@@ -1,26 +1,22 @@
+import { Target } from 'apiClient/v1'
+
 export const DEFAULT_ACTIVITY_FORM_VALUES = {
   venueType: '',
   socialUrls: [''],
   targetCustomer: undefined,
 }
 
-export enum TargetCustomerTypeEnum {
-  ALL = 'all',
-  INDIVIDUAL = 'individual',
-  COLLECTIVE = 'collective',
-}
-
 export const activityTargetCustomerTypeRadios = [
   {
     label: 'À destination du grand public',
-    value: TargetCustomerTypeEnum.INDIVIDUAL,
+    value: Target.INDIVIDUAL,
   },
   {
     label: "À destination d'un groupe scolaire",
-    value: TargetCustomerTypeEnum.COLLECTIVE,
+    value: Target.EDUCATIONAL,
   },
   {
     label: 'Les deux',
-    value: TargetCustomerTypeEnum.ALL,
+    value: Target.INDIVIDUAL_AND_EDUCATIONAL,
   },
 ]
