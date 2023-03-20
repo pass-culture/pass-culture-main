@@ -15,7 +15,8 @@
  * - `[data-use-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly, (required)
  * - `[data-modal-selector]: this value must be the modal selector that contains the form, (optional)
  * - `[data-url]`: this value is required when you do not use confirmation modal (`[data-use-confirmation-modal]`) and should be the `POST` endpoint,
- * - `[data-mode]`: set this attributes to `fetch` if you want to use a form data (requires a POST controller).
+ * - `[data-mode]`: set this attributes to `fetch` if you want to use a form data (requires a POST controller),
+ * - `[data-fetch-url]`: URL that render the form, it use `POST` with the `selectedRowsIds` from table multi select.
  *
  * @example
  * <div
@@ -115,7 +116,7 @@ class PcBatchActionForm extends PcAddOn {
   }
 
   #onBatchButtonClick = async (event) => {
-    const { useConfirmationModal, pcTableMultiSelectId, toggleId, url, mode } = event.target.dataset
+    const { useConfirmationModal, pcTableMultiSelectId, toggleId, url, mode, fetchUrl } = event.target.dataset
     const { inputIdsName } = this.state[toggleId]
     const tableMultiSelectState = this.app.addons.pcTableMultiSelect.state[pcTableMultiSelectId]
     const idsStr = [...tableMultiSelectState.selectedRowsIds].join(',')
@@ -138,22 +139,24 @@ class PcBatchActionForm extends PcAddOn {
     const $modal = document.querySelector(event.target.dataset.modalSelector)
     const $form = $modal.querySelector('form') // no support for turbo loading="lazy" yet
     const $objectIds = $form.querySelector(`input[name="${inputIdsName}"]`)
-    const $turboFrame = $modal.querySelector('turbo-frame')
     $objectIds.value = idsStr
 
-    if (mode === 'fetch') {
+    if (mode === 'fetch' && fetchUrl) {
       try {
+        const $turboFrame = $modal.querySelector('turbo-frame')
         const formData = new FormData()
         formData.append(inputIdsName, idsStr)
         formData.append('csrf_token', app.csrfTokenValue)
-        const response = await fetch('http://localhost/backofficev3/pro/offer/batch/edit', {
+        const response = await fetch(fetchUrl, {
           method: 'POST',
           body: formData,
         })
         if (!response.ok) {
           throw new Error(`Bad response code (${response.status}): ${response.statusText}`)
         }
+        this.app.addons.pcSelectMultipleField.unbindEvents()
         $turboFrame.parentElement.innerHTML = await response.text()
+        this.app.addons.pcSelectMultipleField.bindEvents()
       } catch (error) {
         console.error(error)
       }
