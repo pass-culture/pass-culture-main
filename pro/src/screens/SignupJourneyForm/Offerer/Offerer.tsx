@@ -36,10 +36,11 @@ const Offerer = (): JSX.Element => {
   const onSubmitOfferer = async (
     formValues: IOffererFormValues
   ): Promise<void> => {
-    const response = await getSiretData(formValues.siret)
+    const formattedSiret = formValues.siret.replaceAll(' ', '')
+    const response = await getSiretData(formattedSiret)
 
     const siretExistResponse = await getVenuesOfOffererFromSiretAdapter(
-      formValues.siret
+      formattedSiret
     )
 
     if (!siretExistResponse.isOk) {
@@ -52,7 +53,7 @@ const Offerer = (): JSX.Element => {
     if (siretExistResponse.payload.venues.length === 0) {
       navigate('/parcours-inscription/authentification')
     } else {
-      navigate('/parcours-inscription/structures')
+      navigate('/parcours-inscription/structure/rattachement')
     }
   }
 
