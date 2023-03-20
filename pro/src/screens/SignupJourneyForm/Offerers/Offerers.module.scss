@@ -63,4 +63,14 @@ $small-gap: rem.torem(8px);
     &-down {
       transform: rotate(180deg);
     }
-  }
+}
+
+.dialog-subtitle {
+  @include fonts.button;
+
+  line-height: rem.torem(20px);
+}
+
+.dialog-content, .dialog-info {
+  margin-top: rem.torem(24px);
+}
