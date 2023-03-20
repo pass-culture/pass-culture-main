@@ -51,6 +51,7 @@ export interface ILayoutConfig {
 interface IRouteMeta {
   public?: boolean
   layoutConfig?: ILayoutConfig
+  withoutLayout?: boolean
 }
 
 export interface IRoute {
@@ -66,20 +67,23 @@ const RedirectToConnexionComponent = () => {
   return <Navigate to={`/connexion${location.search}`} />
 }
 
-export const routesWithoutLayout: IRoute[] = [
+const routes: IRoute[] = [
   {
     element: RedirectToConnexionComponent,
     path: '/',
+    meta: { withoutLayout: true },
   },
   {
     element: Logout,
     path: '/logout',
+    meta: { withoutLayout: true },
   },
   {
     element: AdageIframe,
     path: '/adage-iframe',
     meta: {
       public: true,
+      withoutLayout: true,
     },
   },
   {
@@ -88,6 +92,7 @@ export const routesWithoutLayout: IRoute[] = [
     title: 'Inscription',
     meta: {
       public: true,
+      withoutLayout: true,
     },
   },
   {
@@ -96,17 +101,20 @@ export const routesWithoutLayout: IRoute[] = [
     title: 'Inscription',
     meta: {
       public: true,
+      withoutLayout: true,
     },
   },
   {
     element: CsvTable,
     path: '/reservations/detail',
     title: 'Réservations',
+    meta: { withoutLayout: true },
   },
   {
     element: CsvTable,
     path: '/remboursements-details',
     title: 'Remboursements',
+    meta: { withoutLayout: true },
   },
   {
     element: Unavailable,
@@ -114,12 +122,9 @@ export const routesWithoutLayout: IRoute[] = [
     title: 'Page indisponible',
     meta: {
       public: true,
+      withoutLayout: true,
     },
   },
-]
-
-// Routes wrapped with app layout
-const routes: IRoute[] = [
   {
     element: Homepage,
     path: '/accueil',
