@@ -281,4 +281,18 @@ describe('screens:SignupJourney::Offerers', () => {
     renderOfferersScreen(contextValue)
     expect(await screen.findByText('Offerer screen')).toBeInTheDocument()
   })
+
+  describe('modal handling', () => {
+    it('should render component modal', async () => {
+      renderOfferersScreen(contextValue)
+
+      await userEvent.click(await screen.findByText('Rejoindre cet espace'))
+
+      expect(
+        await screen.findByText(
+          'Êtes-vous sûr de vouloir rejoindre cet espace PRO ?'
+        )
+      ).toBeInTheDocument()
+    })
+  })
 })
