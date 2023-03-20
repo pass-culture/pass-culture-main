@@ -55,7 +55,7 @@ interface IRouteMeta {
 }
 
 export interface IRoute {
-  element: any
+  element: JSX.Element
   path: string
   title?: string
   meta?: IRouteMeta
@@ -69,17 +69,17 @@ const RedirectToConnexionComponent = () => {
 
 const routes: IRoute[] = [
   {
-    element: RedirectToConnexionComponent,
+    element: <RedirectToConnexionComponent />,
     path: '/',
     meta: { withoutLayout: true },
   },
   {
-    element: Logout,
+    element: <Logout />,
     path: '/logout',
     meta: { withoutLayout: true },
   },
   {
-    element: AdageIframe,
+    element: <AdageIframe />,
     path: '/adage-iframe',
     meta: {
       public: true,
@@ -87,7 +87,7 @@ const routes: IRoute[] = [
     },
   },
   {
-    element: Signup,
+    element: <Signup />,
     path: '/inscription',
     title: 'Inscription',
     meta: {
@@ -96,7 +96,7 @@ const routes: IRoute[] = [
     },
   },
   {
-    element: Signup,
+    element: <Signup />,
     path: '/inscription/*',
     title: 'Inscription',
     meta: {
@@ -105,19 +105,19 @@ const routes: IRoute[] = [
     },
   },
   {
-    element: CsvTable,
+    element: <CsvTable />,
     path: '/reservations/detail',
     title: 'Réservations',
     meta: { withoutLayout: true },
   },
   {
-    element: CsvTable,
+    element: <CsvTable />,
     path: '/remboursements-details',
     title: 'Remboursements',
     meta: { withoutLayout: true },
   },
   {
-    element: Unavailable,
+    element: <Unavailable />,
     path: UNAVAILABLE_ERROR_PAGE,
     title: 'Page indisponible',
     meta: {
@@ -126,27 +126,27 @@ const routes: IRoute[] = [
     },
   },
   {
-    element: Homepage,
+    element: <Homepage />,
     path: '/accueil',
     title: 'Accueil',
   },
   {
-    element: Desk,
+    element: <Desk />,
     path: '/guichet',
     title: 'Guichet',
   },
   {
-    element: Bookings,
+    element: <Bookings />,
     path: '/reservations',
     title: 'Réservations',
   },
   {
-    element: CollectiveBookings,
+    element: <CollectiveBookings />,
     path: '/reservations/collectives',
     title: 'Réservations',
   },
   {
-    element: SetPassword,
+    element: <SetPassword />,
     path: '/creation-de-mot-de-passe',
     title: 'Création de mot de passe',
     meta: {
@@ -158,7 +158,7 @@ const routes: IRoute[] = [
     },
   },
   {
-    element: SetPassword,
+    element: <SetPassword />,
     path: '/creation-de-mot-de-passe/:token',
     title: 'Création de mot de passe',
     meta: {
@@ -170,7 +170,7 @@ const routes: IRoute[] = [
     },
   },
   {
-    element: SetPasswordConfirm,
+    element: <SetPasswordConfirm />,
     path: '/creation-de-mot-de-passe-confirmation',
     title: 'Confirmation création de mot de passe',
     meta: {
@@ -182,7 +182,7 @@ const routes: IRoute[] = [
     },
   },
   {
-    element: SetPasswordConfirm,
+    element: <SetPasswordConfirm />,
     path: '/creation-de-mot-de-passe-erreur',
     title: 'Erreur de création de mot de passe',
     meta: {
@@ -194,7 +194,7 @@ const routes: IRoute[] = [
     },
   },
   {
-    element: SignIn,
+    element: <SignIn />,
     path: '/connexion',
     title: 'Connexion',
     meta: {
@@ -206,7 +206,7 @@ const routes: IRoute[] = [
     },
   },
   {
-    element: EmailChangeValidation,
+    element: <EmailChangeValidation />,
     path: '/email_validation',
     title: 'Validation changement adresse e-mail',
     meta: {
@@ -218,127 +218,127 @@ const routes: IRoute[] = [
     },
   },
   {
-    element: Offerers,
+    element: <Offerers />,
     path: '/structures',
     title: 'Structures',
   },
   {
-    element: OffererCreation,
+    element: <OffererCreation />,
     path: '/structures/creation',
     title: 'Structures',
   },
   {
-    element: OffererDetails,
+    element: <OffererDetails />,
     path: '/structures/:offererId',
     title: 'Structures',
   },
   {
-    element: VenueCreation,
+    element: <VenueCreation />,
     path: '/structures/:offererId/lieux/creation',
     title: 'Structures',
   },
   {
-    element: VenueEdition,
+    element: <VenueEdition />,
     path: '/structures/:offererId/lieux/:venueId',
     title: 'Structures',
   },
   {
-    element: CollectiveDataEdition,
+    element: <CollectiveDataEdition />,
     path: '/structures/:offererId/lieux/:venueId/eac',
     title: 'Structures',
   },
   {
-    element: OfferType,
+    element: <OfferType />,
     path: '/offre/creation',
     title: 'Selection du type d’offre',
   },
   {
-    element: OffersRoute,
+    element: <OffersRoute />,
     path: '/offres',
     title: 'Offres',
   },
   {
-    element: CollectiveOffers,
+    element: <CollectiveOffers />,
     path: '/offres/collectives',
     title: 'Offres',
   },
   {
-    element: CollectiveOfferSelectionDuplication,
+    element: <CollectiveOfferSelectionDuplication />,
     path: '/offre/creation/collectif/selection',
     title: 'Edition d’une offre collective',
   },
   {
-    element: CollectiveOfferStockCreation,
+    element: <CollectiveOfferStockCreation />,
     path: '/offre/:offerId/collectif/stocks',
     title: 'Edition d’une offre collective',
   },
   {
-    element: CollectiveOfferCreation,
+    element: <CollectiveOfferCreation />,
     path: '/offre/creation/collectif',
     title: 'Edition d’une offre collective',
   },
   {
-    element: CollectiveOfferCreation,
+    element: <CollectiveOfferCreation />,
     path: '/offre/creation/collectif/vitrine',
     title: 'Edition d’une offre collective',
   },
   {
-    element: CollectiveOfferCreation,
+    element: <CollectiveOfferCreation />,
     path: '/offre/collectif/:offerId/creation',
     title: 'Edition d’une offre collective',
   },
   {
-    element: CollectiveOfferCreation,
+    element: <CollectiveOfferCreation />,
     path: '/offre/collectif/vitrine/:offerId/creation',
     title: 'Edition d’une offre collective',
   },
   {
-    element: CollectiveOfferVisibilityCreation,
+    element: <CollectiveOfferVisibilityCreation />,
     path: '/offre/:offerId/collectif/visibilite',
     title: 'Edition d’une offre collective',
   },
   {
-    element: CollectiveOfferSummaryCreation,
+    element: <CollectiveOfferSummaryCreation />,
     path: '/offre/:offerId/collectif/creation/recapitulatif',
     title: 'Edition d’une offre collective',
   },
   {
-    element: CollectiveOfferSummaryCreation,
+    element: <CollectiveOfferSummaryCreation />,
     path: '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
     title: 'Edition d’une offre collective',
   },
   {
-    element: CollectiveOfferConfirmation,
+    element: <CollectiveOfferConfirmation />,
     path: '/offre/:offerId/collectif/confirmation',
     title: 'Edition d’une offre collective',
   },
   {
-    element: CollectiveOfferConfirmation,
+    element: <CollectiveOfferConfirmation />,
     path: '/offre/:offerId/collectif/vitrine/confirmation',
     title: 'Edition d’une offre collective',
   },
   {
-    element: CollectiveOfferEdition,
+    element: <CollectiveOfferEdition />,
     path: '/offre/:offerId/collectif/edition',
     title: 'Edition d’une offre collective',
   },
   {
-    element: CollectiveOfferSummaryEdition,
+    element: <CollectiveOfferSummaryEdition />,
     path: '/offre/:offerId/collectif/recapitulatif',
     title: 'Edition d’une offre collective',
   },
   {
-    element: CollectiveOfferStockEdition,
+    element: <CollectiveOfferStockEdition />,
     path: '/offre/:offerId/collectif/stocks/edition',
     title: 'Edition d’une offre collective',
   },
   {
-    element: CollectiveOfferVisibility,
+    element: <CollectiveOfferVisibility />,
     path: '/offre/:offerId/collectif/visibilite/edition',
     title: 'Edition d’une offre collective',
   },
   {
-    element: LostPassword,
+    element: <LostPassword />,
     path: '/mot-de-passe-perdu',
     title: 'Mot de passe perdu',
     meta: {
@@ -350,12 +350,12 @@ const routes: IRoute[] = [
     },
   },
   {
-    element: OfferIndividualWizard,
+    element: <OfferIndividualWizard />,
     path: '/offre/individuelle/:offerId/*',
     title: 'Offre étape par étape',
   },
   {
-    element: Reimbursements,
+    element: <Reimbursements />,
     path: '/remboursements/*',
     title: 'Remboursements',
     meta: {
@@ -365,18 +365,18 @@ const routes: IRoute[] = [
     },
   },
   {
-    element: UserProfile,
+    element: <UserProfile />,
     path: '/profil',
     title: 'Profil',
   },
   {
-    element: OffererStats,
+    element: <OffererStats />,
     path: '/statistiques',
     title: 'Statistiques',
     featureName: 'ENABLE_OFFERER_STATS',
   },
   {
-    element: SignupJourneyRoutes,
+    element: <SignupJourneyRoutes />,
     path: '/parcours-inscription/*',
     title: 'Parcours de souscription',
     featureName: 'WIP_ENABLE_NEW_ONBOARDING',

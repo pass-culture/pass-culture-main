@@ -10,7 +10,7 @@ import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOffere
 import OfferEducationalScreen from 'screens/OfferEducational'
 import {
   OptionalCollectiveOfferFromParamsProps,
-  withCollectiveOfferFromParams,
+  withOptionalCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import useOfferEducationalFormData from 'screens/OfferEducational/useOfferEducationalFormData'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -53,4 +53,4 @@ export const CollectiveOfferCreation = ({
   )
 }
 
-export default withCollectiveOfferFromParams(CollectiveOfferCreation, false)
+export default withOptionalCollectiveOfferFromParams(CollectiveOfferCreation)
