@@ -709,7 +709,7 @@ jobs:
             cd pro
             nvm install
             yarn install
-            npx --yes start-server-and-test http://localhost:3001
+            CI=true yarn start
           background: true
       - run:
           name: Running Sandbox
