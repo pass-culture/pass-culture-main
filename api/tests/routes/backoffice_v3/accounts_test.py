@@ -369,10 +369,27 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         assert f"Tél : {user.phoneNumber} " in content
         if user.dateOfBirth:
             assert f"Date de naissance {user.dateOfBirth.strftime('%d/%m/%Y')} " in content
+        assert "Date de naissance déclarée à l'inscription" not in content
         assert f"Adresse {user.address} " in content
         if expected_badge:
             assert expected_badge in content
         assert "Suspendu" not in content
+
+    def test_get_public_account_birth_dates(self, authenticated_client):
+        # given
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, days=15),
+            validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=17, days=15),
+        )
+
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+
+        # then
+        assert response.status_code == 200
+        content = html_parser.content_as_text(response.data)
+        assert f"Date de naissance {user.validatedBirthDate.strftime('%d/%m/%Y')} " in content
+        assert f"Date de naissance déclarée à l'inscription {user.dateOfBirth.strftime('%d/%m/%Y')} " in content
 
     def test_get_beneficiary_credit(self, authenticated_client):
         # given
