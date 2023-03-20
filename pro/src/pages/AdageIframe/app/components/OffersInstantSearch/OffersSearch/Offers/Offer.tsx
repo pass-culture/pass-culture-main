@@ -155,6 +155,7 @@ const Offer = ({
               <DialogBox
                 labelledBy="aimer une offre"
                 extraClassNames={style['offer-like-modal']}
+                hasCloseButton
               >
                 <LikedIcon />
                 <p className={style['offer-like-modal-text']}>
