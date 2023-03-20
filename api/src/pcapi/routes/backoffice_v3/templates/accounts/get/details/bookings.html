@@ -68,6 +68,10 @@
                 <span class="fw-bold">Crédit utilisé par le jeune :</span>
                 {{ booking.deposit.type | format_deposit_type | safe }}
               </p>
+              <p class="mb-1">
+                <span class="fw-bold">E-mail à la réservation :</span>
+                {{ booking.emailAtDateCreated }}
+              </p>
             </div>
           </td>
         </tr>
