@@ -9,31 +9,25 @@ import { BaseInput } from '../shared'
 import AutocompleteList from '../shared/AutocompleteList'
 import BaseCheckbox from '../shared/BaseCheckbox'
 import FieldLayout from '../shared/FieldLayout'
+import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import styles from './MultiSelectAutocomplete.module.scss'
 
-export interface MultiSelectAutocompleteProps {
-  className?: string
-  fieldName: string
-  hideFooter?: boolean
+export type MultiSelectAutocompleteProps = FieldLayoutBaseProps & {
   hideTags?: boolean
-  isOptional?: boolean
-  label: string
   maxDisplayOptions?: number
   maxDisplayOptionsLabel?: string
   maxHeight?: number
   options: SelectOption[]
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   pluralLabel?: string
-  smallLabel?: boolean
   disabled?: boolean
   placeholder?: string
-  inline?: boolean
 }
 
 const MultiSelectAutocomplete = ({
   className,
-  fieldName,
+  name,
   hideFooter = false,
   hideTags = false,
   isOptional = false,
@@ -50,8 +44,8 @@ const MultiSelectAutocomplete = ({
 }: MultiSelectAutocompleteProps): JSX.Element => {
   const { setFieldValue, handleChange, setFieldTouched } =
     useFormikContext<any>()
-  const [field, meta] = useField(fieldName)
-  const [searchField, searchMeta] = useField(`search-${fieldName}`)
+  const [field, meta] = useField(name)
+  const [searchField, searchMeta] = useField(`search-${name}`)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [isOpen, setIsOpen] = useState(false)
@@ -63,7 +57,7 @@ const MultiSelectAutocomplete = ({
 
   useEffect(() => {
     if (!isOpen && searchField.value !== '') {
-      setFieldValue(`search-${fieldName}`, '', false)
+      setFieldValue(`search-${name}`, '', false)
     }
   }, [isOpen])
 
@@ -102,11 +96,11 @@ const MultiSelectAutocomplete = ({
   const toggleField = () => {
     if (isOpen) {
       setIsOpen(false)
-      setFieldValue(`search-${fieldName}`, '', false)
+      setFieldValue(`search-${name}`, '', false)
     } else {
       setIsOpen(true)
     }
-    setFieldTouched(fieldName, true)
+    setFieldTouched(name, true)
   }
 
   return (
@@ -116,7 +110,7 @@ const MultiSelectAutocomplete = ({
       hideFooter={!hideTags && field.value.length > 0 ? true : hideFooter}
       isOptional={isOptional}
       label={label}
-      name={`search-${fieldName}`}
+      name={`search-${name}`}
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}
       inline={inline}
@@ -130,7 +124,7 @@ const MultiSelectAutocomplete = ({
             if (!isOpen) {
               setIsOpen(true)
             }
-            setFieldTouched(fieldName, true)
+            setFieldTouched(name, true)
           }}
           placeholder={
             placeholder ??
@@ -171,11 +165,11 @@ const MultiSelectAutocomplete = ({
           renderOption={({ value, label }) => (
             <BaseCheckbox
               label={label}
-              key={`${fieldName}-${value}`}
+              key={`${name}-${value}`}
               value={value}
-              name={fieldName}
+              name={name}
               onChange={e => {
-                setFieldTouched(`search-${fieldName}`, true)
+                setFieldTouched(`search-${name}`, true)
                 handleChange(e)
                 onChange?.(e)
               }}
@@ -188,12 +182,12 @@ const MultiSelectAutocomplete = ({
         <div className={styles['multi-select-autocomplete-tags']}>
           {field.value.map((value: string) => (
             <Tag
-              key={`tag-${fieldName}-${value}`}
+              key={`tag-${name}-${value}`}
               label={optionsLabelById[value]}
               closeable={{
                 onClose: () => {
                   setFieldValue(
-                    fieldName,
+                    name,
                     field.value.filter((_value: string) => _value !== value)
                   )
                 },

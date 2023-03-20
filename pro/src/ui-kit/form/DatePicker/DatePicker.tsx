@@ -7,23 +7,15 @@ import { CalendarIcon } from 'icons'
 import { FORMAT_DD_MM_YYYY } from 'utils/date'
 
 import { BaseInput, FieldLayout } from '../shared'
+import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 registerLocale('fr', fr)
 
-interface IDatePickerProps {
-  name: string
-  className?: string
-  classNameLabel?: string
-  classNameFooter?: string
+interface IDatePickerProps extends FieldLayoutBaseProps {
   disabled?: boolean
-  label: string
-  isLabelHidden?: boolean
   maxDateTime?: Date
   minDateTime?: Date
   openingDateTime?: Date
-  smallLabel?: boolean
-  isOptional?: boolean
-  hideFooter?: boolean
   hideHiddenFooter?: boolean
   onChange?: (name: string, date: Date | null) => void
 }

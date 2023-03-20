@@ -208,7 +208,7 @@ const CollectiveDataForm = ({
             </FormLayout.Row>
             <FormLayout.Row>
               <MultiSelectAutocomplete
-                fieldName="collectiveStudents"
+                name="collectiveStudents"
                 label="Public cible"
                 options={studentOptions}
                 placeholder="Sélectionner un public cible"
@@ -250,7 +250,7 @@ const CollectiveDataForm = ({
               <MultiSelectAutocomplete
                 hideTags
                 options={domains}
-                fieldName="collectiveDomains"
+                name="collectiveDomains"
                 label="Domaine artistique et culturel"
                 placeholder="Sélectionner un ou plusieurs domaine(s)"
                 className={styles.row}
@@ -261,7 +261,7 @@ const CollectiveDataForm = ({
               <MultiSelectAutocomplete
                 hideTags
                 options={venueInterventionOptions}
-                fieldName="collectiveInterventionArea"
+                name="collectiveInterventionArea"
                 label="Zone de mobilité"
                 placeholder="Sélectionner une ou plusieurs zone(s) de mobilité"
                 className={styles.row}
@@ -284,7 +284,7 @@ const CollectiveDataForm = ({
             <FormLayout.Row>
               <MultiSelectAutocomplete
                 options={culturalPartners}
-                fieldName="collectiveNetwork"
+                name="collectiveNetwork"
                 label="Réseaux partenaires EAC"
                 className={styles.row}
                 placeholder="Sélectionner un ou plusieurs réseau(x) partenaire(s)"

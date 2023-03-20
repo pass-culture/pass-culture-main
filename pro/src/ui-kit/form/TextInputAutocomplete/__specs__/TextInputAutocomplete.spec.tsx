@@ -4,11 +4,11 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import TextInputAutocomplete from '..'
-import { ITextInputAutocompleteProps } from '../TextInputAutocomplete'
+import { TextInputAutocompleteProps } from '../TextInputAutocomplete'
 
 const renderTextInputAutocomplete = async (
   initialValues: any,
-  props: ITextInputAutocompleteProps
+  props: TextInputAutocompleteProps
 ) => {
   render(
     <>
@@ -22,7 +22,7 @@ const renderTextInputAutocomplete = async (
 
 describe('src | ui-kit | form | TextInputAutocomplete', () => {
   let initialValues = {}
-  let props: ITextInputAutocompleteProps
+  let props: TextInputAutocompleteProps
   const onSelectCustom = jest.fn()
   const getSuggestions = async (search: string) => {
     if (search == 'testNoSuggestions') {
@@ -53,7 +53,7 @@ describe('src | ui-kit | form | TextInputAutocomplete', () => {
   beforeEach(() => {
     initialValues = { adresse: '', 'search-adresse': '' }
     props = {
-      fieldName: 'adresse',
+      name: 'adresse',
       label: 'Adresse',
       getSuggestions: getSuggestions,
       onSelectCustom: onSelectCustom,

@@ -2,35 +2,22 @@ import { useField } from 'formik'
 import React, { ForwardedRef } from 'react'
 
 import { BaseInput, FieldLayout } from '../shared'
+import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import styles from './TextInput.module.scss'
 
-export interface ITextInputProps
-  extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
-  name: string
-  className?: string
-  classNameLabel?: string
-  classNameFooter?: string
-  disabled?: boolean
-  readOnly?: boolean
-  hideFooter?: boolean
-  label: string
-  isLabelHidden?: boolean
-  placeholder?: string
-  type?: 'text' | 'number' | 'email' | 'url' | 'password' | 'tel'
-  countCharacters?: boolean
-  maxLength?: number
-  isOptional?: boolean
-  smallLabel?: boolean
-  rightButton?: () => JSX.Element
-  rightIcon?: () => JSX.Element
-  step?: number | string
-  inline?: boolean
-  hasDecimal?: boolean
-  refForInput?: ForwardedRef<HTMLInputElement>
-  hideHiddenFooter?: boolean
-  description?: string
-}
+type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
+  FieldLayoutBaseProps & {
+    readOnly?: boolean
+    type?: 'text' | 'number' | 'email' | 'url' | 'password' | 'tel'
+    countCharacters?: boolean
+    rightButton?: () => JSX.Element
+    rightIcon?: () => JSX.Element
+    step?: number | string
+    hasDecimal?: boolean
+    refForInput?: ForwardedRef<HTMLInputElement>
+    hideHiddenFooter?: boolean
+  }
 
 const TextInput = ({
   name,
@@ -57,7 +44,7 @@ const TextInput = ({
   hideHiddenFooter = false,
   description,
   ...props
-}: ITextInputProps): JSX.Element => {
+}: TextInputProps): JSX.Element => {
   const [field, meta] = useField({
     name,
     type,

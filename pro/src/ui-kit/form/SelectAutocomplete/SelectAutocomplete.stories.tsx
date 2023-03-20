@@ -39,7 +39,7 @@ const Template: Story<Args> = args => (
 
 const defaultProps: Args = {
   label: 'Département',
-  fieldName: 'departement',
+  name: 'departement',
   options: [
     { value: '01', label: 'Ain' },
     { value: '02', label: 'Aisne' },

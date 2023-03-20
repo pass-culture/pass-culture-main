@@ -12,24 +12,19 @@ import {
   FieldLayout,
 } from '../shared'
 import { IAutocompleteItemProps } from '../shared/AutocompleteList/type'
+import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import styles from './TextInputAutocomplete.module.scss'
 
-export interface ITextInputAutocompleteProps {
-  className?: string
+export type TextInputAutocompleteProps = FieldLayoutBaseProps & {
   disabled?: boolean
-  fieldName: string
   filterLabel?: string
   getSuggestions: (search: string) => Promise<IAutocompleteItemProps[]>
-  hideFooter?: boolean
-  isOptional?: boolean
-  label: string
   maxDisplayOptions?: number
   maxDisplayOptionsLabel?: string
   maxHeight?: number
   onSelectCustom?: (selectedItem: IAutocompleteItemProps) => void
   onSearchChange?: () => void
-  smallLabel?: boolean
   placeholder?: string
   hideArrow?: boolean
   useDebounce?: boolean
@@ -38,7 +33,7 @@ export interface ITextInputAutocompleteProps {
 const AutocompleteTextInput = ({
   className,
   disabled = false,
-  fieldName,
+  name,
   getSuggestions,
   hideFooter = false,
   isOptional = false,
@@ -48,16 +43,16 @@ const AutocompleteTextInput = ({
   smallLabel = false,
   placeholder,
   useDebounce = false,
-}: ITextInputAutocompleteProps): JSX.Element => {
+}: TextInputAutocompleteProps): JSX.Element => {
   const [suggestions, setSuggestions] = useState<SelectOption[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [isFocus, setIsFocus] = useState(false)
 
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const [field, meta, helpers] = useField(fieldName)
+  const [field, meta, helpers] = useField(name)
   const [searchField] = useField({
-    name: `search-${fieldName}`,
+    name: `search-${name}`,
   })
   const [lastSelectedValue, setLastSelectedValue] =
     useState<IAutocompleteItemProps>()
@@ -94,7 +89,7 @@ const AutocompleteTextInput = ({
       if (!search) {
         setIsOpen(false)
       }
-      setFieldValue(`search-${fieldName}`, search, false)
+      setFieldValue(`search-${name}`, search, false)
     },
     [updateSuggestions, debouncedSearch]
   )
@@ -106,7 +101,7 @@ const AutocompleteTextInput = ({
       onSelectCustom(selectedItem)
     }
     helpers.setValue(selectedItem?.label || '')
-    setFieldValue(`search-${fieldName}`, selectedItem?.label || '', false)
+    setFieldValue(`search-${name}`, selectedItem?.label || '', false)
   }
   const handleSelect = (selectedItem: IAutocompleteItemProps) => {
     setLastSelectedValue(selectedItem)
@@ -118,13 +113,13 @@ const AutocompleteTextInput = ({
   const renderSuggestion = (item: SelectOption, disabled?: boolean) => (
     <BaseCheckbox
       label={item.label}
-      key={`${fieldName}-${item.value}`}
+      key={`${name}-${item.value}`}
       className={cn(styles['option'], {
         [styles['option-disabled']]: disabled,
       })}
       value={item.label}
-      id={`${fieldName}-${item.value}`}
-      name={`${fieldName}-${item.value}`}
+      id={`${name}-${item.value}`}
+      name={`${name}-${item.value}`}
       role="option"
       aria-selected={field.value === item.label}
       disabled={disabled}
@@ -139,7 +134,7 @@ const AutocompleteTextInput = ({
         if (isOpen || !searchField.value) {
           updateFieldWithSelectedItem(lastSelectedValue)
           setIsOpen(false)
-          setFieldTouched(fieldName)
+          setFieldTouched(name)
         }
         setIsFocus(false)
       }
@@ -159,7 +154,7 @@ const AutocompleteTextInput = ({
   return (
     <FieldLayout
       label={label}
-      name={`search-${fieldName}`}
+      name={`search-${name}`}
       error={meta.error}
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}

@@ -26,7 +26,11 @@ const Contact = ({
             }
           >
             <FormLayout.Row>
-              <PhoneNumberInput name="phoneNumber" isOptional />
+              <PhoneNumberInput
+                name="phoneNumber"
+                label="Téléphone"
+                isOptional
+              />
             </FormLayout.Row>
             <FormLayout.Row>
               <TextInput

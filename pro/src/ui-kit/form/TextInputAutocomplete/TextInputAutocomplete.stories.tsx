@@ -31,7 +31,7 @@ const Template: Story<{ label: string }> = ({ label }) => (
     <TextInputAutocomplete
       getSuggestions={getSuggestions}
       label={label}
-      fieldName="adress"
+      name="adress"
       placeholder="input placeholder"
     />
   </Formik>
