@@ -1,5 +1,4 @@
 import logging
-from typing import Dict
 
 from alembic import context
 from sqlalchemy import create_engine
@@ -13,9 +12,7 @@ logger = logging.getLogger(__name__)
 
 target_metadata = Base.metadata
 
-# op.drop_constraint('allocine_pivot_siret_key', 'allocine_pivot', type_='unique')
 IGNORED_TABLES = ("transaction", "activity")
-IGNORED_UNIQUE_CONSTRAINT_BY_TABLE: Dict[str, tuple] = {}
 
 
 def include_object(
@@ -33,13 +30,6 @@ def include_object(
         return False
     if type_ == "table" and name in IGNORED_TABLES:
         logger.warning(">>>>> Ignoring table '%s' from IGNORED_TABLES <<<<<", object.name)  # type: ignore[attr-defined]
-        return False
-    if type_ == "unique_constraint" and name in IGNORED_UNIQUE_CONSTRAINT_BY_TABLE.get(object.table.name, ()):  # type: ignore[attr-defined]
-        logger.warning(
-            ">>>>> Ignoring unique constraint '%s' in table '%s' from IGNORED_UNIQUE_CONSTRAINT_BY_TABLE <<<<<",
-            object.name,  # type: ignore[attr-defined]
-            object.table.name,  # type: ignore[attr-defined]
-        )
         return False
     return True
 
