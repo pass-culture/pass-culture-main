@@ -834,6 +834,22 @@ class MarkAsUsedTest:
             api.mark_as_used(booking)
         assert booking.status is not BookingStatus.USED
 
+    def test_mark_as_used_tracked_to_amplitude(self):
+        booking = bookings_factories.BookingFactory()
+        api.mark_as_used(booking)
+        assert len(amplitude_testing.requests) == 1
+        assert amplitude_testing.requests[0] == {
+            "event_name": "BOOKING_USED",
+            "event_properties": {
+                "booking_id": booking.id,
+                "category": "FILM",
+                "offer_id": booking.stock.offerId,
+                "price": 10.00,
+                "subcategory": "SUPPORT_PHYSIQUE_FILM",
+            },
+            "user_id": str(booking.userId),
+        }
+
 
 @pytest.mark.usefixtures("db_session")
 class MarkAsUnusedTest:
