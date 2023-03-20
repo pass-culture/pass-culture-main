@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 import decimal
 from io import BytesIO
 import logging
@@ -9,30 +8,17 @@ from PIL import UnidentifiedImageError
 
 from pcapi import settings
 from pcapi.core.categories import subcategories
-from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
-from pcapi.core.categories.subcategories import WITHDRAWABLE_SUBCATEGORIES
 from pcapi.core.categories.subcategories_v2 import ExtraDataFieldEnum
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import CollectiveOfferTemplate
-from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offers import exceptions
-from pcapi.core.offers import models as offers_models
-from pcapi.core.offers.models import ActivationCode
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.offers.models import PriceCategory
-from pcapi.core.offers.models import Stock
-from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.core.offers import models
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
-from pcapi.core.providers.models import CinemaProviderPivot
-from pcapi.core.providers.models import Provider
-from pcapi.core.users.models import User
+from pcapi.core.users import models as user_models
 from pcapi.domain import music_types
 from pcapi.domain import show_types
-from pcapi.models.api_errors import ApiErrors
-from pcapi.models.api_errors import ForbiddenError
+from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.public.books_stocks import serialization
 from pcapi.utils import date
@@ -81,7 +67,14 @@ KEY_VALIDATION_CONFIG = {
 VALUE_VALIDATION_CONFIG = {
     "name": [str],
     "conditions": [list],
-    "model": ["Offer", "Venue", "Offerer", "CollectiveOffer", "CollectiveOfferTemplate", "CollectiveStock"],
+    "model": [
+        "Offer",
+        "Venue",
+        "Offerer",
+        "CollectiveOffer",
+        "CollectiveOfferTemplate",
+        "CollectiveStock",
+    ],
     "attribute": [str],
     "type": [str, list],
     "factor": [float, int],
@@ -91,19 +84,23 @@ VALUE_VALIDATION_CONFIG = {
 }
 
 
-def check_provider_can_edit_stock(offer: Offer, editing_provider: providers_models.Provider | None = None) -> None:
+def check_provider_can_edit_stock(
+    offer: models.Offer, editing_provider: providers_models.Provider | None = None
+) -> None:
     if not offer.isFromProvider:
         return
     if offer.isFromAllocine or offer.isFromCinemaProvider:
         return
     if offer.lastProvider != editing_provider:
-        error = ApiErrors()
+        error = api_errors.ApiErrors()
         error.status_code = 400
         error.add_error("global", "Les offres importées ne sont pas modifiables")
         raise error
 
 
-def check_update_only_allowed_fields_for_offer_from_provider(updated_fields: set, provider: Provider) -> None:
+def check_update_only_allowed_fields_for_offer_from_provider(
+    updated_fields: set, provider: providers_models.Provider
+) -> None:
     if provider.isAllocine:
         rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_ALLOCINE_OFFER
     elif provider.name == providers_constants.INDIVIDUAL_OFFERS_API_PROVIDER_NAME:
@@ -111,7 +108,7 @@ def check_update_only_allowed_fields_for_offer_from_provider(updated_fields: set
     else:
         rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
     if rejected_fields:
-        api_error = ApiErrors()
+        api_error = api_errors.ApiErrors()
         for field in rejected_fields:
             api_error.add_error(field, "Vous ne pouvez pas modifier ce champ")
 
@@ -119,30 +116,30 @@ def check_update_only_allowed_fields_for_offer_from_provider(updated_fields: set
 
 
 def check_stock_quantity(quantity: int | None, bookingQuantity: int = 0) -> None:
-    api_errors = ApiErrors()
+    errors = api_errors.ApiErrors()
 
     if quantity is not None and quantity < 0:
-        api_errors.add_error("quantity", "Le stock doit être positif")
+        errors.add_error("quantity", "Le stock doit être positif")
 
     if quantity is not None and bookingQuantity and (quantity - bookingQuantity) < 0:
-        api_errors.add_error("quantity", "Le stock total ne peut être inférieur au nombre de réservations")
+        errors.add_error("quantity", "Le stock total ne peut être inférieur au nombre de réservations")
 
-    if api_errors.errors:
-        raise api_errors
+    if errors.errors:
+        raise errors
 
 
-def check_stock_price(price: decimal.Decimal, offer: Offer) -> None:
+def check_stock_price(price: decimal.Decimal, offer: models.Offer) -> None:
     if price < 0:
-        api_errors = ApiErrors()
-        api_errors.add_error("price", "Le prix doit être positif")
-        raise api_errors
+        errors = api_errors.ApiErrors()
+        errors.add_error("price", "Le prix doit être positif")
+        raise errors
     if price > 300:
-        api_errors = ApiErrors()
-        api_errors.add_error(
+        errors = api_errors.ApiErrors()
+        errors.add_error(
             "price300",
             "Le prix d’une offre ne peut excéder 300 euros.",
         )
-        raise api_errors
+        raise errors
     if finance_repository.has_active_or_future_custom_reimbursement_rule(offer):
         # We obviously look for active rules, but also future ones: if
         # a reimbursement rule has been negotiated that will enter in
@@ -162,23 +159,23 @@ def check_stock_price(price: decimal.Decimal, offer: Offer) -> None:
                     "prices": current_prices,
                 },
             )
-            raise ApiErrors({"price": [error]})
+            raise api_errors.ApiErrors({"price": [error]})
         if not current_prices:
             # Do not allow an offerer to (soft-)delete all its stocks
             # and create a new one with a different price.
-            raise ApiErrors({"price": [error]})
+            raise api_errors.ApiErrors({"price": [error]})
         if current_prices.pop() != price:
-            raise ApiErrors({"price": [error]})
+            raise api_errors.ApiErrors({"price": [error]})
 
 
 def check_required_dates_for_stock(
-    offer: Offer,
-    beginning: datetime | None,
-    booking_limit_datetime: datetime | None,
+    offer: models.Offer,
+    beginning: datetime.datetime | None,
+    booking_limit_datetime: datetime.datetime | None,
 ) -> None:
     if offer.isThing:
         if beginning:
-            raise ApiErrors(
+            raise api_errors.ApiErrors(
                 {
                     "global": [
                         "Impossible de mettre une date de début si l'offre ne porte pas sur un évènement",
@@ -187,21 +184,23 @@ def check_required_dates_for_stock(
             )
     else:
         if not beginning:
-            raise ApiErrors({"beginningDatetime": ["Ce paramètre est obligatoire"]})
+            raise api_errors.ApiErrors({"beginningDatetime": ["Ce paramètre est obligatoire"]})
 
         if not booking_limit_datetime:
-            raise ApiErrors({"bookingLimitDatetime": ["Ce paramètre est obligatoire"]})
+            raise api_errors.ApiErrors({"bookingLimitDatetime": ["Ce paramètre est obligatoire"]})
 
 
-def check_provider_can_create_stock(offer: Offer, creating_provider: providers_models.Provider | None = None) -> None:
+def check_provider_can_create_stock(
+    offer: models.Offer, creating_provider: providers_models.Provider | None = None
+) -> None:
     if offer.isFromProvider and offer.lastProvider != creating_provider:
-        api_errors = ApiErrors()
-        api_errors.add_error("global", "Les offres importées ne sont pas modifiables")
-        raise api_errors
+        errors = api_errors.ApiErrors()
+        errors.add_error("global", "Les offres importées ne sont pas modifiables")
+        raise errors
 
 
-def check_stock_is_updatable(stock: Stock, editing_provider: providers_models.Provider | None = None) -> None:
-    if stock.offer.validation == OfferValidationStatus.DRAFT:
+def check_stock_is_updatable(stock: models.Stock, editing_provider: providers_models.Provider | None = None) -> None:
+    if stock.offer.validation == models.OfferValidationStatus.DRAFT:
         return
     check_validation_status(stock.offer)
     check_provider_can_edit_stock(stock.offer, editing_provider)
@@ -209,20 +208,20 @@ def check_stock_is_updatable(stock: Stock, editing_provider: providers_models.Pr
 
 
 def check_price_category_is_updatable(
-    price_category: PriceCategory, editing_provider: providers_models.Provider | None = None
+    price_category: models.PriceCategory, editing_provider: providers_models.Provider | None = None
 ) -> None:
     check_validation_status(price_category.offer)
     check_provider_can_edit_stock(price_category.offer, editing_provider)
 
 
-def check_event_expiration(stock: CollectiveStock | Stock) -> None:
+def check_event_expiration(stock: educational_models.CollectiveStock | models.Stock) -> None:
     if stock.isEventExpired:
-        api_errors = ApiErrors()
-        api_errors.add_error("global", "Les évènements passés ne sont pas modifiables")
-        raise api_errors
+        errors = api_errors.ApiErrors()
+        errors.add_error("global", "Les évènements passés ne sont pas modifiables")
+        raise errors
 
 
-def check_stock_is_deletable(stock: Stock) -> None:
+def check_stock_is_deletable(stock: models.Stock) -> None:
     check_validation_status(stock.offer)
     if not stock.isEventDeletable:
         raise exceptions.TooLateToDeleteStock()
@@ -230,10 +229,10 @@ def check_stock_is_deletable(stock: Stock) -> None:
 
 def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: set) -> None:
     if not updated_fields.issubset(EDITABLE_FIELDS_FOR_ALLOCINE_STOCK):
-        api_errors = ApiErrors()
-        api_errors.status_code = 400
-        api_errors.add_error("global", "Pour les offres importées, certains champs ne sont pas modifiables")
-        raise api_errors
+        errors = api_errors.ApiErrors()
+        errors.status_code = 400
+        errors.add_error("global", "Pour les offres importées, certains champs ne sont pas modifiables")
+        raise errors
 
 
 def check_image_size(image_as_bytes: bytes, max_size: int = MAX_THUMBNAIL_SIZE) -> None:
@@ -271,16 +270,18 @@ def check_image(
         raise exceptions.ImageTooLarge(max_width, max_height)
 
 
-def check_validation_status(offer: Offer | CollectiveOffer | CollectiveOfferTemplate) -> None:
-    if offer.validation in (OfferValidationStatus.REJECTED, OfferValidationStatus.PENDING):
-        error = ApiErrors()
+def check_validation_status(
+    offer: models.Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
+) -> None:
+    if offer.validation in (models.OfferValidationStatus.REJECTED, models.OfferValidationStatus.PENDING):
+        error = api_errors.ApiErrors()
         error.add_error("global", "Les offres refusées ou en attente de validation ne sont pas modifiables")
         raise error
 
 
-def check_offer_is_digital(offer: Offer) -> None:
+def check_offer_is_digital(offer: models.Offer) -> None:
     if not offer.isDigital:
-        errors = ApiErrors()
+        errors = api_errors.ApiErrors()
         errors.add_error(
             "global",
             "Impossible de créer des codes d'activation sur une offre non-numérique",
@@ -289,14 +290,14 @@ def check_offer_is_digital(offer: Offer) -> None:
 
 
 def check_activation_codes_expiration_datetime(
-    activation_codes_expiration_datetime: datetime | None,
-    booking_limit_datetime: datetime | None,
+    activation_codes_expiration_datetime: datetime.datetime | None,
+    booking_limit_datetime: datetime.datetime | None,
 ) -> None:
     if activation_codes_expiration_datetime is None:
         return
 
     if booking_limit_datetime is None and activation_codes_expiration_datetime is not None:
-        errors = ApiErrors()
+        errors = api_errors.ApiErrors()
         errors.add_error(
             "bookingLimitDatetime",
             (
@@ -308,9 +309,9 @@ def check_activation_codes_expiration_datetime(
 
     if (
         booking_limit_datetime is not None
-        and activation_codes_expiration_datetime < booking_limit_datetime + timedelta(days=7)
+        and activation_codes_expiration_datetime < booking_limit_datetime + datetime.timedelta(days=7)
     ):
-        errors = ApiErrors()
+        errors = api_errors.ApiErrors()
         errors.add_error(
             "activationCodesExpirationDatetime",
             (
@@ -322,8 +323,8 @@ def check_activation_codes_expiration_datetime(
 
 
 def check_activation_codes_expiration_datetime_on_stock_edition(
-    activation_codes: list[ActivationCode] | None,
-    booking_limit_datetime: datetime | None,
+    activation_codes: list[models.ActivationCode] | None,
+    booking_limit_datetime: datetime.datetime | None,
 ) -> None:
     if activation_codes is None or len(activation_codes) == 0:
         return
@@ -332,9 +333,9 @@ def check_activation_codes_expiration_datetime_on_stock_edition(
     check_activation_codes_expiration_datetime(activation_codes_expiration_datetime, booking_limit_datetime)
 
 
-def check_user_can_load_config(user: User) -> None:
+def check_user_can_load_config(user: user_models.User) -> None:
     if settings.IS_PROD and user.email not in settings.SUPER_ADMIN_EMAIL_ADDRESSES:
-        error = ForbiddenError()
+        error = api_errors.ForbiddenError()
         error.add_error("type", "Seuls les membres de l'équipe de validation peuvent éditer cette configuration")
         raise error
 
@@ -364,39 +365,42 @@ def check_offer_is_eligible_for_educational(subcategory_id: str) -> None:
 
 
 def check_offer_withdrawal(
-    withdrawal_type: WithdrawalTypeEnum | None, withdrawal_delay: int | None, subcategory_id: str
+    withdrawal_type: models.WithdrawalTypeEnum | None, withdrawal_delay: int | None, subcategory_id: str
 ) -> None:
-    if subcategory_id not in WITHDRAWABLE_SUBCATEGORIES and withdrawal_type is not None:
+    if subcategory_id not in subcategories.WITHDRAWABLE_SUBCATEGORIES and withdrawal_type is not None:
         raise exceptions.NonWithdrawableEventOfferCantHaveWithdrawal()
 
     if (
         FeatureToggle.PRO_DISABLE_EVENTS_QRCODE.is_active()
-        and subcategory_id in WITHDRAWABLE_SUBCATEGORIES
+        and subcategory_id in subcategories.WITHDRAWABLE_SUBCATEGORIES
         and withdrawal_type is None
     ):
         raise exceptions.WithdrawableEventOfferMustHaveWithdrawal()
 
-    if withdrawal_type == WithdrawalTypeEnum.NO_TICKET and withdrawal_delay is not None:
+    if withdrawal_type == models.WithdrawalTypeEnum.NO_TICKET and withdrawal_delay is not None:
         raise exceptions.NoDelayWhenEventWithdrawalTypeHasNoTicket()
 
-    if withdrawal_type in (WithdrawalTypeEnum.ON_SITE, WithdrawalTypeEnum.BY_EMAIL) and withdrawal_delay is None:
+    if (
+        withdrawal_type in (models.WithdrawalTypeEnum.ON_SITE, models.WithdrawalTypeEnum.BY_EMAIL)
+        and withdrawal_delay is None
+    ):
         raise exceptions.EventWithTicketMustHaveDelay()
 
 
 def check_offer_subcategory_is_valid(offer_subcategory_id: str) -> None:
-    if offer_subcategory_id not in ALL_SUBCATEGORIES_DICT:
+    if offer_subcategory_id not in subcategories.ALL_SUBCATEGORIES_DICT:
         raise exceptions.UnknownOfferSubCategory()
-    if not ALL_SUBCATEGORIES_DICT[offer_subcategory_id].is_selectable:
+    if not subcategories.ALL_SUBCATEGORIES_DICT[offer_subcategory_id].is_selectable:
         raise exceptions.SubCategoryIsInactive()
 
 
 def check_booking_limit_datetime(
-    stock: CollectiveStock | Stock | None,
-    beginning: datetime | None,
-    booking_limit_datetime: datetime | None,
+    stock: educational_models.CollectiveStock | models.Stock | None,
+    beginning: datetime.datetime | None,
+    booking_limit_datetime: datetime.datetime | None,
 ) -> None:
     if stock:
-        if isinstance(stock, CollectiveStock):
+        if isinstance(stock, educational_models.CollectiveStock):
             offer = stock.collectiveOffer
         else:
             offer = stock.offer
@@ -416,13 +420,13 @@ def check_booking_limit_datetime(
         raise exceptions.BookingLimitDatetimeTooLate()
 
 
-def check_offer_extra_data(subcategory_id: str, extra_data: offers_models.OfferExtraData | None) -> None:
-    api_errors = ApiErrors()
+def check_offer_extra_data(subcategory_id: str, extra_data: models.OfferExtraData | None) -> None:
+    errors = api_errors.ApiErrors()
 
     if extra_data is None:
         extra_data = {}
 
-    subcategory = ALL_SUBCATEGORIES_DICT[subcategory_id]
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
     mandatory_fields = [
         name
         for name, conditional_field in subcategory.conditional_fields.items()
@@ -430,12 +434,12 @@ def check_offer_extra_data(subcategory_id: str, extra_data: offers_models.OfferE
     ]
     for field in mandatory_fields:
         if not extra_data.get(field):
-            api_errors.add_error(field, "Ce champ est obligatoire")
+            errors.add_error(field, "Ce champ est obligatoire")
 
     try:
         _check_ean_field(extra_data)
     except exceptions.EanFormatException as e:
-        api_errors.add_client_error(e)
+        errors.add_client_error(e)
 
     try:
         _check_value_is_allowed(extra_data, ExtraDataFieldEnum.MUSIC_TYPE, music_types.MUSIC_TYPES_LABEL_BY_CODE)
@@ -443,14 +447,14 @@ def check_offer_extra_data(subcategory_id: str, extra_data: offers_models.OfferE
         _check_value_is_allowed(extra_data, ExtraDataFieldEnum.SHOW_TYPE, show_types.SHOW_TYPES_LABEL_BY_CODE)
         _check_value_is_allowed(extra_data, ExtraDataFieldEnum.SHOW_SUB_TYPE, show_types.SHOW_SUB_TYPES_BY_CODE)
     except exceptions.ExtraDataValueNotAllowed as e:
-        api_errors.add_client_error(e)
+        errors.add_client_error(e)
 
-    if api_errors.errors:
-        raise api_errors
+    if errors.errors:
+        raise errors
 
 
 def _check_value_is_allowed(
-    extra_data: offers_models.OfferExtraData, extra_data_field: ExtraDataFieldEnum, allowed_values: dict
+    extra_data: models.OfferExtraData, extra_data_field: ExtraDataFieldEnum, allowed_values: dict
 ) -> None:
     field_value = extra_data.get(extra_data_field.value)
     if field_value is None:
@@ -465,7 +469,7 @@ def _check_value_is_allowed(
         raise exceptions.ExtraDataValueNotAllowed(extra_data_field.value, "should be in allowed values")
 
 
-def _check_ean_field(extra_data: offers_models.OfferExtraData) -> None:
+def _check_ean_field(extra_data: models.OfferExtraData) -> None:
     ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
     if ean is None or ean == "":
         return
@@ -478,8 +482,10 @@ def _check_ean_field(extra_data: offers_models.OfferExtraData) -> None:
         raise exceptions.EanFormatException("L'EAN doit être composé de 8 ou 13 chiffres")
 
 
-def check_offer_is_from_current_cinema_provider(offer: Offer) -> bool:
-    venue_cinema_pivot = CinemaProviderPivot.query.filter(CinemaProviderPivot.venueId == offer.venueId).one_or_none()
+def check_offer_is_from_current_cinema_provider(offer: models.Offer) -> bool:
+    venue_cinema_pivot = providers_models.CinemaProviderPivot.query.filter(
+        providers_models.CinemaProviderPivot.venueId == offer.venueId
+    ).one_or_none()
     return venue_cinema_pivot and offer.lastProviderId == venue_cinema_pivot.providerId
 
 
@@ -488,32 +494,32 @@ def check_is_duo_compliance(is_duo: bool | None, subcategory: subcategories.Subc
         raise exceptions.OfferCannotBeDuo()
 
 
-def check_price_categories_deletable(offer: Offer) -> None:
-    if offer.validation != OfferValidationStatus.DRAFT:
-        raise ApiErrors(
+def check_price_categories_deletable(offer: models.Offer) -> None:
+    if offer.validation != models.OfferValidationStatus.DRAFT:
+        raise api_errors.ApiErrors(
             {"global": "Les catégories de prix ne sont pas supprimables sur les offres qui ne sont pas en brouillon"}
         )
 
 
 def check_stock_has_price_or_price_category(
-    offer: Offer,
+    offer: models.Offer,
     stock: serialization.StockCreationBodyModel | serialization.StockEditionBodyModel,
     existing_price_categories: dict,
 ) -> None:
     if not FeatureToggle.WIP_ENABLE_MULTI_PRICE_STOCKS.is_active() or offer.isThing:
         if stock.price is None:
-            raise ApiErrors(
+            raise api_errors.ApiErrors(
                 {"price": ["Le prix est obligatoire pour les offres produit"]},
                 status_code=400,
             )
         return
     if not stock.price_category_id:
-        raise ApiErrors(
+        raise api_errors.ApiErrors(
             {"price_category_id": ["Le tarif est obligatoire pour les offres évènement"]},
             status_code=400,
         )
     if stock.price_category_id not in existing_price_categories:
-        raise ApiErrors(
+        raise api_errors.ApiErrors(
             {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % stock.price_category_id]},
             status_code=400,
         )
