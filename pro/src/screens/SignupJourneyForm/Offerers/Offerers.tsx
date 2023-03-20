@@ -26,7 +26,9 @@ const Offerers = (): JSX.Element => {
     isLoading: isLoadingVenues,
     error: venuesOfOffererError,
     data: venuesOfOfferer,
-  } = useAdapter(() => getVenuesOfOffererFromSiretAdapter(offerer?.siret ?? ''))
+  } = useAdapter(() =>
+    getVenuesOfOffererFromSiretAdapter(offerer?.siret.replaceAll(' ', '') ?? '')
+  )
 
   const formatedSiret = humanizeSiren(venuesOfOfferer?.offererSiren)
   const displayToggleVenueList =
