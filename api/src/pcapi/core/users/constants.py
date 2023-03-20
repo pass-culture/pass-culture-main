@@ -45,6 +45,7 @@ class SuspensionReason(enum.Enum):
     FRAUD_USURPATION_PRO = "usurpating PRO fraud"
     UPON_USER_REQUEST = "upon user request"
     DELETED = "deleted"
+    BLACKLISTED_DOMAIN_NAME = "nom de domaine blacklisté"
 
 
 SUSPENSION_REASON_CHOICES = {
@@ -64,6 +65,7 @@ SUSPENSION_REASON_CHOICES = {
     SuspensionReason.CLOSED_STRUCTURE_DEFINITIVE: "Structure définitivement fermée",
     SuspensionReason.CLOSED_STRUCTURE_TEMP: "Structure fermée provisoirement",
     SuspensionReason.DELETED: "Supprimé",
+    SuspensionReason.BLACKLISTED_DOMAIN_NAME: "Nom de domaine blacklisté",
 }
 
 assert set(SUSPENSION_REASON_CHOICES) == set(SuspensionReason)

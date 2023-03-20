@@ -373,7 +373,7 @@ def suspend_account(
 
     # Cancel all bookings of the related offerer if the suspended
     # account was the last active offerer's account.
-    if reason == constants.SuspensionReason.FRAUD_SUSPICION:
+    if reason in (constants.SuspensionReason.FRAUD_SUSPICION, constants.SuspensionReason.BLACKLISTED_DOMAIN_NAME):
         for user_offerer in user.UserOfferers:
             offerer = user_offerer.offerer
             if any(user_of.user.isActive and user_of.user != user for user_of in offerer.UserOfferers):
@@ -415,7 +415,7 @@ def _cancel_bookings_of_user_on_requested_account_suspension(
 
     for booking in bookings_to_cancel:
         match reason:
-            case constants.SuspensionReason.FRAUD_SUSPICION:
+            case constants.SuspensionReason.FRAUD_SUSPICION | constants.SuspensionReason.BLACKLISTED_DOMAIN_NAME:
                 bookings_api.cancel_booking_for_fraud(booking)
                 cancelled_bookings_count += 1
 

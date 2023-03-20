@@ -31,6 +31,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.DELETE_OFFERER_TAG,
         perm_models.Permissions.MANAGE_OFFERER_TAG,
         perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
+        perm_models.Permissions.FRAUD_ACTIONS,
     ],
     "support-N1": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
