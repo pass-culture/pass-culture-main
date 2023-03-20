@@ -39,6 +39,8 @@ class ActionType(enum.Enum):
     USER_UNSUSPENDED = "Compte réactivé"
     USER_PHONE_VALIDATED = "Validation manuelle du numéro de téléphone"
     USER_EMAIL_VALIDATED = "Validation manuelle de l'e-mail"
+    # Fraud and compliance actions:
+    BLACKLIST_DOMAIN_NAME = "Blacklist d'un nom de domaine"
 
 
 class ActionHistory(PcObject, Base, Model):
@@ -114,5 +116,8 @@ class ActionHistory(PcObject, Base, Model):
     comment = sa.Column(sa.Text(), nullable=True)
 
     __table_args__ = (
-        sa.CheckConstraint('num_nonnulls("userId", "offererId", "venueId") >= 1', name="check_at_least_one_resource"),
+        sa.CheckConstraint(
+            ('num_nonnulls("userId", "offererId", "venueId") >= 1 OR actionType = "BLACKLIST_DOMAIN_NAME"'),
+            name="check_at_least_one_resource",
+        ),
     )

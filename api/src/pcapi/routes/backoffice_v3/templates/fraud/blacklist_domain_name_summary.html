@@ -1,0 +1,99 @@
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Règles de conformité &gt; Noms de domaines > Résumé</h2>
+    <div class="my-4">
+      {% if targeted_non_pro_accounts | length == 0 %}
+        Aucune entrée ne correspond aux critères.
+      {% else %}
+        <div class="accordion accordion-flush"
+             id="blacklist-domain-names-accordion-summary">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapse-{{ domain_name | replace('.', '-') }}"
+                      aria-expanded="true"
+                      aria-controls="collapse-{{ domain_name | replace('.', '-') }}">
+                {% set count = targeted_non_pro_accounts | length %}
+                {% if count > 1 %}
+                  <strong>{{ domain_name }}</strong>&nbsp;{{ count }} comptes seront désactivés
+                {% else %}
+                  <strong>{{ domain_name }}</strong>&nbsp;un compte sera désactivé
+                {% endif %}
+              </button>
+            </h2>
+            <div id="collapse-{{ domain_name | replace('.', '-') }}"
+                 class="accordion-collapse collapse"
+                 data-bs-parent="#blacklist-domain-names-accordion-summary">
+              <div class="accordion-body">
+                {% for user in targeted_non_pro_accounts %}{{ user.email }} ({{ user.id }}),{% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if untouched_pro_accounts | length == 0 %}
+        <div class="alert alert-info mt-3"
+             role="alert">Aucun compte pro n'utilise ce nom de domaine</div>
+      {% else %}
+        <div class="alert alert-warning mt-3"
+             role="alert">
+          Voici les {{ untouched_pro_accounts | length }} comptes PRO avec ce nom de domaine,
+          ils ne sont pas impactés par la suspension. Merci de communiquer le lien à la Fraude Pro.
+        </div>
+        <div class="accordion accordion-flush"
+             id="blacklist-domain-names-pro-accordion-summary">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapse-pro-{{ domain_name | replace('.', '-') }}"
+                      aria-expanded="true"
+                      aria-controls="collapse-pro-{{ domain_name | replace('.', '-') }}">
+                {% set count = untouched_pro_accounts | length %}
+                {% if count > 1 %}
+                  <strong>{{ domain_name }}</strong>&nbsp;{{ count }} comptes PRO utilisent ce nom de domaine
+                {% else %}
+                  <strong>{{ domain_name }}</strong>&nbsp;un compte PRO utilise ce nom de domaine
+                {% endif %}
+              </button>
+            </h2>
+            <div id="collapse-pro-{{ domain_name | replace('.', '-') }}"
+                 class="accordion-collapse collapse"
+                 data-bs-parent="#blacklist-domain-names-pro-accordion-summary">
+              <div class="accordion-body">
+                {% for pro in untouched_pro_accounts %}{{ pro.email }} ({{ pro.id }}),{% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      <form action="{{ url_for("backoffice_v3_web.fraud.blacklist_domain_name") }}"
+            name="{{ url_for("backoffice_v3_web.fraud.blacklist_domain_name") | action_to_name }}"
+            method="post"
+            class="my-4"
+            data-turbo="true">
+        <input type="hidden"
+               id="{{ random_hash() }}"
+               name="domain"
+               value="{{ domain_name }}"
+               required>
+        {{ csrf_token() }}
+        <div>
+          <a class="text-decoration-none"
+             href="{{ url_for('backoffice_v3_web.fraud.list_blacklisted_domain_names') }}">
+            <button type="button"
+                    class="btn btn-outline-primary">Annuler</button>
+          </a>
+          {% if targeted_non_pro_accounts | length > 0 %}
+            <button type="submit"
+                    class="btn btn-primary">Continuer</button>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock page %}
