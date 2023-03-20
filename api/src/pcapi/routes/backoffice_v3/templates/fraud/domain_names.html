@@ -1,0 +1,91 @@
+{% from "components/badges.html" import build_venue_badges %}
+{% from "components/forms.html" import build_form_fields_group with context %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Règles de conformité &gt; Noms de domaines</h2>
+    <div class="my-4">
+      <form action="{{ url_for("backoffice_v3_web.fraud.prepare_blacklist_domain_name") }}"
+            name="{{ url_for("backoffice_v3_web.fraud.prepare_blacklist_domain_name") | action_to_name }}"
+            method="get"
+            data-turbo="true">
+        <div class="col-8 row">
+          <div class="col-8">
+            <div class="input-group mb-3">{{ form.domain }}</div>
+          </div>
+          <div class="col-4">
+            <button type="submit"
+                    class="btn btn-primary">Bannir</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <table class="table mb-4">
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Nom de domaine</th>
+          <th scope="col">Date</th>
+          <th scope="col">Auteur de l'action</th>
+          <th scope="col">Impact</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in history %}
+          {% if event.extraData %}
+            {% set domain = event.extraData.get("domain", "") %}
+          {% else %}
+            {% set domain = '' %}
+          {% endif %}
+          <tr>
+            <th scope="col">
+              {% if domain %}
+                <div class="dropdown">
+                  <button type="button"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                          class="btn p-0">
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-item p-0">
+                      <a href="{{ url_for('backoffice_v3_web.fraud.prepare_blacklist_domain_name', domain=domain) }}"
+                         class="text-decoration-none">
+                        <button type="submit"
+                                class="btn btn-sm d-block w-100 text-start px-3">Répéter l'opération</button>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              {% endif %}
+            </th>
+            <td>{{ domain }}</td>
+            <td>{{ event.actionDate | format_date_time }}</td>
+            <td>{{ event.authorUser.full_name if event.authorUser else None | empty_string_if_null }}</td>
+            <td>
+              {% if event.extraData %}
+                {% set deactivated_users = event.extraData["deactivated_users"] %}
+                {% set cancelled_bookings_count = event.extraData["cancelled_bookings_count"] %}
+                {% if deactivated_users | length > 1 %}
+                  {{ deactivated_users | length }} comptes suspendus,
+                {% elif deactivated_users | length == 1 %}
+                  Un compte suspendu,
+                {% else %}
+                  Aucun compte suspendu,  {# should not happen, but just in case #}
+                {% endif %}
+                {% if cancelled_bookings_count > 1 %}
+                  {{ cancelled_bookings_count }} réservations annulées
+                {% elif cancelled_bookings_count == 1 %}
+                  une réservation annulée
+                {% else %}
+                  aucune réservation annulée
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock page %}

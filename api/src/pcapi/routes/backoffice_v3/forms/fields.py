@@ -2,6 +2,7 @@ from functools import partial
 import json
 import typing
 
+import email_validator
 from flask import render_template
 from flask import url_for
 import wtforms
@@ -51,6 +52,35 @@ class PCStringField(PCOptStringField):
         validators.InputRequired("Information obligatoire"),
         validators.Length(min=1, max=64, message="doit contenir entre %(min)d et %(max)d caractères"),
     ]
+
+
+class DomainNameValidator:
+    def __init__(self, message: str) -> None:
+        self.message = message
+
+    def __call__(self, form: wtforms.Form, field: wtforms.Field) -> None:
+        content = field.data
+        if not content:
+            return
+
+        content = content.strip()
+
+        try:
+            email_validator.syntax.validate_email_domain_name(content)
+        except email_validator.EmailSyntaxError:
+            raise wtforms.validators.ValidationError(self.message)
+
+
+class PCDomainName(wtforms.StringField):
+    widget = partial(widget, template="components/forms/inline_form_field.html")
+    validators = [
+        validators.InputRequired("Information obligatoire"),
+        validators.Length(min=1, max=64, message="doit contenir entre %(min)d et %(max)d caractères"),
+        DomainNameValidator("doit contenir un nom de domaine valide"),
+    ]
+
+    def __init__(self, domain_name: str | None = None, **kwargs: typing.Any):
+        super().__init__(domain_name, filters=(sanitize_pc_string,), **kwargs)
 
 
 class PCHiddenField(PCStringField):

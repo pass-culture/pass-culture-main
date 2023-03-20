@@ -34,3 +34,7 @@ class UnsuspendedUserActionHistoryFactory(ActionHistoryFactory):
     user = factory.SubFactory(users_factories.UserFactory)
     actionType = models.ActionType.USER_UNSUSPENDED
     actionDate = factory.LazyFunction(lambda: datetime.utcnow() - relativedelta(days=1))
+
+
+class BlacklistDomainNameFactory(ActionHistoryFactory):
+    actionType = models.ActionType.BLACKLIST_DOMAIN_NAME
