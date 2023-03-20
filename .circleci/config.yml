@@ -709,7 +709,7 @@ jobs:
             cd pro
             nvm install
             yarn install
-            CI=true yarn start
+            yarn start:testcafe
           background: true
       - run:
           name: Running Sandbox

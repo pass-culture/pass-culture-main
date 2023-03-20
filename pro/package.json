@@ -20,6 +20,7 @@
     "lint:scss:hook:fix": "yarn lint:scss:hook --fix",
     "prettier:js:changed:fix": "./scripts/lint_diff.sh",
     "start": "yarn copy-assets && PORT=3001 react-scripts start",
+    "start:testcafe": "yarn copy-assets && PORT=3001 react-scripts start --watchAll=false",
     "test:cafe": "yarn testcafe testcafe",
     "test:stylelint": "jest stylelint-pass-culture/tests",
     "test:unit": "TZ=UTC jest --coverage",
