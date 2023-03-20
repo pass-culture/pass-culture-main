@@ -5,24 +5,30 @@ import FieldError from '../FieldError'
 
 import styles from './FieldLayout.module.scss'
 
-interface IFieldLayoutProps {
-  children: React.ReactNode
+export type FieldLayoutBaseProps = {
+  // These props are display options that are applicable to all fields using FieldLayout
   label: string
   name: string
-  isLabelHidden?: boolean
-  showError: boolean
-  className?: string
-  error?: string
-  count?: number
+  description?: string
   maxLength?: number
+  isLabelHidden?: boolean
   isOptional?: boolean
+  className?: string
+  classNameLabel?: string
+  classNameFooter?: string
   smallLabel?: boolean
   hideFooter?: boolean
   inline?: boolean
-  classNameLabel?: string
-  classNameFooter?: string
-  description?: string
 }
+
+type FieldLayoutProps = FieldLayoutBaseProps & {
+  // These props are derived from the formik state and passed by the parent component
+  children: React.ReactNode
+  showError: boolean
+  error?: string
+  count?: number
+}
+
 /* istanbul ignore next: DEBT, TO FIX */
 const FieldLayout = ({
   children,
@@ -41,7 +47,7 @@ const FieldLayout = ({
   classNameLabel,
   classNameFooter,
   description,
-}: IFieldLayoutProps): JSX.Element => {
+}: FieldLayoutProps): JSX.Element => {
   const hasError = showError && !!error
   const hasCounter = count !== undefined && maxLength !== undefined
 

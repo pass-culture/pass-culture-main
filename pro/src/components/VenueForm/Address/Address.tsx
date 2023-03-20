@@ -76,7 +76,7 @@ const Address = () => {
       >
         <FormLayout.Row>
           <SelectAutocomplete
-            fieldName="addressAutocomplete"
+            name="addressAutocomplete"
             label="Adresse postale"
             placeholder="Entrez votre adresse et sélectionnez une suggestion"
             options={options}

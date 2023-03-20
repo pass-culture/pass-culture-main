@@ -11,7 +11,7 @@ import MultiSelectAutocomplete, {
 describe('MultiSelectAutocomplete', () => {
   const props: MultiSelectAutocompleteProps = {
     label: 'Département',
-    fieldName: 'departement',
+    name: 'departement',
     options: [
       { value: '01', label: 'Ain' },
       { value: '02', label: 'Aisne' },

@@ -11,7 +11,7 @@ import SelectAutocomplete, {
 describe('SelectAutocomplete', () => {
   const props: SelectAutocompleteProps = {
     label: 'Département',
-    fieldName: 'departement',
+    name: 'departement',
     options: [
       { value: '01', label: 'Ain' },
       { value: '02', label: 'Aisne' },

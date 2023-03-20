@@ -110,7 +110,7 @@ const FormOfferType = ({
             options={domainsOptions}
             pluralLabel="Domaines artistiques et culturels"
             label="Domaine artistique et culturel"
-            fieldName="domains"
+            name="domains"
             disabled={disableForm}
           />
         </FormLayout.Row>

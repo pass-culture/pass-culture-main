@@ -4,25 +4,15 @@ import React, { useCallback } from 'react'
 import { SelectOption } from 'custom_types/form'
 
 import { FieldLayout } from '../shared'
+import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import SelectInput from './SelectInput'
 
-interface ISelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  name: string
-  defaultOption?: SelectOption | null
-  options: SelectOption[]
-  className?: string
-  disabled?: boolean
-  label: string
-  isOptional?: boolean
-  smallLabel?: boolean
-  hideFooter?: boolean
-  description?: string
-  inline?: boolean
-  isLabelHidden?: boolean
-  classNameLabel?: string
-  classNameFooter?: string
-}
+type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> &
+  FieldLayoutBaseProps & {
+    defaultOption?: SelectOption | null
+    options: SelectOption[]
+  }
 
 const Select = ({
   name,
@@ -41,7 +31,7 @@ const Select = ({
   classNameLabel,
   classNameFooter,
   ...selectAttributes
-}: ISelectProps): JSX.Element => {
+}: SelectProps): JSX.Element => {
   const [field, meta] = useField({ name, type: 'select' })
 
   const onCustomChange = useCallback(

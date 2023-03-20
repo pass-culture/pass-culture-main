@@ -4,35 +4,30 @@ import React, { KeyboardEventHandler, useEffect, useRef, useState } from 'react'
 
 import { BaseInput } from '../shared'
 import FieldLayout from '../shared/FieldLayout'
+import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import OptionsList from './OptionsList'
 import styles from './SelectAutocomplete.module.scss'
 import Tags from './Tags'
 import Toggle from './Toggle'
 
-export interface SelectAutocompleteProps {
-  className?: string
+export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   disabled?: boolean
-  fieldName: string
   hideArrow?: boolean
-  hideFooter?: boolean
   hideTags?: boolean
-  inline?: boolean
   isOptional?: boolean
-  label: string
   maxHeight?: number
   multi?: boolean
   options: SelectOption[]
   placeholder?: string
   pluralLabel?: string
-  smallLabel?: boolean
   resetOnOpen?: boolean
 }
 
 const SelectAutocomplete = ({
   className,
   disabled = false,
-  fieldName,
+  name,
   hideArrow,
   hideFooter = false,
   hideTags = false,
@@ -49,8 +44,8 @@ const SelectAutocomplete = ({
 }: SelectAutocompleteProps): JSX.Element => {
   const { setFieldTouched, setFieldValue } = useFormikContext<any>()
 
-  const [field, meta] = useField<string | string[]>(fieldName)
-  const [searchField, searchMeta] = useField(`search-${fieldName}`)
+  const [field, meta] = useField<string | string[]>(name)
+  const [searchField, searchMeta] = useField(`search-${name}`)
 
   const [hoveredOptionIndex, setHoveredOptionIndex] = useState<number | null>(
     null
@@ -69,7 +64,7 @@ const SelectAutocomplete = ({
 
   useEffect(() => {
     if (isOpen && resetOnOpen && searchField.value !== '') {
-      setFieldValue(`search-${fieldName}`, '', false)
+      setFieldValue(`search-${name}`, '', false)
     }
   }, [isOpen])
 
@@ -173,13 +168,9 @@ const SelectAutocomplete = ({
       updatedSelection = value
       setIsOpen(false)
       setHoveredOptionIndex(null)
-      setFieldValue(
-        `search-${fieldName}`,
-        optionsLabelById[updatedSelection],
-        false
-      )
+      setFieldValue(`search-${name}`, optionsLabelById[updatedSelection], false)
     }
-    setFieldValue(fieldName, updatedSelection)
+    setFieldValue(name, updatedSelection)
   }
 
   const openField = () => {
@@ -187,17 +178,17 @@ const SelectAutocomplete = ({
     if (!isOpen) {
       setIsOpen(true)
     }
-    setFieldTouched(fieldName, true)
+    setFieldTouched(name, true)
   }
 
   const toggleField = () => {
     if (isOpen) {
       setIsOpen(false)
-      setFieldValue(`search-${fieldName}`, '', false)
+      setFieldValue(`search-${name}`, '', false)
     } else {
       setIsOpen(true)
     }
-    setFieldTouched(fieldName, true)
+    setFieldTouched(name, true)
   }
 
   const placeholderDisplay = Array.isArray(field.value)
@@ -212,7 +203,7 @@ const SelectAutocomplete = ({
       hideFooter={!hideTags && hideFooter}
       isOptional={isOptional}
       label={label}
-      name={`search-${fieldName}`}
+      name={`search-${name}`}
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}
       inline={inline}
@@ -237,8 +228,8 @@ const SelectAutocomplete = ({
           disabled={disabled}
           {...searchField}
           aria-autocomplete="list"
-          aria-controls={`list-${fieldName}`}
-          aria-describedby={`help-${fieldName}`}
+          aria-controls={`list-${name}`}
+          aria-describedby={`help-${name}`}
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           role="combobox"
@@ -247,7 +238,7 @@ const SelectAutocomplete = ({
           aria-live="polite"
           aria-relevant="text"
           className={styles['visually-hidden']}
-          id={`help-${fieldName}`}
+          id={`help-${name}`}
         >
           {multi && `${field.value.length} options sélectionnées`}
           {!multi &&
@@ -290,7 +281,7 @@ const SelectAutocomplete = ({
           {isOpen && (
             <OptionsList
               className={className}
-              fieldName={fieldName}
+              fieldName={name}
               maxHeight={maxHeight}
               selectedValues={field.value}
               filteredOptions={filteredOptions}
@@ -306,7 +297,7 @@ const SelectAutocomplete = ({
       {Array.isArray(field.value) && !hideTags && field.value.length > 0 && (
         <Tags
           disabled={disabled}
-          fieldName={fieldName}
+          fieldName={name}
           optionsLabelById={optionsLabelById}
           selectedOptions={field.value}
           removeOption={selectOption}
