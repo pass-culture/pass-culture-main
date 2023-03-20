@@ -340,7 +340,7 @@ const CollectiveTimeLine = ({
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           link={{
-            to: `https://www.demarches-simplifiees.fr/dossiers/${bookingDetails.venueDMSApplicationId}`,
+            to: `https://www.demarches-simplifiees.fr/dossiers/${bookingDetails.venueDMSApplicationId}/messagerie`,
             isExternal: true,
           }}
           Icon={ExternalLinkIcon}
