@@ -343,7 +343,7 @@ def test_unindex_all_offers(app):
 
 def test_index_venues(app):
     backend = get_backend()
-    venue = offerers_factories.VenueFactory.build()
+    venue = offerers_factories.VenueFactory()
     with requests_mock.Mocker() as mock:
         posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/venues/batch", json={})
         backend.index_venues([venue])

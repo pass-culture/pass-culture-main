@@ -114,7 +114,16 @@ class Returns200Test:
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "withdrawalDetails": None,
             "bannerUrl": venue.bannerUrl,
-            "bannerMeta": None,
+            "bannerMeta": {
+                "crop_params": {
+                    "height_crop_percent": 1.0,
+                    "width_crop_percent": 1.0,
+                    "x_crop_percent": 0.0,
+                    "y_crop_percent": 0.0,
+                },
+                "image_credit": None,
+                "original_image_url": None,
+            },
             "nonHumanizedId": venue.id,
             "collectiveAccessInformation": None,
             "collectiveDescription": "Description du lieu",

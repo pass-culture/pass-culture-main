@@ -2,6 +2,7 @@ from datetime import datetime
 import decimal
 import enum
 import logging
+import os
 import typing
 
 import psycopg2.extras
@@ -146,6 +147,83 @@ class VenueTypeCode(enum.Enum):
         return value
 
 
+VENUE_DEFAULTS_DIR = "venue_default_images"
+VENUE_TYPE_DEFAULT_BANNERS: dict[VenueTypeCode, tuple[str, ...]] = {
+    VenueTypeCode.ADMINISTRATIVE: (),
+    VenueTypeCode.ARTISTIC_COURSE: (
+        "AdobeStock_254377106_1.png",
+        "the-climate-reality-project-Hb6uWq0i4MI-unsplash_1.png",
+    ),
+    VenueTypeCode.BOOKSTORE: (
+        "becca-tapert-GnY_mW1Q6Xc-unsplash.png",
+        "chuttersnap-m3ewYVannII-unsplash.png",
+    ),
+    VenueTypeCode.CONCERT_HALL: (
+        "aleksandr-popov-hTv8aaPziOQ-unsplash.png",
+        "nick-moore-5zWN8DTNeVA-unsplash.png",
+    ),
+    VenueTypeCode.CREATIVE_ARTS_STORE: (
+        "jack-b-pliYdZJNma0-unsplash.png",
+        "jacqueline-brandwayn-XJEeS5qSFAs-unsplash_1.png",
+    ),
+    VenueTypeCode.CULTURAL_CENTRE: (
+        "jan-antonin-kolar-hN_zCni3ILg-unsplash_1.png",
+        "noriely-fernandez-oJ1qnM6BYZo-unsplash.png",
+    ),
+    VenueTypeCode.DIGITAL: (
+        "glenn-carstens-peters-npxXWgQ33ZQ-unsplash.png",
+        "rodion-kutsaiev-0VGG7cqTwCo-unsplash.png",
+    ),
+    VenueTypeCode.DISTRIBUTION_STORE: (),
+    VenueTypeCode.FESTIVAL: (
+        "cody-board-C7DWZcxFCNY-unsplash.png",
+        "colin-lloyd-W6_txbgkkeU-unsplash.png",
+    ),
+    VenueTypeCode.GAMES: (
+        "AdobeStock_152386393_1.png",
+        "kdwk-leung-3oqHaTT_j8o-unsplash_1.png",
+    ),
+    VenueTypeCode.LIBRARY: (
+        "priscilla-du-preez-ggeZ9oyI-PE-unsplash_1.png",
+        "trnava-university-sd8uJsf4XM4-unsplash_1.png",
+    ),
+    VenueTypeCode.MOVIE: (
+        "denise-jans-OaVJQZ-nFD0-unsplash.png",
+        "krists-luhaers-AtPWnYNDJnM-unsplash.png",
+    ),
+    VenueTypeCode.MUSEUM: (
+        "amy-leigh-barnard-H3APOiYLyzk-unsplash.png",
+        "zalfa-imani-66vHzkS_qvA-unsplash.png",
+    ),
+    VenueTypeCode.MUSICAL_INSTRUMENT_STORE: (
+        "sandie-clarke-Ga6TvlrtTrE-unsplash.png",
+        "viktor-forgacs-nuRL2Wveb6w-unsplash.png",
+    ),
+    VenueTypeCode.OTHER: (),
+    VenueTypeCode.PATRIMONY_TOURISM: (
+        "daniel-chekalov-JAMX7iNjXnU-unsplash.png",
+        "henri-lajarrige-lombard-OFDD2Jg1RCA-unsplash_1.png",
+    ),
+    VenueTypeCode.PERFORMING_ARTS: (
+        "erik-mclean-PFfA3xlHFbQ-unsplash_(1).png",
+        "mark-williams-9bNmhMKQM1Q-unsplash_1.png",
+    ),
+    VenueTypeCode.RECORD_STORE: (
+        "clem-onojeghuo-pTeZKi29EYE-unsplash.png",
+        "ilya-blagoderov-t4csj4KilnE-unsplash.png",
+    ),
+    VenueTypeCode.SCIENTIFIC_CULTURE: (
+        "hans-reniers-lQGJCMY5qcM-unsplash.png",
+        "tobias-stonjeck-fBtruQj8rhc-unsplash.png",
+    ),
+    VenueTypeCode.TRAVELING_CINEMA: (),
+    VenueTypeCode.VISUAL_ARTS: (
+        "dannie-jing-3GZlhROZIQg-unsplash_(1).jpg",
+        "darya-tryfanava-UCNaGWn4EfU-unsplash.jpg",
+    ),
+}
+
+
 VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
     "VenueTypeCodeKey",
     {code.name: code.name for code in VenueTypeCode},
@@ -228,7 +306,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     # bannerUrl should provide a safe way to retrieve the banner,
     # whereas bannerMeta should provide extra information that might be
     # helpful like image type, author, etc. that can change over time.
-    bannerUrl = Column(Text, nullable=True)
+    _bannerUrl = Column(Text, nullable=True, name="bannerUrl")
 
     bannerMeta: dict | None = Column(MutableDict.as_mutable(JSONB), nullable=True)
 
@@ -297,6 +375,26 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     )
 
     collectiveSubCategoryId = sa.Column(sa.Text, nullable=True)
+
+    def _get_type_banner_url(self) -> str | None:
+        elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
+        try:
+            default_banner = elligible_banners[self.id % 2]
+        except IndexError:
+            return None
+        return os.path.join(VENUE_DEFAULTS_DIR, default_banner)
+
+    @hybrid_property
+    def bannerUrl(self) -> str | None:
+        return self._bannerUrl or self._get_type_banner_url()
+
+    @bannerUrl.setter  # type: ignore [no-redef]
+    def bannerUrl(self, value: str | None) -> None:
+        self._bannerUrl = value
+
+    @bannerUrl.expression  # type: ignore [no-redef]
+    def bannerUrl(cls):  # pylint: disable=no-self-argument
+        return cls._bannerUrl
 
     @property
     def is_eligible_for_search(self) -> bool:
