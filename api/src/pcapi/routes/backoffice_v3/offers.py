@@ -1,3 +1,5 @@
+import re
+
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -93,11 +95,13 @@ def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer
         ):
             or_filters.append(offers_models.Offer.extraData["visa"].astext == utils.format_isbn_or_visa(search_query))
 
-        if (
-            form.where.data in (offer_forms.OfferSearchColumn.ALL.name, offer_forms.OfferSearchColumn.ID.name)
-            and search_query.isnumeric()
-        ):
-            or_filters.append(offers_models.Offer.id == int(search_query))
+        if form.where.data in (offer_forms.OfferSearchColumn.ALL.name, offer_forms.OfferSearchColumn.ID.name):
+            if search_query.isnumeric():
+                or_filters.append(offers_models.Offer.id == int(search_query))
+            else:
+                terms = re.split(r"[,;\s]+", search_query)
+                if all(term.isnumeric() for term in terms):
+                    or_filters.append(offers_models.Offer.id.in_([int(term) for term in terms]))
 
         if form.where.data == offer_forms.OfferSearchColumn.NAME.name or (
             form.where.data == offer_forms.OfferSearchColumn.ALL.name and not or_filters

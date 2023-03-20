@@ -1,4 +1,5 @@
 import enum
+import re
 
 from flask_wtf import FlaskForm
 import wtforms
@@ -23,7 +24,7 @@ class GetOffersListForm(FlaskForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("Id de l'offre, nom, ISBN, visa d'exploitation")
+    q = fields.PCOptSearchField("ID de l'offre ou liste d'ID, nom, ISBN, visa d'exploitation")
     where = fields.PCSelectField(
         "Chercher dans",
         choices=utils.choices_from_enum(OfferSearchColumn),
@@ -51,8 +52,8 @@ class GetOffersListForm(FlaskForm):
     def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
         if q.data:
             q.data = q.data.strip()
-        if self.where.data == OfferSearchColumn.ID.name and not q.data.isnumeric():
-            raise wtforms.validators.ValidationError("La recherche ne correspond pas à un ID")
+        if self.where.data == OfferSearchColumn.ID.name and not re.match(r"^[\d\s,;]+$", q.data):
+            raise wtforms.validators.ValidationError("La recherche ne correspond pas à un ID ou une liste d'ID")
         if self.where.data == OfferSearchColumn.ISBN.name and not bo_utils.is_isbn_valid(q.data):
             raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un ISBN")
         if self.where.data == OfferSearchColumn.VISA.name and not bo_utils.is_visa_valid(q.data):
