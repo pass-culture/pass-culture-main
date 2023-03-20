@@ -49,6 +49,7 @@ const Template: ComponentStory<typeof StocksEventList> = () => (
         priceCategoryFactory({ label: 'Catégorie OR', price: 296.98, id: 3 }),
       ]}
       setStocks={() => {}}
+      offerId="AA"
     />
   </div>
 )

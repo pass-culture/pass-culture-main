@@ -1,11 +1,16 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'jest-axe'
 import React from 'react'
 
+import { Events } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { individualOfferFactory } from 'utils/individualApiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { RecurrenceForm } from '../RecurrenceForm'
+
+const mockLogEvent = jest.fn()
 
 const defaultProps = {
   offer: individualOfferFactory({ stocks: [] }),
@@ -14,14 +19,25 @@ const defaultProps = {
 }
 
 describe('RecurrenceForm', () => {
+  beforeEach(() => {
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
+  })
+
   it('should pass axe accessibility tests', async () => {
-    const { container } = render(<RecurrenceForm {...defaultProps} />)
+    const { container } = renderWithProviders(
+      <RecurrenceForm {...defaultProps} />
+    )
     expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should submit', async () => {
     const onConfirm = jest.fn()
-    render(<RecurrenceForm {...defaultProps} onConfirm={onConfirm} />)
+    renderWithProviders(
+      <RecurrenceForm {...defaultProps} onConfirm={onConfirm} />
+    )
 
     await userEvent.click(
       screen.getByLabelText('Date de l’évènement', { exact: true })
@@ -38,10 +54,24 @@ describe('RecurrenceForm', () => {
 
     await userEvent.click(screen.getByText('Ajouter cette date'))
     expect(onConfirm).toHaveBeenCalled()
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'stocks',
+        isDraft: false,
+        isEdition: true,
+        offerId: '1',
+        to: 'stocks',
+        used: 'RecurrencePopin',
+        recurrenceType: 'UNIQUE',
+      }
+    )
   })
 
   it('should add and remove a beginning time', async () => {
-    render(<RecurrenceForm {...defaultProps} />)
+    renderWithProviders(<RecurrenceForm {...defaultProps} />)
 
     expect(
       screen.getByRole('button', { name: 'Supprimer le créneau' })
@@ -62,7 +92,7 @@ describe('RecurrenceForm', () => {
   })
 
   it('should add and remove a price category', async () => {
-    render(<RecurrenceForm {...defaultProps} />)
+    renderWithProviders(<RecurrenceForm {...defaultProps} />)
 
     expect(
       screen.getByRole('button', { name: 'Supprimer les places' })
@@ -83,7 +113,7 @@ describe('RecurrenceForm', () => {
   })
 
   it('should render for daily recurrence', async () => {
-    render(<RecurrenceForm {...defaultProps} />)
+    renderWithProviders(<RecurrenceForm {...defaultProps} />)
 
     await userEvent.click(screen.getByLabelText('Tous les jours'))
   })
