@@ -63,22 +63,30 @@ class ProviderAPI:
         validated_stock_responses = []
         for stock_response in stock_responses:
             if "ref" not in stock_response:
-                logger.exception("[%s SYNC] missing ref key in response", self.name)
+                logger.error(
+                    "[%s SYNC] missing ref key in response",
+                    self.name,
+                    extra={"stock": stock_response},
+                )
                 continue
 
             stock_response_ref = stock_response["ref"]
             if "available" not in stock_response:
-                logger.exception(
-                    "[%s SYNC] missing available key in response with ref %s", self.name, stock_response_ref
+                logger.error(
+                    "[%s SYNC] missing available key in response with ref %s",
+                    self.name,
+                    stock_response_ref,
+                    extra={"stock": stock_response},
                 )
                 continue
 
             if stock_response["available"] < 0:
-                logger.exception(
+                logger.error(
                     "[%s SYNC] invalid available value %s in response with ref %s",
                     self.name,
                     stock_response["available"],
                     stock_response_ref,
+                    extra={"stock": stock_response},
                 )
                 continue
 
@@ -87,7 +95,7 @@ class ProviderAPI:
                 start_blocking_date = datetime.strptime("2022-06-01 00:00:00", "%Y-%m-%d %H:%M:%S")
 
                 if datetime.utcnow() > start_blocking_date:
-                    logger.exception(
+                    logger.error(
                         "[%s SYNC] missing price key in response with ref %s",
                         self.name,
                         stock_response_ref,
