@@ -2,6 +2,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
@@ -14,7 +15,6 @@ import {
   validationSchema,
 } from 'components/OfferIndividualForm'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
-import WithdrawalConfirmDialog from 'components/WithdrawalConfirmDialog'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
@@ -37,6 +37,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
+import { IcoMailOutline } from 'icons'
 
 import { ActionBar } from '../ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks'
@@ -350,14 +351,18 @@ const Informations = ({
         </form>
       </FormLayout>
       {isWithdrawalUpdatedMailActive && isWithdrawalDialogOpen && (
-        <WithdrawalConfirmDialog
-          hideDialog={handleCloseWidthdrawalDialog}
-          handleCancel={handleNextStep({ saveDraft: true })}
-          handleConfirm={handleNextStep({
+        <ConfirmDialog
+          cancelText={'Ne pas envoyer'}
+          confirmText={'Envoyer un e-mail'}
+          leftButtonAction={handleNextStep({ saveDraft: true })}
+          onCancel={handleCloseWidthdrawalDialog}
+          onConfirm={handleNextStep({
             saveDraft: true,
             shouldSendMail: true,
           })}
-        />
+          icon={IcoMailOutline}
+          title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
+        ></ConfirmDialog>
       )}
       <RouteLeavingGuardOfferIndividual
         when={formik.dirty && !isClickingFromActionBar}
