@@ -1,5 +1,5 @@
 :root {
-  --bs-body-bg: $pc-body-body-bg-color;
+  --bs-body-bg: #{$pc-body-body-bg-color};
 }
 
 .pc-header-top {
