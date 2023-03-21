@@ -74,6 +74,12 @@ class GetOffererVenuesTest:
                 "id": digital_venue.id,
                 "legalName": "Do you diji",
                 "location": {"type": "digital"},
+                "accessibility": {
+                    "audioDisabilityCompliant": None,
+                    "mentalDisabilityCompliant": None,
+                    "motorDisabilityCompliant": None,
+                    "visualDisabilityCompliant": None,
+                },
                 "siret": None,
                 "siretComment": None,
             },
@@ -83,6 +89,12 @@ class GetOffererVenuesTest:
                 "publicName": "Tiff tuff",
                 "id": physical_venue.id,
                 "legalName": "Coiffeur Librairie",
+                "accessibility": {
+                    "audioDisabilityCompliant": False,
+                    "mentalDisabilityCompliant": False,
+                    "motorDisabilityCompliant": False,
+                    "visualDisabilityCompliant": False,
+                },
                 "location": {
                     "address": "1 boulevard Poissonnière",
                     "city": "Paris",
