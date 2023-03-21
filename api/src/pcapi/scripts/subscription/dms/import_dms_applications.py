@@ -11,33 +11,6 @@ from pcapi.repository import repository
 logger = logging.getLogger(__name__)
 
 
-def import_dms_accepted_applications(procedure_number: int) -> None:
-    logger.info(
-        "[DMS] Start import of accepted applications from Démarches Simplifiées for procedure %s", procedure_number
-    )
-
-    already_processed_applications_ids = dms_repository.get_already_processed_applications_ids(procedure_number)
-    client = dms_connector_api.DMSGraphQLClient()
-    processed_count = 0
-
-    for application_details in client.get_applications_with_details(
-        procedure_number, dms_models.GraphQLApplicationStates.accepted
-    ):
-        if application_details.number in already_processed_applications_ids:
-            continue
-        processed_count += 1
-        try:
-            dms_api.handle_dms_application(application_details)
-        except Exception:  # pylint: disable=broad-except
-            logger.exception("[DMS] Error in script while importing application %s", application_details.number)
-
-    logger.info(
-        "[DMS] End import of accepted applications from Démarches Simplifiées for procedure %s - Processed %s applications",
-        procedure_number,
-        processed_count,
-    )
-
-
 def _import_all_dms_applications_initial_import(procedure_id: int) -> None:
     already_processed_applications_ids = dms_repository.get_already_processed_applications_ids(procedure_id)
     client = dms_connector_api.DMSGraphQLClient()
