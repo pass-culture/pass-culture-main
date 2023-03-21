@@ -4,7 +4,6 @@ from flask import Response
 from flask import current_app as app
 
 from pcapi.core.offers import exceptions as offers_exceptions
-from pcapi.routes.error_handlers import utils as error_handlers_utils
 
 
 logger = logging.getLogger(__name__)
@@ -14,4 +13,4 @@ logger = logging.getLogger(__name__)
 def handle_create_a_thumbnail(exception: Exception) -> tuple[Response, int]:
     logger.info("When creating the offer thumbnail, this error was encountered: %s", exception.__class__.__name__)
     error_message = exception.args[0] if exception.args else "L'image n'est pas valide"
-    return error_handlers_utils.generate_error_response({"errors": [error_message]}), 400
+    return app.generate_error_response({"errors": [error_message]}), 400  # type: ignore [attr-defined]
