@@ -2,7 +2,6 @@ from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 from unittest import mock
-from unittest.mock import patch
 
 from flask import g
 from flask import url_for
@@ -49,14 +48,7 @@ class GetVenueTest:
         endpoint_kwargs = {"venue_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_bank_info_status")
-    def test_get_venue(self, bank_info_mock, authenticated_client, venue):
-        bank_info_mock.return_value = {
-            "dossier": {
-                "state": "en_construction",
-                "dateDepot": "2022-09-21T16:30:22+02:00",
-            }
-        }
+    def test_get_venue(self, authenticated_client, venue):
         venue.publicName = "Le grand Rantanplan 1"
 
         url = url_for("backoffice_v3_web.venue.get", venue_id=venue.id)
@@ -156,6 +148,7 @@ class GetVenueTest:
                 "dossier": {
                     "state": "en_construction",
                     "dateDepot": "2022-09-21T16:30:22+02:00",
+                    "dateDerniereModification": "2022-09-22T16:30:22+02:00",
                 }
             }
             # when
@@ -166,8 +159,31 @@ class GetVenueTest:
         # then
         assert response.status_code == 200
         response_text = html_parser.content_as_text(response.data)
-        assert "Statut DMS : en_construction" in response_text
+        assert "Statut DMS CB : En construction" in response_text
         assert "Date de dépôt du dossier DMS CB : 21/09/2022" in response_text
+        assert "Date de validation du dossier DMS CB" not in response_text
+        assert "ACCÉDER AU DOSSIER DMS CB" in response_text
+
+    def test_get_venue_dms_stats_for_accepted_file(self, authenticated_client, venue_with_draft_bank_info):
+        with mock.patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_bank_info_status") as bank_info_mock:
+            bank_info_mock.return_value = {
+                "dossier": {
+                    "state": "accepte",
+                    "dateDepot": "2022-09-21T16:30:22+02:00",
+                    "dateDerniereModification": "2022-09-23T16:30:22+02:00",
+                }
+            }
+            # when
+            response = authenticated_client.get(
+                url_for("backoffice_v3_web.venue.get", venue_id=venue_with_draft_bank_info.id)
+            )
+
+        # then
+        assert response.status_code == 200
+        response_text = html_parser.content_as_text(response.data)
+        assert "Statut DMS CB : Accepté" in response_text
+        assert "Date de validation du dossier DMS CB : 23/09/2022" in response_text
+        assert "Date de dépôt du dossier DMS CB" not in response_text
         assert "ACCÉDER AU DOSSIER DMS CB" in response_text
 
     def test_get_venue_none_dms_stats_when_no_application_id(self, authenticated_client, venue_with_accepted_bank_info):

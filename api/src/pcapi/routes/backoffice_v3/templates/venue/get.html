@@ -196,13 +196,20 @@
             <div class="col-4">
               {% if dms_stats %}
                 <p class="mb-1">
-                  <span class="fw-bold">Statut DMS : </span>
-                  {{ dms_stats.status }}
+                  <span class="fw-bold">Statut DMS CB : </span>
+                  {{ dms_stats.status | format_dms_cb_status }}
                 </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Date de dépôt du dossier DMS CB : </span>
-                  {{ dms_stats.subscriptionDate | format_date }}
-                </p>
+                {% if dms_stats.status == "accepte" %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Date de validation du dossier DMS CB : </span>
+                    {{ dms_stats.lastChangeDate | format_date }}
+                  </p>
+                {% else %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Date de dépôt du dossier DMS CB : </span>
+                    {{ dms_stats.subscriptionDate | format_date }}
+                  </p>
+                {% endif %}
                 <p class="mb-4 d-flex">
                   <a href="{{ dms_stats.url }}"
                      target="_blank"
