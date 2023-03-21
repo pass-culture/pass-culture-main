@@ -36,6 +36,30 @@ def get_seances_pass_culture(
     return parse_obj_as(cgr_serializers.GetSancesPassCultureResponse, response)
 
 
+def reservation_pass_culture(
+    cinema_details: providers_models.CGRCinemaDetails, body: cgr_serializers.ReservationPassCultureBody
+) -> cgr_serializers.ReservationPassCultureResponse:
+    user = settings.CGR_API_USER
+    password = settings.CGR_API_PASSWORD
+    cinema_url = cinema_details.cinemaUrl
+    service = get_cgr_service_proxy(cinema_url)
+    response = service.ReservationPassCulture(
+        User=user,
+        mdp=password,
+        pIDSeances=body.pIDSeances,
+        pNumCinema=body.pNumCinema,
+        pPUTTC=body.pPUTTC,
+        pNBPlaces=body.pNBPlaces,
+        pNom=body.pNom,
+        pPrenom=body.pPrenom,
+        pEmail=body.pEmail,
+        pToken=body.pToken,
+    )
+    response = json.loads(response)
+    _check_response_is_ok(response, "ReservationPassCulture")
+    return parse_obj_as(cgr_serializers.ReservationPassCultureResponse, response)
+
+
 def get_movie_poster_from_api(image_url: str) -> bytes:
     api_response = requests.get(image_url)
 
