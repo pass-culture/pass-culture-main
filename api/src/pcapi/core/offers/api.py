@@ -357,9 +357,10 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
     if raw_results:
         offer_ids, venue_ids = zip(*raw_results)
     venue_ids = sorted(set(venue_ids))
+    number_of_offers_to_update = len(offer_ids)
     logger.info(
         "Batch update of offers",
-        extra={"updated_fields": update_fields, "nb_offers": len(offer_ids), "venue_ids": venue_ids},
+        extra={"updated_fields": update_fields, "nb_offers": number_of_offers_to_update, "venue_ids": venue_ids},
     )
     if "isActive" in update_fields.keys():
         message = "Offers has been activated" if update_fields["isActive"] else "Offers has been deactivated"
@@ -370,7 +371,6 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
             technical_message_id=technical_message_id,
         )
 
-    number_of_offers_to_update = len(offer_ids)
     batch_size = 1000
     for current_start_index in range(0, number_of_offers_to_update, batch_size):
         offer_ids_batch = offer_ids[
