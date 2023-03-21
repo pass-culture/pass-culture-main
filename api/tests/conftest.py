@@ -13,7 +13,6 @@ from alembic import command
 from alembic.config import Config
 from flask import Flask
 from flask import g
-from flask import url_for
 from flask.testing import FlaskClient
 from flask_jwt_extended.utils import create_access_token
 import pytest
@@ -404,7 +403,7 @@ class TestClient:
         return self
 
     def with_bo_session_auth(self, user: users_models.User) -> "TestClient":
-        response = self.post(url_for(".signin", user_id=user.id))
+        response = self.post(f"/signin/{user.id}")
         assert response.status_code == 200
 
         return self
