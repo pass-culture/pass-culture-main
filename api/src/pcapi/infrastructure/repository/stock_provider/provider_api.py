@@ -97,6 +97,10 @@ class ProviderAPI:
             validated_stock_responses.append(stock_response)
 
         api_responses["stocks"] = validated_stock_responses
+        batch_log_size = 1_000
+        for i in range(0, len(validated_stock_responses), batch_log_size):
+            log = f"Got stocks from Provider API (partial log: one log per batch of {batch_log_size})"
+            logger.info(log, extra={"stocks": validated_stock_responses[i : i + batch_log_size]})
         return api_responses
 
     def is_siret_registered(self, siret: str) -> bool:
