@@ -128,13 +128,13 @@
                     {{ venue.latitude }} (latitude) / {{ venue.longitude }} (longitude)
                   </p>
                 {% endif %}
+                {% if venue.bookingEmail %}
+                  <p class="mb-1">
+                    <span class="fw-bold">E-mail :</span>
+                    {{ venue.bookingEmail }}
+                  </p>
+                {% endif %}
                 {% if venue.contact %}
-                  {% if venue.contact.email %}
-                    <p class="mb-1">
-                      <span class="fw-bold">E-mail :</span>
-                      {{ venue.contact.email }}
-                    </p>
-                  {% endif %}
                   {% if venue.contact.phone_number %}
                     <p class="mb-1">
                       <span class="fw-bold">Numéro de téléphone :</span>

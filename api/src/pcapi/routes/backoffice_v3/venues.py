@@ -103,7 +103,7 @@ def render_venue_details(
     if not edit_venue_form:
         if venue.isVirtual:
             edit_venue_form = forms.EditVirtualVenueForm(
-                email=venue.contact.email if venue.contact else None,
+                booking_email=venue.bookingEmail,
                 phone_number=venue.contact.phone_number if venue.contact else None,
             )
         else:
@@ -118,7 +118,7 @@ def render_venue_details(
                 else None,
                 postal_code=venue.postalCode,
                 address=venue.address,
-                email=venue.contact.email if venue.contact else None,
+                booking_email=venue.bookingEmail,
                 phone_number=venue.contact.phone_number if venue.contact else None,
                 is_permanent=venue.isPermanent,
                 latitude=venue.latitude,
@@ -274,14 +274,17 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         if field.name and hasattr(venue, to_camelcase(field.name))
     }
 
-    contact_data = serialize_base.VenueContactModel(
-        email=form.email.data,
-        phone_number=form.phone_number.data,
-        # Use existing values, if any, to ensure that no data (website
-        # for example) will be erased by mistake
-        website=venue.contact.website if venue.contact else None,
-        social_medias=venue.contact.social_medias if venue.contact else None,
-    )
+    if form.phone_number.data or venue.contact:
+        contact_data = serialize_base.VenueContactModel(
+            phone_number=form.phone_number.data,
+            # Use existing values, if any, to ensure that no data (website
+            # for example) will be erased by mistake
+            email=venue.contact.email if venue.contact else None,
+            website=venue.contact.website if venue.contact else None,
+            social_medias=venue.contact.social_medias if venue.contact else None,
+        )
+    else:
+        contact_data = None
 
     criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.tags.data)).all()
 

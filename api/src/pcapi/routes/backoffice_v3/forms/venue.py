@@ -14,7 +14,7 @@ class EditVirtualVenueForm(utils.PCForm):
     tags = fields.PCAutocompleteSelectMultipleField(
         "Tags", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_criteria"
     )
-    email = fields.PCEmailField("Email")
+    booking_email = fields.PCEmailField("Email (notifications de réservation)")
     phone_number = fields.PCPhoneNumberField("Numéro de téléphone")  # match Venue.contact.postal_code case
 
 
@@ -66,7 +66,7 @@ class EditVenueForm(EditVirtualVenueForm):
         self.venue = venue
 
         # self._fields is a collections.OrderedDict
-        self._fields.move_to_end("email")
+        self._fields.move_to_end("booking_email")
         self._fields.move_to_end("phone_number")
         self._fields.move_to_end("is_permanent")
 
