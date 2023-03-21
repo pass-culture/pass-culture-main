@@ -128,7 +128,7 @@ def book_offer(
         if is_external_ticket_applicable:
             if not offers_validation.check_offer_is_from_current_cinema_provider(stock.offer):
                 raise ValueError("This offer is from the wrong cinema provider")
-            _book_external_ticket(booking, stock)
+            _book_external_ticket(booking, stock, beneficiary)
 
         repository.save(booking, stock)
 
@@ -160,7 +160,7 @@ def book_offer(
     return booking
 
 
-def _book_external_ticket(booking: Booking, stock: Stock) -> None:
+def _book_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> None:
     venue_provider_name = external_bookings_api.get_active_cinema_venue_provider(
         stock.offer.venueId
     ).provider.localClass
@@ -182,9 +182,7 @@ def _book_external_ticket(booking: Booking, stock: Stock) -> None:
         raise ValueError("Could not retrieve show_id")
 
     tickets = external_bookings_api.book_ticket(
-        venue_id=stock.offer.venueId,
-        show_id=show_id,
-        quantity=booking.quantity,
+        venue_id=stock.offer.venueId, show_id=show_id, booking=booking, beneficiary=beneficiary
     )
     booking.externalBookings = [ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets]
 
