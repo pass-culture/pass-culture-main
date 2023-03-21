@@ -22,4 +22,5 @@ class VenueStats(BaseModel):
 class VenueDmsStats(BaseModel):
     status: str
     subscriptionDate: datetime.datetime
+    lastChangeDate: datetime.datetime
     url: str

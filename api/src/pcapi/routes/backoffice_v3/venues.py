@@ -74,6 +74,10 @@ def get_dms_stats(dms_application_id: int | None) -> serialization.VenueDmsStats
         subscriptionDate=datetime.fromisoformat(
             dms_stats["dossier"]["dateDepot"]  # pylint: disable=unsubscriptable-object
         ),
+        # validation date of the dossier
+        lastChangeDate=datetime.fromisoformat(
+            dms_stats["dossier"]["dateDerniereModification"]  # pylint: disable=unsubscriptable-object
+        ),
         url=f"https://www.demarches-simplifiees.fr/procedures/{settings.DMS_VENUE_PROCEDURE_ID_V4}/dossiers/{dms_application_id}",
     )
 
