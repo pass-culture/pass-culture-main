@@ -84,7 +84,6 @@ const Informations = ({
   const isWithdrawalUpdatedMailActive = useActiveFeature(
     'WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL'
   )
-  console.log(isWithdrawalUpdatedMailActive)
 
   const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
