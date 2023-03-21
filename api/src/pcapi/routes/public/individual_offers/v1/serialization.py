@@ -857,11 +857,14 @@ class VenueResponse(serialization.ConfiguredBaseModel):
         discriminator="type",
     )
     name: str = pydantic.Field(alias="legalName", example="Palais de l'Élysée")
-    publicName: str | None = pydantic.Field(..., description="If null, legalName is used", example="Élysée")
+    publicName: str | None = pydantic.Field(..., description="If null, legalName is used.", example="Élysée")
     siret: str | None = pydantic.Field(
         description="Null when venue is digital or when siretComment field is not null.", example="12345678901234"
     )
     venueTypeCode: VenueTypeEnum = pydantic.Field(alias="activityDomain")  # type: ignore [valid-type]
+    accessibility: PartialAccessibility = pydantic.Field(
+        description="Accessibility to disabled people. Fields are null for digital venues."
+    )
 
     @classmethod
     def build_model(cls, venue: offerers_models.Venue) -> "VenueResponse":
@@ -876,6 +879,7 @@ class VenueResponse(serialization.ConfiguredBaseModel):
             publicName=venue.publicName,
             siret=venue.siret,
             venueTypeCode=venue.venueTypeCode.name,
+            accessibility=PartialAccessibility.from_orm(venue),
         )
 
     class Config:
