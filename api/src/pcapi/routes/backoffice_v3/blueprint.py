@@ -10,7 +10,7 @@ from . import utils
 from .forms import empty as empty_forms
 
 
-backoffice_v3_web = Blueprint("backoffice_v3_web", __name__, template_folder="templates")
+backoffice_v3_web = Blueprint("backoffice_v3_web", __name__, url_prefix="/", template_folder="templates")
 CORS(
     backoffice_v3_web,
     origins=settings.CORS_ALLOWED_ORIGINS,
