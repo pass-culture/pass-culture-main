@@ -289,14 +289,14 @@ const VenueFormScreen = ({
         </form>
         {isWithdrawalUpdatedMailActive && isWithdrawalDialogOpen && (
           <ConfirmDialog
-            cancelText={'Ne pas envoyer'}
-            confirmText={'Envoyer un e-mail'}
+            cancelText="Ne pas envoyer"
+            confirmText="Envoyer un e-mail"
             leftButtonAction={handleCancelWithdrawalDialog}
             onCancel={() => setIsWithdrawalDialogOpen(false)}
             onConfirm={handleConfirmWithdrawalDialog}
             icon={IcoMailOutline}
             title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
-          ></ConfirmDialog>
+          />
         )}
       </FormikProvider>
     </div>
