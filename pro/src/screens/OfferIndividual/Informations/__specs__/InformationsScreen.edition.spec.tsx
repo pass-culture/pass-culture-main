@@ -527,6 +527,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
 
   describe('send mail on withdrawal changes', () => {
     let expectedBody: PatchOfferBodyModel
+    let features: { list: { isActive: true; nameKey: string }[] }
 
     beforeEach(() => {
       expectedBody = {
@@ -560,6 +561,12 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         withdrawalType: undefined,
         shouldSendMail: false,
       }
+
+      features = {
+        list: [
+          { isActive: true, nameKey: 'WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL' },
+        ],
+      }
     })
 
     it('should submit when user click onCancel button, but should not send mail', async () => {
@@ -578,7 +585,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       expectedBody.withdrawalDelay = 140
       expectedBody.withdrawalType = WithdrawalTypeEnum.ON_SITE
 
-      await renderInformationsScreen(props, contextOverride)
+      await renderInformationsScreen(props, contextOverride, features)
 
       const nameField = screen.getByLabelText('Titre de l’offre')
       await userEvent.clear(nameField)
@@ -652,7 +659,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         offererId: offer.venue.offerer.id,
       }
 
-      await renderInformationsScreen(props, contextOverride)
+      await renderInformationsScreen(props, contextOverride, features)
 
       const nameField = screen.getByLabelText('Titre de l’offre')
       await userEvent.clear(nameField)
@@ -740,7 +747,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           venueId: offer.venue.id,
           offererId: offer.venue.offerer.id,
         }
-        await renderInformationsScreen(props, contextOverride)
+        await renderInformationsScreen(props, contextOverride, features)
 
         const nameField = screen.getByLabelText('Titre de l’offre')
         await userEvent.clear(nameField)
@@ -799,7 +806,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         venueId: offer.venue.id,
         offererId: offer.venue.offerer.id,
       }
-      await renderInformationsScreen(props, contextOverride)
+      await renderInformationsScreen(props, contextOverride, features)
 
       const nameField = screen.getByLabelText('Titre de l’offre')
       await userEvent.clear(nameField)
@@ -881,7 +888,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           venueId: offer.venue.id,
           offererId: offer.venue.offerer.id,
         }
-        await renderInformationsScreen(props, contextOverride)
+        await renderInformationsScreen(props, contextOverride, features)
 
         const nameField = screen.getByLabelText('Titre de l’offre')
         await userEvent.clear(nameField)

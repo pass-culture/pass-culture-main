@@ -177,118 +177,6 @@ jest.mock('utils/windowMatchMedia', () => ({
 
 Element.prototype.scrollIntoView = jest.fn()
 
-const formValues: IVenueFormValues = {
-  bannerMeta: undefined,
-  comment: '',
-  description: '',
-  isVenueVirtual: false,
-  bookingEmail: 'em@ail.fr',
-  name: 'MINISTERE DE LA CULTURE',
-  publicName: 'Melodie Sims',
-  siret: '88145723823022',
-  venueType: 'GAMES',
-  venueLabel: 'BM',
-  departmentCode: '',
-  address: 'PARIS',
-  addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
-  'search-addressAutocomplete': 'PARIS',
-  city: 'Saint-Malo',
-  latitude: 48.635699,
-  longitude: -2.006961,
-  postalCode: '35400',
-  accessibility: {
-    visual: false,
-    mental: true,
-    audio: false,
-    motor: true,
-    none: false,
-  },
-  isAccessibilityAppliedOnAllOffers: false,
-  phoneNumber: '0604855967',
-  email: 'em@ail.com',
-  webSite: 'https://www.site.web',
-  isPermanent: false,
-  id: '',
-  bannerUrl: '',
-  withdrawalDetails: 'Oui',
-  venueSiret: null,
-  isWithdrawalAppliedOnAllOffers: false,
-  reimbursementPointId: 91,
-}
-
-const venue: IVenue = {
-  hasPendingBankInformationApplication: false,
-  demarchesSimplifieesApplicationId: '',
-  collectiveDomains: [],
-  dateCreated: '2022-02-02',
-  fieldsUpdated: [],
-  isVirtual: false,
-  managingOffererId: '',
-  accessibility: {
-    visual: false,
-    audio: false,
-    motor: false,
-    mental: false,
-    none: true,
-  },
-  address: 'Address',
-  bannerMeta: null,
-  bannerUrl: '',
-  city: 'city',
-  comment: 'comment',
-  contact: {
-    email: 'email',
-    phoneNumber: '0606060606',
-    webSite: 'web',
-  },
-  description: 'description',
-  departmentCode: '75008',
-  dmsToken: 'dms-token-12345',
-  id: 'id',
-  isPermanent: true,
-  isVenueVirtual: false,
-  latitude: 0,
-  longitude: 0,
-  mail: 'a@b.c',
-  name: 'name',
-  nonHumanizedId: 0,
-  pricingPoint: null,
-  postalCode: '75008',
-  publicName: 'name',
-  siret: '88145723823022',
-  venueType: 'ARTISTIC_COURSE',
-  venueLabel: 'AE',
-  reimbursementPointId: 0,
-  withdrawalDetails: 'string',
-  collectiveAccessInformation: 'string',
-  collectiveDescription: 'string',
-  collectiveEmail: 'string',
-  collectiveInterventionArea: [],
-  collectiveLegalStatus: null,
-  collectiveNetwork: [],
-  collectivePhone: 'string',
-  collectiveStudents: [],
-  collectiveWebsite: 'string',
-
-  managingOfferer: {
-    address: null,
-    bic: null,
-    city: 'string',
-    dateCreated: 'string',
-    dateModifiedAtLastProvider: null,
-    demarchesSimplifieesApplicationId: null,
-    fieldsUpdated: [],
-    iban: null,
-    id: 'id',
-    idAtProviders: null,
-    isValidated: true,
-    lastProviderId: null,
-    name: 'name',
-    postalCode: 'string',
-    siren: null,
-  },
-}
-
 const venueResponse: GetVenueResponseModel = {
   hasPendingBankInformationApplication: false,
   demarchesSimplifieesApplicationId: '',
@@ -854,6 +742,7 @@ describe('screen | VenueForm', () => {
         )
       )
       expectedEditVenue.shouldSendMail = true
+      expectedEditVenue.isWithdrawalAppliedOnAllOffers = true
 
       await userEvent.click(screen.getByText(/Enregistrer et quitter/))
       await expect(
@@ -923,6 +812,7 @@ describe('screen | VenueForm', () => {
           'Appliquer le changement à toutes les offres déjà existantes.'
         )
       )
+      expectedEditVenue.isWithdrawalAppliedOnAllOffers = true
 
       await userEvent.click(screen.getByText(/Enregistrer et quitter/))
 
@@ -950,6 +840,8 @@ describe('screen | VenueForm', () => {
     })
 
     it("should not display withdrawal if offer has no bookingQuantity or withdrawalDetails doesn't change or isWithdrawalAppliedOnAllOffers is not check", async () => {
+      expectedEditVenue.isWithdrawalAppliedOnAllOffers = false
+
       renderForm(
         {
           id: 'EY',
@@ -1042,6 +934,7 @@ describe('screen | VenueForm', () => {
           'Appliquer le changement à toutes les offres déjà existantes.'
         )
       )
+      expectedEditVenue.isWithdrawalAppliedOnAllOffers = true
 
       await userEvent.click(screen.getByText(/Enregistrer et quitter/))
 
@@ -1063,6 +956,54 @@ describe('screen | VenueForm', () => {
       ).not.toBeInTheDocument()
 
       expect(editVenue).toHaveBeenCalledTimes(0)
+    })
+
+    it('should not display withdrawal dialog if withdrawalDetails value after update is the same', async () => {
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: false,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        venue,
+        features,
+        true
+      )
+      const editVenue = jest
+        .spyOn(api, 'editVenue')
+        .mockResolvedValue({ id: 'AA' } as GetVenueResponseModel)
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Informations de retrait de vos offres')
+        ).toBeInTheDocument()
+      })
+
+      const withdrawalDetailsField = await screen.getByDisplayValue(
+        'withdrawal details field'
+      )
+
+      await userEvent.click(withdrawalDetailsField)
+      await userEvent.clear(withdrawalDetailsField)
+      await userEvent.type(withdrawalDetailsField, 'withdrawal details field')
+      await waitFor(() => {
+        expect(screen.getByText('withdrawal details field'))
+      })
+      await userEvent.click(
+        screen.getByText(
+          'Appliquer le changement à toutes les offres déjà existantes.'
+        )
+      )
+      expectedEditVenue.isWithdrawalAppliedOnAllOffers = true
+
+      await userEvent.click(screen.getByText(/Enregistrer et quitter/))
+      await expect(
+        await screen.queryByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).not.toBeInTheDocument()
     })
   })
 })
