@@ -1,6 +1,10 @@
 import cn from 'classnames'
 import React from 'react'
 
+import { ClearIcon } from 'icons'
+import Tooltip from 'ui-kit/Tooltip'
+import { uniqId } from 'utils/uniqId'
+
 import FieldError from '../FieldError'
 
 import styles from './FieldLayout.module.scss'
@@ -19,6 +23,9 @@ export type FieldLayoutBaseProps = {
   smallLabel?: boolean
   hideFooter?: boolean
   inline?: boolean
+  clearButtonProps?: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    tooltip: string
+  }
 }
 
 type FieldLayoutProps = FieldLayoutBaseProps & {
@@ -47,9 +54,22 @@ const FieldLayout = ({
   classNameLabel,
   classNameFooter,
   description,
+  clearButtonProps,
 }: FieldLayoutProps): JSX.Element => {
   const hasError = showError && !!error
   const hasCounter = count !== undefined && maxLength !== undefined
+  const tooltipId = uniqId()
+
+  const clearButton = (
+    <button
+      type="button"
+      {...clearButtonProps}
+      aria-describedby={tooltipId}
+      className={styles['clear-button']}
+    >
+      <ClearIcon className={styles['clear-button-icon']} />
+    </button>
+  )
 
   return (
     <div
@@ -77,8 +97,22 @@ const FieldLayout = ({
           </span>
         )}
       </div>
+
       <div className={styles['field-layout-content']}>
-        <div>{children}</div>
+        <div className={styles['input-wrapper']}>
+          {children}
+          {clearButtonProps && (
+            <div className={styles['clear-button-container']}>
+              {clearButtonProps.disabled ? (
+                clearButton
+              ) : (
+                <Tooltip content={clearButtonProps.tooltip} id={tooltipId}>
+                  {clearButton}
+                </Tooltip>
+              )}
+            </div>
+          )}
+        </div>
 
         {!hideFooter && (hasError || hasCounter) && (
           <div className={cn(classNameFooter, styles['field-layout-footer'])}>

@@ -6,7 +6,7 @@ import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import styles from './TextInput.module.scss'
 
-type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
+export type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
   FieldLayoutBaseProps & {
     readOnly?: boolean
     type?: 'text' | 'number' | 'email' | 'url' | 'password' | 'tel'
@@ -43,6 +43,7 @@ const TextInput = ({
   inline = false,
   hideHiddenFooter = false,
   description,
+  clearButtonProps,
   ...props
 }: TextInputProps): JSX.Element => {
   const [field, meta] = useField({
@@ -72,6 +73,7 @@ const TextInput = ({
       inline={inline}
       hideFooter={hideFooter || (hideHiddenFooter && !showError)}
       description={description}
+      clearButtonProps={clearButtonProps}
     >
       {readOnly ? (
         <span

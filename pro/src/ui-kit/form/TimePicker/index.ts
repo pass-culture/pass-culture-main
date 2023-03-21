@@ -1,2 +1,2 @@
 export { default } from './TimePicker'
-export type { ITimePickerProps } from './TimePicker'
+export type { TimePickerProps } from './TimePicker'
