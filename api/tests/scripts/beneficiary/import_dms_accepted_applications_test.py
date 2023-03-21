@@ -18,7 +18,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 import pcapi.core.subscription.api as subscription_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
 import pcapi.core.subscription.models as subscription_models
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
@@ -284,45 +283,6 @@ class RunIntegrationTest:
         assert (
             subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PHONE_VALIDATION
         )
-
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 679  # complete subscription
-
-    @override_features(ENABLE_USER_PROFILING=True)
-    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    def test_import_user_requires_userprofiling(self, get_applications_with_details):
-        user = users_factories.UserFactory(
-            email=self.EMAIL,
-            dateOfBirth=self.BENEFICIARY_BIRTH_DATE,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            city="Quito",
-        )
-        get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
-        ]
-        # when
-        import_dms_accepted_applications(6712558)
-
-        # then
-        assert users_models.User.query.count() == 1
-        user = users_models.User.query.first()
-
-        assert len(user.beneficiaryFraudChecks) == 2
-
-        honor_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT
-        ).one_or_none()
-        assert honor_check
-        dms_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
-        ).one_or_none()
-        assert dms_check
-
-        assert len(push_testing.requests) == 3
-
-        assert not user.is_beneficiary
-        assert not user.deposit
-        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.USER_PROFILING
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 679  # complete subscription

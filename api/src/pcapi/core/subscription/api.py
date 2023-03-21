@@ -205,13 +205,8 @@ def get_user_profiling_subscription_item(
                 logger.exception("Unexpected UserProfiling status %s", user_profiling.status)
                 status = models.SubscriptionItemStatus.KO
 
-        elif not FeatureToggle.ENABLE_USER_PROFILING.is_active():
-            status = models.SubscriptionItemStatus.NOT_ENABLED
-
-        elif is_eligibility_activable(user, eligibility):
-            status = models.SubscriptionItemStatus.TODO
         else:
-            status = models.SubscriptionItemStatus.VOID
+            status = models.SubscriptionItemStatus.NOT_ENABLED
 
     return models.SubscriptionItem(type=models.SubscriptionStep.USER_PROFILING, status=status)
 

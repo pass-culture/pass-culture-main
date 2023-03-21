@@ -323,7 +323,6 @@ class AccountTest:
         n_queries = 1  # get user
         n_queries += 1  # has beneficiary_fraud_review
         n_queries += 1  # get user_profiling fraud_check
-        n_queries += 1  # get feature enable_user_profiling
         n_queries += 1  # get profile completion fraud_check
         n_queries += 1  # count ubble beneficiary_fraud_checks
         n_queries += 1  # get feature allow_id_check_registration
