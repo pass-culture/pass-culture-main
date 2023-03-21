@@ -40,7 +40,7 @@ with app.app_context():
 
     preprocess_scss(settings.IS_DEV)
     install_routes(app)
-    app.register_blueprint(backoffice_v3_web, url_prefix="/backofficev3")
+    app.register_blueprint(backoffice_v3_web, url_prefix="/")
 
 
 if __name__ == "__main__":

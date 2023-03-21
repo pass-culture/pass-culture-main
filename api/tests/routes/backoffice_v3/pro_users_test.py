@@ -49,7 +49,9 @@ class GetProUserTest(GetEndpointHelper):
             assert response.status_code == 200
 
             assert self.button_label in response.data.decode("utf-8")
-            assert f"/backofficev3/pro/user/{user.id}/validate-email" in response.data.decode("utf-8")
+
+            url = url_for("backoffice_v3_web.pro_user.validate_pro_user_email", user_id=user.id)
+            assert url in response.data.decode("utf-8")
 
         def test_no_button_if_validated_email(self, authenticated_client):
             user = offerers_factories.UserOffererFactory(
