@@ -11,6 +11,7 @@ from pcapi.core.users.factories import AdminFactory
 from tests.conftest import TestClient
 from tests.conftest import clean_database
 from tests.connectors.cgr import soap_definitions
+from tests.local_providers.cinema_providers.cgr import fixtures
 
 
 class CreateCGRPivotTest:
@@ -21,6 +22,9 @@ class CreateCGRPivotTest:
         AdminFactory(email="admin@example.fr")
         venue = offerers_factories.VenueFactory()
         requests_mock.get("https://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.post(
+            "https://example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
+        )
 
         data = {
             "venue_id": venue.id,
@@ -39,6 +43,7 @@ class CreateCGRPivotTest:
             providers_models.CGRCinemaDetails.cinemaProviderPivotId == cinema_provider_pivot.id
         ).one()
         assert cgr_cinema_details.cinemaUrl == "https://example.com/web_service"
+        assert cgr_cinema_details.numCinema == 999
         flash_mock.assert_called_once_with("Connexion à l'API CGR OK.")
 
     @clean_database
@@ -131,6 +136,9 @@ class EditCGRPivotTest:
             cinemaUrl="https://example.com",
         )
         requests_mock.get("https://new-url.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.post(
+            "https://new-url.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
+        )
 
         data = {
             "venue_id": venue.id,
@@ -144,6 +152,7 @@ class EditCGRPivotTest:
         assert response.status_code == 302
         assert cinema_provider_pivot.idAtProvider == "13"
         assert cgr_cinema_details.cinemaUrl == "https://new-url.com/web_service"
+        assert cgr_cinema_details.numCinema == 999
         flash_mock.assert_called_once_with("Connexion à l'API CGR OK.")
 
     @clean_database
