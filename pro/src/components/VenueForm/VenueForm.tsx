@@ -11,6 +11,7 @@ import {
   useNewOfferCreationJourney,
   useScrollToFirstErrorAfterSubmit,
 } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { venueSubmitRedirectUrl } from 'screens/VenueForm/utils/venueSubmitRedirectUrl'
 
@@ -20,6 +21,7 @@ import RouteLeavingGuard, { BlockerFunction } from '../RouteLeavingGuard'
 import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
 import { Address } from './Address'
+import CollectiveVenueInformations from './CollectiveVenueInformations/CollectiveVenueInformations'
 import { Contact } from './Contact'
 import { EACInformation } from './EACInformation'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
@@ -30,7 +32,7 @@ import { WithdrawalDetails } from './WithdrawalDetails'
 
 import { IVenueFormValues } from '.'
 
-interface IVenueForm {
+export interface IVenueForm {
   isCreatingVenue: boolean
   offerer: IOfferer
   updateIsSiretValued: (isSiretValued: boolean) => void
@@ -76,6 +78,9 @@ const VenueForm = ({
   }, [])
 
   const isNewOfferCreationJourney = useNewOfferCreationJourney()
+  const isCollectiveDmsTrackingActive = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
+  )
 
   const shouldBlockNavigation: BlockerFunction = ({ nextLocation }) => {
     if (!isCreatingVenue) {
@@ -152,8 +157,19 @@ const VenueForm = ({
         />
         {
           /* istanbul ignore next: DEBT, TO FIX */ canOffererCreateCollectiveOffer &&
+            !isCollectiveDmsTrackingActive &&
             ((isCreatingVenue && isSiretValued) || !isCreatingVenue) && (
               <EACInformation isCreatingVenue={isCreatingVenue} venue={venue} />
+            )
+        }
+        {
+          /* istanbul ignore next: DEBT, TO FIX */
+          isCollectiveDmsTrackingActive &&
+            ((isCreatingVenue && isSiretValued) || !isCreatingVenue) && (
+              <CollectiveVenueInformations
+                venue={venue}
+                isCreatingVenue={isCreatingVenue}
+              />
             )
         }
         {!isCreatingVenue && venue && (
