@@ -5,13 +5,13 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { VenueProviderResponse } from 'apiClient/v1'
+import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import {
   IVenueFormValues,
   validationSchema,
   VenueForm,
 } from 'components/VenueForm'
 import { generateSiretValidationSchema } from 'components/VenueForm/Informations/SiretOrCommentFields'
-import WithdrawalConfirmDialog from 'components/WithdrawalConfirmDialog'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -25,6 +25,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
+import { IcoMailOutline } from 'icons'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { Button, Title } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -287,11 +288,15 @@ const VenueFormScreen = ({
           />
         </form>
         {isWithdrawalUpdatedMailActive && isWithdrawalDialogOpen && (
-          <WithdrawalConfirmDialog
-            hideDialog={() => setIsWithdrawalDialogOpen(false)}
-            handleCancel={handleCancelWithdrawalDialog}
-            handleConfirm={handleConfirmWithdrawalDialog}
-          />
+          <ConfirmDialog
+            cancelText={'Ne pas envoyer'}
+            confirmText={'Envoyer un e-mail'}
+            leftButtonAction={handleCancelWithdrawalDialog}
+            onCancel={() => setIsWithdrawalDialogOpen(false)}
+            onConfirm={handleConfirmWithdrawalDialog}
+            icon={IcoMailOutline}
+            title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
+          ></ConfirmDialog>
         )}
       </FormikProvider>
     </div>
