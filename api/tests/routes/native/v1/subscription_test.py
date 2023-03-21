@@ -14,7 +14,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.notifications.push import testing as push_testing
-import pcapi.repository as pcapi_repository
+import pcapi.repository
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -255,7 +255,6 @@ class NextStepTest:
     @override_features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=True,
-        ENABLE_USER_PROFILING=True,
     )
     @freeze_time("2022-09-08 12:39:04.289878")
     def test_underage_not_ok_turned_18(self, client):
@@ -289,7 +288,7 @@ class NextStepTest:
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
             )
 
-        # Now user turned 18, phone and user profiling, profile completion are requested and Ubble identification is requested again
+        # Now user turned 18, phone validation and profile completion are requested and Ubble identification is requested again
         # Process should not depend on Ubble result performed when underage
         client.with_token(user.email)
 
@@ -309,7 +308,7 @@ class NextStepTest:
         response = client.get("/native/v1/subscription/next_step")
 
         assert response.status_code == 200
-        assert response.json["nextSubscriptionStep"] == "user-profiling"
+        assert response.json["nextSubscriptionStep"] == "profile-completion"
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] == None
         assert response.json["hasIdentityCheckPending"] == False
@@ -399,7 +398,7 @@ class NextStepTest:
         ubble_fraud_check.resultContent = fraud_factories.UbbleContentFactory(
             status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSED
         )
-        pcapi_repository.repository.save(ubble_fraud_check)
+        pcapi.repository.repository.save(ubble_fraud_check)
         response = client.get("/native/v1/subscription/next_step")
 
         assert response.status_code == 200
@@ -413,7 +412,6 @@ class NextStepTest:
     @override_features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=True,
-        ENABLE_USER_PROFILING=True,
     )
     def test_underage_ubble_ok_turned_18(self, client):
         # User has already performed id check with Ubble for underage credit, 2 years ago
