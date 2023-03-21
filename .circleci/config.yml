@@ -24,9 +24,6 @@ parameters:
   adage-front_cache_key:
     type: string
     default: 'node_modules-18.12-{{ checksum "adage-front/yarn.lock" }}'
-  backoffice-front_cache_key:
-    type: string
-    default: 'node_modules-14.13-{{ checksum "backoffice/yarn.lock" }}'
 
 ###################
 #  EXECUTORS
@@ -914,7 +911,7 @@ jobs:
                 name: Send failure notification
                 command: |
                   VERSION_TO_DEPLOY=$(git describe --contains | sed 's/..$//')
-                  BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *Pro* deployment *"$VERSION_TO_DEPLOY"* may have *FAILED* (an 
+                  BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *Pro* deployment *"$VERSION_TO_DEPLOY"* may have *FAILED* (an
                   old cache could still be valid) :collision:'"
                   curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
                 when: on_fail
@@ -966,39 +963,6 @@ jobs:
                   have *FAILED* (an old cache could still be valid) :collision:'"
                   curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
                 when: on_fail
-
-  deploy-backoffice-front:
-    executor: node-gcp-16
-    parameters:
-      app_environment:
-        type: string
-        default: ${CIRCLE_BRANCH}
-      build_dir:
-        type: string
-        default: backoffice
-      service_account_backoffice_key:
-        type: string
-    steps:
-      - checkout
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          key: << pipeline.parameters.backoffice-front_cache_key >>
-      - setup_sentry
-      - build-frontend-app:
-          node_env: <<parameters.app_environment>>
-          build_dir: <<parameters.build_dir>>
-          yarn_build_subcommand: "build:<<parameters.app_environment>>"
-      - save_cache:
-          name: Save Yarn Package Cache
-          key: << pipeline.parameters.backoffice-front_cache_key >>
-          paths:
-            - backoffice/node_modules
-      - run:
-          name: Deploy backoffice front <<parameters.app_environment>>
-          command: |
-            echo "$<<parameters.service_account_backoffice_key>>" > ~/gcp_backoffice_testing.json
-            export GOOGLE_APPLICATION_CREDENTIALS=~/gcp_backoffice_testing.json
-            yarn --cwd <<parameters.build_dir>> deploy:<<parameters.app_environment>>
 
   release-synthesis:
     machine:
@@ -1205,18 +1169,6 @@ workflows:
 #           - GCP
 #           - GCP_EHP
 #         app_environment: testing
-#      - deploy-backoffice-front:
-#         filters:
-#           branches:
-#             only:
-#               - master
-#         requires:
-#           - restart-pcapi
-#         context:
-#           - GCP
-#           - GCP_EHP
-#         app_environment: testing
-#         service_account_backoffice_key: GCP_BACKOFFICE_TESTING_KEY
   gcp-ehp:
     jobs:
       - generate-pcapi-helm-values-files:
@@ -1249,22 +1201,11 @@ workflows:
           context:
             - GCP
             - GCP_EHP
-      - deploy-backoffice-front:
-          filters:
-            branches:
-              ignore: integration
-          requires:
-            - restart-pcapi
-          context:
-            - GCP
-            - GCP_EHP
-          service_account_backoffice_key: GCP_BACKOFFICE_STAGING_KEY
       - release-synthesis:
           requires:
             - restart-pcapi
             - deploy-pro
             - deploy-adage-front
-            - deploy-backoffice-front
       - restart-pcapi:
           requires:
             - deploy-pcapi
@@ -1300,19 +1241,11 @@ workflows:
           context:
             - GCP
             - GCP_PROD
-      - deploy-backoffice-front:
-          requires:
-            - restart-pcapi
-          context:
-            - GCP
-            - GCP_PROD
-          service_account_backoffice_key: GCP_BACKOFFICE_PRODUCTION_KEY
       - release-synthesis:
           requires:
             - restart-pcapi
             - deploy-pro
             - deploy-adage-front
-            - deploy-backoffice-front
       - restart-pcapi:
           requires:
             - deploy-pcapi

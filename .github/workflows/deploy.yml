@@ -25,10 +25,6 @@ on:
         type: boolean
         required: false
         default: false
-      deploy_backoffice:
-        type: boolean
-        required: false
-        default: false
       deploy_pro:
         type: boolean
         required: false
@@ -157,55 +153,6 @@ jobs:
       gcp_project: ${{ secrets.METIER_GCP_PROJECT }}
       service_account: ${{ secrets.METIER_CIRCLECI_SERVICE_ACCOUNT }}
       workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-
-  deploy-backoffice-front:
-    name: Deploy backoffice
-    needs: deploy-api
-    if: |
-      inputs.environment != 'integration' &&
-      (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
-      inputs.deploy_backoffice == true
-    environment: ${{ inputs.environment }}
-    runs-on: [self-hosted, linux, x64]
-    permissions:
-      id-token: write
-      contents: read
-    defaults:
-      run:
-        working-directory: backoffice
-    steps:
-      - uses: actions/checkout@v3
-      - id: openid-auth
-        name: "OpenID Connect Authentication"
-        uses: 'google-github-actions/auth@v1'
-        with:
-          create_credentials_file: false
-          token_format: 'access_token'
-          workload_identity_provider: ${{ secrets.BACKOFFICE_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.BACKOFFICE_CI_SERVICE_ACCOUNT }}
-      - run: echo "FIREBASE_TOKEN=${{ steps.openid-auth.outputs.access_token }}" >> $GITHUB_ENV
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v0'
-      - name: 'Setup sentry credentials for Backoffice'
-        run: |
-          echo "[defaults]" >> ~/.sentryclirc
-          echo "url=https://sentry.passculture.team/" >> ~/.sentryclirc
-          echo "org=sentry" >> ~/.sentryclirc
-          echo "project=backoffice" >> ~/.sentryclirc
-          echo "" >> ~/.sentryclirc
-          echo "[auth]" >> ~/.sentryclirc
-          echo "token=${{ secrets.SENTRY_AUTH_TOKEN }}" >> ~/.sentryclirc
-      - run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_ENV
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.node_version }}
-          cache: 'npm'
-          cache-dependency-path: backoffice/yarn.lock
-      - run: npm install --global yarn
-      - run: yarn install
-      - run: |
-          set -a; source ../config/run_envs/${{ inputs.environment }};
-          yarn deploy:${{ inputs.environment }}
 
   apply-algolia-config:
     name: "apply Algolia settings"
