@@ -11,6 +11,7 @@ import {
   ISignupJourneyContext,
   SignupJourneyContext,
 } from 'context/SignupJourneyContext'
+import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -19,6 +20,7 @@ import { Offerers } from '..'
 jest.mock('apiClient/api', () => ({
   api: {
     getVenuesOfOffererFromSiret: jest.fn(),
+    createOfferer: jest.fn(),
   },
 }))
 
@@ -45,6 +47,10 @@ const renderOfferersScreen = (contextValue: ISignupJourneyContext) => {
         <Route
           path="/parcours-inscription/authentification"
           element={<div>Authentication screen</div>}
+        />
+        <Route
+          path="/parcours-inscription/structure/rattachement/confirmation"
+          element={<div>Confirmation screen</div>}
         />
       </Routes>
     </SignupJourneyContext.Provider>,
@@ -283,7 +289,7 @@ describe('screens:SignupJourney::Offerers', () => {
   })
 
   describe('modal handling', () => {
-    it('should render component modal', async () => {
+    it('should display confirmation dialog when user want to be linked to the structure', async () => {
       renderOfferersScreen(contextValue)
 
       await userEvent.click(await screen.findByText('Rejoindre cet espace'))
@@ -293,6 +299,64 @@ describe('screens:SignupJourney::Offerers', () => {
           'Êtes-vous sûr de vouloir rejoindre cet espace PRO ?'
         )
       ).toBeInTheDocument()
+    })
+
+    it('should not link offerer to user when they cancel', async () => {
+      renderOfferersScreen(contextValue)
+
+      await userEvent.click(await screen.findByText('Rejoindre cet espace'))
+
+      expect(
+        await screen.findByText(
+          'Êtes-vous sûr de vouloir rejoindre cet espace PRO ?'
+        )
+      ).toBeInTheDocument()
+
+      await userEvent.click(await screen.findByText('Annuler'))
+
+      expect(
+        screen.queryByText(
+          'Êtes-vous sûr de vouloir rejoindre cet espace PRO ?'
+        )
+      ).not.toBeInTheDocument()
+      expect(api.createOfferer).not.toHaveBeenCalled()
+    })
+
+    it('should link offerer to user when they confirm', async () => {
+      renderOfferersScreen(contextValue)
+      jest.spyOn(api, 'createOfferer').mockResolvedValue(expect.anything())
+      jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
+        isOk: true,
+        message: '',
+        payload: {
+          values: {
+            address: '',
+            city: 'lille',
+            name: '',
+            postalCode: '59000',
+            siren: '',
+            apeCode: '',
+          },
+        },
+      })
+
+      await userEvent.click(await screen.findByText('Rejoindre cet espace'))
+
+      expect(
+        await screen.findByText(
+          'Êtes-vous sûr de vouloir rejoindre cet espace PRO ?'
+        )
+      ).toBeInTheDocument()
+
+      await userEvent.click(await screen.findByText('Rejoindre cet espace PRO'))
+
+      expect(api.createOfferer).toHaveBeenCalledWith({
+        city: 'lille',
+        name: 'Offerer Name',
+        postalCode: '59000',
+        siren: '123456789',
+      })
+      expect(await screen.findByText('Confirmation screen')).toBeInTheDocument()
     })
   })
 })

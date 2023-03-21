@@ -2,11 +2,15 @@ import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
+import { CreateOffererQueryModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
+import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { humanizeSiren } from 'core/Offerers/utils'
 import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter'
 import { useAdapter } from 'hooks'
+import useNotification from 'hooks/useNotification'
 import { AddUserIcon, ArrowUpBIcon } from 'icons'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -17,6 +21,7 @@ import { ActionBar } from '../ActionBar'
 import styles from './Offerers.module.scss'
 
 const Offerers = (): JSX.Element => {
+  const notify = useNotification()
   const navigate = useNavigate()
   const [isVenueListOpen, setIsVenueListOpen] = useState<boolean>(false)
   const [showLinkDialog, setShowLinkDialog] = useState<boolean>(false)
@@ -37,13 +42,33 @@ const Offerers = (): JSX.Element => {
     venuesOfOfferer && venuesOfOfferer?.venues.length > 5
 
   useEffect(() => {
-    if (venuesOfOffererError) {
+    if (venuesOfOffererError || (!isLoadingVenues && !venuesOfOfferer)) {
       navigate('/parcours-inscription/structure')
     }
   }, [isLoadingVenues])
 
   if (isLoadingVenues) {
     return <Spinner />
+  }
+
+  const doLinkAccount = async () => {
+    /* istanbul ignore next: venuesOfOfferer will always be defined here or else,
+     the user would have been redirected */
+    try {
+      const response = await getSirenDataAdapter(
+        venuesOfOfferer?.offererSiren ?? ''
+      )
+      const request: CreateOffererQueryModel = {
+        city: response.payload.values?.city ?? '',
+        name: venuesOfOfferer?.offererName ?? '',
+        postalCode: response.payload.values?.postalCode ?? '',
+        siren: venuesOfOfferer?.offererSiren ?? '',
+      }
+      await api.createOfferer(request)
+      navigate('/parcours-inscription/structure/rattachement/confirmation')
+    } catch (e) {
+      notify.error('Impossible de lier votre compte à cette structure.')
+    }
   }
 
   return (
@@ -120,7 +145,7 @@ const Offerers = (): JSX.Element => {
           onCancel={() => setShowLinkDialog(false)}
           title="Êtes-vous sûr de vouloir rejoindre
 cet espace PRO ?"
-          onConfirm={() => alert('Action réalisée')}
+          onConfirm={doLinkAccount}
           confirmText="Rejoindre cet espace PRO"
           cancelText="Annuler"
           extraClassNames={styles['dialog-content']}
