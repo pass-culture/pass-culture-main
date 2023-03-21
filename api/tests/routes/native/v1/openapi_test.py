@@ -58,11 +58,6 @@ def test_public_api(client):
                     "title": "ActivityResponseModel",
                     "type": "object",
                 },
-                "AgentType": {
-                    "description": "An enumeration.",
-                    "enum": ["browser_computer", "browser_mobile", "agent_mobile"],
-                    "title": "AgentType",
-                },
                 "Banner": {
                     "properties": {
                         "name": {"$ref": "#/components/schemas/BannerName"},
@@ -1681,21 +1676,6 @@ def test_public_api(client):
                     "title": "UserProfileUpdateRequest",
                     "type": "object",
                 },
-                "UserProfilingFraudRequest": {
-                    "properties": {
-                        "agentType": {"anyOf": [{"$ref": "#/components/schemas/AgentType"}], "nullable": True},
-                        "sessionId": {"nullable": True, "title": "Sessionid", "type": "string"},
-                        "session_id": {"nullable": True, "title": "Session Id", "type": "string"},
-                    },
-                    "title": "UserProfilingFraudRequest",
-                    "type": "object",
-                },
-                "UserProfilingSessionIdResponse": {
-                    "properties": {"sessionId": {"title": "Sessionid", "type": "string"}},
-                    "required": ["sessionId"],
-                    "title": "UserProfilingSessionIdResponse",
-                    "type": "object",
-                },
                 "UserReportedOffersResponse": {
                     "properties": {
                         "reportedOffers": {
@@ -3178,58 +3158,6 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "start_identification_session <POST>",
-                    "tags": [],
-                }
-            },
-            "/native/v1/user_profiling": {
-                "post": {
-                    "description": "",
-                    "operationId": "post_/native/v1/user_profiling",
-                    "parameters": [],
-                    "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/UserProfilingFraudRequest"}}
-                        }
-                    },
-                    "responses": {
-                        "204": {"description": "No Content"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"JWTAuth": []}],
-                    "summary": "profiling_fraud_score <POST>",
-                    "tags": [],
-                }
-            },
-            "/native/v1/user_profiling/session_id": {
-                "get": {
-                    "description": "",
-                    "operationId": "get_/native/v1/user_profiling/session_id",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/UserProfilingSessionIdResponse"}
-                                }
-                            },
-                            "description": "OK",
-                        },
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"JWTAuth": []}],
-                    "summary": "Generate a unique hash which will be used as an identifier for user profiling",
                     "tags": [],
                 }
             },

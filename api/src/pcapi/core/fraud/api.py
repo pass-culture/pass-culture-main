@@ -33,14 +33,6 @@ logger = logging.getLogger(__name__)
 
 FRAUD_RESULT_REASON_SEPARATOR = ";"
 
-USER_PROFILING_FRAUD_CHECK_STATUS_RISK_MAPPING = {
-    models.UserProfilingRiskRating.TRUSTED: models.FraudCheckStatus.OK,
-    models.UserProfilingRiskRating.NEUTRAL: models.FraudCheckStatus.OK,
-    models.UserProfilingRiskRating.LOW: models.FraudCheckStatus.OK,
-    models.UserProfilingRiskRating.MEDIUM: models.FraudCheckStatus.SUSPICIOUS,
-    models.UserProfilingRiskRating.HIGH: models.FraudCheckStatus.KO,
-}
-
 
 class FraudCheckError(Exception):
     pass
@@ -361,23 +353,6 @@ def _underage_user_fraud_item(birth_date: datetime.date) -> models.FraudItem:
         detail=f"L'âge de l'utilisateur est invalide ({age} ans). Il devrait être parmi {constants.ELIGIBILITY_UNDERAGE_RANGE}",
         reason_code=models.FraudReasonCode.AGE_NOT_VALID,
     )
-
-
-def on_user_profiling_result(
-    user: users_models.User, profiling_infos: models.UserProfilingFraudData
-) -> models.BeneficiaryFraudCheck:
-    risk_rating = profiling_infos.risk_rating
-    fraud_check_status = USER_PROFILING_FRAUD_CHECK_STATUS_RISK_MAPPING[risk_rating]
-    fraud_check = models.BeneficiaryFraudCheck(
-        user=user,
-        type=models.FraudCheckType.USER_PROFILING,
-        thirdPartyId=profiling_infos.session_id,
-        resultContent=profiling_infos,  # type: ignore [arg-type]
-        status=fraud_check_status,
-        eligibilityType=user.eligibility,
-    )
-    repository.save(fraud_check)
-    return fraud_check
 
 
 def _create_failed_phone_validation_fraud_check(

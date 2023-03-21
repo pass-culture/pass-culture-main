@@ -1,5 +1,4 @@
 import datetime
-import re
 import typing
 
 from dateutil.relativedelta import relativedelta
@@ -8,12 +7,10 @@ from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
 from jwt import InvalidTokenError
 import pydantic
-from pydantic.class_validators import root_validator
 from pydantic.class_validators import validator
 from pydantic.fields import Field
 from sqlalchemy.orm import joinedload
 
-from pcapi.connectors.user_profiling import AgentType
 from pcapi.core.bookings import models as bookings_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offers import models as offers_models
@@ -254,38 +251,6 @@ class PhoneValidationRemainingAttemptsRequest(BaseModel):
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}
-
-
-class UserProfilingFraudRequest(BaseModel):
-    # Moving from session_id to sessionId - remove session_id and set sessionId not Optional when app version is forced
-    # to a new minimal version. Also restore a simple validator session_id_alphanumerics for sessionId
-    session_id: str | None
-    sessionId: str | None
-    agentType: AgentType | None
-
-    @root_validator()
-    def session_id_alphanumerics(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        session_id = values.get("sessionId") or values.get("session_id")
-        if not session_id:
-            raise ValueError("L'identifiant de session est manquant")
-        if not re.match(r"^[A-Za-z0-9_-]{1,128}$", session_id):
-            raise ValueError(
-                "L'identifiant de session ne doit être composé exclusivement que de caratères alphanumériques"
-            )
-        values["sessionId"] = session_id
-        return values
-
-    @validator("agentType", always=True)
-    def agent_type_validation(cls, agent_type: str) -> str:
-        if agent_type is None:
-            agent_type = AgentType.AGENT_MOBILE
-        if agent_type not in (AgentType.BROWSER_COMPUTER, AgentType.BROWSER_MOBILE, AgentType.AGENT_MOBILE):
-            raise ValueError("agentType est invalide")
-        return agent_type
-
-
-class UserProfilingSessionIdResponse(BaseModel):
-    sessionId: str
 
 
 class UserSuspensionDateResponse(BaseModel):

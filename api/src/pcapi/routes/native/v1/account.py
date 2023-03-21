@@ -1,19 +1,14 @@
 from datetime import datetime
 import logging
-import uuid
 
 from flask import current_app as app
-from flask import request
 from jwt import InvalidTokenError
 import pydantic
 
 from pcapi.connectors import api_recaptcha
-from pcapi.connectors import user_profiling
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.external.attributes import api as external_attributes_api
-from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.phone_validation import sending_limit
-from pcapi.core.logging import get_or_set_correlation_id
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
@@ -332,58 +327,3 @@ def unsuspend_account(user: users_models.User) -> None:
         raise api_errors.ForbiddenError({"code": "UNSUSPENSION_LIMIT_REACHED"})
 
     api.unsuspend_account(user, actor=user, send_email=True)
-
-
-@blueprint.native_v1.route("/user_profiling", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_success_status=204)
-@authenticated_and_active_user_required
-def profiling_fraud_score(user: users_models.User, body: serializers.UserProfilingFraudRequest) -> None:
-    if not FeatureToggle.ENABLE_USER_PROFILING.is_active():
-        return
-
-    handler = user_profiling.UserProfilingClient()
-
-    # User Profiling step must be after Phone Validation
-    if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
-        raise ApiErrors(
-            {"message": "Le numéro de téléphone est n'a pas été validé", "code": "MISSING_PHONE_VALIDATION"},
-            status_code=400,
-        )
-
-    try:
-        profiling_infos = handler.get_user_profiling_fraud_data(
-            session_id=body.sessionId,  # type: ignore [arg-type]
-            user_id=user.id,
-            user_email=user.email,
-            birth_date=user.birth_date,
-            phone_number=user.phoneNumber,  # type: ignore [arg-type]
-            workflow_type=user_profiling.WorkflowType.BENEFICIARY_VALIDATION,
-            # depends on loadbalancer configuration
-            ip_address=request.headers.get("X-Forwarded-For"),  # type: ignore [arg-type]
-            line_of_business=user_profiling.LineOfBusiness.B2C,
-            # Insert request unique identifier
-            transaction_id=get_or_set_correlation_id(),
-            agent_type=body.agentType,  # type: ignore [arg-type]
-        )
-    except user_profiling.BaseUserProfilingException:
-        logger.exception("Error while retrieving user profiling infos", exc_info=True)
-    else:
-        logger.info(
-            "Success when profiling user: returned userdata %r",
-            profiling_infos.dict(),
-            extra={"sessionId": body.sessionId},
-        )
-        fraud_api.on_user_profiling_result(user, profiling_infos)
-
-        subscription_api.activate_beneficiary_if_no_missing_step(user)
-
-
-@blueprint.native_v1.route("/user_profiling/session_id", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=serializers.UserProfilingSessionIdResponse)
-@authenticated_and_active_user_required
-def profiling_session_id(user: users_models.User) -> serializers.UserProfilingSessionIdResponse:
-    """
-    Generate a unique hash which will be used as an identifier for user profiling
-    """
-    session_id = str(uuid.uuid4())
-    return serializers.UserProfilingSessionIdResponse(sessionId=session_id)
