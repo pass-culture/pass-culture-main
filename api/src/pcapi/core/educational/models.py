@@ -216,12 +216,12 @@ class StatusMixin:
             return offer_mixin.OfferStatus.INACTIVE
 
         if self.validation == offer_mixin.OfferValidationStatus.APPROVED:
-            if self.hasBookingLimitDatetimesPassed and not self.hasBeginningDatetimePassed:
-                return offer_mixin.OfferStatus.INACTIVE
             if self.hasBeginningDatetimePassed:
                 return offer_mixin.OfferStatus.EXPIRED
             if self.isSoldOut:
                 return offer_mixin.OfferStatus.SOLD_OUT
+            if self.hasBookingLimitDatetimesPassed:
+                return offer_mixin.OfferStatus.INACTIVE
 
         return offer_mixin.OfferStatus.ACTIVE
 
@@ -239,12 +239,9 @@ class StatusMixin:
                 ),
                 (cls.validation == offer_mixin.OfferValidationStatus.DRAFT.name, offer_mixin.OfferStatus.DRAFT.name),
                 (cls.isActive.is_(False), offer_mixin.OfferStatus.INACTIVE.name),
-                (
-                    sa.and_(~cls.hasBeginningDatetimePassed, cls.hasBookingLimitDatetimesPassed),
-                    offer_mixin.OfferStatus.INACTIVE.name,
-                ),
                 (cls.hasBeginningDatetimePassed, offer_mixin.OfferStatus.EXPIRED.name),
                 (cls.isSoldOut, offer_mixin.OfferStatus.SOLD_OUT.name),
+                (cls.hasBookingLimitDatetimesPassed, offer_mixin.OfferStatus.INACTIVE.name),
             ],
             else_=offer_mixin.OfferStatus.ACTIVE.name,
         )
