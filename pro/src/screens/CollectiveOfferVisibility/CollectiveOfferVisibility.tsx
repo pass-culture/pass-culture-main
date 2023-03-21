@@ -28,6 +28,7 @@ import {
 } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import RadioGroup from 'ui-kit/form/RadioGroup'
+import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import getEducationalRedactorsAdapter from './adapters/getEducationalRedactorAdapter'
@@ -215,6 +216,7 @@ const CollectiveOfferVisibility = ({
                 <RadioGroup
                   className={styles['radio-group']}
                   disabled={mode === Mode.READ_ONLY}
+                  variant={BaseRadioVariant.SECONDARY}
                   group={[
                     {
                       label: 'Un établissement en particulier',
