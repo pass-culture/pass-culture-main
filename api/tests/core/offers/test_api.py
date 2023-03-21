@@ -1078,10 +1078,9 @@ class BatchUpdateOffersTest:
             "venue_ids": [offer1.venueId, offer2.venueId],
         }
         assert second_record.message == "Offers has been activated"
-        assert second_record.extra == {
-            "offer_ids": (offer1.id, offer2.id),
-            "venue_id": [offer1.venueId, offer2.venueId],
-        }
+        assert second_record.extra.keys() == {"offer_ids", "venue_id"}
+        assert set(second_record.extra["offer_ids"]) == {offer1.id, offer2.id}
+        assert second_record.extra["venue_id"] == [offer1.venueId, offer2.venueId]
 
     def test_deactivate(self, caplog):
         offer1 = factories.OfferFactory()
@@ -1107,10 +1106,9 @@ class BatchUpdateOffersTest:
             "venue_ids": [offer1.venueId, offer2.venueId],
         }
         assert second_record.message == "Offers has been deactivated"
-        assert second_record.extra == {
-            "offer_ids": (offer1.id, offer2.id),
-            "venue_id": [offer1.venueId, offer2.venueId],
-        }
+        assert second_record.extra.keys() == {"offer_ids", "venue_id"}
+        assert set(second_record.extra["offer_ids"]) == {offer1.id, offer2.id}
+        assert second_record.extra["venue_id"] == [offer1.venueId, offer2.venueId]
 
 
 @pytest.mark.usefixtures("db_session")
