@@ -35,7 +35,6 @@ import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
-import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { IcoMailOutline } from 'icons'
 
@@ -112,13 +111,7 @@ const Informations = ({
   const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] =
     useState<boolean>(false)
 
-  const [submitAsButton, setSubmitAsButton] = useState<boolean>(false)
   const [shouldSendMail, setShouldSendMail] = useState<boolean>(false)
-
-  const handleCloseWidthdrawalDialog = () => {
-    setIsWithdrawalDialogOpen(false)
-    setSubmitAsButton(false)
-  }
 
   const widthdrawalHasChanged = () => {
     const withdrawalToCheck = [
@@ -140,21 +133,6 @@ const Informations = ({
     })
   }
 
-  const handleWithdrawalDialog = () => {
-    if (!isWithdrawalDialogOpen && widthdrawalHasChanged()) {
-      setSubmitAsButton(true)
-      setIsWithdrawalDialogOpen(true)
-      return true
-    }
-
-    if (isWithdrawalDialogOpen) {
-      handleCloseWidthdrawalDialog()
-      return true
-    }
-
-    return false
-  }
-
   const handleSendMail = async (sendMail: boolean) => {
     if (!offer?.isActive) {
       return
@@ -165,11 +143,16 @@ const Informations = ({
       0
     )
 
+    const hasWithdrawalDialogAction =
+      (!isWithdrawalDialogOpen && widthdrawalHasChanged()) ||
+      isWithdrawalDialogOpen
+
     if (
       totalBookingsQuantity &&
       totalBookingsQuantity > 0 &&
-      handleWithdrawalDialog()
+      hasWithdrawalDialogAction
     ) {
+      setIsWithdrawalDialogOpen(!isWithdrawalDialogOpen)
       setShouldSendMail(sendMail)
       setIsClickingFromActionBar(false)
       return
@@ -343,7 +326,6 @@ const Informations = ({
             }
             offerId={offer?.id}
             shouldTrack={shouldTrack}
-            submitAsButton={submitAsButton}
           />
         </form>
       </FormLayout>
@@ -352,7 +334,9 @@ const Informations = ({
           cancelText="Ne pas envoyer"
           confirmText="Envoyer un e-mail"
           leftButtonAction={handleNextStep({ saveDraft: true })}
-          onCancel={handleCloseWidthdrawalDialog}
+          onCancel={() => {
+            setIsWithdrawalDialogOpen(false)
+          }}
           onConfirm={handleNextStep({
             saveDraft: true,
             sendMail: true,
