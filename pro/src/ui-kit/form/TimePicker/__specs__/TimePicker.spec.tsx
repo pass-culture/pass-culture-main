@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import TimePicker, { ITimePickerProps } from '../TimePicker'
+import TimePicker, { TimePickerProps } from '../TimePicker'
 
 const renderTimePicker = ({
   onSubmit = jest.fn(),
@@ -11,7 +11,7 @@ const renderTimePicker = ({
   onSubmit?: () => void
 } = {}) => {
   const initialValues = { price: '' }
-  const props: ITimePickerProps = {
+  const props: TimePickerProps = {
     label: 'Horaire',
     name: 'datetime',
   }
