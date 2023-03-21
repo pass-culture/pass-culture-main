@@ -319,3 +319,4 @@ class CGRCinemaDetails(PcObject, Base, Model):
     )
     cinemaProviderPivot = relationship(CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId])  # type: ignore [misc]
     cinemaUrl: str = Column(Text, nullable=False)
+    numCinema: int = Column(Integer, nullable=True)

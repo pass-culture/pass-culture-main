@@ -78,15 +78,16 @@ class CGRPivotView(BaseAdminView):
 
         return super().validate_form(form)
 
-    def check_if_api_call_is_ok(self, CGR_cinema_details: providers_models.CGRCinemaDetails) -> None:
+    def check_if_api_call_is_ok(self, CGR_cinema_details: providers_models.CGRCinemaDetails) -> int | None:
         try:
-            cgr.get_cgr_service_proxy(CGR_cinema_details.cinemaUrl)
+            response = cgr.get_seances_pass_culture(CGR_cinema_details)
             flask.flash("Connexion à l'API CGR OK.")
-            return
+            return response.ObjetRetour.NumCine
         # it could be an unexpected XML parsing error
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception("Error while checking CGR API information", extra={"exc": exc})
         flask.flash("Connexion à l'API CGR KO.", "error")
+        return None
 
     def update_model(
         self, form: CGRPivotForm, CGR_cinema_details: providers_models.CGRCinemaDetails
@@ -97,10 +98,12 @@ class CGRPivotView(BaseAdminView):
         CGR_cinema_details.cinemaProviderPivot.idAtProvider = str(form.cinema_id.data)
         CGR_cinema_details.cinemaUrl = form.cinema_url.data.rstrip("/")
 
+        num_cinema = self.check_if_api_call_is_ok(CGR_cinema_details)
+        if num_cinema:
+            CGR_cinema_details.numCinema = num_cinema
+
         db.session.add(CGR_cinema_details)
         db.session.commit()
-
-        self.check_if_api_call_is_ok(CGR_cinema_details)
 
         return CGR_cinema_details
 
@@ -131,11 +134,13 @@ class CGRPivotView(BaseAdminView):
             cinemaProviderPivot=cinema_provider_pivot, cinemaUrl=cinema_url
         )
 
+        num_cinema = self.check_if_api_call_is_ok(cgr_cinema_details)
+        if num_cinema:
+            cgr_cinema_details.numCinema = num_cinema
+
         db.session.add(cinema_provider_pivot)
         db.session.add(cgr_cinema_details)
         db.session.commit()
-
-        self.check_if_api_call_is_ok(cgr_cinema_details)
 
         return cgr_cinema_details
 
