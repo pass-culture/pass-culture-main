@@ -75,3 +75,48 @@
     justify-self: flex-end;
   }
 }
+
+// Used by clear button
+.input-wrapper {
+  position: relative;
+}
+
+$icon-size: rem.torem(20px);
+
+.clear-button {
+  &-container {
+    position: absolute;
+    top: rem.torem(-4px);
+    right: 0;
+  }
+
+  width: calc(#{$icon-size} + #{rem.torem(2px)});
+  height: calc(#{$icon-size} + #{rem.torem(2px)});
+  border: 1px solid colors.$white;
+  background: colors.$white;
+  border-radius: 50%;
+
+  // Reset button styles
+  line-height: 0;
+
+  &:focus {
+    outline: 1px solid colors.$black;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+
+    path {
+      fill: colors.$grey-semi-dark;
+    }
+  }
+
+  &-icon {
+    width: $icon-size;
+    height: $icon-size;
+
+    path {
+      fill: colors.$black;
+    }
+  }
+}

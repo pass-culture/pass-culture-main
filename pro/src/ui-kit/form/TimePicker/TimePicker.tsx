@@ -6,20 +6,13 @@ import ReactDatePicker, { registerLocale } from 'react-datepicker'
 import { FORMAT_HH_mm } from 'utils/date'
 
 import { BaseInput, FieldLayout } from '../shared'
+import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 registerLocale('fr', fr)
 
-export interface ITimePickerProps {
-  name: string
-  className?: string
+export type TimePickerProps = FieldLayoutBaseProps & {
   disabled?: boolean
-  label: string
-  isLabelHidden?: boolean
   dateTime?: Date
-  smallLabel?: boolean
-  classNameFooter?: string
-  classNameLabel?: string
-  hideFooter?: boolean
   hideHiddenFooter?: boolean
 }
 
@@ -34,7 +27,8 @@ const TimePicker = ({
   smallLabel,
   hideFooter = false,
   hideHiddenFooter = false,
-}: ITimePickerProps): JSX.Element => {
+  clearButtonProps,
+}: TimePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'text' })
   const ref = createRef<HTMLInputElement>()
   const showError = meta.touched && !!meta.error
@@ -52,6 +46,7 @@ const TimePicker = ({
       classNameLabel={classNameLabel}
       classNameFooter={classNameFooter}
       hideFooter={hideFooter || (hideHiddenFooter && !showError)}
+      clearButtonProps={clearButtonProps}
     >
       <ReactDatePicker
         {...field}

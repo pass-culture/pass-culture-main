@@ -45,13 +45,11 @@
   display: flex;
   flex-wrap: wrap;
   margin-bottom: rem.torem(24px);
+  gap: rem.torem(8px);
 }
 
-.beginning-time-wrapper {
-  display: flex;
-  align-items: center;
+.beginning-time-input {
   max-width: rem.torem(180px);
-  margin-bottom: rem.torem(8px);
 }
 
 .align-icon {

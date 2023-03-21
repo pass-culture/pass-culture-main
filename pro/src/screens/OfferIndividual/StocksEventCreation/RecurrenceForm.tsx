@@ -175,28 +175,18 @@ export const RecurrenceForm = ({
                   <>
                     <div className={styles['beginning-time-list']}>
                       {values.beginningTimes.map((beginningTime, index) => (
-                        <div
+                        <TimePicker
                           key={index}
-                          className={styles['beginning-time-wrapper']}
-                        >
-                          <TimePicker
-                            label={`Horaire ${index + 1}`}
-                            name={`beginningTimes[${index}]`}
-                          />
-
-                          <div className={styles['align-icon']}>
-                            <Button
-                              variant={ButtonVariant.TERNARY}
-                              Icon={TrashFilledIcon}
-                              iconPosition={IconPositionEnum.CENTER}
-                              disabled={values.beginningTimes.length <= 1}
-                              onClick={() => arrayHelpers.remove(index)}
-                              hasTooltip
-                            >
-                              Supprimer le créneau
-                            </Button>
-                          </div>
-                        </div>
+                          label={`Horaire ${index + 1}`}
+                          name={`beginningTimes[${index}]`}
+                          className={styles['beginning-time-input']}
+                          clearButtonProps={{
+                            tooltip: 'Supprimer',
+                            'aria-label': 'Supprimer le créneau',
+                            disabled: values.beginningTimes.length <= 1,
+                            onClick: () => arrayHelpers.remove(index),
+                          }}
+                        />
                       ))}
                     </div>
 

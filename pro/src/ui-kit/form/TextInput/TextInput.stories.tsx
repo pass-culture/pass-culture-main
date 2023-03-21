@@ -3,20 +3,20 @@ import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import TextInput from './TextInput'
+import TextInput, { TextInputProps } from './TextInput'
 
 export default {
   title: 'ui-kit/forms/TextInput',
   component: TextInput,
 }
 
-const Template: Story<{ label: string }> = ({ label }) => (
+const Template: Story<TextInputProps> = props => (
   <Formik initialValues={{ email: '' }} onSubmit={action('onSubmit')}>
     {({ getFieldProps }) => (
       <TextInput
         {...getFieldProps('email')}
-        label={label}
         placeholder="input placeholder"
+        {...props}
       />
     )}
   </Formik>
