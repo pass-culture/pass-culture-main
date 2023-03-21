@@ -228,7 +228,7 @@ describe('screens:SignupJourney::Validation', () => {
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       expect(
-        await screen.queryByText('Information structure')
+        await screen.queryByText('Informations structure')
       ).not.toBeInTheDocument()
     })
   })
