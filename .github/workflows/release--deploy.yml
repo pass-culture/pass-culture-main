@@ -60,7 +60,6 @@ jobs:
       teleport_kubernetes_cluster: passculture-metier-ehp
       deploy_api: true
       deploy_adage: ${{ github.event.inputs.target_environment != 'integration' }}
-      deploy_backoffice: ${{ github.event.inputs.target_environment != 'integration' }}
       deploy_pro: true
     secrets: inherit
 
@@ -78,7 +77,6 @@ jobs:
       teleport_kubernetes_cluster: passculture-metier-prod
       deploy_api: true
       deploy_adage: true
-      deploy_backoffice: true
       deploy_pro: true
     secrets: inherit
 
