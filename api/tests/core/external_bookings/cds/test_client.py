@@ -5,8 +5,10 @@ import pytest
 
 from pcapi.connectors.cine_digital_service import ResourceCDS
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
+import pcapi.core.users.factories as users_factories
 
 
 def create_show_cds(
@@ -989,6 +991,7 @@ class CineDigitalServiceGetVoucherForShowTest:
         assert voucher_type.tariff.price == 5
 
 
+@pytest.mark.usefixtures("db_session")
 class CineDigitalServiceBookTicketTest:
     @patch("pcapi.core.external_bookings.cds.client.post_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_show")
@@ -1005,6 +1008,8 @@ class CineDigitalServiceBookTicketTest:
         mocked_get_show,
         mocked_post_resource,
     ):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1)
         mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
             id=12, internal_code="VCH", is_active=True
         )
@@ -1051,7 +1056,7 @@ class CineDigitalServiceBookTicketTest:
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
 
-        tickets = cine_digital_service.book_ticket(show_id=14, quantity=1)
+        tickets = cine_digital_service.book_ticket(show_id=14, booking=booking, beneficiary=beneficiary)
 
         create_transaction_body_arg_call = mocked_post_resource.call_args_list[0][0][4]
 
@@ -1081,6 +1086,8 @@ class CineDigitalServiceBookTicketTest:
         mocked_get_show,
         mocked_post_resource,
     ):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2)
         mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
             id=12, internal_code="VCH", is_active=True
         )
@@ -1135,7 +1142,7 @@ class CineDigitalServiceBookTicketTest:
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
 
-        tickets = cine_digital_service.book_ticket(show_id=14, quantity=2)
+        tickets = cine_digital_service.book_ticket(show_id=14, booking=booking, beneficiary=beneficiary)
 
         create_transaction_body_arg_call = mocked_post_resource.call_args_list[0][0][4]
 
@@ -1174,6 +1181,8 @@ class CineDigitalServiceBookTicketTest:
         mocked_get_show,
         mocked_post_resource,
     ):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1)
         mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
             id=12, internal_code="VCH", is_active=True
         )
@@ -1209,7 +1218,7 @@ class CineDigitalServiceBookTicketTest:
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
 
-        tickets = cine_digital_service.book_ticket(show_id=14, quantity=1)
+        tickets = cine_digital_service.book_ticket(show_id=14, booking=booking, beneficiary=beneficiary)
 
         create_transaction_body_arg_call = mocked_post_resource.call_args_list[0][0][4]
 

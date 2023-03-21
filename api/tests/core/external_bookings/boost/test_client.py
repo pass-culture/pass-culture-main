@@ -3,10 +3,12 @@ from decimal import Decimal
 import pytest
 
 from pcapi.connectors.serialization import boost_serializers
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.external_bookings.boost import client as boost_client
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.utils import date
 
 from tests.local_providers.cinema_providers.boost import fixtures
@@ -105,6 +107,8 @@ class GetShowtimeRemainingSeatsTest:
 
 class BookTicketTest:
     def test_should_book_duo_tickets(self, requests_mock):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2)
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
@@ -118,7 +122,7 @@ class BookTicketTest:
         )
 
         boost = boost_client.BoostClientAPI(cinema_str_id)
-        tickets = boost.book_ticket(show_id=36684, quantity=2)
+        tickets = boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
 
         showtime_info = boost.get_showtime(showtime_id=36684)
         assert showtime_info.showtimePricing == [FULL_PRICING, PC2_PRICING]
