@@ -18,7 +18,6 @@ from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.error_handlers.utils import format_sql_statement_params
-from pcapi.routes.error_handlers.utils import generate_error_response
 from pcapi.utils.human_ids import NonDehumanizableId
 from pcapi.utils.image_conversion import ImageRatioError
 
@@ -32,17 +31,17 @@ ApiErrorResponse = tuple[dict | Response, int]
 
 @app.errorhandler(NotFound)
 def restize_not_found_route_errors(error: NotFound) -> ApiErrorResponse | HtmlErrorResponse:
-    return generate_error_response({}, backoffice_template_name="errors/not_found.html"), 404
+    return app.generate_error_response({}, backoffice_template_name="errors/not_found.html"), 404  # type: ignore [attr-defined]
 
 
 @app.errorhandler(ApiErrors)
 def restize_api_errors(error: ApiErrors) -> ApiErrorResponse:
-    return generate_error_response(error.errors), error.status_code or 400
+    return app.generate_error_response(error.errors), error.status_code or 400  # type: ignore [attr-defined]
 
 
 @app.errorhandler(offers_exceptions.TooLateToDeleteStock)
 def restize_too_late_to_delete_stock(error: offers_exceptions.TooLateToDeleteStock) -> ApiErrorResponse:
-    return generate_error_response(error.errors), 400
+    return app.generate_error_response(error.errors), 400  # type: ignore [attr-defined]
 
 
 @app.errorhandler(Exception)
@@ -53,7 +52,7 @@ def internal_error(error: Exception) -> ApiErrorResponse | HTTPException:
     logger.exception("Unexpected error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
-    return generate_error_response(errors.errors), 500
+    return app.generate_error_response(errors.errors), 500  # type: ignore [attr-defined]
 
 
 @app.errorhandler(UnauthorizedError)
@@ -71,7 +70,7 @@ def method_not_allowed(error: MethodNotAllowed) -> ApiErrorResponse:
     api_errors = ApiErrors()
     api_errors.add_error("global", "La méthode que vous utilisez n'existe pas sur notre serveur")
     logger.warning("405 %s", error)
-    return generate_error_response(api_errors.errors), 405
+    return app.generate_error_response(api_errors.errors), 405  # type: ignore [attr-defined]
 
 
 @app.errorhandler(NonDehumanizableId)
@@ -79,7 +78,7 @@ def invalid_id_for_dehumanize_error(error: NonDehumanizableId) -> ApiErrorRespon
     api_errors = ApiErrors()
     api_errors.add_error("global", "La page que vous recherchez n'existe pas")
     logger.warning("404 %s", error)
-    return generate_error_response(api_errors.errors), 404
+    return app.generate_error_response(api_errors.errors), 404  # type: ignore [attr-defined]
 
 
 @app.errorhandler(DecimalCastError)
@@ -88,7 +87,7 @@ def decimal_cast_error(error: DecimalCastError) -> ApiErrorResponse:
     logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
         api_errors.add_error(field, "Saisissez un nombre valide")
-    return generate_error_response(api_errors.errors), 400
+    return app.generate_error_response(api_errors.errors), 400  # type: ignore [attr-defined]
 
 
 @app.errorhandler(DateTimeCastError)
@@ -97,13 +96,13 @@ def date_time_cast_error(error: DateTimeCastError) -> ApiErrorResponse:
     logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
         api_errors.add_error(field, "Format de date invalide")
-    return generate_error_response(api_errors.errors), 400
+    return app.generate_error_response(api_errors.errors), 400  # type: ignore [attr-defined]
 
 
 @app.errorhandler(finance_exceptions.DepositTypeAlreadyGrantedException)
 def already_activated_exception(error: finance_exceptions.DepositTypeAlreadyGrantedException) -> ApiErrorResponse:
     logger.error(json.dumps(error.errors))
-    return generate_error_response(error.errors), 405
+    return app.generate_error_response(error.errors), 405  # type: ignore [attr-defined]
 
 
 @app.errorhandler(429)
@@ -133,7 +132,7 @@ def ratelimit_handler(error: Exception) -> ApiErrorResponse:
     logger.warning("Requests ratelimit exceeded on routes url=%s", request.url, extra=extra)
     api_errors = ApiErrors()
     api_errors.add_error("global", "Nombre de tentatives de connexion dépassé, veuillez réessayer dans une minute")
-    return generate_error_response(api_errors.errors), 429
+    return app.generate_error_response(api_errors.errors), 429  # type: ignore [attr-defined]
 
 
 @app.errorhandler(DatabaseError)
@@ -157,31 +156,31 @@ def database_error_handler(error: DatabaseError) -> ApiErrorResponse:
     logger.exception("Unexpected database error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
-    return generate_error_response(errors.errors), 500
+    return app.generate_error_response(errors.errors), 500  # type: ignore [attr-defined]
 
 
 @app.errorhandler(ImageRatioError)
 def handle_ratio_error(error: ImageRatioError) -> ApiErrorResponse:
     logger.info("Image ratio error: %s", error)
-    return generate_error_response({"code": "BAD_IMAGE_RATIO", "extra": str(error)}), 400
+    return app.generate_error_response({"code": "BAD_IMAGE_RATIO", "extra": str(error)}), 400  # type: ignore [attr-defined]
 
 
 @app.errorhandler(sirene.UnknownEntityException)
 def handle_unknown_entity_exception(error: sirene.UnknownEntityException) -> ApiErrorResponse:
     msg = "Le SIREN n’existe pas."
     err = {"global": [msg]}
-    return generate_error_response(err), 400
+    return app.generate_error_response(err), 400  # type: ignore [attr-defined]
 
 
 @app.errorhandler(sirene.InvalidFormatException)
 def handle_sirene_invalid_format_exception(error: sirene.InvalidFormatException) -> ApiErrorResponse:
     msg = "Le format de ce SIREN ou SIRET est incorrect."
     err = {"global": [msg]}
-    return generate_error_response(err), 400
+    return app.generate_error_response(err), 400  # type: ignore [attr-defined]
 
 
 @app.errorhandler(sirene.NonPublicDataException)
 def handle_sirene_non_public_data_exception(error: sirene.NonPublicDataException) -> ApiErrorResponse:
     msg = "Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles."
     err = {"global": [msg]}
-    return generate_error_response(err), 400
+    return app.generate_error_response(err), 400  # type: ignore [attr-defined]

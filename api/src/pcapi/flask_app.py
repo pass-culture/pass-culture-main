@@ -4,7 +4,9 @@ import time
 
 from authlib.integrations.flask_client import OAuth
 from flask import Flask
+from flask import Response
 from flask import g
+from flask import jsonify
 from flask import request
 from flask.logging import default_handler
 import flask.wrappers
@@ -154,8 +156,14 @@ oauth.register(
 
 app.url_map.strict_slashes = False
 
+
+def generate_error_response(errors: dict, backoffice_template_name: str = "errors/generic.html") -> Response:
+    return jsonify(errors)
+
+
 with app.app_context():
     app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)  # type: ignore [attr-defined]
+    app.generate_error_response = generate_error_response  # type: ignore [attr-defined]
 
 
 @app.shell_context_processor
