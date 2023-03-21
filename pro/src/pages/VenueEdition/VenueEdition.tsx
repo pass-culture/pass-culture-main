@@ -8,9 +8,10 @@ import { DEFAULT_SEARCH_FILTERS } from 'core/Offers'
 import { useGetVenue } from 'core/Venue'
 import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
-import { useHomePath } from 'hooks'
+import { useAdapter, useHomePath } from 'hooks'
 import useNotification from 'hooks/useNotification'
-import useGetFilteredOffers from 'pages/Offers/adapters/useGetFilteredOffers'
+import { getFilteredOffersAdapter } from 'pages/Offers/adapters'
+import { IPayload } from 'pages/Offers/adapters/getFilteredOffersAdapter'
 import { VenueFormScreen } from 'screens/VenueForm'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -64,8 +65,10 @@ const VenueEdition = (): JSX.Element | null => {
     venueId: venue?.id ?? '',
   }
 
-  const { isLoading: isLoadingVenueOffers, data: venueOffers } =
-    useGetFilteredOffers(apiFilters)
+  const { isLoading: isLoadingVenueOffers, data: venueOffers } = useAdapter<
+    IPayload,
+    IPayload
+  >(() => getFilteredOffersAdapter(apiFilters))
 
   const hasBookingQuantity = offerHasBookingQuantity(venueOffers?.offers)
 
