@@ -76,7 +76,7 @@ const Validation = (): JSX.Element => {
       <section>
         <h1 className={styles['title']}>Vérification</h1>
         <h2 className={styles['subtitle']}>
-          Information structure
+          Informations structure
           <ButtonLink
             link={{
               to: '/parcours-inscription/authentification',
