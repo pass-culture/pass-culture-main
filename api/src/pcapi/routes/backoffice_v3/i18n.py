@@ -65,8 +65,10 @@ def i18n_column_name(term: str) -> str:
             return "Ville"
         case "address":
             return "Adresse"
+        case "bookingemail":
+            return "E-mail"
         case "contact.email":
-            return "Email de contact"
+            return "E-mail de contact"
         case "contact.phone_number":
             return "Numéro de téléphone de contact"
         case "ispermanent":

@@ -82,7 +82,7 @@ class GetVenueTest:
         assert "Région : Île-de-France " in response_text
         assert f"Ville : {venue.city} " in response_text
         assert f"Code postal : {venue.postalCode} " in response_text
-        assert f"E-mail : {venue.contact.email} " in response_text
+        assert f"E-mail : {venue.bookingEmail} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
         assert "Référencement Adage : Non" in response_text
         assert "ID Adage" not in response_text
@@ -111,7 +111,7 @@ class GetVenueTest:
         # then
         assert response.status_code == 200
         response_text = html_parser.content_as_text(response.data)
-        assert "E-mail :" not in response_text
+        assert f"E-mail : {venue_with_no_contact.bookingEmail}" in response_text
         assert "Numéro de téléphone :" not in response_text
 
     def test_get_venue_with_self_reimbursement_point(
@@ -461,17 +461,21 @@ class UpdateVenueTest:
             "city": venue.city,
             "postal_code": venue.postalCode,
             "address": venue.address,
-            "email": venue.contact.email,
+            "booking_email": venue.bookingEmail,
             "phone_number": venue.contact.phone_number,
             "longitude": venue.longitude,
             "latitude": venue.latitude,
         }
 
     def test_update_venue(self, authenticated_client, offerer):
+        contact_email = "contact.venue@example.com"
         website = "update.venue@example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
         venue = offerers_factories.VenueFactory(
-            managingOfferer=offerer, contact__website=website, contact__social_medias=social_medias
+            managingOfferer=offerer,
+            contact__email=contact_email,
+            contact__website=website,
+            contact__social_medias=social_medias,
         )
 
         url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
@@ -482,7 +486,7 @@ class UpdateVenueTest:
             "city": "Umeå",
             "postal_code": "90325",
             "address": "Skolgatan 31A",
-            "email": venue.contact.email + ".update",
+            "booking_email": venue.bookingEmail + ".update",
             "phone_number": "+33102030456",
             "is_permanent": True,
             "latitude": "48.87056",
@@ -502,13 +506,14 @@ class UpdateVenueTest:
         assert venue.city == data["city"]
         assert venue.postalCode == data["postal_code"]
         assert venue.address == data["address"]
-        assert venue.contact.email == data["email"]
+        assert venue.bookingEmail == data["booking_email"]
         assert venue.contact.phone_number == data["phone_number"]
         assert venue.isPermanent == data["is_permanent"]
         assert venue.latitude == Decimal("48.87056")
         assert venue.longitude == Decimal("2.34767")
 
         # should not have been updated or erased
+        assert venue.contact.email == contact_email
         assert venue.contact.website == website
         assert venue.contact.social_medias == social_medias
 
@@ -518,23 +523,22 @@ class UpdateVenueTest:
 
         assert update_snapshot["city"]["new_info"] == data["city"]
         assert update_snapshot["address"]["new_info"] == data["address"]
-        assert update_snapshot["contact.email"]["new_info"] == data["email"]
+        assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
 
     def test_update_venue_contact_only(self, authenticated_client, offerer):
+        contact_email = "contact.venue@example.com"
         website = "update.venue@example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
         venue = offerers_factories.VenueFactory(
-            managingOfferer=offerer, contact__website=website, contact__social_medias=social_medias
+            managingOfferer=offerer,
+            contact__email=contact_email,
+            contact__website=website,
+            contact__social_medias=social_medias,
         )
 
         url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = self._get_current_data(venue)
-        data.update(
-            {
-                "email": venue.contact.email + ".update",
-                "phone_number": "+33102030456",
-            }
-        )
+        data["phone_number"] = "+33102030456"
 
         response = send_request(authenticated_client, venue.id, url, data)
 
@@ -543,17 +547,18 @@ class UpdateVenueTest:
 
         db.session.refresh(venue)
 
-        assert venue.contact.email == data["email"]
         assert venue.contact.phone_number == data["phone_number"]
 
         # should not have been updated or erased
+        assert venue.contact.email == contact_email
         assert venue.contact.website == website
         assert venue.contact.social_medias == social_medias
 
         assert len(venue.action_history) == 1
 
         update_snapshot = venue.action_history[0].extraData["modified_info"]
-        assert update_snapshot["contact.email"]["new_info"] == data["email"]
+        assert set(update_snapshot.keys()) == {"contact.phone_number"}
+        assert update_snapshot["contact.phone_number"]["new_info"] == data["phone_number"]
 
     def test_update_venue_empty_phone_number(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
@@ -587,7 +592,7 @@ class UpdateVenueTest:
 
         url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = {
-            "email": venue.contact.email + ".update",
+            "booking_email": venue.bookingEmail + ".update",
             "phone_number": "+33102030456",
         }
 
@@ -598,7 +603,7 @@ class UpdateVenueTest:
 
         db.session.refresh(venue)
 
-        assert venue.contact.email == data["email"]
+        assert venue.bookingEmail == data["booking_email"]
         assert venue.contact.phone_number == data["phone_number"]
 
     def test_update_with_missing_data(self, authenticated_client, venue):

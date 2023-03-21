@@ -59,8 +59,8 @@ def assert_venue_equals(result_card_text: str, expected_venue: offerers_models.V
     assert f"{expected_venue.name.upper()} " in result_card_text
     assert f"Venue ID : {expected_venue.id} " in result_card_text
     assert f"SIRET : {expected_venue.siret} " in result_card_text
+    assert f"E-mail : {expected_venue.bookingEmail} " in result_card_text
     if expected_venue.contact:
-        assert f"E-mail : {expected_venue.contact.email} " in result_card_text
         assert f"Tél : {expected_venue.contact.phone_number} " in result_card_text
     if expected_venue.isPermanent:
         assert "Lieu permanent " in result_card_text
