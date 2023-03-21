@@ -68,7 +68,7 @@ const renderOffererScreen = (contextValue: ISignupJourneyContext) => {
             element={<div>Authentication screen</div>}
           />
           <Route
-            path="/parcours-inscription/structures"
+            path="/parcours-inscription/structure/rattachement"
             element={<div>Offerers screen</div>}
           />
         </Routes>
