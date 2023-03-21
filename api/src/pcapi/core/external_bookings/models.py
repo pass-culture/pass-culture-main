@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from typing import Optional
 
+import pcapi.core.bookings.models as bookings_models
+import pcapi.core.users.models as users_models
+
 
 @dataclass
 class Ticket:
@@ -27,5 +30,7 @@ class ExternalBookingsClientAPI:
     def cancel_booking(self, barcodes: list[str]) -> None:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
 
-    def book_ticket(self, show_id: int, quantity: int) -> list[Ticket]:
+    def book_ticket(
+        self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
+    ) -> list[Ticket]:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")

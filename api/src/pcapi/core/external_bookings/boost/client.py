@@ -6,7 +6,9 @@ from pydantic import parse_obj_as
 
 from pcapi.connectors import boost
 from pcapi.connectors.serialization import boost_serializers
+import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.models as external_bookings_models
+import pcapi.core.users.models as users_models
 
 from . import constants
 from . import exceptions
@@ -63,7 +65,10 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         sale_cancel = boost_serializers.SaleCancel(sales=sale_cancel_items)
         boost.put_resource(self.cinema_str_id, boost.ResourceBoost.CANCEL_ORDER_SALE, sale_cancel)
 
-    def book_ticket(self, show_id: int, quantity: int) -> list[external_bookings_models.Ticket]:
+    def book_ticket(
+        self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
+    ) -> list[external_bookings_models.Ticket]:
+        quantity = booking.quantity
         showtime = self.get_showtime(show_id)
         pcu_pricing = get_pcu_pricing_if_exists(showtime.showtimePricing)
         if not pcu_pricing:

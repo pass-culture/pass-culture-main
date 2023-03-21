@@ -10,11 +10,13 @@ from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import post_resource
 from pcapi.connectors.cine_digital_service import put_resource
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
+import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.cds.constants as cds_constants
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.core.external_bookings.models import ExternalBookingsClientAPI
 from pcapi.core.external_bookings.models import Ticket
+import pcapi.core.users.models as users_models
 
 
 CDS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
@@ -217,7 +219,10 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
                 f"Error while canceling bookings :{sep}{sep.join([f'{barcode} : {error_msg}' for barcode, error_msg in cancel_errors.__root__.items()])}"
             )
 
-    def book_ticket(self, show_id: int, quantity: int) -> list[Ticket]:
+    def book_ticket(
+        self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
+    ) -> list[Ticket]:
+        quantity = booking.quantity
         if quantity < 0 or quantity > 2:
             raise cds_exceptions.CineDigitalServiceAPIException(f"Booking quantity={quantity} should be 1 or 2")
 

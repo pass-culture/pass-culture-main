@@ -1,9 +1,11 @@
 from pcapi import settings
+import pcapi.core.bookings.models as bookings_models
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
+import pcapi.core.users.models as users_models
 
 
 def get_shows_stock(venue_id: int, shows_id: list[int]) -> dict[int, int]:
@@ -22,9 +24,11 @@ def cancel_booking(venue_id: int, barcodes: list[str]) -> None:
     client.cancel_booking(barcodes)
 
 
-def book_ticket(venue_id: int, show_id: int, quantity: int) -> list[external_bookings_models.Ticket]:
+def book_ticket(
+    venue_id: int, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
+) -> list[external_bookings_models.Ticket]:
     client = _get_external_bookings_client_api(venue_id)
-    return client.book_ticket(show_id, quantity)
+    return client.book_ticket(show_id, booking, beneficiary)
 
 
 def _get_external_bookings_client_api(venue_id: int) -> external_bookings_models.ExternalBookingsClientAPI:
