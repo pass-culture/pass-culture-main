@@ -109,17 +109,14 @@ const Informations = ({
     isOfferSubtypeEvent(offerSubtype)
   )
 
-  const {
-    visible: isWithdrawalDialogOpen,
-    showModal: showWithdrawalDialog,
-    hideModal: hideWithdrawalDialog,
-  } = useModal()
+  const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] =
+    useState<boolean>(false)
 
   const [submitAsButton, setSubmitAsButton] = useState<boolean>(false)
   const [shouldSendMail, setShouldSendMail] = useState<boolean>(false)
 
   const handleCloseWidthdrawalDialog = () => {
-    hideWithdrawalDialog()
+    setIsWithdrawalDialogOpen(false)
     setSubmitAsButton(false)
   }
 
@@ -146,7 +143,7 @@ const Informations = ({
   const handleWithdrawalDialog = () => {
     if (!isWithdrawalDialogOpen && widthdrawalHasChanged()) {
       setSubmitAsButton(true)
-      showWithdrawalDialog()
+      setIsWithdrawalDialogOpen(true)
       return true
     }
 
@@ -158,7 +155,7 @@ const Informations = ({
     return false
   }
 
-  const handleSendMail = async (shouldSendMail: boolean) => {
+  const handleSendMail = async (sendMail: boolean) => {
     if (!offer?.isActive) {
       return
     }
@@ -173,17 +170,17 @@ const Informations = ({
       totalBookingsQuantity > 0 &&
       handleWithdrawalDialog()
     ) {
-      setShouldSendMail(shouldSendMail)
+      setShouldSendMail(sendMail)
       setIsClickingFromActionBar(false)
       return
     }
   }
 
   const handleNextStep =
-    ({ saveDraft = false, shouldSendMail = false } = {}) =>
+    ({ saveDraft = false, sendMail = false } = {}) =>
     async () => {
       if (isWithdrawalUpdatedMailActive && mode === OFFER_WIZARD_MODE.EDITION) {
-        await handleSendMail(shouldSendMail)
+        await handleSendMail(sendMail)
       }
 
       setIsClickingFromActionBar(true)
@@ -352,17 +349,17 @@ const Informations = ({
       </FormLayout>
       {isWithdrawalUpdatedMailActive && isWithdrawalDialogOpen && (
         <ConfirmDialog
-          cancelText={'Ne pas envoyer'}
-          confirmText={'Envoyer un e-mail'}
+          cancelText="Ne pas envoyer"
+          confirmText="Envoyer un e-mail"
           leftButtonAction={handleNextStep({ saveDraft: true })}
           onCancel={handleCloseWidthdrawalDialog}
           onConfirm={handleNextStep({
             saveDraft: true,
-            shouldSendMail: true,
+            sendMail: true,
           })}
           icon={IcoMailOutline}
           title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
-        ></ConfirmDialog>
+        />
       )}
       <RouteLeavingGuardOfferIndividual
         when={formik.dirty && !isClickingFromActionBar}
