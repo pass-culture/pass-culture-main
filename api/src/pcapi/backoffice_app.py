@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 import typing
 
+from flask import Response
+from flask import make_response
 from flask import render_template
+from flask import request
 from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
 from sentry_sdk import set_tag
@@ -30,6 +33,13 @@ def handle_csrf_error(error: typing.Any) -> tuple[str, int]:
     return render_template("errors/csrf.html"), 400
 
 
+def generate_error_response(errors: dict, backoffice_template_name: str = "errors/generic.html") -> Response:
+    # If the error happens inside a turbo-frame, it's id is reused to insert the error in the correct place
+    turbo_frame_id = request.headers.get("Turbo-Frame")
+    content = render_template(backoffice_template_name, errors=errors, turbo_frame_id=turbo_frame_id)
+    return make_response(content)
+
+
 with app.app_context():
     # pylint: disable=unused-import
     from pcapi.routes import error_handlers  # pylint: disable=unused-import
@@ -41,6 +51,8 @@ with app.app_context():
     preprocess_scss(settings.IS_DEV)
     install_routes(app)
     app.register_blueprint(backoffice_v3_web, url_prefix="/")
+
+    app.generate_error_response = generate_error_response  # type: ignore [attr-defined]
 
 
 if __name__ == "__main__":
