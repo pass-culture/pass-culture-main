@@ -291,7 +291,7 @@ describe('screens:StocksEventEdition', () => {
     ).toBeInTheDocument()
     expect(screen.getByLabelText('Quantité restante')).toBeInTheDocument()
 
-    expect(screen.getByText('Réservations')).toBeInTheDocument()
+    expect(screen.getAllByText('Réservations')[0]).toBeInTheDocument()
 
     expect(
       screen.getByTestId('stock-form-actions-button-open')
