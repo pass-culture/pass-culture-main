@@ -22,3 +22,8 @@
 .recurrence-modal {
   width: calc(size.$main-content-width - dialogBox.$dialog-box-padding * 2);
 }
+
+.light-banner {
+  width: 100%;
+  margin-top: rem.torem(32px);
+}

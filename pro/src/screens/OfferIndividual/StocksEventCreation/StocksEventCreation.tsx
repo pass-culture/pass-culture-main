@@ -22,6 +22,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { PlusCircleIcon } from 'icons'
 import { Button } from 'ui-kit'
+import Banner from 'ui-kit/Banners/Banner/'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { ActionBar } from '../ActionBar'
@@ -70,12 +71,14 @@ export const StocksEventCreation = ({
   const mode = useOfferWizardMode()
   const { setOffer } = useOfferIndividualContext()
   const notify = useNotification()
+  const [displayBanner, setDisplayBanner] = useState(false)
 
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
 
   const onCancel = () => setIsRecurrenceModalOpen(false)
   const onConfirm = (newStocks: IStocksEvent[]) => {
     setIsRecurrenceModalOpen(false)
+    setDisplayBanner(true)
     setStocks([...stocks, ...newStocks])
   }
 
@@ -173,7 +176,21 @@ export const StocksEventCreation = ({
       >
         Ajouter une ou plusieurs dates
       </Button>
-
+      {displayBanner && (
+        <Banner
+          type="light"
+          className={styles['light-banner']}
+          handleOnClick={() => setDisplayBanner(false)}
+          closable
+        >
+          <strong>
+            {stocks.length}
+            {stocks.length === 1
+              ? ' nouvelle occurrence a été ajoutée'
+              : ' nouvelles occurrences ont été ajoutées'}
+          </strong>
+        </Banner>
+      )}
       {stocks.length !== 0 && offer?.priceCategories && (
         <StocksEventList
           className={styles['stock-section']}
