@@ -15,7 +15,6 @@ describe('PriceCategories', () => {
     renderPriceCategories({ offer: individualOfferFactory() })
 
     expect(screen.getByText('Tarifs')).toBeInTheDocument()
-    expect(screen.getByText('Réservations “Duo”')).toBeInTheDocument()
   })
 
   it('should render provider banner', () => {

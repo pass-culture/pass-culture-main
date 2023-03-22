@@ -34,6 +34,7 @@ interface IPriceCategoriesForm {
   mode: OFFER_WIZARD_MODE
   setOffer: ((offer: IOfferIndividual | null) => void) | null
   isDisabled: boolean
+  canBeDuo?: boolean
 }
 
 export const PriceCategoriesForm = ({
@@ -43,6 +44,7 @@ export const PriceCategoriesForm = ({
   mode,
   setOffer,
   isDisabled,
+  canBeDuo,
 }: IPriceCategoriesForm): JSX.Element => {
   const { setFieldValue, resetForm, values } =
     useFormikContext<PriceCategoriesFormValues>()
@@ -247,28 +249,30 @@ export const PriceCategoriesForm = ({
         />
       </FormLayout>
 
-      <FormLayout small>
-        <FormLayout.Section
-          className={styles['duo-section']}
-          title="Réservations “Duo”"
-        >
-          <FormLayout.Row
-            sideComponent={
-              <InfoBox
-                type="info"
-                text="Cette option permet au bénéficiaire de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."
-              />
-            }
+      {canBeDuo && (
+        <FormLayout small>
+          <FormLayout.Section
+            className={styles['duo-section']}
+            title="Réservations “Duo”"
           >
-            <Checkbox
-              label="Accepter les réservations “Duo“"
-              name="isDuo"
-              disabled={isDisabled}
-              withBorder
-            />
-          </FormLayout.Row>
-        </FormLayout.Section>
-      </FormLayout>
+            <FormLayout.Row
+              sideComponent={
+                <InfoBox
+                  type="info"
+                  text="Cette option permet au bénéficiaire de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."
+                />
+              }
+            >
+              <Checkbox
+                label="Accepter les réservations “Duo“"
+                name="isDuo"
+                disabled={isDisabled}
+                withBorder
+              />
+            </FormLayout.Row>
+          </FormLayout.Section>
+        </FormLayout>
+      )}
     </>
   )
 }

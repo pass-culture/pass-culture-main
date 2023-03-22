@@ -28,7 +28,8 @@ const defaultValues: PriceCategoriesFormValues = {
 }
 
 const renderPriceCategoriesForm = (
-  customValues?: Partial<PriceCategoriesFormValues>
+  customValues?: Partial<PriceCategoriesFormValues>,
+  canBeDuo?: boolean
 ) => {
   const values = { ...defaultValues, ...customValues }
   return renderWithProviders(
@@ -40,6 +41,7 @@ const renderPriceCategoriesForm = (
         setOffer={jest.fn()}
         humanizedOfferId="AA"
         isDisabled={false}
+        canBeDuo={canBeDuo}
       />
     </Formik>
   )
@@ -52,10 +54,18 @@ describe('PriceCategories', () => {
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
   })
+
   it('should render without error', () => {
-    renderPriceCategoriesForm()
+    renderPriceCategoriesForm(undefined, true)
 
     expect(screen.getAllByText('Intitulé du tarif')).toHaveLength(3)
+    expect(screen.getByText('Réservations “Duo”')).toBeInTheDocument()
+  })
+
+  it('should', () => {
+    renderPriceCategoriesForm(undefined, false)
+
+    expect(screen.queryByText('Réservations “Duo”')).not.toBeInTheDocument()
   })
 
   it('should set tarif to 0 when clicking on free checkbox and vice versa', async () => {
