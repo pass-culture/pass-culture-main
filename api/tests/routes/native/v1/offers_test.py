@@ -29,7 +29,9 @@ from pcapi.core.users.factories import UserFactory
 import pcapi.notifications.push.testing as notifications_testing
 
 from tests.conftest import TestClient
-from tests.local_providers.cinema_providers.boost import fixtures
+from tests.connectors.cgr import soap_definitions
+from tests.local_providers.cinema_providers.boost import fixtures as boost_fixtures
+from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
 
 from .utils import create_user_and_test_client
 
@@ -340,7 +342,7 @@ class OffersTest:
 
         response_return_value = mock.MagicMock(status_code=200, text="", headers={"Content-Type": "application/json"})
         response_return_value.json = mock.MagicMock(
-            return_value=fixtures.ShowtimesWithFilmIdEndpointResponse.PAGE_1_JSON_DATA_3_SHOWTIMES
+            return_value=boost_fixtures.ShowtimesWithFilmIdEndpointResponse.PAGE_1_JSON_DATA_3_SHOWTIMES
         )
         request_get.return_value = response_return_value
 
@@ -371,6 +373,50 @@ class OffersTest:
         response = client.get(f"/native/v1/offer/{offer.id}")
         assert response.status_code == 200
         assert first_show_stock.remainingQuantity == 96
+        assert second_show_stock.remainingQuantity == 0
+
+    @override_features(ENABLE_CGR_INTEGRATION=True)
+    def test_get_cgr_synchronized_offer(self, requests_mock, app):
+        allocine_movie_id = 234099
+        first_show_id = 182021
+        second_show_id = 182022
+
+        requests_mock.get(
+            "https://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
+        )
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service",
+            text=cgr_fixtures.cgr_response_template([cgr_fixtures.FILM_234099_WITH_THREE_SEANCES]),
+        )
+
+        cgr_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+        offer_id_at_provider = f"{allocine_movie_id}%{venue_provider.venueId}%CGR"
+        offer = OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            idAtProvider=offer_id_at_provider,
+            lastProviderId=venue_provider.providerId,
+            venue=venue_provider.venue,
+        )
+        first_show_stock = EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{first_show_id}", quantity=95
+        )
+        second_show_stock = EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{second_show_id}", quantity=95
+        )
+
+        response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert first_show_stock.remainingQuantity == 95
         assert second_show_stock.remainingQuantity == 0
 
 

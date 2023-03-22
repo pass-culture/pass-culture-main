@@ -1924,10 +1924,10 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         ],
     )
     @patch("pcapi.core.search.async_index_offer_ids")
-    @patch("pcapi.core.offers.api.external_bookings_api.get_boost_movie_stocks")
+    @patch("pcapi.core.offers.api.external_bookings_api.get_movie_stocks")
     def test_boost(
         self,
-        mocked_get_boost_movie_shows_stock,
+        mocked_get_movie_shows_stock,
         mocked_async_index_offer_ids,
         show_id,
         show_beginning_datetime,
@@ -1946,7 +1946,51 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             beginningDatetime=show_beginning_datetime,
         )
 
-        mocked_get_boost_movie_shows_stock.return_value = api_return_value
+        mocked_get_movie_shows_stock.return_value = api_return_value
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer, venue_provider)
+
+        assert stock.remainingQuantity == expected_remaining_quantity
+        if expected_remaining_quantity == 0:
+            mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+        else:
+            mocked_async_index_offer_ids.assert_not_called()
+
+    @override_features(ENABLE_CGR_INTEGRATION=True)
+    @pytest.mark.parametrize(
+        "show_id, show_beginning_datetime, api_return_value, expected_remaining_quantity",
+        [
+            (888, DATETIME_10_DAYS_AFTER, {888: 10}, 10),
+            (888, DATETIME_10_DAYS_AFTER, {888: 5}, 10),
+            (888, DATETIME_10_DAYS_AFTER, {888: 1}, 1),
+            (888, DATETIME_10_DAYS_AFTER, {888: 0}, 0),
+            (123, DATETIME_10_DAYS_AFTER, {888: 0}, 0),
+            (888, DATETIME_10_DAYS_AGO, None, 10),
+        ],
+    )
+    @patch("pcapi.core.search.async_index_offer_ids")
+    @patch("pcapi.core.offers.api.external_bookings_api.get_movie_stocks")
+    def test_cgr(
+        self,
+        mocked_get_movie_shows_stock,
+        mocked_async_index_offer_ids,
+        show_id,
+        show_beginning_datetime,
+        api_return_value,
+        expected_remaining_quantity,
+    ):
+        cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
+        movie_id = 523
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%CGR"
+        offer = factories.EventOfferFactory(venue=venue_provider.venue, idAtProvider=offer_id_at_provider)
+        stock = factories.EventStockFactory(
+            offer=offer,
+            quantity=10,
+            idAtProviders=f"{offer_id_at_provider}#{show_id}",
+            beginningDatetime=show_beginning_datetime,
+        )
+
+        mocked_get_movie_shows_stock.return_value = api_return_value
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer, venue_provider)
 
         assert stock.remainingQuantity == expected_remaining_quantity
@@ -1957,10 +2001,8 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
 
     @override_features(ENABLE_BOOST_API_INTEGRATION=True)
     @patch("pcapi.core.search.async_index_offer_ids")
-    @patch("pcapi.core.offers.api.external_bookings_api.get_boost_movie_stocks")
-    def test_should_retry_when_inconsistent_stock(
-        self, mocked_get_boost_movie_shows_stock, mocked_async_index_offer_ids
-    ):
+    @patch("pcapi.core.offers.api.external_bookings_api.get_movie_stocks")
+    def test_should_retry_when_inconsistent_stock(self, mocked_get_movie_shows_stock, mocked_async_index_offer_ids):
         boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
         movie_id = 456
@@ -1975,7 +2017,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         bookings_factories.BookingFactory(stock=stock)
         stock.dnBookedQuantity = 0
 
-        mocked_get_boost_movie_shows_stock.return_value = {777: 0}
+        mocked_get_movie_shows_stock.return_value = {777: 0}
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer, venue_provider)
 
         assert stock.remainingQuantity == 0
