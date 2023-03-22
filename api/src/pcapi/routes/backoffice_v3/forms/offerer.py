@@ -62,7 +62,7 @@ class EditOffererForm(FlaskForm):
     postal_code = fields.PCPostalCodeHiddenField("Code postal")
 
 
-class OffererValidationListForm(FlaskForm):
+class OffererValidationListForm(utils.PCForm):
     class Meta:
         csrf = False
 
@@ -96,7 +96,7 @@ class OffererValidationListForm(FlaskForm):
         return q
 
 
-class UserOffererValidationListForm(FlaskForm):
+class UserOffererValidationListForm(utils.PCForm):
     class Meta:
         csrf = False
 

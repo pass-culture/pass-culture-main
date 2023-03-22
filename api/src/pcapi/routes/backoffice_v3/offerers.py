@@ -353,7 +353,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
         per_page=int(form.data["per_page"]),
     )
 
-    next_page = partial(url_for, ".list_offerers_to_validate", **form.data)
+    next_page = partial(url_for, ".list_offerers_to_validate", **form.raw_data)
     next_pages_urls = search_utils.pagination_links(next_page, int(form.data["page"]), paginated_offerers.pages)
 
     form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
@@ -533,7 +533,7 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
         per_page=int(form.data["per_page"]),
     )
 
-    next_page = partial(url_for, ".list_offerers_attachments_to_validate", **form.data)
+    next_page = partial(url_for, ".list_offerers_attachments_to_validate", **form.raw_data)
     next_pages_urls = search_utils.pagination_links(next_page, int(form.data["page"]), paginated_users_offerers.pages)
 
     form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
