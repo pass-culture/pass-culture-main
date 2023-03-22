@@ -47,7 +47,7 @@ describe('screens:SignupJourney::ConfirmedAttachment', () => {
   it('should redirect user on offerer page on continue button click', async () => {
     renderConfirmedAttachmentScreen()
 
-    await userEvent.click(screen.getByText("Accéder à l'espace PRO"))
+    await userEvent.click(screen.getByText("Accéder à l'espace Pro"))
 
     expect(await screen.findByText('Home screen')).toBeInTheDocument()
   })
