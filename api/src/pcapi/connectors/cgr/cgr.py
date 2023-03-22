@@ -23,14 +23,18 @@ def get_cgr_service_proxy(cinema_url: str) -> ServiceProxy:
 
 
 def get_seances_pass_culture(
-    cinema_details: providers_models.CGRCinemaDetails,
+    cinema_details: providers_models.CGRCinemaDetails, allocine_film_id: int = 0
 ) -> cgr_serializers.GetSancesPassCultureResponse:
+    """
+    if allocine_film_id is 0 CGR API will return all future shows
+    if allocine_film_id is not 0 CGR API wil return only shows for concerned movie
+    """
     user = settings.CGR_API_USER
     password = settings.CGR_API_PASSWORD
     # FIXME(fseguin, 2023-01-26): remove default from settings when FA page and pc pro pages are built
     cinema_url = cinema_details.cinemaUrl or settings.CGR_API_URL
     service = get_cgr_service_proxy(cinema_url)
-    response = service.GetSeancesPassCulture(User=user, mdp=password)
+    response = service.GetSeancesPassCulture(User=user, mdp=password, IDFilmAllocine=str(allocine_film_id))
     response = json.loads(response)
     _check_response_is_ok(response, "GetSeancesPassCulture")
     return parse_obj_as(cgr_serializers.GetSancesPassCultureResponse, response)
