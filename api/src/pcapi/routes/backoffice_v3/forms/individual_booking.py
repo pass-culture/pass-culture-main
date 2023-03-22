@@ -26,8 +26,10 @@ class GetIndividualBookingListForm(FlaskForm):
     status = fields.PCSelectMultipleField(
         "États", choices=utils.choices_from_enum(BookingStatus, formatter=filters.format_booking_status)
     )
-    from_date = fields.PCDateField("À partir du", validators=(wtforms.validators.Optional(),))
-    to_date = fields.PCDateField("Jusqu'au", validators=(wtforms.validators.Optional(),))
+    from_date = fields.PCDateField("Créées à partir du", validators=(wtforms.validators.Optional(),))
+    to_date = fields.PCDateField("Créées jusqu'au", validators=(wtforms.validators.Optional(),))
+    event_from_date = fields.PCDateField("Événement du", validators=(wtforms.validators.Optional(),))
+    event_to_date = fields.PCDateField("Événement jusqu'au", validators=(wtforms.validators.Optional(),))
     limit = fields.PCSelectField(
         "Nombre maximum",
         choices=((20, "20"), (100, "100"), (500, "500"), (1000, "1000")),
@@ -51,5 +53,7 @@ class GetIndividualBookingListForm(FlaskForm):
                 self.status.data,
                 self.from_date.data,
                 self.to_date.data,
+                self.event_from_date.data,
+                self.event_to_date.data,
             )
         )

@@ -91,6 +91,16 @@ def _get_collective_bookings(
         to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time())
         base_query = base_query.filter(educational_models.CollectiveBooking.dateCreated <= to_datetime)
 
+    if form.event_from_date.data:
+        event_from_datetime = date_utils.date_to_localized_datetime(
+            form.event_from_date.data, datetime.datetime.min.time()
+        )
+        base_query = base_query.filter(educational_models.CollectiveStock.beginningDatetime >= event_from_datetime)
+
+    if form.event_to_date.data:
+        event_to_datetime = date_utils.date_to_localized_datetime(form.event_to_date.data, datetime.datetime.max.time())
+        base_query = base_query.filter(educational_models.CollectiveStock.beginningDatetime <= event_to_datetime)
+
     if form.offerer.data:
         base_query = base_query.filter(educational_models.CollectiveBooking.offererId.in_(form.offerer.data))
 
