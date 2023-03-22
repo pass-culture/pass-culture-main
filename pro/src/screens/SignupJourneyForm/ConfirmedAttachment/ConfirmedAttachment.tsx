@@ -20,7 +20,7 @@ const ConfirmedAttachment = (): JSX.Element => {
         variant={ButtonVariant.PRIMARY}
         link={{ isExternal: false, to: '/' }}
       >
-        Accéder à l'espace PRO
+        Accéder à l'espace Pro
       </ButtonLink>
     </div>
   )

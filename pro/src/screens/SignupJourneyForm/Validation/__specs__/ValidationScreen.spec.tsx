@@ -152,7 +152,7 @@ describe('screens:SignupJourney::Validation', () => {
       jest.spyOn(api, 'saveNewOnboardingData').mockResolvedValue()
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      await userEvent.click(screen.getByText('Valider et créer mon espace PRO'))
+      await userEvent.click(screen.getByText('Valider et créer mon espace Pro'))
       expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
         name: 'nom public',
         siret: '123123123',
@@ -181,7 +181,7 @@ describe('screens:SignupJourney::Validation', () => {
       jest.spyOn(api, 'saveNewOnboardingData').mockResolvedValue()
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      await userEvent.click(screen.getByText('Valider et créer mon espace PRO'))
+      await userEvent.click(screen.getByText('Valider et créer mon espace Pro'))
       expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
         name: '',
         siret: '123123123',
@@ -217,7 +217,7 @@ describe('screens:SignupJourney::Validation', () => {
       jest.spyOn(api, 'saveNewOnboardingData').mockRejectedValue({})
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      await userEvent.click(screen.getByText('Valider et créer mon espace PRO'))
+      await userEvent.click(screen.getByText('Valider et créer mon espace Pro'))
       expect(
         await screen.findByText('Erreur lors de la création de votre structure')
       ).toBeInTheDocument()
