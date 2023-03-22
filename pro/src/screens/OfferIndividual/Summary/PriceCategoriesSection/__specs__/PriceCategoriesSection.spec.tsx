@@ -22,9 +22,25 @@ describe('StockEventSection', () => {
   it('should render correctly', () => {
     const offer = individualOfferFactory()
 
-    renderWithProviders(<PriceCategoriesSection offer={offer} />)
+    renderWithProviders(<PriceCategoriesSection offer={offer} canBeDuo />)
 
     expect(screen.getByText(/Tarifs/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Accepter les réservations "Duo"/)
+    ).toBeInTheDocument()
+  })
+
+  it('should render correctly when offer cannot be duo', () => {
+    const offer = individualOfferFactory()
+
+    renderWithProviders(
+      <PriceCategoriesSection offer={offer} canBeDuo={false} />
+    )
+
+    expect(screen.getByText(/Tarifs/)).toBeInTheDocument()
+    expect(
+      screen.queryByText(/Accepter les réservations "Duo"/)
+    ).not.toBeInTheDocument()
   })
 
   it('should track click on modify button', async () => {
