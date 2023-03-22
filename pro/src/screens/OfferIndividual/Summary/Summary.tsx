@@ -59,6 +59,9 @@ const Summary = () => {
   if (offer === null) {
     return null
   }
+  const canBeDuo = subCategories.find(
+    subCategory => subCategory.id === offer.subcategoryId
+  )?.canBeDuo
 
   const offerConfirmationStepUrl = getOfferIndividualUrl({
     offerId: offer.id,
@@ -157,7 +160,7 @@ const Summary = () => {
           <OfferSection conditionalFields={conditionalFields} offer={offer} />
 
           {isPriceCategoriesActive && offer.isEvent && (
-            <PriceCategoriesSection offer={offer} />
+            <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
           )}
 
           <StockSection offer={offer} />

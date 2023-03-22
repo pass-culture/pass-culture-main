@@ -17,9 +17,10 @@ import styles from './PriceCategoriesSection.module.scss'
 
 interface Props {
   offer: IOfferIndividual
+  canBeDuo?: boolean
 }
 
-export const PriceCategoriesSection = ({ offer }: Props) => {
+export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
   const { logEvent } = useAnalytics()
   const mode = useOfferWizardMode()
 
@@ -52,11 +53,12 @@ export const PriceCategoriesSection = ({ offer }: Props) => {
           {formatPrice(priceCategory.price)} - {priceCategory.label}
         </div>
       ))}
-
-      <SummaryLayout.Row
-        title='Accepter les réservations "Duo"'
-        description={offer.isDuo ? 'Oui' : 'Non'}
-      />
+      {canBeDuo && (
+        <SummaryLayout.Row
+          title='Accepter les réservations "Duo"'
+          description={offer.isDuo ? 'Oui' : 'Non'}
+        />
+      )}
     </SummaryLayout.Section>
   )
 }

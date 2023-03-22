@@ -62,7 +62,7 @@ describe('PriceCategories', () => {
     expect(screen.getByText('Réservations “Duo”')).toBeInTheDocument()
   })
 
-  it('should', () => {
+  it('should not suggest duo choice when offer cannot be duo', () => {
     renderPriceCategoriesForm(undefined, false)
 
     expect(screen.queryByText('Réservations “Duo”')).not.toBeInTheDocument()
