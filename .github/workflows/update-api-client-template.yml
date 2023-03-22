@@ -14,6 +14,14 @@ jobs:
   reusable-update-api-client:
     runs-on: [self-hosted, linux, x64]
     steps:
+      - name: Install node
+        run: |
+          cd /tmp;
+          curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o ~/n;
+          chmod +x ~/n;
+          sudo ~/n 18
+          sudo npm install -g yarn lerna netlify-cli webpack-cli webpack vercel newman typescript parcel n gulp grunt
+
       - name: Checkout 🛎️
         uses: actions/checkout@v3
         with:
