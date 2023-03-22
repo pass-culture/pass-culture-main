@@ -200,6 +200,26 @@ class InseeBackend(BaseBackend):
         except json.JSONDecodeError:
             raise SireneApiException(f"Unexpected non-JSON response from Sirene API: {url}")
 
+    def _check_non_public_data(self, info: SirenInfo | SiretInfo) -> None:
+        # If the data is not public (which is known as "non diffusibles"
+        # in Insee jargon), some fields are populated with "[ND]".
+        #
+        # There is also a "statutDiffusionUniteLegale" field in the
+        # response that says whether there is non-public data. But
+        # perhaps the data we want is public, and the non-public data
+        # is something we're not interested in. So it's probably
+        # better to look only at the data we use. (Obviously, this
+        # will fail badly if a company is named "[ND]". We'll suppose
+        # it's unlikely.)
+        def _check_values(values: typing.Iterable) -> None:
+            for value in values:
+                if isinstance(value, dict):
+                    _check_values(value.values())
+                elif value == "[ND]":
+                    raise NonPublicDataException()
+
+        _check_values(info.dict().values())
+
     def _get_head_office(self, siren_data: dict) -> dict:
         return [_b for _b in siren_data["periodesUniteLegale"] if not _b["dateFin"]][0]
 
@@ -246,7 +266,7 @@ class InseeBackend(BaseBackend):
         head_office = self._get_head_office(data)
         head_office_siret = siren + head_office["nicSiegeUniteLegale"]
         address = self.get_siret(head_office_siret).address if with_address else None
-        return SirenInfo(  # type: ignore [call-arg]
+        info = SirenInfo(  # type: ignore [call-arg]
             siren=siren,
             name=self._get_name_from_siren_data(data),
             head_office_siret=head_office_siret,
@@ -254,6 +274,8 @@ class InseeBackend(BaseBackend):
             ape_code=head_office["activitePrincipaleUniteLegale"],
             address=address,
         )
+        self._check_non_public_data(info)
+        return info
 
     def get_siret(self, siret: str) -> SiretInfo:
         subpath = f"/siret/{siret}"
@@ -263,9 +285,11 @@ class InseeBackend(BaseBackend):
             active = block["etatAdministratifEtablissement"] == "A"
         except IndexError:
             active = False
-        return SiretInfo(  # type: ignore [call-arg]
+        info = SiretInfo(  # type: ignore [call-arg]
             siret=siret,
             active=active,
             name=self._get_name_from_siret_data(data),
             address=self._get_address_from_siret_data(data),
         )
+        self._check_non_public_data(info)
+        return info
