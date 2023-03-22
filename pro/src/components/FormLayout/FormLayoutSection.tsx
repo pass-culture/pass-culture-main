@@ -15,6 +15,7 @@ interface IFormLayoutSectionProps {
   className?: string
   descriptionAsBanner?: boolean
   links?: Link[]
+  id?: string
 }
 
 const Section = ({
@@ -24,9 +25,10 @@ const Section = ({
   className,
   descriptionAsBanner = false,
   links,
+  id,
 }: IFormLayoutSectionProps): JSX.Element => (
   <fieldset>
-    <div className={cn(style['form-layout-section'], className)}>
+    <div className={cn(style['form-layout-section'], className)} id={id}>
       <div className={style['form-layout-section-header']}>
         <legend>
           <Title as="h2" level={3}>

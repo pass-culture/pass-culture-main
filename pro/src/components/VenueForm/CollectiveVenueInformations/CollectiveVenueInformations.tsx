@@ -32,6 +32,7 @@ const CollectiveVenueInformations = ({
   return (
     <FormLayout.Section
       title="A destination des scolaires"
+      id="for-schools"
       description={
         venue?.hasAdageId || canCreateCollectiveOffer
           ? ''
