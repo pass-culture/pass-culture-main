@@ -86,6 +86,26 @@ describe('StocksEventCreation', () => {
     expect(screen.getByText('Comment faire ?')).toBeInTheDocument()
   })
 
+  it('should notify when clicking on Étape suivante without stock', async () => {
+    renderStockEventCreation({ offer: individualOfferFactory({ stocks: [] }) })
+
+    await userEvent.click(screen.getByText('Étape suivante'))
+
+    expect(
+      screen.getByText('Veuillez renseigner au moins une date')
+    ).toBeInTheDocument()
+  })
+
+  it('should notify when clicking on Sauvegarder le brouillon without stock', async () => {
+    renderStockEventCreation({ offer: individualOfferFactory({ stocks: [] }) })
+
+    await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
+
+    expect(
+      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+    ).toBeInTheDocument()
+  })
+
   it('should not show help section if there are stocks already and show table', () => {
     renderWithProviders(
       <StocksEventCreation
@@ -330,7 +350,6 @@ describe('deletion', () => {
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
   })
 
@@ -346,7 +365,6 @@ describe('deletion', () => {
     )
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
     expect(
       screen.getByText('Brouillon sauvegardé dans la liste des offres')

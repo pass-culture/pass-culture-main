@@ -110,14 +110,23 @@ export const StocksEventCreation = ({
     async () => {
       setIsClickingFromActionBar(true)
 
+      if (stocksToDelete.length > 0) {
+        await Promise.all(stocksToDelete.map(s => api.deleteStock(s.id)))
+      }
+
+      if (stocks.length < 1) {
+        if (saveDraft) {
+          notify.success('Brouillon sauvegardé dans la liste des offres')
+        } else {
+          notify.error('Veuillez renseigner au moins une date')
+        }
+        return
+      }
+
       const { isOk } = await upsertStocksEventAdapter({
         offerId: offer.id,
         stocks: stocksToCreate,
       })
-
-      if (stocksToDelete.length > 0) {
-        await Promise.all(stocksToDelete.map(s => api.deleteStock(s.id)))
-      }
 
       if (isOk) {
         const response = await getOfferIndividualAdapter(offer.id)
