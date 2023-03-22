@@ -163,6 +163,32 @@ FILM_234099_WITH_THREE_SEANCES = {
     "Seances": [SEANCE_182019, SEANCE_182020, SEANCE_182021],
 }
 
+SEANCE_182022 = {
+    "IDSeance": 182022,
+    "Date": "2023-03-07",
+    "Heure": "16:00:00.000",
+    "NbPlacesRestantes": 0,
+    "bAvecPlacement": True,
+    "bAvecDuo": True,
+    "bICE": True,
+    "Relief": "2D",
+    "Version": "VF",
+    "bAVP": True,
+    "PrixUnitaire": 11,
+}
+
+FILM_234099_WITH_TWO_SEANCES = {
+    "IDFilm": 234099,
+    "IDFilmAlloCine": 234099,
+    "Titre": "Super Mario Bros, Le Film",
+    "NumVisa": 82382,
+    "Duree": 92,
+    "Synopsis": "Un film basé sur l'univers du célèbre jeu : Super Mario Bros.",
+    "Affiche": "https://example.com/82382.jpg",
+    "TypeFilm": "CNC",
+    "Seances": [SEANCE_182021, SEANCE_182022],
+}
+
 
 ONE_TICKET_RESPONSE = {
     "QrCode": "CINE999508637111",
