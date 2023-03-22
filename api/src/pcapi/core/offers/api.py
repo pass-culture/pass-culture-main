@@ -133,7 +133,7 @@ def create_offer(
     validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id)
     validation.check_offer_subcategory_is_valid(subcategory_id)
     formatted_extra_data = _format_extra_data(subcategory_id, extra_data)
-    validation.check_offer_extra_data(subcategory_id, formatted_extra_data)
+    validation.check_offer_extra_data(subcategory_id, formatted_extra_data, venue)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
     validation.check_is_duo_compliance(is_duo, subcategory)
 
@@ -238,7 +238,7 @@ def update_offer(
     validation.check_validation_status(offer)
     if extraData is not UNCHANGED:
         formatted_extra_data = _format_extra_data(offer.subcategoryId, extraData)
-        validation.check_offer_extra_data(offer.subcategoryId, formatted_extra_data)
+        validation.check_offer_extra_data(offer.subcategoryId, formatted_extra_data, offer.venue)
     if isDuo is not UNCHANGED:
         validation.check_is_duo_compliance(isDuo, offer.subcategory)
 

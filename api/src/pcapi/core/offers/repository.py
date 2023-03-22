@@ -740,3 +740,20 @@ def exclude_offers_from_inactive_venue_provider(query: flask_sqlalchemy.BaseQuer
 def get_next_product_id_from_database() -> int:
     sequence: sa.Sequence = sa.Sequence("product_id_seq")
     return db.session.execute(sequence)
+
+
+def find_active_offer_by_ean_or_isbn(ean: str | None, isbn: str | None, venue: offerers_models.Venue) -> bool:
+    if ean is None:
+        searched_field = isbn
+    else:
+        searched_field = ean
+    return db.session.query(
+        models.Offer.query.filter(
+            models.Offer.venue == venue,
+            models.Offer.isActive == sa.true(),
+            sa.or_(
+                models.Offer.extraData["ean"].astext == searched_field,
+                models.Offer.extraData["isbn"].astext == searched_field,
+            ),
+        ).exists()
+    ).scalar()
