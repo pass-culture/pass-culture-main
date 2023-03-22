@@ -97,229 +97,250 @@ const StockFormList = ({
             <div>{values.stocks.length} dates</div>
           </div>
 
-          <div className={styles['form-list']}>
-            {stocksPage.map(
-              (stockValues: IStockEventFormValues, indexInPage) => {
-                const index = (page - 1) * STOCKS_PER_PAGE + indexInPage
-                const disableAllStockFields =
-                  isSynchronized &&
-                  mode === OFFER_WIZARD_MODE.EDITION &&
-                  !stockValues.stockId
+          <table className={styles['stock-table']}>
+            <caption className={styles['caption-table']}>
+              Tableau d'édition des stocks
+            </caption>
+            <thead>
+              <tr>
+                <th className={styles['table-head']} scope="col">
+                  Date
+                </th>
+                <th className={styles['table-head']} scope="col">
+                  Horaire
+                </th>
+                <th className={styles['table-head']} scope="col">
+                  Tarif
+                </th>
+                <th
+                  className={cn(
+                    styles['table-head'],
+                    styles['head-booking-limit-datetime']
+                  )}
+                  scope="col"
+                >
+                  Date limite de réservation
+                </th>
+                <th className={styles['table-head']} scope="col">
+                  Quantité restante
+                </th>
+                <th className={styles['table-head']} scope="col">
+                  Réservations
+                </th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody className={styles['table-body']}>
+              {stocksPage.map(
+                (stockValues: IStockEventFormValues, indexInPage) => {
+                  const index = (page - 1) * STOCKS_PER_PAGE + indexInPage
+                  const disableAllStockFields =
+                    isSynchronized &&
+                    mode === OFFER_WIZARD_MODE.EDITION &&
+                    !stockValues.stockId
 
-                const stockFormValues = values.stocks[index]
+                  const stockFormValues = values.stocks[index]
 
-                if (disableAllStockFields) {
-                  stockFormValues.readOnlyFields =
-                    STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS
-                }
-                const { readOnlyFields } = stockFormValues
-
-                const onChangeBeginningDate = (
-                  _name: string,
-                  date: Date | null
-                ) => {
-                  const stockBookingLimitDatetime =
-                    stockFormValues.bookingLimitDatetime
-                  /* istanbul ignore next: DEBT to fix */
-                  if (stockBookingLimitDatetime === null) {
-                    return
+                  if (disableAllStockFields) {
+                    stockFormValues.readOnlyFields =
+                      STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS
                   }
-                  // tested but coverage don't see it.
-                  /* istanbul ignore next */
-                  if (date && isAfter(stockBookingLimitDatetime, date)) {
-                    setTouched({
-                      [`stocks[${index}]bookingLimitDatetime`]: true,
-                    })
-                    setFieldValue(`stocks[${index}]bookingLimitDatetime`, date)
-                  }
-                }
+                  const { readOnlyFields } = stockFormValues
 
-                const beginningDate = stockFormValues.beginningDate
-                const actions = [
-                  {
-                    callback: async () => {
-                      if (stockValues.stockId) {
-                        /* istanbul ignore next: DEBT, TO FIX */
-                        if (stockValues.bookingsQuantity > 0) {
-                          setDeletingStockData({
-                            deletingStock: stockValues,
-                            deletingIndex: index,
-                          })
-                          deleteConfirmShow()
-                        } else {
+                  const onChangeBeginningDate = (
+                    _name: string,
+                    date: Date | null
+                  ) => {
+                    const stockBookingLimitDatetime =
+                      stockFormValues.bookingLimitDatetime
+                    /* istanbul ignore next: DEBT to fix */
+                    if (stockBookingLimitDatetime === null) {
+                      return
+                    }
+                    // tested but coverage don't see it.
+                    /* istanbul ignore next */
+                    if (date && isAfter(stockBookingLimitDatetime, date)) {
+                      setTouched({
+                        [`stocks[${index}]bookingLimitDatetime`]: true,
+                      })
+                      setFieldValue(
+                        `stocks[${index}]bookingLimitDatetime`,
+                        date
+                      )
+                    }
+                  }
+
+                  const beginningDate = stockFormValues.beginningDate
+                  const actions = [
+                    {
+                      callback: async () => {
+                        if (stockValues.stockId) {
                           /* istanbul ignore next: DEBT, TO FIX */
-                          onDeleteStock(stockValues, index)
+                          if (stockValues.bookingsQuantity > 0) {
+                            setDeletingStockData({
+                              deletingStock: stockValues,
+                              deletingIndex: index,
+                            })
+                            deleteConfirmShow()
+                          } else {
+                            /* istanbul ignore next: DEBT, TO FIX */
+                            onDeleteStock(stockValues, index)
+                          }
+                        } else {
+                          arrayHelpers.remove(index)
+                          /* istanbul ignore next: DEBT, TO FIX */
+                          if (values.stocks.length === 1) {
+                            arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)
+                          }
                         }
-                      } else {
-                        arrayHelpers.remove(index)
-                        /* istanbul ignore next: DEBT, TO FIX */
-                        if (values.stocks.length === 1) {
-                          arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)
-                        }
-                      }
+                      },
+                      label: 'Supprimer le stock',
+                      disabled:
+                        !stockValues.isDeletable ||
+                        isDisabled ||
+                        disableAllStockFields,
+                      Icon: TrashFilledIcon,
                     },
-                    label: 'Supprimer le stock',
-                    disabled:
-                      !stockValues.isDeletable ||
-                      isDisabled ||
-                      disableAllStockFields,
-                    Icon: TrashFilledIcon,
-                  },
-                ]
-                return (
-                  <div className={styles['stock-form-row']} key={index}>
-                    <div className={styles['stock-form']}>
-                      <DatePicker
-                        smallLabel
-                        name={`stocks[${index}]beginningDate`}
-                        label="Date"
-                        isLabelHidden={index !== 0}
-                        className={cn(
-                          styles['field-layout-align-self'],
-                          styles['input-date']
-                        )}
-                        classNameLabel={styles['field-layout-label']}
-                        classNameFooter={styles['field-layout-footer']}
-                        minDateTime={today}
-                        openingDateTime={today}
-                        disabled={readOnlyFields.includes('beginningDate')}
-                        onChange={onChangeBeginningDate}
-                        hideHiddenFooter={true}
-                      />
-
-                      <TimePicker
-                        smallLabel
-                        label="Horaire"
-                        isLabelHidden={index !== 0}
-                        className={cn(
-                          styles['input-beginning-time'],
-                          styles['field-layout-align-self']
-                        )}
-                        classNameLabel={styles['field-layout-label']}
-                        classNameFooter={styles['field-layout-footer']}
-                        name={`stocks[${index}]beginningTime`}
-                        disabled={readOnlyFields.includes('beginningTime')}
-                        hideHiddenFooter={true}
-                      />
+                  ]
+                  return (
+                    <tr className={styles['table-row']} key={index}>
+                      <td className={styles['input-date']}>
+                        <DatePicker
+                          smallLabel
+                          name={`stocks[${index}]beginningDate`}
+                          label="Date"
+                          isLabelHidden
+                          classNameLabel={styles['field-layout-label']}
+                          classNameFooter={styles['field-layout-footer']}
+                          minDateTime={today}
+                          openingDateTime={today}
+                          disabled={readOnlyFields.includes('beginningDate')}
+                          onChange={onChangeBeginningDate}
+                          hideHiddenFooter={true}
+                        />
+                      </td>
+                      <td className={styles['input-beginning-time']}>
+                        <TimePicker
+                          smallLabel
+                          label="Horaire"
+                          isLabelHidden
+                          classNameLabel={styles['field-layout-label']}
+                          classNameFooter={styles['field-layout-footer']}
+                          name={`stocks[${index}]beginningTime`}
+                          disabled={readOnlyFields.includes('beginningTime')}
+                          hideHiddenFooter={true}
+                        />
+                      </td>
 
                       {isPriceCategoriesActive ? (
-                        <Select
-                          name={`stocks[${index}]priceCategoryId`}
-                          options={priceCategoriesOptions}
-                          smallLabel
-                          label="Tarif"
-                          isLabelHidden={index !== 0}
-                          className={cn(
-                            styles['input-price-category'],
-                            styles['field-layout-align-self']
-                          )}
-                          classNameLabel={styles['field-layout-label']}
-                          classNameFooter={styles['field-layout-footer']}
-                          defaultOption={{
-                            label: 'Sélectionner un tarif',
-                            value: '',
-                          }}
-                          disabled={
-                            priceCategoriesOptions.length === 1 ||
-                            readOnlyFields.includes('priceCategoryId')
-                          }
-                        />
+                        <td className={styles['input-price-category']}>
+                          <Select
+                            name={`stocks[${index}]priceCategoryId`}
+                            options={priceCategoriesOptions}
+                            smallLabel
+                            label="Tarif"
+                            isLabelHidden
+                            classNameLabel={styles['field-layout-label']}
+                            classNameFooter={styles['field-layout-footer']}
+                            defaultOption={{
+                              label: 'Sélectionner un tarif',
+                              value: '',
+                            }}
+                            disabled={
+                              priceCategoriesOptions.length === 1 ||
+                              readOnlyFields.includes('priceCategoryId')
+                            }
+                          />
+                        </td>
                       ) : (
-                        <TextInput
+                        <td className={styles['input-price']}>
+                          <TextInput
+                            smallLabel
+                            name={`stocks[${index}]price`}
+                            label="Tarif"
+                            isLabelHidden
+                            classNameLabel={styles['field-layout-label']}
+                            classNameFooter={styles['field-layout-footer']}
+                            disabled={readOnlyFields.includes('price')}
+                            rightIcon={() => <EuroIcon />}
+                            type="number"
+                            step="0.01"
+                            hideHiddenFooter={true}
+                            data-testid="input-price"
+                          />
+                        </td>
+                      )}
+                      <td className={styles['input-booking-limit-datetime']}>
+                        <DatePicker
                           smallLabel
-                          name={`stocks[${index}]price`}
-                          label="Tarif"
-                          isLabelHidden={index !== 0}
-                          className={cn(
-                            styles['input-price'],
-                            styles['field-layout-align-self']
+                          name={`stocks[${index}]bookingLimitDatetime`}
+                          label="Date limite de réservation"
+                          isLabelHidden
+                          classNameLabel={styles['field-layout-label']}
+                          classNameFooter={styles['field-layout-footer']}
+                          minDateTime={today}
+                          maxDateTime={
+                            beginningDate ? beginningDate : undefined
+                          }
+                          openingDateTime={today}
+                          disabled={readOnlyFields.includes(
+                            'bookingLimitDatetime'
                           )}
-                          classNameLabel={styles['field-layout-label']}
-                          classNameFooter={styles['field-layout-footer']}
-                          disabled={readOnlyFields.includes('price')}
-                          rightIcon={() => <EuroIcon />}
-                          type="number"
-                          step="0.01"
                           hideHiddenFooter={true}
-                          data-testid="input-price"
                         />
-                      )}
+                      </td>
 
-                      <DatePicker
-                        smallLabel
-                        name={`stocks[${index}]bookingLimitDatetime`}
-                        label="Date limite de réservation"
-                        isLabelHidden={index !== 0}
-                        className={cn(
-                          styles['input-booking-limit-datetime'],
-                          styles['field-layout-align-self']
-                        )}
-                        classNameLabel={styles['field-layout-label']}
-                        classNameFooter={styles['field-layout-footer']}
-                        minDateTime={today}
-                        maxDateTime={beginningDate ? beginningDate : undefined}
-                        openingDateTime={today}
-                        disabled={readOnlyFields.includes(
-                          'bookingLimitDatetime'
-                        )}
-                        hideHiddenFooter={true}
-                      />
-
-                      <TextInput
-                        smallLabel
-                        name={`stocks[${index}]remainingQuantity`}
-                        label={
-                          mode === OFFER_WIZARD_MODE.EDITION
-                            ? 'Quantité restante'
-                            : 'Quantité'
-                        }
-                        isLabelHidden={index !== 0}
-                        placeholder="Illimité"
-                        className={cn(
-                          styles['input-quantity'],
-                          styles['field-layout-align-self']
-                        )}
-                        classNameLabel={styles['field-layout-label']}
-                        classNameFooter={styles['field-layout-footer']}
-                        disabled={readOnlyFields.includes('remainingQuantity')}
-                        type="number"
-                        hasDecimal={false}
-                        hideHiddenFooter={true}
-                      />
-                      {mode === OFFER_WIZARD_MODE.EDITION && (
+                      <td className={styles['input-quantity']}>
                         <TextInput
-                          name={`stocks[${index}]bookingsQuantity`}
-                          value={values.stocks[index].bookingsQuantity || 0}
-                          readOnly
-                          label="Réservations"
-                          isLabelHidden={index !== 0}
                           smallLabel
-                          className={styles['field-info-bookings']}
+                          name={`stocks[${index}]remainingQuantity`}
+                          label={
+                            mode === OFFER_WIZARD_MODE.EDITION
+                              ? 'Quantité restante'
+                              : 'Quantité'
+                          }
+                          isLabelHidden
+                          placeholder="Illimité"
                           classNameLabel={styles['field-layout-label']}
                           classNameFooter={styles['field-layout-footer']}
-                          hideHiddenFooter
+                          disabled={readOnlyFields.includes(
+                            'remainingQuantity'
+                          )}
+                          type="number"
+                          hasDecimal={false}
+                          hideHiddenFooter={true}
                         />
+                      </td>
+                      {mode === OFFER_WIZARD_MODE.EDITION && (
+                        <td className={styles['field-info-bookings']}>
+                          <TextInput
+                            name={`stocks[${index}]bookingsQuantity`}
+                            value={values.stocks[index].bookingsQuantity || 0}
+                            readOnly
+                            label="Réservations"
+                            isLabelHidden
+                            smallLabel
+                            classNameLabel={styles['field-layout-label']}
+                            classNameFooter={styles['field-layout-footer']}
+                            hideHiddenFooter
+                          />
+                        </td>
                       )}
-                    </div>
 
-                    {actions && actions.length > 0 && (
-                      <div
-                        className={cn(styles['stock-actions'], {
-                          [styles['stock-first-action']]: index == 0,
-                        })}
-                      >
-                        <StockFormActions
-                          actions={actions}
-                          disabled={false}
-                          stockIndex={index}
-                        />
-                      </div>
-                    )}
-                  </div>
-                )
-              }
-            )}
-          </div>
+                      {actions && actions.length > 0 && (
+                        <td className={styles['stock-actions']}>
+                          <StockFormActions
+                            actions={actions}
+                            disabled={false}
+                          />
+                        </td>
+                      )}
+                    </tr>
+                  )
+                }
+              )}
+            </tbody>
+          </table>
 
           <Pagination
             currentPage={page}
