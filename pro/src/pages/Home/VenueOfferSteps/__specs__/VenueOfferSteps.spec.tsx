@@ -1,13 +1,21 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
+import { DMSApplicationstatus } from 'apiClient/v1'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueOfferSteps } from '../index'
 
+jest.mock('hooks/useActiveFeature', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue(true),
+}))
+
 const renderVenueOfferSteps = ({
   hasVenue = false,
   hasMissingReimbursementPoint = true,
+  dmsStatus = DMSApplicationstatus.EN_CONSTRUCTION,
+  dmsInProgress = false,
 }) => {
   const currentUser = {
     id: 'EY',
@@ -24,6 +32,8 @@ const renderVenueOfferSteps = ({
       hasVenue={hasVenue}
       offererId="AB"
       hasMissingReimbursementPoint={hasMissingReimbursementPoint}
+      dmsStatus={dmsStatus}
+      dmsInProgress={dmsInProgress}
     />,
     { storeOverrides, initialRouterEntries: ['/accueil'] }
   )
@@ -56,5 +66,15 @@ describe('VenueOfferSteps', () => {
     expect(
       screen.queryByText('Renseigner des coordonnées bancaires')
     ).not.toBeInTheDocument()
+  })
+  it('Should display section procedure in progress if user has procedure in progress', async () => {
+    renderVenueOfferSteps({
+      hasVenue: false,
+      dmsInProgress: true,
+    })
+    expect(screen.getByText('Démarche en cours :')).toBeInTheDocument()
+    expect(
+      screen.getByText('Suivre ma demande de référencement ADAGE')
+    ).toBeInTheDocument()
   })
 })
