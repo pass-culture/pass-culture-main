@@ -103,6 +103,11 @@ esac
 ROOT_PATH=$(realpath "$(dirname "$PRG")")
 INFRA_SCRIPTS_PATH="$ROOT_PATH"/infra/pc_scripts/
 
+FLASK_CONTAINER_NAME='pc-flask'
+if [[ $(docker ps --format "{{.Names}}" --filter "name=pc-backoffice" --filter "status=running") ]]; then
+  FLASK_CONTAINER_NAME='pc-backoffice'
+fi
+
 function confirm() {
   read -p "$1 (y/n) : " -n 1 -r
   echo
@@ -131,12 +136,12 @@ function pod_console() {
 # Need to specify what alembic command you want to execute
 # Example: ./pc alembic upgrade head
 if [[ "$CMD" == "alembic" ]]; then
-  RUN='docker exec pc-flask bash -c "cd /usr/src/app && alembic '"$*"'"'
+  RUN='docker exec '$FLASK_CONTAINER_NAME' bash -c "cd /usr/src/app && alembic '"$*"'"'
 
 # Connect to API container
 elif [[ "$CMD" == "bash" ]]; then
   if [[ "$ENV" == "development" ]]; then
-    RUN='docker exec -it pc-flask bash'
+    RUN='docker exec -it '$FLASK_CONTAINER_NAME' bash'
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
       kubectl -n $ENV exec -it $(pod_console) -- bash
@@ -177,8 +182,8 @@ elif [[ "$CMD" == "restart-backend" ]]; then
 
 # Clear all data in postgresql database
 elif [[ "$CMD" == "reset-all-db" ]]; then
-  RUN='docker exec -it pc-flask bash -c "rm -rf /usr/src/app/static/object_store_data/*";
-    docker exec pc-flask bash -c "cd /usr/src/app/ && flask clean_database"'
+  RUN='docker exec -it '$FLASK_CONTAINER_NAME' bash -c "rm -rf /usr/src/app/static/object_store_data/*";
+    docker exec '$FLASK_CONTAINER_NAME' bash -c "cd /usr/src/app/ && flask clean_database"'
 
 # Delete all local images
 elif [[ "$CMD" == "reset-all-storage" ]]; then
@@ -303,7 +308,7 @@ elif [[ "$CMD" == "pgcli" ]]; then
   COLUMNS=${COLUMNS:-''}
   if [[ "$ENV" == "development" ]]; then
     source "$ROOT_PATH"/env_file
-    RUN='docker exec -it pc-flask bash -c "bin/pgcli-wrapper.sh"'
+    RUN='docker exec -it '$FLASK_CONTAINER_NAME' bash -c "bin/pgcli-wrapper.sh"'
   else
     kubectl -n $ENV exec -it $(pod_console) -- bash -c 'bin/pgcli-wrapper.sh'
     exit
@@ -313,7 +318,7 @@ elif [[ "$CMD" == "pgcli" ]]; then
 elif [[ "$CMD" == "python" ]]; then
   COLUMNS=${COLUMNS:-''}
   if [[ "$ENV" == "development" ]]; then
-    RUN='docker exec -it pc-flask bash -c "cd /usr/src/app/ && flask shell '"$*"'"'
+    RUN='docker exec -it '$FLASK_CONTAINER_NAME' bash -c "cd /usr/src/app/ && flask shell '"$*"'"'
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
       kubectl -n $ENV exec -it $(pod_console) -- flask shell
@@ -331,7 +336,7 @@ elif [[ "$CMD" == "python" ]]; then
 # Run python scripts from api/scripts
 else
   if [[ "$ENV" == "development" ]]; then
-    RUN='docker exec pc-flask bash -c "cd /usr/src/app/ && flask '"$CMD $*"'"'
+    RUN='docker exec '$FLASK_CONTAINER_NAME' bash -c "cd /usr/src/app/ && flask '"$CMD $*"'"'
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
       kubectl -n $ENV exec -it $(pod_console) -- flask "$CMD" $*
