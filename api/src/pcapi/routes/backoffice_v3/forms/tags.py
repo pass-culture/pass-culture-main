@@ -4,16 +4,12 @@ import wtforms
 from . import fields
 
 
-TAG_NAME_REGEX = r"^[^\s]+$"
-
-
 class EditTagForm(FlaskForm):
     name = fields.PCStringField(
         "Nom",
         validators=(
             wtforms.validators.InputRequired("Information obligatoire"),
             wtforms.validators.Length(min=1, max=140, message="Doit contenir moins de %(max)d caractères"),
-            wtforms.validators.Regexp(TAG_NAME_REGEX, message="Le nom ne doit contenir aucun caractère d'espacement"),
         ),
     )
     description = fields.PCStringField(
@@ -26,6 +22,11 @@ class EditTagForm(FlaskForm):
 
     start_date = fields.PCDateField("Date de début", validators=(wtforms.validators.Optional(),))
     end_date = fields.PCDateField("Date de fin", validators=(wtforms.validators.Optional(),))
+
+    def filter_name(self, name: str | None) -> str | None:
+        if not name:
+            return None
+        return name.strip()
 
     def validate_start_date(self, start_date: fields.PCDateField) -> fields.PCDateField:
         end_date = self._fields["end_date"]
