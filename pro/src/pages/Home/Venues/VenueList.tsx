@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { GetOffererVenueResponseModel } from 'apiClient/v1'
+import { getLastCollectiveDmsApplication } from 'core/Venue/adapters/getVenueAdapter/serializers'
 import { useNewOfferCreationJourney } from 'hooks'
 
 import Venue from './Venue'
@@ -32,6 +33,9 @@ const VenueList = ({
             hasNewOfferCreationJourney ? !virtualVenue.hasCreatedOffer : false
           }
           hasCreatedOffer={virtualVenue.hasCreatedOffer}
+          dmsInformations={getLastCollectiveDmsApplication(
+            virtualVenue.collectiveDmsApplications
+          )}
         />
       )}
 
@@ -47,6 +51,9 @@ const VenueList = ({
           initialOpenState={
             hasNewOfferCreationJourney ? !venue.hasCreatedOffer : false
           }
+          dmsInformations={getLastCollectiveDmsApplication(
+            venue.collectiveDmsApplications
+          )}
         />
       ))}
     </div>

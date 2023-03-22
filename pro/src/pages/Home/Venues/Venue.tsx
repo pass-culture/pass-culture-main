@@ -3,6 +3,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { DMSApplicationForEAC } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings'
 import {
   Events,
@@ -36,6 +37,7 @@ export interface IVenueProps {
   offererId: string
   publicName?: string | null
   hasCreatedOffer?: boolean
+  dmsInformations?: DMSApplicationForEAC | null
 }
 
 const Venue = ({
@@ -47,6 +49,7 @@ const Venue = ({
   initialOpenState,
   publicName,
   hasCreatedOffer,
+  dmsInformations,
 }: IVenueProps) => {
   const [prevInitialOpenState, setPrevInitialOpenState] =
     useState(initialOpenState)
@@ -284,14 +287,17 @@ const Venue = ({
             <>
               {isStatLoaded ? (
                 <>
-                  {hasNewOfferCreationJourney && !hasCreatedOffer && (
+                  {hasNewOfferCreationJourney && (
                     <VenueOfferSteps
                       venueId={id}
                       hasVenue={true}
                       offererId={offererId}
+                      hasCreatedOffer={hasCreatedOffer}
                       hasMissingReimbursementPoint={
                         hasMissingReimbursementPoint
                       }
+                      dmsStatus={dmsInformations?.state}
+                      dmsInProgress={dmsInformations !== null}
                     />
                   )}
                   <div className="venue-stats">

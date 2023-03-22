@@ -349,7 +349,6 @@ describe('screen | VenueForm', () => {
       collectivePhone: 'string',
       collectiveStudents: [],
       collectiveWebsite: 'string',
-
       managingOfferer: {
         address: null,
         bic: null,

@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
+import { DMSApplicationstatus } from 'apiClient/v1'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -18,7 +19,9 @@ const mockLogEvent = jest.fn()
 
 const renderVenueOfferSteps = (
   venueId: string | null = null,
-  hasMissingReimbursementPoint = true
+  hasMissingReimbursementPoint = true,
+  dmsStatus: DMSApplicationstatus = DMSApplicationstatus.ACCEPTE,
+  dmsInProgress = false
 ) => {
   const currentUser = {
     id: 'EY',
@@ -36,6 +39,8 @@ const renderVenueOfferSteps = (
       venueId={venueId}
       offererId="AB"
       hasMissingReimbursementPoint={hasMissingReimbursementPoint}
+      dmsStatus={dmsStatus}
+      dmsInProgress={dmsInProgress}
     />,
     { storeOverrides, initialRouterEntries: ['/accueil'] }
   )

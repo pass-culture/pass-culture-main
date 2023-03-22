@@ -43,6 +43,7 @@ describe('venue create offer link', () => {
       isVirtual: false,
       name: 'My venue',
       offererId: 'OFFERER01',
+      dmsInformations: null,
     }
     loadFakeApiVenueStats({
       activeBookingsQuantity: 0,
