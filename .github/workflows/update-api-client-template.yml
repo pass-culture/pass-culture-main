@@ -13,6 +13,8 @@ on:
 jobs:
   reusable-update-api-client:
     runs-on: [self-hosted, linux, x64]
+    container:
+      image: ubuntu:latest
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
@@ -61,7 +63,8 @@ jobs:
       - name: Install dockerize
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
-          sudo chown -R $USER .
+          apt update && apt install -y sudo wget
+          sudo chown -R 1000:1000 .
           ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
 
       - name: Cache
@@ -83,7 +86,7 @@ jobs:
 
       - name: Update permission PRO
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: cd pro && sudo chown -R $USER .
+        run: cd pro && sudo chown -R 1000:1000 .
 
       - uses: actions/cache@v2
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
@@ -96,7 +99,7 @@ jobs:
 
       - name: Update permission ADAGE FRONT
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: cd adage-front && sudo chown -R $USER .
+        run: cd adage-front && sudo chown -R 1000:1000 .
 
       - uses: actions/cache@v2
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
@@ -111,14 +114,14 @@ jobs:
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
           cd pro
-          sudo chown -R $USER .
+          sudo chown -R 1000:1000 .
           yarn install
 
       - name: Install dependencies ADAGE FRONT
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
           cd adage-front
-          sudo chown -R $USER .
+          sudo chown -R 1000:1000 .
           yarn install
 
       - name: Wait for backend
@@ -147,7 +150,7 @@ jobs:
       - name: Commit
         if: steps.changes.outputs.changed == 'true'
         run: |
-          sudo chown -R $USER .
+          sudo chown -R 1000:1000 .
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git add pro/src/apiClient adage-front/src/apiClient
