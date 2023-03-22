@@ -1,29 +1,31 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 .stock-event-table {
   width: 100%;
+  table-layout: fixed;
 }
 
 .header {
   @include fonts.caption;
 
   text-align: left;
-  padding-bottom: rem.torem(16px);
+  padding-bottom: rem.torem(4px);
 }
 
 .data {
-  padding: rem.torem(8px) 0;
+  padding: rem.torem(12px) 0;
+  line-height: 1;
+  border-bottom: 1px solid colors.$grey-medium;
 }
 
-.with-border {
-  border-bottom: 1px solid colors.$grey-light;
-}
+$icon-size: rem.torem(20px);
 
 .clear-icon {
   svg {
-    width: rem.torem(20px);
+    width: $icon-size;
     fill: colors.$black;
   }
 }
@@ -31,4 +33,46 @@
 // RomainC: needed because there could be 2 actions bar on this page
 .actions {
   z-index: 1;
+}
+
+.table-caption {
+  @include a11y.visually-hidden;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+.checkbox-column {
+  width: rem.torem(32px);
+}
+
+.date-column {
+  width: rem.torem(160px);
+}
+
+.date-cell-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.day {
+  width: rem.torem(40px);
+  margin-right: rem.torem(12px);
+}
+
+.time-column {
+  width: rem.torem(72px);
+}
+
+.booking-limit-date-column {
+  width: rem.torem(120px);
+}
+
+.quantity-column {
+  width: rem.torem(100px);
+}
+
+.actions-column {
+  width: $icon-size;
 }

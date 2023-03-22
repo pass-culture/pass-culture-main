@@ -46,10 +46,6 @@ describe('StocksEventList', () => {
     })
 
     expect(screen.getByText('Date')).toBeInTheDocument()
-    expect(screen.getByText('Horaire')).toBeInTheDocument()
-    expect(screen.getByText('Places')).toBeInTheDocument()
-    expect(screen.getByText('Tarif')).toBeInTheDocument()
-    expect(screen.getByText('Limite de réservation')).toBeInTheDocument()
 
     expect(screen.getByText('ven')).toBeInTheDocument()
     expect(screen.getByText('15/10/2021')).toBeInTheDocument()

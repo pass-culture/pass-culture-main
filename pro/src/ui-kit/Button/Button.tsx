@@ -52,7 +52,11 @@ const Button = ({
       {...buttonAttrs}
     >
       {Icon && iconPosition !== IconPositionEnum.RIGHT && (
-        <Icon className={styles['button-icon']} />
+        <Icon
+          className={cn(styles['button-icon'], {
+            [styles['has-tooltip']]: hasTooltip,
+          })}
+        />
       )}
       {hasTooltip ? (
         <div className={styles['visually-hidden']}>
