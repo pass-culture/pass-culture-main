@@ -36,6 +36,7 @@ def collective_bookings_fixture() -> tuple:
     pending = educational_factories.PendingCollectiveBookingFactory(
         educationalInstitution=institution2,
         collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.EVENEMENT_PATRIMOINE.id,
+        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=6),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
         venue=venue,
     )
@@ -47,7 +48,7 @@ def collective_bookings_fixture() -> tuple:
         collectiveStock__collectiveOffer__name="Visite des locaux primitifs du pass Culture",
         collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.VISITE_GUIDEE.id,
         collectiveStock__bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
-        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=4),
+        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
     )
     # 2
@@ -57,7 +58,7 @@ def collective_bookings_fixture() -> tuple:
         collectiveStock__price=567.8,
         collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.DECOUVERTE_METIERS.id,
         collectiveStock__bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
-        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
+        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=7),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
         venue=venue,
     )
@@ -65,6 +66,7 @@ def collective_bookings_fixture() -> tuple:
     used = educational_factories.UsedCollectiveBookingFactory(
         educationalInstitution=institution3,
         collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.CONFERENCE.id,
+        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
     )
     # 4
@@ -128,7 +130,7 @@ class ListCollectiveBookingsTest:
             (datetime.date.today() - datetime.timedelta(days=3)).strftime("%d/%m/%Y à ")
         )
         assert row["Date de l'événement"].startswith(
-            (datetime.date.today() + datetime.timedelta(days=4)).strftime("%d/%m/%Y à ")
+            (datetime.date.today() + datetime.timedelta(days=3)).strftime("%d/%m/%Y à ")
         )
         assert row["Structure"] == collective_bookings[1].offerer.name
         assert row["Lieu"] == collective_bookings[1].venue.name
@@ -186,7 +188,7 @@ class ListCollectiveBookingsTest:
             (datetime.date.today() - datetime.timedelta(days=2)).strftime("%d/%m/%Y à ")
         )
         assert row["Date de l'événement"].startswith(
-            (datetime.date.today() + datetime.timedelta(days=5)).strftime("%d/%m/%Y à ")
+            (datetime.date.today() + datetime.timedelta(days=7)).strftime("%d/%m/%Y à ")
         )
         assert row["Structure"] == collective_bookings[2].offerer.name
         assert row["Lieu"] == collective_bookings[2].venue.name
@@ -298,6 +300,22 @@ class ListCollectiveBookingsTest:
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[1].id, collective_bookings[2].id}
+
+    def test_list_bookings_by_event_date(self, authenticated_client, collective_bookings):
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    event_from_date=(datetime.date.today() + datetime.timedelta(days=5)).isoformat(),
+                    event_to_date=(datetime.date.today() + datetime.timedelta(days=6)).isoformat(),
+                )
+            )
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[0].id, collective_bookings[3].id}
 
     def test_list_bookings_by_offerer(self, authenticated_client, collective_bookings):
         # when

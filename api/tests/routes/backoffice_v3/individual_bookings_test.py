@@ -48,7 +48,8 @@ def bookings_fixture() -> tuple:
         quantity=1,
         amount=12.5,
         token="CNCL02",
-        stock__offer__product__subcategoryId=subcategories_v2.ABO_SPECTACLE.id,
+        stock__offer__product__subcategoryId=subcategories_v2.FESTIVAL_SPECTACLE.id,
+        stock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=11),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
     )
     confirmed = bookings_factories.BookingFactory(
@@ -65,6 +66,7 @@ def bookings_fixture() -> tuple:
         user=user3,
         token="REIMB3",
         stock__offer__product__subcategoryId=subcategories_v2.SPECTACLE_REPRESENTATION.id,
+        stock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=12),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
     )
 
@@ -249,6 +251,22 @@ class ListIndividualBookingsTest:
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(row["Contremarque"] for row in rows) == {"CNCL02", "ELBEIT"}
+
+    def test_list_bookings_by_event_date(self, authenticated_client, bookings):
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    event_from_date=(datetime.date.today() + datetime.timedelta(days=12)).isoformat(),
+                    event_to_date=(datetime.date.today() + datetime.timedelta(days=12)).isoformat(),
+                )
+            )
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(row["Contremarque"] for row in rows) == {"REIMB3"}
 
     def test_list_bookings_by_offerer(self, authenticated_client, bookings):
         # when

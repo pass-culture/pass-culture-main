@@ -4,7 +4,7 @@
         method="get"
         class="mb-4 mt-3">
     <div class="row">
-      <div class="col-10">
+      <div class="col-11">
         {% set select_multiple = [] %}
         {% for form_field in form %}
           {% if form_field.type == "HiddenField" %}
@@ -26,7 +26,7 @@
           {% endfor %}
         </div>
       </div>
-      <div class="col-2">
+      <div class="col-1">
         <div class="py-2">
           <button type="submit"
                   class="btn btn-primary">Appliquer</button>
