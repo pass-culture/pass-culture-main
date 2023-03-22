@@ -295,7 +295,7 @@ describe('deletion', () => {
     expect(screen.queryByText('Date')).toBeInTheDocument()
 
     await userEvent.click(
-      screen.getAllByRole('button', { name: 'Supprimer le stock' })[0]
+      screen.getAllByRole('button', { name: 'Supprimer' })[0]
     )
 
     // stock line is not here anymore
@@ -317,7 +317,7 @@ describe('deletion', () => {
     })
 
     await userEvent.click(
-      screen.getAllByRole('button', { name: 'Supprimer le stock' })[0]
+      screen.getAllByRole('button', { name: 'Supprimer' })[0]
     )
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 

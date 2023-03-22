@@ -11,9 +11,9 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
-import { ClearIcon } from 'icons'
+import { TrashFilledIcon } from 'icons'
 import { Button } from 'ui-kit'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { formatPrice } from 'utils/formatPrice'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
@@ -105,9 +105,15 @@ const StocksEventList = ({
   return (
     <>
       <table className={cn(styles['stock-event-table'], className)}>
+        <caption className={styles['table-caption']}>
+          Liste des dates et capacités
+        </caption>
         <thead>
           <tr>
-            <th className={cn(styles['first-column'], styles['header'])}>
+            <th
+              scope="col"
+              className={cn(styles['checkbox-column'], styles['header'])}
+            >
               <input
                 checked={areAllChecked}
                 onChange={handleOnChangeSelectAll}
@@ -115,13 +121,42 @@ const StocksEventList = ({
                 aria-label="Sélectionner toutes les lignes"
               />
             </th>
-            <th className={styles['header']}>Date</th>
-            <th className={styles['header']}>Horaire</th>
-            <th className={styles['header']}>Places</th>
-            <th className={styles['header']}>Tarif</th>
-            <th className={styles['header']}>Limite de réservation</th>
+            <th
+              scope="col"
+              className={cn(styles['date-column'], styles['header'])}
+            >
+              Date
+            </th>
+            <th
+              scope="col"
+              className={cn(styles['time-column'], styles['header'])}
+            >
+              Horaire
+            </th>
+            <th scope="col" className={styles['header']}>
+              Tarif
+            </th>
+            <th
+              scope="col"
+              className={cn(
+                styles['booking-limit-date-column'],
+                styles['header']
+              )}
+            >
+              Date limite
+              <br />
+              de réservation
+            </th>
+            <th
+              scope="col"
+              className={cn(styles['quantity-column'], styles['header'])}
+            >
+              Places
+            </th>
+            <th className={cn(styles['actions-column'], styles['header'])} />
           </tr>
         </thead>
+
         <tbody>
           {stocks.map((stock, index) => {
             const beginningDay = formatLocalTimeDateString(
@@ -166,31 +201,28 @@ const StocksEventList = ({
                     type="checkbox"
                   />
                 </td>
-                <td className={cn(styles['data'], styles['with-border'])}>
-                  <b>{beginningDay} </b>
-                  {beginningDate}
+                <td className={cn(styles['data'], styles['capitalize'])}>
+                  <div className={styles['date-cell-wrapper']}>
+                    <div className={styles['day']}>
+                      <strong>{beginningDay}</strong>
+                    </div>
+                    <div>{beginningDate}</div>
+                  </div>
                 </td>
-                <td className={cn(styles['data'], styles['with-border'])}>
-                  {beginningHour}
-                </td>
-                <td className={cn(styles['data'], styles['with-border'])}>
+                <td className={styles['data']}>{beginningHour}</td>
+                <td className={styles['data']}>{price}</td>
+                <td className={styles['data']}>{bookingLimitDate}</td>
+                <td className={styles['data']}>
                   {stock.quantity === null ? 'Illimité' : stock.quantity}
-                </td>
-                <td className={cn(styles['data'], styles['with-border'])}>
-                  {price}
-                </td>
-                <td className={cn(styles['data'], styles['with-border'])}>
-                  {bookingLimitDate}
                 </td>
                 <td className={cn(styles['data'], styles['clear-icon'])}>
                   <Button
                     variant={ButtonVariant.TERNARY}
                     onClick={() => onDeleteStock(index)}
-                    Icon={ClearIcon}
-                    iconPosition={IconPositionEnum.CENTER}
+                    Icon={TrashFilledIcon}
                     hasTooltip
                   >
-                    Supprimer le stock
+                    Supprimer
                   </Button>
                 </td>
               </tr>
