@@ -1,4 +1,5 @@
 import datetime
+import logging
 import operator
 import typing
 
@@ -20,6 +21,9 @@ from pcapi.utils import custom_keys
 
 from . import exceptions
 from . import models
+
+
+logger = logging.getLogger(__name__)
 
 
 IMPORTED_CREATION_MODE = "imported"
@@ -740,3 +744,19 @@ def exclude_offers_from_inactive_venue_provider(query: flask_sqlalchemy.BaseQuer
 def get_next_product_id_from_database() -> int:
     sequence: sa.Sequence = sa.Sequence("product_id_seq")
     return db.session.execute(sequence)
+
+
+def has_active_offer_with_ean_or_isbn(ean: str | None, isbn: str | None, venue: offerers_models.Venue) -> bool:
+    if not ean and not isbn:
+        # We should never be there (an ean or an isbn must be given), in case we are alert sentry.
+        logger.exception("Could not search for an offer without isbn or ean")
+    extra_data_filter = (
+        models.Offer.extraData["ean"].astext == ean
+        if ean is not None
+        else models.Offer.extraData["isbn"].astext == isbn
+    )
+    return db.session.query(
+        models.Offer.query.filter(
+            models.Offer.venue == venue, models.Offer.isActive.is_(True), extra_data_filter
+        ).exists()
+    ).scalar()
