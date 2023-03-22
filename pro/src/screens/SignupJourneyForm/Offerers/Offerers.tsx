@@ -144,9 +144,9 @@ const Offerers = (): JSX.Element => {
           icon={AddUserIcon}
           onCancel={() => setShowLinkDialog(false)}
           title="Êtes-vous sûr de vouloir rejoindre
-cet espace PRO ?"
+cet espace Pro ?"
           onConfirm={doLinkAccount}
-          confirmText="Rejoindre cet espace PRO"
+          confirmText="Rejoindre cet espace Pro"
           cancelText="Annuler"
           extraClassNames={styles['dialog-content']}
         >

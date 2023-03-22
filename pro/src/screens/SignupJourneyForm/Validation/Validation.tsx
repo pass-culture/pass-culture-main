@@ -143,14 +143,14 @@ const Validation = (): JSX.Element => {
       </section>
       <Banner type="notification-info">
         Vous pourrez modifier certaines de ces informations dans la page dédiée
-        de votre espace PRO.
+        de votre espace Pro.
       </Banner>
       <ActionBar
         onClickPrevious={handlePreviousStep}
         onClickNext={onSubmit}
         isDisabled={false}
         withRightIcon={false}
-        nextStepTitle="Valider et créer mon espace PRO"
+        nextStepTitle="Valider et créer mon espace Pro"
       />
     </>
   )
