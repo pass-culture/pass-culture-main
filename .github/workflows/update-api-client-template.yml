@@ -9,6 +9,8 @@ on:
       trigger-only-on-dependency-change:
         required: true
         type: boolean
+    env:
+      USER: runner
 
 jobs:
   reusable-update-api-client:
