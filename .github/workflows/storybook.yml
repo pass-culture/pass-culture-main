@@ -16,6 +16,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 18.12.x
+      - name: Install tools needed
+        run: |
+          apt-get update && apt-get install rsync -y
       - name: Install and Build Storybook 🔧
         run: | # Install npm packages and build the Storybook files
           cd pro
@@ -24,7 +27,7 @@ jobs:
         env:
           STORYBOOK_ROOT_PATH: "https://pass-culture.github.io/pass-culture-main/"
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.4
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: docs # The branch the action should deploy to.
