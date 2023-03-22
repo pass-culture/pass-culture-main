@@ -234,11 +234,11 @@ class DMSGraphQLClient:
             yield node
 
         # pylint: disable=unsubscriptable-object
-        if results["dossiers"]["pageInfo"]["hasNextPage"]:
+        if results["demarche"]["dossiers"]["pageInfo"]["hasNextPage"]:
             yield from self.get_eac_nodes_siret_states(
                 procedure_number=procedure_number,
                 since=since,
                 state=state,
-                page_token=results["dossiers"]["pageInfo"]["endCursor"],
+                page_token=results["demarche"]["dossiers"]["pageInfo"]["endCursor"],
             )
         # pylint: enable=unsubscriptable-object
