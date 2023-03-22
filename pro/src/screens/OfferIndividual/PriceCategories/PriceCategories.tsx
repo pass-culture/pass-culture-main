@@ -163,7 +163,7 @@ export const getPopinType = (
 }
 
 const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
-  const { setOffer } = useOfferIndividualContext()
+  const { setOffer, subCategories } = useOfferIndividualContext()
   const { logEvent } = useAnalytics()
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
@@ -180,6 +180,9 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
     ? isOfferDisabled(offer.status)
     : false
   const isDisabled = isDisabledByStatus || isDisabledBySynchronization
+  const canBeDuo = subCategories.find(
+    subCategory => subCategory.id === offer.subcategoryId
+  )?.canBeDuo
 
   const onSubmitWithCallback = async (values: PriceCategoriesFormValues) => {
     const newPopinType = getPopinType(
@@ -347,6 +350,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
           setOffer={setOffer}
           humanizedOfferId={offer.id}
           isDisabled={isDisabled}
+          canBeDuo={canBeDuo}
         />
 
         <ActionBar
