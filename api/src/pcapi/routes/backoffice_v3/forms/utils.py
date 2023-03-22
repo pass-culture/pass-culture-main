@@ -12,6 +12,10 @@ class PCForm(FlaskForm):
             return ""
         return email_utils.sanitize_email(raw_email)
 
+    @property
+    def raw_data(self) -> dict[str, typing.Any]:
+        return {field.name: field.raw_data for field in self}
+
 
 def choices_from_enum(
     enum_cls: typing.Type[enum.Enum], formatter: typing.Callable[[typing.Any], str] | None = None
