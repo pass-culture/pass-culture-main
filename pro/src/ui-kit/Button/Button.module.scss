@@ -32,13 +32,13 @@
   }
 
   &.button-left {
-    .button-icon:not(.button-icon-arrow) {
+    .button-icon:not(.button-icon-arrow, .has-tooltip) {
       margin-right: rem.torem(8px);
     }
   }
 
   &.button-right {
-    .button-icon:not(.button-icon-arrow) {
+    .button-icon:not(.button-icon-arrow, .has-tooltip) {
       margin-left: rem.torem(8px);
     }
   }
@@ -129,7 +129,7 @@
       fill: colors.$grey-semi-dark;
     }
 
-    .button-icon {
+    .button-icon:not(.has-tooltip) {
       margin-right: rem.torem(8px);
     }
 
@@ -167,8 +167,7 @@
     max-width: rem.torem(400px);
 
     &:hover:not(:disabled, .button-disabled) {
-      box-shadow:
-        rem.torem(0) rem.torem(3px) rem.torem(4px)
+      box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
         colors.$grey-medium-shadow;
     }
 
