@@ -11,8 +11,10 @@ from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories_v2 import ExtraDataFieldEnum
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import repository as finance_repository
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
+from pcapi.core.offers import repository
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as user_models
@@ -420,7 +422,9 @@ def check_booking_limit_datetime(
         raise exceptions.BookingLimitDatetimeTooLate()
 
 
-def check_offer_extra_data(subcategory_id: str, extra_data: models.OfferExtraData | None) -> None:
+def check_offer_extra_data(
+    subcategory_id: str, extra_data: models.OfferExtraData | None, venue: offerers_models.Venue
+) -> None:
     errors = api_errors.ApiErrors()
 
     if extra_data is None:
@@ -438,7 +442,8 @@ def check_offer_extra_data(subcategory_id: str, extra_data: models.OfferExtraDat
 
     try:
         _check_ean_field(extra_data)
-    except exceptions.EanFormatException as e:
+        _check_isbn_or_ean_does_not_exist(extra_data, venue)
+    except (exceptions.EanFormatException, exceptions.OfferAlreadyExists) as e:
         errors.add_client_error(e)
 
     try:
@@ -451,6 +456,19 @@ def check_offer_extra_data(subcategory_id: str, extra_data: models.OfferExtraDat
 
     if errors.errors:
         raise errors
+
+
+def _check_isbn_or_ean_does_not_exist(extra_data: models.OfferExtraData | None, venue: offerers_models.Venue) -> None:
+    if not extra_data:
+        return
+    ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
+    isbn = extra_data.get(ExtraDataFieldEnum.ISBN.value)
+    if not ean and not isbn:
+        return
+    if repository.has_active_offer_with_ean_or_isbn(ean, isbn, venue):
+        if ean:
+            raise exceptions.OfferAlreadyExists("ean")
+        raise exceptions.OfferAlreadyExists("isbn")
 
 
 def _check_value_is_allowed(
