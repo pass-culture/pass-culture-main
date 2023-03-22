@@ -1,7 +1,17 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_size.scss" as size;
 
-.signup-offerer-layout {
-  margin-top: rem.torem(50px);
+$header-height: rem.torem(30px) + rem.torem(42px);
+
+.signup-offerer-layout-wrapper {
+  display: flex;
+  min-height: calc(100vh - #{size.$action-bar-sticky-height + $header-height});
+  align-items: center;
+  justify-content: center;
+
+  .signup-offerer-layout {
+    max-width: rem.torem(488px);
+  }
 }
 
 .stepper {

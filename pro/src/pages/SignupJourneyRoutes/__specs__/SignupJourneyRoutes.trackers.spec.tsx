@@ -1,0 +1,60 @@
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Route, Routes } from 'react-router-dom'
+
+import { Events } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
+import { renderWithProviders } from 'utils/renderWithProviders'
+
+import SignupJourneyRoutes from '../SignupJourneyRoutes'
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getVenueTypes: jest.fn(),
+  },
+}))
+
+const renderSignupJourneyRoutes = () => {
+  renderWithProviders(
+    <Routes>
+      <Route path="/parcours-inscription/*" element={<SignupJourneyRoutes />} />
+      <Route path="/logout" element={<div>Logout</div>} />
+    </Routes>,
+    {
+      storeOverrides: {
+        user: {
+          initialized: true,
+          currentUser: {
+            publicName: 'John Do',
+            isAdmin: false,
+            email: 'email@example.com',
+            hasSeenProTutorials: true,
+          },
+        },
+      },
+      initialRouterEntries: ['/parcours-inscription/structure'],
+    }
+  )
+}
+const mockLogEvent = jest.fn()
+
+describe('SignupJourneyRoutes::trackers', () => {
+  beforeEach(() => {
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
+  })
+  it('should render log logout event', async () => {
+    renderSignupJourneyRoutes()
+    await userEvent.click(screen.getByText('Se déconnecter'))
+    await waitFor(() => {
+      expect(screen.getByText('Logout')).toBeInTheDocument()
+    })
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_LOGOUT, {
+      from: '/parcours-inscription/structure',
+    })
+  })
+})

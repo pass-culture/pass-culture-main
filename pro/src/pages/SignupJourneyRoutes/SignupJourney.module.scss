@@ -1,0 +1,18 @@
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+
+.header {
+  box-shadow: 0 3px 4px rgb(103 104 107 / 10%);
+  padding: rem.torem(15px) 0;
+
+  .header-content {
+    display: flex;
+    max-width: rem.torem(874px);
+    margin: 0 auto;
+    justify-content: space-between;
+  }
+
+  img {
+    height: rem.torem(42px);
+  }
+}
