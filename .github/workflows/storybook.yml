@@ -24,7 +24,7 @@ jobs:
         env:
           STORYBOOK_ROOT_PATH: "https://pass-culture.github.io/pass-culture-main/"
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.4.1
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: docs # The branch the action should deploy to.
