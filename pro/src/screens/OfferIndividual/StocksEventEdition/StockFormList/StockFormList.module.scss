@@ -1,13 +1,39 @@
 @use "styles/mixins/_rem.scss" as rem;
-
-.form-list {
-  margin-top: rem.torem(16px);
-}
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .button-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.stock-table {
+  margin-top: rem.torem(16px);
+}
+
+.caption-table {
+  @include a11y.visually-hidden;
+}
+
+.table-head {
+  @include fonts.caption;
+
+  text-align: left;
+  padding-bottom: rem.torem(16px);
+}
+
+.table-body {
+  padding-bottom: rem.torem(16px);
+}
+
+.table-row {
+  vertical-align: top;
+}
+
+.head-booking-limit-datetime {
+  // force header to break line
+  padding-right: rem.torem(4px);
 }
 
 .field-layout-label {
@@ -17,71 +43,36 @@
   align-items: flex-end;
 }
 
-.field-layout-align-self {
-  align-self: flex-start;
-}
-
 .input-booking-limit-datetime,
 .input-date {
-  flex: 0 1 rem.torem(208px);
   min-width: rem.torem(154px);
+  padding-right: rem.torem(12px);
 }
 
 .input-beginning-time,
 .input-quantity {
-  flex: 0 1 rem.torem(112px);
-  min-width: rem.torem(84px);
+  min-width: rem.torem(90px);
+  padding-right: rem.torem(12px);
 }
 
 .input-price {
-  flex: 0 1 rem.torem(112px);
+  padding-right: rem.torem(12px);
   min-width: rem.torem(101px);
 }
 
-.field-info-remaining-stocks {
-  width: rem.torem(52px);
-  margin-right: rem.torem(12px);
+.input-price-category {
+  min-width: rem.torem(204px);
+  padding-right: rem.torem(12px);
 }
 
 .field-info-bookings {
-  width: rem.torem(80px);
-}
-
-.stock-form-info {
-  display: flex;
+  max-width: rem.torem(40px);
 }
 
 .field-layout-footer {
   min-height: rem.torem(32px);
 }
 
-.stock-form-row {
-  display: flex;
-  padding-bottom: rem.torem(16px);
-
-  .stock-form {
-    display: flex;
-    align-items: center;
-
-    > *:not(:last-child) {
-      margin-right: rem.torem(12px);
-    }
-
-    &:not(:last-child) {
-      margin-right: rem.torem(12px);
-    }
-  }
-
-  .stock-form-info {
-    margin-right: 0;
-  }
-
-  .stock-actions {
-    display: flex;
-    align-self: flex-start;
-
-    &.stock-first-action {
-      margin-top: rem.torem(40px);
-    }
-  }
+.stock-actions {
+  padding-top: rem.torem(8px);
 }

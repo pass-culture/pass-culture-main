@@ -11,18 +11,6 @@
   display: flex;
 
   &-icon {
-    // "Center" with input
-    // We are using margin-top and not flex center because when there is an error the
-    // input field grows at the bottom and we don't want the icon to move
-    margin-top: calc(
-      #{forms.$label-small-space-before-input} - #{fonts.$caption-line-height} /
-        2
-    );
-
-    &-first {
-      margin-top: forms.$label-small-space-before-input;
-    }
-
     &:focus,
     &:focus-visible,
     &:hover {

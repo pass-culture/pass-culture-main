@@ -12,12 +12,10 @@ import { IStockFormRowAction } from './types'
 export interface IStockFormActionsProps {
   disabled?: boolean
   actions: IStockFormRowAction[]
-  stockIndex?: number
 }
 const StockFormActions = ({
   disabled = false,
   actions,
-  stockIndex = 0,
 }: IStockFormActionsProps): JSX.Element => {
   return (
     <div className={styles['stock-form-actions']}>
@@ -31,9 +29,7 @@ const StockFormActions = ({
         >
           <OtherIcon
             title="Opérations sur le stock"
-            className={cn(styles['menu-button-icon'], {
-              [styles['menu-button-icon-first']]: stockIndex === 0,
-            })}
+            className={styles['menu-button-icon']}
           />
         </MenuButton>
 
