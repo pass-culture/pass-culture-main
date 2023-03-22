@@ -8,6 +8,7 @@ WEB_SERVICE_DEFINITION = """<?xml version="1.0" encoding="UTF-8"?>
                 <xsd:sequence>
                     <xsd:element name="User" type="xsd:string"/>
                     <xsd:element name="mdp" type="xsd:string"/>
+                    <xsd:element name="IDFilmAllocine" type="xsd:string"/>
                 </xsd:sequence>
             </xsd:complexType>
             <xsd:element name="GetSeancesPassCulture" type="s0:tGetSeancesPassCulture"/>

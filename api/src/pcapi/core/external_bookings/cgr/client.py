@@ -21,8 +21,9 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         response = get_seances_pass_culture(self.cgr_cinema_details)
         return response.ObjetRetour.Films
 
-    def get_film_showtimes_stocks(self, film_id: int) -> dict[int, int]:  # type: ignore [empty-body]
-        pass
+    def get_film_showtimes_stocks(self, film_id: int) -> dict[int, int]:
+        response = get_seances_pass_culture(self.cgr_cinema_details, allocine_film_id=film_id)
+        return {show.IDSeance: show.NbPlacesRestantes for show in response.ObjetRetour.Films[0].Seances}
 
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
