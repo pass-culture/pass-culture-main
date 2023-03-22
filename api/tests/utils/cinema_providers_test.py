@@ -63,10 +63,11 @@ def test_get_showtime_id_from_uuid(stock_uuid, provider_name, result):
     "offer_uuid,result",
     [
         ("123%45%Boost", 123),
+        ("369%45%CGR", 369),
         ("123445+43423", None),
         (None, None),
         ("movie_id%%venue_id%Boost", None),
     ],
 )
 def test_get_boost_film_id_from_uuid(offer_uuid, result):
-    assert result == cinema_providers_utils.get_boost_film_id_from_uuid(offer_uuid)
+    assert result == cinema_providers_utils.get_boost_or_cgr_film_id_from_uuid(offer_uuid)
