@@ -284,6 +284,15 @@ class OfferStatusTest:
         assert models.Offer.query.filter(models.Offer.status != offer_mixin.OfferStatus.SOLD_OUT.name).count() == 0
 
 
+class OfferShowSubTypeTest:
+    def test_show_sub_type_property(self):
+        offer_without_showsubtype = factories.OfferFactory()
+        offer_with_showsubtype = factories.OfferFactory(extraData={"showSubType": "1101"})
+
+        assert offer_without_showsubtype.showSubType is None
+        assert offer_with_showsubtype.showSubType == "1101"
+
+
 class StockBookingsQuantityTest:
     def test_bookings_quantity_without_bookings(self):
         offer = factories.OfferFactory()
