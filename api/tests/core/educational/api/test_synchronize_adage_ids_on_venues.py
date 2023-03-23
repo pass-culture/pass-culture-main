@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest.mock import patch
 
 import requests_mock
@@ -18,8 +19,8 @@ def test_synchronize_adage_ids_on_venues(db_session):
     venue2 = offerers_factories.VenueFactory()
     venue3 = offerers_factories.VenueFactory()
     venue4 = offerers_factories.VenueFactory()
-    venue5 = offerers_factories.VenueFactory(adageId="11")
-    venue6 = offerers_factories.VenueFactory(adageId="1252")
+    venue5 = offerers_factories.VenueFactory(adageId="11", adageInscriptionDate=datetime.utcnow())
+    venue6 = offerers_factories.VenueFactory(adageId="1252", adageInscriptionDate=datetime.utcnow())
 
     BASE_DATA = {
         "siret": "",
@@ -69,9 +70,15 @@ def test_synchronize_adage_ids_on_venues(db_session):
             educational_api_adage.synchronize_adage_ids_on_venues()
 
     assert venue1.adageId == "128028"
+    assert venue1.adageInscriptionDate != None
     assert venue2.adageId == "128029"
+    assert venue2.adageInscriptionDate != None
     assert venue3.adageId is None
+    assert venue3.adageInscriptionDate is None
     assert venue4.adageId is None
+    assert venue4.adageInscriptionDate is None
     assert venue5.adageId is None
+    assert venue5.adageInscriptionDate is None
     assert venue6.adageId is None
+    assert venue6.adageInscriptionDate is None
     mock_activation_mail.assert_called_with(venue2, list(email2))
