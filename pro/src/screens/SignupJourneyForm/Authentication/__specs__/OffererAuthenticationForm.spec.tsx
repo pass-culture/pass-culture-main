@@ -96,7 +96,7 @@ describe('screens:SignupJourney::OffererAuthenticationForm', () => {
 
     expect(
       screen.getByText(
-        'À remplir si le nom de votre établissement est différent de la raison sociale - c’est ce nom qui sera visible du public'
+        'À remplir si le nom de votre structure est différent de la raison sociale. C’est ce nom qui sera visible du public.'
       )
     ).toBeInTheDocument()
   })
