@@ -11,11 +11,11 @@ import { useActiveStep } from './hooks'
 const SignupJourneyBreadcrumb = () => {
   const { activity, offerer } = useSignupJourneyContext()
 
-  const isActivityStepDisable =
-    activity === null || activity == DEFAULT_ACTIVITY_FORM_VALUES
+  const isActivityStepDisabled =
+    activity === null || activity === DEFAULT_ACTIVITY_FORM_VALUES
 
-  const isOffererStepDisable =
-    offerer === null || offerer == DEFAULT_OFFERER_FORM_VALUES
+  const isOffererStepDisabled =
+    offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES
 
   const signupJourneyBreadcrumbSteps: Step[] = [
     {
@@ -26,13 +26,15 @@ const SignupJourneyBreadcrumb = () => {
     {
       id: SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
       label: 'Activité',
-      url: isActivityStepDisable ? undefined : '/parcours-inscription/activite',
+      url: isActivityStepDisabled
+        ? undefined
+        : '/parcours-inscription/activite',
     },
     {
       id: SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
       label: 'Validation',
       url:
-        isActivityStepDisable || isOffererStepDisable
+        isActivityStepDisabled || isOffererStepDisabled
           ? undefined
           : '/parcours-inscription/validation',
     },
