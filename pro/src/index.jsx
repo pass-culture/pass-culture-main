@@ -3,7 +3,7 @@ import './styles/index.scss'
 import { init as SentryInit } from '@sentry/browser'
 import { Integrations as TracingIntegrations } from '@sentry/tracing'
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import smoothscroll from 'smoothscroll-polyfill'
 
 import Root from 'Root'
@@ -51,11 +51,11 @@ if (SENTRY_SERVER_URL) {
 smoothscroll.polyfill()
 
 // Start app
-ReactDOM.render(
+const root = createRoot(document.getElementById('root'))
+root.render(
   <React.StrictMode>
     <Root />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 )
 
 // If you want your app to work offline and load faster, you can change
