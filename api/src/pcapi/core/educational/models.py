@@ -22,6 +22,7 @@ from sqlalchemy.sql.sqltypes import Numeric
 
 from pcapi import settings
 from pcapi.core.bookings import exceptions as booking_exceptions
+from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 import pcapi.core.finance.models as finance_models
 from pcapi.core.object_storage import delete_public_object
@@ -423,6 +424,10 @@ class CollectiveOffer(
         if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for collective offer {self.id}")
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
+
+    @property
+    def category(self) -> categories.Category:
+        return self.subcategory.category
 
     @hybrid_property
     def isEvent(self) -> bool:

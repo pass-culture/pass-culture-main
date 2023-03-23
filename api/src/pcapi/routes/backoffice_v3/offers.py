@@ -168,6 +168,38 @@ def _get_remaining_stock(offer: offers_models.Offer) -> int | str:
     return sum(remaining_quantities)  # type: ignore [arg-type]
 
 
+@list_offers_blueprint.route("", methods=["GET"])
+def list_offers() -> utils.BackofficeResponse:
+    form = offer_forms.GetOffersListForm(request.args)
+    if not form.validate():
+        return render_template("offer/list.html", rows=[], form=form), 400
+
+    if form.is_empty():
+        return render_template("offer/list.html", rows=[], form=form)
+
+    offers = _get_offers(form)
+
+    if len(offers) > form.limit.data:
+        flash(
+            f"Il y a plus de {form.limit.data} résultats dans la base de données, la liste ci-dessous n'en donne donc "
+            "qu'une partie. Veuillez affiner les filtres de recherche.",
+            "info",
+        )
+        offers = offers[: form.limit.data]
+
+    autocomplete.prefill_criteria_choices(form.criteria)
+    autocomplete.prefill_offerers_choices(form.offerer)
+    autocomplete.prefill_venues_choices(form.venue)
+
+    return render_template(
+        "offer/list.html",
+        rows=offers,
+        form=form,
+        get_initial_stock=_get_initial_stock,
+        get_remaining_stock=_get_remaining_stock,
+    )
+
+
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
@@ -386,35 +418,3 @@ def reject_offer(offer_id: int) -> utils.BackofficeResponse:
         search.async_index_offer_ids([offer.id])
 
     return redirect(request.referrer or url_for("backoffice_v3_web.offer.list_offers"), 303)
-
-
-@list_offers_blueprint.route("", methods=["GET"])
-def list_offers() -> utils.BackofficeResponse:
-    form = offer_forms.GetOffersListForm(request.args)
-    if not form.validate():
-        return render_template("offer/list.html", rows=[], form=form), 400
-
-    if form.is_empty():
-        return render_template("offer/list.html", rows=[], form=form)
-
-    offers = _get_offers(form)
-
-    if len(offers) > form.limit.data:
-        flash(
-            f"Il y a plus de {form.limit.data} résultats dans la base de données, la liste ci-dessous n'en donne donc "
-            "qu'une partie. Veuillez affiner les filtres de recherche.",
-            "info",
-        )
-        offers = offers[: form.limit.data]
-
-    autocomplete.prefill_criteria_choices(form.criteria)
-    autocomplete.prefill_offerers_choices(form.offerer)
-    autocomplete.prefill_venues_choices(form.venue)
-
-    return render_template(
-        "offer/list.html",
-        rows=offers,
-        form=form,
-        get_initial_stock=_get_initial_stock,
-        get_remaining_stock=_get_remaining_stock,
-    )
