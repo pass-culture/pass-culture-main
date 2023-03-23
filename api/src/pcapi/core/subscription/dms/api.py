@@ -403,15 +403,14 @@ def _process_user_not_found_error(
             latest_modification_datetime=latest_modification_datetime,
             email=email,
         )
-
-    if state == dms_models.GraphQLApplicationStates.draft:
-        dms_connector_api.DMSGraphQLClient().send_user_message(
-            application_scalar_id,
-            settings.DMS_INSTRUCTOR_ID,
-            dms_internal_mailing.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
-        )
-    elif state == dms_models.GraphQLApplicationStates.accepted:
-        transactional_mails.send_create_account_after_dms_email(email)
+        if state == dms_models.GraphQLApplicationStates.draft:
+            dms_connector_api.DMSGraphQLClient().send_user_message(
+                application_scalar_id,
+                settings.DMS_INSTRUCTOR_ID,
+                dms_internal_mailing.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
+            )
+        elif state == dms_models.GraphQLApplicationStates.accepted:
+            transactional_mails.send_create_account_after_dms_email(email)
 
 
 def _process_accepted_application(

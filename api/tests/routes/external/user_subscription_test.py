@@ -584,9 +584,8 @@ class DmsWebhookApplicationTest:
 
         # assert an OrphanApplication is not created again
         assert fraud_models.OrphanDmsApplication.query.count() == 1
-        # assert an email is sent to ask to create account
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 678
+        # assert no email is sent to ask to create account (Already sent once when the application was created)
+        assert len(mails_testing.outbox) == 0
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
