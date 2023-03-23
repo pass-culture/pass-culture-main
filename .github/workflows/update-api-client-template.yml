@@ -12,7 +12,7 @@ on:
 
 jobs:
   reusable-update-api-client:
-    runs-on: 'ubuntu-latest'
+    runs-on: [self-hosted, linux, x64]
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
@@ -61,7 +61,6 @@ jobs:
       - name: Install dockerize
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
-          sudo chown -R $USER .
           ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
 
       - name: Cache
@@ -81,10 +80,6 @@ jobs:
           sudo chown -R 1000:1000 .
           ./pc start-backend &
 
-      - name: Update permission PRO
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: cd pro && sudo chown -R $USER .
-
       - uses: actions/cache@v2
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         with:
@@ -93,10 +88,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-16-yarn-${{ hashFiles('pro/yarn.lock') }}
             ${{ runner.os }}-node-16-yarn-
-
-      - name: Update permission ADAGE FRONT
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: cd adage-front && sudo chown -R $USER .
 
       - uses: actions/cache@v2
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
@@ -111,14 +102,12 @@ jobs:
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
           cd pro
-          sudo chown -R $USER .
           yarn install
 
       - name: Install dependencies ADAGE FRONT
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
           cd adage-front
-          sudo chown -R $USER .
           yarn install
 
       - name: Wait for backend
@@ -147,7 +136,6 @@ jobs:
       - name: Commit
         if: steps.changes.outputs.changed == 'true'
         run: |
-          sudo chown -R $USER .
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git add pro/src/apiClient adage-front/src/apiClient
