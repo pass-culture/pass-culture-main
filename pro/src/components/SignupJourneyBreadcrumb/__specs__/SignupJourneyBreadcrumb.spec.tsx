@@ -107,7 +107,7 @@ describe('test SignupBreadcrumb', () => {
     expect(screen.getByText('Authentication screen')).toBeInTheDocument()
   })
 
-  it('should render validation step and naviagte through steps', async () => {
+  it('should render validation step and navigate through steps', async () => {
     contextValue.offerer = {
       name: 'test name',
       siret: '1234567893333',
