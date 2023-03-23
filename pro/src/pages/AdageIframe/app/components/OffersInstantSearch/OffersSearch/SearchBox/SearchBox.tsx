@@ -5,8 +5,6 @@ import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { AlgoliaQueryContext } from 'pages/AdageIframe/app/providers'
 import { ReactComponent as MagnifyingGlassIcon } from 'pages/AdageIframe/assets/magnifying-glass.svg'
 
-import { placeholder } from './constants'
-
 export const SearchBoxComponent = ({
   refine,
 }: {
@@ -29,7 +27,7 @@ export const SearchBoxComponent = ({
       <input
         className="search-box"
         onChange={e => setQuery(e.target.value)}
-        placeholder={placeholder}
+        placeholder="Nom de l’offre ou du partenaire culturel"
         type="search"
         value={query}
       />
