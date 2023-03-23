@@ -14,10 +14,10 @@ import {
 } from 'pages/AdageIframe/app/providers'
 import { AnalyticsContext } from 'pages/AdageIframe/app/providers/AnalyticsContextProvider'
 import { Filters } from 'pages/AdageIframe/app/types'
-import Tabs from 'pages/AdageIframe/app/ui-kit/Tabs'
 import { ReactComponent as InstitutionIcon } from 'pages/AdageIframe/assets/institution.svg'
 import { ReactComponent as OffersIcon } from 'pages/AdageIframe/assets/offers.svg'
 import { getDefaultFacetFilterUAICodeValue } from 'pages/AdageIframe/utils/facetFilters'
+import Tabs from 'ui-kit/Tabs'
 import { LOGS_DATA } from 'utils/config'
 
 import { computeVenueFacetFilter, populateFacetFilters } from '../utils'

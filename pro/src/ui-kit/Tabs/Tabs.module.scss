@@ -26,6 +26,13 @@
       padding-bottom: rem.torem(8px);
     }
 
+    &-button {
+      &:hover,
+      &:focus {
+        text-decoration: none;
+      }
+    }
+
     &.is-selected {
       border-bottom: rem.torem(2px) solid colors.$primary;
 
