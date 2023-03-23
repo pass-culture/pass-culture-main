@@ -233,6 +233,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     bannerMeta: dict | None = Column(MutableDict.as_mutable(JSONB), nullable=True)
 
     adageId = Column(Text, nullable=True)
+    adageInscriptionDate = Column(DateTime, nullable=True)
 
     thumb_path_component = "venues"
 
