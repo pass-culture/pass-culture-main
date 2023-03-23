@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
@@ -9,9 +9,7 @@ describe('useGetOfferIndividual', () => {
   it('should return loading payload then success payload', async () => {
     jest.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
 
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useGetOfferIndividual('YA')
-    )
+    const { result } = renderHook(() => useGetOfferIndividual('YA'))
     const loadingState = result.current
 
     expect(loadingState.data).toBeUndefined()
@@ -107,11 +105,12 @@ describe('useGetOfferIndividual', () => {
       withdrawalType: null,
     }
 
-    await waitForNextUpdate()
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
     expect(api.getOffer).toHaveBeenCalled()
-    const updatedState = result.current
-    expect(updatedState.isLoading).toBe(false)
-    expect(updatedState.data).toEqual(offerIndividual)
-    expect(updatedState.error).toBeUndefined()
+    expect(result.current.data).toEqual(offerIndividual)
+    expect(result.current.error).toBeUndefined()
   })
 })
