@@ -14,9 +14,8 @@ def get_shows_stock(venue_id: int, shows_id: list[int]) -> dict[int, int]:
     return client.get_shows_remaining_places(shows_id)
 
 
-def get_boost_movie_stocks(venue_id: int, movie_id: int) -> dict[int, int]:
+def get_movie_stocks(venue_id: int, movie_id: int) -> dict[int, int]:
     client = _get_external_bookings_client_api(venue_id)
-    assert isinstance(client, BoostClientAPI)
     return client.get_film_showtimes_stocks(movie_id)
 
 
