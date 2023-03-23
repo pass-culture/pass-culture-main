@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel, VenueTypeCode } from 'apiClient/v1'
@@ -71,7 +71,7 @@ describe('useGetVenue', () => {
 
     jest.spyOn(api, 'getVenue').mockResolvedValue(apiVenue)
 
-    const { result, waitForNextUpdate } = renderHook(() => useGetVenue('AE'))
+    const { result } = renderHook(() => useGetVenue('AE'))
     const loadingState = result.current
 
     expect(loadingState.data).toBeUndefined()
@@ -155,11 +155,11 @@ describe('useGetVenue', () => {
       collectiveDmsApplication: null,
     }
 
-    await waitForNextUpdate()
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
     expect(api.getVenue).toHaveBeenCalledWith('AE')
-    const updatedState = result.current
-    expect(updatedState.isLoading).toBe(false)
-    expect(updatedState.data).toEqual(venue)
-    expect(updatedState.error).toBeUndefined()
+    expect(result.current.data).toEqual(venue)
+    expect(result.current.error).toBeUndefined()
   })
 })
