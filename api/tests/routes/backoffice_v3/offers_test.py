@@ -75,7 +75,6 @@ class ListOffersTest:
 
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
         endpoint = "backoffice_v3_web.offer.list_offers"
-        endpoint_kwargs = {"offerer_id": 1}
         needed_permission = perm_models.Permissions.READ_OFFERS
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
