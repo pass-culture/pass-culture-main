@@ -46,7 +46,9 @@ const StocksEventList = ({
 }: IStocksEventListProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const { logEvent } = useAnalytics()
-  const [isCheckedArray, setIsCheckedArray] = useState(stocks.map(() => false))
+  const [isCheckedArray, setIsCheckedArray] = useState<boolean[]>(
+    Array(stocks.length).fill(false)
+  )
   const areAllChecked = isCheckedArray.every(isChecked => isChecked)
 
   const handleOnChangeSelected = (index: number) => {
@@ -64,6 +66,11 @@ const StocksEventList = ({
   }
 
   const onDeleteStock = (index: number) => {
+    // handle checkbox selection
+    const newArray = [...isCheckedArray]
+    newArray.splice(index, 1)
+    setIsCheckedArray(newArray)
+
     stocks.splice(index, 1)
     setStocks([...stocks])
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
