@@ -70,7 +70,7 @@ const Offerer = (): JSX.Element => {
         <form onSubmit={formik.handleSubmit} data-testid="signup-offerer-form">
           <OffererForm />
           <Banner type="notification-info" className={styles['siret-banner']}>
-            <strong>Votre structure n’a pas de SIRET propre ?</strong>
+            <strong>Votre structure dépend d’un autre SIRET ?</strong>
             <p className={styles['banner-content-info']}>
               Renseignez le SIRET de la collectivité, de la régie ou de
               l’établissement public auquel vous êtes rattaché.

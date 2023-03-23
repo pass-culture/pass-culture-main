@@ -121,7 +121,7 @@ describe('screens:SignupJourney::Offerer', () => {
     ).not.toBeInTheDocument()
 
     expect(
-      await screen.getByText('Votre structure n’a pas de SIRET propre ?')
+      await screen.getByText('Votre structure dépend d’un autre SIRET ?')
     ).toBeInTheDocument()
   })
 
