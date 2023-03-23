@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import { VenueListItemResponseModel } from 'apiClient/v1'
@@ -15,7 +15,7 @@ describe('useGetOfferIndividualVenues', () => {
   it("should not call api when no offererId isn't provided or admin users", async () => {
     jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
 
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result } = renderHook(() =>
       useGetOfferIndividualVenues({ isAdmin: true })
     )
     const loadingState = result.current
@@ -24,12 +24,12 @@ describe('useGetOfferIndividualVenues', () => {
     expect(loadingState.isLoading).toBe(true)
     expect(loadingState.error).toBeUndefined()
 
-    await waitForNextUpdate()
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
     expect(api.getVenues).not.toHaveBeenCalled()
-    const updatedState = result.current
-    expect(updatedState.isLoading).toBe(false)
-    expect(updatedState.data).toEqual([])
-    expect(updatedState.error).toBeUndefined()
+    expect(result.current.data).toEqual([])
+    expect(result.current.error).toBeUndefined()
   })
 
   describe('should return loading payload then success payload', () => {
@@ -75,7 +75,7 @@ describe('useGetOfferIndividualVenues', () => {
     })
 
     it('should call api for all venues', async () => {
-      const { result, waitForNextUpdate } = renderHook(() =>
+      const { result } = renderHook(() =>
         useGetOfferIndividualVenues({ isAdmin: false })
       )
       const loadingState = result.current
@@ -84,16 +84,16 @@ describe('useGetOfferIndividualVenues', () => {
       expect(loadingState.isLoading).toBe(true)
       expect(loadingState.error).toBeUndefined()
 
-      await waitForNextUpdate()
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
       expect(api.getVenues).toHaveBeenCalledWith(null, null, true, undefined)
-      const updatedState = result.current
-      expect(updatedState.isLoading).toBe(false)
-      expect(updatedState.data).toEqual(offerIndividualVenues)
-      expect(updatedState.error).toBeUndefined()
+      expect(result.current.data).toEqual(offerIndividualVenues)
+      expect(result.current.error).toBeUndefined()
     })
 
     it('should call api for venues of given offerer', async () => {
-      const { result, waitForNextUpdate } = renderHook(() =>
+      const { result } = renderHook(() =>
         useGetOfferIndividualVenues({ isAdmin: false, offererId: 'AA' })
       )
       const loadingState = result.current
@@ -102,12 +102,12 @@ describe('useGetOfferIndividualVenues', () => {
       expect(loadingState.isLoading).toBe(true)
       expect(loadingState.error).toBeUndefined()
 
-      await waitForNextUpdate()
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
       expect(api.getVenues).toHaveBeenCalledWith(null, null, true, 'AA')
-      const updatedState = result.current
-      expect(updatedState.isLoading).toBe(false)
-      expect(updatedState.data).toEqual(offerIndividualVenues)
-      expect(updatedState.error).toBeUndefined()
+      expect(result.current.data).toEqual(offerIndividualVenues)
+      expect(result.current.error).toBeUndefined()
     })
   })
 
@@ -128,7 +128,7 @@ describe('useGetOfferIndividualVenues', () => {
   it('should return loading payload then failure payload', async () => {
     jest.spyOn(api, 'getVenues').mockRejectedValue(new Error('Api error'))
 
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result } = renderHook(() =>
       useGetOfferIndividualVenues({ isAdmin: false })
     )
     const loadingState = result.current
@@ -137,12 +137,11 @@ describe('useGetOfferIndividualVenues', () => {
     expect(loadingState.isLoading).toBe(true)
     expect(loadingState.error).toBeUndefined()
 
-    await waitForNextUpdate()
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
     expect(api.getVenues).toHaveBeenCalled()
-    const errorState = result.current
-    expect(loadingState.data).toBeUndefined()
-    expect(errorState.isLoading).toBe(false)
-    expect(errorState.error?.payload).toEqual([])
-    expect(errorState.error?.message).toBe(GET_DATA_ERROR_MESSAGE)
+    expect(result.current.error?.payload).toEqual([])
+    expect(result.current.error?.message).toBe(GET_DATA_ERROR_MESSAGE)
   })
 })
