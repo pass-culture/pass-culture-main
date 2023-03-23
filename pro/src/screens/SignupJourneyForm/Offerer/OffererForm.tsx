@@ -22,7 +22,7 @@ const OffererForm = (): JSX.Element => {
 
   return (
     <FormLayout.Section title="Renseignez le SIRET de votre structure">
-      <FormLayout.MandatoryInfo />
+      <FormLayout.MandatoryInfo className={styles['mandatory-info']} />
       <FormLayout.Row>
         <TextInput
           name="siret"
