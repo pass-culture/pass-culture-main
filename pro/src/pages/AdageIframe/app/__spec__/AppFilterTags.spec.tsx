@@ -17,17 +17,6 @@ import {
   FeaturesContextType,
 } from '../providers/FeaturesContextProvider'
 
-import {
-  findCategoriesFilter,
-  findDepartmentFilter,
-  findDomainsFilter,
-  findLaunchSearchButton,
-  findSearchBox,
-  findStudentsFilter,
-  queryResetFiltersButton,
-  queryTag,
-} from './__test_utils__/elements'
-
 jest.mock('react-instantsearch-dom', () => {
   return {
     ...jest.requireActual('react-instantsearch-dom'),
@@ -141,11 +130,13 @@ describe('app', () => {
     // Given
     renderApp()
 
-    const departmentFilter = await findDepartmentFilter()
-    const studentsFilter = await findStudentsFilter()
-    const categoriesFilter = await findCategoriesFilter()
-    const domainsFilter = await findDomainsFilter()
-    const launchSearchButton = await findLaunchSearchButton()
+    const departmentFilter = screen.getByLabelText('Département')
+    const studentsFilter = screen.getByLabelText('Niveau scolaire')
+    const categoriesFilter = screen.getByLabelText('Catégorie')
+    const domainsFilter = screen.getByLabelText('Domaine')
+    const launchSearchButton = screen.getByRole('button', {
+      name: 'Lancer la recherche',
+    })
 
     // When
     await userEvent.selectOptions(departmentFilter, '01 - Ain')
@@ -191,12 +182,16 @@ describe('app', () => {
       ],
     ])
 
-    expect(queryTag('01 - Ain')).toBeInTheDocument()
-    expect(queryTag('59 - Nord')).toBeInTheDocument()
-    expect(queryTag('Collège - 4e')).toBeInTheDocument()
-    expect(queryTag('Danse')).toBeInTheDocument()
-    expect(queryTag('Cinéma')).toBeInTheDocument()
-    expect(queryTag('Musée')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '01 - Ain' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: '59 - Nord' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Collège - 4e' })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Danse' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Cinéma' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Musée' })).toBeInTheDocument()
   })
 
   // FIX ME: skip test breaking CI
@@ -204,9 +199,11 @@ describe('app', () => {
     // Given
     renderApp()
 
-    const departmentFilter = await findDepartmentFilter()
-    const studentsFilter = await findStudentsFilter()
-    const launchSearchButton = await findLaunchSearchButton()
+    const departmentFilter = screen.getByLabelText('Département')
+    const studentsFilter = screen.getByLabelText('Niveau scolaire')
+    const launchSearchButton = screen.getByRole('button', {
+      name: 'Lancer la recherche',
+    })
 
     await userEvent.selectOptions(departmentFilter, '01 - Ain')
     await userEvent.selectOptions(departmentFilter, '59 - Nord')
@@ -256,9 +253,15 @@ describe('app', () => {
       ],
     ])
 
-    expect(queryTag('01 - Ain')).not.toBeInTheDocument()
-    expect(queryTag('59 - Nord')).not.toBeInTheDocument()
-    expect(queryTag('Collège - 4e')).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: '01 - Ain' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: '59 - Nord' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Collège - 4e' })
+    ).not.toBeInTheDocument()
   })
 
   // FIX ME: skip test breaking CI
@@ -267,7 +270,7 @@ describe('app', () => {
     renderApp()
 
     // When
-    const departmentFilter = await findDepartmentFilter()
+    const departmentFilter = screen.getByLabelText('Département')
     await userEvent.selectOptions(departmentFilter, '01 - Ain')
 
     const filterTag = screen.getByText('01 - Ain', { selector: 'div' })
@@ -286,18 +289,26 @@ describe('app', () => {
   // FIX ME: skip test breaking CI
   it.skip('should display tag with query after clicking on search button', async () => {
     renderApp()
-    const textInput = await findSearchBox()
-    const launchSearchButton = await findLaunchSearchButton()
+    const textInput = screen.getByPlaceholderText(
+      'Nom de l’offre ou du partenaire culturel'
+    )
+    const launchSearchButton = screen.getByRole('button', {
+      name: 'Lancer la recherche',
+    })
 
     userEvent.type(textInput, 'blabla')
 
-    expect(queryTag('blabla')).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'blablabla' })
+    ).not.toBeInTheDocument()
 
     userEvent.click(launchSearchButton)
 
-    const resetFiltersButton = queryResetFiltersButton() as HTMLElement
+    const resetFiltersButton = screen.queryByRole('button', {
+      name: 'Réinitialiser les filtres',
+    })
 
-    expect(queryTag('blabla')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'blabla' })).toBeInTheDocument()
     expect(resetFiltersButton).toBeInTheDocument()
   })
 })

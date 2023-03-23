@@ -14,18 +14,6 @@ import {
 } from '../providers'
 import { FeaturesContextProvider } from '../providers/FeaturesContextProvider'
 
-import {
-  findCategoriesFilter,
-  findDepartmentFilter,
-  findDomainsFilter,
-  findLaunchSearchButton,
-  findResetAllFiltersButton,
-  findSearchBox,
-  findStudentsFilter,
-  queryResetFiltersButton,
-  queryTag,
-} from './__test_utils__/elements'
-
 jest.mock('react-instantsearch-dom', () => {
   return {
     ...jest.requireActual('react-instantsearch-dom'),
@@ -142,11 +130,13 @@ describe('app', () => {
     window.location.search = `?siret=${siret}`
     renderApp()
 
-    const departmentFilter = await findDepartmentFilter()
-    const studentsFilter = await findStudentsFilter()
-    const categoriesFilter = await findCategoriesFilter()
-    const domainsFilter = await findDomainsFilter()
-    const launchSearchButton = await findLaunchSearchButton()
+    const departmentFilter = await screen.findByLabelText('Département')
+    const studentsFilter = await screen.findByLabelText('Niveau scolaire')
+    const categoriesFilter = await screen.findByLabelText('Catégorie')
+    const domainsFilter = await screen.findByLabelText('Domaine')
+    const launchSearchButton = await screen.findByRole('button', {
+      name: 'Lancer la recherche',
+    })
 
     await userEvent.click(departmentFilter)
     await userEvent.click(screen.getByText('01 - Ain'))
@@ -164,10 +154,16 @@ describe('app', () => {
 
     userEvent.click(launchSearchButton)
 
-    const resetFiltersButton = queryResetFiltersButton() as HTMLElement
+    const resetFiltersButton = screen.queryByRole('button', {
+      name: 'Réinitialiser les filtres',
+    }) as HTMLElement
 
     // When
-    await waitFor(() => expect(queryTag('01 - Ain')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('button', { name: '01 - Ain' })
+      ).toBeInTheDocument()
+    )
     userEvent.click(resetFiltersButton)
     userEvent.click(launchSearchButton)
 
@@ -182,12 +178,24 @@ describe('app', () => {
         'offer.educationalInstitutionUAICode:uai',
       ],
     ])
-    expect(queryTag('01 - Ain')).not.toBeInTheDocument()
-    expect(queryTag('59 - Nord')).not.toBeInTheDocument()
-    expect(queryTag('Collège - 4e')).not.toBeInTheDocument()
-    expect(queryTag('Danse')).not.toBeInTheDocument()
-    expect(queryTag('Cinéma')).not.toBeInTheDocument()
-    expect(queryTag(`Lieu : ${venue?.publicName}`)).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: '01 - Ain' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: '59 - Nord' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Collège - 4e' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Danse' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Cinéma' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: `Lieu : ${venue?.publicName}` })
+    ).not.toBeInTheDocument()
   })
 
   it('should reset all filters and launch search when no result and click on button', async () => {
@@ -196,9 +204,13 @@ describe('app', () => {
     window.location.search = `?siret=${siret}`
     renderApp()
 
-    const textInput = await findSearchBox()
-    const departmentFilter = await findDepartmentFilter()
-    const launchSearchButton = await findLaunchSearchButton()
+    const textInput = await screen.findByPlaceholderText(
+      'Nom de l’offre ou du partenaire culturel'
+    )
+    const departmentFilter = await screen.findByLabelText('Département')
+    const launchSearchButton = await screen.findByRole('button', {
+      name: 'Lancer la recherche',
+    })
 
     // When
     await userEvent.type(textInput, 'a')
@@ -207,11 +219,15 @@ describe('app', () => {
 
     await userEvent.click(launchSearchButton)
 
-    expect(queryTag('a')).toBeInTheDocument()
-    expect(queryTag('01 - Ain')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'a' })).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: '01 - Ain' })
+    ).toBeInTheDocument()
 
-    const resetAllFiltersButton = await findResetAllFiltersButton()
-    userEvent.click(resetAllFiltersButton)
+    const resetAllFiltersButton = await screen.findByRole('button', {
+      name: 'Réinitialiser tous les filtres',
+    })
+    await userEvent.click(resetAllFiltersButton)
 
     // Then
     await waitFor(() => expect(Configure).toHaveBeenCalledTimes(4))
@@ -233,16 +249,22 @@ describe('app', () => {
         'offer.educationalInstitutionUAICode:uai',
       ],
     ])
-    expect(queryTag('a')).not.toBeInTheDocument()
-    expect(queryTag('01 - Ain')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'a' })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: '01 - Ain' })
+    ).not.toBeInTheDocument()
   })
 
   it('should display a "Réinitialiser les filtres" button when no result query is not empty', async () => {
     // Given
     jest.spyOn(apiAdage, 'getCollectiveOffer').mockRejectedValueOnce('')
     renderApp()
-    const searchBox = await findSearchBox()
-    const launchSearchButton = await findLaunchSearchButton()
+    const searchBox = await screen.findByPlaceholderText(
+      'Nom de l’offre ou du partenaire culturel'
+    )
+    const launchSearchButton = await screen.findByRole('button', {
+      name: 'Lancer la recherche',
+    })
 
     await userEvent.type(searchBox, 'Paris')
     await userEvent.click(launchSearchButton)
@@ -260,10 +282,12 @@ describe('app', () => {
     renderApp()
 
     // When
-    const departmentFilter = await findDepartmentFilter()
+    const departmentFilter = await screen.findByLabelText('Département')
     await userEvent.click(departmentFilter)
     await userEvent.click(screen.getByText('01 - Ain'))
-    const launchSearchButton = await findLaunchSearchButton()
+    const launchSearchButton = await screen.findByRole('button', {
+      name: 'Lancer la recherche',
+    })
     userEvent.click(launchSearchButton)
 
     // Then
