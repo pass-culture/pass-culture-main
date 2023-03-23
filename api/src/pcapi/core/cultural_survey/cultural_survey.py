@@ -158,6 +158,72 @@ SANS_ACTIVITES = CulturalSurveyAnswer(
     title="Aucune de ces activités culturelles",
 )
 
+PROJECTION_FESTIVAL = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.PROJECTION_FESTIVAL,
+    title="Aller à un festival",
+    subtitle="Musique, cinéma, littéraire, ...",
+)
+
+
+PROJECTION_CINEMA = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.PROJECTION_CINEMA,
+    title="Aller au cinéma",
+)
+
+PROJECTION_VISITE = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.PROJECTION_VISITE,
+    title="Faire des visites",
+    subtitle="Une exposition, un monument, ...",
+)
+
+PROJECTION_CONCERT = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.PROJECTION_CONCERT,
+    title="Participer à un concert",
+)
+
+
+PROJECTION_CD_VINYLE = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.PROJECTION_CD_VINYLE,
+    title="Écouter des CDs ou des vinyls",
+)
+
+
+PROJECTION_SPECTACLE = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.PROJECTION_SPECTACLE,
+    title="Voir un spectacle",
+    subtitle="Pièce de théâtre, cirque, humour, ...",
+)
+
+
+PROJECTION_ACTIVITE_ARTISTIQUE = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.PROJECTION_ACTIVITE_ARTISTIQUE,
+    title="Faire une activité artistique",
+    subtitle="Dessin, danse, théâtre, musique, ...",
+)
+
+
+PROJECTION_LIVRE = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.PROJECTION_LIVRE,
+    title="Lire des livres",
+)
+
+
+PROJECTION_CONFERENCE = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.PROJECTION_CONFERENCE,
+    title="Assister à des conférences ou des rencontres",
+)
+
+PROJECTION_JEU = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.PROJECTION_JEU,
+    title="Faire des jeux en solo ou en duo",
+    subtitle="Escape games, jeux vidéo, ...",
+)
+
+PROJECTION_AUTRE = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.PROJECTION_AUTRE,
+    title="Autre",
+)
+
 ALL_CULTURAL_SURVEY_ANSWERS = (
     FESTIVAL,
     SPECTACLE,
@@ -232,6 +298,19 @@ ACTIVITES_ANSWERS = [
     FILM_DOMICILE,
     SANS_ACTIVITES,
 ]
+PROJECTION_ANSWERS = [
+    PROJECTION_FESTIVAL,
+    PROJECTION_CINEMA,
+    PROJECTION_VISITE,
+    PROJECTION_CONCERT,
+    PROJECTION_CD_VINYLE,
+    PROJECTION_SPECTACLE,
+    PROJECTION_ACTIVITE_ARTISTIQUE,
+    PROJECTION_LIVRE,
+    PROJECTION_CONFERENCE,
+    PROJECTION_JEU,
+    PROJECTION_AUTRE,
+]
 
 
 SORTIES = CulturalSurveyQuestion(
@@ -258,9 +337,16 @@ ACTIVITES = CulturalSurveyQuestion(
     answers=ACTIVITES_ANSWERS,
 )
 
+PROJECTIONS = CulturalSurveyQuestion(
+    id=CulturalSurveyQuestionEnum.PROJECTIONS,
+    title="Cette année, tu aimerais ...",
+    answers=PROJECTION_ANSWERS,
+)
+
 ALL_CULTURAL_SURVEY_QUESTIONS = [
     SORTIES,
     FESTIVALS,
     SPECTACLES,
     ACTIVITES,
+    PROJECTIONS,
 ]
