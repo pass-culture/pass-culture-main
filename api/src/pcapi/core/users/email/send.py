@@ -23,15 +23,15 @@ def _build_link_for_email_change(current_email: str, new_email: str, expiration_
     return generate_firebase_dynamic_link(path, params)
 
 
-def send_beneficiary_user_emails_for_email_change(user: User, new_email: str, expiration_date: datetime) -> None:
+def send_beneficiary_user_emails_for_email_change(user: User, new_email: str, expiration_date: datetime) -> bool:
     user_with_new_email = find_user_by_email(new_email)
     if user_with_new_email:
-        return True  # type: ignore [return-value]
+        return True
 
     success = transactional_mails.send_information_email_change_email(user)
     link_for_email_change = _build_link_for_email_change(user.email, new_email, expiration_date)
     success &= transactional_mails.send_confirmation_email_change_email(user, new_email, link_for_email_change)
-    return success  # type: ignore [return-value]
+    return success
 
 
 def build_pro_link_for_email_change(current_email: str, new_email: str, user_id: int, expiration_date: datetime) -> str:
