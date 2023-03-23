@@ -21,6 +21,7 @@ class Target(enum.Enum):
 
 
 class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
+    adageInscriptionDate: datetime | None
     address: str | None
     bookingEmail: str | None
     city: str | None
@@ -28,6 +29,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     departementCode: str | None
     hasMissingReimbursementPoint: bool
     hasCreatedOffer: bool
+    hasAdageId: bool
     id: str
     isVirtual: bool
     managingOffererId: str
@@ -39,6 +41,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     venueLabelId: str | None
     venueTypeCode: offerers_models.VenueTypeCode
     withdrawalDetails: str | None
+    DMSApplicationIdForEAC: list[int]
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
     _humanize_venue_label_id = humanize_field("venueLabelId")
@@ -60,6 +63,8 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
             or venue.hasPendingBankInformationApplication
         )
         venue.hasCreatedOffer = venue.id in ids_of_venues_with_offers
+        venue.hasAdageId = bool(venue.adageId)
+        venue.DMSApplicationIdForEAC = [application.application for application in venue.collectiveDmsApplications]
         return super().from_orm(venue)
 
     class Config:
@@ -110,6 +115,7 @@ class GetOffererResponseModel(BaseModel):
             offerers_models.Venue.query.filter_by(managingOffererId=offerer.id)
             .options(sqla_orm.joinedload(offerers_models.Venue.reimbursement_point_links))
             .options(sqla_orm.joinedload(offerers_models.Venue.bankInformation))
+            .options(sqla_orm.joinedload(offerers_models.Venue.collectiveDmsApplications))
             .order_by(offerers_models.Venue.common_name)
             .all()
         )
