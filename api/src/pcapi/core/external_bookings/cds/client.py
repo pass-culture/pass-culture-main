@@ -32,6 +32,9 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
         self.account_id = account_id
         super()
 
+    def get_film_showtimes_stocks(self, film_id: int) -> dict[int, int]:  # type: ignore [empty-body]
+        pass
+
     def get_internet_sale_gauge_active(self) -> bool:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.CINEMAS)
         cinemas = parse_obj_as(list[cds_serializers.CinemaCDS], data)
