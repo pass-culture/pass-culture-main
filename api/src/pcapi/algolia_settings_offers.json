@@ -30,9 +30,7 @@
     "queryLanguages": [
         "fr"
     ],
-    "replicas": [
-        "virtual(PRODUCTION Top offres)"
-    ],
+    "replicas": [],
     "attributesForFaceting": [
         "offer.bookMacroSection",
         "filterOnly(offer.category)",
