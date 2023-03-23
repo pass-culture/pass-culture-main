@@ -187,6 +187,78 @@ class CulturalSurveyQuestionsTest:
                         },
                     ],
                 },
+                {
+                    "id": "PROJECTIONS",
+                    "title": "Cette année, tu aimerais ...",
+                    "answers": [
+                        {
+                            "id": "PROJECTION_FESTIVAL",
+                            "title": "Aller à un festival",
+                            "sub_question": None,
+                            "subtitle": "Musique, cinéma, littéraire, ...",
+                        },
+                        {
+                            "id": "PROJECTION_CINEMA",
+                            "title": "Aller au cinéma",
+                            "sub_question": None,
+                            "subtitle": None,
+                        },
+                        {
+                            "id": "PROJECTION_VISITE",
+                            "title": "Faire des visites",
+                            "sub_question": None,
+                            "subtitle": "Une exposition, un monument, ...",
+                        },
+                        {
+                            "id": "PROJECTION_CONCERT",
+                            "title": "Participer à un concert",
+                            "sub_question": None,
+                            "subtitle": None,
+                        },
+                        {
+                            "id": "PROJECTION_CD_VINYLE",
+                            "title": "Écouter des CDs ou des vinyls",
+                            "sub_question": None,
+                            "subtitle": None,
+                        },
+                        {
+                            "id": "PROJECTION_SPECTACLE",
+                            "title": "Voir un spectacle",
+                            "sub_question": None,
+                            "subtitle": "Pièce de théâtre, cirque, humour, ...",
+                        },
+                        {
+                            "id": "PROJECTION_ACTIVITE_ARTISTIQUE",
+                            "title": "Faire une activité artistique",
+                            "sub_question": None,
+                            "subtitle": "Dessin, danse, théâtre, musique, ...",
+                        },
+                        {
+                            "id": "PROJECTION_LIVRE",
+                            "title": "Lire des livres",
+                            "sub_question": None,
+                            "subtitle": None,
+                        },
+                        {
+                            "id": "PROJECTION_CONFERENCE",
+                            "title": "Assister à des conférences ou des rencontres",
+                            "sub_question": None,
+                            "subtitle": None,
+                        },
+                        {
+                            "id": "PROJECTION_JEU",
+                            "title": "Faire des jeux en solo ou en duo",
+                            "sub_question": None,
+                            "subtitle": "Escape games, jeux vidéo, ...",
+                        },
+                        {
+                            "id": "PROJECTION_AUTRE",
+                            "title": "Autre",
+                            "sub_question": None,
+                            "subtitle": None,
+                        },
+                    ],
+                },
             ]
         }
 
@@ -209,6 +281,12 @@ class CulturalSurveyQuestionsTest:
                     CulturalSurveyAnswerEnum.FESTIVAL_MUSIQUE.value,
                 ],
             },
+            {
+                "questionId": CulturalSurveyQuestionEnum.PROJECTIONS.value,
+                "answerIds": [
+                    CulturalSurveyAnswerEnum.PROJECTION_SPECTACLE.value,
+                ],
+            },
         ]
         response = client.post(
             "/native/v1/cultural_survey/answers",
@@ -220,7 +298,8 @@ class CulturalSurveyQuestionsTest:
         answers_str = (
             '{"user_id": %s, "submitted_at": "2020-01-01T00:00:00", "answers": '
             '[{"question_id": "SORTIES", "answer_ids": ["FESTIVAL"]}, '
-            '{"question_id": "FESTIVALS", "answer_ids": ["FESTIVAL_MUSIQUE"]}]}'
+            '{"question_id": "FESTIVALS", "answer_ids": ["FESTIVAL_MUSIQUE"]}, '
+            '{"question_id": "PROJECTIONS", "answer_ids": ["PROJECTION_SPECTACLE"]}]}'
         ) % user.id
 
         # Note: if the path does not exist, GCP creates the necessary folders
