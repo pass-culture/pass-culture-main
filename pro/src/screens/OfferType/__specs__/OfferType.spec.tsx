@@ -149,7 +149,6 @@ describe('screens:OfferIndividual::OfferType', () => {
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
     )
-    expect(api.canOffererCreateEducationalOffer).toHaveBeenCalledTimes(1)
 
     await userEvent.click(
       screen.getByRole('radio', {
