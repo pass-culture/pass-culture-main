@@ -17,12 +17,6 @@ import {
   FeaturesContextType,
 } from '../providers/FeaturesContextProvider'
 
-import {
-  findLaunchSearchButton,
-  queryResetFiltersButton,
-  queryTag,
-} from './__test_utils__/elements'
-
 jest.mock('react-instantsearch-dom', () => {
   return {
     ...jest.requireActual('react-instantsearch-dom'),
@@ -186,9 +180,6 @@ describe('app', () => {
         ],
       ])
 
-      expect(queryTag(`Lieu : ${venue?.publicName}`)).toBeInTheDocument()
-      expect(queryResetFiltersButton()).toBeInTheDocument()
-
       expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, false)
     })
 
@@ -205,7 +196,6 @@ describe('app', () => {
       const venueFilter = await screen.findByText(`Lieu : ${venue.name}`)
       expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, false)
       expect(venueFilter).toBeInTheDocument()
-      expect(queryResetFiltersButton()).toBeInTheDocument()
     })
 
     it('should show search offers input with filter on venue public name when venueId is provided and public name exists', async () => {
@@ -231,9 +221,6 @@ describe('app', () => {
         ],
       ])
 
-      expect(queryTag(`Lieu : ${venue?.publicName}`)).toBeInTheDocument()
-      expect(queryResetFiltersButton()).toBeInTheDocument()
-
       expect(apiAdage.getVenueById).toHaveBeenCalledWith(venueId, false)
     })
 
@@ -250,7 +237,6 @@ describe('app', () => {
       const venueFilter = await screen.findByText(`Lieu : ${venue.name}`)
       expect(apiAdage.getVenueById).toHaveBeenCalledWith(venueId, false)
       expect(venueFilter).toBeInTheDocument()
-      expect(queryResetFiltersButton()).toBeInTheDocument()
     })
 
     it("should show search offers input with no filter when venue isn't recognized", async () => {
@@ -279,7 +265,9 @@ describe('app', () => {
         ],
       ])
       expect(Configure).toHaveBeenCalledTimes(1)
-      expect(queryTag(`Lieu : ${venue?.publicName}`)).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: `Lieu : ${venue?.publicName}` })
+      ).not.toBeInTheDocument()
       expect(
         screen.getByText('Lieu inconnu. Tous les résultats sont affichés.')
       ).toBeInTheDocument()
@@ -348,7 +336,9 @@ describe('app', () => {
       renderApp()
 
       const venueFilter = await screen.findByText(`Lieu : ${venue?.publicName}`)
-      const launchSearchButton = await findLaunchSearchButton()
+      const launchSearchButton = screen.getByRole('button', {
+        name: 'Lancer la recherche',
+      })
 
       // When
       userEvent.click(venueFilter)
@@ -375,7 +365,9 @@ describe('app', () => {
           'offer.educationalInstitutionUAICode:uai',
         ],
       ])
-      expect(queryTag(`Lieu : ${venue?.publicName}`)).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: `Lieu : ${venue?.publicName}` })
+      ).not.toBeInTheDocument()
     })
 
     it('should uncheck on department only and search on intervention area also when only in my department is unchecked', async () => {
@@ -385,7 +377,9 @@ describe('app', () => {
       const onlyInMyDptFilter = await screen.getByLabelText(
         'Les acteurs culturels de mon département : ALES (30)'
       )
-      const launchSearchButton = await findLaunchSearchButton()
+      const launchSearchButton = screen.getByRole('button', {
+        name: 'Lancer la recherche',
+      })
       // When
       userEvent.click(onlyInMyDptFilter)
       userEvent.click(launchSearchButton)

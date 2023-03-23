@@ -4,14 +4,12 @@ import React from 'react'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { findLaunchSearchButton } from 'pages/AdageIframe/app/__spec__/__test_utils__/elements'
 import {
   AlgoliaQueryContextProvider,
   FiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
 
 import { OffersSearchComponent, SearchProps } from '../OffersSearch'
-import { placeholder } from '../SearchBox'
 
 jest.mock('../Offers/Offers', () => {
   return {
@@ -64,10 +62,14 @@ describe('offersSearch component', () => {
   it('should call algolia with requested query', async () => {
     // Given
     renderOffersSearchComponent(props)
-    const launchSearchButton = await findLaunchSearchButton()
+    const launchSearchButton = screen.getByRole('button', {
+      name: 'Lancer la recherche',
+    })
 
     // When
-    const textInput = screen.getByPlaceholderText(placeholder)
+    const textInput = screen.getByPlaceholderText(
+      'Nom de l’offre ou du partenaire culturel'
+    )
     await userEvent.type(textInput, 'Paris')
     await userEvent.click(launchSearchButton)
 
