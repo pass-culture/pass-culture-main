@@ -51,6 +51,7 @@ interface IRouteMeta {
   public?: boolean
   layoutConfig?: ILayoutConfig
   withoutLayout?: boolean
+  shouldRedirect?: boolean
 }
 
 export interface IRoute {
