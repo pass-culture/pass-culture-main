@@ -1112,7 +1112,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(
             film_id = cinema_providers_utils.get_boost_film_id_from_uuid(offer.idAtProvider)
             if not film_id:
                 return
-            shows_remaining_places = external_bookings_api.get_boost_movie_stocks(offer.venueId, film_id)
+            shows_remaining_places = external_bookings_api.get_movie_stocks(offer.venueId, film_id)
         case _:
             raise ValueError(f"Unknown Provider: {venue_provider.provider.localClass}")
 
