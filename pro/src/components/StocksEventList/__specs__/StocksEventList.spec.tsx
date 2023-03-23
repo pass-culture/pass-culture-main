@@ -99,14 +99,13 @@ describe('StocksEventList', () => {
     expect(checkboxes[2]).not.toBeChecked()
   })
 
-  it('should bulk delete lines when clicking on button', async () => {
+  it('should bulk delete lines when clicking on button on action bar', async () => {
     renderStocksEventList({
       stocks: [
         individualStockEventListFactory({ priceCategoryId: 1 }),
         individualStockEventListFactory({ priceCategoryId: 1 }),
       ],
     })
-
     expect(screen.getAllByText('12,38 € - Label')).toHaveLength(2)
 
     const checkboxes = screen.getAllByRole('checkbox')
@@ -129,6 +128,45 @@ describe('StocksEventList', () => {
         isEdition: true,
         offerId: 'AA',
         used: 'StockEventBulkDelete',
+        to: 'stocks',
+      }
+    )
+  })
+
+  it('should delete line when clicking on trash icon', async () => {
+    renderStocksEventList({
+      stocks: [
+        individualStockEventListFactory({ priceCategoryId: 1 }),
+        individualStockEventListFactory({ priceCategoryId: 1 }),
+      ],
+    })
+    expect(screen.getAllByText('12,38 € - Label')).toHaveLength(2)
+
+    const checkboxes = screen.getAllByRole('checkbox')
+    await userEvent.click(checkboxes[0])
+    expect(screen.getByText('2 dates sélectionnées')).toBeInTheDocument()
+
+    await userEvent.click(screen.getAllByText('Supprimer')[0])
+    expect(screen.getByText('1 date sélectionnée')).toBeInTheDocument()
+    expect(mockSetSotcks).toBeCalledTimes(1)
+    expect(mockSetSotcks).toHaveBeenNthCalledWith(1, [
+      {
+        beginningDatetime: '2021-10-15T12:00:00.000Z',
+        bookingLimitDatetime: '2021-09-15T12:00:00.000Z',
+        priceCategoryId: 1,
+        quantity: 18,
+      },
+    ])
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'stocks',
+        isDraft: false,
+        isEdition: true,
+        offerId: 'AA',
+        used: 'StockEventDelete',
         to: 'stocks',
       }
     )
