@@ -622,6 +622,12 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         except ValueError:  # if no non-deleted stocks
             return 0
 
+    @property
+    def showSubType(self) -> str | None:  # used in validation rule, do not remove
+        if self.extraData:
+            return self.extraData.get("showSubType")
+        return None
+
     @hybrid_property
     def status(self) -> OfferStatus:
         if self.validation == OfferValidationStatus.REJECTED:
