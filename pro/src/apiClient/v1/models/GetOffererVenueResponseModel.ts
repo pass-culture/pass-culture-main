@@ -5,12 +5,15 @@
 import type { VenueTypeCode } from './VenueTypeCode';
 
 export type GetOffererVenueResponseModel = {
+  DMSApplicationIdForEAC: Array<number>;
+  adageInscriptionDate?: string | null;
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;
   bookingEmail?: string | null;
   city?: string | null;
   comment?: string | null;
   departementCode?: string | null;
+  hasAdageId: boolean;
   hasCreatedOffer: boolean;
   hasMissingReimbursementPoint: boolean;
   id: string;
