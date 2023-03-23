@@ -24,7 +24,6 @@ import {
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.svg'
 import { ReactComponent as CaseIcon } from 'icons/ico-case.svg'
@@ -88,7 +87,6 @@ const OfferType = (): JSX.Element => {
   }, [offerType])
   const [isLoadingEligibility, setIsLoadingEligibility] = useState(false)
   const [isEligible, setIsEligible] = useState(false)
-  const { currentUser } = useCurrentUser()
 
   const getNextPageHref = (event: FormEvent<HTMLFormElement>) => {
     if (offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
@@ -144,12 +142,13 @@ const OfferType = (): JSX.Element => {
     setIsLoadingEligibility(true)
     const offererNames = await api.listOfferersNames()
 
-    const offererId = currentUser.isAdmin
-      ? queryOffererId
-      : offererNames.offerersNames[0].id
-    if (offererNames.offerersNames.length > 1) {
+    const offererId = queryOffererId ?? offererNames.offerersNames[0].id
+    if (offererNames.offerersNames.length > 1 && !queryOffererId) {
       setIsEligible(true)
+      setIsLoadingEligibility(false)
+      return
     }
+
     if (offererId) {
       const { isOk, message, payload } =
         await canOffererCreateCollectiveOfferAdapter(offererId)
