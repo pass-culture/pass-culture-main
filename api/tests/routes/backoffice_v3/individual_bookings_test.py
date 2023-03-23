@@ -85,7 +85,6 @@ class ListIndividualBookingsTest:
 
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
         endpoint = "backoffice_v3_web.individual_bookings.list_individual_bookings"
-        endpoint_kwargs = {"offerer_id": 1}
         needed_permission = perm_models.Permissions.READ_BOOKINGS
 
     def test_list_bookings_without_filter(self, authenticated_client, bookings):
