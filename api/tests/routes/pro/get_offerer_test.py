@@ -35,7 +35,15 @@ def test_basics(client):
             datetime.datetime.utcnow() - datetime.timedelta(days=9),
         ],
     )
-    offerers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="More venue withdrawal details")
+    venue = offerers_factories.VenueFactory(
+        managingOfferer=offerer,
+        withdrawalDetails="More venue withdrawal details",
+        adageId="123",
+        adageInscriptionDate=datetime.datetime.utcnow(),
+    )
+    collective_factories.CollectiveDmsApplicationFactory(
+        venue=venue,
+    )
     offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix")
     offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix2")
     finance_factories.BankInformationFactory(venue=venue_1, applicationId=2, status="REJECTED")
@@ -69,12 +77,17 @@ def test_basics(client):
         "lastProviderId": offerer.lastProviderId,
         "managedVenues": [
             {
-                "audioDisabilityCompliant": False,
+                "adageInscriptionDate": format_into_utc_date(venue.adageInscriptionDate)
+                if venue.adageInscriptionDate
+                else None,
                 "address": venue.address,
+                "audioDisabilityCompliant": False,
                 "bookingEmail": venue.bookingEmail,
                 "city": venue.city,
                 "comment": venue.comment,
                 "departementCode": venue.departementCode,
+                "DMSApplicationIdForEAC": [a.application for a in venue.collectiveDmsApplications],
+                "hasAdageId": bool(venue.adageId),
                 "hasMissingReimbursementPoint": venue.hasMissingReimbursementPoint,
                 "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
                 "id": humanize(venue.id),
