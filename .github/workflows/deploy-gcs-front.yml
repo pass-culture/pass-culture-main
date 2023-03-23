@@ -22,8 +22,6 @@ on:
 jobs:
   deploy-app:
     name: "[${{ inputs.app_name }}] Deployment"
-    container:
-      image: node:18
     runs-on: [self-hosted, linux, x64]
     environment: ${{ inputs.environment }}
     permissions:
