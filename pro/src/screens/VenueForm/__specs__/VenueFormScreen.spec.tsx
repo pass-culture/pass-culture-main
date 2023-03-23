@@ -971,9 +971,6 @@ describe('screen | VenueForm', () => {
         features,
         true
       )
-      const editVenue = jest
-        .spyOn(api, 'editVenue')
-        .mockResolvedValue({ id: 'AA' } as GetVenueResponseModel)
 
       await waitFor(() => {
         expect(
