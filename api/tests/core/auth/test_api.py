@@ -5,6 +5,8 @@ import pytest
 from pcapi.core.auth.api import NotAPassCultureTeamAccountError
 from pcapi.core.auth.api import authenticate_with_permissions
 from pcapi.core.auth.api import extract_roles_from_google_workspace_groups
+from pcapi.core.auth.api import get_permissions_from_roles
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.permissions.factories import PermissionFactory
 from pcapi.core.permissions.factories import RoleFactory
 from pcapi.core.testing import override_settings
@@ -48,6 +50,33 @@ def test_can_extract_roles_from_legacy_google_workspace_groups():
 
     # then
     assert extracted_roles == {"admin", "pro-support", "public-support"}
+
+
+def test_get_permissions_from_roles():
+    # given
+    perm_admin = PermissionFactory(name="perm-admin")
+    perm_pro = PermissionFactory(name="perm-pro")
+    perm_public = PermissionFactory(name="perm-public")
+    perm_fraude = PermissionFactory(name="perm-fraude")
+    RoleFactory(name="admin", permissions=[perm_admin, perm_fraude])
+    RoleFactory(name="pro-support", permissions=[perm_pro])
+    RoleFactory(name="public-support", permissions=[perm_public])
+    extracted_roles = {"admin", "pro-support"}
+
+    # when
+    extracted_permissions = get_permissions_from_roles(extracted_roles)
+
+    # then
+    assert set(extracted_permissions) == {perm_admin, perm_pro, perm_fraude}
+
+
+def test_get_permissions_creates_unknown_role():
+    # when
+    extracted_permissions = get_permissions_from_roles({"unknown"})
+
+    # then
+    assert len(extracted_permissions) == 0
+    assert perm_models.Role.query.one().name == "unknown"
 
 
 def test_get_token_with_permission_from_google_token_id():
