@@ -1,3 +1,4 @@
+from datetime import datetime
 from functools import partial
 import json
 import typing
@@ -120,12 +121,14 @@ def synchronize_adage_ids_on_venues() -> None:
                 send_eac_offerer_activation_email(venue, list(emails))
 
         venue.adageId = str(filtered_cultural_partner_by_ids[venue.id].id)
+        venue.adageInscriptionDate = datetime.utcnow()
 
     db.session.commit()
 
 
 def _remove_venue_from_eac(venue: offerers_models.Venue) -> None:
     venue.adageId = None
+    venue.adageInscriptionDate = None
 
 
 def get_adage_educational_redactors_for_uai(uai: str, *, force_update: bool = False) -> list[dict[str, str]]:
