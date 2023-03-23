@@ -5,6 +5,7 @@ import {
   Navigate,
   RouterProvider,
   useLocation,
+  useMatches,
 } from 'react-router-dom'
 
 import App from 'app/App/App'
@@ -13,10 +14,12 @@ import { IRoute } from 'app/AppRouter/routes_map'
 import useCurrentUser from 'hooks/useCurrentUser'
 import NotFound from 'pages/Errors/NotFound/NotFound'
 import { selectActiveFeatures } from 'store/features/selectors'
+import { dehumanizedRoute } from 'utils/dehumanize'
 
 const RouteWrapper = ({ route }: { route: IRoute }) => {
   const { currentUser } = useCurrentUser()
   const location = useLocation()
+  const matches = useMatches()
   const fromUrl = encodeURIComponent(`${location.pathname}${location.search}`)
   let jsx: JSX.Element = route.element
 
@@ -36,6 +39,16 @@ const RouteWrapper = ({ route }: { route: IRoute }) => {
     jsx = <Navigate to={loginUrl} replace />
   }
 
+  // FIXME (mageoffray, 2023-03-24)
+  // This is a temporary redirection to remove humanizedId.
+  // For 6 months (until around 2023-10-01) we should redirect
+  // urls with humanized params to url wih non human parameters
+  if (route.meta?.shouldRedirect) {
+    const newLocation = dehumanizedRoute(location, matches)
+    if (location.pathname + location.search != newLocation) {
+      jsx = <Navigate to={newLocation} replace />
+    }
+  }
   return <App>{jsx}</App>
 }
 

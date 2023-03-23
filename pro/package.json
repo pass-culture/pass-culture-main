@@ -58,6 +58,7 @@
     "final-form": "^4.20.6",
     "final-form-calculate": "^1.2.1",
     "formik": "^2.2.9",
+    "hi-base32": "^0.5.1",
     "identity-obj-proxy": "^3.0.0",
     "libphonenumber-js": "^1.9.44",
     "lodash.debounce": "^4.0.8",
