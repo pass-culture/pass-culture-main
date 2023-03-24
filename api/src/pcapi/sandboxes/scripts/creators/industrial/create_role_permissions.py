@@ -27,7 +27,6 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_BOOKINGS,
         perm_models.Permissions.SEARCH_BOOKINGS,
         perm_models.Permissions.READ_BOOKINGS,
-        perm_models.Permissions.SEARCH_OFFERS,
         perm_models.Permissions.READ_OFFERS,
     ],
     "support-PRO-N2": [
@@ -35,6 +34,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_PROVIDERS,
     ],
     "fraude-conformite": [
+        perm_models.Permissions.FRAUD_ACTIONS,
         perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.REVIEW_PUBLIC_ACCOUNT,
@@ -47,7 +47,6 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.SEARCH_BOOKINGS,
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.MANAGE_OFFERS,
-        perm_models.Permissions.SEARCH_OFFERS,
         perm_models.Permissions.READ_OFFERS,
     ],
     "daf": [],
@@ -59,7 +58,6 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.MANAGE_PRO_ENTITY,
         perm_models.Permissions.VALIDATE_OFFERER,
-        perm_models.Permissions.SEARCH_OFFERS,
         perm_models.Permissions.MANAGE_OFFERS,
         perm_models.Permissions.READ_OFFERS,
     ],

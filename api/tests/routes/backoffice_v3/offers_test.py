@@ -76,7 +76,7 @@ class ListOffersTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
         endpoint = "backoffice_v3_web.offer.list_offers"
         endpoint_kwargs = {"offerer_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+        needed_permission = perm_models.Permissions.READ_OFFERS
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # when
@@ -548,7 +548,7 @@ class ValidateOfferTest:
         method = "post"
         endpoint = "backoffice_v3_web.offer.validate_offer"
         endpoint_kwargs = {"offer_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+        needed_permission = perm_models.Permissions.FRAUD_ACTIONS
 
     def test_validate_offer(self, legit_user, authenticated_client):
         offer_to_validate = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.REJECTED)
@@ -587,7 +587,7 @@ class ValidateOfferFormTest:
         method = "post"
         endpoint = "backoffice_v3_web.offer.get_validate_offer_form"
         endpoint_kwargs = {"offer_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+        needed_permission = perm_models.Permissions.FRAUD_ACTIONS
 
     def test_get_validate_form_test(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory()
@@ -604,7 +604,7 @@ class RejectOfferTest:
         method = "post"
         endpoint = "backoffice_v3_web.offer.reject_offer"
         endpoint_kwargs = {"offer_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+        needed_permission = perm_models.Permissions.FRAUD_ACTIONS
 
     def test_reject_offer(self, legit_user, authenticated_client):
         offer_to_reject = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.APPROVED)
@@ -643,7 +643,7 @@ class RejectOfferFormTest:
         method = "post"
         endpoint = "backoffice_v3_web.offer.get_reject_offer_form"
         endpoint_kwargs = {"offer_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+        needed_permission = perm_models.Permissions.FRAUD_ACTIONS
 
     def test_get_edit_form_test(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory()

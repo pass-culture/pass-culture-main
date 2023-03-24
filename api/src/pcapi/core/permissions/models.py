@@ -21,6 +21,8 @@ class Permissions(enum.Enum):
 
     MANAGE_PERMISSIONS = "gérer les droits"
 
+    FRAUD_ACTIONS = "actions exclusives à l'équipe Fraude et Conformité"
+
     SEARCH_PUBLIC_ACCOUNT = "rechercher un compte bénéficiaire/grand public"
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
     REVIEW_PUBLIC_ACCOUNT = "faire une revue manuelle d'un compte bénéficiaire/grand public"
@@ -41,6 +43,7 @@ class Permissions(enum.Enum):
     SEARCH_BOOKINGS = "rechercher les réservations"
     READ_BOOKINGS = "visualiser les réservations"
 
+    # TODO : deprecated, remove SEARCH_OFFERS
     SEARCH_OFFERS = "rechercher les offres"
     READ_OFFERS = "visualiser les offres"
     MANAGE_OFFERS = "gérer les offres"
