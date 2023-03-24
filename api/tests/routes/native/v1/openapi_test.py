@@ -3041,6 +3041,7 @@ def test_public_api(client):
                     "responses": {
                         "200": {"description": "OK"},
                         "403": {"description": "Forbidden"},
+                        "404": {"description": "Not Found"},
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
