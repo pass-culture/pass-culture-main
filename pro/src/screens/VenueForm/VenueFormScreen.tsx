@@ -25,7 +25,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import { IcoMailOutline } from 'icons'
+import { MailOutlineIcon } from 'icons'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { Button, Title } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -294,7 +294,7 @@ const VenueFormScreen = ({
             leftButtonAction={handleCancelWithdrawalDialog}
             onCancel={() => setIsWithdrawalDialogOpen(false)}
             onConfirm={handleConfirmWithdrawalDialog}
-            icon={IcoMailOutline}
+            icon={MailOutlineIcon}
             title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
           />
         )}
