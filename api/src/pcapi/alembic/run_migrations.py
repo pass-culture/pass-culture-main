@@ -12,8 +12,6 @@ logger = logging.getLogger(__name__)
 
 target_metadata = Base.metadata
 
-IGNORED_TABLES = ("transaction", "activity")
-
 
 def include_object(
     object: schema.SchemaItem,  # pylint: disable=redefined-builtin
@@ -27,9 +25,6 @@ def include_object(
     if type_ == "table" and reflected and compare_to is None:
         table_name = object.name  # type: ignore[attr-defined]
         logger.warning(">>>>> Ignoring DROP TABLE for table '%s' <<<<<", table_name)
-        return False
-    if type_ == "table" and name in IGNORED_TABLES:
-        logger.warning(">>>>> Ignoring table '%s' from IGNORED_TABLES <<<<<", object.name)  # type: ignore[attr-defined]
         return False
     return True
 
