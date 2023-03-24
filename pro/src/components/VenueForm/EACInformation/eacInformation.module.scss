@@ -4,3 +4,11 @@
 .eac-banner-light {
   background-color: colors.$notification-info;
 }
+
+.eac-title-info {
+  font-weight: 500;
+}
+
+.eac-description-info {
+  margin: rem.torem(16px) 0 rem.torem(24px) 0;
+}
