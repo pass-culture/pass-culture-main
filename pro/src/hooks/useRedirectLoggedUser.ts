@@ -14,12 +14,8 @@ const useRedirectLoggedUser = () => {
 
   useEffect(() => {
     async function fetchOfferersNames() {
-      try {
-        const listOfferer = await api.listOfferersNames()
-        if (listOfferer.offerersNames.length === 0) {
-          navigate('/parcours-inscription')
-        }
-      } catch (error) {
+      const listOfferer = await api.listOfferersNames()
+      if (listOfferer.offerersNames.length === 0) {
         navigate('/parcours-inscription')
       }
     }
