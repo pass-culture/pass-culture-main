@@ -49,6 +49,7 @@ const renderValidationScreen = (contextValue: ISignupJourneyContext) => {
             path="/parcours-inscription/validation"
             element={<Validation />}
           />
+          <Route path="/accueil" element={<div>accueil</div>} />
         </Routes>
       </SignupJourneyContext.Provider>
       <Notification />
@@ -160,6 +161,8 @@ describe('screens:SignupJourney::Validation', () => {
         webPresence: 'url1, url2',
         target: Target.EDUCATIONAL,
       })
+
+      expect(screen.getByText('accueil')).toBeInTheDocument()
     })
   })
 
