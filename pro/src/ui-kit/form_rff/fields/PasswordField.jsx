@@ -98,10 +98,11 @@ class PasswordField extends PureComponent {
         {this.props.showTooltip && (
           <Icon
             alt="Caractéristiques obligatoires du mot de passe"
+            className="react-tooltip-anchor"
             currentitem="false"
-            data-place="bottom"
-            data-tip={this.renderPasswordTooltip()}
-            data-type="info"
+            data-tooltip-place="bottom"
+            data-tooltip-content={this.renderPasswordTooltip()}
+            data-tooltip-type="info"
             svg="picto-info"
           />
         )}

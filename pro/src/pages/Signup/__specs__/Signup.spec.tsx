@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
@@ -12,6 +12,8 @@ jest.mock('apiClient/api', () => ({
   api: {
     getProfile: jest.fn().mockResolvedValue({}),
     listFeatures: jest.fn(),
+    listOfferersNames: jest.fn(),
+    getSirenInfo: jest.fn(),
   },
 }))
 
@@ -29,12 +31,13 @@ describe('src | components | pages | Signup', () => {
   })
   afterEach(jest.resetAllMocks)
 
-  it('should render logo and sign-up form', () => {
+  it('should render logo and sign-up form', async () => {
     // when
     renderWithProviders(<Signup />, {
       storeOverrides,
       initialRouterEntries: ['/'], // /inscription
     })
+    await waitFor(() => expect(campaignTracker.signUp).toHaveBeenCalled())
 
     // then
     expect(
@@ -42,12 +45,13 @@ describe('src | components | pages | Signup', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render logo and confirmation page', () => {
+  it('should render logo and confirmation page', async () => {
     // when
     renderWithProviders(<Signup />, {
       storeOverrides,
       initialRouterEntries: ['/confirmation'], // /inscription/confirmation
     })
+    await waitFor(() => expect(campaignTracker.signUp).toHaveBeenCalled())
 
     // then
     expect(
@@ -68,6 +72,7 @@ describe('src | components | pages | Signup', () => {
       storeOverrides,
       initialRouterEntries: ['/inscription'],
     })
+    await waitFor(() => expect(campaignTracker.signUp).toHaveBeenCalled())
 
     // then
     expect(
