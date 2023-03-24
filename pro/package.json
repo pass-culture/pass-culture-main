@@ -103,7 +103,7 @@
     "@storybook/builder-webpack5": "^6.5.16",
     "@storybook/manager-webpack5": "^6.5.16",
     "@storybook/react": "^6.5.16",
-    "@svgr/webpack": "^6.2.1",
+    "@svgr/webpack": "^7.0.0",
     "@testing-library/jest-dom": "^5.16.3",
     "@testing-library/react": "12.1.2",
     "@testing-library/react-hooks": "^8.0.0",
