@@ -614,57 +614,7 @@ def _delete_dependent_pricings(
     bookings_already_priced = {p.bookingId for p in pricings}
     for pricing in pricings:
         if pricing.status not in models.DELETABLE_PRICING_STATUSES:
-            # FIXME (dbaty, 2022-04-06): there was a bug that caused
-            # cashflows to be generated for events that had not yet
-            # happened (see fix in 4d68e12dae26c54d8e03fcacdfdf3002b).
-            # For impacted events, we will end up here but we cannot
-            # do anything. Once all impacted events have happened
-            # (i.e. after 2022-11-05), we can remove the `if` part of
-            # the block (and always log an error and raise an
-            # exception as we currently do in the `else` part).
-            #
-            # Stock identifiers have been exported with this query:
-            #   SELECT id, "beginningDatetime" FROM stock
-            #   WHERE id in (
-            #     SELECT distinct(stock.id) FROM stock
-            #     JOIN booking ON booking."stockId" = stock.id
-            #     JOIN pricing ON pricing."bookingId" = booking.id
-            #     WHERE stock."beginningDatetime" > now() AND pricing.status = 'invoiced'
-            #   )
-            #   ORDER BY "beginningDatetime";
-            # fmt: off
-            stock_ids = {
-                # happen before end of April
-                50064552, 50416251, 46417998, 23264071, 48486869, 49304599, 49474883, 43553116,
-                45321327, 30776142, 51231535, 46406103, 50416326, 49096489, 49096374, 50222944,
-                49096506, 49096405, 45964076, 49096446, 50222788, 49096475, 48487047, 23264187,
-                44848126,
-                # happen before end of May
-                49726292, 30070444,
-                # happen before end of June
-                47917093, 47917071, 47916748, 50629375, 50276834, 47916807, 30833457,
-                # happen before end of July
-                49729242, 49729181, 49729227, 49729197, 49729210, 49923686, 50221016, 42193135,
-                49343153, 49343119, 49343139, 49343148, 49343160, 50259980, 49425966, 48774702,
-                50259991, 49425801,
-                # happens before end of September
-                30776103,
-                # happens on 2022-11-05
-                51132276,
-            }
-            # fmt: on
-            if pricing.stockId in stock_ids:
-                pricing_ids.remove(pricing.id)
-                bookings_already_priced.remove(pricing.bookingId)
-                logger.info(
-                    "Found non-deletable pricing for a SIRET that has an older booking to price or cancel (special case for prematurely reimbursed event bookings)",
-                    extra={
-                        "booking_being_priced_or_cancelled": booking.id,
-                        "older_pricing": pricing.id,
-                        "older_pricing_status": pricing.status,
-                    },
-                )
-            elif pricing_point_id in settings.FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS:
+            if pricing_point_id in settings.FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS:
                 pricing_ids.remove(pricing.id)
                 bookings_already_priced.remove(pricing.bookingId)
                 logger.info(
