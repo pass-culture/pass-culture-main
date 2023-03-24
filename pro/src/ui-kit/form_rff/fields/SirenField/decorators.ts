@@ -13,7 +13,6 @@ export const sirenUpdate = async (humanSiren: string) => {
       name: '',
       postalCode: '',
       siren: humanSiren,
-      apeCode: '',
     }
   }
   let values = undefined
