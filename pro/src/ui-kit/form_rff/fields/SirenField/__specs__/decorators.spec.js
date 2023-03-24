@@ -42,7 +42,6 @@ describe('sirenUpdate', () => {
         name: '',
         postalCode: '',
         siren: '418 71',
-        apeCode: '',
       })
     })
   })
