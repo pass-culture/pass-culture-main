@@ -73,27 +73,31 @@
                       <i class="bi bi-three-dots-vertical"></i>
                     </button>
                     <ul class="dropdown-menu">
-                      <li class="dropdown-item">
-                        <a class="btn btn-sm d-block w-100 text-start px-3"
-                           data-bs-toggle="modal"
-                           data-bs-target="#edit-offer-modal-{{ offer.id }}">
-                          Modifier
-                        </a>
-                      </li>
-                      <li class="dropdown-item">
-                        <a class="btn btn-sm d-block w-100 text-start px-3"
-                           data-bs-toggle="modal"
-                           data-bs-target="#validate-offer-modal-{{ offer.id }}">
-                          Valider l'offre
-                        </a>
-                      </li>
-                      <li class="dropdown-item">
-                        <a class="btn btn-sm d-block w-100 text-start px-3"
-                           data-bs-toggle="modal"
-                           data-bs-target="#reject-offer-modal-{{ offer.id }}">
-                          Rejeter l'offre
-                        </a>
-                      </li>
+                      {% if has_permission("MANAGE_OFFERS") %}
+                        <li class="dropdown-item">
+                          <a class="btn btn-sm d-block w-100 text-start px-3"
+                             data-bs-toggle="modal"
+                             data-bs-target="#edit-offer-modal-{{ offer.id }}">
+                            Modifier
+                          </a>
+                        </li>
+                      {% endif %}
+                      {% if has_permission("FRAUD_ACTIONS") %}
+                        <li class="dropdown-item">
+                          <a class="btn btn-sm d-block w-100 text-start px-3"
+                             data-bs-toggle="modal"
+                             data-bs-target="#validate-offer-modal-{{ offer.id }}">
+                            Valider l'offre
+                          </a>
+                        </li>
+                        <li class="dropdown-item">
+                          <a class="btn btn-sm d-block w-100 text-start px-3"
+                             data-bs-toggle="modal"
+                             data-bs-target="#reject-offer-modal-{{ offer.id }}">
+                            Rejeter l'offre
+                          </a>
+                        </li>
+                      {% endif %}
                     </ul>
                   </div>
                 </td>
