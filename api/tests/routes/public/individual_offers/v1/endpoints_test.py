@@ -1349,6 +1349,75 @@ class GetProductTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class GetProductByEanTest:
+    def test_valid_ean(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            description="Un livre de contrepèterie",
+            name="Vieux motard que jamais",
+            extraData={"ean": "12345678"},
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products/ean/{product_offer.extraData['ean']}"
+        )
+
+        assert response.status_code == 200
+        assert response.json == {
+            "bookingEmail": None,
+            "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": product_offer.extraData["ean"]},
+            "description": "Un livre de contrepèterie",
+            "accessibility": {
+                "audioDisabilityCompliant": False,
+                "mentalDisabilityCompliant": False,
+                "motorDisabilityCompliant": False,
+                "visualDisabilityCompliant": False,
+            },
+            "enableDoubleBookings": False,
+            "externalTicketOfficeUrl": None,
+            "id": product_offer.id,
+            "image": None,
+            "itemCollectionDetails": None,
+            "location": {"type": "physical", "venueId": product_offer.venueId},
+            "name": "Vieux motard que jamais",
+            "status": "SOLD_OUT",
+            "stock": None,
+        }
+
+    def test_get_newest_ean_product(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer, extraData={"ean": "12345678"}, isActive=False
+        )
+        newest_product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer, extraData={"ean": "12345678"}, isActive=False
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products/ean/{newest_product_offer.extraData['ean']}"
+        )
+
+        assert response.status_code == 200
+        assert response.json["id"] == newest_product_offer.id
+
+    def test_404_when_ean_not_found(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            description="Un livre de contrepèterie",
+            name="Vieux motard que jamais",
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            "/public/offers/v1/products/ean/12345678"
+        )
+
+        assert response.status_code == 404
+        assert response.json == {"ean": ["The product offer could not be found"]}
+
+
+@pytest.mark.usefixtures("db_session")
 class GetEventTest:
     def test_404_when_requesting_a_product(self, client):
         api_key = offerers_factories.ApiKeyFactory()
