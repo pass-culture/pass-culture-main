@@ -20,18 +20,22 @@ const steps: IStep[] = [
   {
     position: 1,
     component: Welcome,
+    className: 'tutorial-content',
   },
   {
     position: 2,
     component: CreateVenue,
+    className: 'two-columns-section',
   },
   {
     position: 3,
     component: CreateOffer,
+    className: 'two-columns-section',
   },
   {
     position: 4,
     component: ManageBookings,
+    className: 'tutorial-content',
   },
 ]
 const getStep = (position: number): IStep | undefined =>
@@ -61,7 +65,7 @@ const Tutorial = ({ onFinish }: ITutorialProps): JSX.Element => {
   return (
     <div className={styles['tutorial']} data-testid="tutorial-container">
       <activeStep.component
-        contentClassName={styles['tutorial-content']}
+        contentClassName={styles[activeStep.className]}
         titleId={TUTO_DIALOG_LABEL_ID}
       />
 

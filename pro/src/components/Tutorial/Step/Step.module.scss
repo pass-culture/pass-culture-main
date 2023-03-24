@@ -2,12 +2,20 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
-p.tw-numbers {
+p.tw-icon svg {
   margin-bottom: rem.torem(8px);
+  width: rem.torem(28px);
+  height: rem.torem(28px);
+
+  &, & path {
+    fill: colors.$black
+  }
 }
 
 .tw-strong {
-  @include fonts.body-important;
+  @include fonts.title4;
+
+  font-weight: 500;
 }
 
 .tco-italic {
@@ -76,5 +84,42 @@ p.tw-numbers {
 
   .fourth-column {
     grid-column-start: 4;
+  }
+}
+
+.tw-description {
+  @include fonts.body
+}
+
+.two-columns-section-block {
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+
+  p, h2 {
+    text-align: left;
+  }
+
+  h2 {
+    @include fonts.button;
+
+    line-height: rem.torem(20px);
+    margin-bottom: rem.torem(8px);
+  }
+
+  p {
+    @include fonts.body
+  }
+
+  svg {
+    width: 35px;
+    height: 35px;
+    margin-bottom: rem.torem(20px);
+
+    &, & path {
+      fill: colors.$black
+    }
   }
 }

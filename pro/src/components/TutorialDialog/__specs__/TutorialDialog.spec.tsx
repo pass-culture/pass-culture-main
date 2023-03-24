@@ -15,8 +15,8 @@ jest.mock('apiClient/api', () => ({
 
 const stepTitles = [
   'Bienvenue dans l’espace acteurs culturels',
-  'Gérer vos lieux culturels',
-  'Créer une offre',
+  'Paramétrez votre espace PRO',
+  'Créez et publiez vos offres à destination :',
   'Suivre et gérer vos réservations',
 ]
 
