@@ -60,8 +60,7 @@ const Validation = (): JSX.Element => {
     try {
       await api.saveNewOnboardingData(data)
       notify.success('Votre structure a bien été créée')
-      // TODO: will do the redirect when the next page is available.
-      // TODO: add test too
+      navigate('/accueil')
     } catch (error) {
       notify.error('Erreur lors de la création de votre structure')
     }
