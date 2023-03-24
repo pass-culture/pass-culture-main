@@ -784,15 +784,35 @@ class GetProfileTest:
         response = client.get("/native/v1/subscription/profile")
 
         content: fraud_models.ProfileCompletionContent = fraud_check.source_data()
+        profile_content = response.json["profile"]
 
         assert response.status_code == 200
-        assert response.json["firstName"] == content.first_name
-        assert response.json["lastName"] == content.last_name
-        assert response.json["address"] == content.address
-        assert response.json["city"] == content.city
-        assert response.json["postalCode"] == content.postal_code
-        assert response.json["activity"] == content.activity
-        assert response.json["schoolType"] == content.school_type
+        assert profile_content["firstName"] == content.first_name
+        assert profile_content["lastName"] == content.last_name
+        assert profile_content["address"] == content.address
+        assert profile_content["city"] == content.city
+        assert profile_content["postalCode"] == content.postal_code
+        assert profile_content["activity"] == content.activity
+        assert profile_content["schoolType"] == content.school_type
+
+    def test_get_profile_with_no_fraud_check(self, client):
+        user = users_factories.BeneficiaryGrant18Factory()
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/profile")
+
+        assert response.status_code == 404
+
+    def test_get_profile_with_obsolete_profile_info(self, client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        content = fraud_factories.ProfileCompletionContentFactory(activity="Étudiant")
+        fraud_factories.ProfileCompletionFraudCheckFactory(resultContent=content, user=user)
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/profile")
+
+        assert response.status_code == 200
+        assert response.json["profile"] is None
 
 
 class UpdateProfileTest:
@@ -1137,4 +1157,5 @@ class HonorStatementTest:
 
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert fraud_check.reason == "statement from /subscription/honor_statement endpoint"
+        assert fraud_check.eligibilityType == eligibility_type
         assert fraud_check.eligibilityType == eligibility_type
