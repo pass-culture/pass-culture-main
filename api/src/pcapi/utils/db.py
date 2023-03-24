@@ -224,3 +224,24 @@ def detect_invalid_indexes() -> None:
         return
     names = sorted(row[0] for row in rows)
     logger.error("Found invalid PostgreSQL indexes: %s", names)
+
+
+@blueprint.cli.command("detect_not_valid_constraints")
+@cron_decorators.log_cron_with_transaction
+def detect_not_valid_constraints() -> None:
+    """Log an error if there are constraints that are "NOT VALID"."""
+    statement = """
+      select
+        -- `conrelid` is 0 if not a table constraint
+        case when pg_constraint.conrelid != 0 then (pg_class.relname || '.') else '' end
+        || pg_constraint.conname
+      from pg_constraint
+      left outer join pg_class on pg_class.oid = pg_constraint.conrelid
+      where not convalidated
+    """
+    res = db.session.execute(statement)
+    rows = res.fetchall()
+    if not rows:
+        return
+    names = sorted(row[0] for row in rows)
+    logger.error("Found PostgreSQL constraints that are NOT VALID: %s", names)
