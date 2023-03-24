@@ -1,31 +1,37 @@
 import React from 'react'
 
+import { OfferCardEuroIcon, Venue2Icon } from 'icons'
+
 import { IStepComponentProps } from '../types'
+
+import styles from './Step.module.scss'
 
 const CreateVenue = ({
   titleId,
   contentClassName,
 }: IStepComponentProps): JSX.Element => (
   <>
-    <h1 id={titleId}>Gérer vos lieux culturels</h1>
+    <h1 id={titleId}>Paramétrez votre espace PRO</h1>
     <section className={contentClassName}>
-      <p>
-        Les lieux vous permettent de créer des offres physiques et de les rendre
-        visibles sur l’application publique.
-      </p>
-      <p>
-        Vous pouvez créer dans vos lieux des évènements, des visites, des offres
-        pour des livres, des instruments de musique, etc.
-      </p>
-      <p>
-        Pour les offres dématérialisées (livres numériques, visites virtuelles,
-        adaptations de spectacles, jeux vidéos, etc.), pas besoin de créer un
-        lieu, il vous suffit de créer une nouvelle offre numérique.
-      </p>
-      <p>
-        Pour créer un lieu physique, vous devez renseigner certaines
-        informations (adresse, type, etc.).
-      </p>
+      <div className={styles['two-columns-section-block']}>
+        <OfferCardEuroIcon />
+        <h2>Renseignez vos coordonnées bancaires</h2>
+        <p>
+          Ajoutez vos informations bancaires pour percevoir les remboursements
+          de vos offres. <br />
+          Tous les remboursements sont rétroactifs.
+        </p>
+      </div>
+      <div className={styles['two-columns-section-block']}>
+        <Venue2Icon />
+        <h2>Ajoutez des lieux</h2>
+        <p>
+          Vous ne disposez pas d'un lieu physique ?
+          <br />
+          Ajoutez des lieux et publiez vos offres. Ces offres seront
+          géolocalisées à l'adresse du lieu rattaché.
+        </p>
+      </div>
     </section>
   </>
 )

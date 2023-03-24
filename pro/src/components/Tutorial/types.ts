@@ -6,4 +6,5 @@ export interface IStepComponentProps {
 export interface IStep {
   position: number
   component: React.ComponentType<IStepComponentProps>
+  className: string
 }
