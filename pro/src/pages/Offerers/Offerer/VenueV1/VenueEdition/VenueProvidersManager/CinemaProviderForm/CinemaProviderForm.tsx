@@ -1,8 +1,7 @@
 import './CinemaProviderForm.scss'
 
 import { Form, FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
-import ReactTooltip from 'react-tooltip'
+import React, { useState } from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { Checkbox, SubmitButton } from 'ui-kit'
@@ -29,10 +28,6 @@ export const CinemaProviderForm = ({
   onCancel,
 }: ICinemaProviderFormProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    ReactTooltip.rebuild()
-  }, [])
 
   const handleFromSubmit = (values: ICinemaProviderFormValues) => {
     const payload = {
@@ -68,10 +63,10 @@ export const CinemaProviderForm = ({
                   value={formik.values.isDuo}
                 />
                 <span
-                  className="cpf-tooltip"
-                  data-place="bottom"
-                  data-tip="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>"
-                  data-type="info"
+                  className="cpf-tooltip react-tooltip-anchor"
+                  data-tooltip-place="bottom"
+                  data-tooltip-html="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>"
+                  data-tooltip-type="info"
                 >
                   <Icon svg="picto-info" />
                 </span>
