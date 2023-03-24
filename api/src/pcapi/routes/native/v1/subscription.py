@@ -1,6 +1,8 @@
 import logging
 import typing
 
+from pydantic import ValidationError
+
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
@@ -81,11 +83,15 @@ def get_subscription_stepper(user: users_models.User) -> serializers.Subscriptio
 
 
 @blueprint.native_v1.route("/subscription/profile", methods=["GET"])
-@spectree_serialize(on_success_status=200, api=blueprint.api)
+@spectree_serialize(on_success_status=200, on_error_statuses=[404], api=blueprint.api)
 @authenticated_and_active_user_required
-def get_profile(user: users_models.User) -> serializers.ProfileResponse:
+def get_profile(user: users_models.User) -> serializers.ProfileResponse | None:
     if (profile_data := subscription_api.get_profile_data(user)) is not None:
-        return serializers.ProfileResponse(**profile_data.dict())
+        try:
+            return serializers.ProfileResponse(profile=serializers.ProfileContent(**profile_data.dict()))
+        except ValidationError as e:
+            logger.error("Invalid profile data for user %s: %s", user.id, e)
+            return serializers.ProfileResponse()
 
     raise api_errors.ResourceNotFoundError()
 

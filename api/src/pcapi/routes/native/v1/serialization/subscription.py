@@ -76,9 +76,9 @@ class SubscriptionStepperResponse(BaseModel):
         allow_population_by_field_name = True
 
 
-class ProfileResponse(BaseModel):
+class ProfileContent(BaseModel):
     activity: profile_options.ACTIVITY_ID_ENUM
-    address: str
+    address: str | None  # Address is nullable for backward compatibility
     city: str
     first_name: str
     last_name: str
@@ -89,6 +89,10 @@ class ProfileResponse(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         use_enum_values = True
+
+
+class ProfileResponse(BaseModel):
+    profile: ProfileContent | None = fields.Field(None)
 
 
 class ProfileUpdateRequest(BaseModel):
