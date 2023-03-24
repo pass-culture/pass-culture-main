@@ -3,7 +3,7 @@ import React from 'react'
 import FormLayout from 'components/FormLayout'
 import { IVenue } from 'core/Venue'
 
-import { EACInformation } from '../EACInformation'
+import NewEACInformation from '../EACInformation/NewEACInformation'
 
 import CollectiveDmsTimeline from './CollectiveDmsTimeline/CollectiveDmsTimeline'
 
@@ -31,7 +31,7 @@ const CollectiveVenueInformations = ({
       {
         // istanbul ignore next: FIX ME not yet implemented
         isAcceptedOnAdage ? (
-          <EACInformation venue={venue} isCreatingVenue={isCreatingVenue} />
+          <NewEACInformation venue={venue} isCreatingVenue={isCreatingVenue} />
         ) : (
           <CollectiveDmsTimeline />
         )
