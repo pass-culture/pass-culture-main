@@ -64,6 +64,16 @@ def reservation_pass_culture(
     return parse_obj_as(cgr_serializers.ReservationPassCultureResponse, response)
 
 
+def annulation_pass_culture(cinema_details: providers_models.CGRCinemaDetails, qr_code: str) -> None:
+    user = settings.CGR_API_USER
+    password = settings.CGR_API_PASSWORD
+    cinema_url = cinema_details.cinemaUrl
+    service = get_cgr_service_proxy(cinema_url)
+    response = service.AnnulationPassCulture(User=user, mdp=password, pQrCode=qr_code)
+    response = json.loads(response)
+    _check_response_is_ok(response, "AnnulationPassCulture")
+
+
 def get_movie_poster_from_api(image_url: str) -> bytes:
     api_response = requests.get(image_url)
 

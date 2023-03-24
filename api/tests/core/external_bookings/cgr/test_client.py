@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.connectors.cgr.exceptions import CGRAPIException
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.external_bookings.cgr.client as cgr_client
 import pcapi.core.providers.factories as providers_factories
@@ -68,3 +69,49 @@ class BookTicketTest:
         assert "<pEmail>beneficiary@example.com</pEmail>" in post_adapter.last_request.text
         assert "<pPUTTC>5.50</pPUTTC>" in post_adapter.last_request.text
         assert "<pIDSeances>177182</pIDSeances>" in post_adapter.last_request.text
+
+
+@pytest.mark.usefixtures("db_session")
+class CancelBookingTest:
+    def test_should_cancel_booking_with_success(self, requests_mock):
+        cinema_details = providers_factories.CGRCinemaDetailsFactory(
+            cinemaUrl="https://cinema-0.example.com/web_service"
+        )
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.get("https://cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        post_adapter = requests_mock.post(
+            "https://cinema-0.example.com/web_service",
+            text=fixtures.cgr_annulation_response_template(),
+        )
+
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_str_id)
+        try:
+            cgr.cancel_booking(barcodes=["CINE-123456789"])
+        except CGRAPIException:
+            assert False, "Should not raise exception"
+
+        assert post_adapter.call_count == 1
+        assert "<pQrCode>CINE-123456789</pQrCode>" in post_adapter.last_request.text
+
+    def test_when_cgr_returns_element_not_found(self, requests_mock):
+        cinema_details = providers_factories.CGRCinemaDetailsFactory(
+            cinemaUrl="https://cinema-0.example.com/web_service"
+        )
+        cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.get("https://cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.post(
+            "https://cinema-0.example.com/web_service",
+            text=fixtures.cgr_annulation_response_template(
+                success=False,
+                message_error="L'annulation n'a pas pu être prise en compte : Code barre non reconnu / annulation impossible",
+            ),
+        )
+
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id)
+        with pytest.raises(CGRAPIException) as exception:
+            cgr.cancel_booking(barcodes=["CINE-987654321"])
+
+        assert (
+            str(exception.value)
+            == "Error on CGR API on AnnulationPassCulture : L'annulation n'a pas pu être prise en compte : Code barre non reconnu / annulation impossible"
+        )

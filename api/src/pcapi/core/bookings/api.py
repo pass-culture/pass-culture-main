@@ -245,6 +245,9 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
         case "BoostStocks":
             if not FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
                 raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
+        case "CGRStocks":
+            if not FeatureToggle.ENABLE_CGR_INTEGRATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_CGR_INTEGRATION is inactive")
         case _:
             raise ValueError(f"Unknown Provider: {venue_provider_name}")
     barcodes = [external_booking.barcode for external_booking in booking.externalBookings]

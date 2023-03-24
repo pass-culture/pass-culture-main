@@ -53,6 +53,28 @@ def cgr_reservation_response_template(ticket_response: Dict) -> str:
         """.strip()
 
 
+def cgr_annulation_response_template(success: bool = True, message_error: str = str) -> str:
+    return f"""
+       <?xml version="1.0" encoding="UTF-8"?>
+        <SOAP-ENV:Envelope
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+            <SOAP-ENV:Header/>
+            <SOAP-ENV:Body>
+                <ns1:AnnulationPassCultureResponse xmlns:ns1="urn:GestionCinemaWS">
+                    <AnnulationPassCultureResult>
+                        {json.dumps({
+                            "CodeErreur": 0 if success else 99,
+                            "IntituleErreur": "" if success else message_error,
+                        })}
+                    </AnnulationPassCultureResult>
+                </ns1:AnnulationPassCultureResponse>
+            </SOAP-ENV:Body>
+        </SOAP-ENV:Envelope>
+        """.strip()
+
+
 def film(films_info: List[Dict]) -> List[Dict]:
     return [
         {

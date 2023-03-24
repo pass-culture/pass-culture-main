@@ -39,6 +39,20 @@ WEB_SERVICE_DEFINITION = """<?xml version="1.0" encoding="UTF-8"?>
                 </xsd:sequence>
             </xsd:complexType>
             <xsd:element name="ReservationPassCultureResponse" type="s0:tReservationPassCultureResponse"/>
+            <xsd:complexType name="tAnnulationPassCulture">
+                <xsd:sequence>
+                    <xsd:element name="User" type="xsd:string"/>
+                    <xsd:element name="mdp" type="xsd:string"/>
+                    <xsd:element name="pQrCode" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="AnnulationPassCulture" type="s0:tAnnulationPassCulture"/>
+            <xsd:complexType name="tAnnulationPassCultureResponse">
+            <xsd:sequence>
+                <xsd:element name="AnnulationPassCultureResult" type="xsd:string"/>
+                </xsd:sequence>
+                </xsd:complexType>
+            <xsd:element name="AnnulationPassCultureResponse" type="s0:tAnnulationPassCultureResponse"/>
         </xsd:schema>
     </types>
     <message name="GestionCinemaWS_GetSeancesPassCulture_MessageIn">
@@ -53,6 +67,12 @@ WEB_SERVICE_DEFINITION = """<?xml version="1.0" encoding="UTF-8"?>
     <message name="GestionCinemaWS_ReservationPassCulture_MessageOut">
         <part name="parameters" element="s0:ReservationPassCultureResponse"/>
     </message>
+    <message name="GestionCinemaWS_AnnulationPassCulture_MessageIn">
+        <part name="parameters" element="s0:AnnulationPassCulture"/>
+    </message>
+    <message name="GestionCinemaWS_AnnulationPassCulture_MessageOut">
+        <part name="parameters" element="s0:AnnulationPassCultureResponse"/>
+    </message>
     <portType name="GestionCinemaWSSOAPPortType">
         <operation name="GetSeancesPassCulture">
             <input message="s0:GestionCinemaWS_GetSeancesPassCulture_MessageIn"/>
@@ -61,6 +81,10 @@ WEB_SERVICE_DEFINITION = """<?xml version="1.0" encoding="UTF-8"?>
         <operation name="ReservationPassCulture">
             <input message="s0:GestionCinemaWS_ReservationPassCulture_MessageIn"/>
             <output message="s0:GestionCinemaWS_ReservationPassCulture_MessageOut"/>
+        </operation>
+        <operation name="AnnulationPassCulture">
+            <input message="s0:GestionCinemaWS_AnnulationPassCulture_MessageIn"/>
+            <output message="s0:GestionCinemaWS_AnnulationPassCulture_MessageOut"/>
         </operation>
     </portType>
     <binding name="GestionCinemaWSSOAPBinding" type="s0:GestionCinemaWSSOAPPortType">
@@ -76,6 +100,15 @@ WEB_SERVICE_DEFINITION = """<?xml version="1.0" encoding="UTF-8"?>
         </operation>
         <operation name="ReservationPassCulture">
         <soap:operation soapAction="urn:GestionCinemaWS/ReservationPassCulture" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="AnnulationPassCulture">
+            <soap:operation soapAction="urn:GestionCinemaWS/AnnulationPassCulture" style="document"/>
             <input>
                 <soap:body use="literal"/>
             </input>
