@@ -28,8 +28,8 @@ const RecurrenceSection = ({ offer }: IRecurrenceSectionProps) => {
   const sortedStocks = offer.stocks.sort(sortStocks)
 
   const totalCapacity = sortedStocks.find(s => s.quantity === null)
-    ? 'Illimité'
-    : sortedStocks.reduce((a, b) => a + (b.quantity ?? 0), 0)
+    ? 'Illimitée'
+    : `${sortedStocks.reduce((a, b) => a + (b.quantity ?? 0), 0)} places`
 
   let periodText = ''
   if (sortedStocks.length > 1) {
@@ -57,10 +57,7 @@ const RecurrenceSection = ({ offer }: IRecurrenceSectionProps) => {
         description={sortedStocks.length}
       />
       <SummaryLayout.Row title="Période concernée" description={periodText} />
-      <SummaryLayout.Row
-        title="Capacité totale"
-        description={`${totalCapacity} places`}
-      />
+      <SummaryLayout.Row title="Capacité totale" description={totalCapacity} />
     </>
   )
 }

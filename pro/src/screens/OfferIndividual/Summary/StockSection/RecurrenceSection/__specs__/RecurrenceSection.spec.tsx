@@ -12,7 +12,7 @@ describe('StockEventSection', () => {
   it('should render all information', () => {
     const offer = individualOfferFactory({
       isEvent: true,
-      stocks: [individualStockFactory()],
+      stocks: [individualStockFactory({ quantity: null })],
     })
 
     render(<RecurrenceSection offer={offer} />)
@@ -20,6 +20,7 @@ describe('StockEventSection', () => {
     expect(screen.queryByText(/Nombre de dates/)).toBeInTheDocument()
     expect(screen.queryByText(/Période concernée/)).toBeInTheDocument()
     expect(screen.queryByText(/Capacité totale/)).toBeInTheDocument()
+    expect(screen.queryByText('Illimitée')).toBeInTheDocument()
   })
 
   it('should not render if there are no stocks', () => {
