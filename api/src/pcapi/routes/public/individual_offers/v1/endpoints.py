@@ -97,9 +97,21 @@ def _retrieve_venue_from_location(
     return venue
 
 
-def _retrieve_offer_query(offer_id: int) -> sqla_orm.Query:
+def _retrieve_offer_tied_to_user_query() -> sqla_orm.Query:
     return offers_models.Offer.query.join(offerers_models.Venue).filter(
-        offers_models.Offer.id == offer_id, offerers_models.Venue.managingOffererId == current_api_key.offererId  # type: ignore[attr-defined]
+        offerers_models.Venue.managingOffererId == current_api_key.offererId  # type: ignore[attr-defined]
+    )
+
+
+def _retrieve_offer_query(offer_id: int) -> sqla_orm.Query:
+    return _retrieve_offer_tied_to_user_query().filter(offers_models.Offer.id == offer_id)
+
+
+def _retrieve_offer_by_ean_query(ean: str) -> sqla_orm.Query:
+    return (
+        _retrieve_offer_tied_to_user_query()
+        .filter(offers_models.Offer.extraData["ean"].astext == ean)
+        .order_by(offers_models.Offer.id.desc())
     )
 
 
@@ -399,6 +411,26 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     )
     if not offer:
         raise api_errors.ApiErrors({"product_id": ["The product offer could not be found"]}, status_code=404)
+
+    return serialization.ProductOfferResponse.build_product_offer(offer)
+
+
+@blueprint.v1_blueprint.route("/products/ean/<string:ean>", methods=["GET"])
+@spectree_serialize(
+    api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
+)
+@api_key_required
+def get_product_by_ean(ean: str) -> serialization.ProductOfferResponse:
+    """
+    Get a product offer.
+    """
+    offer: offers_models.Offer | None = (
+        _retrieve_offer_relations_query(_retrieve_offer_by_ean_query(ean))
+        .filter(offers_models.Offer.isEvent == False)
+        .first()
+    )
+    if not offer:
+        raise api_errors.ApiErrors({"ean": ["The product offer could not be found"]}, status_code=404)
 
     return serialization.ProductOfferResponse.build_product_offer(offer)
 

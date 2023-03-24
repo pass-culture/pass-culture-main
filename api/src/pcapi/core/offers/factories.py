@@ -65,6 +65,7 @@ class OfferFactory(BaseFactory):
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
     lastValidationType = OfferValidationType.AUTO
+    extraData = None
 
     @classmethod
     def _create(
