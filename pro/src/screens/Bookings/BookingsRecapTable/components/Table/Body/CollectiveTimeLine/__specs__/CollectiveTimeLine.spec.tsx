@@ -61,9 +61,15 @@ describe('collective timeline', () => {
   it('should render steps for reimbursed booking', () => {
     const bookingRecap = collectiveBookingRecapFactory({
       bookingStatus: BOOKING_STATUS.REIMBURSED,
+      bookingStatusHistory: [
+        { date: new Date().toISOString(), status: BOOKING_STATUS.PENDING },
+        { date: new Date().toISOString(), status: BOOKING_STATUS.CONFIRMED },
+        { date: '2023-03-25', status: BOOKING_STATUS.REIMBURSED },
+      ],
     })
     renderCollectiveTimeLine(bookingRecap, bookingDetails)
     expect(screen.getByText('Remboursement effectué')).toBeInTheDocument()
+    expect(screen.getByText('25 mars 2023')).toBeInTheDocument()
   })
   it('should render steps for cancelled booking', () => {
     const bookingRecap = collectiveBookingRecapFactory({

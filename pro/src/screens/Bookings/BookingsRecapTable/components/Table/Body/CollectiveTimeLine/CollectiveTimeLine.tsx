@@ -62,7 +62,7 @@ const CollectiveTimeLine = ({
   const eventDate = getDateToFrenchText(
     bookingRecap.stock.eventBeginningDatetime
   )
-  const cancelledDate = getDateToFrenchText(
+  const lastHistoryDate = getDateToFrenchText(
     bookingRecap.bookingStatusHistory[
       bookingRecap.bookingStatusHistory.length - 1
     ].date
@@ -229,7 +229,7 @@ const CollectiveTimeLine = ({
         <div className={styles['timeline-step-title']}>
           Remboursement effectué
         </div>
-        <div>{}</div>
+        <div>{lastHistoryDate}</div>
       </>
     ),
   }
@@ -274,7 +274,7 @@ const CollectiveTimeLine = ({
           {cancellationReasonTitle(bookingRecap)}
         </div>
         <div>
-          {cancelledDate}
+          {lastHistoryDate}
           <br />
           <br />
           {bookingRecap.bookingCancellationReason ===
