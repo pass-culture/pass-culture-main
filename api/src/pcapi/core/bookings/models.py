@@ -103,7 +103,7 @@ class Booking(PcObject, Base, Model):
 
     token: str = Column(String(6), unique=True, nullable=False)
 
-    userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=True)
+    userId: int = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
 
     activationCode = relationship("ActivationCode", uselist=False, back_populates="booking")  # type: ignore [misc]
 
