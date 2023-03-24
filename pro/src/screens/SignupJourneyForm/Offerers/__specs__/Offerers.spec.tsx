@@ -296,7 +296,7 @@ describe('screens:SignupJourney::Offerers', () => {
 
       expect(
         await screen.findByText(
-          'Êtes-vous sûr de vouloir rejoindre cet espace Pro ?'
+          'Êtes-vous sûr de vouloir rejoindre cet espace ?'
         )
       ).toBeInTheDocument()
     })
@@ -308,16 +308,14 @@ describe('screens:SignupJourney::Offerers', () => {
 
       expect(
         await screen.findByText(
-          'Êtes-vous sûr de vouloir rejoindre cet espace Pro ?'
+          'Êtes-vous sûr de vouloir rejoindre cet espace ?'
         )
       ).toBeInTheDocument()
 
       await userEvent.click(await screen.findByText('Annuler'))
 
       expect(
-        screen.queryByText(
-          'Êtes-vous sûr de vouloir rejoindre cet espace Pro ?'
-        )
+        screen.queryByText('Êtes-vous sûr de vouloir rejoindre cet espace ?')
       ).not.toBeInTheDocument()
       expect(api.createOfferer).not.toHaveBeenCalled()
     })
@@ -344,11 +342,11 @@ describe('screens:SignupJourney::Offerers', () => {
 
       expect(
         await screen.findByText(
-          'Êtes-vous sûr de vouloir rejoindre cet espace Pro ?'
+          'Êtes-vous sûr de vouloir rejoindre cet espace ?'
         )
       ).toBeInTheDocument()
 
-      await userEvent.click(await screen.findByText('Rejoindre cet espace Pro'))
+      await userEvent.click(await screen.findByText('Rejoindre cet espace'))
 
       expect(api.createOfferer).toHaveBeenCalledWith({
         city: 'lille',
