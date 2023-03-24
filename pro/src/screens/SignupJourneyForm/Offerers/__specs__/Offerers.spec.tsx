@@ -346,7 +346,9 @@ describe('screens:SignupJourney::Offerers', () => {
         )
       ).toBeInTheDocument()
 
-      await userEvent.click(await screen.findByText('Rejoindre cet espace'))
+      await userEvent.click(
+        await screen.findByRole('button', { name: 'Rejoindre cet espace' })
+      )
 
       expect(api.createOfferer).toHaveBeenCalledWith({
         city: 'lille',
