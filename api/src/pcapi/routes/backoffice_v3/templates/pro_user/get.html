@@ -1,6 +1,7 @@
 {% from "components/badges.html" import build_pro_user_status_badge %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/forms.html" import build_form_fields_group with context %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
 {% extends "layouts/pro.html" %}
 {% block pro_main_content %}
   <div class="row row-cols-1 g-4 py-3">
@@ -92,12 +93,7 @@
                 </p>
                 {% if not user.isEmailValidated and has_permission("MANAGE_PRO_ENTITY") %}
                   <p class="mb-1">
-                    <a href="{{ user | pc_pro_user_email_validation_link }}"
-                       target="_blank"
-                       class="btn btn-outline-primary fw-bold"
-                       role="button">
-                      Valider l'email
-                    </a>
+                    {{ build_modal_form("validate-email", url_for("backoffice_v3_web.pro_user.validate_pro_user_email", user_id=user.id), empty_form, "Valider l'adresse e-mail", "Confirmer la validation de l'adresse e-mail", "Vous êtes sur le point de valider l'adresse e-mail, êtes-vous sûr ?") }}
                   </p>
                 {% endif %}
               </div>

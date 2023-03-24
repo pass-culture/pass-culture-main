@@ -17,6 +17,7 @@ import pcapi.core.users.email.update as email_update
 import pcapi.utils.email as email_utils
 
 from . import utils
+from .forms import empty as empty_forms
 from .forms import pro_user as pro_user_forms
 from .forms import user as user_forms
 
@@ -50,7 +51,12 @@ def get(user_id: int) -> utils.BackofficeResponse:
     dst = url_for(".update_pro_user", user_id=user.id)
 
     return render_template(
-        "pro_user/get.html", user=user, form=form, dst=dst, **user_forms.get_toggle_suspension_args(user)
+        "pro_user/get.html",
+        user=user,
+        form=form,
+        dst=dst,
+        empty_form=empty_forms.EmptyForm(),
+        **user_forms.get_toggle_suspension_args(user),
     )
 
 
@@ -134,4 +140,16 @@ def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
     users_api.add_comment_to_user(user=user, author_user=current_user, comment=form.comment.data)
     flash("Commentaire enregistré", "success")
 
+    return redirect(url_for("backoffice_v3_web.pro_user.get", user_id=user_id), code=303)
+
+
+@pro_user_blueprint.route("/validate-email", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def validate_pro_user_email(user_id: int) -> utils.BackofficeResponse:
+    user = users_models.User.query.get_or_404(user_id)
+    if user.isEmailValidated:
+        flash(f"L'e-mail {user.email} est déjà validé !", "warning")
+    else:
+        users_api.validate_pro_user_email(user=user, author_user=current_user)
+        flash(f"L'e-mail {user.email} est validé !", "success")
     return redirect(url_for("backoffice_v3_web.pro_user.get", user_id=user_id), code=303)

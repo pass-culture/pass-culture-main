@@ -4,7 +4,6 @@ from flask import g
 from flask import url_for
 import pytest
 
-from pcapi import settings
 import pcapi.core.history.factories as history_factories
 import pcapi.core.history.models as history_models
 import pcapi.core.offerers.factories as offerers_factories
@@ -37,7 +36,7 @@ class GetProUserTest:
 
     class EmailValidationButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
-        button_label = "Valider l'email"
+        button_label = "Valider l&#39;adresse e-mail"
 
         @property
         def path(self):
@@ -50,7 +49,7 @@ class GetProUserTest:
             assert response.status_code == 200
 
             assert self.button_label in response.data.decode("utf-8")
-            assert f"{settings.PRO_URL}/inscription/validation/{user.validationToken}" in response.data.decode("utf-8")
+            assert f"/backofficev3/pro/user/{user.id}/validate-email" in response.data.decode("utf-8")
 
         def test_no_button_if_validated_email(self, authenticated_client):
             user = offerers_factories.UserOffererFactory(
@@ -305,3 +304,45 @@ class GetProUserOfferersTest:
         with assert_no_duplicated_queries():
             response = authenticated_client.get(url)
         assert response.status_code == 200
+
+
+class ValidateProEmailTest:
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+        endpoint = "backoffice_v3_web.pro_user.validate_pro_user_email"
+        endpoint_kwargs = {"user_id": 1}
+        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_validate_pro_user_email(self, authenticated_client):
+        authenticated_client.get(url_for("backoffice_v3_web.home"))
+        pro_user = offerers_factories.NotValidatedUserOffererFactory(
+            user__validationToken=False, user__isEmailValidated=False
+        ).user
+        assert not pro_user.isEmailValidated
+
+        data = dict({"csrf_token": g.get("csrf_token", None)})
+
+        response = authenticated_client.post(
+            url_for("backoffice_v3_web.pro_user.validate_pro_user_email", user_id=pro_user.id), form=data
+        )
+        assert response.status_code == 303
+        assert pro_user.isEmailValidated
+
+        response_redirect = authenticated_client.get(response.location)
+        assert f"L&#39;e-mail {pro_user.email} est validé !" in response_redirect.data.decode("utf-8")
+
+    def test_already_validated_pro_user_email(self, authenticated_client):
+        authenticated_client.get(url_for("backoffice_v3_web.home"))
+        pro_user = offerers_factories.NotValidatedUserOffererFactory(
+            user__validationToken=False, user__isEmailValidated=True
+        ).user
+
+        data = dict({"csrf_token": g.get("csrf_token", None)})
+
+        response = authenticated_client.post(
+            url_for("backoffice_v3_web.pro_user.validate_pro_user_email", user_id=pro_user.id), form=data
+        )
+        assert response.status_code == 303
+        assert pro_user.isEmailValidated
+
+        response_redirect = authenticated_client.get(response.location)
+        assert f"L&#39;e-mail {pro_user.email} est déjà validé !" in response_redirect.data.decode("utf-8")

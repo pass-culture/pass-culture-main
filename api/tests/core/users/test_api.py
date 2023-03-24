@@ -1,10 +1,12 @@
 import datetime
 from decimal import Decimal
+from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 
+from pcapi.connectors import sirene
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
@@ -1335,3 +1337,65 @@ class PublicAccountHistoryTest:
         assert len(history) == 9
         datetimes = [item["datetime"] for item in history]
         assert datetimes == sorted(datetimes, reverse=True)
+
+
+class UserEmailValidationTest:
+    @patch("pcapi.core.users.api.maybe_send_offerer_validation_email")
+    def test_validate_pro_user_email_from_pro(self, mocked_maybe_send_offerer_validation_email):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__validationToken="token", user__isEmailValidated=False
+        )
+
+        users_api.validate_pro_user_email(user_offerer.user)
+
+        assert history_models.ActionHistory.query.count() == 0
+        assert user_offerer.user.validationToken is None
+        assert user_offerer.user.isEmailValidated is True
+
+        mocked_maybe_send_offerer_validation_email.assert_called_once_with(
+            user_offerer.offerer,
+            user_offerer,
+            sirene.SirenInfo(
+                siren=user_offerer.offerer.siren,
+                name="MINISTERE DE LA CULTURE",
+                head_office_siret=f"{user_offerer.offerer.siren}00001",
+                ape_code="90.03A",
+                legal_category_code="1000",
+                address=sirene._Address(
+                    street="3 RUE DE VALOIS", postal_code="75001", city="Paris", insee_code="75101"
+                ),
+            ),
+        )
+
+    @patch("pcapi.core.users.api.maybe_send_offerer_validation_email")
+    def test_validate_pro_user_email_from_backoffice(self, mocked_maybe_send_offerer_validation_email):
+        backoffice_user = users_factories.AdminFactory()
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__validationToken="token", user__isEmailValidated=False
+        )
+
+        users_api.validate_pro_user_email(user_offerer.user, backoffice_user)
+
+        assert history_models.ActionHistory.query.count() == 1
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.USER_EMAIL_VALIDATED
+        assert action.user == user_offerer.user
+        assert action.authorUser == backoffice_user
+
+        assert user_offerer.user.validationToken is None
+        assert user_offerer.user.isEmailValidated is True
+
+        mocked_maybe_send_offerer_validation_email.assert_called_once_with(
+            user_offerer.offerer,
+            user_offerer,
+            sirene.SirenInfo(
+                siren=user_offerer.offerer.siren,
+                name="MINISTERE DE LA CULTURE",
+                head_office_siret=f"{user_offerer.offerer.siren}00001",
+                ape_code="90.03A",
+                legal_category_code="1000",
+                address=sirene._Address(
+                    street="3 RUE DE VALOIS", postal_code="75001", city="Paris", insee_code="75101"
+                ),
+            ),
+        )
