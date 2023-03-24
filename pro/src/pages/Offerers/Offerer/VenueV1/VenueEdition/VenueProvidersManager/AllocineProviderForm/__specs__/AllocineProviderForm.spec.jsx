@@ -1,7 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import ReactTooltip from 'react-tooltip'
+import { Tooltip } from 'react-tooltip'
 
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
@@ -28,7 +28,7 @@ const renderVenueProvidersManager = async props => {
     <>
       <VenueProvidersManager {...props} />
       <Notification />
-      <ReactTooltip html />
+      <Tooltip />
     </>
   )
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))

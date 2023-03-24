@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Form } from 'react-final-form'
-import ReactTooltip from 'react-tooltip'
 
 import { CheckboxField } from 'ui-kit'
 import NumberField from 'ui-kit/form_rff/fields/NumberField'
@@ -18,10 +17,6 @@ const AllocineProviderForm = ({
   onCancel,
 }) => {
   const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    ReactTooltip.rebuild()
-  }, [])
 
   const handleSubmit = useCallback(
     formValues => {
@@ -68,9 +63,9 @@ const AllocineProviderForm = ({
                     <span className="field-asterisk">*</span>
                   </label>
                   <span
-                    className="apf-tooltip"
-                    data-place="bottom"
-                    data-tip="<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>"
+                    className="apf-tooltip react-tooltip-anchor"
+                    data-tooltip-place="bottom"
+                    data-tooltip-html="<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>"
                     data-type="info"
                   >
                     <Icon svg="picto-info" />
@@ -107,10 +102,10 @@ const AllocineProviderForm = ({
                   name="isDuo"
                 />
                 <span
-                  className="apf-tooltip"
-                  data-place="bottom"
-                  data-tip="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>"
-                  data-type="info"
+                  className="apf-tooltip react-tooltip-anchor"
+                  data-tooltip-place="bottom"
+                  data-tooltip-html="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>"
+                  data-tooltip-type="info"
                 >
                   <Icon svg="picto-info" />
                 </span>

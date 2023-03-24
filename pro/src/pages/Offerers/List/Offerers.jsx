@@ -195,9 +195,10 @@ class Offerers extends PureComponent {
           Ajouter une structure
         </ButtonLink>
         <Icon
-          data-place="bottom"
-          data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
-          data-type="info"
+          data-tooltip-place="bottom"
+          className="react-tooltip-anchor"
+          data-tooltip-html="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
+          data-tooltip-type="info"
           svg="picto-tip"
         />
       </span>

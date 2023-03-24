@@ -3,7 +3,7 @@
 @use "styles/variables/_colors.scss" as colors;
 
 /* stylelint-disable-next-line selector-class-pattern */
-.__react_component_tooltip {
+.react-tooltip {
   a {
     color: colors.$white;
     pointer-events: visible;
@@ -43,5 +43,5 @@
   }
 
   padding: rem.torem(12px);
-  width: rem.torem(300px);
+  width: rem.torem(300px) !important;
 }

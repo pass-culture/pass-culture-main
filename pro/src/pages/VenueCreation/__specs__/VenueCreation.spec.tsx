@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -26,7 +26,7 @@ const renderVenueCreation = async (offererId: string) => {
     },
   }
 
-  return renderWithProviders(
+  renderWithProviders(
     <AppLayout>
       <VenueCreation />
     </AppLayout>,
@@ -35,6 +35,9 @@ const renderVenueCreation = async (offererId: string) => {
       initialRouterEntries: [`/structures/${offererId}/lieux/creation`],
     }
   )
+  await waitFor(() => {
+    expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled()
+  })
 }
 
 jest.mock('react-router-dom', () => ({
@@ -49,6 +52,7 @@ jest.mock('apiClient/api', () => ({
     fetchVenueLabels: jest.fn(),
     getOfferer: jest.fn(),
     getVenueTypes: jest.fn(),
+    canOffererCreateEducationalOffer: jest.fn(),
   },
 }))
 
@@ -72,7 +76,6 @@ describe('route VenueCreation', () => {
   it('should display venue form screen with creation title', async () => {
     // When
     await renderVenueCreation(offerer.id)
-
     // Then
     const venueCreationTitle = await screen.findByText('Création d’un lieu')
     expect(venueCreationTitle).toBeInTheDocument()

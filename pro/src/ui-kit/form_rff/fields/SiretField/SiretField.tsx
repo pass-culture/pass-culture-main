@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useField } from 'react-final-form'
-import ReactTooltip from 'react-tooltip'
 
 import { humanizeSiret, unhumanizeSiret } from 'core/Venue/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -53,9 +52,6 @@ const SiretField = ({
   } else {
     tooltip = isValid ? <TooltipValidSiret /> : <TooltipInvalidSiret />
   }
-  useEffect(() => {
-    ReactTooltip.rebuild()
-  }, [isValid])
 
   const formatSiret = (value: string): string => {
     // remove character when when it's not a number
