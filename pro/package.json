@@ -6,6 +6,7 @@
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js' --html build/stats.html",
     "build": "yarn copy-assets && react-scripts build",
+    "build:development": "env-cmd -f .env.development yarn build",
     "build:staging": "env-cmd -f .env.staging yarn build",
     "build:testing": "env-cmd -f .env.testing yarn build",
     "build:integration": "env-cmd -f .env.integration yarn build",
@@ -19,6 +20,7 @@
     "lint:scss:hook": "stylelint",
     "lint:scss:hook:fix": "yarn lint:scss:hook --fix",
     "prettier:js:changed:fix": "./scripts/lint_diff.sh",
+    "serve": "serve -s build -l 3001",
     "start": "yarn copy-assets && PORT=3001 react-scripts start",
     "test:cafe": "yarn testcafe testcafe",
     "test:stylelint": "jest stylelint-pass-culture/tests",
@@ -140,6 +142,7 @@
     "pnp-webpack-plugin": "^1.7.0",
     "prepend-file": "^2.0.0",
     "prettier": "^2.8.4",
+    "serve": "^14.2.0",
     "source-map-explorer": "^2.5.0",
     "storybook": "^6.5.16",
     "storybook-svgr-react-component": "^1.0.1",
