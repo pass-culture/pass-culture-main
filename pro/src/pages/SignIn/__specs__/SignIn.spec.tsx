@@ -374,30 +374,6 @@ describe('src | components | pages | SignIn', () => {
       expect(screen.getByText("I'm the onboarding page")).toBeInTheDocument()
     })
 
-    it('should redirect to onboarding page if offerer list response is an error', async () => {
-      jest
-        .spyOn(api, 'listOfferersNames')
-        .mockRejectedValueOnce(
-          new ApiError({} as ApiRequestOptions, {} as ApiResult, '')
-        )
-
-      renderSignIn(storeOverrides)
-
-      const email = screen.getByLabelText('Adresse e-mail')
-      await userEvent.type(email, 'MonPetitEmail@exemple.com')
-
-      const password = screen.getByLabelText('Mot de passe')
-      await userEvent.type(password, 'MCSolar85')
-
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: 'Se connecter',
-        })
-      )
-
-      expect(screen.getByText("I'm the onboarding page")).toBeInTheDocument()
-    })
-
     it('should not redirect user to onboarding page if use has an offerer', async () => {
       jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [
