@@ -1,5 +1,6 @@
 import logging
 
+from pcapi.connectors.cgr.cgr import annulation_pass_culture
 from pcapi.connectors.cgr.cgr import get_seances_pass_culture
 from pcapi.connectors.cgr.cgr import reservation_pass_culture
 from pcapi.connectors.serialization import cgr_serializers
@@ -50,7 +51,10 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         return tickets
 
     def cancel_booking(self, barcodes: list[str]) -> None:
-        raise NotImplementedError
+        barcodes_set = set(barcodes)
+        for barcode in barcodes_set:
+            annulation_pass_culture(self.cgr_cinema_details, barcode)
+            logger.info("CGR Booking Cancelled", extra={"barcode": barcode})
 
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:
         raise NotImplementedError
