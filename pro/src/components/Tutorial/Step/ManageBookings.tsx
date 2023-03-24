@@ -17,8 +17,7 @@ const ManageBookings = ({ titleId }: IStepComponentProps): JSX.Element => (
     <section className={styles['mb-content']}>
       <span className={styles['first-column']}>Validez vos contremarques</span>
       <span className={styles['third-column']}>
-        Accédez à la liste de vos réservations et les adresses mails des
-        utilisateurs
+        Accédez à la liste de vos réservations
       </span>
       <DownArrow className={styles['first-column']} />
       <DownArrow className={styles['third-column']} />
@@ -43,10 +42,10 @@ const ManageBookings = ({ titleId }: IStepComponentProps): JSX.Element => (
       <UpArrow className={styles['second-column']} />
       <UpArrow className={styles['fourth-column']} />
       <span className={styles['second-column']}>
-        Créez, éditez, désactivez et gérez vos offres
+        Créez, éditez, désactivez vos offres
       </span>
       <span className={styles['fourth-column']}>
-        Téléchargez les remboursements du pass Culture
+        Téléchargez le détail de vos remboursements
       </span>
     </section>
   </>

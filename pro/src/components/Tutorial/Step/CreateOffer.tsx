@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { CaseIcon, InfoPhoneIcon } from 'icons'
+
 import { IStepComponentProps } from '../types'
 
 import styles from './Step.module.scss'
@@ -9,29 +11,30 @@ const CreateOffer = ({
   contentClassName,
 }: IStepComponentProps): JSX.Element => (
   <>
-    <h1 id={titleId}>Créer une offre</h1>
+    <h1 id={titleId}>Créez et publiez vos offres à destination :</h1>
     <section className={contentClassName}>
-      <p>
-        Vous pouvez créer des offres numériques ou physiques de plusieurs façons
-        :
-      </p>
-      <p>
-        1. Automatiquement si vous utilisez un de nos logiciels partenaires
-        (Titelive Stocks, GStocks, Librisoft, Praxiel) ou êtes référencé sur
-        l’une des plateformes partenaires (Placesdeslibraires.fr,
-        leslibraires.fr, Allociné ... et bien d’autres !)
-      </p>
-      <p className={styles['tco-italic']}>
-        Les offres sont synchronisées avec les données du gestionnaire tous les
-        soirs.
-      </p>
-      <div>
-        <p>2. Manuellement avec notre système de création d’offre :</p>
-        <ul>
-          <li>Sélectionnez un type d’offre</li>
-          <li>Remplissez les informations nécessaires</li>
-          <li>Ajoutez une image</li>
-        </ul>
+      <div className={styles['two-columns-section-block']}>
+        <InfoPhoneIcon />
+        <h2>Du grand public</h2>
+        <p>
+          Les offres seront publiées et réservables par les jeunes via
+          l'application pass Culture.
+          <br />
+          Vous pourrez proposer des offres numériques, physiques et
+          d’évènements.
+        </p>
+      </div>
+      <div className={styles['two-columns-section-block']}>
+        <CaseIcon />
+        <h2>Des établissements scolaires</h2>
+        <p>
+          Les offres seront publiées et réservables par les enseignants sur la
+          plateforme ADAGE (Application Dédiée À la Généralisation de
+          l’Éducation artistique et culturelle).
+          <br />
+          Vous devez être référencé sur ADAGE afin de proposer des offres à
+          destination des enseignants.
+        </p>
       </div>
     </section>
   </>
