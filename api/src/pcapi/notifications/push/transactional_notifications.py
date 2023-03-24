@@ -55,7 +55,7 @@ def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> Trans
 def get_today_stock_booking_notification_data(booking: Booking, offer: Offer) -> TransactionalNotificationData | None:
     return TransactionalNotificationData(
         group_id=GroupId.TODAY_STOCK.value,
-        user_ids=[booking.userId],  # type: ignore [list-item]
+        user_ids=[booking.userId],
         message=TransactionalNotificationMessage(
             title="C'est aujourd'hui !",
             body=f"Retrouve les détails de la réservation pour {offer.name} sur l’application pass Culture",
@@ -91,7 +91,7 @@ def get_soon_expiring_bookings_with_offers_notification_data(booking: Booking) -
 
     return TransactionalNotificationData(
         group_id=GroupId.SOON_EXPIRING_BOOKINGS.value,
-        user_ids=[booking.userId],  # type: ignore [list-item]
+        user_ids=[booking.userId],
         message=TransactionalNotificationMessage(title="Tu n'as pas récupéré ta réservation", body=body),
         extra={"deeplink": booking_app_link(booking)},
     )

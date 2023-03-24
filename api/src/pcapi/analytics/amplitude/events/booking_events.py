@@ -22,9 +22,6 @@ def _track_booking_event(
     event_name: amplitude_connector.AmplitudeEventType,
     reason: bookings_models.BookingCancellationReasons | None = None,
 ) -> None:
-    # TODO: (lixxday) remove this when userId is not null in Booking
-    if not booking.userId:
-        return
     event_properties = _get_booking_event_properties(booking)
     if reason:
         event_properties["reason"] = reason.value
