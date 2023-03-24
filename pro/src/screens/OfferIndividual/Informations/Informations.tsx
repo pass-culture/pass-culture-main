@@ -36,7 +36,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import { IcoMailOutline } from 'icons'
+import { MailOutlineIcon } from 'icons'
 
 import { ActionBar } from '../ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks'
@@ -341,7 +341,7 @@ const Informations = ({
             saveDraft: true,
             sendMail: true,
           })}
-          icon={IcoMailOutline}
+          icon={MailOutlineIcon}
           title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
         />
       )}
