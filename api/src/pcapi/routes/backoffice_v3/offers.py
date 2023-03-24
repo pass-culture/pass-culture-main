@@ -35,7 +35,7 @@ list_offers_blueprint = utils.child_backoffice_blueprint(
     "offer",
     __name__,
     url_prefix="/pro/offer",
-    permission=perm_models.Permissions.MANAGE_OFFERS,
+    permission=perm_models.Permissions.READ_OFFERS,
 )
 
 
@@ -169,6 +169,7 @@ def _get_remaining_stock(offer: offers_models.Offer) -> int | str:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = (
         offers_models.Offer.query.filter_by(id=offer_id)
@@ -198,6 +199,7 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/edit", methods=["GET", "POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_batch_edit_offer_form() -> utils.BackofficeResponse:
     form = offer_forms.BatchEditOfferForm()
     if form.object_ids.data:
@@ -231,6 +233,7 @@ def get_batch_edit_offer_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-edit", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def batch_edit_offer() -> utils.BackofficeResponse:
     form = offer_forms.BatchEditOfferForm()
 
@@ -265,6 +268,7 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.get_or_404(offer_id)
     form = offer_forms.EditOfferForm()
@@ -284,6 +288,7 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
 
@@ -303,6 +308,7 @@ def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def validate_offer(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.get_or_404(offer_id)
 
@@ -329,6 +335,7 @@ def validate_offer(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
 
@@ -348,6 +355,7 @@ def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def reject_offer(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.get_or_404(offer_id)
 
