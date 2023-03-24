@@ -2,8 +2,8 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
-.url-input, .venue-type-select {
-  width: rem.torem(486px);
+.url-input input {
+  width: rem.torem(486px);;
 }
 
 .form-row-actions {
