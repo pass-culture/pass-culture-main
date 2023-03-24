@@ -116,7 +116,7 @@ class GetVenueTest:
 
         # then
         assert response.status_code == 200
-        assert "Présence de CB : Oui" in html_parser.content_as_text(response.data)
+        assert "Relié à un point de remboursement : Oui" in html_parser.content_as_text(response.data)
 
     def test_get_venue_with_accepted_reimbursement_point(
         self, authenticated_client, venue_with_accepted_reimbursement_point
@@ -128,7 +128,7 @@ class GetVenueTest:
 
         # then
         assert response.status_code == 200
-        assert "Présence de CB : Oui" in html_parser.content_as_text(response.data)
+        assert "Relié à un point de remboursement : Oui" in html_parser.content_as_text(response.data)
 
     def test_get_venue_with_expired_reimbursement_point(
         self, authenticated_client, venue_with_expired_reimbursement_point
@@ -140,7 +140,7 @@ class GetVenueTest:
 
         # then
         assert response.status_code == 200
-        assert "Présence de CB : Non" in html_parser.content_as_text(response.data)
+        assert "Relié à un point de remboursement : Non" in html_parser.content_as_text(response.data)
 
     def test_get_venue_dms_stats(self, authenticated_client, venue_with_draft_bank_info):
         with mock.patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_bank_info_status") as bank_info_mock:
