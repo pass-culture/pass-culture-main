@@ -3,6 +3,7 @@ import datetime
 import pytest
 
 from pcapi.core import testing
+from pcapi.core.educational import factories as educational_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
@@ -52,6 +53,9 @@ class Returns200Test:
             timespan=[now - datetime.timedelta(days=14), None],
         )
         venue_id = venue.id
+        dmsapplication = educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue,
+        )
         bank_information = finance_factories.BankInformationFactory(venue=venue)
         expected_serialized_venue = {
             "address": venue.address,
@@ -130,8 +134,24 @@ class Returns200Test:
             "collectiveWebsite": None,
             "collectiveSubCategoryId": None,
             "hasPendingBankInformationApplication": False,
+            "collectiveDmsApplications": [
+                {
+                    "venueId": dmsapplication.venueId,
+                    "state": dmsapplication.state,
+                    "procedure": dmsapplication.procedure,
+                    "application": dmsapplication.application,
+                    "lastChangeDate": format_into_utc_date(dmsapplication.lastChangeDate),
+                    "depositDate": format_into_utc_date(dmsapplication.depositDate),
+                    "expirationDate": format_into_utc_date(dmsapplication.expirationDate),
+                    "buildDate": format_into_utc_date(dmsapplication.buildDate),
+                    "instructionDate": None,
+                    "processingDate": None,
+                    "userDeletionDate": None,
+                }
+            ],
+            "hasAdageId": True,
+            "adageInscriptionDate": format_into_utc_date(venue.adageInscriptionDate),
         }
-
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         db.session.commit()  # clear SQLA cached objects
 
@@ -140,6 +160,27 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json == expected_serialized_venue
+
+    def when_user_has_rights_on_managing_offerer_with_no_adage_id(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offerers_factories.CollectiveVenueFactory(
+            name="L'encre et la plume",
+            managingOfferer=user_offerer.offerer,
+            collectiveDescription="Description du lieu",
+            adageId=None,
+            adageInscriptionDate=None,
+        )
+        venue_id = venue.id
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        db.session.commit()  # clear SQLA cached objects
+
+        with testing.assert_no_duplicated_queries():
+            response = auth_request.get("/venues/%s" % humanize(venue_id))
+
+        assert response.status_code == 200
+        assert response.json["adageInscriptionDate"] == None
+        assert response.json["hasAdageId"] == False
 
     def should_ignore_invalid_banner_metadata(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
