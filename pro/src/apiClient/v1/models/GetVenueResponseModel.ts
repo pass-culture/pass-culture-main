@@ -3,6 +3,7 @@
 /* eslint-disable */
 
 import type { BannerMetaModel } from './BannerMetaModel';
+import type { DMSApplicationForEAC } from './DMSApplicationForEAC';
 import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel';
 import type { GetVenueManagingOffererResponseModel } from './GetVenueManagingOffererResponseModel';
 import type { GetVenuePricingPointResponseModel } from './GetVenuePricingPointResponseModel';
@@ -12,6 +13,7 @@ import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
 
 export type GetVenueResponseModel = {
+  adageInscriptionDate?: string | null;
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;
   bannerMeta?: BannerMetaModel | null;
@@ -21,6 +23,7 @@ export type GetVenueResponseModel = {
   city?: string | null;
   collectiveAccessInformation?: string | null;
   collectiveDescription?: string | null;
+  collectiveDmsApplications: Array<DMSApplicationForEAC>;
   collectiveDomains: Array<GetVenueDomainResponseModel>;
   collectiveEmail?: string | null;
   collectiveInterventionArea?: Array<string> | null;
@@ -39,6 +42,7 @@ export type GetVenueResponseModel = {
   description?: string | null;
   dmsToken: string;
   fieldsUpdated: Array<string>;
+  hasAdageId?: boolean;
   hasPendingBankInformationApplication?: boolean | null;
   iban?: string | null;
   id: string;

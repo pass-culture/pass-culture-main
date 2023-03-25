@@ -32,6 +32,24 @@ MAX_LONGITUDE = 180
 MAX_LATITUDE = 90
 
 
+class DMSApplicationForEAC(BaseModel):
+    venueId: int
+    state: str
+    procedure: int
+    application: int
+    lastChangeDate: datetime
+    depositDate: datetime
+    expirationDate: datetime | None
+    buildDate: datetime | None
+    instructionDate: datetime | None
+    processingDate: datetime | None
+    userDeletionDate: datetime | None
+
+    class Config:
+        orm_mode = True
+        json_encoders = {datetime: format_into_utc_date}
+
+
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     address: base.VenueAddress
     bookingEmail: base.VenueBookingEmail
@@ -207,6 +225,9 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     collectivePhone: str | None
     collectiveEmail: str | None
     collectiveSubCategoryId: str | None
+    collectiveDmsApplications: list[DMSApplicationForEAC]
+    hasAdageId: bool
+    adageInscriptionDate: datetime | None
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
     _humanize_venue_label_id = humanize_field("venueLabelId")
@@ -252,6 +273,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
 
         venue.collectiveLegalStatus = venue.venueEducationalStatus
         venue.dmsToken = DMS_TOKEN_PRO_PREFIX + venue.dmsToken
+        venue.hasAdageId = bool(venue.adageId)
         return super().from_orm(venue)
 
 

@@ -104,6 +104,7 @@ class CollectiveVenueFactory(VenueFactory):
     isPermanent = True
 
     adageId = factory.Sequence(str)
+    adageInscriptionDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=365))
 
     managingOfferer = factory.SubFactory(CollectiveOffererFactory)
 
