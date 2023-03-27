@@ -1633,12 +1633,8 @@ class AdditionalInfo:
     siren: str
 
 
-def get_additional_info_from_onboarding_data(siret: str) -> AdditionalInfo | None:
-    try:
-        siret_info = sirene.get_siret(siret)
-    except sirene.SireneException as exc:
-        logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
-        return None
+def _get_additional_info_from_onboarding_data(siret: str) -> AdditionalInfo | None:
+    siret_info = sirene.get_siret(siret)
 
     try:
         address_info = api_adresse.get_address(
@@ -1666,3 +1662,69 @@ def get_additional_info_from_onboarding_data(siret: str) -> AdditionalInfo | Non
         postalCode=siret_info.address.postal_code,
         siren=siret[:9],
     )
+
+
+def create_from_onboarding_data(
+    user: users_models.User,
+    onboarding_data: offerers_serialize.SaveNewOnboardingDataQueryModel,
+) -> models.UserOfferer:
+    # Get additional info from external APIs (Sirene and Adresse)
+    additional_info = _get_additional_info_from_onboarding_data(onboarding_data.siret)
+    if not additional_info:
+        raise ApiErrors(
+            {
+                "additional_info": "Les informations relatives à l'adresse de cette structure n'ont pas pu être récupérées"
+            }
+        )
+
+    # Create Offerer or attach user to existing Offerer
+    offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
+        address=additional_info.address,
+        city=additional_info.city,
+        latitude=additional_info.latitude,
+        longitude=additional_info.longitude,
+        name=additional_info.name,
+        postalCode=additional_info.postalCode,
+        siren=onboarding_data.siret[:9],
+    )
+    user_offerer = create_offerer(user, offerer_creation_info)
+
+    # Create Venue with siret if it's not in DB yet, or Venue without siret if requested
+    if not offerers_repository.find_venue_by_siret(onboarding_data.siret) or onboarding_data.createVenueWithoutSiret:
+        common_kwargs = dict(
+            address=additional_info.address,
+            bookingEmail="",
+            city=additional_info.city,
+            latitude=additional_info.latitude,
+            longitude=additional_info.longitude,
+            managingOffererId=human_ids.humanize(user_offerer.offererId),
+            name=additional_info.name,
+            # FIXME(fseguin, 2023-03-27): use only publicName when pcpro is updated
+            publicName=onboarding_data.publicName or onboarding_data.name,
+            postalCode=additional_info.postalCode,
+            venueLabelId=None,
+            # FIXME(fseguin, 2023-03-27): use only venueTypeCode when pcpro is updated
+            venueTypeCode=onboarding_data.venueTypeCode or onboarding_data.venueType,
+            withdrawalDetails=None,
+            description=None,
+            contact=None,
+            audioDisabilityCompliant=False,
+            mentalDisabilityCompliant=False,
+            motorDisabilityCompliant=False,
+            visualDisabilityCompliant=False,
+        )
+        if onboarding_data.createVenueWithoutSiret:
+            comment_and_siret = dict(
+                comment="Lieu sans SIRET car dépend du SIRET d'un autre lieu",
+                siret=None,
+            )
+        else:
+            comment_and_siret = dict(
+                comment=None,
+                siret=onboarding_data.siret,
+            )
+        venue_kwargs = common_kwargs | comment_and_siret
+        venue_creation_info = venues_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore [arg-type]
+        create_venue(venue_creation_info)
+
+    return user_offerer
