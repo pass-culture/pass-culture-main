@@ -21,27 +21,29 @@ const Signup = () => {
     'ENABLE_PRO_ACCOUNT_CREATION'
   )
   return (
-    <AppLayout
-      layoutConfig={{
-        fullscreen: true,
-        pageName: 'sign-up',
-      }}
-      className={styles['sign-up']}
-    >
-      <PageTitle title="S’inscrire" />
+    <div className={styles['sign-up']}>
       <header className={styles['logo-side']}>
         <Logo noLink signPage />
       </header>
-      {isProAccountCreationEnabled ? (
-        <Routes>
-          <Route element={<SignupContainer />} path="" />
-          <Route element={<SignupConfirmation />} path="/confirmation" />
-          <Route element={<SignUpValidation />} path="/validation/:token" />
-        </Routes>
-      ) : (
-        <SignupUnavailable />
-      )}
-    </AppLayout>
+      <AppLayout
+        layoutConfig={{
+          fullscreen: true,
+          pageName: 'sign-up',
+        }}
+      >
+        <PageTitle title="S’inscrire" />
+
+        {isProAccountCreationEnabled ? (
+          <Routes>
+            <Route element={<SignupContainer />} path="" />
+            <Route element={<SignupConfirmation />} path="/confirmation" />
+            <Route element={<SignUpValidation />} path="/validation/:token" />
+          </Routes>
+        ) : (
+          <SignupUnavailable />
+        )}
+      </AppLayout>
+    </div>
   )
 }
 

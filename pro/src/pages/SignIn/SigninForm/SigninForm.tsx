@@ -16,6 +16,8 @@ import { setCurrentUser } from 'store/user/actions'
 import { PasswordInput, SubmitButton, TextInput } from 'ui-kit'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
+import styles from '../Signin.module.scss'
+
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
 import { validationSchema } from './validationSchema'
 
@@ -89,7 +91,7 @@ const SigninForm = (): JSX.Element => {
         {({ dirty, isValid, isSubmitting }) => (
           <Form>
             <FormLayout>
-              <div className="sign-up-form">
+              <div className={styles['signin-form']}>
                 <FormLayout.Row>
                   <TextInput
                     label="Adresse e-mail"
@@ -118,7 +120,7 @@ const SigninForm = (): JSX.Element => {
                 <KeyIcon className="ico-key" />
                 Mot de passe égaré ?
               </Link>
-              <div className="field buttons-field">
+              <div className={styles['buttons-field']}>
                 <Link
                   className="secondary-link"
                   onClick={() =>
