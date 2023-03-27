@@ -467,3 +467,26 @@ class FindAllOffererPaymentsTest:
             assert getattr(payments[0], attr) == expected, f"wrong {attr}"
         for attr, expected in specific_for_pricing.items():
             assert getattr(payments[0], attr) == expected, f"wrong {attr}"
+
+    def test_ignore_complementary_invoices(self):
+        booking = bookings_factories.UsedBookingFactory(stock__offer__venue__reimbursement_point="self")
+        rpoint = booking.venue
+        factories.BankInformationFactory(venue=rpoint)
+        pricing = factories.PricingFactory(
+            booking=booking,
+            status=models.PricingStatus.INVOICED,
+        )
+        cashflow = factories.CashflowFactory(
+            reimbursementPoint=rpoint,
+            pricings=[pricing],
+        )
+        invoice_original = factories.InvoiceFactory(cashflows=[cashflow])
+        factories.InvoiceFactory(
+            cashflows=[cashflow],
+            reference=invoice_original.reference + ".2",
+        )
+
+        reimbursement_period = (datetime.date.today(), datetime.date.today())
+        payments = repository.find_all_offerer_payments(rpoint.managingOffererId, reimbursement_period)
+
+        assert len(payments) == 1
