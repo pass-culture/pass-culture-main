@@ -53,9 +53,10 @@ class Returns201Test:
         assert offers_models.PriceCategoryLabel.query.count() == 0
         assert offer.validation == OfferValidationStatus.DRAFT
         assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
-        mocked_async_index_offer_ids.assert_not_called()
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
-    def test_create_event_stocks(self, client):
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_create_event_stocks(self, mocked_async_index_offer_ids, client):
         # Given
         offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(
@@ -103,9 +104,15 @@ class Returns201Test:
         assert created_stocks[2].price == 30
         assert created_stocks[2].priceCategory.price == 30
         assert created_stocks[2].priceCategory.label == "Tarif 2"
+        assert [call.args for call in mocked_async_index_offer_ids.call_args_list] == [
+            ([offer.id],),
+            ([offer.id],),
+            ([offer.id],),
+        ]
 
+    @patch("pcapi.core.search.async_index_offer_ids")
     @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
-    def test_create_event_stocks_with_multi_price(self, client):
+    def test_create_event_stocks_with_multi_price(self, mocked_async_index_offer_ids, client):
         # Given
         offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(
@@ -151,6 +158,11 @@ class Returns201Test:
         assert created_stocks[0].priceCategory.label == "Shared"
         assert created_stocks[0].priceCategory is created_stocks[1].priceCategory
         assert created_stocks[2].priceCategory is second_price_cat
+        assert [call.args for call in mocked_async_index_offer_ids.call_args_list] == [
+            ([offer.id],),
+            ([offer.id],),
+            ([offer.id],),
+        ]
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_edit_one_stock(self, mocked_async_index_offer_ids, client):
@@ -238,6 +250,7 @@ class Returns201Test:
         assert len(Stock.query.all()) == 1
         assert offers_models.PriceCategory.query.count() == 1
         assert offers_models.PriceCategoryLabel.query.count() == 1
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @patch("pcapi.core.search.async_index_offer_ids")
     @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
@@ -277,6 +290,7 @@ class Returns201Test:
         assert len(Stock.query.all()) == 1
         assert created_stock.priceCategory == new_price_category
         assert created_stock.price == 25
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     def test_create_one_stock_with_activation_codes(self, client):
         # Given
@@ -365,7 +379,11 @@ class Returns201Test:
             assert result_stock.quantity == expected_stock["quantity"]
             assert result_stock.bookingLimitDatetime == booking_limit_datetime
 
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+        assert [call.args for call in mocked_async_index_offer_ids.call_args_list] == [
+            ([offer.id],),
+            ([offer.id],),
+            ([offer.id],),
+        ]
 
     def test_sends_email_if_beginning_date_changes_on_edition(self, client):
         # Given
@@ -530,19 +548,19 @@ class Returns201Test:
         created_stock = Stock.query.get(dehumanize(response.json["stocks"][0]["id"]))
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
-        assert created_stock.bookingLimitDatetime == None
+        assert created_stock.bookingLimitDatetime is None
 
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-    def when_missing_offer_id(self, app):
+    def when_missing_offer_id(self, client):
         # Given
         offer = offers_factories.ThingOfferFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        booking_limit_datetime = datetime(2019, 2, 14)
+        booking_limit_datetime = datetime.datetime(2019, 2, 14)
 
         # When
         stock_data = {
@@ -555,15 +573,13 @@ class Returns400Test:
             ],
         }
 
-        response = (
-            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        )
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 400
         assert response.json == {"humanizedOfferId": ["Ce champ est obligatoire"]}
 
-    def test_update_thing_stock_without_price(self, app):
+    def test_update_thing_stock_without_price(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         existing_stock = offers_factories.StockFactory(offer=offer)
         offerers_factories.UserOffererFactory(
@@ -576,14 +592,12 @@ class Returns400Test:
             "stocks": [{"quantity": 20, "humanizedId": humanize(existing_stock.id)}],
         }
 
-        response = (
-            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        )
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
 
         assert response.json["price"] == ["Le prix est obligatoire pour les offres produit"]
 
     @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
-    def test_update_product_stock_without_price_is_forbidden(self, app):
+    def test_update_product_stock_without_price_is_forbidden(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         existing_stock = offers_factories.StockFactory(offer=offer)
         offerers_factories.UserOffererFactory(
@@ -596,13 +610,11 @@ class Returns400Test:
             "stocks": [{"quantity": 20, "humanizedId": humanize(existing_stock.id)}],
         }
 
-        response = (
-            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        )
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
 
         assert response.json["price"] == ["Le prix est obligatoire pour les offres produit"]
 
-    def when_invalid_quantity_or_price_for_edition_and_creation(self, app):
+    def when_invalid_quantity_or_price_for_edition_and_creation(self, client):
         # Given
         offer = offers_factories.EventOfferFactory()
         existing_stock = offers_factories.StockFactory(offer=offer, price=10)
@@ -610,7 +622,7 @@ class Returns400Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        booking_limit_datetime = datetime(2019, 2, 14)
+        booking_limit_datetime = datetime.datetime(2019, 2, 14)
 
         # When
         stock_data = {
@@ -631,9 +643,7 @@ class Returns400Test:
             ],
         }
 
-        response = (
-            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        )
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 400
@@ -643,7 +653,7 @@ class Returns400Test:
         assert persisted_stock.count() == 1
         assert persisted_stock[0].price == 10
 
-    def test_patch_non_approved_offer_fails(self, app):
+    def test_patch_non_approved_offer_fails(self, client):
         pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         stock = offers_factories.StockFactory(offer=pending_validation_offer)
         offerers_factories.UserOffererFactory(
@@ -655,14 +665,12 @@ class Returns400Test:
             "stocks": [{"humanizedId": humanize(stock.id), "price": 20}],
         }
 
-        response = (
-            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        )
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
 
-    def test_invalid_activation_codes_expiration_datetime(self, app):
+    def test_invalid_activation_codes_expiration_datetime(self, client):
         # Given
         offer = offers_factories.ThingOfferFactory(url="https://chartreu.se")
         offerers_factories.UserOffererFactory(
@@ -683,9 +691,7 @@ class Returns400Test:
             ],
         }
 
-        response = (
-            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        )
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 400
@@ -696,7 +702,7 @@ class Returns400Test:
             )
         ]
 
-    def test_invalid_booking_limit_datetime(self, app):
+    def test_invalid_booking_limit_datetime(self, client):
         # Given
         offer = offers_factories.ThingOfferFactory(url="https://chartreu.se")
         offerers_factories.UserOffererFactory(
@@ -704,8 +710,12 @@ class Returns400Test:
             offerer=offer.venue.managingOfferer,
         )
         existing_stock = offers_factories.StockFactory(offer=offer)
-        offers_factories.ActivationCodeFactory(expirationDate=datetime(2020, 5, 2, 23, 59, 59), stock=existing_stock)
-        offers_factories.ActivationCodeFactory(expirationDate=datetime(2020, 5, 2, 23, 59, 59), stock=existing_stock)
+        offers_factories.ActivationCodeFactory(
+            expirationDate=datetime.datetime(2020, 5, 2, 23, 59, 59), stock=existing_stock
+        )
+        offers_factories.ActivationCodeFactory(
+            expirationDate=datetime.datetime(2020, 5, 2, 23, 59, 59), stock=existing_stock
+        )
 
         # When
         stock_data = {
