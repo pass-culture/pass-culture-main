@@ -28,15 +28,6 @@ export default [
   },
   {
     error:
-      'Warning: An update to %s inside a test was not wrapped in act(...).',
-    files: [
-      'components/VenueForm/EACInformation/CollectiveData/CollectiveData.tsx',
-      'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/Offers.tsx',
-      '',
-    ],
-  },
-  {
-    error:
       "Warning: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in %s.%s",
     files: [
       'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/DeleteVenueProviderButton/DeleteVenueProviderButton.tsx',
