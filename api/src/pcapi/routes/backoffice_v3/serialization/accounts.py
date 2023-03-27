@@ -94,6 +94,8 @@ class EmailChangeAction(AccountAction):
                 return "Validation de changement d'email"
             case users_models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION:
                 return "Validation (admin) de changement d'email"
+            case users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST:
+                return "Changement d'email par l'admin"
             case _:
                 return "Action de changement d'email inconnue"
 
