@@ -145,12 +145,12 @@ def list_educational_offerers(
         raise ApiErrors({"offerer_id": "Missing query parameter"})
 
 
-@private_api.route("/offerers/<offerer_id>", methods=["GET"])
+@private_api.route("/offerers/<int:offerer_id>", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=offerers_serialize.GetOffererResponseModel, api=blueprint.pro_private_schema)
-def get_offerer(offerer_id: str) -> offerers_serialize.GetOffererResponseModel:
-    check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))  # type: ignore [arg-type]
-    offerer = load_or_404(offerers_models.Offerer, offerer_id)
+def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
+    check_user_has_access_to_offerer(current_user, offerer_id)
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
     return offerers_serialize.GetOffererResponseModel.from_orm(offerer)
 
 
@@ -235,16 +235,16 @@ def get_available_reimbursement_points(
     )
 
 
-@private_api.route("/offerers/<offerer_id>/dashboard", methods=["GET"])
+@private_api.route("/offerers/<int:offerer_id>/dashboard", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offerers_serialize.OffererStatsResponseModel,
     api=blueprint.pro_private_schema,
 )
 def get_offerer_stats_dashboard_url(
-    offerer_id: str,
+    offerer_id: int,
 ) -> offerers_serialize.OffererStatsResponseModel:
-    offerer = offerers_models.Offerer.query.get_or_404(dehumanize(offerer_id))
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
     check_user_has_access_to_offerer(current_user, offerer.id)
     url = api.get_metabase_stats_iframe_url(offerer, venues=offerer.managedVenues)
     return offerers_serialize.OffererStatsResponseModel(dashboardUrl=url)

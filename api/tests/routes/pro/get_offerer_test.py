@@ -55,7 +55,7 @@ def test_basics(client):
     db.session.commit()
 
     with testing.assert_no_duplicated_queries():
-        response = client.get(f"/offerers/{humanize(offerer_id)}")
+        response = client.get(f"/offerers/{offerer_id}")
 
     expected_serialized_offerer = {
         "address": offerer.address,
@@ -133,7 +133,7 @@ def test_unauthorized_offerer(client):
     offerer = offerers_factories.OffererFactory()
 
     client = client.with_session_auth(pro.email)
-    response = client.get(f"/offerers/{humanize(offerer.id)}")
+    response = client.get(f"/offerers/{offerer.id}")
 
     assert response.status_code == 403
 
@@ -159,7 +159,7 @@ def test_serialize_venue_has_missing_reimbursement_point(client):
     offerer_id = offerer.id
     client = client.with_session_auth(pro.email)
 
-    response = client.get(f"/offerers/{humanize(offerer_id)}")
+    response = client.get(f"/offerers/{offerer_id}")
     assert response.status_code == 200
     assert response.json["managedVenues"][0]["hasMissingReimbursementPoint"] == True
     assert response.json["managedVenues"][1]["hasMissingReimbursementPoint"] == False
@@ -185,7 +185,7 @@ def test_serialize_venue_offer_created_flag(client):
     offerer_id = offerer.id
     client = client.with_session_auth(pro.email)
 
-    response = client.get(f"/offerers/{humanize(offerer_id)}")
+    response = client.get(f"/offerers/{offerer_id}")
     assert response.status_code == 200
     assert response.json["managedVenues"][0]["hasCreatedOffer"] == True
     assert response.json["managedVenues"][1]["hasCreatedOffer"] == True

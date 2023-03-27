@@ -19,7 +19,7 @@ const OffererStats = (): JSX.Element | null => {
 
   const offererOptions = sortByDisplayName(
     offererNames.map(offerer => ({
-      id: offerer.id,
+      id: offerer.nonHumanizedId.toString(),
       displayName: offerer.name,
     }))
   )

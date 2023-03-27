@@ -64,7 +64,7 @@ describe('OffererStatsScreen', () => {
         },
         {
           id: 'B1',
-          nonHumanizedId: 1,
+          nonHumanizedId: 2,
           name: 'Ma super librairie',
         },
       ],

@@ -16,7 +16,7 @@ export const getOffererAdapter: GetOffererAdapter = async (
   offererId: string
 ) => {
   try {
-    const offerer = await api.getOfferer(offererId)
+    const offerer = await api.getOfferer(Number(offererId))
 
     return {
       isOk: true,

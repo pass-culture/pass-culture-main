@@ -169,9 +169,7 @@ class Returns200Test:
 
         # when
         response = (
-            TestClient(app.test_client())
-            .with_session_auth(email=pro.email)
-            .get("/offers?offererId=" + humanize(offerer.id))
+            TestClient(app.test_client()).with_session_auth(email=pro.email).get(f"/offers?offererId={offerer.id}")
         )
 
         # then
