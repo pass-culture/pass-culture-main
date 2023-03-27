@@ -60,6 +60,7 @@ const BaseInput = forwardRef(
         <input
           {...props}
           aria-invalid={hasError}
+          {...(hasError ? { 'aria-describedby': `error-${name}` } : {})}
           className={cn(
             styles['base-input'],
             {
