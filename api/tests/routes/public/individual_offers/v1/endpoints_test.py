@@ -2129,6 +2129,89 @@ class PatchProductTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class PatchProductByEanTest:
+    def test_create_stock_for_newest_product(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        old_product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            lastProvider=individual_offers_api_provider,
+            extraData={"ean": "12345678"},
+        )
+        newest_product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            lastProvider=individual_offers_api_provider,
+            extraData={"ean": "12345678"},
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/ean/{newest_product_offer.extraData['ean']}",
+            json={"stock": {"price": 1234, "quantity": 1, "bookingLimitDatetime": "2021-01-15T00:00:00Z"}},
+        )
+
+        assert response.status_code == 200
+        assert response.json["stock"] == {
+            "bookedQuantity": 0,
+            "bookingLimitDatetime": "2021-01-15T00:00:00Z",
+            "price": 1234,
+            "quantity": 1,
+        }
+        assert len(newest_product_offer.activeStocks) == 1
+        assert not old_product_offer.activeStocks
+
+    def test_update_stock(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            lastProvider=individual_offers_api_provider,
+            extraData={"ean": "12345678"},
+        )
+        stock = offers_factories.StockFactory(offer=product_offer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/ean/{product_offer.extraData['ean']}",
+            json={"stock": {"price": 1234, "quantity": 1, "bookingLimitDatetime": "2021-01-15T00:00:00Z"}},
+        )
+
+        assert response.status_code == 200
+        assert response.json["stock"] == {
+            "bookedQuantity": 0,
+            "bookingLimitDatetime": "2021-01-15T00:00:00Z",
+            "price": 1234,
+            "quantity": 1,
+        }
+        assert len(product_offer.activeStocks) == 1
+        assert product_offer.activeStocks[0] == stock
+
+    def test_delete_stock(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            lastProvider=individual_offers_api_provider,
+            extraData={"ean": "12345678"},
+        )
+        offers_factories.StockFactory(offer=product_offer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/products/ean/{product_offer.extraData['ean']}",
+            json={},
+        )
+
+        assert response.status_code == 200
+        assert not product_offer.activeStocks
+
+    def test_404_when_ean_not_found(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            "/public/offers/v1/products/ean/12345678"
+        )
+
+        assert response.status_code == 404
+        assert response.json == {"ean": ["The product offer could not be found"]}
+
+
+@pytest.mark.usefixtures("db_session")
 class DeleteDateTest:
     def test_delete_date(self, individual_offers_api_provider, client):
         api_key = offerers_factories.ApiKeyFactory()

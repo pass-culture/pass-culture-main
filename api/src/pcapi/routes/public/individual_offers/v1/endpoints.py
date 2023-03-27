@@ -666,39 +666,77 @@ def edit_product(
                 **compute_accessibility_edition_fields(update_body.get("accessibility")),
             )
             if "stock" in update_body:
-                existing_stock = next((stock for stock in offer.activeStocks), None)
-                if body.stock is None:
-                    if existing_stock:
-                        offers_api.delete_stock(existing_stock)
-                else:
-                    if not existing_stock:
-                        if not body.stock.price:
-                            raise api_errors.ApiErrors({"stock.price": ["Required"]})
-                        offers_api.create_stock(
-                            offer=offer,
-                            price=finance_utils.to_euros(body.stock.price),
-                            quantity=serialization.deserialize_quantity(body.stock.quantity),
-                            booking_limit_datetime=body.stock.booking_limit_datetime,
-                            creating_provider=individual_offers_provider,
-                        )
-                    else:
-                        price = update_body["stock"].get("price", offers_api.UNCHANGED)
-                        quantity = update_body["stock"].get("quantity", offers_api.UNCHANGED)
-                        offers_api.edit_stock(
-                            existing_stock,
-                            quantity=serialization.deserialize_quantity(quantity),
-                            price=finance_utils.to_euros(price)
-                            if price != offers_api.UNCHANGED
-                            else offers_api.UNCHANGED,
-                            booking_limit_datetime=update_body["stock"].get(
-                                "booking_limit_datetime", offers_api.UNCHANGED
-                            ),
-                            editing_provider=individual_offers_provider,
-                        )
+                _upsert_product_stock(offer, body.stock, individual_offers_provider)
     except offers_exceptions.OfferCreationBaseException as e:
         raise api_errors.ApiErrors(e.errors, status_code=400)
 
     return serialization.ProductOfferResponse.build_product_offer(offer)
+
+
+@blueprint.v1_blueprint.route("/products/ean/<string:ean>", methods=["PATCH"])
+@spectree_serialize(
+    api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
+)
+@api_key_required
+@public_utils.individual_offers_api_provider
+def edit_product_by_ean(
+    individual_offers_provider: providers_models.Provider, ean: str, body: serialization.ProductOfferByEanEdition
+) -> serialization.ProductOfferResponse:
+    """
+    Edit a product by accessing it through its European Article Number.
+
+    Leave fields undefined to keep their current value.
+    """
+    offer: offers_models.Offer | None = (
+        _retrieve_offer_relations_query(_retrieve_offer_by_ean_query(ean))
+        .filter(offers_models.Offer.isEvent == False)
+        .first()
+    )
+    if not offer:
+        raise api_errors.ApiErrors({"ean": ["The product offer could not be found"]}, status_code=404)
+
+    try:
+        with repository.transaction():
+            _upsert_product_stock(offer, body.stock, individual_offers_provider)
+    except offers_exceptions.OfferCreationBaseException as e:
+        raise api_errors.ApiErrors(e.errors, status_code=400)
+
+    return serialization.ProductOfferResponse.build_product_offer(offer)
+
+
+def _upsert_product_stock(
+    offer: offers_models.Offer,
+    stock_body: serialization.StockEdition | None,
+    individual_offers_provider: providers_models.Provider,
+) -> None:
+    existing_stock = next((stock for stock in offer.activeStocks), None)
+    if not stock_body:
+        if existing_stock:
+            offers_api.delete_stock(existing_stock)
+        return
+
+    if not existing_stock:
+        if not stock_body.price:
+            raise api_errors.ApiErrors({"stock.price": ["Required"]})
+        offers_api.create_stock(
+            offer=offer,
+            price=finance_utils.to_euros(stock_body.price),
+            quantity=serialization.deserialize_quantity(stock_body.quantity),
+            booking_limit_datetime=stock_body.booking_limit_datetime,
+            creating_provider=individual_offers_provider,
+        )
+        return
+
+    stock_update_body = stock_body.dict(exclude_unset=True)
+    price = stock_update_body.get("price", offers_api.UNCHANGED)
+    quantity = stock_update_body.get("quantity", offers_api.UNCHANGED)
+    offers_api.edit_stock(
+        existing_stock,
+        quantity=serialization.deserialize_quantity(quantity),
+        price=finance_utils.to_euros(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,
+        booking_limit_datetime=stock_update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
+        editing_provider=individual_offers_provider,
+    )
 
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["DELETE"])
