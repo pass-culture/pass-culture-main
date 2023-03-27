@@ -1497,28 +1497,6 @@ export class DefaultService {
   }
 
   /**
-   * get_stocks <GET>
-   * @param offerId
-   * @returns StocksResponseModel OK
-   * @throws ApiError
-   */
-  public getStocks(
-    offerId: string,
-  ): CancelablePromise<StocksResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/offers/{offer_id}/stocks',
-      path: {
-        'offer_id': offerId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
    * get_reimbursements_csv <GET>
    * @param venueId
    * @param reimbursementPeriodBeginningDate

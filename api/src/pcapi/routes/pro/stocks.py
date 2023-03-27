@@ -10,7 +10,6 @@ import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
-import pcapi.core.offers.repository as offers_repository
 import pcapi.core.offers.validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
@@ -25,21 +24,6 @@ from . import blueprint
 
 
 logger = logging.getLogger(__name__)
-
-
-@private_api.route("/offers/<offer_id>/stocks", methods=["GET"])
-@login_required
-@spectree_serialize(response_model=serialization.StocksResponseModel, api=blueprint.pro_private_schema)
-def get_stocks(offer_id: str) -> serialization.StocksResponseModel:
-    try:
-        offerer = offerers_repository.get_by_offer_id(dehumanize(offer_id))  # type: ignore [arg-type]
-    except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)
-    stocks = offers_repository.get_stocks_for_offer(dehumanize(offer_id))  # type: ignore [arg-type]
-    return serialization.StocksResponseModel(
-        stocks=[serialization.StockResponseModel.from_orm(stock) for stock in stocks],
-    )
 
 
 def _get_existing_stocks(
