@@ -6,7 +6,7 @@ import type { StockCreationBodyModel } from './StockCreationBodyModel';
 import type { StockEditionBodyModel } from './StockEditionBodyModel';
 
 export type StocksUpsertBodyModel = {
-  humanizedOfferId: string;
+  offerId: number;
   stocks: Array<(StockCreationBodyModel | StockEditionBodyModel)>;
 };
 

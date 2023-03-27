@@ -87,7 +87,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
   const onSubmit = async (formValues: IStockThingFormValues) => {
     const { isOk, payload, message } = await upsertStocksThingAdapter({
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
       formValues,
       departementCode: offer.venue.departmentCode,
       mode,
