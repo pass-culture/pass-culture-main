@@ -165,7 +165,8 @@ export const computeInitialValuesFromOffer = (
     email: email ?? DEFAULT_EAC_FORM_VALUES.email,
     phone: phone ?? DEFAULT_EAC_FORM_VALUES.phone,
     notificationEmails:
-      offer.bookingEmails ?? DEFAULT_EAC_FORM_VALUES.notificationEmails,
+      offer.bookingEmails ??
+      (email ? [email] : DEFAULT_EAC_FORM_VALUES.notificationEmails),
     domains,
     interventionArea:
       offer.interventionArea ?? DEFAULT_EAC_FORM_VALUES.interventionArea,

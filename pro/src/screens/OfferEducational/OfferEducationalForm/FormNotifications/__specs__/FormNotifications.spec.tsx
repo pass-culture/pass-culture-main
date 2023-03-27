@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
@@ -9,13 +9,10 @@ import { SubmitButton } from 'ui-kit'
 
 import FormNotifications from '../FormNotifications'
 
-const renderFormNotifications = ({
-  initialValues,
-  onSubmit = jest.fn(),
-}: {
-  initialValues: Partial<IOfferEducationalFormValues>
+const renderFormNotifications = (
+  initialValues: Partial<IOfferEducationalFormValues>,
   onSubmit: () => void
-}) => {
+) => {
   const validationSchema = yup.object().shape({
     notifications: yup.boolean(),
     notificationEmail: yup.string().when('notifications', {
@@ -26,7 +23,8 @@ const renderFormNotifications = ({
         .email('Veuillez renseigner un e-mail valide'),
     }),
   })
-  const rtlReturns = render(
+
+  render(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
@@ -40,13 +38,6 @@ const renderFormNotifications = ({
       )}
     </Formik>
   )
-
-  return {
-    ...rtlReturns,
-    buttonSubmit: screen.getByRole('button', {
-      name: 'Submit',
-    }),
-  }
 }
 
 describe('FormNotifications', () => {
@@ -58,39 +49,34 @@ describe('FormNotifications', () => {
     }
   })
 
-  it('should render notification mail with pro email value if provided', () => {
-    initialValues = {
-      notificationEmails: [''],
-      email: 'test@example.com',
-    }
-    renderFormNotifications({ initialValues, onSubmit })
-
-    expect(screen.getByDisplayValue('test@example.com')).toBeInTheDocument()
-  })
-
   it('should add notification mail input when button is clicked', async () => {
     initialValues = {
       notificationEmails: ['test@example.com'],
     }
-    renderFormNotifications({ initialValues, onSubmit })
-    let mailInputs = await screen.getAllByRole('textbox', {
+    renderFormNotifications(initialValues, onSubmit)
+    const mailInputs = screen.getAllByRole('textbox', {
       name: 'E-mail auquel envoyer les notifications',
     })
-    const addInputButton = await screen.getByRole('button', {
+    const addInputButton = screen.getByRole('button', {
       name: 'Ajouter un e-mail de notification',
     })
     expect(mailInputs.length).toEqual(1)
     await userEvent.click(addInputButton)
-    mailInputs = await screen.getAllByRole('textbox', {
-      name: 'E-mail auquel envoyer les notifications',
+
+    await waitFor(() => {
+      expect(
+        screen.getAllByRole('textbox', {
+          name: 'E-mail auquel envoyer les notifications',
+        }).length
+      ).toEqual(2)
     })
-    expect(mailInputs.length).toEqual(2)
   })
+
   it('should remove notification mail input when trash icon is clicked', async () => {
     initialValues = {
       notificationEmails: ['test@example.com', 'test2@example.com'],
     }
-    renderFormNotifications({ initialValues, onSubmit })
+    renderFormNotifications(initialValues, onSubmit)
     let mailInputs = await screen.getAllByRole('textbox', {
       name: 'E-mail auquel envoyer les notifications',
     })

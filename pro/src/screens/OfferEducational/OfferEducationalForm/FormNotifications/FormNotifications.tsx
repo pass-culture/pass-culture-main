@@ -1,5 +1,5 @@
 import { FieldArray, useFormikContext } from 'formik'
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
@@ -15,14 +15,7 @@ const FormNotifications = ({
 }: {
   disableForm: boolean
 }): JSX.Element => {
-  const { values, setFieldValue } =
-    useFormikContext<IOfferEducationalFormValues>()
-
-  useEffect(() => {
-    if (values.email && !values.notificationEmails[0]) {
-      setFieldValue('notificationEmails.0', values.email)
-    }
-  }, [setFieldValue])
+  const { values } = useFormikContext<IOfferEducationalFormValues>()
 
   return (
     <FormLayout.Section title="Notifications">
