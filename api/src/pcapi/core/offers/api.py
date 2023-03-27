@@ -545,6 +545,7 @@ def create_stock(
             )
         )
     repository.add_to_session(created_stock, *created_activation_codes)
+    search.async_index_offer_ids([offer.id])
 
     return created_stock
 
@@ -606,14 +607,12 @@ def edit_stock(
         setattr(stock, model_attr, value)
 
     repository.add_to_session(stock)
+    search.async_index_offer_ids([stock.offerId])
 
     return stock, is_beginning_updated
 
 
 def handle_stocks_edition(offer_id: int, edited_stocks: list[typing.Tuple[models.Stock, bool]]) -> None:
-    if edited_stocks:
-        search.async_index_offer_ids([offer_id])
-
     for stock, is_beginning_datetime_updated in edited_stocks:
         if is_beginning_datetime_updated:
             bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)

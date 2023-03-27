@@ -126,6 +126,7 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
             {"stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]},
             status_code=400,
         )
+
     offers_api.handle_stocks_edition(body.offer_id, edited_stocks_with_update_info)
 
     return serialization.StocksResponseModel(
