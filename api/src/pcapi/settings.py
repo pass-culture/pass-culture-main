@@ -35,7 +35,7 @@ load_dotenv(dotenv_path=env_path)
 
 if IS_DEV:
     load_dotenv(dotenv_path=".env.local.secret", override=True)
-if IS_RUNNING_TESTS:
+if IS_RUNNING_TESTS and not IS_E2E_TESTS:
     load_dotenv(dotenv_path=".env.testauto", override=True)
 
 LOG_LEVEL = int(os.environ.get("LOG_LEVEL", LOG_LEVEL_INFO))
