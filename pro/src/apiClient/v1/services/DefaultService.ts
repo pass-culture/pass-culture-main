@@ -1453,7 +1453,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public postPriceCategories(
-    offerId: string,
+    offerId: number,
     requestBody?: PriceCategoryBody,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
@@ -1479,8 +1479,8 @@ export class DefaultService {
    * @throws ApiError
    */
   public deletePriceCategory(
-    offerId: string,
-    priceCategoryId: string,
+    offerId: number,
+    priceCategoryId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
