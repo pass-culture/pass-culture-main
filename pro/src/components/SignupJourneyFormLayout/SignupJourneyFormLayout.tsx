@@ -13,12 +13,8 @@ const SignupJourneyFormLayout = ({
   children,
 }: ISignupOffererFormLayoutProps): JSX.Element => (
   <div className={styles['signup-offerer-layout-wrapper']}>
-    <div className={styles['signup-offerer-layout']}>
-      <div className={styles['stepper']}>
-        <SignupJourneyBreadcrumb />
-      </div>
-      <div className={styles['content']}>{children}</div>
-    </div>
+    <SignupJourneyBreadcrumb />
+    <div className={styles['content']}>{children}</div>
   </div>
 )
 

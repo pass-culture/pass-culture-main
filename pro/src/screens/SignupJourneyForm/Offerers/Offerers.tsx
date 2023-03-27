@@ -82,7 +82,7 @@ const Offerers = (): JSX.Element => {
           Rejoignez-le si votre structure se trouve dans la liste.
         </div>
         <div className={styles['venues-layout']}>
-          <div className={styles['title-4']}>
+          <div className={styles['offerer-name-accent']}>
             {venuesOfOfferer?.offererName} - {formatedSiret}
           </div>
           <ul className={styles['venue-list']}>
@@ -128,6 +128,7 @@ const Offerers = (): JSX.Element => {
         Votre structure ne se trouve pas dans cette liste ?
       </div>
       <Button
+        className={styles['button-add-new-offerer']}
         onClick={() => navigate('/parcours-inscription/authentification')}
         variant={ButtonVariant.SECONDARY}
       >
