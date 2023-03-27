@@ -38,7 +38,7 @@ describe('CollectiveOfferPracticalInformation', () => {
     expect(screen.getByText('Le détail du prix')).toBeInTheDocument()
   })
 
-  it('when offer is not template', () => {
+  it('when offer is not template', async () => {
     renderWithProviders(
       <CollectiveOfferPracticalInformation
         offer={collectiveOfferFactory(
@@ -49,6 +49,9 @@ describe('CollectiveOfferPracticalInformation', () => {
         )}
       />
     )
+    await waitFor(() => {
+      expect(api.getVenue).toHaveBeenCalledTimes(1)
+    })
 
     const priceDetail = screen.queryByText(/Informations sur le prix/)
     expect(priceDetail).not.toBeInTheDocument()
