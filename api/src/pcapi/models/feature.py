@@ -91,7 +91,6 @@ class FeatureToggle(enum.Enum):
     SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION = "Permettre limport journalier des résumés des livres"
     SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS = "Permettre limport journalier des couvertures de livres"
     UPDATE_BOOKING_USED = "Permettre la validation automatique des contremarques 48h après la fin de lévènement"
-    USER_PROFILING_FRAUD_CHECK = "Détection de la fraude basée sur le profil de l'utilisateur"
     ENABLE_VENUE_STRICT_SEARCH = (
         "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
     )
@@ -162,7 +161,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.GENERATE_CASHFLOWS_BY_CRON,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
-    FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.ENABLE_OFFERER_STATS,
