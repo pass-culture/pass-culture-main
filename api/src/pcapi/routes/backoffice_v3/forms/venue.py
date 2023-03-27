@@ -27,7 +27,7 @@ class EditVenueForm(EditVirtualVenueForm):
         "Nom d'usage",
         validators=(wtforms.validators.Length(max=255, message="doit contenir moins de %(max)d caractères"),),
     )
-    siret = fields.PCStringField("siret")
+    siret = fields.PCOptStringField("siret")
     postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
         "Adresse",
         address="address",
@@ -71,7 +71,12 @@ class EditVenueForm(EditVirtualVenueForm):
         self._fields.move_to_end("is_permanent")
 
     def validate_siret(self, siret: fields.PCStringField) -> fields.PCStringField:
-        if not siret.data or len(siret.data) != 14:
+        siret.data = siret.data.strip()
+        if not siret.data:
+            siret.data = None
+            return siret
+
+        if len(siret.data) != 14:
             raise validators.ValidationError("Un siret doit comporter 14 chiffres")
 
         try:

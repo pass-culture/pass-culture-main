@@ -629,7 +629,7 @@ class UpdateVenueTest:
         response = authenticated_client.post(url, json=data)
         response = send_request(authenticated_client, venue.id, url, data)
 
-        assert response.status_code == 200
+        assert response.status_code == 400
         assert "Les données envoyées comportent des erreurs" in response.data.decode("utf-8")
 
     def test_update_venue_tags(self, legit_user, authenticated_client):
@@ -657,6 +657,52 @@ class UpdateVenueTest:
         assert venue.action_history[0].extraData == {
             "modified_info": {"criteria": {"old_info": ["Premier", "Deuxième"], "new_info": ["Deuxième", "Troisième"]}}
         }
+
+    def test_update_venue_without_siret(self, authenticated_client, offerer):
+        venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
+
+        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
+        data = self._get_current_data(venue)
+        data["phone_number"] = "+33203040506"
+
+        response = send_request(authenticated_client, venue.id, url, data)
+
+        assert response.status_code == 303
+        db.session.refresh(venue)
+        assert venue.siret is None
+        assert venue.contact.phone_number == "+33203040506"
+
+    def test_update_venue_create_siret(self, authenticated_client, offerer):
+        venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
+
+        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
+        data = self._get_current_data(venue)
+        data["siret"] = f"{venue.managingOfferer.siren}12345"
+
+        response = send_request(authenticated_client, venue.id, url, data)
+
+        assert response.status_code == 400
+        db.session.refresh(venue)
+        assert venue.siret is None
+        assert "Vous ne pouvez pas créer le SIRET d'un lieu. Contactez le support pro." in html_parser.extract_alert(
+            response.data
+        )
+
+    def test_update_venue_remove_siret(self, authenticated_client, offerer):
+        venue = offerers_factories.VenueFactory()
+
+        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
+        data = self._get_current_data(venue)
+        data["siret"] = " "
+
+        response = send_request(authenticated_client, venue.id, url, data)
+
+        assert response.status_code == 400
+        db.session.refresh(venue)
+        assert venue.siret
+        assert "Vous ne pouvez pas retirer le SIRET d'un lieu. Contactez le support pro." in html_parser.extract_alert(
+            response.data
+        )
 
 
 def send_request(authenticated_client, venue_id, url, form_data=None):
