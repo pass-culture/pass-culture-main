@@ -344,7 +344,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
 
       <form onSubmit={formik.handleSubmit}>
         <PriceCategoriesForm
-          offerId={offer.nonHumanizedId.toString()}
+          offerId={offer.nonHumanizedId}
           mode={mode}
           stocks={offer.stocks}
           setOffer={setOffer}

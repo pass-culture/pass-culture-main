@@ -358,7 +358,7 @@ def _get_offer_for_price_categories_upsert(
     )
 
 
-@private_api.route("/offers/<offer_id>/price_categories", methods=["POST"])
+@private_api.route("/offers/<int:offer_id>/price_categories", methods=["POST"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
@@ -406,7 +406,7 @@ def post_price_categories(
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/offers/<offer_id>/price_categories/<price_category_id>", methods=["DELETE"])
+@private_api.route("/offers/<int:offer_id>/price_categories/<int:price_category_id>", methods=["DELETE"])
 @login_required
 @spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
 def delete_price_category(offer_id: int, price_category_id: int) -> None:

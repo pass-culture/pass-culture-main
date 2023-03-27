@@ -96,7 +96,7 @@ describe('PriceCategories', () => {
       await screen.findByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
     expect(api.patchOffer).toHaveBeenCalled()
-    expect(api.postPriceCategories).toHaveBeenCalledWith(expect.any(String), {
+    expect(api.postPriceCategories).toHaveBeenCalledWith(expect.any(Number), {
       priceCategories: [
         { id: priceCategory.id, label: 'mon label', price: 20 },
       ],

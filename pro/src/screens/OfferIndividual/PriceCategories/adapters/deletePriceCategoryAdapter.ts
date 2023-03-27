@@ -5,8 +5,8 @@ type TSuccessPayload = Record<string, unknown>
 type TFailurePayload = { errors: Record<string, string>[] }
 export type TDeletePriceCategoryAdapter = Adapter<
   {
-    offerId: string
-    priceCategoryId: string
+    offerId: number
+    priceCategoryId: number
   },
   TSuccessPayload,
   TFailurePayload

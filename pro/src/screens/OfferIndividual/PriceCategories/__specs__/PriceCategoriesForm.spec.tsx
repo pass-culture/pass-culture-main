@@ -35,7 +35,7 @@ const renderPriceCategoriesForm = (
   return renderWithProviders(
     <Formik initialValues={values} onSubmit={jest.fn()}>
       <PriceCategoriesForm
-        offerId="42"
+        offerId={42}
         mode={OFFER_WIZARD_MODE.DRAFT}
         stocks={[individualStockFactory({ priceCategoryId: 144 })]}
         setOffer={jest.fn()}
@@ -157,8 +157,8 @@ describe('PriceCategories', () => {
     await userEvent.click(
       screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
     )
-    expect(api.deletePriceCategory).toHaveBeenNthCalledWith(1, '42', '66')
-    expect(api.postPriceCategories).toHaveBeenNthCalledWith(1, '42', {
+    expect(api.deletePriceCategory).toHaveBeenNthCalledWith(1, 42, 66)
+    expect(api.postPriceCategories).toHaveBeenNthCalledWith(1, 42, {
       priceCategories: [{ id: 2, label: 'Tarif unique' }],
     })
   })
@@ -192,7 +192,7 @@ describe('PriceCategories', () => {
       screen.getAllByRole('button', { name: 'Supprimer le tarif' })[1]
     )
     await userEvent.click(screen.getByText('Confirmer la supression'))
-    expect(api.deletePriceCategory).toHaveBeenNthCalledWith(1, '42', '144')
+    expect(api.deletePriceCategory).toHaveBeenNthCalledWith(1, 42, 144)
   })
 
   it('should handle unique line label cases', async () => {

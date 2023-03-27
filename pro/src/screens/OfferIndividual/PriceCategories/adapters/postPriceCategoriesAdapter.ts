@@ -6,7 +6,7 @@ type TSuccessPayload = Record<string, unknown>
 type TFailurePayload = { errors: Record<string, string>[] }
 export type TPostPriceCategoriesAdapter = Adapter<
   {
-    offerId: string
+    offerId: number
     requestBody?: PriceCategoryBody
   },
   TSuccessPayload,
