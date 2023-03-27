@@ -1440,6 +1440,11 @@ class CreateFromOnboardingDataTest:
         assert venue.motorDisabilityCompliant is False
         assert venue.visualDisabilityCompliant is False
 
+    def assert_common_action_history_extra_data(self, action: history_models.ActionHistory) -> None:
+        assert action.extraData["target"] == offerers_models.Target.INDIVIDUAL.name
+        assert action.extraData["venue_type_code"] == offerers_models.VenueTypeCode.MOVIE.name
+        assert action.extraData["web_presence"] == "www.example.com, instagram.com/example, @example@mastodon.example"
+
     def get_onboarding_data(
         self, create_venue_without_siret: bool
     ) -> offerers_serialize.SaveNewOnboardingDataQueryModel:
@@ -1482,6 +1487,15 @@ class CreateFromOnboardingDataTest:
         assert created_venue.comment is None
         assert created_venue.siret == "85331845900031"
         assert created_venue.current_pricing_point_id == created_venue.id
+        # Action logs
+        assert history_models.ActionHistory.query.count() == 1
+        offerer_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_NEW
+        ).one()
+        assert offerer_action.offerer == created_offerer
+        assert offerer_action.authorUser == user
+        assert offerer_action.user == user
+        self.assert_common_action_history_extra_data(offerer_action)
 
     def test_existing_siren_new_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
@@ -1506,6 +1520,15 @@ class CreateFromOnboardingDataTest:
         assert created_venue.comment is None
         assert created_venue.siret == "85331845900031"
         assert created_venue.current_pricing_point_id == created_venue.id
+        # Action logs
+        assert history_models.ActionHistory.query.count() == 1
+        offerer_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW
+        ).one()
+        assert offerer_action.offerer == offerer
+        assert offerer_action.authorUser == user
+        assert offerer_action.user == user
+        self.assert_common_action_history_extra_data(offerer_action)
 
     def test_existing_siren_new_venue_without_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
@@ -1531,6 +1554,15 @@ class CreateFromOnboardingDataTest:
         assert created_venue.siret is None
         # No pricing point yet
         assert not created_venue.current_pricing_point_id
+        # Action logs
+        assert history_models.ActionHistory.query.count() == 1
+        offerer_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW
+        ).one()
+        assert offerer_action.offerer == offerer
+        assert offerer_action.authorUser == user
+        assert offerer_action.user == user
+        self.assert_common_action_history_extra_data(offerer_action)
 
     def test_existing_siren_existing_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
@@ -1551,3 +1583,12 @@ class CreateFromOnboardingDataTest:
         assert created_user_offerer.validationStatus == ValidationStatus.NEW
         # Venue has not been created
         assert offerers_models.Venue.query.count() == 2
+        # Action logs
+        assert history_models.ActionHistory.query.count() == 1
+        offerer_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW
+        ).one()
+        assert offerer_action.offerer == offerer
+        assert offerer_action.authorUser == user
+        assert offerer_action.user == user
+        self.assert_common_action_history_extra_data(offerer_action)

@@ -411,8 +411,24 @@ def auto_tag_new_offerer(
     db.session.commit()
 
 
+@dataclasses.dataclass
+class NewOnboardingInfo:
+    target: models.Target | None
+    venueTypeCode: offerers_models.VenueTypeCode | None
+    webPresence: str | None
+
+
+def _add_new_onboarding_info_to_extra_data(new_onboarding_info: NewOnboardingInfo | None, extra_data: dict) -> None:
+    if feature.FeatureToggle.WIP_ENABLE_NEW_ONBOARDING and new_onboarding_info:
+        extra_data["target"] = new_onboarding_info.target
+        extra_data["venue_type_code"] = new_onboarding_info.venueTypeCode
+        extra_data["web_presence"] = new_onboarding_info.webPresence
+
+
 def create_offerer(
-    user: users_models.User, offerer_informations: offerers_serialize.CreateOffererQueryModel
+    user: users_models.User,
+    offerer_informations: offerers_serialize.CreateOffererQueryModel,
+    new_onboarding_info: NewOnboardingInfo | None = None,
 ) -> models.UserOfferer:
     offerer = offerers_repository.find_offerer_by_siren(offerer_informations.siren)
     is_new = False
@@ -429,9 +445,17 @@ def create_offerer(
             objects_to_save += [offerer]
         else:
             user_offerer.validationStatus = ValidationStatus.NEW
+            if feature.FeatureToggle.WIP_ENABLE_NEW_ONBOARDING:
+                extra_data = {}
+                _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
             objects_to_save += [
                 history_api.log_action(
-                    history_models.ActionType.USER_OFFERER_NEW, user, user=user, offerer=offerer, save=False
+                    history_models.ActionType.USER_OFFERER_NEW,
+                    user,
+                    user=user,
+                    offerer=offerer,
+                    save=False,
+                    **extra_data,
                 ),
             ]
         repository.save(*objects_to_save)
@@ -458,6 +482,8 @@ def create_offerer(
         extra_data = {}
         if siren_info:
             extra_data = {"sirene_info": dict(siren_info)}
+        if feature.FeatureToggle.WIP_ENABLE_NEW_ONBOARDING:
+            _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
 
         history_api.log_action(
             history_models.ActionType.OFFERER_NEW,
@@ -1687,7 +1713,12 @@ def create_from_onboarding_data(
         postalCode=additional_info.postalCode,
         siren=onboarding_data.siret[:9],
     )
-    user_offerer = create_offerer(user, offerer_creation_info)
+    new_onboarding_info = NewOnboardingInfo(
+        target=onboarding_data.target,
+        venueTypeCode=onboarding_data.venueTypeCode,
+        webPresence=onboarding_data.webPresence,
+    )
+    user_offerer = create_offerer(user, offerer_creation_info, new_onboarding_info)
 
     # Create Venue with siret if it's not in DB yet, or Venue without siret if requested
     if not offerers_repository.find_venue_by_siret(onboarding_data.siret) or onboarding_data.createVenueWithoutSiret:
