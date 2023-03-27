@@ -36,7 +36,7 @@ export const onSubmit = async (
 
   const { isOk: isPriceCategoriesOk, message: priceCategoriesMessage } =
     await postPriceCategoriesAdapter({
-      offerId: offer.nonHumanizedId + '',
+      offerId: offer.nonHumanizedId,
       requestBody: serializePriceCategories(values),
     })
 

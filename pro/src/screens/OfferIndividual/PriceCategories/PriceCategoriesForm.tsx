@@ -28,7 +28,7 @@ import { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
 import styles from './PriceCategoriesForm.module.scss'
 
 interface IPriceCategoriesForm {
-  offerId: string
+  offerId: number
   humanizedOfferId: string
   stocks: IOfferIndividualStock[]
   mode: OFFER_WIZARD_MODE
@@ -86,7 +86,7 @@ export const PriceCategoriesForm = ({
       }
       const { isOk, message } = await deletePriceCategoryAdapter({
         offerId,
-        priceCategoryId: priceCategoryId.toString(),
+        priceCategoryId: priceCategoryId,
       })
       if (isOk) {
         arrayHelpers.remove(index)
