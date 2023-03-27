@@ -102,6 +102,7 @@ jest.mock('apiClient/api', () => ({
     editVenue: jest.fn(),
     getEducationalPartners: jest.fn(),
     getAvailableReimbursementPoints: jest.fn(),
+    canOffererCreateEducationalOffer: jest.fn(),
   },
 }))
 jest.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
@@ -118,6 +119,8 @@ jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
   name: 'lieu',
   siret: '88145723823022',
 })
+
+jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
 
 jest.mock('apiClient/adresse', () => {
   return {
@@ -465,9 +468,11 @@ describe('screen | VenueForm', () => {
 
       await userEvent.click(screen.getByText(/Enregistrer/))
 
-      expect(
-        screen.getByText('ensure this value has at least 14 characters')
-      ).toBeInTheDocument()
+      await waitFor(() => {
+        expect(
+          screen.getByText('ensure this value has at least 14 characters')
+        ).toBeInTheDocument()
+      })
     })
 
     it('should display an error when the venue could not be updated', async () => {
@@ -496,9 +501,11 @@ describe('screen | VenueForm', () => {
 
       await userEvent.click(screen.getByText(/Enregistrer/))
 
-      expect(
-        screen.getByText('ensure this value has at least 14 characters')
-      ).toBeInTheDocument()
+      await waitFor(() => {
+        expect(
+          screen.getByText('ensure this value has at least 14 characters')
+        ).toBeInTheDocument()
+      })
     })
 
     it('Submit creation form that fails with unknown error', async () => {
@@ -618,14 +625,17 @@ describe('screen | VenueForm', () => {
         expect(screen.queryByTestId('wrapper-publicName')).toBeInTheDocument()
       })
 
-      expect(await screen.getByText('Raison sociale')).toBeInTheDocument()
-      expect(await screen.getByText('Nom public')).toBeInTheDocument()
-      expect(await screen.getByText('Activité principale')).toBeInTheDocument()
-      expect(
-        await screen.getByText(
-          'À remplir si différent de la raison sociale. En le remplissant, c’est ce dernier qui sera utilisé comme nom principal.'
-        )
-      ).toBeInTheDocument()
+      expect(screen.getByText('Raison sociale')).toBeInTheDocument()
+      expect(screen.getByText('Nom public')).toBeInTheDocument()
+      expect(screen.getByText('Activité principale')).toBeInTheDocument()
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            'À remplir si différent de la raison sociale. En le remplissant, c’est ce dernier qui sera utilisé comme nom principal.'
+          )
+        ).toBeInTheDocument()
+      })
     })
 
     it('should render errors on creation', async () => {
@@ -651,8 +661,9 @@ describe('screen | VenueForm', () => {
           'Veuillez renseigner la raison sociale de votre lieu'
         )
       ).toBeInTheDocument()
+
       expect(
-        await screen.getByText('Veuillez sélectionner une activité principale')
+        screen.getByText('Veuillez sélectionner une activité principale')
       ).toBeInTheDocument()
     })
   })
@@ -723,7 +734,7 @@ describe('screen | VenueForm', () => {
         ).toBeInTheDocument()
       })
 
-      const withdrawalDetailsField = await screen.getByDisplayValue(
+      const withdrawalDetailsField = screen.getByDisplayValue(
         'withdrawal details field'
       )
 
@@ -747,7 +758,7 @@ describe('screen | VenueForm', () => {
       expectedEditVenue.isWithdrawalAppliedOnAllOffers = true
 
       await userEvent.click(screen.getByText(/Enregistrer et quitter/))
-      await expect(
+      expect(
         await screen.findByText(
           'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
         )
@@ -755,8 +766,8 @@ describe('screen | VenueForm', () => {
 
       const sendMailButton = await screen.findByText('Envoyer un e-mail')
       await userEvent.click(sendMailButton)
-      await expect(
-        await screen.queryByText(
+      expect(
+        screen.queryByText(
           'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
         )
       ).not.toBeInTheDocument()
@@ -794,7 +805,7 @@ describe('screen | VenueForm', () => {
         ).toBeInTheDocument()
       })
 
-      const withdrawalDetailsField = await screen.getByDisplayValue(
+      const withdrawalDetailsField = screen.getByDisplayValue(
         'withdrawal details field'
       )
 
@@ -818,7 +829,7 @@ describe('screen | VenueForm', () => {
 
       await userEvent.click(screen.getByText(/Enregistrer et quitter/))
 
-      await expect(
+      expect(
         await screen.findByText(
           'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
         )
@@ -826,11 +837,13 @@ describe('screen | VenueForm', () => {
 
       const cancelDialogButton = await screen.findByText('Ne pas envoyer')
       await userEvent.click(cancelDialogButton)
-      await expect(
-        await screen.queryByText(
-          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
-        )
-      ).not.toBeInTheDocument()
+      await waitFor(() => {
+        expect(
+          screen.queryByText(
+            'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+          )
+        ).not.toBeInTheDocument()
+      })
 
       expect(editVenue).toHaveBeenCalledWith('id', expectedEditVenue)
 
@@ -867,7 +880,7 @@ describe('screen | VenueForm', () => {
         ).toBeInTheDocument()
       })
 
-      const withdrawalDetailsField = await screen.getByDisplayValue(
+      const withdrawalDetailsField = screen.getByDisplayValue(
         'withdrawal details field'
       )
 
@@ -916,7 +929,7 @@ describe('screen | VenueForm', () => {
         ).toBeInTheDocument()
       })
 
-      const withdrawalDetailsField = await screen.getByDisplayValue(
+      const withdrawalDetailsField = screen.getByDisplayValue(
         'withdrawal details field'
       )
 
@@ -940,7 +953,7 @@ describe('screen | VenueForm', () => {
 
       await userEvent.click(screen.getByText(/Enregistrer et quitter/))
 
-      await expect(
+      expect(
         await screen.findByText(
           'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
         )
@@ -951,8 +964,8 @@ describe('screen | VenueForm', () => {
       })
       await userEvent.click(closeWithdrawalDialogButton)
 
-      await expect(
-        await screen.queryByText(
+      expect(
+        screen.queryByText(
           'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
         )
       ).not.toBeInTheDocument()
@@ -980,7 +993,7 @@ describe('screen | VenueForm', () => {
         ).toBeInTheDocument()
       })
 
-      const withdrawalDetailsField = await screen.getByDisplayValue(
+      const withdrawalDetailsField = screen.getByDisplayValue(
         'withdrawal details field'
       )
 
@@ -998,8 +1011,8 @@ describe('screen | VenueForm', () => {
       expectedEditVenue.isWithdrawalAppliedOnAllOffers = true
 
       await userEvent.click(screen.getByText(/Enregistrer et quitter/))
-      await expect(
-        await screen.queryByText(
+      expect(
+        screen.queryByText(
           'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
         )
       ).not.toBeInTheDocument()
