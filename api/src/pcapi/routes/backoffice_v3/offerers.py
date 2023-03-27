@@ -63,6 +63,7 @@ def render_offerer_details(
     )
     if not edit_offerer_form:
         edit_offerer_form = offerer_forms.EditOffererForm(
+            name=offerer.name,
             postal_address_autocomplete=f"{offerer.address}, {offerer.postalCode} {offerer.city}"
             if offerer.address is not None and offerer.city is not None and offerer.postalCode is not None
             else None,
@@ -207,6 +208,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
     modified_info = offerers_api.update_offerer(
         offerer,
+        name=form.name.data,
         city=form.city.data,
         postal_code=form.postal_code.data,
         address=form.address.data,
