@@ -26,7 +26,7 @@ const Header = () => {
     navigate('/logout')
   }, [navigate, logEvent, location.pathname])
   return (
-    <header className="menu-v2">
+    <header className="menu-v2" id="header-navigation">
       <nav>
         <div className="nav-brand">
           <Logo

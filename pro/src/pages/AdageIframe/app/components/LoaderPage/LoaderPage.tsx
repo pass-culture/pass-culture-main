@@ -6,7 +6,7 @@ import { ReactComponent as Logo } from 'icons/logo-pass-culture-dark.svg'
 import { Spinner } from '../Layout/Spinner/Spinner'
 
 export const LoaderPage = (): JSX.Element => (
-  <>
+  <div className="root-adage">
     <header>
       <Logo />
     </header>
@@ -14,5 +14,5 @@ export const LoaderPage = (): JSX.Element => (
       {' '}
       <Spinner message="Chargement en cours" />
     </main>
-  </>
+  </div>
 )

@@ -70,8 +70,9 @@ main {
   }
 
   &.container {
-    grid-column-start: col-main;
-    grid-row: row-header / row-footer;
+    position: relative;
+    max-width: 874px;
+    margin: rem.torem(-88px) auto 0 auto;
 
     .page-content {
       background: colors.$white;
