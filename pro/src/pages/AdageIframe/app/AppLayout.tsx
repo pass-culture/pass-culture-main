@@ -18,28 +18,30 @@ export const AppLayout = ({
   venueFilter: VenueResponse | null
 }): JSX.Element => {
   return (
-    <main className="app-layout">
-      <div className="app-layout-header">
-        <div className="app-layout-header-right">
-          <h2 className="app-layout-header-title">Rechercher une offre</h2>
-          <a
-            className="app-layout-header-help-link"
-            download
-            href={`${document.referrer}adage/index/docGet/format/pptx/doc/PRESENTATION_J_UTILISE_PASS_CULTURE`}
-            rel="noreferrer"
-            target="_blank"
-          >
-            <Download className="app-layout-header-help-link-icon" />
-            Télécharger l’aide
-          </a>
+    <div className="root-adage">
+      <main className="app-layout">
+        <div className="app-layout-header">
+          <div className="app-layout-header-right">
+            <h2 className="app-layout-header-title">Rechercher une offre</h2>
+            <a
+              className="app-layout-header-help-link"
+              download
+              href={`${document.referrer}adage/index/docGet/doc/PARCOURS_REDACTEUR`}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <Download className="app-layout-header-help-link-icon" />
+              Télécharger l’aide
+            </a>
+          </div>
+          <Logo className="app-logo" />
         </div>
-        <Logo className="app-logo" />
-      </div>
-      <OffersInstantSearch
-        removeVenueFilter={removeVenueFilter}
-        user={user}
-        venueFilter={venueFilter}
-      />
-    </main>
+        <OffersInstantSearch
+          removeVenueFilter={removeVenueFilter}
+          user={user}
+          venueFilter={venueFilter}
+        />
+      </main>
+    </div>
   )
 }

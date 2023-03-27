@@ -33,7 +33,7 @@ const CsvTable = ({ getCsvData }: ICsvTableProps): JSX.Element => {
       <Spinner />
     </div>
   ) : dataFromCsv?.data?.length ? (
-    <main id="main-container">
+    <main id="content" className="csv-main-container">
       <div id="csv-container">
         <table id="csv-table">
           <thead>
@@ -61,7 +61,7 @@ const CsvTable = ({ getCsvData }: ICsvTableProps): JSX.Element => {
       <hr />
     </main>
   ) : (
-    <main className="no-data-container">
+    <main id="content" className="no-data-container">
       <p>Il n’y a pas de données à afficher.</p>
     </main>
   )

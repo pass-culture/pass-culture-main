@@ -3,6 +3,7 @@ import React from 'react'
 
 import DomainNameBanner from 'components/DomainNameBanner'
 import Header from 'components/Header/Header'
+import SkipLinks from 'components/SkipLinks'
 
 import { ILayoutConfig } from './AppRouter/routesMap'
 
@@ -25,8 +26,15 @@ const AppLayout = ({ children, layoutConfig, className }: AppLayoutProps) => {
 
   return (
     <>
-      {!fullscreen && <Header />}
+      {!fullscreen && (
+        <>
+          <SkipLinks />
+          <Header />
+        </>
+      )}
+
       <main
+        id="content"
         className={classnames(
           {
             page: true,
