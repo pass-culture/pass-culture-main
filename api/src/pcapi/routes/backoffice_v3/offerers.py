@@ -366,15 +366,21 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
         date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
     )
 
-    sorted_offerers: BaseQuery = offerers.order_by(offerers_models.Offerer.dateCreated.desc())
+    sorted_offerers: BaseQuery = offerers.order_by(
+        getattr(getattr(offerers_models.Offerer, form.sort.data), form.order.data)()
+    )
 
     paginated_offerers = sorted_offerers.paginate(
         page=int(form.data["page"]),
         per_page=int(form.data["per_page"]),
     )
 
-    next_page = partial(url_for, ".list_offerers_to_validate", **form.raw_data)
-    next_pages_urls = search_utils.pagination_links(next_page, int(form.data["page"]), paginated_offerers.pages)
+    form_url = partial(url_for, ".list_offerers_to_validate", **form.raw_data)
+    next_pages_urls = search_utils.pagination_links(form_url, int(form.data["page"]), paginated_offerers.pages)
+
+    date_created_sort_url = form_url(
+        sort="dateCreated", order="desc" if form.sort.data == "dateCreated" and form.order.data == "asc" else "asc"
+    )
 
     form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
 
@@ -385,6 +391,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
         next_pages_urls=next_pages_urls,
         is_top_actor_func=offerers_api.is_top_actor,
         get_last_comment_func=_get_serialized_offerer_last_comment,
+        date_created_sort_url=date_created_sort_url,
         stats=stats,
     )
 
@@ -546,15 +553,21 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
         date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
     )
 
-    sorted_users_offerers: BaseQuery = users_offerers.order_by(offerers_models.UserOfferer.id.desc())
+    sorted_users_offerers: BaseQuery = users_offerers.order_by(
+        getattr(getattr(offerers_models.UserOfferer, form.sort.data), form.order.data)()
+    )
 
     paginated_users_offerers = sorted_users_offerers.paginate(
         page=int(form.data["page"]),
         per_page=int(form.data["per_page"]),
     )
 
-    next_page = partial(url_for, ".list_offerers_attachments_to_validate", **form.raw_data)
-    next_pages_urls = search_utils.pagination_links(next_page, int(form.data["page"]), paginated_users_offerers.pages)
+    form_url = partial(url_for, ".list_offerers_attachments_to_validate", **form.raw_data)
+    next_pages_urls = search_utils.pagination_links(form_url, int(form.data["page"]), paginated_users_offerers.pages)
+
+    date_created_sort_url = form_url(
+        sort="dateCreated", order="desc" if form.sort.data == "dateCreated" and form.order.data == "asc" else "asc"
+    )
 
     form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
 
@@ -565,6 +578,7 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
         next_pages_urls=next_pages_urls,
         is_top_actor_func=offerers_api.is_top_actor,
         get_last_comment_func=_get_serialized_user_offerer_last_comment,
+        date_created_sort_url=date_created_sort_url,
     )
 
 

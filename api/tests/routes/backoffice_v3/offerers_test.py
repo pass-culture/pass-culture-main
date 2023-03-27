@@ -1,4 +1,5 @@
 import datetime
+from operator import attrgetter
 
 from flask import g
 from flask import url_for
@@ -893,7 +894,15 @@ class ListOfferersToValidateUnauthorizedTest(unauthorized_helpers.UnauthorizedHe
 
 class ListOfferersToValidateTest:
     class ListOfferersToBeValidatedTest:
-        def test_list_offerers_to_be_validated(self, authenticated_client):
+        @pytest.mark.parametrize(
+            "row_key,sort,order",
+            [
+                ("Date de la demande", None, None),
+                ("Date de la demande", "dateCreated", "asc"),
+                ("Date de la demande", "dateCreated", "desc"),
+            ],
+        )
+        def test_list_offerers_to_be_validated(self, authenticated_client, row_key, sort, order):
             # given
             _validated_offerers = [offerers_factories.UserOffererFactory().offerer for _ in range(3)]
             to_be_validated_offerers = []
@@ -910,12 +919,20 @@ class ListOfferersToValidateTest:
 
             # when
             with assert_no_duplicated_queries():
-                response = authenticated_client.get(url_for("backoffice_v3_web.validation.list_offerers_to_validate"))
+                response = authenticated_client.get(
+                    url_for("backoffice_v3_web.validation.list_offerers_to_validate", order=order, sort=sort)
+                )
 
             # then
             assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
-            assert sorted([int(row["ID"]) for row in rows]) == sorted(o.id for o in to_be_validated_offerers)
+            # Without sort, table is ordered by dateCreated desc
+            to_be_validated_offerers.sort(
+                key=attrgetter(sort or "dateCreated"), reverse=(order == "desc") if sort else True
+            )
+            assert [row[row_key] for row in rows] == [
+                offerer.dateCreated.strftime("%d/%m/%Y") for offerer in to_be_validated_offerers
+            ]
 
         @pytest.mark.parametrize(
             "validation_status,expected_status",
@@ -1607,7 +1624,17 @@ class ListUserOffererToValidateUnauthorizedTest(unauthorized_helpers.Unauthorize
 
 
 class ListUserOffererToValidateTest:
-    def test_list_only_user_offerer_to_be_validated(self, authenticated_client):
+    @pytest.mark.parametrize(
+        "row_key,sort,order",
+        [
+            ("ID Compte pro", None, None),
+            ("ID Compte pro", "id", "asc"),
+            ("ID Compte pro", "id", "desc"),
+            ("Date de la demande", "dateCreated", "asc"),
+            ("Date de la demande", "dateCreated", "desc"),
+        ],
+    )
+    def test_list_only_user_offerer_to_be_validated(self, authenticated_client, row_key, sort, order):
         # given
         to_be_validated = []
         for _ in range(2):
@@ -1622,13 +1649,20 @@ class ListUserOffererToValidateTest:
         # when
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
-                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate")
+                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", order=order, sort=sort)
             )
 
         # then
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
-        assert {int(row["ID Compte pro"]) for row in rows} == {user_offerer.user.id for user_offerer in to_be_validated}
+        # Without sort, table is ordered by id desc
+        to_be_validated.sort(key=attrgetter(sort or "id"), reverse=(order == "desc") if sort else True)
+        if sort == "id" or not order:
+            assert [int(row[row_key]) for row in rows] == [user_offerer.user.id for user_offerer in to_be_validated]
+        elif sort == "dateCreated":
+            assert [row[row_key] for row in rows] == [
+                user_offerer.dateCreated.strftime("%d/%m/%Y") for user_offerer in to_be_validated
+            ]
 
     @pytest.mark.parametrize(
         "validation_status,expected_status",

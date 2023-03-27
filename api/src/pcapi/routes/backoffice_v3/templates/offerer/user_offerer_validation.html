@@ -70,7 +70,14 @@
               <th scope="col">Email Compte pro</th>
               <th scope="col">Nom Compte pro</th>
               <th scope="col">État</th>
-              <th scope="col">Date de la demande</th>
+              <th scope="col">
+                <a href="{{ date_created_sort_url }}"
+                   class="text-decoration-none{{ ' text-body' if request.args.get('sort') != 'dateCreated' else '' }}"
+                   title="Changer pour un tri {{ 'décroissant' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'asc' else 'croissant' }}">
+                  Date de la demande
+                  <i class="bi bi-sort-{{ 'up' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'asc' else 'down' }}-alt"></i>
+                </a>
+              </th>
               <th scope="col">Dernier commentaire</th>
               <th scope="col">Tél Compte pro</th>
               <th scope="col">Nom Structure</th>
@@ -127,9 +134,7 @@
                 </td>
                 <td>{{ user_offerer.user.id }}</td>
                 <td>{{ user_offerer.user.email | empty_string_if_null }}</td>
-                <td>
-                  {{ links.build_pro_user_name_to_details_link(user_offerer.user) }}
-                </td>
+                <td>{{ links.build_pro_user_name_to_details_link(user_offerer.user) }}</td>
                 <td>
                   {{ build_user_offerer_status_badge(user_offerer) }}
                 </td>
