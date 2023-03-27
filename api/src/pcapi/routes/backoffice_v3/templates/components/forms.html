@@ -5,24 +5,31 @@
         class="mb-4 mt-3">
     <div class="row">
       <div class="col-11">
+        {% set row1_fields = [] %}
         {% set select_multiple = [] %}
+        {% set switches = [] %}
         {% for form_field in form %}
-          {% if form_field.type == "HiddenField" %}
+          {% if "Hidden" in form_field.type %}
             {{ form_field }}
           {% elif form_field.type in ('PCSelectMultipleField', "PCQuerySelectMultipleField", "PCAutocompleteSelectMultipleField") %}
             {% set _ = select_multiple.append(form_field) %}
+          {% elif form_field.type == "PCSwitchBooleanField" %}
+            {% set _ = switches.append(form_field) %}
+          {% else %}
+            {% set _ = row1_fields.append(form_field) %}
           {% endif %}
         {% endfor %}
         <div class="input-group mb-3 px-1">
-          {% for form_field in form %}
-            {% if form_field.type not in ("HiddenField", "PCSelectMultipleField", "PCQuerySelectMultipleField", "PCAutocompleteSelectMultipleField") %}
-              {{ form_field }}
-            {% endif %}
-          {% endfor %}
+          {% for form_field in row1_fields %}{{ form_field }}{% endfor %}
         </div>
         <div class="input-group mb-1 ">
           {% for form_field in select_multiple %}
             <div class="col-{{ [(12/(select_multiple|length))|round|int, 6] | min }} p-1">{{ form_field }}</div>
+          {% endfor %}
+        </div>
+        <div class="input-group mb-1">
+          {% for form_field in switches %}
+            <div class="col-{{ (12/(switches|length))|round|int }} p-1">{{ form_field }}</div>
           {% endfor %}
         </div>
       </div>

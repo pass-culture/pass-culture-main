@@ -7,6 +7,7 @@ import pytest
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -180,6 +181,39 @@ class ListCollectiveOffersTest:
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
+
+    def test_list_offers_pending_from_validated_offerers_sorted_by_date(self, authenticated_client):
+        # test results when clicking on pending collective offers link (home page)
+        # given
+        educational_factories.CollectiveOfferFactory(
+            validation=offers_models.OfferValidationStatus.PENDING,
+            venue__managingOfferer=offerers_factories.NotValidatedOffererFactory(),
+        )
+
+        validated_venue = offerers_factories.VenueFactory()
+        for days_ago in (2, 4, 1, 3):
+            educational_factories.CollectiveOfferFactory(
+                name=f"Offre {days_ago}",
+                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=days_ago),
+                validation=offers_models.OfferValidationStatus.PENDING,
+                venue=validated_venue,
+            )
+
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    status=[offers_models.OfferValidationStatus.PENDING.value],
+                    only_validated_offerers="on",
+                    sort="on",
+                )
+            )
+            assert response.status_code == 200
+
+        # then: must be sorted, older first
+        rows = html_parser.extract_table_rows(response.data)
+        assert [row["Nom de l'offre"] for row in rows] == ["Offre 4", "Offre 3", "Offre 2", "Offre 1"]
 
 
 class ValidateCollectiveOfferTest:

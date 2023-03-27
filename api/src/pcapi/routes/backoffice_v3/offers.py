@@ -108,6 +108,13 @@ def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer
     if form.status.data:
         base_query = base_query.filter(offers_models.Offer.validation.in_(form.status.data))
 
+    if form.only_validated_offerers.data:
+        base_query = (
+            base_query.join(offers_models.Offer.venue)
+            .join(offerers_models.Venue.managingOfferer)
+            .filter(offerers_models.Offerer.isValidated)
+        )
+
     if form.q.data:
         search_query = form.q.data
         or_filters = []
@@ -147,6 +154,10 @@ def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer
             query = base_query.filter(False)
     else:
         query = base_query
+
+    if form.sort.data:
+        # currently only support ascending date
+        query = query.order_by(offers_models.Offer.dateCreated.asc())
 
     # +1 to check if there are more results than requested
     return query.limit(form.limit.data + 1).all()
