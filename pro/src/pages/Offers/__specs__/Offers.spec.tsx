@@ -785,7 +785,7 @@ describe('route Offers', () => {
       await userEvent.click(searchButton)
       // When
       await userEvent.selectOptions(
-        screen.getByDisplayValue('Manuelle'),
+        screen.getByDisplayValue('Manuel'),
         DEFAULT_CREATION_MODE.id
       )
       await userEvent.click(searchButton)
