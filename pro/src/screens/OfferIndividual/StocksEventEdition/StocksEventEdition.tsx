@@ -173,7 +173,7 @@ const StocksEventEdition = ({
     }
 
     const { isOk, payload } = await upsertStocksEventAdapter({
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
       stocks: serializeStockEventEdition(
         formValues.stocks,
         offer.venue.departmentCode

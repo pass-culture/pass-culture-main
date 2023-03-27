@@ -11,7 +11,7 @@ type TSuccessPayload = { stockIds: string[] }
 type TFailurePayload = { errors: Record<string, string> }
 export type TUpdateStocksAdapter = Adapter<
   {
-    offerId: string
+    offerId: number
     formValues: IStockThingFormValues
     departementCode: string
     mode: OFFER_WIZARD_MODE
@@ -34,7 +34,7 @@ const upsertStocksThingAdapter: TUpdateStocksAdapter = async ({
 }) => {
   try {
     const response = await api.upsertStocks({
-      humanizedOfferId: offerId,
+      offerId: offerId,
       stocks: serializeStockThingList(formValues, departementCode),
     })
     return {

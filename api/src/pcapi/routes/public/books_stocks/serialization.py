@@ -118,15 +118,11 @@ class EducationalStockIdResponseModel(BaseModel):
 
 
 class StocksUpsertBodyModel(BaseModel):
-    humanized_offer_id: str
+    offer_id: int
     stocks: list[StockCreationBodyModel | StockEditionBodyModel]
 
     class Config:
         alias_generator = to_camel
-
-    @property
-    def offer_id(self) -> int:
-        return dehumanize_or_raise(self.humanized_offer_id)
 
 
 class UpdateVenueStockBodyModel(BaseModel):

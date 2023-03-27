@@ -10,7 +10,7 @@ type TSuccessPayload = { stockIds: string[] }
 type TFailurePayload = { errors: Record<string, string>[] }
 export type TUpdateStocksAdapter = Adapter<
   {
-    offerId: string
+    offerId: number
     stocks: Array<StockCreationBodyModel | StockEditionBodyModel>
   },
   TSuccessPayload,
@@ -23,7 +23,7 @@ const upsertStocksEventAdapter: TUpdateStocksAdapter = async ({
 }) => {
   try {
     const response = await api.upsertStocks({
-      humanizedOfferId: offerId,
+      offerId: offerId,
       stocks: stocks,
     })
     return {
