@@ -421,16 +421,6 @@ def get_stocks_for_offers(offer_ids: list[int]) -> list[models.Stock]:
     return models.Stock.query.filter(models.Stock.offerId.in_(offer_ids)).all()
 
 
-def get_stocks_for_offer(offer_id: int) -> list[models.Stock]:
-    return (
-        models.Stock.query.options(sa_orm.joinedload(models.Stock.offer).load_only(models.Offer.url))
-        .options(sa_orm.joinedload(models.Stock.bookings).load_only(bookings_models.Booking.status))
-        .filter(models.Stock.offerId == offer_id)
-        .filter(models.Stock.isSoftDeleted.is_(False))
-        .all()
-    )
-
-
 def get_products_map_by_provider_reference(id_at_providers: list[str]) -> dict[str, models.Product]:
     products = (
         models.Product.query.filter(models.Product.can_be_synchronized)
