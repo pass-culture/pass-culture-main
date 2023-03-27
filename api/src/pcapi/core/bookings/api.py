@@ -170,12 +170,18 @@ def _book_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> 
         case "CDSStocks":
             if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
                 raise feature.DisabledFeatureError("ENABLE_CDS_IMPLEMENTATION is inactive")
+            if FeatureToggle.DISABLE_CDS_EXTERNAL_BOOKINGS.is_active():
+                raise feature.DisabledFeatureError("DISABLE_CDS_EXTERNAL_BOOKINGS is active")
         case "BoostStocks":
             if not FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
                 raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
+            if FeatureToggle.DISABLE_BOOST_EXTERNAL_BOOKINGS.is_active():
+                raise feature.DisabledFeatureError("DISABLE_BOOST_EXTERNAL_BOOKINGS is active")
         case "CGRStocks":
             if not FeatureToggle.ENABLE_CGR_INTEGRATION.is_active():
                 raise feature.DisabledFeatureError("ENABLE_CGR_INTEGRATION is inactive")
+            if FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS.is_active():
+                raise feature.DisabledFeatureError("DISABLE_CGR_EXTERNAL_BOOKINGS is active")
         case _:
             raise ValueError(f"Unknown Provider: {venue_provider_name}")
 
