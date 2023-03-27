@@ -63,16 +63,6 @@ jobs:
         cd api
         echo "${{ inputs.tag }}" > version.txt
         git add version.txt
-    - name: Add version to pro
-      run: |
-        cd pro
-        yarn version --new-version "${{ inputs.tag }}"
-        git add package.json
-    - name: Add version to adage
-      run: |
-        cd adage-front
-        yarn version --new-version "${{ inputs.tag }}"
-        git add package.json
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
       with:
