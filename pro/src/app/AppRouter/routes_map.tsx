@@ -198,10 +198,7 @@ const routes: IRoute[] = [
     title: 'Connexion',
     meta: {
       public: true,
-      layoutConfig: {
-        fullscreen: true,
-        pageName: 'sign-in',
-      },
+      withoutLayout: true,
     },
   },
   {
@@ -342,10 +339,7 @@ const routes: IRoute[] = [
     title: 'Mot de passe perdu',
     meta: {
       public: true,
-      layoutConfig: {
-        fullscreen: true,
-        pageName: 'sign-in',
-      },
+      withoutLayout: true,
     },
   },
   {
