@@ -4,7 +4,6 @@ import pytest
 
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
-from pcapi.routes.serialization import offerers_serialize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -35,7 +34,7 @@ def test_wip_route(client, caplog):
         "longitude": 48.87171,
         "postalCode": "75001",
         "siren": "853318459",
-        "target": offerers_serialize.Target.INDIVIDUAL,
+        "target": offerers_models.Target.INDIVIDUAL,
         "venueType": "Cinéma - Salle de projections",
         "webPresence": "www.example.com, instagram.com/example, @example@mastodon.example",
         "offerer_name": "MINISTERE DE LA CULTURE",

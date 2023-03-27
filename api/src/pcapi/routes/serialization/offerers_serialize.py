@@ -1,23 +1,17 @@
 from datetime import datetime
-import enum
 from typing import Iterable
 
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.offerers.models import Target
 import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.users.models as users_models
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import humanize_field
 import pcapi.utils.date as date_utils
-
-
-class Target(enum.Enum):
-    EDUCATIONAL = "EDUCATIONAL"
-    INDIVIDUAL_AND_EDUCATIONAL = "INDIVIDUAL_AND_EDUCATIONAL"
-    INDIVIDUAL = "INDIVIDUAL"
 
 
 class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
