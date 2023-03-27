@@ -39,6 +39,9 @@ class FeatureToggle(enum.Enum):
     APP_ENABLE_AUTOCOMPLETE = "Active l'autocomplete sur la barre de recherche relative au rework de la homepage"
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
     DISABLE_ENTERPRISE_API = "Désactiver les appels à l'API entreprise"
+    DISABLE_BOOST_EXTERNAL_BOOKINGS = "Désactiver les réservations externes Boost"
+    DISABLE_CDS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CDS"
+    DISABLE_CGR_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CGR"
     DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING = "Désactiver la validation des noms et prénoms"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
     ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING = (
@@ -147,6 +150,9 @@ class Feature(PcObject, Base, Model, DeactivableMixin):
 FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE,
     FeatureToggle.DISABLE_ENTERPRISE_API,
+    FeatureToggle.DISABLE_BOOST_EXTERNAL_BOOKINGS,
+    FeatureToggle.DISABLE_CDS_EXTERNAL_BOOKINGS,
+    FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS,
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,
     FeatureToggle.ENABLE_BACKOFFICE_API,
     FeatureToggle.ENABLE_CULTURAL_SURVEY,
