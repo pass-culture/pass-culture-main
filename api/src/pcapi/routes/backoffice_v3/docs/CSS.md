@@ -2,7 +2,13 @@
 
 This documentation describe CSS class names code convention.
 
-We use scss as a preprocessing language for css, read their [documentation](https://sass-lang.com/documentation/). 
+We use scss as a preprocessing language for css, read their [documentation](https://sass-lang.com/documentation/).
+
+To watch for scss changes:
+
+```bash
+boussole watch --config src/pcapi/static/backofficev3/scss/boussole.yml --backend yaml
+```
 
 There is 4 categories of css rules:
 
