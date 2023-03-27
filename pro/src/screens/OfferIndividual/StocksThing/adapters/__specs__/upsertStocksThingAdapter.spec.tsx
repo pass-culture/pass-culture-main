@@ -13,7 +13,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
       .spyOn(api, 'upsertStocks')
       .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
     upsertStocksThingAdapter({
-      offerId: 'OFFER_ID',
+      offerId: 1,
       formValues: {
         activationCodesExpirationDatetime: null,
         activationCodes: [],
@@ -27,7 +27,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
       mode: OFFER_WIZARD_MODE.CREATION,
     })
     expect(api.upsertStocks).toHaveBeenCalledWith({
-      humanizedOfferId: 'OFFER_ID',
+      offerId: 1,
       stocks: [
         {
           bookingLimitDatetime: null,
@@ -42,7 +42,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
       .spyOn(api, 'upsertStocks')
       .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
     upsertStocksThingAdapter({
-      offerId: 'OFFER_ID',
+      offerId: 1,
       formValues: {
         activationCodesExpirationDatetime: null,
         activationCodes: [],
@@ -57,7 +57,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
       mode: OFFER_WIZARD_MODE.CREATION,
     })
     expect(api.upsertStocks).toHaveBeenCalledWith({
-      humanizedOfferId: 'OFFER_ID',
+      offerId: 1,
       stocks: [
         {
           humanizedId: 'STOCK_ID',
@@ -85,7 +85,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
       )
     )
     const reponse = await upsertStocksThingAdapter({
-      offerId: 'OFFER_ID',
+      offerId: 1,
       formValues: {
         stockId: 'STOCK_ID',
         activationCodesExpirationDatetime: null,

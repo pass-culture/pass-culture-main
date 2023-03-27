@@ -124,7 +124,7 @@ export const StocksEventCreation = ({
       }
 
       const { isOk } = await upsertStocksEventAdapter({
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         stocks: stocksToCreate,
       })
 

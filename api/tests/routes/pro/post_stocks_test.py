@@ -19,7 +19,6 @@ from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
@@ -35,7 +34,7 @@ class Returns201Test:
 
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [{"price": 20}],
         }
 
@@ -67,7 +66,7 @@ class Returns201Test:
 
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
                     "price": 20,
@@ -127,7 +126,7 @@ class Returns201Test:
 
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
                     "priceCategoryId": first_price_cat.id,
@@ -175,9 +174,10 @@ class Returns201Test:
 
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
-            "stocks": [{"humanizedId": humanize(existing_stock.id), "price": 20}],
+            "offerId": offer.id,
+            "stocks": [{"id": existing_stock.id, "price": 20}],
         }
+
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
         created_stock = Stock.query.get(dehumanize(response.json["stocks"][0]["id"]))
         assert offer.id == created_stock.offerId
@@ -198,10 +198,10 @@ class Returns201Test:
         beginning = datetime.datetime.utcnow() + relativedelta(days=10)
 
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
-                    "humanizedId": humanize(existing_stock.id),
+                    "id": existing_stock.id,
                     "price": 20,
                     "beginningDatetime": serialize(beginning),
                     "bookingLimitDatetime": serialize(beginning),
@@ -233,10 +233,10 @@ class Returns201Test:
         beginning = datetime.datetime.utcnow() + relativedelta(days=10)
 
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
-                    "humanizedId": humanize(existing_stock.id),
+                    "id": existing_stock.id,
                     "beginningDatetime": serialize(beginning),
                     "bookingLimitDatetime": serialize(beginning),
                     "priceCategoryId": price_category.id,
@@ -274,10 +274,10 @@ class Returns201Test:
         beginning = datetime.datetime.utcnow() + relativedelta(days=10)
 
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
-                    "humanizedId": humanize(existing_stock.id),
+                    "id": existing_stock.id,
                     "beginningDatetime": serialize(beginning),
                     "bookingLimitDatetime": serialize(beginning),
                     "priceCategoryId": new_price_category.id,
@@ -303,7 +303,7 @@ class Returns201Test:
 
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
                     "price": 20,
@@ -344,10 +344,10 @@ class Returns201Test:
 
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
-                    "humanizedId": humanize(existing_stock.id),
+                    "id": existing_stock.id,
                     "price": 20,
                     "quantity": None,
                     "bookingLimitDatetime": serialize(booking_limit_datetime),
@@ -396,10 +396,10 @@ class Returns201Test:
         beginning = datetime.datetime.utcnow() + relativedelta(days=10)
 
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
-                    "humanizedId": humanize(existing_stock.id),
+                    "id": existing_stock.id,
                     "price": 2,
                     "beginningDatetime": serialize(beginning),
                     "bookingLimitDatetime": serialize(beginning),
@@ -441,10 +441,10 @@ class Returns201Test:
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
-                    "humanizedId": humanize(existing_stock.id),
+                    "id": existing_stock.id,
                     "price": 2,
                     "beginningDatetime": serialize(event_reported_in_10_days),
                     "bookingLimitDatetime": serialize(existing_stock.bookingLimitDatetime),
@@ -472,10 +472,10 @@ class Returns201Test:
 
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
-                    "humanizedId": humanize(existing_stock.id),
+                    "id": existing_stock.id,
                     "price": 2,
                     "beginningDatetime": serialize(event_reported_in_10_days),
                     "bookingLimitDatetime": serialize(existing_stock.bookingLimitDatetime),
@@ -508,10 +508,10 @@ class Returns201Test:
 
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
-                    "humanizedId": humanize(existing_stock.id),
+                    "id": existing_stock.id,
                     "price": 2,
                     "beginningDatetime": serialize(event_reported_in_less_48_hours),
                     "bookingLimitDatetime": serialize(existing_stock.bookingLimitDatetime),
@@ -539,8 +539,8 @@ class Returns201Test:
         )
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
-            "stocks": [{"price": 20, "humanizedId": humanize(existing_stock.id)}],
+            "offerId": offer.id,
+            "stocks": [{"price": 20, "id": existing_stock.id}],
         }
 
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
@@ -577,7 +577,7 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json == {"humanizedOfferId": ["Ce champ est obligatoire"]}
+        assert response.json == {"offerId": ["Ce champ est obligatoire"]}
 
     def test_update_thing_stock_without_price(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
@@ -588,8 +588,8 @@ class Returns400Test:
         )
 
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
-            "stocks": [{"quantity": 20, "humanizedId": humanize(existing_stock.id)}],
+            "offerId": offer.id,
+            "stocks": [{"quantity": 20, "id": existing_stock.id}],
         }
 
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
@@ -606,8 +606,8 @@ class Returns400Test:
         )
 
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
-            "stocks": [{"quantity": 20, "humanizedId": humanize(existing_stock.id)}],
+            "offerId": offer.id,
+            "stocks": [{"quantity": 20, "id": existing_stock.id}],
         }
 
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
@@ -626,10 +626,10 @@ class Returns400Test:
 
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
-                    "humanizedId": humanize(existing_stock.id),
+                    "id": existing_stock.id,
                     "price": -3,
                     "beginningDatetime": serialize(booking_limit_datetime),
                     "bookingLimitDatetime": serialize(booking_limit_datetime),
@@ -661,8 +661,8 @@ class Returns400Test:
             offerer=pending_validation_offer.venue.managingOfferer,
         )
         stock_data = {
-            "humanizedOfferId": humanize(pending_validation_offer.id),
-            "stocks": [{"humanizedId": humanize(stock.id), "price": 20}],
+            "offerId": pending_validation_offer.id,
+            "stocks": [{"id": stock.id, "price": 20}],
         }
 
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
@@ -680,7 +680,7 @@ class Returns400Test:
 
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
                     "price": 20,
@@ -719,10 +719,10 @@ class Returns400Test:
 
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
-                    "humanizedId": humanize(existing_stock.id),
+                    "id": existing_stock.id,
                     "bookingLimitDatetime": "2020-05-2T23:59:59Z",
                     "price": 20.0,
                 }
@@ -750,7 +750,7 @@ class Returns400Test:
 
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
                     "price": 20,
@@ -773,8 +773,8 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
-            "stocks": [{"humanizedId": humanize(existing_stock.id), "price": 20}],
+            "offerId": offer.id,
+            "stocks": [{"id": existing_stock.id, "price": 20}],
         }
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
         assert response.status_code == 400
@@ -791,7 +791,7 @@ class Returns400Test:
 
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [{"price": float(price_str)}],
         }
 
@@ -802,7 +802,7 @@ class Returns400Test:
 
         response_dict = response.json
         assert response_dict == {
-            "stocks.0.humanizedId": ["Ce champ est obligatoire"],
+            "stocks.0.id": ["Ce champ est obligatoire"],
             "stocks.0.price": [
                 "La valeur n'est pas un nombre décimal valide",
                 "La valeur n'est pas un nombre décimal valide",
@@ -819,7 +819,7 @@ class Returns400Test:
         )
 
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
                     "beginningDatetime": "2022-06-11T08:00:00Z",
@@ -832,7 +832,7 @@ class Returns400Test:
 
         if is_update:
             stock = offers_factories.StockFactory(offer=offer)
-            stock_data["stocks"][0]["humanizedId"] = humanize(stock.id)
+            stock_data["stocks"][0]["id"] = stock.id
 
         # When
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
@@ -854,7 +854,7 @@ class Returns400Test:
         )
         beginning = datetime.datetime.utcnow() + relativedelta(days=10)
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
                     "price": 20,
@@ -878,7 +878,7 @@ class Returns400Test:
         price_category = offers_factories.PriceCategoryFactory(offer=offer)
         beginning = datetime.datetime.utcnow() + relativedelta(days=10)
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
                     "price": 20,
@@ -905,7 +905,7 @@ class Returns403Test:
 
         # When
         stock_data = {
-            "humanizedOfferId": humanize(offer.id),
+            "offerId": offer.id,
             "stocks": [
                 {
                     "quantity": 10,
