@@ -202,6 +202,8 @@ class UpdateOffererTest:
     def test_update_offerer(self, legit_user, authenticated_client):
         offerer_to_edit = offerers_factories.OffererFactory()
 
+        old_name = offerer_to_edit.name
+        new_name = "Librairie bretonne"
         old_city = offerer_to_edit.city
         new_city = "Brest"
         old_postal_code = offerer_to_edit.postalCode
@@ -211,6 +213,7 @@ class UpdateOffererTest:
         new_address = "1 Rue de Siam"
 
         base_form = {
+            "name": new_name,
             "city": new_city,
             "postal_code": new_postal_code,
             "address": new_address,
@@ -233,13 +236,25 @@ class UpdateOffererTest:
         response = authenticated_client.get(history_url)
 
         offerer_to_edit = offerers_models.Offerer.query.get(offerer_to_edit.id)
+        assert offerer_to_edit.name == new_name
         assert offerer_to_edit.city == new_city
         assert offerer_to_edit.postalCode == new_postal_code
         assert offerer_to_edit.address == new_address
 
+        assert len(offerer_to_edit.action_history) == 1
+        assert offerer_to_edit.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert offerer_to_edit.action_history[0].authorUser == legit_user
+        assert set(offerer_to_edit.action_history[0].extraData["modified_info"].keys()) == {
+            "name",
+            "city",
+            "postalCode",
+            "address",
+        }
+
         history_rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
         assert len(history_rows) == 1
         assert history_rows[0]["Type"] == history_models.ActionType.INFO_MODIFIED.value
+        assert f"Nom juridique : {old_name} => {offerer_to_edit.name}" in history_rows[0]["Commentaire"]
         assert f"Ville : {old_city} => {offerer_to_edit.city}" in history_rows[0]["Commentaire"]
         assert f"Code postal : {old_postal_code} => {offerer_to_edit.postalCode}" in history_rows[0]["Commentaire"]
         assert f"Adresse : {old_address} => {offerer_to_edit.address}" in history_rows[0]["Commentaire"]
@@ -254,6 +269,7 @@ class UpdateOffererTest:
         offerers_factories.OffererTagMappingFactory(tagId=tag1.id, offererId=offerer_to_edit.id)
 
         base_form = {
+            "name": offerer_to_edit.name,
             "city": offerer_to_edit.city,
             "postal_code": offerer_to_edit.postalCode,
             "address": offerer_to_edit.address,

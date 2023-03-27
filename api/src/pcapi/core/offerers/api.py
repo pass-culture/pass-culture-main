@@ -490,6 +490,7 @@ def _format_tags(tags: typing.Iterable[models.OffererTag]) -> str:
 
 def update_offerer(
     offerer: models.Offerer,
+    name: str | T_UNCHANGED = UNCHANGED,
     city: str | T_UNCHANGED = UNCHANGED,
     postal_code: str | T_UNCHANGED = UNCHANGED,
     address: str | T_UNCHANGED = UNCHANGED,
@@ -497,6 +498,9 @@ def update_offerer(
 ) -> dict[str, dict[str, str | None]]:
     modified_info: dict[str, dict[str, str | None]] = {}
 
+    if name is not UNCHANGED and offerer.name != name:
+        modified_info["name"] = {"old_info": offerer.name, "new_info": name}
+        offerer.name = name
     if city is not UNCHANGED and offerer.city != city:
         modified_info["city"] = {"old_info": offerer.city, "new_info": city}
         offerer.city = city
