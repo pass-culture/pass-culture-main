@@ -41,6 +41,7 @@ from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models import feature
 import pcapi.notifications.push.testing as push_testing
 
 from tests.conftest import clean_database
@@ -534,6 +535,69 @@ class BookOfferTest:
 
             assert booking.token
             assert len(booking.externalBookings) == 0
+
+        @override_features(DISABLE_CDS_EXTERNAL_BOOKINGS=True)
+        def test_should_raise_error_when_cds_external_bookings_are_disabled(self):
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+            cds_provider = get_provider_by_local_class("CDSStocks")
+            venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+            cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+            offer_solo = offers_factories.EventOfferFactory(
+                name="Séance ciné solo",
+                venue=venue_provider.venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProviderId=cinema_provider_pivot.provider.id,
+            )
+            stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111%4444#111/datetime")
+
+            # When
+            with pytest.raises(feature.DisabledFeatureError) as exc:
+                api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
+
+            assert Booking.query.count() == 0
+            assert str(exc.value) == "DISABLE_CDS_EXTERNAL_BOOKINGS is active"
+
+        @override_features(DISABLE_BOOST_EXTERNAL_BOOKINGS=True)
+        def test_should_raise_error_when_boost_external_bookings_are_disabled(self):
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+            boost_provider = get_provider_by_local_class("BoostStocks")
+            venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
+            cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+            offer_solo = offers_factories.EventOfferFactory(
+                name="Séance ciné solo",
+                venue=venue_provider.venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProviderId=cinema_provider_pivot.provider.id,
+            )
+            stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="123%12345678912345#111")
+
+            # When
+            with pytest.raises(feature.DisabledFeatureError) as exc:
+                api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
+
+            assert Booking.query.count() == 0
+            assert str(exc.value) == "DISABLE_BOOST_EXTERNAL_BOOKINGS is active"
+
+        @override_features(ENABLE_CGR_INTEGRATION=True, DISABLE_CGR_EXTERNAL_BOOKINGS=True)
+        def test_should_raise_error_when_cgr_external_bookings_are_disabled(self):
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+            boost_provider = get_provider_by_local_class("CGRStocks")
+            venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
+            cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+            offer_solo = offers_factories.EventOfferFactory(
+                name="Séance ciné solo",
+                venue=venue_provider.venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProviderId=cinema_provider_pivot.provider.id,
+            )
+            stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="123%12354114%CGR#111")
+
+            # When
+            with pytest.raises(feature.DisabledFeatureError) as exc:
+                api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
+
+            assert Booking.query.count() == 0
+            assert str(exc.value) == "DISABLE_CGR_EXTERNAL_BOOKINGS is active"
 
 
 @pytest.mark.usefixtures("db_session")
