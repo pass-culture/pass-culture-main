@@ -211,6 +211,11 @@ def _get_sent_pricings_for_collective_bookings(
             ),
             educational_models.CollectiveBooking.offererId.in_(offerer_ids),
             (offerers_models.Venue.id == venue_id) if venue_id else sqla.true(),
+            # Complementary invoices (that end with ".2") are linked
+            # to the same bookings as the original invoices they
+            # complement. We don't want these bookings to be listed
+            # twice.
+            ~models.Invoice.reference.like("%.2"),
         )
         .join(
             educational_models.EducationalRedactor,
@@ -298,6 +303,11 @@ def _get_sent_pricings_for_individual_bookings(
             ),
             bookings_models.Booking.offererId.in_(offerer_ids),
             (bookings_models.Booking.venueId == venue_id) if venue_id else sqla.true(),
+            # Complementary invoices (that end with ".2") are linked
+            # to the same bookings as the original invoices they
+            # complement. We don't want these bookings to be listed
+            # twice.
+            ~models.Invoice.reference.like("%.2"),
         )
         .join(bookings_models.Booking.offerer)
         .join(bookings_models.Booking.stock)
