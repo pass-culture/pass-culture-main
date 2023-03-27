@@ -54,7 +54,14 @@
               <th scope="col">État</th>
               <th scope="col">Top Acteur</th>
               <th scope="col">Tags structure</th>
-              <th scope="col">Date de la demande</th>
+              <th scope="col">
+                <a href="{{ date_created_sort_url }}"
+                   class="text-decoration-none"
+                   title="Changer pour un tri {{ 'décroissant' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'asc' else 'croissant' }}">
+                  Date de la demande
+                  <i class="bi bi-sort-{{ 'up' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'asc' else 'down' }}-alt"></i>
+                </a>
+              </th>
               <th scope="col">Dernier commentaire</th>
               <th scope="col">SIREN</th>
               <th scope="col">Email</th>
@@ -116,9 +123,7 @@
                   </div>
                 </td>
                 <td>{{ offerer.tags | filter_homologation_tags | format_tag_object_list | escape }}</td>
-                <td>
-                  {{ offerer.dateCreated | format_date("%d/%m/%Y") }}
-                </td>
+                <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>
                   {{ get_last_comment_func(offerer) | empty_string_if_null | replace("\n", "
                   <br/>

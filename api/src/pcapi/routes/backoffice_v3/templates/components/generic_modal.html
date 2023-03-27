@@ -18,18 +18,14 @@
               name="{{ dst | action_to_name }}"
               method="post">
           <div class="modal-body">
-            {% if description %}
-              <p>
-                {{ description }}
-              </p>
-            {% endif %}
+            {% if description %}<p>{{ description }}</p>{% endif %}
             <div class="form-group">
               {% for form_field in form %}
-                  {% if form_field.errors %}
-                    <div class="w-100 my-4">
-                      {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
-                    </div>
-                  {% endif %}
+                {% if form_field.errors %}
+                  <div class="w-100 my-4">
+                    {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
+                  </div>
+                {% endif %}
                 {{ form_field }}
               {% endfor %}
             </div>
