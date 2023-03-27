@@ -37,6 +37,10 @@ class EditOffererForm(FlaskForm):
         get_pk=lambda tag: tag.id,
         get_label=lambda tag: tag.label or tag.name,
     )
+    name = fields.PCStringField(
+        "Nom de la structure",
+        validators=(wtforms.validators.Length(max=140, message="doit contenir moins de %(max)d caractères"),),
+    )
     postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
         "Adresse",
         address="address",
