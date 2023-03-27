@@ -101,8 +101,8 @@ export const ALL_CATEGORIES_OPTION = {
 }
 const CREATION_MODES_OPTIONS = [
   { displayName: 'Tous', id: ALL_CREATION_MODES },
-  { displayName: 'Manuelle', id: 'manual' },
-  { displayName: 'Importée', id: 'imported' },
+  { displayName: 'Manuel', id: 'manual' },
+  { displayName: 'Synchronisé', id: 'imported' },
 ]
 const COLLECTIVE_OFFER_TYPES_OPTIONS = [
   { displayName: 'Tout', id: ALL_CREATION_MODES },

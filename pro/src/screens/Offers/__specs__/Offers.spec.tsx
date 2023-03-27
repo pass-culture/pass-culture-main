@@ -322,7 +322,7 @@ describe('screen Offers', () => {
         )
 
         // Then
-        expect(screen.getByDisplayValue('Importée')).toBeInTheDocument()
+        expect(screen.getByDisplayValue('Synchronisé')).toBeInTheDocument()
       })
 
       it('should allow user to select manual creation mode filter', async () => {
@@ -331,10 +331,10 @@ describe('screen Offers', () => {
         const creationModeSelect = screen.getByLabelText('Mode de création')
 
         // When
-        await userEvent.selectOptions(creationModeSelect, 'Manuelle')
+        await userEvent.selectOptions(creationModeSelect, 'Manuel')
 
         // Then
-        expect(screen.getByDisplayValue('Manuelle')).toBeInTheDocument()
+        expect(screen.getByDisplayValue('Manuel')).toBeInTheDocument()
       })
 
       it('should allow user to select imported creation mode filter', async () => {
@@ -346,7 +346,7 @@ describe('screen Offers', () => {
         await userEvent.selectOptions(creationModeSelect, 'imported')
 
         // Then
-        expect(screen.getByDisplayValue('Importée')).toBeInTheDocument()
+        expect(screen.getByDisplayValue('Synchronisé')).toBeInTheDocument()
       })
 
       it('should display event period filter with no default option', async () => {
