@@ -80,10 +80,11 @@ describe('src | components | pages | Signup | validation', () => {
     })
   })
 
-  it('should call media campaign tracker once', () => {
+  it('should call media campaign tracker once', async () => {
     jest.spyOn(api, 'validateUser').mockResolvedValue()
     // when the user lands on signup validation page
     renderSignupValidation('/validation/AAA')
+    await waitFor(() => expect(api.validateUser).toHaveBeenCalledTimes(1))
     // then the media campaign tracker should be called once
     expect(campaignTracker.signUpValidation).toHaveBeenCalledTimes(1)
   })
