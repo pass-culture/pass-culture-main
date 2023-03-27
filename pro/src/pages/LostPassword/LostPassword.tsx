@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { api } from 'apiClient/api'
 import AppLayout from 'app/AppLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
+import SkipLinks from 'components/SkipLinks'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Hero from 'ui-kit/Hero'
@@ -56,41 +57,44 @@ const ResetPassword = (): JSX.Element => {
   }
 
   return (
-    <div className={styles['lost-password']}>
-      <header className={styles['logo-side']}>
-        <Logo noLink signPage />
-      </header>
-      <AppLayout
-        layoutConfig={{
-          fullscreen: true,
-          pageName: 'lost-password',
-        }}
-      >
-        <PageTitle title="Demande de mot de passe" />
+    <>
+      <SkipLinks displayMenu={false} />
+      <div className={styles['lost-password']}>
+        <header className={styles['logo-side']}>
+          <Logo noLink signPage />
+        </header>
+        <AppLayout
+          layoutConfig={{
+            fullscreen: true,
+            pageName: 'lost-password',
+          }}
+        >
+          <PageTitle title="Demande de mot de passe" />
 
-        <div className={styles['scrollable-content-side']}>
-          <div className={styles['content']}>
-            {mailSent ? (
-              <Hero
-                linkLabel="Revenir à l’accueil"
-                linkTo="/"
-                text="Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe."
-                title="Merci !"
-              />
-            ) : (
-              <ChangePasswordRequestForm
-                emailValue={emailValue}
-                isChangePasswordRequestSubmitDisabled={
-                  isChangePasswordRequestSubmitDisabled
-                }
-                onChange={handleInputEmailChange}
-                onSubmit={submitChangePasswordRequest}
-              />
-            )}
+          <div className={styles['scrollable-content-side']}>
+            <div className={styles['content']}>
+              {mailSent ? (
+                <Hero
+                  linkLabel="Revenir à l’accueil"
+                  linkTo="/"
+                  text="Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe."
+                  title="Merci !"
+                />
+              ) : (
+                <ChangePasswordRequestForm
+                  emailValue={emailValue}
+                  isChangePasswordRequestSubmitDisabled={
+                    isChangePasswordRequestSubmitDisabled
+                  }
+                  onChange={handleInputEmailChange}
+                  onSubmit={submitChangePasswordRequest}
+                />
+              )}
+            </div>
           </div>
-        </div>
-      </AppLayout>
-    </div>
+        </AppLayout>
+      </div>
+    </>
   )
 }
 

@@ -4,8 +4,7 @@
 
 header.menu-v2 {
   background-image: colors.$linear-gradient-to-right;
-  grid-column: col-start / end-line;
-  grid-row: row-nav / row-main;
+  min-height: 160px;
 
   nav {
     display: grid;

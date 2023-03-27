@@ -5,7 +5,7 @@ import Icon from 'ui-kit/Icon/Icon'
 
 const Unavailable = () => {
   return (
-    <main className=" fullscreen unavailable-page">
+    <main className=" fullscreen unavailable-page" id="content">
       <PageTitle title="Page indisponible" />
       <Icon className="error-icon" svg="ico-unavailable-page-white" />
       <h1>Page indisponible</h1>

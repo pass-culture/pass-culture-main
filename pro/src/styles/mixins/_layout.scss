@@ -6,6 +6,7 @@
   align-items: center;
   justify-content: center;
   position: fixed;
+  top: 0;
   min-height: 100vh;
   background-image: url("/icons/linear-gradient.svg");
   box-shadow: inset rem.torem(-10px) 0 rem.torem(20px) 0 colors.$black-shadow;
