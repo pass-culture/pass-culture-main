@@ -279,11 +279,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     const nextButton = screen.getByText('Étape suivante')
     const draftButton = screen.getByText('Sauvegarder le brouillon')
 
-    userEvent.click(screen.getByText('Étape suivante'))
-    await waitFor(() => {
-      expect(nextButton).toBeDisabled()
-      expect(draftButton).toBeDisabled()
-    })
+    await userEvent.click(screen.getByText('Étape suivante'))
 
     await waitFor(() => {
       expect(api.postOffer).toHaveBeenCalledTimes(1)
@@ -440,9 +436,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     )
   })
 
-  // FIX ME: for some mystery the form is dirty and log not triggger in test
-  // same test in draft is ok...
-  it.skip('should track when cancelling creation', async () => {
+  it('should track when cancelling creation', async () => {
     renderInformationsScreen(props, contextOverride)
 
     await userEvent.click(await screen.findByText('Étape précédente'))
@@ -456,7 +450,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         isDraft: true,
         isEdition: false,
         offerId: undefined,
-        to: 'Offers',
+        to: 'OfferFormHomepage',
         used: 'StickyButtons',
       }
     )

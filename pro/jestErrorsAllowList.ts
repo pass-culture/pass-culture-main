@@ -31,7 +31,6 @@ export default [
       'Warning: An update to %s inside a test was not wrapped in act(...).',
     files: [
       'components/VenueForm/EACInformation/CollectiveData/CollectiveData.tsx',
-      'screens/OfferIndividual/Informations/Informations.tsx',
       'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/Offers.tsx',
       '',
     ],
