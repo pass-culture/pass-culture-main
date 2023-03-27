@@ -59,6 +59,8 @@ class GetOffersListForm(FlaskForm):
         coerce=int,
         validators=(wtforms.validators.Optional(),),
     )
+    only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les offres des structures validées")
+    sort = fields.PCHiddenBooleanField("Trier par date")
 
     def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
         if q.data:
@@ -72,6 +74,7 @@ class GetOffersListForm(FlaskForm):
         return q
 
     def is_empty(self) -> bool:
+        # 'where' and 'only_validated_offerers' must be combined with other filters
         return not any(
             (
                 self.q.data,

@@ -83,6 +83,13 @@ def _get_collective_offers(
     if form.status.data:
         base_query = base_query.filter(educational_models.CollectiveOffer.validation.in_(form.status.data))
 
+    if form.only_validated_offerers.data:
+        base_query = (
+            base_query.join(educational_models.CollectiveOffer.venue)
+            .join(offerers_models.Venue.managingOfferer)
+            .filter(offerers_models.Offerer.isValidated)
+        )
+
     if form.q.data:
         search_query = form.q.data
 
@@ -94,6 +101,10 @@ def _get_collective_offers(
             base_query = base_query.filter(
                 sa.func.unaccent(educational_models.CollectiveOffer.name).ilike(f"%{name_query}%")
             )
+
+    if form.sort.data:
+        # currently only support ascending date
+        base_query = base_query.order_by(educational_models.CollectiveOffer.dateCreated.asc())
 
     # +1 to check if there are more results than requested
     return base_query.limit(form.limit.data + 1).all()
