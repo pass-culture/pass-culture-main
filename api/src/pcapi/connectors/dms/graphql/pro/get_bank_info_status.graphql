@@ -2,6 +2,7 @@ query get_banking_info_status($dossierNumber: Int!) {
   dossier(number: $dossierNumber) {
     state
     dateDepot
+    dateDerniereModification
   }
 }
 
