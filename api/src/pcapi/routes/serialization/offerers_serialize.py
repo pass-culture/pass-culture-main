@@ -223,18 +223,19 @@ class CreateOffererQueryModel(BaseModel):
     name: str
     postalCode: str
     siren: str
-    # For new onboarding:
-    target: Target | None
-    venueType: str | None
-    webPresence: str | None
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
-    name: str
+    # FIXME(fseguin, 2023-03-27): make these attributes not optional when UI is implemented
+    createVenueWithoutSiret: bool = False
+    publicName: str | None
     siret: str
     target: Target
-    venueType: str
+    venueTypeCode: offerers_models.VenueTypeCode | None
     webPresence: str
+    # FIXME(fseguin, 2023-03-27): delete these 2 attributes when pcpro is updated
+    name: str | None
+    venueType: str | None
 
     class Config:
         extra = "forbid"

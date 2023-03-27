@@ -1063,12 +1063,12 @@ export class DefaultService {
   /**
    * save_new_onboarding_data <POST>
    * @param requestBody
-   * @returns void
+   * @returns GetOffererResponseModel Created
    * @throws ApiError
    */
   public saveNewOnboardingData(
     requestBody?: SaveNewOnboardingDataQueryModel,
-  ): CancelablePromise<void> {
+  ): CancelablePromise<GetOffererResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/offerers/new',
