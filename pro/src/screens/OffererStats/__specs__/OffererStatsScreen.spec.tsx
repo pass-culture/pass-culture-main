@@ -46,17 +46,17 @@ describe('OffererStatsScreen', () => {
   beforeEach(() => {
     offererOptions = [
       {
-        id: 'A1',
+        id: '1',
         displayName: 'Mon super cinéma',
       },
       {
-        id: 'B1',
+        id: '2',
         displayName: 'Ma super librairie',
       },
     ]
     offerers = [
       {
-        id: 'A1',
+        id: '1',
         hasDigitalVenueAtLeastOneOffer: true,
         managedVenues: [
           { id: 'D1', name: 'Offre numérique', isVirtual: true },
@@ -65,7 +65,7 @@ describe('OffererStatsScreen', () => {
         ],
       },
       {
-        id: 'B1',
+        id: '2',
         managedVenues: [
           { id: 'L1', name: 'Terre de livres' },
           { id: 'L2', name: 'La voie aux chapitres' },
@@ -75,7 +75,9 @@ describe('OffererStatsScreen', () => {
 
     jest.spyOn(api, 'getOfferer').mockImplementation(offererId => {
       return new CancelablePromise(resolve =>
-        resolve(offerers.filter(offerer => offerer.id == offererId)[0])
+        resolve(
+          offerers.filter(offerer => offerer.id == offererId.toString())[0]
+        )
       )
     })
     jest
@@ -115,7 +117,7 @@ describe('OffererStatsScreen', () => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
     const offererSelect = screen.getByLabelText('Structure')
-    await userEvent.selectOptions(offererSelect, 'B1')
+    await userEvent.selectOptions(offererSelect, '2')
 
     const iframe = screen.getByTitle('Tableau des statistiques')
     expect(iframe).toBeInTheDocument()
@@ -147,5 +149,15 @@ describe('OffererStatsScreen', () => {
     const iframe = screen.getByTitle('Tableau des statistiques')
     expect(iframe).toBeInTheDocument()
     expect(iframe).toHaveAttribute('src', 'venueIframeUrl')
+  })
+  it('should display offerer stats when selecting all venues', async () => {
+    renderOffererStatsScreen(offererOptions)
+    await waitFor(() => {
+      expect(api.getOfferer).toHaveBeenCalledTimes(1)
+    })
+
+    const venueSelect = screen.getByLabelText('Lieu')
+    await userEvent.selectOptions(venueSelect, 'all')
+    expect(api.getOffererStatsDashboardUrl).toHaveBeenCalledTimes(1)
   })
 })

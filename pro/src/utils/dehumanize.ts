@@ -17,6 +17,7 @@ const dehumanizeId = (humanId: string) => {
       decode.asBytes(humanId.replace(/8/g, 'O').replace(/9/g, 'I'))
     )
   } catch (e) {
+    /* istanbul ignore next */
     return null
   }
 }

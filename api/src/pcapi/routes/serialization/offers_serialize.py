@@ -239,7 +239,6 @@ class ListOffersQueryModel(BaseModel):
     collective_offer_type: CollectiveOfferType | None
 
     _dehumanize_venue_id = dehumanize_field("venue_id")
-    _dehumanize_offerer_id = dehumanize_field("offerer_id")
 
     class Config:
         alias_generator = to_camel

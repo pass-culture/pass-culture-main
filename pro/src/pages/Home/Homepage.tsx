@@ -40,7 +40,7 @@ const Homepage = (): JSX.Element => {
   useEffect(() => {
     async function loadOfferer(offererId: string) {
       try {
-        const receivedOfferer = await api.getOfferer(offererId)
+        const receivedOfferer = await api.getOfferer(Number(offererId))
         const offererPhysicalVenues =
           receivedOfferer.managedVenues?.filter(venue => !venue.isVirtual) ?? []
         const virtualVenue =

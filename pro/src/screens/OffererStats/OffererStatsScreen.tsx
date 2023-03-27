@@ -38,7 +38,7 @@ const OffererStatsScreen = ({ offererOptions }: IOffererStatsScreenProps) => {
   }
 
   useEffect(() => {
-    api.getOfferer(selectedOffererId).then(offerer => {
+    api.getOfferer(Number(selectedOffererId)).then(offerer => {
       if (offerer.managedVenues) {
         const sortedVenueOptions = sortByDisplayName(
           offerer.managedVenues
@@ -68,7 +68,9 @@ const OffererStatsScreen = ({ offererOptions }: IOffererStatsScreenProps) => {
         return
       }
       if (venueId == 'all') {
-        response = await api.getOffererStatsDashboardUrl(selectedOffererId)
+        response = await api.getOffererStatsDashboardUrl(
+          Number(selectedOffererId)
+        )
       } else {
         response = await api.getVenueStatsDashboardUrl(selectedVenueId)
       }

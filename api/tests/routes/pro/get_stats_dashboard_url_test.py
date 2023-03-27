@@ -15,7 +15,7 @@ class OffererStatsTest:
         offerer = user_offerer.offerer
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.get(f"/offerers/{humanize(offerer.id)}/dashboard")
+        response = client.get(f"/offerers/{offerer.id}/dashboard")
 
         url = response.json["dashboardUrl"]
         token = url.split("/")[3].split("#")[0]
@@ -30,7 +30,7 @@ class OffererStatsTest:
         forbidden_offerer = offerers_factories.OffererFactory()
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.get(f"/offerers/{humanize(forbidden_offerer.id)}/dashboard")
+        response = client.get(f"/offerers/{forbidden_offerer.id}/dashboard")
 
         assert response.status_code == 403
 

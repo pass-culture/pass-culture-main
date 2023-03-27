@@ -127,6 +127,7 @@ const routes: IRoute[] = [
     element: <Homepage />,
     path: '/accueil',
     title: 'Accueil',
+    meta: { shouldRedirect: true },
   },
   {
     element: <Desk />,
@@ -178,16 +179,19 @@ const routes: IRoute[] = [
     element: <OffererDetails />,
     path: '/structures/:offererId',
     title: 'Structures',
+    meta: { shouldRedirect: true },
   },
   {
     element: <VenueCreation />,
     path: '/structures/:offererId/lieux/creation',
     title: 'Structures',
+    meta: { shouldRedirect: true },
   },
   {
     element: <VenueEdition />,
     path: '/structures/:offererId/lieux/:venueId',
     title: 'Structures',
+    meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveDataEdition />,
@@ -203,6 +207,7 @@ const routes: IRoute[] = [
     element: <OffersRoute />,
     path: '/offres',
     title: 'Offres',
+    meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveOffers />,
