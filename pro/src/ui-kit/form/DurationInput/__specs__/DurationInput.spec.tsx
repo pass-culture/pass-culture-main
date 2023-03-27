@@ -5,18 +5,14 @@ import React from 'react'
 
 import DurationInput, { IDurationInputProps } from '../DurationInput'
 
-const renderDurationInput = ({
-  onSubmit = jest.fn(),
-}: {
-  onSubmit?: () => void
-} = {}) => {
+const renderDurationInput = () => {
   const initialValues = { durationMinutes: '' }
   const props: IDurationInputProps = {
     label: 'Durée',
     name: 'durationMinutes',
   }
   return render(
-    <Formik initialValues={initialValues} onSubmit={onSubmit}>
+    <Formik initialValues={initialValues} onSubmit={jest.fn()}>
       <DurationInput {...props} />
     </Formik>
   )
@@ -47,7 +43,7 @@ describe('DurationInput', () => {
         exact: false,
       })
       await userEvent.type(durationInput, value)
-      userEvent.tab()
+      await userEvent.tab()
       expect(durationInput).toHaveValue(expectedDuration)
     }
   )
