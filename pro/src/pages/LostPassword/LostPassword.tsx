@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import AppLayout from 'app/AppLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
+import SkipLinks from 'components/SkipLinks'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Hero from 'ui-kit/Hero'
@@ -74,53 +75,56 @@ const LostPassword = (): JSX.Element => {
   }
 
   return (
-    <div className={styles['lost-password']}>
-      <header className={styles['logo-side']}>
-        <Logo noLink signPage />
-      </header>
-      <AppLayout
-        layoutConfig={{
-          fullscreen: true,
-          pageName: 'lost-password',
-        }}
-      >
-        <PageTitle title="Mot de passe perdu" />
+    <>
+      <SkipLinks displayMenu={false} />
+      <div className={styles['lost-password']}>
+        <header className={styles['logo-side']}>
+          <Logo noLink signPage />
+        </header>
+        <AppLayout
+          layoutConfig={{
+            fullscreen: true,
+            pageName: 'lost-password',
+          }}
+        >
+          <PageTitle title="Mot de passe perdu" />
 
-        <div className={styles['scrollable-content-side']}>
-          <div className={styles['content']}>
-            {passwordChanged && (
-              <Hero
-                linkLabel="Se connecter"
-                linkTo="/connexion"
-                text="Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe"
-                title="Mot de passe changé !"
-              />
-            )}
-            {passwordSent && (
-              <Hero
-                linkLabel="Revenir à l’accueil"
-                linkTo="/"
-                text="Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe."
-                title="Merci !"
-              />
-            )}
-            {token && !passwordChanged && (
-              <ChangePasswordForm onSubmit={submitChangePassword} />
-            )}
-            {!token && !passwordSent && !passwordChanged && (
-              <ChangePasswordRequestForm
-                emailValue={emailValue}
-                isChangePasswordRequestSubmitDisabled={
-                  isChangePasswordRequestSubmitDisabled
-                }
-                onChange={handleInputEmailChange}
-                onSubmit={submitChangePasswordRequest}
-              />
-            )}
+          <div className={styles['scrollable-content-side']}>
+            <div className={styles['content']}>
+              {passwordChanged && (
+                <Hero
+                  linkLabel="Se connecter"
+                  linkTo="/connexion"
+                  text="Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe"
+                  title="Mot de passe changé !"
+                />
+              )}
+              {passwordSent && (
+                <Hero
+                  linkLabel="Revenir à l’accueil"
+                  linkTo="/"
+                  text="Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe."
+                  title="Merci !"
+                />
+              )}
+              {token && !passwordChanged && (
+                <ChangePasswordForm onSubmit={submitChangePassword} />
+              )}
+              {!token && !passwordSent && !passwordChanged && (
+                <ChangePasswordRequestForm
+                  emailValue={emailValue}
+                  isChangePasswordRequestSubmitDisabled={
+                    isChangePasswordRequestSubmitDisabled
+                  }
+                  onChange={handleInputEmailChange}
+                  onSubmit={submitChangePasswordRequest}
+                />
+              )}
+            </div>
           </div>
-        </div>
-      </AppLayout>
-    </div>
+        </AppLayout>
+      </div>
+    </>
   )
 }
 

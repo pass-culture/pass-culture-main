@@ -9,7 +9,7 @@ interface Props {
 }
 
 const NotFound = ({ redirect = '/accueil' }: Props) => (
-  <main className="page fullscreen no-match">
+  <main className="page fullscreen no-match" id="content">
     <PageTitle title="Page inaccessible" />
     <Icon svg="ico-404" />
     <h1>Oh non !</h1>

@@ -52,7 +52,7 @@ const StoreProvider = ({ children, isDev = false }: IStoreProvider) => {
 
   if (initialState === null) {
     return (
-      <main className="spinner-container">
+      <main id="content" className="spinner-container">
         <Spinner />
       </main>
     )

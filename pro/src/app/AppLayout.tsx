@@ -4,6 +4,7 @@ import ReactTooltip from 'react-tooltip'
 
 import DomainNameBanner from 'components/DomainNameBanner'
 import Header from 'components/Header/Header'
+import SkipLinks from 'components/SkipLinks'
 import TutorialDialog from 'components/TutorialDialog'
 
 import { ILayoutConfig } from './AppRouter/routes_map'
@@ -27,7 +28,12 @@ const AppLayout = ({ children, layoutConfig, className }: AppLayoutProps) => {
 
   return (
     <>
-      {!fullscreen && <Header />}
+      {!fullscreen && (
+        <>
+          <SkipLinks />
+          <Header />
+        </>
+      )}
       <ReactTooltip
         className="flex-center items-center"
         delayHide={500}
@@ -36,6 +42,7 @@ const AppLayout = ({ children, layoutConfig, className }: AppLayoutProps) => {
       />
 
       <main
+        id="content"
         className={classnames(
           {
             page: true,

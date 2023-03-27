@@ -6,7 +6,7 @@ export const withPageTemplate = (getStory: GetStory): React.ReactNode => {
   return (
     <>
       <div />
-      <main className="container">
+      <main id="content" className="container">
         <div className="page-content">
           <div className="after-notification-content">{getStory()}</div>
         </div>

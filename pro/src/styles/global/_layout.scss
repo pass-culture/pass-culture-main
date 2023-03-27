@@ -30,15 +30,6 @@ body {
   height: 100%;
 }
 
-#root {
-  display: grid;
-  grid-template-columns: [col-start] 1fr [col-main] size.$main-content-width 1fr;
-  grid-template-rows: [row-nav] rem.torem(72px) [row-header] rem.torem(80px) [row-main] 1fr [row-footer] rem.torem(
-      120px
-    );
-  min-height: 100%;
-}
-
 table {
   border-collapse: collapse;
   border-spacing: 0;

@@ -1,3 +1,4 @@
+@use "styles/variables/_size.scss" as size;
 @import "sass-rem";
 
 main.app-layout {
@@ -5,6 +6,15 @@ main.app-layout {
   flex-direction: column;
   grid-column-start: col-main;
   grid-row-start: row-main;
+}
+
+.root-adage {
+  display: grid;
+  grid-template-columns: [col-start] 1fr [col-main] size.$main-content-width 1fr;
+  grid-template-rows: [row-nav] rem(72px) [row-header] rem(80px) [row-main] 1fr [row-footer] rem(
+      120px
+    );
+  min-height: 100vh;
 }
 
 .app-layout-header {
