@@ -93,6 +93,7 @@ def create_offers_base_list(
     pending_offers: bool = True,
     offers_intervention_56: bool = True,
     offers_intervention_91: bool = True,
+    offers_next_year: bool = True,
 ) -> tuple[list[educational_models.CollectiveOffer], list[educational_models.CollectiveOfferTemplate]]:
     domains_iterator = cycle(domains)
     venue_iterator = cycle(offerer.managedVenues)
@@ -332,6 +333,45 @@ def create_offers_base_list(
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__validation=OfferValidationStatus.PENDING,
         )
+    if offers_next_year:
+        current_year = datetime.utcnow().year
+        target_year = current_year + 2 if datetime.utcnow().month >= 9 else current_year + 1
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer__name=f"offer next year {next(number_iterator)} pour {offerer.name}",
+            collectiveOffer__educational_domains=[next(domains_iterator)],
+            collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime(target_year, 3, 18),
+            bookingLimitDatetime=datetime(target_year, 3, 3),
+        )
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer__name=f"offer next year {next(number_iterator)} pour {offerer.name}",
+            collectiveOffer__educational_domains=[next(domains_iterator)],
+            collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime(target_year, 3, 18),
+            bookingLimitDatetime=datetime(target_year, 3, 3),
+        )
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer__name=f"offer next year {next(number_iterator)} pour {offerer.name}",
+            collectiveOffer__educational_domains=[next(domains_iterator)],
+            collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime(target_year, 3, 18),
+            bookingLimitDatetime=datetime(target_year, 3, 3),
+        )
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer__name=f"offer next year {next(number_iterator)} pour {offerer.name}",
+            collectiveOffer__educational_domains=[next(domains_iterator)],
+            collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime(target_year, 3, 18),
+            bookingLimitDatetime=datetime(target_year, 3, 3),
+        )
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer__name=f"offer next year {next(number_iterator)} pour {offerer.name}",
+            collectiveOffer__educational_domains=[next(domains_iterator)],
+            collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime(target_year, 3, 18),
+            bookingLimitDatetime=datetime(target_year, 3, 3),
+        )
+
     if offers_intervention_56:
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} interventionArea 56",
