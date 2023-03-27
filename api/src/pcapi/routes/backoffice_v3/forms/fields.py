@@ -190,9 +190,16 @@ class PCSearchField(PCOptSearchField):
     validators = [validators.InputRequired("Information obligatoire")]
 
 
-class PCSwitchBooleanField(wtforms.BooleanField):
+class PCBooleanField(wtforms.BooleanField):
+    false_values = (False, "False", "false", "off", "0", "")
+
+
+class PCSwitchBooleanField(PCBooleanField):
     widget = partial(widget, template="components/forms/switch_boolean_field.html")
-    false_values = (False, "False", "false", "")
+
+
+class PCHiddenBooleanField(PCBooleanField):
+    widget = wtforms.widgets.HiddenInput()
 
 
 class PcPostalAddressAutocomplete(wtforms.StringField):
