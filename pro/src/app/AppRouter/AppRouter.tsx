@@ -43,6 +43,7 @@ const RouteWrapper = ({ route }: { route: IRoute }) => {
   // This is a temporary redirection to remove humanizedId.
   // For 6 months (until around 2023-10-01) we should redirect
   // urls with humanized params to url wih non human parameters
+  /* istanbul ignore next */
   if (route.meta?.shouldRedirect) {
     const newLocation = dehumanizedRoute(location, matches)
     if (location.pathname + location.search != newLocation) {

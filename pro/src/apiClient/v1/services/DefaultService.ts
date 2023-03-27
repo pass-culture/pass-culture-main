@@ -1110,7 +1110,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getOfferer(
-    offererId: string,
+    offererId: number,
   ): CancelablePromise<GetOffererResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -1154,7 +1154,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getOffererStatsDashboardUrl(
-    offererId: string,
+    offererId: number,
   ): CancelablePromise<OffererStatsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
