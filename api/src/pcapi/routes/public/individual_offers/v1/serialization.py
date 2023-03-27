@@ -492,14 +492,24 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
         extra = "forbid"
 
 
+STOCK_EDITION_FIELD = pydantic.Field(
+    description="If stock is set to null, all cancellable bookings (i.e not used) will be cancelled. To prevent from further bookings, you may alternatively set stock.quantity to the bookedQuantity (but not below).",
+)
+
+
 class ProductOfferEdition(OfferEditionBase):
     category_related_fields: product_category_edition_fields | None = pydantic.Field(
         None,
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
     )
-    stock: StockEdition | None = pydantic.Field(
-        description="If stock is set to null, all cancellable bookings (i.e not used) will be cancelled. To prevent from further bookings, you may alternatively set stock.quantity to the bookedQuantity (but not below)."
-    )
+    stock: StockEdition | None = STOCK_EDITION_FIELD
+
+    class Config:
+        extra = "forbid"
+
+
+class ProductOfferByEanEdition(serialization.ConfiguredBaseModel):
+    stock: StockEdition | None = STOCK_EDITION_FIELD
 
     class Config:
         extra = "forbid"
