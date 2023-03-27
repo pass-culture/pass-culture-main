@@ -4,7 +4,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { Target } from 'apiClient/v1'
+import { GetOffererResponseModel, Target } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import {
   ISignupJourneyContext,
@@ -150,7 +150,9 @@ describe('screens:SignupJourney::Validation', () => {
     })
 
     it('Should send the data on submit', async () => {
-      jest.spyOn(api, 'saveNewOnboardingData').mockResolvedValue()
+      jest
+        .spyOn(api, 'saveNewOnboardingData')
+        .mockResolvedValue({} as GetOffererResponseModel)
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer mon espace'))
@@ -181,7 +183,9 @@ describe('screens:SignupJourney::Validation', () => {
     })
 
     it('Should send data with empty public name', async () => {
-      jest.spyOn(api, 'saveNewOnboardingData').mockResolvedValue()
+      jest
+        .spyOn(api, 'saveNewOnboardingData')
+        .mockResolvedValue({} as GetOffererResponseModel)
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer mon espace'))

@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import os
 import pathlib
 import time
@@ -28,8 +29,8 @@ from pcapi.core.users import factories as users_factories
 from pcapi.models import api_errors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.serialization import base as serialize_base
-from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization import offerers_serialize
+from pcapi.routes.serialization import venues_serialize
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -1387,7 +1388,7 @@ class UpdateOffererTagTest:
 class GetAdditionalInfoFromOnboardingDataTest:
     def test_simple(self):
         siret = "12345678901234"
-        info = offerers_api.get_additional_info_from_onboarding_data(siret)
+        info = offerers_api._get_additional_info_from_onboarding_data(siret)
 
         assert info == offerers_api.AdditionalInfo(
             address="3 RUE DE VALOIS",
@@ -1402,20 +1403,151 @@ class GetAdditionalInfoFromOnboardingDataTest:
     @patch("pcapi.connectors.sirene.get_siret", side_effect=sirene.SireneApiException)
     def test_no_siret_info(self, _mocked_get_siret):
         siret = "12345678901234"
-        info = offerers_api.get_additional_info_from_onboarding_data(siret)
 
-        assert info is None
+        with pytest.raises(sirene.SireneApiException):
+            offerers_api._get_additional_info_from_onboarding_data(siret)
 
     @patch("pcapi.connectors.api_adresse.get_address", side_effect=api_adresse.NoResultException)
     def test_no_address_info(self, _mocked_get_address):
         siret = "12345678901234"
-        info = offerers_api.get_additional_info_from_onboarding_data(siret)
+        info = offerers_api._get_additional_info_from_onboarding_data(siret)
 
         assert info is None
 
     @patch("pcapi.connectors.api_adresse.get_address", side_effect=api_adresse.AdresseApiException)
     def test_api_adresse_error(self, _mocked_get_address):
         siret = "12345678901234"
-        info = offerers_api.get_additional_info_from_onboarding_data(siret)
+        info = offerers_api._get_additional_info_from_onboarding_data(siret)
 
         assert info is None
+
+
+class CreateFromOnboardingDataTest:
+    def assert_common_venue_attrs(self, venue: offerers_models.Venue) -> None:
+        assert venue.address == "3 RUE DE VALOIS"
+        assert venue.bookingEmail == ""
+        assert venue.city == "Paris"
+        assert not venue.current_reimbursement_point_id
+        assert venue.dmsToken
+        assert venue.latitude == decimal.Decimal("2.30829")
+        assert venue.longitude == decimal.Decimal("48.87171")
+        assert venue.name == "MINISTERE DE LA CULTURE"
+        assert venue.postalCode == "75001"
+        assert venue.publicName == "Nom public de mon lieu"
+        assert venue.venueTypeCode == offerers_models.VenueTypeCode.MOVIE
+        assert venue.audioDisabilityCompliant is False
+        assert venue.mentalDisabilityCompliant is False
+        assert venue.motorDisabilityCompliant is False
+        assert venue.visualDisabilityCompliant is False
+
+    def get_onboarding_data(
+        self, create_venue_without_siret: bool
+    ) -> offerers_serialize.SaveNewOnboardingDataQueryModel:
+        return offerers_serialize.SaveNewOnboardingDataQueryModel(
+            createVenueWithoutSiret=create_venue_without_siret,
+            publicName="Nom public de mon lieu",
+            siret="85331845900031",
+            target=offerers_models.Target.INDIVIDUAL,
+            venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
+            webPresence="www.example.com, instagram.com/example, @example@mastodon.example",
+        )
+
+    def test_new_siren_new_siret(self):
+        user = users_factories.UserFactory()
+        user.add_non_attached_pro_role()
+
+        onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
+        created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
+
+        # Offerer has been created
+        created_offerer = created_user_offerer.offerer
+        assert created_offerer.name == "MINISTERE DE LA CULTURE"
+        assert created_offerer.siren == "853318459"
+        assert created_offerer.address == "3 RUE DE VALOIS"
+        assert created_offerer.postalCode == "75001"
+        assert created_offerer.city == "Paris"
+        assert created_offerer.validationStatus == ValidationStatus.NEW
+        # User is attached to offerer
+        assert created_user_offerer.userId == user.id
+        assert created_user_offerer.validationStatus == ValidationStatus.VALIDATED
+        # but does not have PRO role yet, because the Offerer is not validated
+        assert created_user_offerer.user.has_non_attached_pro_role
+        # 1 virtual Venue + 1 Venue with siret have been created
+        assert len(created_user_offerer.offerer.managedVenues) == 2
+        created_venue, created_virtual_venue = sorted(
+            created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual
+        )
+        assert created_virtual_venue.isVirtual
+        self.assert_common_venue_attrs(created_venue)
+        assert created_venue.comment is None
+        assert created_venue.siret == "85331845900031"
+        assert created_venue.current_pricing_point_id == created_venue.id
+
+    def test_existing_siren_new_siret(self):
+        offerer = offerers_factories.OffererFactory(siren="853318459")
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        user = users_factories.UserFactory()
+        user.add_non_attached_pro_role()
+
+        onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
+        created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
+
+        # Offerer has not been created
+        assert offerers_models.Offerer.query.count() == 1
+        assert created_user_offerer.offerer == offerer
+        # User is not attached to offerer yet
+        assert created_user_offerer.userId == user.id
+        assert created_user_offerer.validationStatus == ValidationStatus.NEW
+        assert created_user_offerer.user.has_non_attached_pro_role
+        # 1 venue with siret has been created
+        assert len(offerer.managedVenues) == 2
+        created_venue = next(v for v in offerer.managedVenues if not v.isVirtual)
+        self.assert_common_venue_attrs(created_venue)
+        assert created_venue.comment is None
+        assert created_venue.siret == "85331845900031"
+        assert created_venue.current_pricing_point_id == created_venue.id
+
+    def test_existing_siren_new_venue_without_siret(self):
+        offerer = offerers_factories.OffererFactory(siren="853318459")
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        user = users_factories.UserFactory()
+        user.add_non_attached_pro_role()
+
+        onboarding_data = self.get_onboarding_data(create_venue_without_siret=True)
+        created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
+
+        # Offerer has not been created
+        assert offerers_models.Offerer.query.count() == 1
+        assert created_user_offerer.offerer == offerer
+        # User is not attached to offerer yet
+        assert created_user_offerer.userId == user.id
+        assert created_user_offerer.user.has_non_attached_pro_role
+        assert created_user_offerer.validationStatus == ValidationStatus.NEW
+        # 1 venue without siret has been created
+        assert len(offerer.managedVenues) == 2
+        created_venue = next(v for v in offerer.managedVenues if not v.isVirtual)
+        self.assert_common_venue_attrs(created_venue)
+        assert created_venue.comment == "Lieu sans SIRET car dépend du SIRET d'un autre lieu"
+        assert created_venue.siret is None
+        # No pricing point yet
+        assert not created_venue.current_pricing_point_id
+
+    def test_existing_siren_existing_siret(self):
+        offerer = offerers_factories.OffererFactory(siren="853318459")
+        _virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        _venue_with_siret = offerers_factories.VenueFactory(managingOfferer=offerer, siret="85331845900031")
+        user = users_factories.UserFactory()
+        user.add_non_attached_pro_role()
+
+        onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
+        created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
+
+        # Offerer has not been created
+        assert offerers_models.Offerer.query.count() == 1
+        assert created_user_offerer.offerer == offerer
+        # User is not attached to offerer yet
+        assert created_user_offerer.userId == user.id
+        assert created_user_offerer.user.has_non_attached_pro_role
+        assert created_user_offerer.validationStatus == ValidationStatus.NEW
+        # Venue has not been created
+        assert offerers_models.Venue.query.count() == 2
