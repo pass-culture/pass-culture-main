@@ -101,6 +101,12 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
 """
 
 
+class Target(enum.Enum):
+    EDUCATIONAL = "EDUCATIONAL"
+    INDIVIDUAL_AND_EDUCATIONAL = "INDIVIDUAL_AND_EDUCATIONAL"
+    INDIVIDUAL = "INDIVIDUAL"
+
+
 class VenueTypeCode(enum.Enum):
     ADMINISTRATIVE = "Lieu administratif"
     ARTISTIC_COURSE = "Cours et pratique artistiques"
