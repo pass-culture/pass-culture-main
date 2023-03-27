@@ -5,16 +5,15 @@
 
 .sign-up-form-page {
   height: 100%;
-  overflow: auto;
   width: 100%;
+  position: relative;
+  left: rem.torem(665px);
 
   .content {
-    margin-left: calc(sizes.$signup-content-margin + 15%);
     padding: rem.torem(60px) 0;
     width: rem.torem(486px);
 
     .sign-page-form {
-      margin-left: 36%;
       width: 59%;
     }
 

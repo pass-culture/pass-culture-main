@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import AppLayout from 'app/AppLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
@@ -13,6 +14,7 @@ import { getReCaptchaToken, initReCaptchaScript } from 'utils/recaptcha'
 
 import ChangePasswordForm from './ChangePasswordForm'
 import ChangePasswordRequestForm from './ChangePasswordRequestForm'
+import styles from './LostPassword.module.scss'
 
 const LostPassword = (): JSX.Element => {
   const [emailValue, setEmailValue] = useState('')
@@ -72,45 +74,53 @@ const LostPassword = (): JSX.Element => {
   }
 
   return (
-    <>
-      <PageTitle title="Mot de passe perdu" />
-      <div className="logo-side">
+    <div className={styles['lost-password']}>
+      <header className={styles['logo-side']}>
         <Logo noLink signPage />
-      </div>
-      <div className="scrollable-content-side">
-        <div className="content">
-          {passwordChanged && (
-            <Hero
-              linkLabel="Se connecter"
-              linkTo="/connexion"
-              text="Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe"
-              title="Mot de passe changé !"
-            />
-          )}
-          {passwordSent && (
-            <Hero
-              linkLabel="Revenir à l’accueil"
-              linkTo="/"
-              text="Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe."
-              title="Merci !"
-            />
-          )}
-          {token && !passwordChanged && (
-            <ChangePasswordForm onSubmit={submitChangePassword} />
-          )}
-          {!token && !passwordSent && !passwordChanged && (
-            <ChangePasswordRequestForm
-              emailValue={emailValue}
-              isChangePasswordRequestSubmitDisabled={
-                isChangePasswordRequestSubmitDisabled
-              }
-              onChange={handleInputEmailChange}
-              onSubmit={submitChangePasswordRequest}
-            />
-          )}
+      </header>
+      <AppLayout
+        layoutConfig={{
+          fullscreen: true,
+          pageName: 'lost-password',
+        }}
+      >
+        <PageTitle title="Mot de passe perdu" />
+
+        <div className={styles['scrollable-content-side']}>
+          <div className={styles['content']}>
+            {passwordChanged && (
+              <Hero
+                linkLabel="Se connecter"
+                linkTo="/connexion"
+                text="Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe"
+                title="Mot de passe changé !"
+              />
+            )}
+            {passwordSent && (
+              <Hero
+                linkLabel="Revenir à l’accueil"
+                linkTo="/"
+                text="Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe."
+                title="Merci !"
+              />
+            )}
+            {token && !passwordChanged && (
+              <ChangePasswordForm onSubmit={submitChangePassword} />
+            )}
+            {!token && !passwordSent && !passwordChanged && (
+              <ChangePasswordRequestForm
+                emailValue={emailValue}
+                isChangePasswordRequestSubmitDisabled={
+                  isChangePasswordRequestSubmitDisabled
+                }
+                onChange={handleInputEmailChange}
+                onSubmit={submitChangePasswordRequest}
+              />
+            )}
+          </div>
         </div>
-      </div>
-    </>
+      </AppLayout>
+    </div>
   )
 }
 
