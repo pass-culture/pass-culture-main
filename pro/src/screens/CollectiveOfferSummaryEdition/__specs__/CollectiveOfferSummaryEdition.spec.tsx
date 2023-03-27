@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import fetchMock from 'jest-fetch-mock'
 import React from 'react'
@@ -97,10 +97,12 @@ describe('CollectiveOfferSummary', () => {
     fetchMock.mockIf(/image.jpg/, 'some response')
   })
 
-  it('should display desactive offer option when offer is active and not booked', () => {
+  it('should display desactive offer option when offer is active and not booked', async () => {
     offer = collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
     renderCollectiveOfferSummaryEdition(offer, categories)
-
+    await waitFor(() => {
+      expect(api.getVenue).toHaveBeenCalled()
+    })
     const desactivateOffer = screen.getByRole('button', {
       name: 'Masquer la publication sur Adage',
     })
