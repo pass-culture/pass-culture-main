@@ -99,7 +99,7 @@ def has_reimbursement_point(
 
 def render_venue_details(
     venue: offerers_models.Venue, edit_venue_form: forms.EditVirtualVenueForm | None = None
-) -> utils.BackofficeResponse:
+) -> str:
     dms_application_id = venue.bankInformation.applicationId if venue.bankInformation else None
     dms_stats = get_dms_stats(dms_application_id)
     region = regions_utils.get_region_name_from_postal_code(venue.postalCode) if venue.postalCode else ""
@@ -270,7 +270,14 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             """
         ).format()
         flash(msg, "warning")
-        return render_venue_details(venue, form)
+        return render_venue_details(venue, form), 400
+
+    if not venue.isVirtual and bool(venue.siret) != bool(form.siret.data):
+        flash(
+            f"Vous ne pouvez pas {'créer' if form.siret.data else 'retirer'} le SIRET d'un lieu. Contactez le support pro.",
+            "warning",
+        )
+        return render_venue_details(venue, form), 400
 
     attrs = {
         to_camelcase(field.name): field.data
@@ -300,7 +307,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         for error_key, error_details in api_errors.errors.items():
             for error_detail in error_details:
                 flash(f"[{error_key}] {error_detail}", "warning")
-        return render_venue_details(venue, form)
+        return render_venue_details(venue, form), 400
 
     flash("Les informations ont bien été mises à jour", "success")
     return redirect(url_for("backoffice_v3_web.venue.get", venue_id=venue.id), code=303)
