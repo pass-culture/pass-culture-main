@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
@@ -14,7 +14,15 @@ import OfferType from '../OfferType'
 
 const mockLogEvent = jest.fn()
 
-const renderOfferTypes = (storeOverrides: any) =>
+jest.mock('apiClient/api', () => ({
+  api: {
+    listOfferersNames: jest.fn(),
+    canOffererCreateEducationalOffer: jest.fn(),
+    getCollectiveOffers: jest.fn(),
+  },
+}))
+
+const renderOfferTypes = async (storeOverrides: any) => {
   renderWithProviders(
     <Routes>
       <Route path="/creation" element={<OfferType />} />
@@ -41,22 +49,28 @@ const renderOfferTypes = (storeOverrides: any) =>
     }
   )
 
-jest.mock('apiClient/api', () => ({
-  api: {
-    listOfferersNames: jest.fn(),
-    canOffererCreateEducationalOffer: jest.fn(),
-    getCollectiveOffers: jest.fn(),
-  },
-}))
-
-jest.mock('hooks/useActiveFeature', () => ({
-  __esModule: true,
-  default: jest.fn().mockReturnValue(true),
-}))
+  await waitFor(() => {
+    expect(api.listOfferersNames).toHaveBeenCalled()
+  })
+  await waitFor(() => {
+    expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled()
+  })
+  await waitFor(() => {
+    expect(api.getCollectiveOffers).toHaveBeenCalled()
+  })
+}
 
 describe('screens:OfferIndividual::OfferType', () => {
   let store: any
-
+  beforeAll(() => {
+    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        { id: 'A1', nonHumanizedId: 1, name: 'Ma super structure' },
+      ],
+    })
+    jest.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
+    jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
+  })
   beforeEach(() => {
     store = {
       user: {
@@ -66,6 +80,15 @@ describe('screens:OfferIndividual::OfferType', () => {
           isAdmin: false,
           email: 'email@example.com',
         },
+      },
+      features: {
+        list: [
+          {
+            nameKey: 'WIP_DUPLICATE_OFFER_SELECTION',
+            isActive: true,
+          },
+        ],
+        initialized: true,
       },
     }
 
@@ -107,11 +130,6 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should select collective offer', async () => {
-    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        { id: 'A1', nonHumanizedId: 1, name: 'Ma super structure' },
-      ],
-    })
     renderOfferTypes(store)
 
     expect(
@@ -134,7 +152,7 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should select template offer', async () => {
-    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    jest.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
       offerersNames: [
         { id: 'A1', nonHumanizedId: 1, name: 'Ma super structure' },
         { id: 'A2', nonHumanizedId: 2, name: 'Ma super structure #2' },
@@ -163,18 +181,6 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should display non eligible banner if offerer can not create collective offer', async () => {
-    store = {
-      ...store,
-      features: {
-        list: [
-          {
-            nameKey: 'WIP_DUPLICATE_OFFER_SELECTION',
-            isActive: true,
-          },
-        ],
-        initialized: true,
-      },
-    }
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         { id: 'A1', nonHumanizedId: 1, name: 'Ma super structure' },
