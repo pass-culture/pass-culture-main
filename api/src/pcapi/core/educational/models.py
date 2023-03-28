@@ -1119,7 +1119,7 @@ class CollectiveDmsApplication(PcObject, Base, Model):
     siret: str = sa.Column(sa.String(14), nullable=False)
     lastChangeDate = sa.Column(sa.DateTime, nullable=False)
     depositDate = sa.Column(sa.DateTime, nullable=False)
-    expirationDate = sa.Column(sa.DateTime, nullable=False)
+    expirationDate = sa.Column(sa.DateTime, nullable=True)
     buildDate = sa.Column(sa.DateTime, nullable=True)
     instructionDate = sa.Column(sa.DateTime, nullable=True)
     processingDate = sa.Column(sa.DateTime, nullable=True)
