@@ -152,7 +152,7 @@ describe('app', () => {
     await userEvent.click(categoriesFilter)
     await userEvent.click(screen.getByText('Cinéma'))
 
-    userEvent.click(launchSearchButton)
+    await userEvent.click(launchSearchButton)
 
     const resetFiltersButton = screen.queryByRole('button', {
       name: 'Réinitialiser les filtres',
@@ -164,8 +164,8 @@ describe('app', () => {
         screen.queryByRole('button', { name: '01 - Ain' })
       ).toBeInTheDocument()
     )
-    userEvent.click(resetFiltersButton)
-    userEvent.click(launchSearchButton)
+    await userEvent.click(resetFiltersButton)
+    await userEvent.click(launchSearchButton)
 
     // Then
     await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
@@ -288,7 +288,7 @@ describe('app', () => {
     const launchSearchButton = await screen.findByRole('button', {
       name: 'Lancer la recherche',
     })
-    userEvent.click(launchSearchButton)
+    await userEvent.click(launchSearchButton)
 
     // Then
     const resetFiltersNoResultButton = await screen.findByRole('button', {
