@@ -1,9 +1,11 @@
 {% macro stats_card(value, text_one, text_many, link) %}
-  <div class="col-3 p-2">
-    <div class="card shadow">
-      <div class="card-body">
+  <div class="col">
+    <div class="card shadow h-100">
+      <div class="card-body py-0 pt-3">
         <div class="fs-2">{{ value }}</div>
         <div class="text-muted">{{ text_many if value > 1 else text_one }}</div>
+      </div>
+      <div class="card-footer bg-white border-0 py-0 pb-3">
         {% if link %}
           <div class="d-flex flex-row-reverse mt-4">
             <a href="{{ link }}"
@@ -28,7 +30,7 @@
   <div class="py-4 px-5">
     <h1 class="text-muted mt-5">Bonjour {{ current_user.firstName | empty_string_if_null }} !</h1>
     {% if has_permission("FRAUD_ACTIONS") %}
-      <div class="row px-1 py-4">
+      <div class="row row-cols-4 g-3 py-4">
         {{ stats_card(
         pending_individual_offers_count,
         "offre individuelle en attente",
