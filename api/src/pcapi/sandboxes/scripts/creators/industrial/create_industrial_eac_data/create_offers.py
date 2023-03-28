@@ -107,30 +107,35 @@ def create_offers_base_list(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name}",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name}",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name}",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name}",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name}",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
     if image_offers:
@@ -138,6 +143,7 @@ def create_offers_base_list(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} with image",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         add_image_to_offer(stock.collectiveOffer, next(image_iterator))
         offers.append(stock.collectiveOffer)
@@ -145,6 +151,7 @@ def create_offers_base_list(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} with image",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         add_image_to_offer(stock.collectiveOffer, next(image_iterator))
         offers.append(stock.collectiveOffer)
@@ -152,6 +159,7 @@ def create_offers_base_list(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} with image",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         add_image_to_offer(stock.collectiveOffer, next(image_iterator))
         offers.append(stock.collectiveOffer)
@@ -159,6 +167,7 @@ def create_offers_base_list(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} with image",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         add_image_to_offer(stock.collectiveOffer, next(image_iterator))
         offers.append(stock.collectiveOffer)
@@ -166,6 +175,7 @@ def create_offers_base_list(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} with image",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         add_image_to_offer(stock.collectiveOffer, next(image_iterator))
         offers.append(stock.collectiveOffer)
@@ -191,6 +201,7 @@ def create_offers_base_list(
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__institution=institution,
             collectiveOffer__teacher=redactor,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} to teacher",
@@ -198,6 +209,7 @@ def create_offers_base_list(
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__institution=institution,
             collectiveOffer__teacher=redactor,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} to teacher",
@@ -205,6 +217,7 @@ def create_offers_base_list(
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__institution=institution,
             collectiveOffer__teacher=redactor,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} to teacher",
@@ -212,6 +225,7 @@ def create_offers_base_list(
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__institution=institution,
             collectiveOffer__teacher=redactor,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} to teacher",
@@ -219,6 +233,7 @@ def create_offers_base_list(
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__institution=institution,
             collectiveOffer__teacher=redactor,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
     if public_api_offers:
         stock = educational_factories.CollectiveStockFactory(
@@ -228,6 +243,7 @@ def create_offers_base_list(
             collectiveOffer__institution=next(institution_iterator),
             collectiveOffer__interventionArea=[],
             collectiveOffer__isPublicApi=True,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
@@ -237,6 +253,7 @@ def create_offers_base_list(
             collectiveOffer__institution=next(institution_iterator),
             collectiveOffer__interventionArea=[],
             collectiveOffer__isPublicApi=True,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
@@ -246,6 +263,7 @@ def create_offers_base_list(
             collectiveOffer__institution=next(institution_iterator),
             collectiveOffer__interventionArea=[],
             collectiveOffer__isPublicApi=True,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
@@ -255,6 +273,7 @@ def create_offers_base_list(
             collectiveOffer__institution=next(institution_iterator),
             collectiveOffer__interventionArea=[],
             collectiveOffer__isPublicApi=True,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
@@ -264,6 +283,7 @@ def create_offers_base_list(
             collectiveOffer__institution=next(institution_iterator),
             collectiveOffer__interventionArea=[],
             collectiveOffer__isPublicApi=True,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
     if expired_offers:
@@ -308,30 +328,35 @@ def create_offers_base_list(
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__validation=OfferValidationStatus.PENDING,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} pending",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__validation=OfferValidationStatus.PENDING,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} pending",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__validation=OfferValidationStatus.PENDING,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} pending",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__validation=OfferValidationStatus.PENDING,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         educational_factories.CollectiveStockFactory(
             collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} pending",
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__validation=OfferValidationStatus.PENDING,
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
     if offers_next_year:
         current_year = datetime.utcnow().year
@@ -378,6 +403,7 @@ def create_offers_base_list(
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__interventionArea=["56"],
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
@@ -385,6 +411,7 @@ def create_offers_base_list(
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__interventionArea=["56"],
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
@@ -392,6 +419,7 @@ def create_offers_base_list(
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__interventionArea=["56"],
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
@@ -399,6 +427,7 @@ def create_offers_base_list(
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__interventionArea=["56"],
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
@@ -406,6 +435,7 @@ def create_offers_base_list(
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__interventionArea=["56"],
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
     if offers_intervention_91:
@@ -414,6 +444,7 @@ def create_offers_base_list(
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__interventionArea=["91"],
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
@@ -421,6 +452,7 @@ def create_offers_base_list(
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__interventionArea=["91"],
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
@@ -428,6 +460,7 @@ def create_offers_base_list(
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__interventionArea=["91"],
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
@@ -435,6 +468,7 @@ def create_offers_base_list(
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__interventionArea=["91"],
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
         stock = educational_factories.CollectiveStockFactory(
@@ -442,6 +476,7 @@ def create_offers_base_list(
             collectiveOffer__educational_domains=[next(domains_iterator)],
             collectiveOffer__venue=next(venue_iterator),
             collectiveOffer__interventionArea=["91"],
+            beginningDatetime=datetime.utcnow() + timedelta(days=60),
         )
         offers.append(stock.collectiveOffer)
     if basic_templates:
