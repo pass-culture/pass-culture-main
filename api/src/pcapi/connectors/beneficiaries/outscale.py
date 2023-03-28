@@ -1,4 +1,5 @@
 import logging
+import threading
 
 import boto3
 from botocore.exceptions import ClientError
@@ -8,9 +9,21 @@ from pcapi import settings
 
 logger = logging.getLogger(__name__)
 
+_thread_local_boto_session_container = threading.local()
+
+
+def _get_boto_session() -> boto3.Session:
+    if not hasattr(_thread_local_boto_session_container, "session"):
+        _thread_local_boto_session_container.session = boto3.Session()
+    return _thread_local_boto_session_container.session
+
 
 def upload_file(user_id: str, file_path: str, file_name: str) -> bool:
-    client = boto3.client(
+    # Do not use `boto3.client()`, it is not thread safe. Instead, get
+    # a session (and keep it for the whole duration of this thread,
+    # since it's a bit costly to create).
+    session = _get_boto_session()
+    client = session.client(
         "s3",
         aws_access_key_id=settings.OUTSCALE_ACCESS_KEY,
         aws_secret_access_key=settings.OUTSCALE_SECRET_KEY,

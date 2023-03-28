@@ -28,8 +28,8 @@ class UploadFileTest:
         record = caplog.records[0]
         assert expected_log_message in record.message
 
-    @patch("pcapi.connectors.beneficiaries.outscale.boto3.client")
-    def test_upload_file_succesfully(self, mock_s3_client, caplog) -> None:
+    @patch("botocore.session.Session.create_client")
+    def test_upload_file_succesfully(self, mocked_storage_client, caplog) -> None:
         # Given
         file_name = "carte_identite_front.png"
         file_path = f"{IMAGES_DIR}/{file_name}"
@@ -41,7 +41,7 @@ class UploadFileTest:
             outscale.upload_file(user_id, file_path, file_name)
 
         # Then
-        assert mock_s3_client.return_value.upload_file.call_count == 1
+        assert mocked_storage_client.return_value.upload_file.call_count == 1
         assert len(caplog.records) >= 1
         record = caplog.records[0]
         assert expected_log_message in record.message

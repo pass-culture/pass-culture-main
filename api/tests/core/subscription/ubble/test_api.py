@@ -519,8 +519,8 @@ class DownloadUbbleDocumentPictureTest:
         assert self.picture_path in record.extra["url"]
         assert record.extra["status_code"] == 503
 
-    @patch("pcapi.connectors.beneficiaries.outscale.boto3.client")
-    def test_download_ubble_document_pictures_successfully(self, mock_s3_client, requests_mock):
+    @patch("botocore.session.Session.create_client")
+    def test_download_ubble_document_pictures_successfully(self, mocked_storage_client, requests_mock):
         # Given
         with open(f"{IMAGES_DIR}/carte_identite_front.png", "rb") as img:
             identity_file_picture = BytesIO(img.read())
@@ -532,7 +532,7 @@ class DownloadUbbleDocumentPictureTest:
         # When
         ubble_subscription_api._download_and_store_ubble_picture(self.fraud_check, self.picture_path, "front")
 
-        assert mock_s3_client.return_value.upload_file.call_count == 1
+        assert mocked_storage_client.return_value.upload_file.call_count == 1
 
 
 @pytest.mark.usefixtures("db_session")
@@ -599,8 +599,8 @@ class ArchiveUbbleUserIdPicturesTest:
         db.session.refresh(fraud_check)
         assert fraud_check.idPicturesStored is False
 
-    @patch("pcapi.connectors.beneficiaries.outscale.boto3.client")
-    def test_archive_ubble_user_id_pictures_only_front_saved(self, mock_s3_client, ubble_mocker, requests_mock):
+    @patch("botocore.session.Session.create_client")
+    def test_archive_ubble_user_id_pictures_only_front_saved(self, mocked_storage_client, ubble_mocker, requests_mock):
         # Given
         fraud_check = BeneficiaryFraudCheckFactory(status=FraudCheckStatus.OK, type=FraudCheckType.UBBLE)
 
@@ -638,10 +638,10 @@ class ArchiveUbbleUserIdPicturesTest:
         # Then
         assert exc_info.value.is_retryable is True
         assert fraud_check.idPicturesStored is False
-        assert mock_s3_client.return_value.upload_file.call_count == 1
+        assert mocked_storage_client.return_value.upload_file.call_count == 1
 
-    @patch("pcapi.connectors.beneficiaries.outscale.boto3.client")
-    def test_archive_ubble_user_id_pictures_both_files_saved(self, mock_s3_client, ubble_mocker, requests_mock):
+    @patch("botocore.session.Session.create_client")
+    def test_archive_ubble_user_id_pictures_both_files_saved(self, mocked_storage_client, ubble_mocker, requests_mock):
         # Given
         fraud_check = BeneficiaryFraudCheckFactory(status=FraudCheckStatus.OK, type=FraudCheckType.UBBLE)
 
@@ -689,10 +689,12 @@ class ArchiveUbbleUserIdPicturesTest:
         # Then
         db.session.refresh(fraud_check)
         assert fraud_check.idPicturesStored is expected_id_pictures_stored
-        assert mock_s3_client.return_value.upload_file.call_count == 2
+        assert mocked_storage_client.return_value.upload_file.call_count == 2
 
-    @patch("pcapi.connectors.beneficiaries.outscale.boto3.client")
-    def test_archive_ubble_user_id_pictures_all_expected_files_saved(self, mock_s3_client, ubble_mocker, requests_mock):
+    @patch("botocore.session.Session.create_client")
+    def test_archive_ubble_user_id_pictures_all_expected_files_saved(
+        self, mocked_storage_client, ubble_mocker, requests_mock
+    ):
         # Given
         fraud_check = BeneficiaryFraudCheckFactory(status=FraudCheckStatus.OK, type=FraudCheckType.UBBLE)
 
@@ -732,7 +734,7 @@ class ArchiveUbbleUserIdPicturesTest:
         # Then
         db.session.refresh(fraud_check)
         assert fraud_check.idPicturesStored is expected_id_pictures_stored
-        assert mock_s3_client.return_value.upload_file.call_count == 1
+        assert mocked_storage_client.return_value.upload_file.call_count == 1
 
 
 @pytest.mark.usefixtures("db_session")
