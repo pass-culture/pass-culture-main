@@ -27,7 +27,7 @@ class EditVenueForm(EditVirtualVenueForm):
         "Nom d'usage",
         validators=(wtforms.validators.Length(max=255, message="doit contenir moins de %(max)d caractères"),),
     )
-    siret = fields.PCOptStringField("siret")
+    siret = fields.PCOptStringField("siret", filters=(utils.sanitize_pc_string,))
     postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
         "Adresse",
         address="address",
@@ -71,23 +71,20 @@ class EditVenueForm(EditVirtualVenueForm):
         self._fields.move_to_end("is_permanent")
 
     def validate_siret(self, siret: fields.PCStringField) -> fields.PCStringField:
-        siret.data = siret.data.strip()
-        if not siret.data:
-            siret.data = None
-            return siret
+        if siret.data:
+            if len(siret.data) != 14:
+                raise validators.ValidationError("Un siret doit comporter 14 chiffres")
 
-        if len(siret.data) != 14:
-            raise validators.ValidationError("Un siret doit comporter 14 chiffres")
+            try:
+                int(siret.data)
+            except (ValueError, TypeError):
+                raise validators.ValidationError("Un siret doit comporter 14 chiffres")
 
-        try:
-            int(siret.data)
-        except (ValueError, TypeError):
-            raise validators.ValidationError("Un siret doit comporter 14 chiffres")
+            if siret.data[:9] != self.venue.managingOfferer.siren:
+                raise validators.ValidationError(
+                    "Les 9 premiers caractères du SIRET doivent correspondre au SIREN de la structure"
+                )
 
-        if siret.data[:9] != self.venue.managingOfferer.siren:
-            raise validators.ValidationError(
-                "Les 9 premiers caractères du SIRET doivent correspondre au SIREN de la structure"
-            )
         return siret
 
 
