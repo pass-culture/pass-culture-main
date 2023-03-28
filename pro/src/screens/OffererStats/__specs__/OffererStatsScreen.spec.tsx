@@ -92,7 +92,7 @@ describe('OffererStatsScreen', () => {
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
-    const virtualVenueOption = screen.getByText('Offre numérique')
+    const virtualVenueOption = await screen.findByText('Offre numérique')
     const venueOption = screen.getByText('Salle 1')
     expect(virtualVenueOption).toBeInTheDocument()
     expect(venueOption).toBeInTheDocument()
@@ -104,8 +104,8 @@ describe('OffererStatsScreen', () => {
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
+    const venueOption = await screen.findByText('Salle 1')
     const virtualVenueOption = screen.queryByText('Offre numérique')
-    const venueOption = screen.getByText('Salle 1')
     expect(virtualVenueOption).not.toBeInTheDocument()
     expect(venueOption).toBeInTheDocument()
   })
@@ -142,7 +142,7 @@ describe('OffererStatsScreen', () => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
 
-    const venueSelect = screen.getByLabelText('Lieu')
+    const venueSelect = await screen.findByLabelText('Lieu')
     await userEvent.selectOptions(venueSelect, 'V1')
     const iframe = screen.getByTitle('Tableau des statistiques')
     expect(iframe).toBeInTheDocument()
