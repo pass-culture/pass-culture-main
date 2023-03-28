@@ -10,7 +10,7 @@ export const buildInitialValues = (
     return STOCK_THING_FORM_DEFAULT_VALUES
   }
   return {
-    stockId: offer.stocks[0].id,
+    stockId: offer.stocks[0].nonHumanizedId,
     remainingQuantity:
       offer.stocks[0].remainingQuantity?.toString() || 'unlimited',
     bookingsQuantity: offer.stocks[0].bookingsQuantity.toString(),

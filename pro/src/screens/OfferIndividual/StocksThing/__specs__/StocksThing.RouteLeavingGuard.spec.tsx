@@ -215,6 +215,7 @@ describe('screens:StocksThing', () => {
     })
     const stock = {
       id: 'STOCK_ID',
+      nonHumanizedId: 1,
       quantity: 10,
       price: 17.11,
       remainingQuantity: 6,

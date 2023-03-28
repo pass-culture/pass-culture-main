@@ -109,6 +109,7 @@ describe('screens:StocksThing', () => {
   beforeEach(() => {
     offer = {
       id: 'OFFER_ID',
+      nonHumanizedId: 1,
       venue: {
         departmentCode: '75',
       } as IOfferIndividualVenue,
@@ -225,7 +226,7 @@ describe('screens:StocksThing', () => {
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })
 
-  it('should submit stock form when click on "Étape suivante""', async () => {
+  it('should submit stock form when click on "Étape suivante"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
@@ -244,7 +245,7 @@ describe('screens:StocksThing', () => {
       ).toBeInTheDocument()
     })
     expect(api.upsertStocks).toHaveBeenCalledWith({
-      humanizedOfferId: 'OFFER_ID',
+      offerId: offer.nonHumanizedId,
       stocks: [
         {
           bookingLimitDatetime: null,
@@ -363,7 +364,7 @@ describe('screens:StocksThing', () => {
       expect(expirationInput).toHaveValue(date.toLocaleDateString('en-GB'))
       await userEvent.click(screen.getByText('Étape suivante'))
       expect(api.upsertStocks).toHaveBeenCalledWith({
-        humanizedOfferId: 'OFFER_ID',
+        offerId: offer.nonHumanizedId,
         stocks: [
           {
             bookingLimitDatetime: null,

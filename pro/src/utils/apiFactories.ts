@@ -162,9 +162,11 @@ export const offererFactory = (
 }
 
 export const stockFactory = (customStock = {}): GetOfferStockResponseModel => {
+  const id = stockId++
   return {
     bookingsQuantity: 0,
-    id: `STOCK${stockId++}`,
+    id: `STOCK${id}`,
+    nonHumanizedId: id,
     offerId: `OFFER${offerId}`,
     price: 10,
     quantity: null,

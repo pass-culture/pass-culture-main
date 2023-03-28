@@ -13,7 +13,6 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.human_ids import dehumanize_or_raise
 
 
 logger = logging.getLogger(__name__)
@@ -79,7 +78,7 @@ class StockCreationBodyModel(BaseModel):
 class StockEditionBodyModel(BaseModel):
     beginning_datetime: datetime | None
     booking_limit_datetime: datetime | None
-    humanized_id: str
+    id: int
     price: decimal.Decimal | None
     price_category_id: int | None
     quantity: int | None
@@ -87,10 +86,6 @@ class StockEditionBodyModel(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
-
-    @property
-    def id(self) -> int:
-        return dehumanize_or_raise(self.humanized_id)
 
 
 class StockIdResponseModel(BaseModel):

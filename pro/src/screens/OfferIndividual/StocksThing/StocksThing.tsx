@@ -186,7 +186,6 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       /* istanbul ignore next */
       setIsSubmittingDraft(saveDraft)
       setAfterSubmitUrl(nextStepUrl)
-
       const hasSavedStock = formik.values.stockId !== undefined
       if (hasSavedStock && !formik.dirty) {
         if (!saveDraft) {

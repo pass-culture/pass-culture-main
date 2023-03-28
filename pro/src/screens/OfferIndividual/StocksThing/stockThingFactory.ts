@@ -4,7 +4,7 @@ import { IStockThingFormValues } from './types'
 export const stockThingFactory = (
   customStockThing: Partial<IStockThingFormValues> = {}
 ): IStockThingFormValues => ({
-  stockId: 'AA',
+  stockId: 1,
   remainingQuantity: '10',
   bookingsQuantity: '1',
   quantity: 9,

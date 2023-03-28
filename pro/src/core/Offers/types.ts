@@ -106,6 +106,7 @@ export interface IOfferIndividualStock {
   isEventDeletable: boolean
   isEventExpired: boolean
   isSoftDeleted: boolean
+  nonHumanizedId: number
   offerId: string
   price: number
   priceCategoryId?: number | null
