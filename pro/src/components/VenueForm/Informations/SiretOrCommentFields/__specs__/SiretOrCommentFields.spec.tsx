@@ -4,15 +4,15 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { IVenueFormValues } from 'components/VenueForm'
+import * as siretApiValidate from 'core/Venue/siretApiValidate'
 import { SubmitButton } from 'ui-kit'
-import * as siretApiValidate from 'ui-kit/form_rff/fields/SiretField/validators/siretApiValidate'
 
 import SiretOrCommentFields, {
   SiretOrCommentInterface,
 } from '../SiretOrCommentFields'
 import generateSiretValidationSchema from '../validationSchema'
 
-jest.mock('ui-kit/form_rff/fields/SiretField/validators/siretApiValidate')
+jest.mock('core/Venue/siretApiValidate')
 
 jest.mock('apiClient/api', () => ({
   api: {
