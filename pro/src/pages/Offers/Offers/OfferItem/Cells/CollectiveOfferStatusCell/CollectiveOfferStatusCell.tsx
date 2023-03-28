@@ -76,7 +76,7 @@ export const getCollectiveStatusLabel = (
         />
       )
     case OfferStatus.EXPIRED:
-      return lastBookingStatus ? (
+      return lastBookingStatus && lastBookingStatus != 'CANCELLED' ? (
         <CollectiveStatusLabel
           className={style['status-ended']}
           icon={<StatusEndedIcon className={style['status-label-icon']} />}
