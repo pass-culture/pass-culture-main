@@ -471,14 +471,14 @@ class UpdateVenueTest:
     def _get_current_data(self, venue: offerers_models.Venue) -> dict:
         return {
             "tags": [criteria.id for criteria in venue.criteria],
-            "name": venue.name,
-            "public_name": venue.publicName,
-            "siret": venue.siret,
-            "city": venue.city,
-            "postal_code": venue.postalCode,
-            "address": venue.address,
-            "booking_email": venue.bookingEmail,
-            "phone_number": venue.contact.phone_number,
+            "name": venue.name or "",
+            "public_name": venue.publicName or "",
+            "siret": venue.siret or "",
+            "city": venue.city or "",
+            "postal_code": venue.postalCode or "",
+            "address": venue.address or "",
+            "booking_email": venue.bookingEmail or "",
+            "phone_number": venue.contact.phone_number or "",
             "longitude": venue.longitude,
             "latitude": venue.latitude,
         }
@@ -659,6 +659,7 @@ class UpdateVenueTest:
         }
 
     def test_update_venue_without_siret(self, authenticated_client, offerer):
+        offerers_factories.VenueFactory(siret="", comment="other venue without siret")
         venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
 
         url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
@@ -688,12 +689,13 @@ class UpdateVenueTest:
             response.data
         )
 
-    def test_update_venue_remove_siret(self, authenticated_client, offerer):
+    @pytest.mark.parametrize("siret", ["", " "])
+    def test_update_venue_remove_siret(self, authenticated_client, offerer, siret):
         venue = offerers_factories.VenueFactory()
 
         url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = self._get_current_data(venue)
-        data["siret"] = " "
+        data["siret"] = siret
 
         response = send_request(authenticated_client, venue.id, url, data)
 
@@ -703,6 +705,18 @@ class UpdateVenueTest:
         assert "Vous ne pouvez pas retirer le SIRET d'un lieu. Contactez le support pro." in html_parser.extract_alert(
             response.data
         )
+
+    @pytest.mark.parametrize("siret", ["1234567891234", "123456789123456", "123456789ABCDE", "11122233300001"])
+    def test_update_venue_invalid_siret(self, authenticated_client, offerer, siret):
+        venue = offerers_factories.VenueFactory(siret="12345678900001", managingOfferer__siren="123456789")
+
+        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
+        data = self._get_current_data(venue)
+        data["siret"] = " "
+
+        response = send_request(authenticated_client, venue.id, url, data)
+
+        assert response.status_code == 400
 
 
 def send_request(authenticated_client, venue_id, url, form_data=None):
