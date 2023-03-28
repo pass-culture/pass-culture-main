@@ -2,6 +2,7 @@ from flask import request
 import sqlalchemy as sa
 
 from pcapi.core.criteria import models as criteria_models
+from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -160,4 +161,40 @@ def autocomplete_criteria() -> AutocompleteResponse:
 
     return AutocompleteResponse(
         items=[AutocompleteItem(id=criterion.id, text=_get_criterion_choice_label(criterion)) for criterion in criteria]
+    )
+
+
+def _get_cashflow_batches_base_query() -> sa.orm.Query:
+    return finance_models.CashflowBatch.query.options(
+        sa.orm.load_only(
+            finance_models.CashflowBatch.id,
+            finance_models.CashflowBatch.label,
+        )
+    )
+
+
+def prefill_cashflow_batch_choices(autocomplete_field: fields.PCAutocompleteSelectMultipleField) -> None:
+    if autocomplete_field.data:
+        cashflow_batches = (
+            _get_cashflow_batches_base_query()
+            .filter(finance_models.CashflowBatch.id.in_(autocomplete_field.data))
+            .order_by(finance_models.CashflowBatch.label)
+        )
+        autocomplete_field.choices = [(cashflow_batch.id, cashflow_batch.label) for cashflow_batch in cashflow_batches]
+
+
+@blueprint.backoffice_v3_web.route("/autocomplete/cashflow-batches", methods=["GET"])
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_v3_web_schema)
+def autocomplete_cashflow_batches() -> AutocompleteResponse:
+    query_string = request.args.get("q", "").strip()
+
+    if len(query_string) < 2:
+        return AutocompleteResponse(items=[])
+
+    filters = finance_models.CashflowBatch.label.ilike(f"%{query_string}%")
+
+    cashflow_batches = _get_cashflow_batches_base_query().filter(filters).limit(NUM_RESULTS)
+
+    return AutocompleteResponse(
+        items=[AutocompleteItem(id=cashflow_batch.id, text=cashflow_batch.label) for cashflow_batch in cashflow_batches]
     )

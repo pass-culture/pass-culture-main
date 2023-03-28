@@ -26,6 +26,9 @@ class GetIndividualBookingListForm(FlaskForm):
     status = fields.PCSelectMultipleField(
         "États", choices=utils.choices_from_enum(BookingStatus, formatter=filters.format_booking_status)
     )
+    cashflow_batches = fields.PCAutocompleteSelectMultipleField(
+        "Virements", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_cashflow_batches"
+    )
     from_date = fields.PCDateField("Créées à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Créées jusqu'au", validators=(wtforms.validators.Optional(),))
     event_from_date = fields.PCDateField("Événement du", validators=(wtforms.validators.Optional(),))
@@ -55,5 +58,6 @@ class GetIndividualBookingListForm(FlaskForm):
                 self.to_date.data,
                 self.event_from_date.data,
                 self.event_to_date.data,
+                self.cashflow_batches.data,
             )
         )
