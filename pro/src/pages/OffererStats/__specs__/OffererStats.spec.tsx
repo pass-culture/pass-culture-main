@@ -83,7 +83,7 @@ describe('OffererStatsScreen', () => {
     await waitFor(() => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     })
-    const offererOption = screen.getByText('Mon super cinéma')
+    const offererOption = await screen.findByText('Mon super cinéma')
     expect(offererOption).toBeInTheDocument()
   })
 
