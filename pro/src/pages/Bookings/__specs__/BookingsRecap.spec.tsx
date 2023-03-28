@@ -815,7 +815,7 @@ describe('components | BookingsRecap | Pro user', () => {
     const downloadBookingsCsvButton = screen.getByRole('button', {
       name: 'Télécharger',
     })
-    const informationMessage = screen.queryByText(
+    const informationMessage = await screen.findByText(
       'Vous n’avez aucune réservation pour le moment'
     )
 
