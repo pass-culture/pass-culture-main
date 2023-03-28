@@ -18,7 +18,7 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { OfferIndividualWizard } from '..'
+import OfferIndividualWizard from '../OfferIndividualWizard'
 
 jest.mock('core/Notification/constants', () => ({
   NOTIFICATION_TRANSITION_DURATION: 10,
