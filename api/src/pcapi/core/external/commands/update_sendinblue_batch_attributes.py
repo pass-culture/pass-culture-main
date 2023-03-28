@@ -3,8 +3,6 @@ Fetch users from database and update their information in Batch and Sendinblue.
 Goal: some users do not have all the expected attributes, this script should
 fix this issue.
 """
-import click
-
 from pcapi.core.external import batch
 from pcapi.core.external import sendinblue
 from pcapi.core.external.attributes.api import get_user_attributes
@@ -13,10 +11,6 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.backends.batch import UserUpdateData
-from pcapi.utils.blueprint import Blueprint
-
-
-blueprint = Blueprint(__name__, __name__)
 
 
 def format_batch_users(users: list[User]) -> list[UserUpdateData]:
@@ -89,13 +83,3 @@ def update_sendinblue_batch_loop(
         print(f"===> Manually stopped, process can be resumed with --max-id={current_max_id}")
     else:
         print("Completed.")
-
-
-@blueprint.cli.command("update_sendinblue_batch")
-@click.option("--chunk-size", type=int, default=500, help="number of users to update in one query")
-@click.option("--min-id", type=int, default=0, help="minimum user id")
-@click.option("--max-id", type=int, default=0, help="maximum user id")
-@click.option("--sync-sendinblue", is_flag=True, default=False, help="synchronize Sendinblue")
-@click.option("--sync-batch", is_flag=True, default=False, help="synchronize Batch")
-def update_sendinblue_batch(chunk_size: int, min_id: int, max_id: int, sync_sendinblue: bool, sync_batch: bool) -> None:
-    update_sendinblue_batch_loop(chunk_size, min_id, max_id, sync_sendinblue, sync_batch)

@@ -1,10 +1,7 @@
 """
 Refresh all PRO attributes in Sendinblue.
-This script should be run when a new attribute is added for pro users or when its content scope is changed.
-
-Start index parameter enabled to stop and resume (emails are sorted alphabetically before processing).
+This command should be run when a new attribute is added for pro users or when its content scope is changed.
 """
-import sys
 import time
 
 from pcapi.core.external.attributes.api import get_pro_attributes
@@ -69,16 +66,3 @@ def sendinblue_update_all_pro_attributes(start_index: int = 0) -> None:
     print(f"Completed with {len(errors)} errors")
     for email in errors:
         print(f" - {email}")
-
-
-if __name__ == "__main__":
-    from flask import current_app as app
-
-    app.app_context().push()
-
-    if len(sys.argv) > 1:
-        start_from_index = int(sys.argv[1])
-    else:
-        start_from_index = 0
-
-    sendinblue_update_all_pro_attributes(start_index=start_from_index)
