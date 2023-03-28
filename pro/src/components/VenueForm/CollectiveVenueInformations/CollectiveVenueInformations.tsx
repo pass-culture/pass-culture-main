@@ -33,7 +33,8 @@ const CollectiveVenueInformations = ({
         isAcceptedOnAdage ? (
           <NewEACInformation venue={venue} isCreatingVenue={isCreatingVenue} />
         ) : (
-          <CollectiveDmsTimeline />
+          //collectiveDmsStatus = venue.collectiveDmsStatus // FIX ME : collectiveDmsStatus is not yet a property of IVenue
+          <CollectiveDmsTimeline collectiveDmsStatus="REFUSED" />
         )
       }
     </FormLayout.Section>
