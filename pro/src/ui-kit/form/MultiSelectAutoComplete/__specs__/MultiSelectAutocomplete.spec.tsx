@@ -246,7 +246,7 @@ describe('MultiSelectAutocomplete', () => {
     await userEvent.click(screen.getByLabelText('Ain'))
     await userEvent.click(screen.getByLabelText('Aisne'))
     expect(
-      screen.queryByText('Veuillez renseigner un département')
+      await screen.findByText('Veuillez renseigner un département')
     ).toBeInTheDocument()
   })
 })
