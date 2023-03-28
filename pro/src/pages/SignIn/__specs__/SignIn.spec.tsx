@@ -265,7 +265,7 @@ describe('src | components | pages | SignIn', () => {
     )
 
     expect(
-      screen.getByText('Identifiant ou mot de passe incorrect.')
+      await screen.findByText('Identifiant ou mot de passe incorrect.')
     ).toBeInTheDocument()
   })
 
@@ -300,7 +300,7 @@ describe('src | components | pages | SignIn', () => {
     )
 
     expect(
-      screen.getByText(
+      await screen.findByText(
         'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
       )
     ).toBeInTheDocument()
