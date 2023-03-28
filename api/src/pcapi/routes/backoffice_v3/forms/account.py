@@ -8,12 +8,12 @@ from . import utils
 
 
 class EditAccountForm(utils.PCForm):
-    first_name = fields.PCOptStringField("Prénom", filters=(utils.sanitize_pc_string,))
-    last_name = fields.PCOptStringField("Nom", filters=(utils.sanitize_pc_string,))
+    first_name = fields.PCOptStringField("Prénom")
+    last_name = fields.PCOptStringField("Nom")
     email = fields.PCEmailField("Email")
     birth_date = fields.PCDateField("Date de naissance")
-    phone_number = fields.PCOptStringField("Numéro de téléphone", filters=(utils.sanitize_pc_string,))
-    id_piece_number = fields.PCOptStringField("N° pièce d'identité", filters=(utils.sanitize_pc_string,))
+    phone_number = fields.PCOptStringField("Numéro de téléphone")
+    id_piece_number = fields.PCOptStringField("N° pièce d'identité")
     postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
         "Adresse",
         address="address",
@@ -26,9 +26,9 @@ class EditAccountForm(utils.PCForm):
         has_manual_editing=True,
         limit=10,
     )
-    address = fields.PCOptHiddenField("Adresse", filters=(utils.sanitize_pc_string,))
-    postal_code = fields.PCOptPostalCodeHiddenField("Code postal", filters=(utils.sanitize_pc_string,))
-    city = fields.PCOptHiddenField("Ville", filters=(utils.sanitize_pc_string,))
+    address = fields.PCOptHiddenField("Adresse")
+    postal_code = fields.PCOptPostalCodeHiddenField("Code postal")
+    city = fields.PCOptHiddenField("Ville")
 
 
 class ManualReviewForm(FlaskForm):

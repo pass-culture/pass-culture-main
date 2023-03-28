@@ -38,11 +38,6 @@ class GetIndividualBookingListForm(FlaskForm):
         validators=(wtforms.validators.Optional(),),
     )
 
-    def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
-        if q.data:
-            q.data = q.data.strip()
-        return q
-
     def is_empty(self) -> bool:
         return not any(
             (
