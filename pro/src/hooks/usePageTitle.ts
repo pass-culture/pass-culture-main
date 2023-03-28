@@ -3,13 +3,17 @@ import { useEffect } from 'react'
 import { matchPath, useLocation } from 'react-router-dom'
 
 import { routesDefinitions, RouteDefinition } from 'app/AppRouter/routes_map'
+import { subroutesDefinitions } from 'app/AppRouter/subroutes_map'
 
 const usePageTitle = (): LocationListener | void => {
   const location = useLocation()
 
   useEffect(() => {
-    // @ts-expect-error Property findLast does not exist on RouteDefinition[]
-    const currentRoute = routesDefinitions.findLast(
+    const currentRoute = [
+      ...routesDefinitions,
+      ...subroutesDefinitions,
+      // @ts-expect-error Property findLast does not exist on RouteDefinition[]
+    ].findLast(
       ({ path, parentPath }: RouteDefinition) =>
         matchPath(`${parentPath || ''}${path}`, location.pathname) !== null
     )
