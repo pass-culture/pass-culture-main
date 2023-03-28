@@ -15,6 +15,17 @@ def widget(field: wtforms.Field, template: str, *args: typing.Any, **kwargs: typ
     return render_template(template, field=field)
 
 
+def sanitize_pc_string(value: str | None) -> str | None:
+    """
+    Strips leading whitespaces and avoids empty strings in database.
+    """
+    if isinstance(value, str):
+        value = value.strip()
+        if not value:
+            return None
+    return value
+
+
 class PostalCodeValidator:
     def __init__(self, message: str) -> None:
         self.message = message
@@ -30,6 +41,9 @@ class PCOptStringField(wtforms.StringField):
         validators.Optional(""),
         validators.Length(max=64, message="doit contenir au maximum %(max)d caractères"),
     ]
+
+    def __init__(self, label: str | None = None, **kwargs: typing.Any):
+        super().__init__(label, filters=(sanitize_pc_string,), **kwargs)
 
 
 class PCStringField(PCOptStringField):
@@ -184,6 +198,9 @@ class PCQuerySelectMultipleField(wtforms_sqlalchemy.fields.QuerySelectMultipleFi
 class PCOptSearchField(wtforms.StringField):
     widget = partial(widget, template="components/forms/search_field.html")
     validators = [validators.Optional()]
+
+    def __init__(self, label: str | None = None, **kwargs: typing.Any):
+        super().__init__(label, filters=(sanitize_pc_string,), **kwargs)
 
 
 class PCSearchField(PCOptSearchField):
