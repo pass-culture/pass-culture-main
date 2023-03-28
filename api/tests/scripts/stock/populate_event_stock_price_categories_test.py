@@ -117,7 +117,7 @@ def test_populate_event_stock_price_categories():
         priceCategory=price_category_3b_second,
     )
 
-    populate_event_stock_price_categories.populate_event_stock_price_categories()
+    populate_event_stock_price_categories.populate_event_stock_price_categories(creation_date=None)
 
     # case 1a
     price_categories_1a = sorted(event_1a.priceCategories, key=lambda d: d.price)
