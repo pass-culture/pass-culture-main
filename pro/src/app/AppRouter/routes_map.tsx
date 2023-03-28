@@ -1,5 +1,6 @@
 /* No need to test this file */
 /* istanbul ignore file */
+import React from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 
 import AdageIframe from 'pages/AdageIframe/AdageIframe'
@@ -38,7 +39,6 @@ import { VenueCreation } from 'pages/VenueCreation'
 import { VenueEdition } from 'pages/VenueEdition'
 import CollectiveOfferSelectionDuplication from 'screens/CollectiveOfferSelectionDuplication'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
-
 export interface ILayoutConfig {
   pageName?: string
   fullscreen?: boolean
@@ -51,10 +51,13 @@ interface IRouteMeta {
   shouldRedirect?: boolean
 }
 
-export interface IRoute {
-  element: JSX.Element
+export interface RouteDefinition {
   path: string
   title?: string
+}
+
+export interface IRoute extends RouteDefinition {
+  element: JSX.Element
   meta?: IRouteMeta
   featureName?: string
 }
@@ -167,30 +170,30 @@ const routes: IRoute[] = [
   {
     element: <OffererCreation />,
     path: '/structures/creation',
-    title: 'Structures',
+    title: 'Vos structures juridiques',
   },
   {
     element: <OffererDetails />,
     path: '/structures/:offererId',
-    title: 'Structures',
+    title: 'Vos structures juridiques',
     meta: { shouldRedirect: true },
   },
   {
     element: <VenueCreation />,
     path: '/structures/:offererId/lieux/creation',
-    title: 'Structures',
+    title: 'Création d’un lieu',
     meta: { shouldRedirect: true },
   },
   {
     element: <VenueEdition />,
     path: '/structures/:offererId/lieux/:venueId',
-    title: 'Structures',
+    title: 'Edition d’un lieu',
     meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveDataEdition />,
     path: '/structures/:offererId/lieux/:venueId/eac',
-    title: 'Structures',
+    title: 'Mes informations pour les enseignants',
   },
   {
     element: <OfferType />,
@@ -200,13 +203,13 @@ const routes: IRoute[] = [
   {
     element: <OffersRoute />,
     path: '/offres',
-    title: 'Offres',
+    title: 'Vos offres',
     meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveOffers />,
     path: '/offres/collectives',
-    title: 'Offres',
+    title: 'Vos offres collectives',
   },
   {
     element: <CollectiveOfferSelectionDuplication />,
@@ -300,7 +303,7 @@ const routes: IRoute[] = [
   {
     element: <Reimbursements />,
     path: '/remboursements/*',
-    title: 'Remboursements',
+    title: 'Vos remboursements',
     meta: {
       layoutConfig: {
         pageName: 'reimbursements',
@@ -326,5 +329,9 @@ const routes: IRoute[] = [
     meta: { withoutLayout: true },
   },
 ]
+
+export const routesDefinitions: RouteDefinition[] = routes.map(route => {
+  return { path: route.path, title: route.title }
+})
 
 export default routes
