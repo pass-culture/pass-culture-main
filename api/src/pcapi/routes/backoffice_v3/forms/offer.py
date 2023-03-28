@@ -64,13 +64,12 @@ class GetOffersListForm(FlaskForm):
 
     def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
         if q.data:
-            q.data = q.data.strip()
-        if self.where.data == OfferSearchColumn.ID.name and not re.match(r"^[\d\s,;]+$", q.data):
-            raise wtforms.validators.ValidationError("La recherche ne correspond pas à un ID ou une liste d'ID")
-        if self.where.data == OfferSearchColumn.ISBN.name and not bo_utils.is_isbn_valid(q.data):
-            raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un ISBN")
-        if self.where.data == OfferSearchColumn.VISA.name and not bo_utils.is_visa_valid(q.data):
-            raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un visa")
+            if self.where.data == OfferSearchColumn.ID.name and not re.match(r"^[\d\s,;]+$", q.data):
+                raise wtforms.validators.ValidationError("La recherche ne correspond pas à un ID ou une liste d'ID")
+            if self.where.data == OfferSearchColumn.ISBN.name and not bo_utils.is_isbn_valid(q.data):
+                raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un ISBN")
+            if self.where.data == OfferSearchColumn.VISA.name and not bo_utils.is_visa_valid(q.data):
+                raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un visa")
         return q
 
     def is_empty(self) -> bool:

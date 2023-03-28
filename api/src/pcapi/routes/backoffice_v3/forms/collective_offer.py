@@ -39,11 +39,6 @@ class GetCollectiveOffersListForm(FlaskForm):
     only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les offres des structures validées")
     sort = fields.PCHiddenBooleanField("Trier par date")
 
-    def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
-        if q.data:
-            q.data = q.data.strip()
-        return q
-
     def is_empty(self) -> bool:
         # 'only_validated_offerers' must be combined with other filters
         return not any(
