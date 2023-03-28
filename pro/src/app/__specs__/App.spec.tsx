@@ -15,6 +15,7 @@ jest.mock('hooks/useAnalytics', () => ({
 window.scrollTo = jest.fn()
 
 jest.mock('hooks/useLogNavigation', () => jest.fn())
+jest.mock('hooks/usePageTitle', () => jest.fn())
 
 const renderApp = (storeOverrides: any, url = '/') =>
   renderWithProviders(
