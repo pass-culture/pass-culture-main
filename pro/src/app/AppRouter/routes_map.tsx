@@ -28,6 +28,11 @@ import CollectiveDataEdition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/C
 import OffererCreation from 'pages/Offerers/OffererCreation'
 import { OffererStats } from 'pages/OffererStats'
 import { OfferIndividualWizard } from 'pages/OfferIndividualWizard'
+import { Confirmation } from 'pages/OfferIndividualWizard/Confirmation'
+import { Offer } from 'pages/OfferIndividualWizard/Offer'
+import { PriceCategories } from 'pages/OfferIndividualWizard/PriceCategories'
+import { Stocks } from 'pages/OfferIndividualWizard/Stocks'
+import { Summary } from 'pages/OfferIndividualWizard/Summary'
 import OffersRoute from 'pages/Offers'
 import OfferType from 'pages/OfferType'
 import Reimbursements from 'pages/Reimbursements'
@@ -330,7 +335,89 @@ const routes: IRoute[] = [
   },
 ]
 
-export const routesDefinitions: RouteDefinition[] = routes.map(route => {
+export const routesOfferIndividualWizard: IRoute[] = [
+  {
+    element: <Offer />,
+    path: '/informations',
+    title: 'Détails de l’offre',
+  },
+  {
+    element: <Offer />,
+    path: '/creation/informations',
+    title: 'Détails de l’offre',
+  },
+  {
+    element: <Offer />,
+    path: '/brouillon/informations',
+    title: 'Détails de l’offre',
+  },
+  {
+    element: <PriceCategories />,
+    path: '/creation/tarifs',
+    title: 'Vos tarifs',
+  },
+  {
+    element: <PriceCategories />,
+    path: '/brouillon/tarifs',
+    title: 'Vos tarifs',
+  },
+  {
+    element: <PriceCategories />,
+    path: '/tarifs',
+    title: 'Vos tarifs',
+  },
+  {
+    element: <Stocks />,
+    path: '/creation/stocks',
+    title: 'Vos stocks',
+  },
+  {
+    element: <Stocks />,
+    path: '/brouillon/stocks',
+    title: 'Vos stocks',
+  },
+  {
+    element: <Stocks />,
+    path: '/stocks',
+    title: 'Vos stocks',
+  },
+  {
+    element: <Summary />,
+    path: '/creation/recapitulatif',
+
+    title: 'Récapitulatif',
+  },
+  {
+    element: <Summary />,
+    path: '/brouillon/recapitulatif',
+    title: 'Récapitulatif',
+  },
+  {
+    element: <Summary />,
+    path: '/recapitulatif',
+    title: 'Récapitulatif',
+  },
+  {
+    element: <Confirmation />,
+    path: '/creation/confirmation',
+    title: 'Confirmation',
+  },
+  {
+    element: <Confirmation />,
+    path: '/brouillon/confirmation',
+    title: 'Confirmation',
+  },
+  {
+    element: <Confirmation />,
+    path: '/confirmation',
+    title: 'Confirmation',
+  },
+]
+
+export const routesDefinitions: RouteDefinition[] = [
+  ...routes,
+  ...routesOfferIndividualWizard,
+].map(route => {
   return { path: route.path, title: route.title }
 })
 
