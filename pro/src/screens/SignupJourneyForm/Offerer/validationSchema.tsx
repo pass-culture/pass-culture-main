@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
 import { valideSiretLength } from 'components/VenueForm/Informations/SiretOrCommentFields/validationSchema'
-import siretApiValidate from 'ui-kit/form_rff/fields/SiretField/validators/siretApiValidate'
+import siretApiValidate from 'core/Venue/siretApiValidate'
 
 export const validationSchema = yup.object().shape({
   siret: yup
