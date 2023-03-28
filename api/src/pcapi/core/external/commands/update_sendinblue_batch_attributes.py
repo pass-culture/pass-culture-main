@@ -3,6 +3,10 @@ Fetch users from database and update their information in Batch and Sendinblue.
 Goal: some users do not have all the expected attributes, this script should
 fix this issue.
 """
+import time
+
+import urllib3.exceptions
+
 from pcapi.core.external import batch
 from pcapi.core.external import sendinblue
 from pcapi.core.external.attributes.api import get_user_attributes
@@ -47,12 +51,25 @@ def _run_iteration(min_user_id: int, max_user_id: int, synchronize_batch: bool, 
         .filter(User.has_admin_role.is_(False))  # type: ignore [attr-defined]
         .all()
     )
-    if synchronize_batch:
-        batch_users_data = format_batch_users(chunk)
-        update_users_attributes(batch_users_data)
-    if synchronize_sendinblue:
-        sendinblue_users_data = format_sendinblue_users(chunk)
-        sendinblue.import_contacts_in_sendinblue(sendinblue_users_data)
+
+    retries = 3
+    while retries > 0:
+        retries -= 1
+        try:
+            if synchronize_batch:
+                batch_users_data = format_batch_users(chunk)
+                update_users_attributes(batch_users_data)
+            if synchronize_sendinblue:
+                sendinblue_users_data = format_sendinblue_users(chunk)
+                sendinblue.import_contacts_in_sendinblue(sendinblue_users_data)
+        except (TimeoutError, urllib3.exceptions.TimeoutError) as exc:
+            if retries == 0:
+                raise
+            print("A timeout exception occurred: %s", exc)
+            print("Retry after 30 seconds...")
+            time.sleep(30)
+        else:
+            break
 
     print(f"{len(chunk)} users updated")
 
