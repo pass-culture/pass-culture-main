@@ -8,9 +8,10 @@ const usePageTitle = (): LocationListener | void => {
   const location = useLocation()
 
   useEffect(() => {
-    const currentRoute = routesDefinitions.find(
-      (route: RouteDefinition) =>
-        matchPath(location.pathname, route.path) !== null
+    // @ts-expect-error Property findLast does not exist on RouteDefinition[]
+    const currentRoute = routesDefinitions.findLast(
+      ({ path, parentPath }: RouteDefinition) =>
+        matchPath(`${parentPath || ''}${path}`, location.pathname) !== null
     )
 
     document.title = currentRoute
