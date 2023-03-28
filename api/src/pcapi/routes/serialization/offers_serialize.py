@@ -293,6 +293,7 @@ class GetOfferStockResponseModel(BaseModel):
     isEventExpired: bool
     isSoftDeleted: bool
     lastProviderId: str | None
+    nonHumanizedId: int
     offerId: str
     price: float
     priceCategoryId: int | None

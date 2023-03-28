@@ -62,6 +62,7 @@ export const serializeStockApi = (
     dateCreated: new Date(apiStock.dateCreated),
     hasActivationCode: apiStock.hasActivationCode,
     id: apiStock.id,
+    nonHumanizedId: apiStock.nonHumanizedId,
     isEventDeletable: apiStock.isEventDeletable,
     isEventExpired: apiStock.isEventExpired,
     isSoftDeleted: apiStock.isSoftDeleted,

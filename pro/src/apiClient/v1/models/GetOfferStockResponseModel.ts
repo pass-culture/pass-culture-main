@@ -20,6 +20,7 @@ export type GetOfferStockResponseModel = {
   isEventExpired: boolean;
   isSoftDeleted: boolean;
   lastProviderId?: string | null;
+  nonHumanizedId: number;
   offerId: string;
   price: number;
   priceCategoryId?: number | null;

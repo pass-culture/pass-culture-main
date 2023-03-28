@@ -74,7 +74,7 @@ describe('screens::StockEvent::serializers:serializeStockEventEdition', () => {
 
   it('should serialize data for stock event edition', async () => {
     const expectedApiStockEvent: StockEditionBodyModel = {
-      humanizedId: 'STOCK_ID',
+      id: 1,
       beginningDatetime: '2022-10-11T13:00:00Z',
       bookingLimitDatetime: '2022-10-10T21:59:59Z',
       price: null,
@@ -86,7 +86,7 @@ describe('screens::StockEvent::serializers:serializeStockEventEdition', () => {
       [
         ...formValuesList.map((formValues: IStockEventFormValues) => ({
           ...formValues,
-          stockId: 'STOCK_ID',
+          stockId: 1,
           beginningDate: new Date('2022-10-11T00:00:00.0200'),
           beginningTime: new Date('2022-10-11T15:00:00.0200'),
           bookingLimitDatetime: new Date('2022-10-10T00:00:00'),

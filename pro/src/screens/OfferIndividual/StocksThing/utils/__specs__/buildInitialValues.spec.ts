@@ -19,6 +19,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
     offer.stocks = [
       {
         id: 'STOCK_ID',
+        nonHumanizedId: 1,
         remainingQuantity: 10,
         bookingsQuantity: 20,
         quantity: 40,
@@ -28,7 +29,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
     ]
     const initialValues = buildInitialValues(offer)
     expect(initialValues).toEqual({
-      stockId: 'STOCK_ID',
+      stockId: 1,
       remainingQuantity: '10',
       bookingsQuantity: '20',
       quantity: 40,
@@ -43,6 +44,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
     offer.stocks = [
       {
         id: 'STOCK_ID',
+        nonHumanizedId: 1,
         bookingsQuantity: 20,
         quantity: null,
         bookingLimitDatetime: null,
@@ -53,7 +55,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
     expect(initialValues).toEqual({
       activationCodes: undefined,
       activationCodesExpirationDatetime: undefined,
-      stockId: 'STOCK_ID',
+      stockId: 1,
       remainingQuantity: 'unlimited',
       bookingsQuantity: '20',
       quantity: null,

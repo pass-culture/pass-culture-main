@@ -1596,7 +1596,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public deleteStock(
-    stockId: string,
+    stockId: number,
   ): CancelablePromise<StockIdResponseModel> {
     return this.httpRequest.request({
       method: 'DELETE',

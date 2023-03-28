@@ -17,7 +17,6 @@ from pcapi.routes.apis import private_api
 from pcapi.routes.public.books_stocks import serialization
 from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 
 from . import blueprint
@@ -118,14 +117,14 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
     )
 
 
-@private_api.route("/stocks/<stock_id>", methods=["DELETE"])
+@private_api.route("/stocks/<int:stock_id>", methods=["DELETE"])
 @login_required
 @spectree_serialize(response_model=serialization.StockIdResponseModel, api=blueprint.pro_private_schema)
-def delete_stock(stock_id: str) -> serialization.StockIdResponseModel:
+def delete_stock(stock_id: int) -> serialization.StockIdResponseModel:
     # fmt: off
     stock = (
         offers_models.Stock.queryNotSoftDeleted()
-            .filter_by(id=dehumanize(stock_id))
+            .filter_by(id=stock_id)
             .join(offers_models.Offer, Venue)
             .first_or_404()
     )

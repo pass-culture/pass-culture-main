@@ -69,6 +69,7 @@ describe('useGetOfferIndividual', () => {
           isEventDeletable: true,
           isEventExpired: false,
           isSoftDeleted: false,
+          nonHumanizedId: 1,
           offerId: 'OFFER1',
           price: 10,
           quantity: null,

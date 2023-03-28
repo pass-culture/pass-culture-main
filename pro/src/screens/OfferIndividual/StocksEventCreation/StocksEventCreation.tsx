@@ -111,7 +111,9 @@ export const StocksEventCreation = ({
       setIsClickingFromActionBar(true)
 
       if (stocksToDelete.length > 0) {
-        await Promise.all(stocksToDelete.map(s => api.deleteStock(s.id)))
+        await Promise.all(
+          stocksToDelete.map(s => api.deleteStock(s.nonHumanizedId))
+        )
       }
 
       if (stocks.length < 1) {

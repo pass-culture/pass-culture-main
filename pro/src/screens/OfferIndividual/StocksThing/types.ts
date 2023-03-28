@@ -1,5 +1,5 @@
 export interface IStockThingFormValues {
-  stockId?: string
+  stockId?: number
   remainingQuantity: string
   bookingsQuantity: string
   quantity: number | null | ''

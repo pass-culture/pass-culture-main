@@ -223,7 +223,7 @@ describe('screens:StocksEventEdition', () => {
       screen.getByRole('button', { name: 'Étape suivante' })
     )
     expect(api.upsertStocks).toHaveBeenCalledWith({
-      humanizedOfferId: 'OFFER_ID',
+      offerId: 5,
       stocks: [
         {
           beginningDatetime: '2020-12-25T11:00:00Z',

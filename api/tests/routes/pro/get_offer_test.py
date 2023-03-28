@@ -231,6 +231,7 @@ class Returns200Test:
                     "hasActivationCode": False,
                     "priceCategoryId": stock.priceCategoryId,
                     "id": humanize(stock.id),
+                    "nonHumanizedId": stock.id,
                     "idAtProviders": None,
                     "isBookable": True,
                     "isEventDeletable": True,

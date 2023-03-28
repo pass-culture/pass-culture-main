@@ -88,8 +88,10 @@ export const individualOfferFactory = (
 export const individualStockFactory = (
   customStock: Partial<IOfferIndividualStock> = {}
 ): IOfferIndividualStock => {
+  const id = stockId++
   return {
-    id: `STOCK${stockId++}`,
+    id: `STOCK${id}`,
+    nonHumanizedId: id,
     offerId: 'OFFER_ID',
     price: 100,
     beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),

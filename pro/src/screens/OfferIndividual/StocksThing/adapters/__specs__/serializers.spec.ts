@@ -50,7 +50,7 @@ describe('screens::StockThing::serializers:serializeStockThingList', () => {
 
   it('should serialize data for stock thing edition', async () => {
     const expectedApiStockThing: StockEditionBodyModel = {
-      humanizedId: 'STOCK_ID',
+      id: 1,
       bookingLimitDatetime: '2022-10-26T21:59:59Z',
       price: 10,
       quantity: 12,
@@ -58,7 +58,7 @@ describe('screens::StockThing::serializers:serializeStockThingList', () => {
 
     const serializedData = serializeStockThingList(
       {
-        stockId: 'STOCK_ID',
+        stockId: 1,
         ...formValues,
       },
       departementCode
@@ -69,7 +69,7 @@ describe('screens::StockThing::serializers:serializeStockThingList', () => {
   it('should not set null when quantity value is 0', async () => {
     const serializedData = serializeStockThingList(
       {
-        stockId: 'STOCK_ID',
+        stockId: 1,
         ...formValues,
         quantity: 0,
       },
@@ -81,7 +81,7 @@ describe('screens::StockThing::serializers:serializeStockThingList', () => {
   it('should set null when quantity field is empty', async () => {
     const serializedData = serializeStockThingList(
       {
-        stockId: 'STOCK_ID',
+        stockId: 1,
         ...formValues,
         quantity: null,
       },
@@ -94,7 +94,7 @@ describe('screens::StockThing::serializers:serializeStockThingList', () => {
   it('should set null when quantity field is ""', async () => {
     const serializedData = serializeStockThingList(
       {
-        stockId: 'STOCK_ID',
+        stockId: 1,
         ...formValues,
         quantity: '',
       },
