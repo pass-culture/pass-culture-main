@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
@@ -14,12 +14,27 @@ jest.mock('apiClient/api', () => ({
   api: { getOfferers: jest.fn() },
 }))
 
+const baseOfferer = {
+  id: 'AE',
+  siren: '1234567',
+  isValidated: true,
+  managedVenues: [],
+  userHasAccess: true,
+  nOffers: 0,
+  nonHumanizedId: 10,
+  name: 'Offre',
+}
+
 describe('src | components | Offerers', () => {
   let offerer
 
   beforeEach(() => {
-    offerer = { id: 'AE', siren: '1234567' }
-    api.getOfferers.mockResolvedValue({
+    offerer = {
+      ...baseOfferer,
+      id: 'AE',
+      siren: '1234567',
+    }
+    jest.spyOn(api, 'getOfferers').mockResolvedValue({
       offerers: [offerer],
       nbTotalResults: 1,
     })
@@ -37,10 +52,12 @@ describe('src | components | Offerers', () => {
           })
 
           // then
-
-          expect(
-            await screen.findByText('créer un nouveau lieu')
-          ).toHaveAttribute('href', '/structures/AE/lieux/creation')
+          await waitFor(() => {
+            expect(screen.getByText('créer un nouveau lieu')).toHaveAttribute(
+              'href',
+              '/structures/AE/lieux/creation'
+            )
+          })
         })
       })
 
@@ -72,10 +89,14 @@ describe('src | components | Offerers', () => {
 
       it('should display Structures juridiques when many offerers', async () => {
         // given
-        api.getOfferers.mockResolvedValue({
+        jest.spyOn(api, 'getOfferers').mockResolvedValue({
           offerers: [
-            { id: 'AE', siren: '1234567' },
-            { id: 'AF', siren: '1234568' },
+            {
+              ...baseOfferer,
+              id: 'AE',
+              siren: '1234567',
+            },
+            { ...baseOfferer, id: 'AF', siren: '1234568' },
           ],
           nbTotalResults: 2,
         })
@@ -96,13 +117,14 @@ describe('src | components | Offerers', () => {
         it('should render an active offerer item in the list for each activated offerer', async () => {
           // given
           const offerer = {
+            ...baseOfferer,
             id: 'B2',
             isValidated: true,
             userHasAccess: true,
             name: 'My Offerer',
             managedVenues: [],
           }
-          api.getOfferers.mockResolvedValue({
+          jest.spyOn(api, 'getOfferers').mockResolvedValue({
             offerers: [offerer],
             nbTotalResults: 1,
           })
@@ -121,12 +143,13 @@ describe('src | components | Offerers', () => {
           it('should render a pending offerer item', async () => {
             // given
             const offerer = {
+              ...baseOfferer,
               id: 'B2',
               siren: '1431',
               isValidated: false,
               userHasAccess: true,
             }
-            api.getOfferers.mockResolvedValue({
+            jest.spyOn(api, 'getOfferers').mockResolvedValue({
               offerers: [offerer],
               nbTotalResults: 1,
             })
@@ -146,12 +169,13 @@ describe('src | components | Offerers', () => {
           it('should render a pending offerer item', async () => {
             // given
             const offerer = {
+              ...baseOfferer,
               id: 'B2',
               siren: '1431',
               isValidated: true,
               userHasAccess: false,
             }
-            api.getOfferers.mockResolvedValue({
+            jest.spyOn(api, 'getOfferers').mockResolvedValue({
               offerers: [offerer],
               nbTotalResults: 1,
             })
