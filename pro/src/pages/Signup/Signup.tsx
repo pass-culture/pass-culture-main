@@ -2,16 +2,14 @@ import React, { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
+import { routesSignup, IRoute } from 'app/AppRouter/routes_map'
 import PageTitle from 'components/PageTitle/PageTitle'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 import Logo from 'ui-kit/Logo/Logo'
 
 import styles from './Signup.module.scss'
-import SignupConfirmation from './SignupConfirmation/SignupConfirmation'
-import SignupContainer from './SignupContainer/SignupContainer'
 import SignupUnavailable from './SignupUnavailable/SignupUnavailable'
-import SignUpValidation from './SignUpValidation'
 
 const Signup = () => {
   useEffect(() => {
@@ -35,9 +33,9 @@ const Signup = () => {
 
         {isProAccountCreationEnabled ? (
           <Routes>
-            <Route element={<SignupContainer />} path="" />
-            <Route element={<SignupConfirmation />} path="/confirmation" />
-            <Route element={<SignUpValidation />} path="/validation/:token" />
+            {routesSignup.map(({ path, element }: IRoute) => (
+              <Route key={path} path={path} element={element} />
+            ))}
           </Routes>
         ) : (
           <SignupUnavailable />
