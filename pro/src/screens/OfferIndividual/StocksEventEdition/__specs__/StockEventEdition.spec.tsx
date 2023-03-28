@@ -334,7 +334,10 @@ describe('screens:StocksEventEdition', () => {
       await screen.findByText('Voulez-vous supprimer cette occurrence ?')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
-    expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
+
+    expect(
+      await screen.findByText('Le stock a été supprimé.')
+    ).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
     jest.spyOn(api, 'upsertStocks')
@@ -413,7 +416,10 @@ describe('screens:StocksEventEdition', () => {
       screen.getByText('Voulez-vous supprimer cette occurrence ?')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
-    expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
+
+    expect(
+      await screen.findByText('Le stock a été supprimé.')
+    ).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID_2')
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
 
@@ -475,7 +481,10 @@ describe('screens:StocksEventEdition', () => {
       screen.getByText('Voulez-vous supprimer cette occurrence ?')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
-    expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
+
+    expect(
+      await screen.findByText('Le stock a été supprimé.')
+    ).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
@@ -515,7 +524,7 @@ describe('screens:StocksEventEdition', () => {
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
     expect(
-      screen.getByText('Vos modifications ont bien été enregistrées')
+      await screen.findByText('Vos modifications ont bien été enregistrées')
     ).toBeInTheDocument()
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
   })
@@ -586,7 +595,7 @@ describe('screens:StocksEventEdition', () => {
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
     expect(
-      await screen.getByText('Des réservations sont en cours pour cette offre')
+      await screen.findByText('Des réservations sont en cours pour cette offre')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Confirmer les modifications'))
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
@@ -611,7 +620,11 @@ describe('screens:StocksEventEdition', () => {
     apiOffer.stocks = []
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await screen.findByTestId('stock-event-form')
-    await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
+    await userEvent.click(
+      (
+        await screen.findAllByTitle('Supprimer le stock')
+      )[1]
+    )
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')
     ).not.toBeInTheDocument()
