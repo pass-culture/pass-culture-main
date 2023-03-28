@@ -25,3 +25,13 @@ def choices_from_enum(
 
 def values_from_enum(enum_cls: typing.Type[enum.Enum]) -> list[tuple]:
     return [(opt.value, opt.value) for opt in enum_cls]
+
+
+def sanitize_pc_string(value: str | None) -> str | None:
+    """
+    Strips leading whitespaces and avoids empty strings in database.
+    This filter may be set globally for any PCOptStringField but has not been tested on every form yet.
+    """
+    if value:
+        value = value.strip()
+    return value if value else None
