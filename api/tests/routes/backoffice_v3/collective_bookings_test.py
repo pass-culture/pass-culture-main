@@ -257,6 +257,41 @@ class ListCollectiveBookingsTest:
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[2].id, collective_bookings[3].id}
 
+    def test_list_bookings_by_cashflow_batch(self, authenticated_client):
+        # given
+        cashflows = finance_factories.CashflowFactory.create_batch(
+            3,
+            reimbursementPoint=finance_factories.BankInformationFactory(venue=offerers_factories.VenueFactory()).venue,
+        )
+
+        finance_factories.CollectivePricingFactory(
+            collectiveBooking=educational_factories.UsedCollectiveBookingFactory()
+        )
+        finance_factories.CollectivePricingFactory(
+            collectiveBooking=educational_factories.ReimbursedCollectiveBookingFactory(), cashflows=[cashflows[1]]
+        )
+
+        reimbursed_pricing1 = finance_factories.CollectivePricingFactory(
+            collectiveBooking=educational_factories.ReimbursedCollectiveBookingFactory(), cashflows=[cashflows[0]]
+        )
+        reimbursed_pricing3 = finance_factories.CollectivePricingFactory(
+            collectiveBooking=educational_factories.ReimbursedCollectiveBookingFactory(), cashflows=[cashflows[2]]
+        )
+
+        # when
+        searched_cashflow_batches = [cashflows[0].batch.id, cashflows[2].batch.id]
+        # one more query because of cashflow_batches validation
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, cashflow_batches=searched_cashflow_batches))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID résa"]) for row in rows) == {
+            reimbursed_pricing1.collectiveBookingId,
+            reimbursed_pricing3.collectiveBookingId,
+        }
+
     @pytest.mark.parametrize(
         "status, expected_idx",
         [
