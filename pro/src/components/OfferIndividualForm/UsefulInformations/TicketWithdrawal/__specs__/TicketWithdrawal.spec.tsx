@@ -73,19 +73,13 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
     })
 
     expect(
-      screen.queryByText('Vous devez cocher l’une des options ci-dessus')
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByText('Vous devez choisir l’une des options ci-dessus')
+      screen.queryByText('Veuillez sélectionner l’une de ces options')
     ).not.toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Submit'))
     expect(
-      await screen.findByText('Vous devez cocher l’une des options ci-dessus')
+      await screen.findByText('Veuillez sélectionner l’une de ces options')
     ).toBeInTheDocument()
-    expect(
-      screen.queryByText('Vous devez choisir l’une des options ci-dessus')
-    ).not.toBeInTheDocument()
   })
 
   it('should disable read only fields', () => {
