@@ -238,9 +238,18 @@ class AdageHttpClient(AdageClient):
             raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
         response_content = api_response.json()
-        result = response_content.get("redacteurs", [])
+        redactors = response_content.get("redacteurs", [])
 
-        if len(result) == 0:
+        if not redactors:
+            if redactors is None:
+                # The attribute should not be present or it should be
+                # a list. But it seems that we sometimes get `null`.
+                logger.error(
+                    "Got null list of redactors from Adage API /redacteurs-projets endpoint",
+                    extra={
+                        "response": api_response.content,
+                    },
+                )
             raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
 
-        return result
+        return redactors
