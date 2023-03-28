@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
 import { unhumanizeSiret } from 'core/Venue'
-import siretApiValidate from 'ui-kit/form_rff/fields/SiretField/validators/siretApiValidate'
+import siretApiValidate from 'core/Venue/siretApiValidate'
 
 export const valideSiretLength = (siret: string) =>
   unhumanizeSiret(siret).length === 14
