@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
@@ -210,10 +210,13 @@ describe('screens:StocksThing', () => {
     expect(nextButton).not.toBeDisabled()
     expect(draftButton).not.toBeDisabled()
     await userEvent.click(draftButton)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      ).toBeInTheDocument()
+    })
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-    expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
-    ).toBeInTheDocument()
     expect(
       screen.getByText(
         /Les bénéficiaires ont 30 jours pour faire valider leur contremarque/
@@ -234,6 +237,12 @@ describe('screens:StocksThing', () => {
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(nextButton)
     expect(draftButton).toBeDisabled()
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      ).toBeInTheDocument()
+    })
     expect(api.upsertStocks).toHaveBeenCalledWith({
       humanizedOfferId: 'OFFER_ID',
       stocks: [
@@ -244,9 +253,6 @@ describe('screens:StocksThing', () => {
         },
       ],
     })
-    expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
-    ).toBeInTheDocument()
     expect(screen.getByText('Next page')).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
   })
@@ -290,7 +296,10 @@ describe('screens:StocksThing', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )
-    expect(screen.getByText('API price ERROR')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByText('API price ERROR')).toBeInTheDocument()
+    })
     expect(screen.getByText('API quantity ERROR')).toBeInTheDocument()
     expect(
       screen.getByText('API bookingLimitDatetime ERROR')
