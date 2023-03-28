@@ -6,6 +6,7 @@ from operator import attrgetter
 from typing import List
 from typing import Literal
 
+from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
 
@@ -245,7 +246,7 @@ def _check_if_pro_attribute_has_collective_offers(user: users_models.User) -> bo
         offerers_models.UserOfferer.user == user,
         educational_models.CollectiveOffer.status.in_([OfferStatus.ACTIVE, OfferStatus.SOLD_OUT]),  # type: ignore [attr-defined]
     )
-    collective_offer_query = collective_offer_query.limit(1)
+    collective_offer_query = collective_offer_query.exists()
 
     collective_offer_template_query = db.session.query(educational_models.CollectiveOfferTemplate.id)
     collective_offer_template_query = collective_offer_template_query.join(
@@ -262,10 +263,10 @@ def _check_if_pro_attribute_has_collective_offers(user: users_models.User) -> bo
         offerers_models.UserOfferer.user == user,
         educational_models.CollectiveOfferTemplate.status == OfferStatus.ACTIVE,
     )
-    collective_offer_template_query = collective_offer_template_query.limit(1)
+    collective_offer_template_query = collective_offer_template_query.exists()
 
-    result = bool(collective_offer_query.union(collective_offer_template_query).one_or_none())
-    return result
+    result = db.session.query(or_(collective_offer_query, collective_offer_template_query)).scalar()
+    return bool(result)
 
 
 def get_user_attributes(user: users_models.User) -> models.UserAttributes:

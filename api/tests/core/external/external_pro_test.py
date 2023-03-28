@@ -26,7 +26,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 EXPECTED_PRO_ATTR_NUM_QUERIES = 5
 
 
-def _build_params(subs, virt, perman, draft, accep, offer, book, attach):
+def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff):
     return pytest.param(
         subs,
         virt,
@@ -36,21 +36,27 @@ def _build_params(subs, virt, perman, draft, accep, offer, book, attach):
         offer,
         book,
         attach,
-        id=f"sub:{subs}, vir:{virt}, per:{perman}, dra:{draft}, " f"acc:{accep}, off:{offer}, boo:{book}, att:{attach}",
+        colloff,
+        tploff,
+        id=(
+            f"sub:{subs}, vir:{virt}, per:{perman}, dra:{draft}, "
+            f"acc:{accep}, off:{offer}, boo:{book}, "
+            f"att:{attach}, colloff:{colloff}, tploff:{tploff}"
+        ),
     )
 
 
 @pytest.mark.parametrize(
     "enable_subscription,create_virtual,create_permanent,create_dms_draft,create_dms_accepted,"
-    "create_offer,create_booking,attached",
+    "create_offer,create_booking,attached,create_collective_offer,create_template_offer",
     [
-        #             subs, virt, perman, draft, accep, offer, book, attach
-        _build_params(False, False, False, False, False, False, False, "none"),
-        _build_params(True, False, True, True, False, True, False, "one"),
-        _build_params(False, True, False, False, True, True, False, "all"),
-        _build_params(True, True, True, True, True, True, True, "none"),
-        _build_params(False, True, True, False, True, False, False, "one"),
-        _build_params(True, True, True, True, True, True, True, "all"),
+        #             subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff
+        _build_params(False, False, False, False, False, False, False, "none", False, False),
+        _build_params(True, False, True, True, False, True, False, "one", True, False),
+        _build_params(False, True, False, False, True, True, False, "all", False, True),
+        _build_params(True, True, True, True, True, True, True, "none", True, True),
+        _build_params(False, True, True, False, True, False, False, "one", True, False),
+        _build_params(True, True, True, True, True, True, True, "all", True, True),
     ],
 )
 def test_update_external_pro_user_attributes(
@@ -62,6 +68,8 @@ def test_update_external_pro_user_attributes(
     create_offer,
     create_booking,
     attached,
+    create_collective_offer,
+    create_template_offer,
 ):
     email = "juste.leblanc@example.net"
 
@@ -93,7 +101,12 @@ def test_update_external_pro_user_attributes(
         isPermanent=create_permanent,
         venueTypeCode=VenueTypeCode.MOVIE,
         venueLabelId=venue_label_a.id,
-        collectiveOffers=[educational_factories.CollectiveOfferFactory(isActive=True)],
+        collectiveOffers=[educational_factories.CollectiveOfferFactory(isActive=True)]
+        if create_collective_offer
+        else [],
+        collectiveOfferTemplates=[educational_factories.CollectiveOfferTemplateFactory(isActive=True)]
+        if create_template_offer
+        else [],
     )
     venue1b = offerers_factories.VenueFactory(
         managingOfferer=offerer1,
@@ -257,7 +270,7 @@ def test_update_external_pro_user_attributes(
     assert attributes.isPermanent is create_permanent
     assert attributes.has_offers is create_offer
     assert attributes.has_bookings is create_booking
-    assert attributes.has_collective_offers == True
+    assert attributes.has_collective_offers == (create_collective_offer or create_template_offer)
 
 
 def test_update_external_pro_user_attributes_no_offerer_no_venue():
