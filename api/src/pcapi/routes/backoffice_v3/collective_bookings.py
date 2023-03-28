@@ -119,6 +119,12 @@ def _get_collective_bookings(
     if form.status.data:
         base_query = base_query.filter(educational_models.CollectiveBooking.status.in_(form.status.data))
 
+    if form.cashflow_batches.data:
+        base_query = (
+            base_query.join(finance_models.Pricing).join(finance_models.CashflowPricing).join(finance_models.Cashflow)
+        )
+        base_query = base_query.filter(finance_models.Cashflow.batchId.in_(form.cashflow_batches.data))
+
     if form.q.data:
         search_query = form.q.data
 
@@ -163,6 +169,7 @@ def list_collective_bookings() -> utils.BackofficeResponse:
 
     autocomplete.prefill_offerers_choices(form.offerer)
     autocomplete.prefill_venues_choices(form.venue)
+    autocomplete.prefill_cashflow_batch_choices(form.cashflow_batches)
 
     return render_template(
         "collective_bookings/list.html",
