@@ -161,7 +161,7 @@ class EducationalInstitutionFactory(BaseFactory):
     class Meta:
         model = models.EducationalInstitution
 
-    institutionId = factory.Sequence("{}470009E".format)
+    institutionId = factory.Sequence(lambda x: f"{x+1}470009E")
     name = factory.Sequence("DE LA TOUR{}".format)
     city = "PARIS"
     postalCode = "75000"
