@@ -97,6 +97,26 @@ const renderStockEventScreen = () => {
 
 describe('screens:StocksEventEdition', () => {
   let apiOffer: GetIndividualOfferResponseModel
+  const stockToDelete = {
+    beginningDatetime: '2023-01-23T08:25:31.009799Z',
+    bookingLimitDatetime: '2023-01-23T07:25:31.009799Z',
+    bookingsQuantity: 4,
+    dateCreated: '2022-05-18T08:25:31.015652Z',
+    hasActivationCode: false,
+    id: 'STOCK_ID',
+    nonHumanizedId: 1,
+    isEventDeletable: true,
+    isEventExpired: false,
+    isSoftDeleted: false,
+    offerId: 'OFFER_ID',
+    price: 10.01,
+    quantity: 10,
+    remainingQuantity: 6,
+    activationCodesExpirationDatetime: null,
+    isBookable: false,
+    dateModified: '2022-05-18T08:25:31.015652Z',
+    fieldsUpdated: [],
+  }
 
   beforeEach(() => {
     apiOffer = {
@@ -165,27 +185,7 @@ describe('screens:StocksEventEdition', () => {
       },
       productId: 'AJFA',
       priceCategories: [{ price: 12.2, label: 'Mon premier tariff', id: 1 }],
-      stocks: [
-        {
-          beginningDatetime: '2023-01-23T08:25:31.009799Z',
-          bookingLimitDatetime: '2023-01-23T07:25:31.009799Z',
-          bookingsQuantity: 4,
-          dateCreated: '2022-05-18T08:25:31.015652Z',
-          hasActivationCode: false,
-          id: 'STOCK_ID',
-          isEventDeletable: true,
-          isEventExpired: false,
-          isSoftDeleted: false,
-          offerId: 'OFFER_ID',
-          price: 10.01,
-          quantity: 10,
-          remainingQuantity: 6,
-          activationCodesExpirationDatetime: null,
-          isBookable: false,
-          dateModified: '2022-05-18T08:25:31.015652Z',
-          fieldsUpdated: [],
-        },
-      ],
+      stocks: [stockToDelete],
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
       thumbUrl: null,
       externalTicketOfficeUrl: null,
@@ -309,6 +309,7 @@ describe('screens:StocksEventEdition', () => {
         dateCreated: '2022-05-18T08:25:31.015652Z',
         hasActivationCode: false,
         id: 'STOCK_ID_2',
+        nonHumanizedId: 1,
         isEventDeletable: true,
         isEventExpired: false,
         isSoftDeleted: false,
@@ -338,8 +339,8 @@ describe('screens:StocksEventEdition', () => {
     expect(
       await screen.findByText('Le stock a été supprimé.')
     ).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
-    expect(api.deleteStock).toHaveBeenCalledTimes(1)
+    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.nonHumanizedId)
+
     jest.spyOn(api, 'upsertStocks')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
@@ -375,6 +376,7 @@ describe('screens:StocksEventEdition', () => {
   it('should keep user modifications when deleting a exiting stock', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
     const previousApiOffer = { ...apiOffer }
+    const stockToDeleteId = 2
     apiOffer.stocks = [
       ...apiOffer.stocks,
       {
@@ -384,6 +386,7 @@ describe('screens:StocksEventEdition', () => {
         dateCreated: '2022-05-18T08:25:31.015652Z',
         hasActivationCode: false,
         id: 'STOCK_ID_2',
+        nonHumanizedId: stockToDeleteId,
         isEventDeletable: true,
         isEventExpired: false,
         isSoftDeleted: false,
@@ -420,7 +423,7 @@ describe('screens:StocksEventEdition', () => {
     expect(
       await screen.findByText('Le stock a été supprimé.')
     ).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID_2')
+    expect(api.deleteStock).toHaveBeenCalledWith(stockToDeleteId)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
 
     const allPriceInputs = screen.getAllByLabelText('Tarif')
@@ -485,7 +488,7 @@ describe('screens:StocksEventEdition', () => {
     expect(
       await screen.findByText('Le stock a été supprimé.')
     ).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
+    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.nonHumanizedId)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
@@ -555,7 +558,7 @@ describe('screens:StocksEventEdition', () => {
       )
     ).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
-    expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
+    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.nonHumanizedId)
   })
 
   it('should save the offer without warning on "Enregistrer les modifications" button click', async () => {

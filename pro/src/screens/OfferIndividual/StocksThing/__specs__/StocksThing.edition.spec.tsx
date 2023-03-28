@@ -98,6 +98,26 @@ const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
 describe('screens:StocksThing', () => {
   let storeOverride: Partial<RootState>
   let apiOffer: GetIndividualOfferResponseModel
+  const stockToDelete = {
+    beginningDatetime: '2022-05-23T08:25:31.009799Z',
+    bookingLimitDatetime: '2022-05-23T07:25:31.009799Z',
+    bookingsQuantity: 4,
+    dateCreated: '2022-05-18T08:25:31.015652Z',
+    hasActivationCode: false,
+    id: 'STOCK_ID',
+    nonHumanizedId: 1,
+    isEventDeletable: false,
+    isEventExpired: true,
+    isSoftDeleted: false,
+    offerId: 'YA',
+    price: 10.01,
+    quantity: 10,
+    remainingQuantity: 6,
+    activationCodesExpirationDatetime: null,
+    isBookable: false,
+    dateModified: '2022-05-18T08:25:31.015652Z',
+    fieldsUpdated: [],
+  }
 
   beforeEach(() => {
     apiOffer = {
@@ -166,27 +186,7 @@ describe('screens:StocksThing', () => {
       },
       productId: 'AJFA',
       priceCategories: [{ price: 12.2, label: 'Mon premier tariff', id: 1 }],
-      stocks: [
-        {
-          beginningDatetime: '2022-05-23T08:25:31.009799Z',
-          bookingLimitDatetime: '2022-05-23T07:25:31.009799Z',
-          bookingsQuantity: 4,
-          dateCreated: '2022-05-18T08:25:31.015652Z',
-          hasActivationCode: false,
-          id: 'STOCK_ID',
-          isEventDeletable: false,
-          isEventExpired: true,
-          isSoftDeleted: false,
-          offerId: 'YA',
-          price: 10.01,
-          quantity: 10,
-          remainingQuantity: 6,
-          activationCodesExpirationDatetime: null,
-          isBookable: false,
-          dateModified: '2022-05-18T08:25:31.015652Z',
-          fieldsUpdated: [],
-        },
-      ],
+      stocks: [stockToDelete],
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
       thumbUrl: null,
       externalTicketOfficeUrl: null,
@@ -312,7 +312,7 @@ describe('screens:StocksThing', () => {
     await waitFor(() => {
       expect(screen.getByLabelText('Prix')).toHaveValue(null)
     })
-    expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
+    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.nonHumanizedId)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
 
     await userEvent.click(
@@ -344,7 +344,7 @@ describe('screens:StocksThing', () => {
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
     expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
+    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.nonHumanizedId)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
@@ -368,7 +368,7 @@ describe('screens:StocksThing', () => {
       await screen.findByText('Supprimer', { selector: 'button' })
     )
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
-    expect(api.deleteStock).toHaveBeenCalledWith('STOCK_ID')
+    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.nonHumanizedId)
     expect(
       screen.getByText(
         'Une erreur est survenue lors de la suppression du stock.'

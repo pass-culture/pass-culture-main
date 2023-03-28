@@ -22,7 +22,7 @@ class Returns200Test:
 
         # when
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
-        response = client.delete(f"/stocks/{humanize(stock.id)}")
+        response = client.delete(f"/stocks/{stock.id}")
 
         # then
         assert response.status_code == 200
@@ -46,7 +46,7 @@ class Returns400Test:
         user = users_factories.AdminFactory()
 
         client = TestClient(app.test_client()).with_session_auth(user.email)
-        response = client.delete(f"/stocks/{humanize(stock.id)}")
+        response = client.delete(f"/stocks/{stock.id}")
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -60,7 +60,7 @@ class Returns403Test:
 
         # when
         client = TestClient(app.test_client()).with_session_auth(pro.email)
-        response = client.delete(f"/stocks/{humanize(stock.id)}")
+        response = client.delete(f"/stocks/{stock.id}")
 
         # then
         assert response.status_code == 403

@@ -49,7 +49,7 @@ export const serializeStockThingList = (
     return [
       {
         ...apiStock,
-        humanizedId: formValues.stockId,
+        id: formValues.stockId,
       },
     ]
   }

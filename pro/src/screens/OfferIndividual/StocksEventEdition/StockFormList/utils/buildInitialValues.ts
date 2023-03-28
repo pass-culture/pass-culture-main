@@ -31,7 +31,7 @@ export const buildSingleInitialValues = ({
   isPriceCategoriesActive,
 }: IBuildSingleInitialValuesArgs): IStockEventFormValues => {
   const hiddenValues = {
-    stockId: stock.id,
+    stockId: stock.nonHumanizedId,
     isDeletable: stock.isEventDeletable,
     readOnlyFields: setFormReadOnlyFields({
       beginningDate: stock.beginningDatetime

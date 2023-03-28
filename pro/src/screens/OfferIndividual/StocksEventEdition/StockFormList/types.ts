@@ -1,5 +1,5 @@
 export interface IStockEventFormHiddenValues {
-  stockId?: string
+  stockId?: number
   isDeletable: boolean
   readOnlyFields: string[]
 }

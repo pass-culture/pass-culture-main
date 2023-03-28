@@ -90,7 +90,7 @@ export const serializeStockEvent = (
   if (formValues.stockId) {
     return {
       ...apiStock,
-      humanizedId: formValues.stockId,
+      id: formValues.stockId,
     }
   }
   return apiStock

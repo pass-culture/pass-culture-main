@@ -46,7 +46,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
       formValues: {
         activationCodesExpirationDatetime: null,
         activationCodes: [],
-        stockId: 'STOCK_ID',
+        stockId: 1,
         remainingQuantity: STOCK_THING_FORM_DEFAULT_VALUES.remainingQuantity,
         bookingsQuantity: STOCK_THING_FORM_DEFAULT_VALUES.bookingsQuantity,
         bookingLimitDatetime: null,
@@ -60,7 +60,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
       offerId: 1,
       stocks: [
         {
-          humanizedId: 'STOCK_ID',
+          id: 1,
           bookingLimitDatetime: null,
           price: 10,
           quantity: 12,
@@ -87,7 +87,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
     const reponse = await upsertStocksThingAdapter({
       offerId: 1,
       formValues: {
-        stockId: 'STOCK_ID',
+        stockId: 12,
         activationCodesExpirationDatetime: null,
         activationCodes: [],
         remainingQuantity: STOCK_THING_FORM_DEFAULT_VALUES.remainingQuantity,
