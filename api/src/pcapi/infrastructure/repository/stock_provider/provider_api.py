@@ -65,7 +65,7 @@ class ProviderAPI:
                 logger.error(
                     "[%s SYNC] missing ref key in response",
                     self.name,
-                    extra={"stock": stock_response},
+                    extra={"stock": stock_response, "siret": siret},
                 )
                 continue
 
@@ -75,7 +75,7 @@ class ProviderAPI:
                     "[%s SYNC] missing available key in response with ref %s",
                     self.name,
                     stock_response_ref,
-                    extra={"stock": stock_response},
+                    extra={"stock": stock_response, "siret": siret},
                 )
                 continue
 
@@ -85,7 +85,7 @@ class ProviderAPI:
                     self.name,
                     stock_response["available"],
                     stock_response_ref,
-                    extra={"stock": stock_response},
+                    extra={"stock": stock_response, "siret": siret},
                 )
                 continue
 
@@ -94,6 +94,7 @@ class ProviderAPI:
                     "[%s SYNC] missing price key in response with ref %s",
                     self.name,
                     stock_response_ref,
+                    extra={"stock": stock_response, "siret": siret},
                 )
                 continue
 
@@ -103,7 +104,13 @@ class ProviderAPI:
         batch_log_size = 1_000
         for i in range(0, len(validated_stock_responses), batch_log_size):
             log = f"Got stocks from Provider API (partial log: one log per batch of {batch_log_size})"
-            logger.info(log, extra={"stocks": validated_stock_responses[i : i + batch_log_size]})
+            logger.info(
+                log,
+                extra={
+                    "stocks": validated_stock_responses[i : i + batch_log_size],
+                    "siret": siret,
+                },
+            )
         return api_responses
 
     def is_siret_registered(self, siret: str) -> bool:
