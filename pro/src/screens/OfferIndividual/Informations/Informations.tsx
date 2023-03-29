@@ -154,7 +154,6 @@ const Informations = ({
     ) {
       setIsWithdrawalDialogOpen(!isWithdrawalDialogOpen)
       setShouldSendMail(sendMail)
-      setIsClickingFromActionBar(false)
       return
     }
   }
@@ -162,11 +161,12 @@ const Informations = ({
   const handleNextStep =
     ({ saveDraft = false, sendMail = false } = {}) =>
     async () => {
+      setIsClickingFromActionBar(true)
+
       if (isWithdrawalUpdatedMailActive && mode === OFFER_WIZARD_MODE.EDITION) {
         await handleSendMail(sendMail)
       }
 
-      setIsClickingFromActionBar(true)
       setIsSubmittingDraft(saveDraft)
       if (Object.keys(formik.errors).length !== 0) {
         /* istanbul ignore next: DEBT, TO FIX */
@@ -314,6 +314,7 @@ const Informations = ({
             imageOffer={imageOffer}
             offerSubtype={offerSubtype}
           />
+
           <ActionBar
             onClickPrevious={handlePreviousStep}
             onClickNext={handleNextStep()}
@@ -329,6 +330,7 @@ const Informations = ({
           />
         </form>
       </FormLayout>
+
       {isWithdrawalUpdatedMailActive && isWithdrawalDialogOpen && (
         <ConfirmDialog
           cancelText="Ne pas envoyer"
@@ -336,6 +338,7 @@ const Informations = ({
           leftButtonAction={handleNextStep({ saveDraft: true })}
           onCancel={() => {
             setIsWithdrawalDialogOpen(false)
+            setIsClickingFromActionBar(false)
           }}
           onConfirm={handleNextStep({
             saveDraft: true,
@@ -345,6 +348,7 @@ const Informations = ({
           title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
         />
       )}
+
       <RouteLeavingGuardOfferIndividual
         when={formik.dirty && !isClickingFromActionBar}
         tracking={nextLocation =>
