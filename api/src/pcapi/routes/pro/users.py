@@ -204,6 +204,6 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
 @blueprint.pro_private_api.route("/users/signout", methods=["GET"])
 @login_required
 @spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
-def signout():  # type: ignore [no-untyped-def]
+def signout() -> None:
     discard_session()
     logout_user()
