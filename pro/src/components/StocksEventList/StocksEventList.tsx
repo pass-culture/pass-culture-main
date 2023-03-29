@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
@@ -14,10 +14,13 @@ import useAnalytics from 'hooks/useAnalytics'
 import { TrashFilledIcon } from 'icons'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Pagination } from 'ui-kit/Pagination'
 import { formatPrice } from 'utils/formatPrice'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 import styles from './StocksEventList.module.scss'
+
+const STOCKS_PER_PAGE = 20
 
 export interface IStocksEvent {
   id?: string
@@ -48,6 +51,13 @@ const StocksEventList = ({
   const { logEvent } = useAnalytics()
   const [isCheckedArray, setIsCheckedArray] = useState<boolean[]>(
     Array(stocks.length).fill(false)
+  )
+  const [page, setPage] = useState(1)
+  const previousPage = useCallback(() => setPage(page => page - 1), [])
+  const nextPage = useCallback(() => setPage(page => page + 1), [])
+  const stocksPage = stocks.slice(
+    (page - 1) * STOCKS_PER_PAGE,
+    page * STOCKS_PER_PAGE
   )
   const areAllChecked = isCheckedArray.every(isChecked => isChecked)
 
@@ -165,7 +175,7 @@ const StocksEventList = ({
         </thead>
 
         <tbody>
-          {stocks.map((stock, index) => {
+          {stocksPage.map((stock, index) => {
             const beginningDay = formatLocalTimeDateString(
               stock.beginningDatetime,
               departmentCode,
@@ -199,8 +209,9 @@ const StocksEventList = ({
                 priceCategory?.label
               }`
             }
+
             return (
-              <tr key={index}>
+              <tr key={index} className={styles['row']}>
                 <td className={styles['data']}>
                   <input
                     checked={isCheckedArray[index]}
@@ -237,6 +248,14 @@ const StocksEventList = ({
           })}
         </tbody>
       </table>
+
+      <Pagination
+        currentPage={page}
+        pageCount={Math.ceil(stocks.length / STOCKS_PER_PAGE)}
+        onPreviousPageClick={previousPage}
+        onNextPageClick={nextPage}
+      />
+
       {isAtLeastOneStockChecked && (
         <ActionsBarSticky className={styles['actions']}>
           <ActionsBarSticky.Left>{selectedDateText}</ActionsBarSticky.Left>
