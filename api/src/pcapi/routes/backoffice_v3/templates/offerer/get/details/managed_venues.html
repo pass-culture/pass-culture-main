@@ -7,6 +7,7 @@
       <th scope="col">Nom</th>
       <th scope="col">SIRET</th>
       <th scope="col">Type de lieu</th>
+      <th scope="col">Statut du dossier DMS Adage</th>
     </tr>
   </thead>
   <tbody>
@@ -17,6 +18,7 @@
         <td class="text-break">{{ links.build_venue_name_to_pc_pro_link(venue, public_name=true) }}</td>
         <td>{{ links.build_siret_to_external_link(venue) }}</td>
         <td>{{ venue.venueTypeCode.value }}</td>
+        <td>{{ venue.dms_adage_status | format_dms_status if venue.dms_adage_status else "" }}</td>
       </tr>
     {% endfor %}
   </tbody>
