@@ -490,33 +490,13 @@ class BatchEditOfferFormTest:
         response = self._update_offer(authenticated_client, offers[-1], base_form)
         assert response.status_code == 303
 
-        offer_list_url = url_for(
-            "backoffice_v3_web.offer.list_offers", category=subcategories.LIVRE_PAPIER.category.id, _external=True
-        )
-        response = authenticated_client.get(offer_list_url)
-        assert response.status_code == 200
+        assert offers[0].rankingWeight is None
+        assert offers[1].rankingWeight is None
+        assert offers[2].rankingWeight == choosen_ranking_weight
 
-        rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == len(offers)
-        assert rows[0]["Pondération"] == ""
-        assert rows[1]["Pondération"] == ""
-        assert rows[2]["Pondération"] == str(choosen_ranking_weight)
-
-        assert criteria[2].name in rows[0]["Tag"]
-        assert criteria[2].name in rows[1]["Tag"]
-        assert criteria[2].name in rows[2]["Tag"]
-
-        assert criteria[0].name in rows[0]["Tag"]
-        assert criteria[0].name in rows[1]["Tag"]
-        assert criteria[0].name not in rows[2]["Tag"]
-
-        assert criteria[1].name in rows[0]["Tag"]
-        assert criteria[1].name in rows[1]["Tag"]
-        assert criteria[1].name not in rows[2]["Tag"]
-
-        assert criteria[3].name not in rows[0]["Tag"]
-        assert criteria[3].name not in rows[1]["Tag"]
-        assert criteria[3].name in rows[2]["Tag"]
+        assert set(offers[0].criteria) == set(criteria[:3])
+        assert set(offers[1].criteria) == set(criteria[:3])
+        assert set(offers[2].criteria) == set(criteria[2:])
 
     def _update_offers_form(self, authenticated_client, form):
         edit_url = url_for("backoffice_v3_web.offer.list_offers")
