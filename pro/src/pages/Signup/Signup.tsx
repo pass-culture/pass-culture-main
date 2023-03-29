@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
 import { IRoute } from 'app/AppRouter/routes_map'
-import { routesSignup } from 'app/AppRouter/subroutes_map'
+import { routesSignup } from 'app/AppRouter/subroutes_signup_map'
 import PageTitle from 'components/PageTitle/PageTitle'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
