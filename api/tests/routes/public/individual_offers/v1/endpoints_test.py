@@ -182,6 +182,7 @@ class PostProductTest:
             "enableDoubleBookings": False,
             "externalTicketOfficeUrl": None,
             "id": created_offer.id,
+            "idAtProvider": None,
             "image": None,
             "itemCollectionDetails": None,
             "location": {"type": "physical", "venueId": venue.id},
@@ -289,6 +290,7 @@ class PostProductTest:
             "enableDoubleBookings": False,
             "externalTicketOfficeUrl": "https://maposaic.com",
             "id": created_offer.id,
+            "idAtProvider": None,
             "image": {
                 "credit": "Jean-Crédit Photo",
                 "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(created_mediation.id)}",
@@ -718,6 +720,172 @@ class PostProductTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class PostProductByEanTest:
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_valid_ean(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "accessibility": ACCESSIBILITY_FIELDS,
+                "ean": product.extraData["ean"],
+                "idAtProvider": "id",
+                "location": {"type": "physical", "venueId": venue.id},
+                "stock": {
+                    "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                    "price": 1234,
+                    "quantity": 3,
+                },
+            },
+        )
+
+        assert response.status_code == 200
+
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.bookingEmail == venue.bookingEmail
+        assert created_offer.description == product.description
+        assert created_offer.extraData == product.extraData
+        assert created_offer.idAtProvider == "id"
+        assert created_offer.lastProvider.name == "Individual Offers public API"
+        assert created_offer.name == product.name
+        assert created_offer.product == product
+        assert created_offer.venue == venue
+        assert created_offer.subcategoryId == product.subcategoryId
+        assert created_offer.withdrawalDetails == venue.withdrawalDetails
+
+        created_stock = offers_models.Stock.query.one()
+        assert created_stock.price == decimal.Decimal("12.34")
+        assert created_stock.quantity == 3
+        assert created_stock.offer == created_offer
+        assert created_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 1, 12, 0, 0)
+
+        assert response.json == {
+            "id": created_offer.id,
+            "idAtProvider": "id",
+            "accessibility": ACCESSIBILITY_FIELDS,
+            "bookingEmail": venue.bookingEmail,
+            "description": product.description,
+            "externalTicketOfficeUrl": None,
+            "image": None,
+            "enableDoubleBookings": False,
+            "location": {"type": "physical", "venueId": venue.id},
+            "name": product.name,
+            "status": "EXPIRED",
+            "itemCollectionDetails": None,
+            "categoryRelatedFields": {"category": "CARTE_MUSEE"},
+            "stock": {
+                "bookingLimitDatetime": "2022-01-01T12:00:00Z",
+                "bookedQuantity": 0,
+                "quantity": 3,
+                "price": 1234,
+            },
+        }
+
+    def test_venue_accessibility_as_default(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=api_key.offerer,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
+        product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "ean": product.extraData["ean"],
+                "location": {"type": "physical", "venueId": venue.id},
+            },
+        )
+
+        assert response.status_code == 200
+        assert response.json["accessibility"] == ACCESSIBILITY_FIELDS
+
+    def test_400_when_no_accessibility_and_virtual_venue(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        offerers_factories.VirtualVenueFactory(managingOfferer=api_key.offerer)
+        product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "ean": product.extraData["ean"],
+                "location": {"type": "digital", "url": "https://example.com"},
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"accessibility": ["The accessibility is required when the location type is digital"]}
+
+    def test_400_when_ean_wrong_format(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        product = offers_factories.ProductFactory(extraData={"ean": "123456789"})
+
+        client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "ean": product.extraData["ean"],
+                "location": {"type": "physical", "venueId": venue.id},
+            },
+        )
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "ean": product.extraData["ean"],
+                "idAtProvider": "id",
+                "location": {"type": "physical", "venueId": venue.id},
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"ean": ["ensure this value has at least 13 characters"]}
+
+    def test_400_when_ean_does_not_exist(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
+
+        client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "ean": product.extraData["ean"],
+                "location": {"type": "physical", "venueId": venue.id},
+            },
+        )
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "ean": product.extraData["ean"],
+                "location": {"type": "physical", "venueId": venue.id},
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"ean": ["Une offre avec cet ean existe déjà"]}
+
+    def test_404_when_ean_not_found(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "ean": "1234567890123",
+                "location": {"type": "physical", "venueId": venue.id},
+            },
+        )
+
+        assert response.status_code == 404
+        assert response.json == {"ean": ["The product is not present in pass Culture's database"]}
+
+
+@pytest.mark.usefixtures("db_session")
 class PostEventTest:
     def test_event_minimal_body(self, client):
         api_key = offerers_factories.ApiKeyFactory()
@@ -846,6 +1014,7 @@ class PostEventTest:
             "eventDuration": 120,
             "externalTicketOfficeUrl": "https://maposaic.com",
             "id": created_offer.id,
+            "idAtProvider": None,
             "image": {
                 "credit": "Jean-Crédit Photo",
                 "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(created_mediation.id)}",
@@ -1267,6 +1436,7 @@ class GetProductTest:
             "enableDoubleBookings": False,
             "externalTicketOfficeUrl": None,
             "id": product_offer.id,
+            "idAtProvider": None,
             "image": None,
             "itemCollectionDetails": None,
             "location": {"type": "physical", "venueId": product_offer.venueId},
@@ -1377,6 +1547,7 @@ class GetProductByEanTest:
             "enableDoubleBookings": False,
             "externalTicketOfficeUrl": None,
             "id": product_offer.id,
+            "idAtProvider": None,
             "image": None,
             "itemCollectionDetails": None,
             "location": {"type": "physical", "venueId": product_offer.venueId},
@@ -1466,6 +1637,7 @@ class GetEventTest:
             "externalTicketOfficeUrl": None,
             "eventDuration": None,
             "id": event_offer.id,
+            "idAtProvider": None,
             "image": {
                 "credit": None,
                 "url": f"http://localhost/storage/thumbs/products/{human_ids.humanize(product.id)}",
