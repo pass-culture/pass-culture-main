@@ -5,8 +5,6 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
-import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
-import Icon from 'ui-kit/Icon/Icon'
 
 import { ReactComponent as DropDownIcon } from './assets/dropdown-disclosure-down-w.svg'
 import { ReactComponent as DropUpIcon } from './assets/dropdown-disclosure-up-w.svg'
@@ -90,23 +88,6 @@ const MultiDownloadButtonsModal = ({
             <DownloadSvg />
             Fichier CSV (.csv)
           </button>
-          <Icon className={style['separator']} svg="ico-separator" />
-          <a
-            className={style['inside-modal-button']}
-            onClick={() => {
-              logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_OTHER_FORMAT, {
-                from: location.pathname,
-              })
-              setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
-            }}
-            href={
-              'https://passculture.qualtrics.com/jfe/form/SV_7OKMUyNBgZxmx9Q'
-            }
-            target={'_blank'}
-          >
-            <LinkIcon />
-            Proposer un autre format
-          </a>
         </div>
       )}
     </div>
