@@ -358,7 +358,6 @@ def _build_new_offers_from_stock_details(
         offer = _build_new_offer(
             venue,
             product,
-            id_at_providers=stock_detail.offers_provider_reference,
             id_at_provider=stock_detail.products_provider_reference,
             provider_id=provider_id,
         )
@@ -468,7 +467,6 @@ def _validate_stock_or_offer(model: offers_models.Offer | offers_models.Stock) -
 def _build_new_offer(
     venue: offerers_models.Venue,
     product: offers_models.Product,
-    id_at_providers: str,
     id_at_provider: str,
     provider_id: int | None,
 ) -> offers_models.Offer:
