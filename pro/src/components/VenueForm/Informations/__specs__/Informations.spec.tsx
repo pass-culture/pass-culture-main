@@ -136,7 +136,9 @@ describe('components | Informations', () => {
     await userEvent.click(nameInput)
     await userEvent.tab()
     expect(
-      screen.getByText('Veuillez renseigner le nom juridique de votre lieu')
+      await screen.findByText(
+        'Veuillez renseigner le nom juridique de votre lieu'
+      )
     ).toBeInTheDocument()
   })
 })
