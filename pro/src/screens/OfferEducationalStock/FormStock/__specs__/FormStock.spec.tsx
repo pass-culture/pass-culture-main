@@ -69,7 +69,7 @@ describe('TimePicker', () => {
     const saveButton = screen.getByText('Enregistrer')
 
     await userEvent.click(saveButton)
-    const requiredField = screen.getAllByText('Champ requis')
+    const requiredField = await screen.findAllByText('Champ requis')
     expect(requiredField).toHaveLength(4)
   })
 
