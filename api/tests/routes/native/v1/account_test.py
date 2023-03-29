@@ -321,14 +321,9 @@ class AccountTest:
         assert response.status_code == 200
         client.with_token(user.email)
         n_queries = 1  # get user
-        n_queries += 1  # has beneficiary_fraud_review
-        n_queries += 1  # get user_profiling fraud_check
-        n_queries += 1  # get profile completion fraud_check
-        n_queries += 1  # count ubble beneficiary_fraud_checks
         n_queries += 1  # get feature allow_id_check_registration
         n_queries += 1  # get feature enable_ubble
         n_queries += 1  # get feature enable_subscription_limitation
-        n_queries += 1  # count ubble beneficiary_fraud_checks
         n_queries += 1  # get bookings
 
         with testing.assert_num_queries(n_queries):

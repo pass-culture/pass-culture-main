@@ -281,14 +281,17 @@ def can_retry_identity_fraud_check(identity_fraud_check: fraud_models.Beneficiar
                 for code in identity_fraud_check.reasonCodes
             ):
                 return False
-            ubble_attempts_count = fraud_models.BeneficiaryFraudCheck.query.filter(
-                fraud_models.BeneficiaryFraudCheck.userId == identity_fraud_check.userId,
-                fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
-                fraud_models.BeneficiaryFraudCheck.eligibilityType == identity_fraud_check.eligibilityType,
-                ~fraud_models.BeneficiaryFraudCheck.status.in_(
-                    [fraud_models.FraudCheckStatus.CANCELED, fraud_models.FraudCheckStatus.STARTED]
-                ),
-            ).count()
+            # user.beneficiaryFraudChecks may have been joinedloaded before to reduce the number of db requests
+            ubble_attempts_count = len(
+                [
+                    fraud_check
+                    for fraud_check in identity_fraud_check.user.beneficiaryFraudChecks
+                    if fraud_check.type == fraud_models.FraudCheckType.UBBLE
+                    and fraud_check.eligibilityType == identity_fraud_check.eligibilityType
+                    and fraud_check.status
+                    not in (fraud_models.FraudCheckStatus.CANCELED, fraud_models.FraudCheckStatus.STARTED)
+                ]
+            )
 
             return ubble_attempts_count < ubble_constants.MAX_UBBLE_RETRIES
     return False

@@ -4,10 +4,17 @@ from pcapi.core.users import models as users_models
 
 def get_completed_profile_check(
     user: users_models.User, eligibility: users_models.EligibilityType | None
-) -> fraud_models.BeneficiaryFraudCheck:
-    return fraud_models.BeneficiaryFraudCheck.query.filter(
-        fraud_models.BeneficiaryFraudCheck.user == user,
-        fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.PROFILE_COMPLETION,
-        fraud_models.BeneficiaryFraudCheck.eligibilityType == eligibility,
-        fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.OK,
-    ).first()
+) -> fraud_models.BeneficiaryFraudCheck | None:
+    # user.beneficiaryFraudChecks should have been joinedloaded before to reduce the number of db requests
+    profile_completion_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type == fraud_models.FraudCheckType.PROFILE_COMPLETION
+        and fraud_check.eligibilityType == eligibility
+        and fraud_check.status == fraud_models.FraudCheckStatus.OK
+    ]
+
+    if profile_completion_checks:
+        return profile_completion_checks[0]
+
+    return None

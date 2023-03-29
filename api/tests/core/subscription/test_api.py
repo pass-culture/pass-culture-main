@@ -9,6 +9,7 @@ from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
 from freezegun import freeze_time
 import pytest
+from sqlalchemy.orm import joinedload
 
 from pcapi import settings
 from pcapi.core.fraud import factories as fraud_factories
@@ -2661,5 +2662,15 @@ class TestQueriesTest:
             reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
         )
 
-        with assert_num_queries(1):
-            subscription_api.get_user_subscription_state(user)
+        fetched_user = (
+            users_models.User.query.filter(users_models.User.id == user.id)
+            .options(
+                joinedload(users_models.User.beneficiaryFraudChecks),
+                joinedload(users_models.User.beneficiaryFraudReviews),
+            )
+            .one()
+        )
+
+        # 3 features flags checked, no N+1 query when fraud checks and reviews joinedloaded
+        with assert_num_queries(3):
+            subscription_api.get_user_subscription_state(fetched_user)

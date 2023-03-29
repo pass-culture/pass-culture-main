@@ -16,6 +16,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 import pcapi.core.permissions.models as perm_models
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -350,16 +351,19 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
             return url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user.id)
 
     @pytest.mark.parametrize(
-        "index,expected_badge",
-        [(0, "Pass 15-17"), (1, "Pass 18"), (2, "Pro"), (3, None)],
+        "index,expected_badge,expected_num_queries",
+        [(0, "Pass 15-17", 3), (1, "Pass 18", 3), (2, "Pro", 4), (3, None, 3)],
     )
-    def test_get_public_account(self, authenticated_client, index, expected_badge):
+    def test_get_public_account(self, authenticated_client, index, expected_badge, expected_num_queries):
         # given
         users = create_bunch_of_accounts()
         user = users[index]
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+        user_id = user.id
+        # expected_num_queries depends on the number of feature flags checked (2 + user + FF)
+        with assert_num_queries(expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
 
         # then
         assert response.status_code == 200
@@ -403,7 +407,9 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         )
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, user_id=grant_18.id))
+        user_id = grant_18.id
+        with assert_num_queries(3):  # 2 + user
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
 
         # then
         assert response.status_code == 200
@@ -417,11 +423,13 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         _, _, pro, random, _ = create_bunch_of_accounts()
 
         # when
-        responses = [authenticated_client.get(url_for(self.endpoint, user_id=user.id)) for user in (pro, random)]
+        for user, expected_num_queries in ((pro, 4), (random, 3)):
+            user_id = user.id
+            with assert_num_queries(expected_num_queries):  # 2 + user (+ 2 FF)
+                response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
 
-        # then
-        for response in responses:
-            assert response.status_code == 200
+                # then
+                assert response.status_code == 200
             assert "Crédit restant" not in html_parser.content_as_text(response.data)
 
     def test_get_beneficiary_bookings(self, authenticated_client):
@@ -442,7 +450,10 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         b2 = bookings_factories.UsedBookingFactory(user=user, amount=20)
         bookings_factories.UsedBookingFactory()
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+        user_id = user.id
+        with assert_num_queries(4):  # 2 + user + 1 FF
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
 
         bookings = html_parser.extract_table_rows(response.data, parent_class="bookings-tab-pane")
         assert len(bookings) == 2
@@ -474,14 +485,21 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         user = users_factories.BeneficiaryGrant18Factory()
         bookings_factories.UsedBookingFactory()
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+        user_id = user.id
+        with assert_num_queries(4):  # 2 + user + 1 FF
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
 
         assert not html_parser.extract_table_rows(response.data, parent_class="bookings-tab-pane")
         assert "Aucune réservation à ce jour" in response.data.decode("utf-8")
 
     def test_subscription_items(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+
+        user_id = user.id
+        with assert_num_queries(4):  # 2 + user + 1 FF
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
 
         parsed_html = html_parser.get_soup(response.data)
         underage_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.UNDERAGE.value}")
@@ -521,7 +539,9 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
             dateCreated=datetime.date.today() - datetime.timedelta(days=2),
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+        user_id = user.id
+        with assert_num_queries(4):  # 2 + user + 1 FF
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
 
         parsed_html = html_parser.get_soup(response.data)
 
@@ -591,7 +611,9 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         repository.save(no_date_action)
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+        user_id = user.id
+        with assert_num_queries(4):  # 2 + user + 1 FF
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
 
         # then
         assert response.status_code == 200

@@ -5,12 +5,19 @@ import pytest
 
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import models as users_models
 import pcapi.core.users.factories as users_factories
 
 
 @pytest.mark.usefixtures("db_session")
 class BannerTest:
+    # - authenticated user
+    # - user joinloaded with subscription data
+    expected_num_queries_without_subscription_check = 2
+    # - 3 feature flags checked
+    expected_num_queries_with_subscription_check = expected_num_queries_without_subscription_check + 3
+
     def setup_method(self):
         self.geolocation_banner = {
             "banner": {
@@ -39,17 +46,18 @@ class BannerTest:
         user = users_factories.UserFactory()
 
         client.with_token(email=user.email)
-        response = client.get("/native/v1/banner")
-
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
+            response = client.get("/native/v1/banner")
+            assert response.status_code == 200
 
     def should_return_geolocation_banner_when_not_geolocated(self, client):
         user = users_factories.UserFactory()
 
         client.with_token(email=user.email)
-        response = client.get("/native/v1/banner?isGeolocated=false")
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
+            response = client.get("/native/v1/banner?isGeolocated=false")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == self.geolocation_banner
 
     def should_return_activation_banner_when_user_has_phone_validation_to_complete(self, client):
@@ -57,9 +65,10 @@ class BannerTest:
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
 
         client.with_token(email=user.email)
-        response = client.get("/native/v1/banner?isGeolocated=false")
+        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # 1 FF checked
+            response = client.get("/native/v1/banner?isGeolocated=false")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == self.activation_banner
 
     def should_return_activation_banner_when_user_has_profile_to_complete(self, client):
@@ -69,9 +78,10 @@ class BannerTest:
         )
 
         client.with_token(email=user.email)
-        response = client.get("/native/v1/banner?isGeolocated=false")
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
+            response = client.get("/native/v1/banner?isGeolocated=false")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == self.activation_banner
 
     def should_return_activation_banner_when_user_has_identity_check_to_complete(self, client):
@@ -84,9 +94,10 @@ class BannerTest:
         )
 
         client.with_token(email=user.email)
-        response = client.get("/native/v1/banner?isGeolocated=false")
+        with assert_num_queries(self.expected_num_queries_with_subscription_check):
+            response = client.get("/native/v1/banner?isGeolocated=false")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == self.activation_banner
 
     def should_return_activation_banner_when_user_has_honor_statement_to_complete(self, client):
@@ -102,18 +113,20 @@ class BannerTest:
         )
 
         client.with_token(email=user.email)
-        response = client.get("/native/v1/banner?isGeolocated=false")
+        with assert_num_queries(self.expected_num_queries_with_subscription_check):
+            response = client.get("/native/v1/banner?isGeolocated=false")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == self.activation_banner
 
     def should_not_return_any_banner_when_beneficiary_and_geolocated(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
 
         client.with_token(email=user.email)
-        response = client.get("/native/v1/banner?isGeolocated=true")
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
+            response = client.get("/native/v1/banner?isGeolocated=true")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {"banner": None}
 
     def should_return_activation_banner_with_20_euros_when_15_year_old(self, client):
@@ -121,9 +134,12 @@ class BannerTest:
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
 
         client.with_token(email=user.email)
-        response = client.get("/native/v1/banner?isGeolocated=false")
 
-        assert response.status_code == 200
+        # authenticated user + joined user
+        with assert_num_queries(2):
+            response = client.get("/native/v1/banner?isGeolocated=false")
+            assert response.status_code == 200
+
         assert response.json == {
             "banner": {
                 "name": "activation_banner",
@@ -140,9 +156,10 @@ class BannerTest:
         fraud_factories.UbbleRetryFraudCheckFactory(user=user)
 
         client.with_token(email=user.email)
-        response = client.get("/native/v1/banner")
+        with assert_num_queries(self.expected_num_queries_with_subscription_check):
+            response = client.get("/native/v1/banner")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {
             "banner": {
                 "name": "retry_identity_check_banner",
