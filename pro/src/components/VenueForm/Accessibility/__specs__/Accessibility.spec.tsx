@@ -151,7 +151,7 @@ describe('Accessibility', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Submit' }))
 
     expect(
-      screen.getByText(
+      await screen.findByText(
         'Veuillez sélectionner au moins un critère d’accessibilité'
       )
     ).toBeInTheDocument()
