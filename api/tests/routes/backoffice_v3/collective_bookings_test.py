@@ -150,6 +150,18 @@ class ListCollectiveBookingsTest:
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
 
+    def test_list_bookings_by_name(self, authenticated_client, collective_bookings):
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="Visite des locaux primitifs du pass Culture"))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom de l'offre"] == "Visite des locaux primitifs du pass Culture"
+        assert html_parser.extract_pagination_info(response.data) == (1, 1, 1)
+
     def test_list_bookings_by_id_not_found(self, authenticated_client, collective_bookings):
         # when
         search_query = str(collective_bookings[-1].id * 1000)

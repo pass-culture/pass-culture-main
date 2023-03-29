@@ -129,6 +129,19 @@ class ListIndividualBookingsTest:
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, 1)
 
+    def test_list_bookings_by_offer_name(self, authenticated_client, bookings):
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="Routard Sainte-Hélène"))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID résa"] == str(bookings[0].id)
+        assert rows[0]["Nom de l'offre"] == "Guide du Routard Sainte-Hélène"
+        assert html_parser.extract_pagination_info(response.data) == (1, 1, 1)
+
     def test_list_bookings_by_token_not_found(self, authenticated_client, bookings):
         # when
         with assert_num_queries(self.expected_num_queries):

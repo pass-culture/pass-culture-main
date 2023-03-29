@@ -158,15 +158,16 @@ def _get_individual_bookings(
                     f"%{name}%"
                 ),
             )
+            or_filters.append(sa.func.unaccent(offers_models.Offer.name).ilike(f"%{name}%"))
 
         query = base_query.filter(or_filters[0])
+
         if len(or_filters) > 1:
             # Performance is really better than .filter(sa.or_(...)) when searching for a numeric id
             # On staging: or_ takes 19 minutes, union takes 0.15 second!
             query = query.union(*(base_query.filter(f) for f in or_filters[1:]))
     else:
         query = base_query
-
     # +1 to check if there are more results than requested
     return query.limit(form.limit.data + 1).all()
 
