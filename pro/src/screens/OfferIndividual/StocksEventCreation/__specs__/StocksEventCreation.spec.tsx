@@ -9,6 +9,7 @@ import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { IOfferIndividualStock } from 'core/Offers/types'
 import {
   getOfferIndividualPath,
   getOfferIndividualUrl,
@@ -96,6 +97,25 @@ describe('StocksEventCreation', () => {
 
     expect(screen.queryByText('Comment faire ?')).not.toBeInTheDocument()
     expect(screen.getByText('Date')).toBeInTheDocument()
+  })
+
+  it('should paginate stocks', async () => {
+    const stocks: IOfferIndividualStock[] = []
+    for (let i = 0; i < 30; i++) {
+      stocks.push(individualStockFactory({ priceCategoryId: 1 }))
+    }
+
+    renderWithProviders(
+      <StocksEventCreation offer={individualOfferFactory({ stocks })} />
+    )
+
+    expect(screen.queryAllByRole('button', { name: 'Supprimer' })).toHaveLength(
+      20
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
+    expect(screen.queryAllByRole('button', { name: 'Supprimer' })).toHaveLength(
+      10
+    )
   })
 
   it('should open recurrence modal', async () => {
@@ -295,7 +315,7 @@ describe('deletion', () => {
     await userEvent.click(dates[dates.length - 1])
     await userEvent.click(screen.getByLabelText('Horaire 1'))
     await userEvent.click(screen.getByText('12:00'))
-    await userEvent.click(screen.getByText('Ajouter cette date'))
+    await userEvent.click(screen.getByText('Valider'))
     // stock line are here
     expect(screen.queryByText('Date')).toBeInTheDocument()
 
