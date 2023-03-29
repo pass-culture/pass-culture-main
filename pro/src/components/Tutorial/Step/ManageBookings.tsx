@@ -13,7 +13,7 @@ import styles from './Step.module.scss'
 
 const ManageBookings = ({ titleId }: IStepComponentProps): JSX.Element => (
   <>
-    <h1 id={titleId}>Suivre et gérer vos réservations</h1>
+    <h1 id={titleId}>Suivez et gérez vos réservations</h1>
     <section className={styles['mb-content']}>
       <span className={styles['first-column']}>Validez vos contremarques</span>
       <span className={styles['third-column']}>

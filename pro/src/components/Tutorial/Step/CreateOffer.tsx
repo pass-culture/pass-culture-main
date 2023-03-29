@@ -20,6 +20,7 @@ const CreateOffer = ({
           Les offres seront publiées et réservables par les jeunes via
           l'application pass Culture.
           <br />
+          <br />
           Vous pourrez proposer des offres numériques, physiques et
           d’évènements.
         </p>
@@ -31,6 +32,7 @@ const CreateOffer = ({
           Les offres seront publiées et réservables par les enseignants sur la
           plateforme ADAGE (Application Dédiée À la Généralisation de
           l’Éducation artistique et culturelle).
+          <br />
           <br />
           Vous devez être référencé sur ADAGE afin de proposer des offres à
           destination des enseignants.
