@@ -287,7 +287,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     })
 
     expect(pcapi.postThumbnail).not.toHaveBeenCalled()
-    expect(screen.getByText('api wrong name')).toBeInTheDocument()
+    expect(await screen.findByText('api wrong name')).toBeInTheDocument()
     expect(screen.getByText('api wrong venue')).toBeInTheDocument()
     expect(nextButton).not.toBeDisabled()
     expect(draftButton).not.toBeDisabled()

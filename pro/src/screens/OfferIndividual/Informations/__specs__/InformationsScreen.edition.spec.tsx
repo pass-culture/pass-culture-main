@@ -585,7 +585,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       expectedBody.withdrawalDelay = 140
       expectedBody.withdrawalType = WithdrawalTypeEnum.ON_SITE
 
-      await renderInformationsScreen(props, contextOverride, features)
+      renderInformationsScreen(props, contextOverride, features)
 
       const nameField = screen.getByLabelText('Titre de l’offre')
       await userEvent.clear(nameField)
@@ -610,19 +610,19 @@ describe('screens:OfferIndividual::Informations:edition', () => {
 
       await userEvent.click(submitButton)
 
-      await expect(
+      expect(
         await screen.findByText(
           'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
         )
       ).toBeInTheDocument()
 
-      await expect(api.patchOffer).toHaveBeenCalledTimes(0)
-      await expect(api.getOffer).toHaveBeenCalledTimes(0)
-      await expect(
-        await screen.queryByText('There is the summary route content')
+      expect(api.patchOffer).toHaveBeenCalledTimes(0)
+      expect(api.getOffer).toHaveBeenCalledTimes(0)
+      expect(
+        screen.queryByText('There is the summary route content')
       ).not.toBeInTheDocument()
 
-      await expect(
+      expect(
         await screen.findByText(
           'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
         )
@@ -631,16 +631,16 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       const cancelSendMailButton = await screen.findByText('Ne pas envoyer')
       await userEvent.click(cancelSendMailButton)
 
-      await expect(
-        await screen.queryByText(
+      expect(
+        screen.queryByText(
           'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
         )
       ).not.toBeInTheDocument()
 
-      await expect(api.patchOffer).toHaveBeenCalledTimes(1)
-      await expect(api.patchOffer).toHaveBeenCalledWith('AA', expectedBody)
-      await expect(api.getOffer).toHaveBeenCalledTimes(1)
-      await expect(
+      expect(api.patchOffer).toHaveBeenCalledTimes(1)
+      expect(api.patchOffer).toHaveBeenCalledWith('AA', expectedBody)
+      expect(api.getOffer).toHaveBeenCalledTimes(1)
+      expect(
         await screen.findByText('There is the summary route content')
       ).toBeInTheDocument()
     })
@@ -659,7 +659,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         offererId: offer.venue.offerer.id,
       }
 
-      await renderInformationsScreen(props, contextOverride, features)
+      renderInformationsScreen(props, contextOverride, features)
 
       const nameField = screen.getByLabelText('Titre de l’offre')
       await userEvent.clear(nameField)
@@ -685,7 +685,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
 
       await userEvent.click(submitButton)
 
-      await expect(
+      expect(
         await screen.findByText(
           'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
         )
@@ -696,15 +696,15 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       })
       await userEvent.click(closewithdrawalDialogButton)
 
-      await expect(
-        await screen.queryByText(
+      expect(
+        screen.queryByText(
           'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
         )
       ).not.toBeInTheDocument()
 
-      await expect(api.patchOffer).toHaveBeenCalledTimes(0)
-      await expect(api.getOffer).toHaveBeenCalledTimes(0)
-      await expect(screen.getByText('Titre de l’offre')).toBeInTheDocument()
+      expect(api.patchOffer).toHaveBeenCalledTimes(0)
+      expect(api.getOffer).toHaveBeenCalledTimes(0)
+      expect(screen.getByText('Titre de l’offre')).toBeInTheDocument()
     })
 
     /**
@@ -747,7 +747,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           venueId: offer.venue.id,
           offererId: offer.venue.offerer.id,
         }
-        await renderInformationsScreen(props, contextOverride, features)
+        renderInformationsScreen(props, contextOverride, features)
 
         const nameField = screen.getByLabelText('Titre de l’offre')
         await userEvent.clear(nameField)
@@ -775,15 +775,17 @@ describe('screens:OfferIndividual::Informations:edition', () => {
 
         await userEvent.click(submitButton)
 
-        await expect(
-          await screen.queryByText(
+        expect(
+          screen.queryByText(
             'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
           )
         ).not.toBeInTheDocument()
 
         expect(api.patchOffer).toHaveBeenCalledTimes(1)
         expect(api.patchOffer).toHaveBeenCalledWith('AA', expectedBody)
-        expect(api.getOffer).toHaveBeenCalledTimes(1)
+        await waitFor(() => {
+          expect(api.getOffer).toHaveBeenCalledTimes(1)
+        })
         expect(
           await screen.findByText('There is the summary route content')
         ).toBeInTheDocument()
@@ -806,7 +808,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         venueId: offer.venue.id,
         offererId: offer.venue.offerer.id,
       }
-      await renderInformationsScreen(props, contextOverride, features)
+      renderInformationsScreen(props, contextOverride, features)
 
       const nameField = screen.getByLabelText('Titre de l’offre')
       await userEvent.clear(nameField)
@@ -831,13 +833,15 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       )
       await userEvent.click(submitButton)
 
-      await expect(
-        await screen.queryByText(
+      expect(
+        screen.queryByText(
           'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
         )
       ).not.toBeInTheDocument()
 
-      expect(api.patchOffer).toHaveBeenCalledTimes(1)
+      await waitFor(() => {
+        expect(api.patchOffer).toHaveBeenCalledTimes(1)
+      })
       expect(
         await screen.findByText('There is the summary route content')
       ).toBeInTheDocument()
@@ -888,7 +892,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           venueId: offer.venue.id,
           offererId: offer.venue.offerer.id,
         }
-        await renderInformationsScreen(props, contextOverride, features)
+        renderInformationsScreen(props, contextOverride, features)
 
         const nameField = screen.getByLabelText('Titre de l’offre')
         await userEvent.clear(nameField)
@@ -932,31 +936,31 @@ describe('screens:OfferIndividual::Informations:edition', () => {
 
         await userEvent.click(submitButton)
 
-        await expect(
+        expect(
           await screen.findByText(
             'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
           )
         ).toBeInTheDocument()
 
-        await expect(api.patchOffer).toHaveBeenCalledTimes(0)
-        await expect(api.getOffer).toHaveBeenCalledTimes(0)
-        await expect(
-          await screen.queryByText('There is the summary route content')
+        expect(api.patchOffer).toHaveBeenCalledTimes(0)
+        expect(api.getOffer).toHaveBeenCalledTimes(0)
+        expect(
+          screen.queryByText('There is the summary route content')
         ).not.toBeInTheDocument()
 
         const sendMailButton = await screen.findByText('Envoyer un e-mail')
         await userEvent.click(sendMailButton)
 
-        await expect(
-          await screen.queryByText(
+        expect(
+          screen.queryByText(
             'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
           )
         ).not.toBeInTheDocument()
 
-        await expect(api.patchOffer).toHaveBeenCalledTimes(1)
-        await expect(api.patchOffer).toHaveBeenCalledWith('AA', expectedBody)
-        await expect(api.getOffer).toHaveBeenCalledTimes(1)
-        await expect(
+        expect(api.patchOffer).toHaveBeenCalledTimes(1)
+        expect(api.patchOffer).toHaveBeenCalledWith('AA', expectedBody)
+        expect(api.getOffer).toHaveBeenCalledTimes(1)
+        expect(
           await screen.findByText('There is the summary route content')
         ).toBeInTheDocument()
       }
