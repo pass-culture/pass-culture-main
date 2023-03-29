@@ -3,7 +3,7 @@ import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
 import { IRoute } from 'app/AppRouter/routes_map'
-import { routesSignupJourney } from 'app/AppRouter/subroutes_map'
+import { routesSignupJourney } from 'app/AppRouter/subroutes_signupjourney_map'
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
 import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'

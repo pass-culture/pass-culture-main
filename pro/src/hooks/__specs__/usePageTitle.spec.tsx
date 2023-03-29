@@ -40,9 +40,11 @@ describe('usePageTitle', () => {
       { initialRouterEntries: ['/accueil'] }
     )
   })
-  it('should update page title', async () => {
-    const button = screen.getByRole('link', { name: 'Structures' })
-    await userEvent.click(button)
+  it('should set initial page title', async () => {
+    expect(document.title).toEqual('Accueil - pass Culture Pro')
+  })
+  it('should update page title when user navigates to another page', async () => {
+    await userEvent.click(screen.getByRole('link', { name: 'Structures' }))
     expect(document.title).toEqual(
       'Vos structures juridiques - pass Culture Pro'
     )
