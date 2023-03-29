@@ -1892,6 +1892,19 @@ def get_granted_deposit(
     return None
 
 
+def _recredit_user(user: users_models.User, deposit: models.Deposit) -> models.Recredit | None:
+    if not user.age:
+        return None
+
+    recredit = models.Recredit(
+        deposit=deposit,
+        amount=conf.RECREDIT_TYPE_AMOUNT_MAPPING[conf.RECREDIT_TYPE_AGE_MAPPING[user.age]],
+        recreditType=conf.RECREDIT_TYPE_AGE_MAPPING[user.age],
+    )
+    deposit.amount += recredit.amount
+    return recredit
+
+
 def create_deposit(
     beneficiary: users_models.User,
     deposit_source: str,
@@ -1923,15 +1936,30 @@ def create_deposit(
         expirationDate=granted_deposit.expiration_date,
     )
 
+    # Edge-cases: Validation of the registration occured over a birthday
+    # Then we need to add recredit to compensate
+    if (
+        eligibility == users_models.EligibilityType.UNDERAGE
+        and _can_be_recredited(beneficiary)
+        and beneficiary.age
+        and age_at_registration
+    ):
+        recredit = _recredit_user(beneficiary, deposit)
+        if recredit:
+            # Rare edge-case: Validation is longer than a year and started when user was 15
+            if beneficiary.age == age_at_registration + 2:
+                # User will get grant from registration age and recredit from current age
+                # Therefore missing recredit is 16's one.
+                additional_amount = conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[16]
+                deposit.amount += additional_amount
+
+            db.session.add(recredit)
+
     return deposit
 
 
 def _can_be_recredited(user: users_models.User) -> bool:
-    return (
-        user.deposit_activation_date is not None
-        and _has_celebrated_birthday_since_registration(user)
-        and not _has_been_recredited(user)
-    )
+    return _has_celebrated_birthday_since_registration(user) and not _has_been_recredited(user)
 
 
 def _has_celebrated_birthday_since_registration(user: users_models.User) -> bool:
@@ -1987,23 +2015,19 @@ def recredit_underage_users() -> None:
             .all()
         )
 
-        users_to_recredit = [user for user in users if _can_be_recredited(user)]
+        users_to_recredit = [user for user in users if user.deposit and _can_be_recredited(user)]
         users_and_recredit_amounts = []
         with transaction():
             for user in users_to_recredit:
                 try:
-                    recredit = models.Recredit(
-                        deposit=user.deposit,
-                        amount=conf.RECREDIT_TYPE_AMOUNT_MAPPING[conf.RECREDIT_TYPE_AGE_MAPPING[user.age]],
-                        recreditType=conf.RECREDIT_TYPE_AGE_MAPPING[user.age],
-                    )
-                    users_and_recredit_amounts.append((user, recredit.amount))
-                    recredit.deposit.amount += recredit.amount
-                    user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
+                    recredit = _recredit_user(user, user.deposit)
+                    if recredit:  # recredit will be None is user's age is also None
+                        users_and_recredit_amounts.append((user, recredit.amount))
+                        user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
 
-                    db.session.add(user)
-                    db.session.add(recredit)
-                    total_users_recredited += 1
+                        db.session.add(user)
+                        db.session.add(recredit)
+                        total_users_recredited += 1
                 except Exception as e:  # pylint: disable=broad-except
                     failed_users.append(user.id)
                     logger.exception("Could not recredit user %s: %s", user.id, e)
