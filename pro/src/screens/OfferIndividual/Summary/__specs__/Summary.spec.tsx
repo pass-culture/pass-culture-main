@@ -443,7 +443,7 @@ describe('Summary', () => {
       )
 
       expect(
-        await screen.getByText('Félicitations, vous avez créé votre offre !')
+        await screen.findByText('Félicitations, vous avez créé votre offre !')
       ).toBeInTheDocument()
     })
   })
