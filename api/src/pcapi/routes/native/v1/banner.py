@@ -1,4 +1,7 @@
+from sqlalchemy.orm import joinedload
+
 import pcapi.core.banner.api as banner_api
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import models as users_models
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -11,7 +14,28 @@ from pcapi.serialization.decorator import spectree_serialize
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.BannerResponse)
 @authenticated_and_active_user_required
 def get_banner(user: users_models.User, query: serializers.BannerQueryParams) -> serializers.BannerResponse | None:
-    subscription_state = subscription_api.get_user_subscription_state(user)
+    joined_user = (
+        users_models.User.query.filter_by(id=user.id)
+        .options(
+            joinedload(users_models.User.beneficiaryFraudChecks).load_only(
+                fraud_models.BeneficiaryFraudCheck.dateCreated,
+                fraud_models.BeneficiaryFraudCheck.eligibilityType,
+                fraud_models.BeneficiaryFraudCheck.type,
+                fraud_models.BeneficiaryFraudCheck.status,
+                fraud_models.BeneficiaryFraudCheck.userId,
+                fraud_models.BeneficiaryFraudCheck.reasonCodes,
+                fraud_models.BeneficiaryFraudCheck.updatedAt,
+            ),
+            joinedload(users_models.User.beneficiaryFraudReviews).load_only(
+                fraud_models.BeneficiaryFraudReview.dateReviewed,
+                fraud_models.BeneficiaryFraudReview.review,
+            ),
+            joinedload(users_models.User.deposits),
+        )
+        .one()
+    )
 
-    banner = banner_api.get_banner(subscription_state, user.age, query.is_geolocated)
+    subscription_state = subscription_api.get_user_subscription_state(joined_user)
+
+    banner = banner_api.get_banner(subscription_state, joined_user.age, query.is_geolocated)
     return serializers.BannerResponse(banner=banner)
