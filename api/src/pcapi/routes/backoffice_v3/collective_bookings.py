@@ -139,7 +139,7 @@ def _get_collective_bookings(
             name = clean_accents(name)
             query = base_query.filter(
                 sa.func.unaccent(educational_models.EducationalInstitution.name).ilike(f"%{name}%"),
-            )
+            ).union(base_query.filter(sa.func.unaccent(educational_models.CollectiveOffer.name).ilike(f"%{name}%")))
     else:
         query = base_query
 
