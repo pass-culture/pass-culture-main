@@ -617,7 +617,7 @@ class PostProductTest:
         )
 
         assert response.status_code == 400
-        assert response.json == {"imageFile": "The image is too small. It must be It must be above 400x600 pixels."}
+        assert response.json == {"imageFile": "The image is too small. It must be above 400x600 pixels."}
 
         assert offers_models.Offer.query.first() is None
         assert offers_models.Stock.query.first() is None
