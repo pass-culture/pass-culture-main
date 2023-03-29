@@ -90,6 +90,7 @@ def _ensure_phone_number_unicity(
         reasonCodes=[fraud_models.FraudReasonCode.PHONE_UNVALIDATED_BY_PEER],
         reason=f"Phone number {phone_number} was unvalidated by user {user_validating_phone.id}",
         status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+        eligibilityType=user_with_same_validated_number.eligibility,
         thirdPartyId=f"PC-{user_with_same_validated_number.id}",
     )
 
@@ -99,6 +100,7 @@ def _ensure_phone_number_unicity(
         reasonCodes=[fraud_models.FraudReasonCode.PHONE_UNVALIDATION_FOR_PEER],
         reason=f"The phone number validation had the following side effect: phone number {phone_number} was unvalidated for user {user_with_same_validated_number.id}",
         status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+        eligibilityType=user_validating_phone.eligibility,
         thirdPartyId=f"PC-{user_validating_phone.id}",
     )
 
