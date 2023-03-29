@@ -2202,6 +2202,82 @@ class CreateDepositTest:
         assert deposit.user.id == beneficiary.id
         assert deposit.expirationDate == datetime.datetime(2021 - (age + 1) + 18, 12, 5, 0, 0, 0)
 
+    @pytest.mark.parametrize("age, expected_amount", [(15, Decimal(50)), (16, Decimal(60)), (17, Decimal(300))])
+    def test_create_underage_deposit_and_recredit_after_validation(self, age, expected_amount):
+        with freezegun.freeze_time(
+            datetime.datetime.combine(datetime.datetime.utcnow(), datetime.time(0, 0))
+            - relativedelta(years=age + 1, months=1)  # 16 (or 17) years and 1 month ago, user was born
+        ):
+            beneficiary = users_factories.UserFactory(validatedBirthDate=datetime.datetime.utcnow())
+
+        with freezegun.freeze_time(datetime.datetime.utcnow() - relativedelta(months=2)):
+            # User starts registration at 15 (or 16) years and 11 months old
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=beneficiary,
+                status=fraud_models.FraudCheckStatus.STARTED,
+                type=fraud_models.FraudCheckType.EDUCONNECT,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+                resultContent=fraud_factories.EduconnectContentFactory(
+                    registration_datetime=datetime.datetime.utcnow()
+                ),
+            )
+
+        # Registration is completed 2 months later, when user is 16 (or 17) years and 1 months old
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=beneficiary,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.datetime.utcnow()),
+        )
+
+        # Deposit is created right after the validation of the registration
+        deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility, age_at_registration=age)
+
+        if age < 16:
+            assert deposit.type == models.DepositType.GRANT_15_17
+            assert deposit.version == 1
+        assert deposit.amount == expected_amount
+        assert deposit.user.id == beneficiary.id
+
+    @pytest.mark.parametrize("age, expected_amount", [(15, Decimal(80))])
+    def test_create_underage_deposit_and_recredit_sum_of_15_17(self, age, expected_amount):
+        with freezegun.freeze_time(
+            datetime.datetime.combine(datetime.datetime.utcnow(), datetime.time(0, 0))
+            - relativedelta(years=age + 2, months=1)  # 17 years and 1 month ago, user was born
+        ):
+            beneficiary = users_factories.UserFactory(validatedBirthDate=datetime.datetime.utcnow())
+
+        with freezegun.freeze_time(datetime.datetime.utcnow() - relativedelta(years=1, months=2)):
+            # User starts registration at 15 years and 11 months old
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=beneficiary,
+                status=fraud_models.FraudCheckStatus.STARTED,
+                type=fraud_models.FraudCheckType.EDUCONNECT,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+                resultContent=fraud_factories.EduconnectContentFactory(
+                    registration_datetime=datetime.datetime.utcnow()
+                ),
+            )
+
+        # Registration is completed 2 months later, when user is 16 (or 17) years and 1 months old
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=beneficiary,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.datetime.utcnow()),
+        )
+
+        # Deposit is created right after the validation of the registration
+        deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility, age_at_registration=age)
+
+        if age < 16:
+            assert deposit.type == models.DepositType.GRANT_15_17
+            assert deposit.version == 1
+        assert deposit.amount == expected_amount
+        assert deposit.user.id == beneficiary.id
+
     @freezegun.freeze_time("2022-09-05 09:00:00")
     def test_create_18_years_old_deposit(self):
         beneficiary = users_factories.UserFactory()
