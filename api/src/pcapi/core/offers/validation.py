@@ -442,7 +442,7 @@ def check_offer_extra_data(
 
     try:
         _check_ean_field(extra_data)
-        _check_isbn_or_ean_does_not_exist(extra_data, venue)
+        check_isbn_or_ean_does_not_exist(extra_data, venue)
     except (exceptions.EanFormatException, exceptions.OfferAlreadyExists) as e:
         errors.add_client_error(e)
 
@@ -458,7 +458,7 @@ def check_offer_extra_data(
         raise errors
 
 
-def _check_isbn_or_ean_does_not_exist(extra_data: models.OfferExtraData | None, venue: offerers_models.Venue) -> None:
+def check_isbn_or_ean_does_not_exist(extra_data: models.OfferExtraData | None, venue: offerers_models.Venue) -> None:
     if not extra_data:
         return
     ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
