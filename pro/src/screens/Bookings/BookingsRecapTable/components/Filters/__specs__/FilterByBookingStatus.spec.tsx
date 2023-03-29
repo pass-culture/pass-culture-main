@@ -97,12 +97,12 @@ describe('components | FilterByBookingStatus', () => {
   })
 
   describe('on focus on the filter icon', () => {
-    it('should display a red filter icon', () => {
+    it('should display a red filter icon', async () => {
       // given
       renderFilterByBookingStatus(props)
 
       // when
-      screen.getByRole('button').focus()
+      await userEvent.click(screen.getByRole('button'))
 
       // then
       const filterIcon = screen.getByRole('img')
@@ -131,10 +131,10 @@ describe('components | FilterByBookingStatus', () => {
       // given
       renderFilterByBookingStatus(props)
       await userEvent.click(screen.getByRole('img'))
-      const checkbox = screen.getAllByRole('checkbox')[1]
 
       // when
-      checkbox.click()
+      await userEvent.click(screen.getAllByRole('checkbox')[1])
+
       // then
       expect(props.updateGlobalFilters).toHaveBeenCalledWith({
         bookingStatus: ['validated'],
@@ -146,10 +146,8 @@ describe('components | FilterByBookingStatus', () => {
       renderFilterByBookingStatus(props)
       await userEvent.click(screen.getByRole('img'))
 
-      const checkbox = screen.getAllByRole('checkbox')[1]
-
       // when
-      checkbox.click()
+      await userEvent.click(screen.getAllByRole('checkbox')[1])
 
       // then
       expect(props.updateGlobalFilters).toHaveBeenCalledWith({
@@ -163,11 +161,11 @@ describe('components | FilterByBookingStatus', () => {
       await userEvent.click(screen.getByRole('img'))
 
       const validatedStatusCheckbox = screen.getAllByRole('checkbox')[1]
-      validatedStatusCheckbox.click()
-      const bookedStatusCheckbox = screen.getAllByRole('checkbox')[0]
+      await userEvent.click(validatedStatusCheckbox)
 
       // when
-      bookedStatusCheckbox.click()
+      const bookedStatusCheckbox = screen.getAllByRole('checkbox')[0]
+      await userEvent.click(bookedStatusCheckbox)
 
       // then
       expect(props.updateGlobalFilters).toHaveBeenCalledWith({
