@@ -191,7 +191,7 @@ def format_offer_category(subcategory_id: str) -> str:
     return ""
 
 
-def format_dms_cb_status(status: str) -> str:
+def format_dms_status(status: str) -> str:
     match status:
         case "accepte":
             return "Accepté"
@@ -287,7 +287,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
-    app.jinja_env.filters["format_dms_cb_status"] = format_dms_cb_status
+    app.jinja_env.filters["format_dms_status"] = format_dms_status
     app.jinja_env.filters["filter_homologation_tags"] = filter_homologation_tags
     app.jinja_env.filters["format_fraud_check_url"] = format_fraud_check_url
     app.jinja_env.filters["format_role"] = format_role

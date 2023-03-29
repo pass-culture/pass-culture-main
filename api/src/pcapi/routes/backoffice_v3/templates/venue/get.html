@@ -158,6 +158,12 @@
                   {% endif %}
                 </span>
               </p>
+              {% if venue.dms_adage_status %}
+                <p class="mb-1">
+                  <span class="fw-bold">Statut du dossier DMS Adage :</span>
+                  {{ venue.dms_adage_status | format_dms_status }}
+                </p>
+              {% endif %}
               {% if venue.adageId %}
                 <p class="mb-1">
                   <span class="fw-bold">ID Adage :</span>
@@ -197,7 +203,7 @@
               {% if dms_stats %}
                 <p class="mb-1">
                   <span class="fw-bold">Statut DMS CB : </span>
-                  {{ dms_stats.status | format_dms_cb_status }}
+                  {{ dms_stats.status | format_dms_status }}
                 </p>
                 {% if dms_stats.status == "accepte" %}
                   <p class="mb-1">

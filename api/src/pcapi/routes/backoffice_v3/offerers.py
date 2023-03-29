@@ -15,6 +15,7 @@ from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
+from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -139,6 +140,23 @@ def get_offerer(offerer_id: int) -> offerers_models.Offerer:
             sa.orm.joinedload(offerers_models.Offerer.action_history).joinedload(history_models.ActionHistory.user),
             sa.orm.joinedload(offerers_models.Offerer.action_history).joinedload(
                 history_models.ActionHistory.authorUser
+            ),
+        )
+        .options(
+            sa.orm.joinedload(offerers_models.Offerer.managedVenues)
+            .load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.siret,
+                offerers_models.Venue.venueTypeCode,
+                offerers_models.Venue.isVirtual,
+                offerers_models.Venue.managingOffererId,
+            )
+            .joinedload(offerers_models.Venue.collectiveDmsApplications)
+            .load_only(
+                educational_models.CollectiveDmsApplication.state,
+                educational_models.CollectiveDmsApplication.lastChangeDate,
             ),
         )
         .one_or_none()
