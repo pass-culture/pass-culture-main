@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -112,38 +112,44 @@ describe('reimbursementsWithFilters', () => {
       '2020-12-15',
       undefined
     )
-    expect(screen.queryAllByRole('row').length).toEqual(4)
+    await waitFor(() => {
+      expect(screen.queryAllByRole('row').length).toEqual(4)
+    })
     expect(screen.queryAllByRole('columnheader').length).toEqual(5)
-    const reimbursementCells = screen
-      .queryAllByRole('cell')
-      .map(cell => cell.innerHTML)
-    const first_line = [
+
+    const firstLine = [
       '10-02-2022',
       'First business Unit',
       'J987654321',
       'VIR9, VIR12',
       '75&nbsp;€',
     ]
-    const second_line = [
+    const secondLine = [
       '11-03-2022',
       'Second business Unit',
       'J666666666',
       'VIR4',
       '50&nbsp;€',
     ]
-    const third_line = [
+    const thirdLine = [
       '13-02-2022',
       'First business Unit',
       'J123456789',
       'VIR7',
       '100&nbsp;€',
     ]
-    expect(reimbursementCells.slice(0, 5)).toEqual(first_line)
-    expect(reimbursementCells[5]).toContain('J987654321.invoice')
-    expect(reimbursementCells.slice(6, 11)).toEqual(second_line)
-    expect(reimbursementCells[11]).toContain('J666666666.invoice')
-    expect(reimbursementCells.slice(12, 17)).toEqual(third_line)
-    expect(reimbursementCells[17]).toContain('J123456789.invoice')
+
+    await waitFor(() => {
+      const reimbursementCells = screen
+        .queryAllByRole('cell')
+        .map(cell => cell.innerHTML)
+      expect(reimbursementCells.slice(0, 5)).toEqual(firstLine)
+      expect(reimbursementCells[5]).toContain('J987654321.invoice')
+      expect(reimbursementCells.slice(6, 11)).toEqual(secondLine)
+      expect(reimbursementCells[11]).toContain('J666666666.invoice')
+      expect(reimbursementCells.slice(12, 17)).toEqual(thirdLine)
+      expect(reimbursementCells[17]).toContain('J123456789.invoice')
+    })
   })
 
   it('should reorder invoices on order buttons click', async () => {
@@ -153,8 +159,10 @@ describe('reimbursementsWithFilters', () => {
     })
     await userEvent.click(button)
 
-    const reimbursementCells = await screen.getAllByRole('cell')
-    expect(reimbursementCells[3].innerHTML).toContain('VIR9, VIR12')
+    const reimbursementCells = await screen.findAllByRole('cell')
+    await waitFor(() => {
+      expect(reimbursementCells[3].innerHTML).toContain('VIR9, VIR12')
+    })
     expect(reimbursementCells[9].innerHTML).toContain('VIR4')
     expect(reimbursementCells[15].innerHTML).toContain('VIR7')
     const orderButton = screen.getByText('N° de virement')
