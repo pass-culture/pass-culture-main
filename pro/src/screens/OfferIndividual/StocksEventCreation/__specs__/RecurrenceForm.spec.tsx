@@ -57,7 +57,7 @@ describe('RecurrenceForm', () => {
       '2'
     )
 
-    await userEvent.click(screen.getByText('Ajouter cette date'))
+    await userEvent.click(screen.getByText('Valider'))
     expect(onConfirm).toHaveBeenCalled()
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(

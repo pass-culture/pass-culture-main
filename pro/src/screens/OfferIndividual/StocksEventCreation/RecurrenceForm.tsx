@@ -298,7 +298,7 @@ export const RecurrenceForm = ({
             Icon={CircleArrowIcon}
             iconPosition={IconPositionEnum.RIGHT}
           >
-            Ajouter cette date
+            Valider
           </SubmitButton>
         </div>
       </form>
