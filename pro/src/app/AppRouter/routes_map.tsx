@@ -31,8 +31,6 @@ import { OfferIndividualWizard } from 'pages/OfferIndividualWizard'
 import OffersRoute from 'pages/Offers'
 import OfferType from 'pages/OfferType'
 import Reimbursements from 'pages/Reimbursements'
-import SetPassword from 'pages/SetPassword/SetPassword'
-import SetPasswordConfirm from 'pages/SetPasswordConfirm/SetPasswordConfirm'
 import SignIn from 'pages/SignIn/SignIn'
 import Signup from 'pages/Signup/Signup'
 import { SignupJourneyRoutes } from 'pages/SignupJourneyRoutes'
@@ -143,54 +141,6 @@ const routes: IRoute[] = [
     element: <CollectiveBookings />,
     path: '/reservations/collectives',
     title: 'Réservations',
-  },
-  {
-    element: <SetPassword />,
-    path: '/creation-de-mot-de-passe',
-    title: 'Création de mot de passe',
-    meta: {
-      public: true,
-      layoutConfig: {
-        fullscreen: true,
-        pageName: 'sign-in',
-      },
-    },
-  },
-  {
-    element: <SetPassword />,
-    path: '/creation-de-mot-de-passe/:token',
-    title: 'Création de mot de passe',
-    meta: {
-      public: true,
-      layoutConfig: {
-        fullscreen: true,
-        pageName: 'sign-in',
-      },
-    },
-  },
-  {
-    element: <SetPasswordConfirm />,
-    path: '/creation-de-mot-de-passe-confirmation',
-    title: 'Confirmation création de mot de passe',
-    meta: {
-      public: true,
-      layoutConfig: {
-        fullscreen: true,
-        pageName: 'sign-in',
-      },
-    },
-  },
-  {
-    element: <SetPasswordConfirm />,
-    path: '/creation-de-mot-de-passe-erreur',
-    title: 'Erreur de création de mot de passe',
-    meta: {
-      public: true,
-      layoutConfig: {
-        fullscreen: true,
-        pageName: 'sign-in',
-      },
-    },
   },
   {
     element: <SignIn />,
