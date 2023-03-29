@@ -81,7 +81,7 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
 
     await userEvent.click(screen.getByText('Submit'))
     expect(
-      screen.getByText('Vous devez cocher l’une des options ci-dessus')
+      await screen.findByText('Vous devez cocher l’une des options ci-dessus')
     ).toBeInTheDocument()
     expect(
       screen.queryByText('Vous devez choisir l’une des options ci-dessus')
