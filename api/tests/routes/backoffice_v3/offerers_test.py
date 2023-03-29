@@ -297,6 +297,24 @@ class UpdateOffererTest:
         for item in ("Adresse", "Code postal", "Ville"):
             assert item not in history_rows[0]["Commentaire"]
 
+    def test_update_offerer_empty_name(self, legit_user, authenticated_client):
+        offerer = offerers_factories.OffererFactory(name="Original")
+
+        base_form = {
+            "name": "",
+            "city": offerer.city,
+            "postal_code": offerer.postalCode,
+            "address": offerer.address,
+            "tags": [],
+        }
+
+        response = self.update_offerer(authenticated_client, offerer, base_form)
+        assert response.status_code == 400
+        assert "Les données envoyées comportent des erreurs" in html_parser.extract_alert(response.data)
+
+        assert offerer.name == "Original"
+        assert len(offerer.action_history) == 0
+
     def update_offerer(self, authenticated_client, offerer_to_edit, form):
         # generate csrf token
         edit_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_to_edit.id)

@@ -49,7 +49,7 @@ offerer_blueprint = utils.child_backoffice_blueprint(
 
 def render_offerer_details(
     offerer: offerers_models.Offerer, edit_offerer_form: offerer_forms.EditOffererForm | None = None
-) -> utils.BackofficeResponse:
+) -> str:
     basic_info = offerers_api.get_offerer_basic_info(offerer.id)
 
     if not basic_info:
@@ -222,7 +222,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
             """
         ).format()
         flash(msg, "warning")
-        return render_offerer_details(offerer=offerer, edit_offerer_form=form)
+        return render_offerer_details(offerer=offerer, edit_offerer_form=form), 400
 
     modified_info = offerers_api.update_offerer(
         offerer,
