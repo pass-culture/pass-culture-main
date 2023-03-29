@@ -65,7 +65,9 @@ describe('src | components | pages | LostPassword', () => {
       await userEvent.click(screen.getByText(/Envoyer/))
 
       // he has been redirected to final step
-      expect(screen.getByText(/Mot de passe changé !/)).toBeInTheDocument()
+      expect(
+        await screen.findByText(/Mot de passe changé !/)
+      ).toBeInTheDocument()
       expect(screen.getByText(/Se connecter/)).toBeInTheDocument()
     })
   })
