@@ -79,13 +79,14 @@ class CommonTest:
             assert fraud_api.is_subscription_name_valid(name) is True
 
     def test_create_profile_completion_fraud_check(self, caplog):
-        user = users_factories.UserFactory()
+        user = users_factories.EligibleGrant18Factory()
         content = fraud_factories.ProfileCompletionContentFactory(origin="Origine orignale")
         fraud_api.create_profile_completion_fraud_check(user, user.eligibility, content)
         profile_completion_fraud_check = user.beneficiaryFraudChecks[0]
 
         assert profile_completion_fraud_check.type == fraud_models.FraudCheckType.PROFILE_COMPLETION
         assert profile_completion_fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert profile_completion_fraud_check.eligibilityType == users_models.EligibilityType.AGE18
 
         # try to create duplicate
         fraud_api.create_profile_completion_fraud_check(user, user.eligibility, content)
