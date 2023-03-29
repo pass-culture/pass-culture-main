@@ -178,13 +178,9 @@ def _save_image(image_body: serialization.ImageBody, offer: offers_models.Offer)
         )
     except offers_exceptions.ImageValidationError as error:
         if isinstance(error, offers_exceptions.ImageTooSmall):
-            message = (
-                f"The image is too small. It must be It must be above {MIN_IMAGE_WIDTH}x{MIN_IMAGE_HEIGHT} pixels."
-            )
+            message = f"The image is too small. It must be above {MIN_IMAGE_WIDTH}x{MIN_IMAGE_HEIGHT} pixels."
         elif isinstance(error, offers_exceptions.ImageTooLarge):
-            message = (
-                f"The image is too large. It must be It must be below {MAX_IMAGE_WIDTH}x{MAX_IMAGE_HEIGHT} pixels."
-            )
+            message = f"The image is too large. It must be below {MAX_IMAGE_WIDTH}x{MAX_IMAGE_HEIGHT} pixels."
         elif isinstance(error, offers_exceptions.UnacceptedFileType):
             message = f"The image format is not accepted. It must be in {offers_validation.ACCEPTED_THUMBNAIL_FORMATS}."
         elif isinstance(error, offers_exceptions.UnidentifiedImage):
