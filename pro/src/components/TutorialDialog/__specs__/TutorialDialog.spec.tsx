@@ -17,7 +17,7 @@ const stepTitles = [
   'Bienvenue dans l’espace acteurs culturels',
   'Paramétrez votre espace PRO',
   'Créez et publiez vos offres à destination :',
-  'Suivre et gérer vos réservations',
+  'Suivez et gérez vos réservations',
 ]
 
 const renderTutorialDialog = (storeOverrides: any) =>
