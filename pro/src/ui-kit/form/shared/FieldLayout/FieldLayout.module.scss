@@ -77,6 +77,8 @@
 
   &-input-description {
     @include fonts.caption;
+
+    color: colors.$grey-dark;
   }
 }
 
