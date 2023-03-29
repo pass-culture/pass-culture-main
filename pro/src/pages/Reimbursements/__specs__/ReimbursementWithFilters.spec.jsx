@@ -195,10 +195,13 @@ describe('reimbursementsWithFilters', () => {
     expect(buttons.display).toBeInTheDocument()
 
     expect(buttons.download).toBeEnabled()
-    expect(buttons.display).toHaveAttribute(
-      'href',
-      `/remboursements-details?reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15`
-    )
+
+    await waitFor(() => {
+      expect(buttons.display).toHaveAttribute(
+        'href',
+        `/remboursements-details?reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15`
+      )
+    })
   })
 
   it('should disable buttons if one or both of the period dates are not filled', async () => {
@@ -318,10 +321,12 @@ describe('reimbursementsWithFilters', () => {
     const { buttons, filters } = await getElementsOnLoadingComplete()
 
     // then
-    expect(buttons.display).toHaveAttribute(
-      'href',
-      `/remboursements-details?${initialFilterUrlParams}`
-    )
+    await waitFor(() => {
+      expect(buttons.display).toHaveAttribute(
+        'href',
+        `/remboursements-details?${initialFilterUrlParams}`
+      )
+    })
     const options = await within(filters.venue).findAllByRole('option')
     await userEvent.selectOptions(filters.venue, [options[1].value])
     expect(buttons.display).toHaveAttribute(
