@@ -9,6 +9,7 @@ import useLogNavigation from 'hooks/useLogNavigation'
 import usePageTitle from 'hooks/usePageTitle'
 import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
 import { URL_FOR_MAINTENANCE } from 'utils/config'
+
 export interface IAppProps {
   children: JSX.Element
 }
