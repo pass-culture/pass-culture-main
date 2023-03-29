@@ -10,6 +10,7 @@ from pcapi.core.mails.transactional import send_venue_provider_deleted_email
 from pcapi.core.mails.transactional import send_venue_provider_disabled_email
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.repository import find_venue_by_id
+import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.providers.constants as providers_constants
@@ -355,7 +356,7 @@ def _build_new_offers_from_stock_details(
             continue
 
         product = products_by_provider_reference[stock_detail.products_provider_reference]
-        offer = _build_new_offer(
+        offer = offers_api.build_new_offer_from_product(
             venue,
             product,
             id_at_provider=stock_detail.products_provider_reference,
@@ -462,26 +463,6 @@ def _validate_stock_or_offer(model: offers_models.Offer | offers_models.Stock) -
         return False
 
     return True
-
-
-def _build_new_offer(
-    venue: offerers_models.Venue,
-    product: offers_models.Product,
-    id_at_provider: str,
-    provider_id: int | None,
-) -> offers_models.Offer:
-    return offers_models.Offer(
-        bookingEmail=venue.bookingEmail,
-        description=product.description,
-        extraData=product.extraData,
-        idAtProvider=id_at_provider,
-        lastProviderId=provider_id,
-        name=product.name,
-        productId=product.id,
-        venueId=venue.id,
-        subcategoryId=product.subcategoryId,
-        withdrawalDetails=venue.withdrawalDetails,
-    )
 
 
 def _should_reindex_offer(new_quantity: int, new_price: decimal.Decimal, existing_stock: dict) -> bool:

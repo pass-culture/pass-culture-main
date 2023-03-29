@@ -93,6 +93,26 @@ def list_offers_for_pro_user(
     )
 
 
+def build_new_offer_from_product(
+    venue: offerers_models.Venue,
+    product: models.Product,
+    id_at_provider: str | None,
+    provider_id: int | None,
+) -> models.Offer:
+    return models.Offer(
+        bookingEmail=venue.bookingEmail,
+        description=product.description,
+        extraData=product.extraData,
+        idAtProvider=id_at_provider,
+        lastProviderId=provider_id,
+        name=product.name,
+        productId=product.id,
+        venueId=venue.id,
+        subcategoryId=product.subcategoryId,
+        withdrawalDetails=venue.withdrawalDetails,
+    )
+
+
 def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | None) -> models.OfferExtraData | None:
     """Keep only the fields that are defined in the subcategory conditional fields"""
     if extra_data is None:

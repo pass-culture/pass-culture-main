@@ -7,6 +7,7 @@ from sqlalchemy import orm as sqla_orm
 from pcapi import repository
 from pcapi import settings
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.external.attributes import api as attributes_api
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
@@ -249,6 +250,87 @@ def post_product_offer(
     return serialization.ProductOfferResponse.build_product_offer(created_offer)
 
 
+@blueprint.v1_blueprint.route("/products/ean", methods=["POST"])
+@spectree_serialize(
+    api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
+)
+@api_key_required
+@public_utils.individual_offers_api_provider
+def post_product_offer_by_ean(
+    individual_offers_provider: providers_models.Provider, body: serialization.ProductOfferByEanCreation
+) -> serialization.ProductOfferResponse:
+    """
+    Create a product offer using its European Article Number (EAN-13).
+    """
+    product = offers_models.Product.query.filter(
+        offers_models.Product.extraData["ean"].astext == body.ean
+    ).one_or_none()
+    if not product:
+        raise api_errors.ApiErrors({"ean": ["The product is not present in pass Culture's database"]}, status_code=404)
+
+    venue = _retrieve_venue_from_location(body.location)
+    try:
+        with repository.transaction():
+            created_offer = _create_offer_from_product(
+                venue, product, body.id_at_provider, individual_offers_provider.id, body.accessibility
+            )
+
+            if body.stock:
+                offers_api.create_stock(
+                    offer=created_offer,
+                    price=finance_utils.to_euros(body.stock.price),
+                    quantity=serialization.deserialize_quantity(body.stock.quantity),
+                    booking_limit_datetime=body.stock.booking_limit_datetime,
+                    creating_provider=individual_offers_provider,
+                )
+
+            offers_api.publish_offer(created_offer, user=None)
+
+    except offers_exceptions.OfferCreationBaseException as error:
+        raise api_errors.ApiErrors(error.errors, status_code=400)
+
+    return serialization.ProductOfferResponse.build_product_offer(created_offer)
+
+
+def _create_offer_from_product(
+    venue: offerers_models.Venue,
+    product: offers_models.Product,
+    id_at_provider: str | None,
+    provider_id: int | None,
+    accessibility: serialization.Accessibility | None,
+) -> offers_models.Offer:
+    if venue.isVirtual and accessibility is None:
+        raise api_errors.ApiErrors(
+            {"accessibility": ["The accessibility is required when the location type is digital"]}
+        )
+
+    offers_validation.check_isbn_or_ean_does_not_exist(product.extraData, venue)
+
+    offer = offers_api.build_new_offer_from_product(venue, product, id_at_provider, provider_id)
+    if accessibility:
+        offer.audioDisabilityCompliant = accessibility.audio_disability_compliant
+        offer.mentalDisabilityCompliant = accessibility.mental_disability_compliant
+        offer.motorDisabilityCompliant = accessibility.motor_disability_compliant
+        offer.visualDisabilityCompliant = accessibility.visual_disability_compliant
+    else:
+        offer.audioDisabilityCompliant = venue.audioDisabilityCompliant
+        offer.mentalDisabilityCompliant = venue.mentalDisabilityCompliant
+        offer.motorDisabilityCompliant = venue.motorDisabilityCompliant
+        offer.visualDisabilityCompliant = venue.visualDisabilityCompliant
+
+    repository.repository.add_to_session(offer)
+
+    logger.info(
+        "models.Offer has been created",
+        extra={"offer_id": offer.id, "venue_id": venue.id, "product_id": offer.productId},
+        technical_message_id="offer.created",
+    )
+
+    attributes_api.update_external_pro(venue.bookingEmail)
+
+    return offer
+
+
 def _deserialize_ticket_collection(
     ticket_collection: serialization.SentByEmailDetails | serialization.OnSiteCollectionDetails | None,
     subcategory_id: str,
@@ -418,7 +500,7 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
 @api_key_required
 def get_product_by_ean(ean: str) -> serialization.ProductOfferResponse:
     """
-    Get a product offer.
+    Get a product offer using its European Article Number.
     """
     offer: offers_models.Offer | None = (
         _retrieve_offer_relations_query(_retrieve_offer_by_ean_query(ean))

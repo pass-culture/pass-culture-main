@@ -88,9 +88,12 @@ class DigitalLocation(serialization.ConfiguredBaseModel):
     )
 
 
+EAN_FIELD = pydantic.Field(example="1234567890123", description="European Article Number (EAN-13)")
+
+
 class ExtraDataModel(serialization.ConfiguredBaseModel):
     author: str | None = pydantic.Field(example="Jane Doe")
-    ean: str | None = pydantic.Field(example="12345678")
+    ean: str | None = EAN_FIELD
     isbn: str | None = pydantic.Field(None, example="9783140464079")
     musicType: MusicTypeEnum | None  # type: ignore [valid-type]
     performer: str | None = pydantic.Field(example="Jane Doe")
@@ -123,6 +126,9 @@ EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic.Field(
     None,
     description="Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
     example="https://example.com",
+)
+ID_AT_PROVIDER_FIELD = pydantic.Field(
+    description="The ID of the offer in your database. May be used to assert proper synchronization."
 )
 IMAGE_CREDIT_FIELD = pydantic.Field(None, description="Image owner or author.", example="Jane Doe")
 WITHDRAWAL_DETAILS_FIELD = pydantic.Field(
@@ -438,6 +444,22 @@ class ProductOfferCreation(OfferCreationBase):
         extra = "forbid"
 
 
+class ProductOfferByEanCreation(serialization.ConfiguredBaseModel):
+    accessibility: Accessibility | None = pydantic.Field(
+        description="Accessibility for people with disabilities. Required when the location type is digital. If left empty, the default accessibility criteria from the physical location is used."
+    )
+    if typing.TYPE_CHECKING:
+        ean: str = EAN_FIELD
+    else:
+        ean: pydantic.constr(min_length=13, max_length=13) = EAN_FIELD
+    id_at_provider: str | None = ID_AT_PROVIDER_FIELD
+    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
+    stock: StockCreation | None
+
+    class Config:
+        extra = "forbid"
+
+
 class DecimalPriceGetterDict(GetterDict):
     def get(self, key: str, default: typing.Any = None) -> typing.Any:
         if key == "price" and isinstance(self._obj.price, decimal.Decimal):
@@ -636,6 +658,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     description: str | None = DESCRIPTION_FIELD
     external_ticket_office_url: pydantic.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageResponse | None
+    id_at_provider: str | None = ID_AT_PROVIDER_FIELD
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     name: str = NAME_FIELD
@@ -664,6 +687,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
             accessibility=Accessibility.from_orm(offer),
             external_ticket_office_url=offer.externalTicketOfficeUrl,  # type: ignore [arg-type]
             image=offer.image,  # type: ignore [arg-type]
+            id_at_provider=offer.idAtProvider,
             is_duo=offer.isDuo,
             location=DigitalLocation.from_orm(offer) if offer.isDigital else PhysicalLocation.from_orm(offer),
             name=offer.name,
