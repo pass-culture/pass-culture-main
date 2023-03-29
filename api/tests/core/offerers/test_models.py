@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import patch
 
 import pytest
@@ -303,3 +304,24 @@ class OffererFirstUserPropertyTest:
         factories.UserOffererFactory.create_batch(3, offerer=offerer)
 
         assert offerer.first_user == first.user
+
+
+class VenueDmsAdageStatusTest:
+    def test_dms_adage_status_when_no_dms_application(self):
+        venue = factories.VenueFactory()
+
+        assert venue.dms_adage_status is None
+
+    def test_dms_adage_status_when_multiple_dms_application(self):
+        venue = factories.VenueFactory()
+        educational_factories.CollectiveDmsApplicationFactory.create_batch(
+            2, venue=venue, lastChangeDate=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        )
+        latest = educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue, state="accepte", lastChangeDate=datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+        )
+        educational_factories.CollectiveDmsApplicationFactory.create_batch(
+            2, venue=venue, lastChangeDate=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        )
+
+        assert venue.dms_adage_status == latest.state

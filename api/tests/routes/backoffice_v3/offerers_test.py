@@ -6,6 +6,7 @@ import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import factories as history_factories
@@ -746,6 +747,7 @@ class GetOffererDetailsTest:
         other_offerer = offerers_factories.OffererFactory()
         venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
         venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        educational_factories.CollectiveDmsApplicationFactory(venue=venue_2)
         offerers_factories.VenueFactory(managingOfferer=other_offerer)
 
         url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
@@ -764,11 +766,13 @@ class GetOffererDetailsTest:
         assert rows[0]["SIRET"] == venue_1.siret
         assert rows[0]["Nom"] == venue_1.name
         assert rows[0]["Type de lieu"] == venue_1.venueTypeCode.value
+        assert rows[0]["Statut du dossier DMS Adage"] == ""
 
         assert rows[1]["ID"] == str(venue_2.id)
         assert rows[1]["SIRET"] == venue_2.siret
         assert rows[1]["Nom"] == venue_2.name
         assert rows[1]["Type de lieu"] == venue_2.venueTypeCode.value
+        assert rows[1]["Statut du dossier DMS Adage"] == "En construction"
 
 
 class GetOffererHistoryDataTest:

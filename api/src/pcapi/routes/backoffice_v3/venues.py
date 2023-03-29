@@ -13,6 +13,7 @@ from werkzeug.exceptions import NotFound
 from pcapi import settings
 from pcapi.connectors.dms.api import DMSGraphQLClient
 from pcapi.core.criteria import models as criteria_models
+from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.history.models as history_models
 from pcapi.core.offerers import api as offerers_api
@@ -50,6 +51,10 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
             sa.orm.joinedload(offerers_models.Venue.bankInformation),
             sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links),
             sa.orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
+            sa.orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
+                educational_models.CollectiveDmsApplication.state,
+                educational_models.CollectiveDmsApplication.lastChangeDate,
+            ),
         )
         .one_or_none()
     )

@@ -9,6 +9,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import models as history_models
@@ -77,9 +78,10 @@ class GetVenueTest:
         assert f"E-mail : {venue.bookingEmail} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
         assert "Référencement Adage : Non" in response_text
+        assert "Statut dossier DMS Adage :" not in response_text
         assert "ID Adage" not in response_text
         assert f"Site web : {venue.contact.website}" in response_text
-        assert "Pas de dossier DMS" in response_text
+        assert "Pas de dossier DMS CB" in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Lieu" in badges
@@ -195,6 +197,16 @@ class GetVenueTest:
         # then
         assert response.status_code == 200
         assert "Pas de dossier DMS CB" in html_parser.content_as_text(response.data)
+
+    def test_get_venue_with_dms_adage_status(self, authenticated_client, random_venue):
+        educational_factories.CollectiveDmsApplicationFactory(venue=random_venue, state="en_construction")
+
+        # when
+        response = authenticated_client.get(url_for("backoffice_v3_web.venue.get", venue_id=random_venue.id))
+
+        # then
+        assert response.status_code == 200
+        assert "Statut du dossier DMS Adage : En construction" in html_parser.content_as_text(response.data)
 
 
 class GetVenueStatsDataTest:

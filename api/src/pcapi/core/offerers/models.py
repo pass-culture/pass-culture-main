@@ -336,6 +336,14 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         return self.bankInformation.applicationId
 
     @property
+    def dms_adage_status(self) -> str | None:
+        if self.collectiveDmsApplications:
+            return sorted(
+                self.collectiveDmsApplications, key=lambda application: application.lastChangeDate, reverse=True  # type: ignore [arg-type, return-value]
+            )[0].state
+        return None
+
+    @property
     def hasPendingBankInformationApplication(self) -> bool:
         if not self.bankInformation:
             return False
