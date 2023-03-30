@@ -24,7 +24,7 @@ def get_email_validation_to_admin_email_data(token: str) -> models.Transactional
     return models.TransactionalEmailData(
         template=TransactionalEmail.EMAIL_VALIDATION_TO_PRO.value,
         params={
-            "EMAIL_VALIDATION_LINK": f"{settings.PRO_URL}/creation-de-mot-de-passe/{token}",
+            "EMAIL_VALIDATION_LINK": f"{settings.PRO_URL}/mot-de-passe-perdu?token={token}",
         },
     )
 

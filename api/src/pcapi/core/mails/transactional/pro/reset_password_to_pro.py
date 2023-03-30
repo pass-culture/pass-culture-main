@@ -27,29 +27,6 @@ def send_reset_password_email_to_pro(user: users_models.User, token: users_model
     return mails.send(recipients=[user.email], data=data)
 
 
-def get_reset_password_link_to_admin_email_data(
-    created_user: users_models.User, reset_password_link: str
-) -> models.TransactionalWithoutTemplateEmailData:
-    return models.TransactionalWithoutTemplateEmailData(
-        subject="Création d'un compte pro",
-        html_content=(
-            "<html><head></head><body>"
-            "<div><div>Bonjour,</div>"
-            f"<div>Vous venez de créer le compte de {created_user.full_name}.</div>"
-            f"<div>Le lien de création de mot de passe est <a href='{reset_password_link}'>{reset_password_link}</a></div>"
-        ),
-    )
-
-
-def send_reset_password_link_to_admin_email(
-    created_user: users_models.User,
-    admin_email: users_models.User,
-    reset_password_link: str,
-) -> bool:
-    data = get_reset_password_link_to_admin_email_data(created_user, reset_password_link)
-    return mails.send(recipients=[admin_email], data=data)
-
-
 def get_reset_password_from_connected_pro_email_data(user: users_models.User) -> models.TransactionalEmailData:
     departmentCode = user.departementCode
     if departmentCode:

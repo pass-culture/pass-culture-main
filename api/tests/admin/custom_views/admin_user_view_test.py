@@ -77,7 +77,7 @@ class AdminUserViewTest:
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["params"] == {
-            "EMAIL_VALIDATION_LINK": "http://localhost:3001/creation-de-mot-de-passe/" + user_created.tokens[0].value
+            "EMAIL_VALIDATION_LINK": "http://localhost:3001/mot-de-passe-perdu?token=" + user_created.tokens[0].value
         }
         assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.EMAIL_VALIDATION_TO_PRO.value)
 
