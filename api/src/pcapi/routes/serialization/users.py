@@ -255,3 +255,7 @@ class ChangePasswordBodyModel(BaseModel):
     oldPassword: str
     newPassword: str
     newConfirmationPassword: str
+
+
+class ProFlagsQueryModel(BaseModel):
+    firebase: dict

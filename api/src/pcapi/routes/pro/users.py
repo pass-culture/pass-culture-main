@@ -207,3 +207,10 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
 def signout() -> None:
     discard_session()
     logout_user()
+
+
+@blueprint.pro_private_api.route("/users/pro_flags", methods=["POST"])
+@login_required
+@spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
+def post_pro_flags(body: users_serializers.ProFlagsQueryModel) -> None:
+    users_api.save_flags(user=current_user, flags=body.dict())
