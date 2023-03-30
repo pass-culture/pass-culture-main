@@ -7,7 +7,6 @@ from pcapi import settings
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Target
 import pcapi.core.offerers.repository as offerers_repository
-import pcapi.core.users.models as users_models
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import humanize_field
@@ -240,58 +239,6 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
     class Config:
         extra = "forbid"
         anystr_strip_whitespace = True
-
-
-class GetOfferersVenueResponseModel(BaseModel):
-    id: str
-    nonHumanizedId: int
-    isVirtual: bool
-    _humanize_id = humanize_field("id")
-
-    class Config:
-        orm_mode = True
-
-
-class GetOfferersResponseModel(BaseModel):
-    id: str
-    nonHumanizedId: int
-    name: str
-    # FIXME (mageoffray, 2021-12-27): optional until we populate the database (PC-5693)
-    siren: str | None
-    isValidated: bool
-    userHasAccess: bool
-    nOffers: int  # possibly `-1` for offerers with too much offers.
-    managedVenues: list[GetOfferersVenueResponseModel]
-
-    _humanize_id = humanize_field("id")
-
-    class Config:
-        orm_mode = True
-
-    @classmethod
-    def from_orm(  # type: ignore [override]
-        cls,
-        offerer: offerers_models.Offerer,
-        user: users_models.User,
-        offer_counts: dict[int, int],
-    ) -> "GetOfferersResponseModel":
-        offerer.userHasAccess = user.has_admin_role or any(
-            uo.isValidated for uo in offerer.UserOfferers if uo.userId == user.id
-        )
-        venue_ids = (venue.id for venue in offerer.managedVenues)
-        offerer.nOffers = sum((offer_counts.get(venue_id, 0) for venue_id in venue_ids), 0)
-        return super().from_orm(offerer)
-
-
-class GetOfferersListResponseModel(BaseModel):
-    offerers: list[GetOfferersResponseModel]
-    nbTotalResults: int
-
-
-class GetOffererListQueryModel(BaseModel):
-    keywords: str | None
-    page: int | None = 1
-    paginate: int | None = 10
 
 
 class ReimbursementPointResponseModel(BaseModel):
