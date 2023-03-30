@@ -531,7 +531,9 @@ describe('CollectiveDataEdition', () => {
         /Domaine artistique et culturel/
       )
 
-      expect(websiteField).toHaveValue('http://monsite.com')
+      await waitFor(() => {
+        expect(websiteField).toHaveValue('http://monsite.com')
+      })
       expect(statusField).toHaveValue('2')
 
       await userEvent.click(domainsInput)
