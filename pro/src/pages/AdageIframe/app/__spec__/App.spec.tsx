@@ -1,4 +1,9 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
@@ -170,7 +175,11 @@ describe('app', () => {
         selector: 'h2',
       })
       expect(contentTitle).toBeInTheDocument()
-      expect(Configure).toHaveBeenCalledTimes(2)
+
+      await waitFor(() => {
+        expect(Configure).toHaveBeenCalledTimes(2)
+      })
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         [`venue.id:${venue.id}`],
@@ -211,7 +220,11 @@ describe('app', () => {
         selector: 'h2',
       })
       expect(contentTitle).toBeInTheDocument()
-      expect(Configure).toHaveBeenCalledTimes(2)
+
+      await waitFor(() => {
+        expect(Configure).toHaveBeenCalledTimes(2)
+      })
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         [`venue.id:${venue.id}`],
@@ -269,8 +282,11 @@ describe('app', () => {
         screen.queryByRole('button', { name: `Lieu : ${venue?.publicName}` })
       ).not.toBeInTheDocument()
       expect(
-        screen.getByText('Lieu inconnu. Tous les résultats sont affichés.')
+        await screen.findByText(
+          'Lieu inconnu. Tous les résultats sont affichés.'
+        )
       ).toBeInTheDocument()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     })
 
     it('should add all related venues in facet filters when siret is provided and "all" query param is true', async () => {
@@ -289,16 +305,19 @@ describe('app', () => {
         selector: 'h2',
       })
       expect(contentTitle).toBeInTheDocument()
-
       expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, true)
-      const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
-      expect(searchConfiguration.facetFilters).toStrictEqual([
-        [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
-        [
-          'offer.educationalInstitutionUAICode:all',
-          'offer.educationalInstitutionUAICode:uai',
-        ],
-      ])
+
+      await waitFor(() => {
+        const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
+        expect(searchConfiguration.facetFilters).toStrictEqual([
+          [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
+          [
+            'offer.educationalInstitutionUAICode:all',
+            'offer.educationalInstitutionUAICode:uai',
+          ],
+        ])
+      })
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     })
 
     it('should add all related venues in facet filters when venue is provided and "all" query param is true', async () => {
@@ -317,15 +336,19 @@ describe('app', () => {
       })
       expect(contentTitle).toBeInTheDocument()
 
-      const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
       expect(apiAdage.getVenueById).toHaveBeenCalledWith(venue.id, true)
-      expect(searchConfiguration.facetFilters).toStrictEqual([
-        [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
-        [
-          'offer.educationalInstitutionUAICode:all',
-          'offer.educationalInstitutionUAICode:uai',
-        ],
-      ])
+
+      await waitFor(() => {
+        const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
+        expect(searchConfiguration.facetFilters).toStrictEqual([
+          [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
+          [
+            'offer.educationalInstitutionUAICode:all',
+            'offer.educationalInstitutionUAICode:uai',
+          ],
+        ])
+      })
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     })
 
     it('should remove venue filter on click', async () => {
