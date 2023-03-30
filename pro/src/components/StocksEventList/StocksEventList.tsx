@@ -39,6 +39,12 @@ interface IStocksEventListProps {
   setStocks: (stocks: IStocksEvent[]) => void
 }
 
+const sortStocks = (stocks: IStocksEvent[]): IStocksEvent[] => {
+  return stocks.sort(
+    (a, b) => Date.parse(a.beginningDatetime) - Date.parse(b.beginningDatetime)
+  )
+}
+
 const StocksEventList = ({
   stocks,
   priceCategories,
@@ -55,7 +61,7 @@ const StocksEventList = ({
   const [page, setPage] = useState(1)
   const previousPage = useCallback(() => setPage(page => page - 1), [])
   const nextPage = useCallback(() => setPage(page => page + 1), [])
-  const stocksPage = stocks.slice(
+  const stocksPage = sortStocks(stocks).slice(
     (page - 1) * STOCKS_PER_PAGE,
     page * STOCKS_PER_PAGE
   )
