@@ -1378,3 +1378,37 @@ class UserEmailValidationTest:
 
         assert user_offerer.user.validationToken is None
         assert user_offerer.user.isEmailValidated is True
+
+
+class SaveFlagsTest:
+    def test_new_firebase_flags(self):
+        user = users_factories.UserFactory()
+
+        users_api.save_flags(user, {"firebase": {"BETTER_OFFER_CREATION": True}})
+
+        assert user.pro_flags.firebase == {"BETTER_OFFER_CREATION": True}
+
+    def test_same_pre_existing_firebase_flags(self, caplog):
+        flags = users_factories.UserProFlagsFactory()
+        user = flags.user
+
+        users_api.save_flags(user, {"firebase": {"BETTER_OFFER_CREATION": True}})
+
+        assert user.pro_flags.firebase == {"BETTER_OFFER_CREATION": True}
+        assert not caplog.messages
+
+    def test_different_pre_existing_firebase_flags(self, caplog):
+        flags = users_factories.UserProFlagsFactory()
+        user = flags.user
+
+        users_api.save_flags(user, {"firebase": {"BETTER_OFFER_CREATION": False}})
+
+        assert user.pro_flags.firebase == {"BETTER_OFFER_CREATION": False}
+        assert caplog.messages == [f"{user} now has different Firebase flags than before"]
+
+    def test_unknown_flags(self):
+        flags = users_factories.UserProFlagsFactory()
+        user = flags.user
+
+        with pytest.raises(ValueError):
+            users_api.save_flags(user, {"uknown": {"toto": 10}})
