@@ -2457,8 +2457,7 @@ def send_request(authenticated_client, offerer_id, url, form_data=None):
 class ListOffererTagsTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
         endpoint = "backoffice_v3_web.offerer_tag.list_offerer_tags"
-        endpoint_kwargs = {"offerer_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+        needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
 
     def test_list_offerer_tags(self, authenticated_client):
         # given
@@ -2489,7 +2488,7 @@ class UpdateOffererTagTest:
         method = "post"
         endpoint = "backoffice_v3_web.offerer_tag.update_offerer_tag"
         endpoint_kwargs = {"offerer_tag_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+        needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
 
     def test_update_offerer_tag(self, authenticated_client):
         offerer_tag_not_to_edit = offerers_factories.OffererTagFactory(name="zzzzzzzz-end-of-the-list")
@@ -2590,7 +2589,7 @@ class CreateOffererTagTest:
     class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
         method = "post"
         endpoint = "backoffice_v3_web.offerer_tag.create_offerer_tag"
-        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+        needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
 
     def test_create_offerer(self, authenticated_client):
         category = offerers_factories.OffererTagCategoryFactory(label="La catégorie des sucreries")

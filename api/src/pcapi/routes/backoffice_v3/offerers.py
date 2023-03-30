@@ -794,7 +794,7 @@ offerer_tag_blueprint = utils.child_backoffice_blueprint(
     "offerer_tag",
     __name__,
     url_prefix="/pro/offerer-tag",
-    permission=perm_models.Permissions.MANAGE_PRO_ENTITY,
+    permission=perm_models.Permissions.MANAGE_OFFERER_TAG,
 )
 
 
