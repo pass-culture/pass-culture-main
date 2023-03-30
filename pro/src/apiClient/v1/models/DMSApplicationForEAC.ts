@@ -6,12 +6,11 @@ export type DMSApplicationForEAC = {
   application: number;
   buildDate?: string | null;
   depositDate: string;
-  expirationDate: string;
+  expirationDate?: string | null;
   instructionDate?: string | null;
   lastChangeDate: string;
   procedure: number;
   processingDate?: string | null;
-  siret: string;
   state: string;
   userDeletionDate?: string | null;
   venueId: number;
