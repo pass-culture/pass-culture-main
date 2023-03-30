@@ -898,6 +898,7 @@ class ListOfferersToValidateTest:
             "row_key,sort,order",
             [
                 ("Date de la demande", None, None),
+                ("Date de la demande", "", ""),
                 ("Date de la demande", "dateCreated", "asc"),
                 ("Date de la demande", "dateCreated", "desc"),
             ],
@@ -1037,6 +1038,8 @@ class ListOfferersToValidateTest:
                 (20, {"per_page": 10, "page": 1}, 2, 1, 10),
                 (27, {"page": 1}, 1, 1, 27),
                 (10, {"per_page": 25, "page": 1}, 1, 1, 10),
+                (1, {"per_page": None, "page": 1}, 1, 1, 1),
+                (1, {"per_page": "", "page": 1}, 1, 1, 1),  # ensure that it does not crash (fallbacks to default)
             ),
         )
         def test_list_pagination(
@@ -1774,6 +1777,8 @@ class ListUserOffererToValidateTest:
             (20, {"per_page": 10, "page": 1}, 2, 1, 10),
             (27, {"page": 1}, 1, 1, 27),
             (10, {"per_page": 25, "page": 1}, 1, 1, 10),
+            (1, {"per_page": None, "page": 1}, 1, 1, 1),
+            (1, {"per_page": "", "page": 1}, 1, 1, 1),  # ensure that it does not crash (fallbacks to default)
         ),
     )
     def test_list_pagination(

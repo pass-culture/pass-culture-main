@@ -349,7 +349,7 @@ class OffererToBeValidatedRow:
 def list_offerers_to_validate() -> utils.BackofficeResponse:
     stats = offerers_api.count_offerers_by_validation_status()
 
-    form = offerer_forms.OffererValidationListForm(request.args)
+    form = offerer_forms.OffererValidationListForm(formdata=utils.get_query_params())
     if not form.validate():
         return render_template("offerer/validation.html", rows=[], form=form, stats=stats), 400
 
@@ -535,7 +535,7 @@ def _get_serialized_user_offerer_last_comment(
 
 @validation_blueprint.route("/user-offerer", methods=["GET"])
 def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
-    form = offerer_forms.UserOffererValidationListForm(request.args)
+    form = offerer_forms.UserOffererValidationListForm(formdata=utils.get_query_params())
     if not form.validate():
         return render_template("offerer/user_offerer_validation.html", rows=[], form=form), 400
 

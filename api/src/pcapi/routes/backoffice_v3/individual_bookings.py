@@ -174,7 +174,7 @@ def _get_individual_bookings(
 
 @individual_bookings_blueprint.route("", methods=["GET"])
 def list_individual_bookings() -> utils.BackofficeResponse:
-    form = individual_booking_forms.GetIndividualBookingListForm(request.args)
+    form = individual_booking_forms.GetIndividualBookingListForm(formdata=utils.get_query_params())
     if not form.validate():
         return render_template("individual_bookings/list.html", rows=[], form=form), 400
 

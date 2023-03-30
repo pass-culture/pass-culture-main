@@ -180,7 +180,7 @@ def _get_remaining_stock(offer: offers_models.Offer) -> int | str:
 
 @list_offers_blueprint.route("", methods=["GET"])
 def list_offers() -> utils.BackofficeResponse:
-    form = offer_forms.GetOffersListForm(request.args)
+    form = offer_forms.GetOffersListForm(formdata=utils.get_query_params())
     if not form.validate():
         return render_template("offer/list.html", rows=[], form=form), 400
 

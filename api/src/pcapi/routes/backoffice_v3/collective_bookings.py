@@ -149,7 +149,7 @@ def _get_collective_bookings(
 
 @collective_bookings_blueprint.route("", methods=["GET"])
 def list_collective_bookings() -> utils.BackofficeResponse:
-    form = collective_booking_forms.GetCollectiveBookingListForm(request.args)
+    form = collective_booking_forms.GetCollectiveBookingListForm(formdata=utils.get_query_params())
     if not form.validate():
         return render_template("collective_bookings/list.html", isEAC=True, rows=[], form=form), 400
 
