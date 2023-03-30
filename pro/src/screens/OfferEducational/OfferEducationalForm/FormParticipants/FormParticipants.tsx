@@ -5,7 +5,7 @@ import { StudentLevels } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
-import { CheckboxGroup, InfoBox } from 'ui-kit'
+import { Banner, CheckboxGroup, InfoBox } from 'ui-kit'
 
 import { participantsOptions } from './participantsOptions'
 import useParicipantUpdates from './useParticipantUpdates'
@@ -30,20 +30,29 @@ const FormParticipants = ({
     ? participantsOptions
     : participantsOptions.filter(
         x =>
-          x.label !== StudentLevels.COLL_GE_6E &&
-          x.label !== StudentLevels.COLL_GE_5E
+          x.name !== `participants.${StudentLevels.COLL_GE_6E}` &&
+          x.name !== `participants.${StudentLevels.COLL_GE_5E}`
       )
 
   return (
     <FormLayout.Section title="Participants">
+      {isCLG6Active && (
+        <Banner type="attention">
+          À partir du 1er septembre 2023, le pass Culture est étendu aux classes
+          de 6e et 5e. Grâce au déploiement du dispositif, vous pouvez désormais
+          créer des offres pour ces classes pour l’année scolaire 2023-2024.
+        </Banner>
+      )}
       <FormLayout.Row
         sideComponent={
-          <InfoBox
-            type="info"
-            text={`Le pass Culture à destination du public scolaire s’adresse aux élèves de la ${
-              isCLG6Active ? 'sixième' : 'quatrième'
-            } à la terminale des établissements publics et privés sous contrat.`}
-          />
+          !isCLG6Active ? (
+            <InfoBox
+              type="info"
+              text={`Le pass Culture à destination du public scolaire s’adresse aux élèves de la ${
+                isCLG6Active ? 'sixième' : 'quatrième'
+              } à la terminale des établissements publics et privés sous contrat.`}
+            />
+          ) : null
         }
       >
         <CheckboxGroup
