@@ -16,7 +16,6 @@ from pcapi.sandboxes.scripts.creators.data.create_data_thing_offers import *
 from pcapi.sandboxes.scripts.creators.data.create_data_thing_products import *
 from pcapi.sandboxes.scripts.creators.data.create_data_thing_stocks import *
 from pcapi.sandboxes.scripts.creators.data.create_data_venues import *
-from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
 
 
 def save_data_sandbox() -> None:
@@ -50,8 +49,6 @@ def save_data_sandbox() -> None:
     associate_criterion_to_one_offer_with_mediation(offers_by_name_data, criteria_by_name)
 
     create_data_bookings(offers_by_name_data, users_by_name_data)
-
-    create_venue_labels(sandbox=True)
 
     create_data_pro_users_api_keys(offerers_by_name_data)
     create_data_search_indexed_objects()

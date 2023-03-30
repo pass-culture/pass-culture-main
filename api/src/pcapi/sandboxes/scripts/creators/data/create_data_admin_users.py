@@ -18,14 +18,14 @@ def create_data_admin_users() -> dict[str, User]:
 
     for departement_code in departement_codes:
         for admin_count in range(ADMINS_COUNT):
-            email = "pctest.admin{}.{}@example.com".format(departement_code, admin_count)
+            email = "pctest.admin{}.{}_DATA@example.com".format(departement_code, admin_count)
             users_by_name["admin{} {}".format(departement_code, admin_count)] = users_factories.AdminFactory(
                 departementCode=str(departement_code),
                 email=email,
-                firstName="PC Test Admin",
+                firstName="PC Test DATA Admin",
                 lastName="{} {}".format(departement_code, admin_count),
                 postalCode="{}100".format(departement_code),
-                publicName="PC Test Admin {} {}".format(departement_code, admin_count),
+                publicName="PC Test DATA Admin {} {}".format(departement_code, admin_count),
             )
 
     logger.info("created %d users", len(users_by_name))

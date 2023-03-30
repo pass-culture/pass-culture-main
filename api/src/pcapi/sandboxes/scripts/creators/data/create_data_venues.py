@@ -8,7 +8,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
-from pcapi.core.providers import factories as providers_factories
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 
 
@@ -41,7 +40,7 @@ def create_data_venues(offerers_by_name: dict) -> dict[str, Venue]:
     iban_count = 0
     iban_prefix = "FR7630001007941234567890185"
     bic_prefix, bic_suffix = "QSDFGH8Z", 556
-    application_id_prefix = "12"
+    application_id_prefix = "52"
 
     image_venue_counter = 0
 
@@ -108,25 +107,6 @@ def create_data_venues(offerers_by_name: dict) -> dict[str, Venue]:
 
         bic_suffix += 1
         mock_index += 1
-
-    # Venue Allocine
-    venue_synchronized_with_allocine = offerers_factories.VenueFactory(
-        name="Lieu synchro allociné",
-        siret="21070034000016",
-        pricing_point="self",
-        reimbursement_point="self",
-        managingOfferer__name="Structure du lieu synchro allociné",
-    )
-    allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)
-    theater = providers_factories.AllocineTheaterFactory(siret=venue_synchronized_with_allocine.siret)
-    pivot = providers_factories.AllocinePivotFactory(
-        venue=venue_synchronized_with_allocine, theaterId=theater.theaterId, internalId=theater.internalId
-    )
-    allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
-        venue=venue_synchronized_with_allocine, provider=allocine_provider, venueIdAtOfferProvider=pivot.theaterId
-    )
-    providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
-    venue_by_name[venue_synchronized_with_allocine.name] = venue_synchronized_with_allocine
 
     logger.info("created %d venues DATA", len(venue_by_name))
 

@@ -29,15 +29,15 @@ def create_data_pro_users(offerers_by_name: dict) -> dict[str, User]:
     for _, pro_user_config in enumerate(pro_users_config):
         for pro_count in range(PROS_COUNT):
             departement_code = pro_user_config["departement_code"]
-            email = f"pctest.pro{departement_code}.{pro_count}@example.com"
+            email = f"pctest_DATA.pro{departement_code}.{pro_count}@example.com"
             user = users_factories.ProFactory(
                 dateOfBirth=None,
                 departementCode=str(departement_code),
                 email=email,
-                firstName="PC Test Pro",
+                firstName="PC Test DATA Pro",
                 lastName=f"{departement_code} {pro_count}",
                 postalCode=f"{departement_code}100",
-                publicName=f"PC Test Pro {departement_code} {pro_count}",
+                publicName=f"PC Test DATA Pro {departement_code} {pro_count}",
             )
             users_by_name[f"pro{departement_code} {pro_count} DATA"] = user
             user_offerer = adage_not_eligible_offerers[0]
