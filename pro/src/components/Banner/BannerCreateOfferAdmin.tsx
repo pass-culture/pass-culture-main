@@ -8,8 +8,8 @@ const BannerCreateOfferAdmin = (): JSX.Element => (
     type="attention"
     links={[
       {
-        href: '/structures',
-        linkTitle: 'Aller à la liste des structures',
+        href: '/accueil',
+        linkTitle: 'Aller à l’accueil',
         Icon: EyeOpenIcon,
         isExternal: false,
       },

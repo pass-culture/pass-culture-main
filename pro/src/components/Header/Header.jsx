@@ -45,7 +45,7 @@ const Header = () => {
               logEvent?.(Events.CLICKED_HOME, { from: location.pathname })
             }}
             role="menuitem"
-            to={currentUser.isAdmin ? '/structures' : '/accueil'}
+            to={'/accueil'}
           >
             <IconHome aria-hidden className="nav-item-icon" />
             Accueil

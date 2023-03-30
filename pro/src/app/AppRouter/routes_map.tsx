@@ -22,7 +22,6 @@ import Unavailable from 'pages/Errors/Unavailable/Unavailable'
 import Homepage from 'pages/Home/Homepage'
 import { Logout } from 'pages/Logout'
 import LostPassword from 'pages/LostPassword/LostPassword'
-import Offerers from 'pages/Offerers/List/Offerers'
 import OffererDetails from 'pages/Offerers/Offerer/OffererDetails/OffererDetails'
 import CollectiveDataEdition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition'
 import OffererCreation from 'pages/Offerers/OffererCreation'
@@ -164,11 +163,6 @@ const routes: IRoute[] = [
         pageName: 'sign-in',
       },
     },
-  },
-  {
-    element: <Offerers />,
-    path: '/structures',
-    title: 'Structures',
   },
   {
     element: <OffererCreation />,

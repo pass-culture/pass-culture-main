@@ -5,24 +5,16 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Logo from '../Logo'
 
-const renderLogo = props => {
-  return renderWithProviders(<Logo {...props} />)
+const renderLogo = () => {
+  return renderWithProviders(<Logo />)
 }
 
 describe('header logo', () => {
-  it('should link to /accueil when user is not admin', () => {
+  it('should link to /accueil', () => {
     // When
-    renderLogo({ isUserAdmin: false })
+    renderLogo()
 
     // Then
     expect(screen.getByRole('link')).toHaveAttribute('href', '/accueil')
-  })
-
-  it('should link to /structures when user is admin', () => {
-    // When
-    renderLogo({ isUserAdmin: true })
-
-    // Then
-    expect(screen.getByRole('link')).toHaveAttribute('href', '/structures')
   })
 })
