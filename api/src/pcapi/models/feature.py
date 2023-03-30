@@ -105,9 +105,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_BOOST_API_INTEGRATION = "Active la réservation de places de cinéma via l'API Boost"
     ENABLE_OFFERER_STATS = "Active l'affichage des statistiques d'une structure sur le portail pro"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
-    TEMP_DISABLE_OFFERER_VALIDATION_EMAIL = (
-        "Désactiver l'envoi d'email interne de validation par token pour les structures et rattachements"
-    )
     WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY = "Nouveau parcours de creation d'offre optimisé"
     WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
     WIP_DUPLICATE_OFFER_SELECTION = "Active la sélection d'offre à dupliquer à la création d'une offre collective"
@@ -170,7 +167,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.ENABLE_OFFERER_STATS,
-    FeatureToggle.TEMP_DISABLE_OFFERER_VALIDATION_EMAIL,
     FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY,
     FeatureToggle.WIP_DUPLICATE_OFFER_SELECTION,
     FeatureToggle.WIP_ENABLE_MULTI_PRICE_STOCKS,
