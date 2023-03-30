@@ -226,6 +226,8 @@ const venueResponse: GetVenueResponseModel = {
   collectivePhone: 'string',
   collectiveStudents: [],
   collectiveWebsite: 'string',
+  hasAdageId: false,
+  collectiveDmsApplications: [],
 
   managingOfferer: {
     address: null,
