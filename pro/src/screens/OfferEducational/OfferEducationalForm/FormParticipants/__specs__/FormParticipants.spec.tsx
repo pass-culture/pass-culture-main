@@ -3,9 +3,13 @@ import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { StudentLevels } from 'apiClient/v1'
+import {
+  GetCollectiveOfferCollectiveStockResponseModel,
+  StudentLevels,
+} from 'apiClient/v1'
 import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 import { RootState } from 'store/reducers'
+import { collectiveStockFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import FormParticipants from '../FormParticipants'
@@ -19,7 +23,8 @@ const filteredParticipants = Object.values(StudentLevels).filter(
 
 const renderFormParticipants = (
   participants: Record<string, boolean>,
-  storeOverride?: Partial<RootState>
+  storeOverride?: Partial<RootState>,
+  offerStock?: GetCollectiveOfferCollectiveStockResponseModel | null
 ) => {
   const storeOverrides = {
     features: {
@@ -35,7 +40,7 @@ const renderFormParticipants = (
   }
   return renderWithProviders(
     <Formik initialValues={{ participants }} onSubmit={() => {}}>
-      <FormParticipants disableForm={false} />
+      <FormParticipants disableForm={false} offerStock={offerStock} />
     </Formik>,
     { storeOverrides }
   )
@@ -199,6 +204,29 @@ describe('FormParticipants', () => {
           `${StudentLevels.COLL_GE_5E} : à partir de septembre 2023`
         )
       ).toBeInTheDocument()
+    })
+
+    it('should not display clg 6 & 5 if stock exist before 1st september', () => {
+      const storeOverride = {
+        features: {
+          initialized: true,
+          list: [
+            {
+              isActive: true,
+              nameKey: 'WIP_ADD_CLG_6_5_COLLECTIVE_OFFER',
+            },
+          ],
+        },
+      }
+      const offerStock = collectiveStockFactory()
+      renderFormParticipants(participants, storeOverride, offerStock)
+
+      expect(
+        screen.queryByLabelText(StudentLevels.COLL_GE_6E)
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByLabelText(StudentLevels.COLL_GE_5E)
+      ).not.toBeInTheDocument()
     })
   })
 })
