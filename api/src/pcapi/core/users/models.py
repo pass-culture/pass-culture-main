@@ -1,3 +1,5 @@
+from __future__ import annotations  # to type models before their declaration
+
 from dataclasses import asdict
 from dataclasses import dataclass
 from datetime import date
@@ -222,6 +224,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     validatedBirthDate = sa.Column(sa.Date, nullable=True)  # validated by an Identity Provider
     backoffice_profile = orm.relationship("BackOfficeUserProfile", uselist=False, back_populates="user")  # type: ignore [misc]
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
+    pro_flags: UserProFlags = orm.relationship("UserProFlags", back_populates="user", uselist=False)
 
     def __init__(self, **kwargs: typing.Any) -> None:
         kwargs.setdefault("roles", [])
@@ -751,3 +754,18 @@ class UserSuspension(PcObject, Base, Model):
 class UserSession(PcObject, Base, Model):
     userId: int = sa.Column(sa.BigInteger, nullable=False)
     uuid: UUID = sa.Column(postgresql.UUID(as_uuid=True), unique=True, nullable=False)
+
+
+class UserProFlags(PcObject, Base, Model):
+    __tablename__ = "user_pro_flags"
+
+    firebase: dict = sa.Column(
+        MutableDict.as_mutable(postgresql.json.JSONB), nullable=False, default={}, server_default="{}"
+    )
+    userId: int = sa.Column(
+        sa.BigInteger,
+        sa.ForeignKey("user.id", ondelete="CASCADE"),
+        unique=True,
+        nullable=False,
+    )
+    user: User = orm.relationship(User, foreign_keys=[userId], back_populates="pro_flags", uselist=False)
