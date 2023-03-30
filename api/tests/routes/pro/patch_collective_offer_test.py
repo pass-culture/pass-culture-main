@@ -8,6 +8,7 @@ from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
+from pcapi.core.educational.factories import CollectiveStockFactory
 from pcapi.core.educational.factories import EducationalDomainFactory
 from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 from pcapi.core.educational.models import CollectiveBookingStatus
@@ -144,6 +145,34 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert len(adage_api_testing.adage_requests) == 0
+
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
+    def test_patch_collective_offer_add_college_5_college_6_too_early(
+        self,
+        client,
+    ):
+        # Given
+        offer = CollectiveOfferFactory()
+        CollectiveStockFactory(collectiveOffer=offer, beginningDatetime=datetime(2023, 8, 20))
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        data = {
+            "students": ["Collège - 6e", "Collège - 5e", "Collège - 4e"],
+        }
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
+
+        # Then
+        assert response.status_code == 200
+        assert offer.students == [StudentLevels.COLLEGE4]
 
     def test_patch_offer_with_empty_intervention_area_in_offerer_venue(self, client):
         # Given
@@ -575,6 +604,33 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json == {"Partner": ["User not in Adage can't edit the offer"]}
         assert offer1.isActive == False
+
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
+    def test_patch_collective_offer_add_college_5_college_6_only_too_early(
+        self,
+        client,
+    ):
+        # Given
+        offer = CollectiveOfferFactory()
+        CollectiveStockFactory(collectiveOffer=offer, beginningDatetime=datetime(2023, 8, 20))
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        data = {
+            "students": ["Collège - 6e", "Collège - 5e"],
+        }
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{humanize(offer.id)}", json=data)
+
+        # Then
+        assert response.status_code == 403
 
 
 class Returns404Test:

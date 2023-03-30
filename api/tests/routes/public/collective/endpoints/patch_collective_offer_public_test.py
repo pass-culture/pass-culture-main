@@ -10,6 +10,7 @@ from pcapi import settings
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.testing import override_features
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -121,6 +122,41 @@ class CollectiveOffersPublicPatchOfferTest:
 
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive == True
+
+    @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
+    def test_patch_offer_6_5_only_too_early(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__isPublicApi=True,
+            collectiveOffer__imageCredit="pouet",
+            collectiveOffer__imageId="123456789",
+            collectiveOffer__venue=venue,
+            beginningDatetime=datetime(2022, 8, 1),
+            collectiveOffer__students=[educational_models.StudentLevels.COLLEGE4],
+        )
+
+        payload = {
+            "students": [
+                educational_models.StudentLevels.COLLEGE5.name,
+                educational_models.StudentLevels.COLLEGE6.name,
+            ],
+        }
+
+        # When
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+            )
+
+        # Then
+        assert response.status_code == 403
+
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        assert offer.students == [educational_models.StudentLevels.COLLEGE4]
 
     def test_change_venue(self, client):
         # Given
