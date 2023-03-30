@@ -48,15 +48,13 @@ def get_from_cache(
     :param force_update: If True force the update of the field cache.
     """
     redis_client = current_app.redis_client  # type: ignore [attr-defined]
-    miss = False
     if key_args:
         key = key_template % key_args
     else:
         key = key_template
 
     data = redis_client.get(key)
-    if not data and not redis_client.exists(key):
-        miss = True
+    miss = data is None
 
     if miss or force_update:
         data = retriever()
