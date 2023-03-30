@@ -8,7 +8,7 @@ import { DEFAULT_SEARCH_FILTERS } from 'core/Offers'
 import { useGetVenue } from 'core/Venue'
 import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
-import { useAdapter, useHomePath } from 'hooks'
+import { useAdapter } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import { getFilteredOffersAdapter } from 'pages/Offers/adapters'
 import { IPayload } from 'pages/Offers/adapters/getFilteredOffersAdapter'
@@ -21,7 +21,7 @@ import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdap
 import { offerHasBookingQuantity } from './utils'
 
 const VenueEdition = (): JSX.Element | null => {
-  const homePath = useHomePath()
+  const homePath = '/accueil'
   const navigate = useNavigate()
   const { offererId, venueId } = useParams<{
     offererId: string

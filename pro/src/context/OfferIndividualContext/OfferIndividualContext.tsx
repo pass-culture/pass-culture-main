@@ -10,7 +10,6 @@ import {
 } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
-import { useHomePath } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -61,7 +60,7 @@ export function OfferIndividualContextProvider({
   offerId,
   queryOffererId,
 }: IOfferIndividualContextProviderProps) {
-  const homePath = useHomePath()
+  const homePath = '/accueil'
   const notify = useNotification()
   const navigate = useNavigate()
 

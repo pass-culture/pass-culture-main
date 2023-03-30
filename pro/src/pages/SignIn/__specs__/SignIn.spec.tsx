@@ -52,10 +52,6 @@ const renderSignIn = (storeOverrides?: any) => {
           element={<span>I'm logged standard user redirect route</span>}
         />
         <Route
-          path="/structures"
-          element={<span>I'm logged admin redirect route</span>}
-        />
-        <Route
           path="/inscription"
           element={<span>I'm the inscription page</span>}
         />
@@ -208,22 +204,6 @@ describe('src | components | pages | SignIn', () => {
   })
 
   describe('when user is signed in', () => {
-    it('should redirect to homepage if user is admin', async () => {
-      renderSignIn({
-        user: {
-          currentUser: {
-            id: 'user_id',
-            publicName: 'François',
-            isAdmin: true,
-          },
-          initialized: true,
-        },
-      })
-      expect(
-        screen.getByText("I'm logged admin redirect route")
-      ).toBeInTheDocument()
-    })
-
     it('should redirect to offerers page if user is not admin', async () => {
       renderSignIn({
         user: {
