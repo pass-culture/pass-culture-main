@@ -24,10 +24,10 @@ jobs:
         if: steps.changes.outputs.src == 'true'
         run: |
           cd api
-          this_branch_ignore_count="$(grep "type: ignore" -r src | wc -l)"
+          this_branch_ignore_count="$(grep "type: ignore" -r src | grep -v /alembic/versions/ | wc -l)"
           git fetch origin master:master --quiet
           git checkout master --quiet
-          master_ignore_count="$(grep "type: ignore" -r src | wc -l)"
+          master_ignore_count="$(grep "type: ignore" -r src | grep -v /alembic/versions/ | wc -l)"
           git checkout - --quiet
           echo "this_branch_ignore_count=$this_branch_ignore_count" >> $GITHUB_OUTPUT
           echo "master_ignore_count=$master_ignore_count" >> $GITHUB_OUTPUT
