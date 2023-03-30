@@ -65,6 +65,7 @@ const CollectiveOfferSummaryEdition = ({
         reloadCollectiveOffer={reloadCollectiveOffer}
         mode={mode}
       />
+
       {offer.isTemplate && (
         <div className={styles['duplicate-offer']}>
           <p className={styles['duplicate-offer-description']}>
@@ -75,6 +76,7 @@ const CollectiveOfferSummaryEdition = ({
             &nbsp;· L’offre associée à l’établissement devra être préréservée
             par l’enseignant(e) qui vous a contacté
           </p>
+
           <Button
             variant={ButtonVariant.PRIMARY}
             onClick={() => {
@@ -88,6 +90,7 @@ const CollectiveOfferSummaryEdition = ({
           </Button>
         </div>
       )}
+
       <CollectiveOfferSummary
         offer={offer}
         categories={categories}
@@ -95,6 +98,7 @@ const CollectiveOfferSummaryEdition = ({
         stockEditLink={stockEditLink}
         visibilityEditLink={visibilityEditLink}
       />
+
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <ButtonLink
