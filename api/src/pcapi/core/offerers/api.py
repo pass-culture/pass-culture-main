@@ -34,7 +34,6 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
 import pcapi.core.users.repository as users_repository
-from pcapi.domain import admin_emails
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
@@ -492,12 +491,6 @@ def create_offerer(
             offerer=offerer,
             comment=comment,
             **extra_data,  # type: ignore [arg-type]
-        )
-
-    if not admin_emails.maybe_send_offerer_validation_email(offerer, user_offerer, siren_info):
-        logger.warning(
-            "Could not send validation email to offerer",
-            extra={"user_offerer": user_offerer.id},
         )
 
     external_attributes_api.update_external_pro(user.email)

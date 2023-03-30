@@ -463,10 +463,7 @@ class ApiKeyTest:
 
 
 class CreateOffererTest:
-    @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
-    def test_create_new_offerer_with_validation_token_if_siren_is_not_already_registered(
-        self, mock_maybe_send_offerer_validation_email
-    ):
+    def test_create_new_offerer_with_validation_token_if_siren_is_not_already_registered(self):
         # Given
         gen_offerer_tags()
         user = users_factories.UserFactory()
@@ -493,12 +490,6 @@ class CreateOffererTest:
 
         assert not created_user_offerer.user.has_pro_role
 
-        mock_maybe_send_offerer_validation_email.assert_called_once_with(
-            created_user_offerer.offerer,
-            created_user_offerer,
-            sirene.get_siren(created_user_offerer.offerer.siren),
-        )
-
         actions_list = history_models.ActionHistory.query.all()
         assert len(actions_list) == 1
         assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
@@ -506,8 +497,7 @@ class CreateOffererTest:
         assert actions_list[0].user == user
         assert actions_list[0].offerer == created_offerer
 
-    @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
-    def test_create_digital_venue_if_siren_is_not_already_registered(self, mock_maybe_send_offerer_validation_email):
+    def test_create_digital_venue_if_siren_is_not_already_registered(self):
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
@@ -522,10 +512,7 @@ class CreateOffererTest:
         assert len(created_offerer.managedVenues) == 1
         assert created_offerer.managedVenues[0].isVirtual is True
 
-    @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
-    def test_create_new_offerer_attachment_with_validation_token_if_siren_is_already_registered(
-        self, mock_maybe_send_offerer_validation_email
-    ):
+    def test_create_new_offerer_attachment_with_validation_token_if_siren_is_already_registered(self):
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
@@ -547,12 +534,6 @@ class CreateOffererTest:
 
         assert not created_user_offerer.user.has_pro_role
 
-        mock_maybe_send_offerer_validation_email.assert_called_once_with(
-            created_user_offerer.offerer,
-            created_user_offerer,
-            sirene.get_siren(created_user_offerer.offerer.siren),
-        )
-
         actions_list = history_models.ActionHistory.query.all()
         assert len(actions_list) == 1
         assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
@@ -560,10 +541,7 @@ class CreateOffererTest:
         assert actions_list[0].user == user
         assert actions_list[0].offerer == offerer
 
-    @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
-    def test_keep_offerer_validation_token_if_siren_is_already_registered_but_not_validated(
-        self, mock_maybe_send_offerer_validation_email
-    ):
+    def test_keep_offerer_validation_token_if_siren_is_already_registered_but_not_validated(self):
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
@@ -586,10 +564,7 @@ class CreateOffererTest:
         assert created_user_offerer.validationStatus == ValidationStatus.NEW
         assert created_user_offerer.dateCreated is not None
 
-    @patch("pcapi.domain.admin_emails.maybe_send_offerer_validation_email", return_value=True)
-    def test_create_new_offerer_with_validation_token_if_siren_was_previously_rejected(
-        self, mock_maybe_send_offerer_validation_email
-    ):
+    def test_create_new_offerer_with_validation_token_if_siren_was_previously_rejected(self):
         # Given
         user = users_factories.UserFactory()
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
@@ -621,21 +596,6 @@ class CreateOffererTest:
         assert created_user_offerer.dateCreated is not None
 
         assert not created_user_offerer.user.has_pro_role
-
-        mock_maybe_send_offerer_validation_email.assert_called_once_with(
-            created_user_offerer.offerer,
-            created_user_offerer,
-            sirene.SirenInfo(
-                siren="418166096",
-                name="MINISTERE DE LA CULTURE",
-                head_office_siret="41816609600001",
-                ape_code="90.03A",
-                legal_category_code="1000",
-                address=sirene._Address(
-                    street="3 RUE DE VALOIS", postal_code="75001", city="Paris", insee_code="75101"
-                ),
-            ),
-        )
 
         actions_list = history_models.ActionHistory.query.all()
         assert len(actions_list) == 1

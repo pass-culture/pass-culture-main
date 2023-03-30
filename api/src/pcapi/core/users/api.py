@@ -32,7 +32,6 @@ import pcapi.core.users.email.update as email_update
 import pcapi.core.users.models as users_models
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
-from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.password import random_hashed_password
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -1192,21 +1191,3 @@ def validate_pro_user_email(user: users_models.User, author_user: users_models.U
             "Could not send welcome email when pro user is valid",
             extra={"user": user.id},
         )
-
-    user_offerer = offerers_models.UserOfferer.query.filter_by(userId=user.id).one_or_none()
-
-    if user_offerer:
-        offerer = user_offerer.offerer
-
-        assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
-        try:
-            siren_info = sirene.get_siren(offerer.siren)
-        except sirene.SireneException as exc:
-            logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
-            siren_info = None
-
-        if not maybe_send_offerer_validation_email(offerer, user_offerer, siren_info):
-            logger.warning(
-                "Could not send offerer validation email to offerer",
-                extra={"user_offerer": user_offerer.id},
-            )
