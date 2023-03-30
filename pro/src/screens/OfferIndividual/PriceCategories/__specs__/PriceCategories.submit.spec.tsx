@@ -72,27 +72,36 @@ describe('PriceCategories', () => {
     await userEvent.click(screen.getByText('Étape suivante'))
 
     expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
     expect(api.patchOffer).toHaveBeenCalled()
     expect(api.postPriceCategories).toHaveBeenCalled()
   })
 
   it('should notify and submit when clicking on Sauvegarder le brouillon in creation', async () => {
-    renderPriceCategories({ offer: individualOfferFactory({ id: 'AA' }) })
-    await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif'),
-      'Mon tarif'
-    )
+    const priceCategory = priceCategoryFactory()
+    renderPriceCategories({
+      offer: individualOfferFactory({
+        id: 'AA',
+        priceCategories: [priceCategory],
+      }),
+    })
+
+    await userEvent.clear(screen.getByLabelText('Prix par personne'))
     await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
     expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
     expect(api.patchOffer).toHaveBeenCalled()
-    expect(api.postPriceCategories).toHaveBeenCalled()
+    expect(api.postPriceCategories).toHaveBeenCalledWith(expect.any(String), {
+      priceCategories: [
+        { id: priceCategory.id, label: 'mon label', price: 20 },
+      ],
+    })
+    expect(api.getOffer).toHaveBeenCalled()
   })
 
   it('should notify and submit when clicking on Etape suivante in draft', async () => {
@@ -115,7 +124,7 @@ describe('PriceCategories', () => {
     await userEvent.click(screen.getByText('Étape suivante'))
 
     expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
     expect(api.patchOffer).toHaveBeenCalled()
     expect(api.postPriceCategories).toHaveBeenCalled()
@@ -141,7 +150,7 @@ describe('PriceCategories', () => {
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
     expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
     expect(api.patchOffer).toHaveBeenCalled()
     expect(api.postPriceCategories).toHaveBeenCalled()
@@ -174,7 +183,7 @@ describe('PriceCategories', () => {
     await userEvent.click(screen.getByText('Étape suivante'))
 
     expect(
-      screen.getByText(
+      await screen.findByText(
         'Cette modification de tarif s’appliquera à l’ensemble des occurrences qui y sont associées.'
       )
     ).toBeInTheDocument()
@@ -219,7 +228,7 @@ describe('PriceCategories', () => {
     await userEvent.click(screen.getByText('Étape suivante'))
 
     expect(
-      screen.getByText(
+      await screen.findByText(
         'Cette modification de tarif s’appliquera à l’ensemble des occurrences qui y sont associées.'
       )
     ).toBeInTheDocument()
@@ -268,7 +277,7 @@ describe('PriceCategories', () => {
     await userEvent.type(screen.getAllByLabelText('Prix par personne')[1], '1')
     await userEvent.click(screen.getByText('Étape suivante'))
     expect(
-      screen.getByText(
+      await screen.findByText(
         'L’intitulé de ce tarif restera inchangé pour les personnes ayant déjà réservé cette offre.'
       )
     ).toBeInTheDocument()
@@ -298,7 +307,7 @@ describe('PriceCategories', () => {
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
     expect(
-      screen.getByText('Vos modifications ont bien été enregistrées')
+      await screen.findByText('Vos modifications ont bien été enregistrées')
     ).toBeInTheDocument()
     expect(api.patchOffer).toHaveBeenCalled()
     expect(api.postPriceCategories).toHaveBeenCalled()
@@ -326,7 +335,7 @@ describe('PriceCategories', () => {
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
     expect(
-      screen.getByText(
+      await screen.findByText(
         'Une erreur est survenue lors de la mise à jour de votre tarif'
       )
     ).toBeInTheDocument()
