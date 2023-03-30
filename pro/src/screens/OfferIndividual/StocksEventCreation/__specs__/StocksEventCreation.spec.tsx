@@ -203,7 +203,7 @@ describe('navigation and submit', () => {
     await userEvent.click(screen.getByText('Étape suivante'))
 
     expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
     expect(screen.getByText('Next page')).toBeInTheDocument()
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
@@ -231,7 +231,7 @@ describe('navigation and submit', () => {
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
     expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
     expect(
       screen.getByText('Ajouter une ou plusieurs dates')
@@ -337,7 +337,7 @@ describe('deletion', () => {
     await userEvent.click(screen.getByText('12:00'))
     await userEvent.click(screen.getByText('Valider'))
     // stock line are here
-    expect(screen.queryByText('Date')).toBeInTheDocument()
+    expect(await screen.findByText('Date')).toBeInTheDocument()
 
     await userEvent.click(
       screen.getAllByRole('button', { name: 'Supprimer' })[0]
@@ -348,7 +348,7 @@ describe('deletion', () => {
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
     expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
   })
@@ -367,7 +367,7 @@ describe('deletion', () => {
 
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
     expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
+      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
     ).toBeInTheDocument()
   })
 })
