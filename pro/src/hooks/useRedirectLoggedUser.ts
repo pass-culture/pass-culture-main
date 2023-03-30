@@ -30,8 +30,6 @@ const useRedirectLoggedUser = () => {
       const queryParams = new URLSearchParams(location.search)
       if (queryParams.has('de')) {
         redirectUrl = queryParams.get('de')
-      } else if (currentUser.isAdmin) {
-        redirectUrl = `/structures${location.search}`
       } else {
         redirectUrl = `/accueil${location.search}`
       }

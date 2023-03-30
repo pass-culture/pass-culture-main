@@ -31,15 +31,15 @@ describe('useLogNavigation', () => {
             element={
               <>
                 <span>Main page</span>
-                <Link to="/structures">Structures</Link>
+                <Link to="/other_page">Other page</Link>
               </>
             }
           />
           <Route
-            path="/structures"
+            path="/other_page"
             element={
               <>
-                <span>Structure page</span>
+                <span>Other page</span>
                 <Link to="/">Accueil</Link>
               </>
             }
@@ -48,14 +48,14 @@ describe('useLogNavigation', () => {
       </>
     )
 
-    const button = screen.getByRole('link', { name: 'Structures' })
+    const button = screen.getByRole('link', { name: 'Other page' })
     await userEvent.click(button)
     const homeButton = screen.getByRole('link', { name: 'Accueil' })
     await userEvent.click(homeButton)
     expect(mockLogEvent).toHaveBeenCalledTimes(3)
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'page_view', { from: '/' })
     expect(mockLogEvent).toHaveBeenNthCalledWith(2, 'page_view', {
-      from: '/structures',
+      from: '/other_page',
     })
     expect(mockLogEvent).toHaveBeenNthCalledWith(3, 'page_view', { from: '/' })
   })

@@ -33,10 +33,6 @@ const renderSignUp = (storeOverrides: any) =>
         element={<span>I'm logged in as a pro user</span>}
       />
       <Route
-        path="/structures"
-        element={<span>I'm logged in as an Admin</span>}
-      />
-      <Route
         path="/inscription/confirmation"
         element={<span>I'm the confirmation page</span>}
       />
@@ -76,22 +72,6 @@ describe('Signup', () => {
     renderSignUp(store)
     await expect(
       screen.findByText("I'm logged in as a pro user")
-    ).resolves.toBeInTheDocument()
-  })
-
-  it('should redirect to structure page if the user is logged in as an Admin', async () => {
-    // when the user is logged in and lands on signup validation page
-    store.user = {
-      currentUser: {
-        id: 'user_id',
-        publicName: 'François',
-        isAdmin: true,
-      },
-      initialized: true,
-    }
-    renderSignUp(store)
-    await expect(
-      screen.findByText("I'm logged in as an Admin")
     ).resolves.toBeInTheDocument()
   })
 

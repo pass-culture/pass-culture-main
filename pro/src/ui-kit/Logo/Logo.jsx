@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom'
 
 import { ROOT_PATH } from 'utils/config'
 
-const Logo = ({ className, noLink, onClick, signPage, isUserAdmin }) => {
+const Logo = ({ className, noLink, onClick, signPage }) => {
   let src = `${ROOT_PATH}/icons/brand-logo-pro-small-pro.png`
   if (signPage) {
     src = `${ROOT_PATH}/icons/logo-pass-culture-white.svg`
@@ -17,7 +17,7 @@ const Logo = ({ className, noLink, onClick, signPage, isUserAdmin }) => {
     <NavLink
       className={classnames('logo', className, { 'no-link': noLink })}
       onClick={handleClick}
-      to={isUserAdmin ? '/structures' : '/accueil'}
+      to={'/accueil'}
     >
       <img
         alt="Pass Culture pro, l'espace Pass Culture des acteurs culturels"
@@ -29,7 +29,6 @@ const Logo = ({ className, noLink, onClick, signPage, isUserAdmin }) => {
 
 Logo.defaultProps = {
   className: '',
-  isUserAdmin: false,
   noLink: false,
   onClick: () => {},
   signPage: false,
@@ -37,7 +36,6 @@ Logo.defaultProps = {
 
 Logo.propTypes = {
   className: PropTypes.string,
-  isUserAdmin: PropTypes.bool,
   noLink: PropTypes.bool,
   onClick: PropTypes.func,
   signPage: PropTypes.bool,

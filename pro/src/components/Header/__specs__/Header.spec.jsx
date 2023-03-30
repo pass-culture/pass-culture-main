@@ -47,26 +47,6 @@ describe('navigation menu', () => {
         '/accueil'
       )
     })
-
-    it('should redirect to /structures when user is admin', () => {
-      // When
-      renderHeader({
-        user: {
-          currentUser: {
-            publicName: 'François',
-            isAdmin: true,
-            email: 'test@toto.com',
-          },
-          initialized: true,
-        },
-      })
-
-      // Then
-      expect(screen.getByText('Accueil').closest('a')).toHaveAttribute(
-        'href',
-        '/structures'
-      )
-    })
   })
 
   describe('trackers should have been called 1 time with pathname', () => {

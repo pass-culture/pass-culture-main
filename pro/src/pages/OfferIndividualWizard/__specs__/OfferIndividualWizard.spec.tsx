@@ -38,7 +38,6 @@ const renderOfferIndividualWizardRoute = (
           path="offre/individuelle/:offerId/*"
           element={<OfferIndividualWizard />}
         />
-        <Route path="/structures" element={<>Home Page</>} />
         <Route path="/accueil" element={<>Home Page</>} />
       </Routes>
       <Notification />
