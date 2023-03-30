@@ -190,10 +190,14 @@ describe('FormParticipants', () => {
       renderFormParticipants(participants, storeOverride)
 
       expect(
-        screen.getByLabelText(StudentLevels.COLL_GE_6E)
+        screen.getByLabelText(
+          `${StudentLevels.COLL_GE_6E} : à partir de septembre 2023`
+        )
       ).toBeInTheDocument()
       expect(
-        screen.getByLabelText(StudentLevels.COLL_GE_5E)
+        screen.getByLabelText(
+          `${StudentLevels.COLL_GE_5E} : à partir de septembre 2023`
+        )
       ).toBeInTheDocument()
     })
   })
