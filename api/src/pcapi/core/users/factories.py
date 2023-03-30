@@ -536,3 +536,11 @@ class EmailValidationEntryFactory(UserEmailHistoryFactory):
 
 class EmailAdminValidationEntryFactory(UserEmailHistoryFactory):
     eventType = models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION.value
+
+
+class UserProFlagsFactory(BaseFactory):
+    class Meta:
+        model = models.UserProFlags
+
+    user = factory.SubFactory(ProFactory)
+    firebase = {"BETTER_OFFER_CREATION": True}
