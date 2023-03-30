@@ -65,6 +65,8 @@ describe('useGetVenue', () => {
       collectivePhone: '',
       collectiveStudents: [],
       collectiveWebsite: '',
+      hasAdageId: false,
+      collectiveDmsApplications: [],
     }
 
     jest.spyOn(api, 'getVenue').mockResolvedValue(apiVenue)
