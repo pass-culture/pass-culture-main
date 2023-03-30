@@ -18,19 +18,19 @@ releases:
 environments:
   testing:
     values:
-      - chartVersion: 0.17.4
+      - chartVersion: 0.17.5
   staging:
     values:
-      - chartVersion: 0.17.4
+      - chartVersion: 0.17.5
   integration:
     values:
-      - chartVersion: 0.17.4
+      - chartVersion: 0.17.5
   production:
     values:
-      - chartVersion: 0.17.4
+      - chartVersion: 0.17.5
   ops:
     values:
-      - chartVersion: 0.17.4
+      - chartVersion: 0.17.5
   perf:
     values:
-      - chartVersion: 0.17.4
+      - chartVersion: 0.17.5
