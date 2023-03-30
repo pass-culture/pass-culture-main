@@ -4,6 +4,7 @@ import pytest
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.educational.models import StudentLevels
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.human_ids import dehumanize
@@ -45,6 +46,37 @@ class Return200Test:
         assert created_stock.price == 1500
         assert created_stock.priceDetail == "Détail du prix"
         assert offer.validation == OfferValidationStatus.DRAFT
+
+    def test_create_collective_stock_for_offer_with_6_5_too_early(self, client):
+        # Given
+        offer = educational_factories.CollectiveOfferFactory(
+            validation=OfferValidationStatus.DRAFT,
+            students=[StudentLevels.COLLEGE6, StudentLevels.COLLEGE5, StudentLevels.COLLEGE4],
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_payload = {
+            "offerId": humanize(offer.id),
+            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+            "totalPrice": 1500,
+            "numberOfTickets": 38,
+            "educationalPriceDetail": "Détail du prix",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.post("/collective/stocks/", json=stock_payload)
+
+        # Then
+        assert response.status_code == 201
+        response_dict = response.json
+        created_stock: CollectiveStock = CollectiveStock.query.get(dehumanize(response_dict["id"]))
+        assert created_stock
+        assert offer.students == [StudentLevels.COLLEGE4]
 
 
 @freeze_time("2020-11-17 15:00:00")
@@ -224,3 +256,34 @@ class Return400Test:
         # Then
         assert response.status_code == 400
         assert response.json == {"beginningDatetime": ["L'évènement ne peut commencer dans le passé."]}
+
+
+@freeze_time("2020-11-17 15:00:00")
+class Return403Test:
+    def test_create_collective_stock_for_offer_with_6_5_only_too_early(self, client):
+        # Given
+        offer = educational_factories.CollectiveOfferFactory(
+            validation=OfferValidationStatus.DRAFT,
+            students=[StudentLevels.COLLEGE6, StudentLevels.COLLEGE5],
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_payload = {
+            "offerId": humanize(offer.id),
+            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+            "totalPrice": 1500,
+            "numberOfTickets": 38,
+            "educationalPriceDetail": "Détail du prix",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.post("/collective/stocks/", json=stock_payload)
+
+        # Then
+        assert response.status_code == 403
+        assert offer.students == [StudentLevels.COLLEGE6, StudentLevels.COLLEGE5]
