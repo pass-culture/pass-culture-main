@@ -3,9 +3,10 @@
 import { addDays, isAfter, isBefore } from 'date-fns'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 
-import { CollectiveBookingStatus } from 'apiClient/v1'
+import { CollectiveBookingStatus, StudentLevels } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import FormLayout from 'components/FormLayout'
@@ -18,6 +19,7 @@ import {
   MAX_DETAILS_LENGTH,
   Mode,
   OfferEducationalStockFormValues,
+  OPENING_DATE_FOR_6E_AND_5E,
 } from 'core/OfferEducational'
 import { isOfferDisabled } from 'core/Offers/utils'
 import { Banner, ButtonLink, SubmitButton, TextArea } from 'ui-kit'
@@ -31,6 +33,7 @@ import {
   generateValidationSchema,
   showcaseOfferValidationSchema,
 } from './validationSchema'
+import WrongStudentsModal from './WrongStudentsModal/WrongStudentsModal'
 
 export interface IOfferEducationalStockProps<
   T = CollectiveOffer | CollectiveOfferTemplate
@@ -53,7 +56,9 @@ const OfferEducationalStock = <
 }: IOfferEducationalStockProps<T>): JSX.Element => {
   const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
-
+  const [isWrongStudentsModalVisible, setIsWrongStudentsModalVisible] =
+    useState(false)
+  const navigate = useNavigate()
   const beginningDatetime =
     isCollectiveOffer(offer) && offer.collectiveStock?.beginningDatetime
 
@@ -75,10 +80,27 @@ const OfferEducationalStock = <
           isAfter(new Date(), addDays(new Date(beginningDatetime), 2)))
     )
 
-  const submitForm = async (values: OfferEducationalStockFormValues) => {
+  const postForm = async (values: OfferEducationalStockFormValues) => {
     setIsLoading(true)
     await onSubmit(offer, values)
     setIsLoading(false)
+  }
+
+  const hasOnly6eAnd5eStudents = offer.students.every(
+    student =>
+      student == StudentLevels.COLL_GE_6E || student == StudentLevels.COLL_GE_5E
+  )
+
+  const submitForm = async (values: OfferEducationalStockFormValues) => {
+    if (
+      values.eventDate < OPENING_DATE_FOR_6E_AND_5E &&
+      (offer.students.includes(StudentLevels.COLL_GE_6E) ||
+        offer.students.includes(StudentLevels.COLL_GE_5E))
+    ) {
+      setIsWrongStudentsModalVisible(true)
+      return
+    }
+    postForm(values)
   }
 
   const { resetForm, ...formik } = useFormik({
@@ -176,6 +198,20 @@ const OfferEducationalStock = <
                 />
               </FormLayout.Row>
             </FormLayout.Section>
+            {isWrongStudentsModalVisible && (
+              <WrongStudentsModal
+                closeModal={() => setIsWrongStudentsModalVisible(false)}
+                postForm={() => postForm(formik.values)}
+                modifyStudents={() =>
+                  navigate(
+                    `/offre/collectif/${offer.id}/${
+                      mode == Mode.EDITION ? 'edition' : 'creation'
+                    }`
+                  )
+                }
+                hasOnlyWrongStudents={hasOnly6eAnd5eStudents}
+              />
+            )}
             <ActionsBarSticky>
               <ActionsBarSticky.Left>
                 <ButtonLink

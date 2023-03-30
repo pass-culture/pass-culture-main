@@ -68,3 +68,5 @@ export const offerAdageActivated =
   'Votre offre est maintenant active et visible dans ADAGE'
 export const offerAdageDeactivate =
   'Votre offre est désactivée et n’est plus visible sur ADAGE'
+
+export const OPENING_DATE_FOR_6E_AND_5E = new Date('2023-09-01T00:00:00+00:00')
