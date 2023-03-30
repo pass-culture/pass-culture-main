@@ -10,6 +10,7 @@ from flask import url_for
 from flask_login import current_user
 from flask_wtf import FlaskForm
 import werkzeug
+from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import Forbidden
 from werkzeug.wrappers import Response as WerkzeugResponse
 
@@ -137,3 +138,12 @@ def build_form_error_msg(form: FlaskForm) -> str:
             error_msg += f" {field.label.text}: {', '.join(error for error in field.errors)};"
 
     return error_msg
+
+
+def get_query_params() -> ImmutableMultiDict[str, str]:
+    """
+    Ignore empty query parameters so that they are considered as missing, not set to an empty string.
+    This enables to fallback to the default value in wtforms field.
+    request.args is an ImmutableMultiDict
+    """
+    return ImmutableMultiDict(item for item in request.args.items(multi=True) if item[1])
