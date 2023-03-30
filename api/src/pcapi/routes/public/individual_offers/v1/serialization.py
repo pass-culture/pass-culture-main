@@ -66,6 +66,8 @@ class Accessibility(serialization.ConfiguredBaseModel):
 
 
 class PartialAccessibility(serialization.ConfiguredBaseModel):
+    """Accessibility for people with disabilities. Fields are null for digital venues."""
+
     audio_disability_compliant: bool | None
     mental_disability_compliant: bool | None
     motor_disability_compliant: bool | None
@@ -872,9 +874,7 @@ class VenueResponse(serialization.ConfiguredBaseModel):
         description="Null when venue is digital or when siretComment field is not null.", example="12345678901234"
     )
     venueTypeCode: VenueTypeEnum = pydantic.Field(alias="activityDomain")  # type: ignore [valid-type]
-    accessibility: PartialAccessibility = pydantic.Field(
-        description="Accessibility to disabled people. Fields are null for digital venues."
-    )
+    accessibility: PartialAccessibility
 
     @classmethod
     def build_model(cls, venue: offerers_models.Venue) -> "VenueResponse":
