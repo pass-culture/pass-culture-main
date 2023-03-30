@@ -163,3 +163,7 @@ class BookingIsAlreadyRefunded(Exception):
 
 class EducationalRedactorNotFound(Exception):
     pass
+
+
+class StudentsNotOpenedYet(Exception):
+    pass
