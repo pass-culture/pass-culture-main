@@ -83,8 +83,6 @@ def update_dms_applications_for_procedure(procedure_number: int, since: datetime
 
 
 def _get_or_create_application(procedure_number: int, node: dict) -> None:
-    # Dirty fix will be changed in PC-21388
-    expiration_date = _convert_iso_string_to_naive_utc_datetime(node["dateExpiration"]) or datetime(1970, 1, 1)
     data = {
         "state": node["state"],
         "procedure": procedure_number,
@@ -92,7 +90,7 @@ def _get_or_create_application(procedure_number: int, node: dict) -> None:
         "siret": node["demandeur"].get("siret"),
         "lastChangeDate": _convert_iso_string_to_naive_utc_datetime(node["dateDerniereModification"]),
         "depositDate": _convert_iso_string_to_naive_utc_datetime(node["dateDepot"]),
-        "expirationDate": expiration_date,
+        "expirationDate": _convert_iso_string_to_naive_utc_datetime(node["dateExpiration"]),
         "buildDate": _convert_iso_string_to_naive_utc_datetime(node["datePassageEnConstruction"]),
         "instructionDate": _convert_iso_string_to_naive_utc_datetime(node["datePassageEnInstruction"]),
         "processingDate": _convert_iso_string_to_naive_utc_datetime(node["dateTraitement"]),
