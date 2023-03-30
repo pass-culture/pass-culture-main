@@ -1,1 +1,1 @@
-export const CINEMA_PROVIDER_NAMES = ['ciné office', 'boost']
+export const CINEMA_PROVIDER_NAMES = ['ciné office', 'boost', 'cgr']

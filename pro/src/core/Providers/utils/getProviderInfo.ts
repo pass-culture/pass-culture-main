@@ -88,6 +88,12 @@ export const getProviderInfo = (
       name: 'Boost',
       synchronizedOfferMessage: 'Offre synchronisée avec Boost',
     },
+    {
+      id: 'cgr',
+      icon: 'logo-cgr',
+      name: 'CGR',
+      synchronizedOfferMessage: 'Offre synchronisée avec CGR',
+    },
   ]
 
   return providers.find(providerInfo =>
