@@ -1191,3 +1191,22 @@ def validate_pro_user_email(user: users_models.User, author_user: users_models.U
             "Could not send welcome email when pro user is valid",
             extra={"user": user.id},
         )
+
+
+def _save_firebase_flags(user: models.User, firebase_value: dict) -> None:
+    if user.pro_flags:
+        if user.pro_flags.firebase and user.pro_flags.firebase != firebase_value:
+            logger.warning("%s now has different Firebase flags than before", user)
+        user.pro_flags.firebase = firebase_value
+    else:
+        user.pro_flags = users_models.UserProFlags(user=user, firebase=firebase_value)
+    db.session.commit()
+
+
+def save_flags(user: models.User, flags: dict) -> None:
+    for flag, value in flags.items():
+        match flag:
+            case "firebase":
+                _save_firebase_flags(user, value)
+            case _:
+                raise ValueError()
