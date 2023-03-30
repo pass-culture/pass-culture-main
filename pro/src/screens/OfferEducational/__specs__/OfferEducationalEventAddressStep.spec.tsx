@@ -48,7 +48,7 @@ describe('screens | OfferEducational : event address step', () => {
       expect(screen.getByLabelText('Sélectionner le lieu')).toBeDisabled()
 
       expect(
-        screen.getByText('Venue name', { exact: false, selector: 'div' })
+        await screen.findByText('Venue name', { exact: false, selector: 'div' })
       ).toBeInTheDocument()
 
       expect(
