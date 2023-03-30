@@ -38,6 +38,7 @@ const CollectiveOfferSummary = ({
   visibilityEditLink,
 }: ICollectiveOfferSummaryProps) => {
   const offerManuallyCreated = isCollectiveOffer(offer) && !offer.isPublicApi
+
   return (
     <>
       <SummaryLayout>
@@ -70,6 +71,7 @@ const CollectiveOfferSummary = ({
               />
             )}
           </SummaryLayout.Section>
+
           {!offer.isTemplate && (
             <SummaryLayout.Section
               title="Date & Prix"
@@ -83,6 +85,7 @@ const CollectiveOfferSummary = ({
               />
             </SummaryLayout.Section>
           )}
+
           {!offer.isTemplate && (
             <SummaryLayout.Section
               title="Visibilité"

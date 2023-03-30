@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import fetchMock from 'jest-fetch-mock'
 import React from 'react'
@@ -99,20 +99,20 @@ describe('CollectiveOfferSummary', () => {
 
   it('should display desactive offer option when offer is active and not booked', async () => {
     offer = collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
+
     renderCollectiveOfferSummaryEdition(offer, categories)
-    await waitFor(() => {
-      expect(api.getVenue).toHaveBeenCalled()
-    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
     const desactivateOffer = screen.getByRole('button', {
       name: 'Masquer la publication sur Adage',
     })
-
     expect(desactivateOffer).toBeInTheDocument()
   })
 
   it('should log event when clicking duplicate offer button', async () => {
     offer = collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
     renderCollectiveOfferSummaryEdition(offer, categories)
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const duplicateOffer = screen.getByRole('button', {
       name: 'Créer une offre réservable pour un établissement scolaire',
