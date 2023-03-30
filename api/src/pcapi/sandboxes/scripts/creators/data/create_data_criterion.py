@@ -12,15 +12,15 @@ def create_data_criteria() -> dict[str, Criterion]:
     logger.info("create_data_criteria")
 
     criterion1 = criteria_factories.CriterionFactory(
-        name="Bonne offre d’appel",
+        name="Bonne offre d’appel DATA",
         description="Offre déjà beaucoup réservée par les autres jeunes",
     )
     criterion2 = criteria_factories.CriterionFactory(
-        name="Mauvaise accroche",
+        name="Mauvaise accroche DATA",
         description="Offre ne possédant pas une accroche de qualité suffisante",
     )
     criterion3 = criteria_factories.CriterionFactory(
-        name="Offre de médiation spécifique",
+        name="Offre de médiation spécifique DATA",
         description="Offre possédant une médiation orientée pour les jeunes de 18 ans",
     )
 
@@ -37,5 +37,5 @@ def associate_criterion_to_one_offer_with_mediation(
     offers_by_name: dict[str, Offer], criteria_by_name: dict[str, Criterion]
 ) -> None:
     offer = list(filter(lambda o: o.mediations is not None, list(offers_by_name.values())))[0]
-    criterion = criteria_by_name["Offre de médiation spécifique"]
+    criterion = criteria_by_name["Offre de médiation spécifique DATA"]
     offer.criteria = [criterion]  # type: ignore [call-overload]

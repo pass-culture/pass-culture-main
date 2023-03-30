@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def create_data_bookings(offers_by_name: dict[str, Offer], users_by_name: dict[str, User]) -> None:
     logger.info("create_data_bookings_data")
     bookings_by_name: dict[str, Booking] = {}
-    token = 100000
+    token = 200000
     for user_name, user in users_by_name.items():
         if user.firstName not in ("DATA Test Jeune", "DATA Test Mineur"):
             continue
