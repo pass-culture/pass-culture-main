@@ -111,7 +111,7 @@ def _get_collective_offers(
 
 @list_collective_offers_blueprint.route("", methods=["GET"])
 def list_collective_offers() -> utils.BackofficeResponse:
-    form = collective_offer_forms.GetCollectiveOffersListForm(request.args)
+    form = collective_offer_forms.GetCollectiveOffersListForm(formdata=utils.get_query_params())
     if not form.validate():
         return render_template("collective_offer/list.html", rows=[], form=form), 400
 
