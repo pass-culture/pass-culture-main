@@ -33,7 +33,6 @@ import type { GetCollectiveVenueResponseModel } from '../models/GetCollectiveVen
 import type { GetEducationalOfferersResponseModel } from '../models/GetEducationalOfferersResponseModel';
 import type { GetIndividualOfferResponseModel } from '../models/GetIndividualOfferResponseModel';
 import type { GetOffererResponseModel } from '../models/GetOffererResponseModel';
-import type { GetOfferersListResponseModel } from '../models/GetOfferersListResponseModel';
 import type { GetOfferersNamesResponseModel } from '../models/GetOfferersNamesResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
@@ -932,35 +931,6 @@ export class DefaultService {
       method: 'GET',
       url: '/finance/reimbursement-points',
       errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
-   * get_offerers <GET>
-   * @param keywords
-   * @param page
-   * @param paginate
-   * @returns GetOfferersListResponseModel OK
-   * @throws ApiError
-   */
-  public getOfferers(
-    keywords?: string | null,
-    page: number | null = 1,
-    paginate: number | null = 10,
-  ): CancelablePromise<GetOfferersListResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/offerers',
-      query: {
-        'keywords': keywords,
-        'page': page,
-        'paginate': paginate,
-      },
-      errors: {
-        400: `Bad Request`,
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
