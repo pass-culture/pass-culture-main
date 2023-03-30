@@ -75,7 +75,7 @@ def create_data_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str,
     user_validation_suffix = 123
 
     # loop on locations to create offerers and associated users
-    incremented_siren = 222222222
+    incremented_siren = 555555555
     starting_index = 0
 
     for location_index, location in enumerate(OFFERER_LOCATIONS):
@@ -101,7 +101,7 @@ def create_data_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str,
         domain = MOCK_DOMAINS[user_index % len(MOCK_DOMAINS)]
         first_name = MOCK_FIRST_NAMES[user_index % len(MOCK_FIRST_NAMES)]
         last_name = MOCK_LAST_NAMES[user_index % len(MOCK_LAST_NAMES)]
-        email = get_email(first_name, last_name, domain)
+        email = get_email(f"{first_name}_Data", last_name, domain)
         user_name = f"{first_name} {last_name}"
         user_validation_token = None
         offerer.validationStatus = ValidationStatus.VALIDATED
@@ -132,7 +132,7 @@ def create_data_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str,
             domain = MOCK_DOMAINS[user_index % len(MOCK_DOMAINS)]
             first_name = MOCK_FIRST_NAMES[user_index % len(MOCK_FIRST_NAMES)]
             last_name = MOCK_LAST_NAMES[user_index % len(MOCK_LAST_NAMES)]
-            email = get_email(first_name, last_name, domain)
+            email = get_email("{first_name}_Data", last_name, domain)
             user_name = f"{first_name} {last_name} DATA"
             user_validation_token = None
             pro = users_factories.ProFactory(
