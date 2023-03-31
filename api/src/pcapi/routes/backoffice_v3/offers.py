@@ -156,8 +156,7 @@ def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer
         query = base_query
 
     if form.sort.data:
-        # currently only support ascending date
-        query = query.order_by(offers_models.Offer.dateCreated.asc())
+        query = query.order_by(getattr(offers_models.Offer, form.sort.data))
 
     # +1 to check if there are more results than requested
     return query.limit(form.limit.data + 1).all()

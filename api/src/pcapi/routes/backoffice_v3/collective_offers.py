@@ -103,8 +103,7 @@ def _get_collective_offers(
             )
 
     if form.sort.data:
-        # currently only support ascending date
-        base_query = base_query.order_by(educational_models.CollectiveOffer.dateCreated.asc())
+        base_query = base_query.order_by(getattr(educational_models.CollectiveOffer, form.sort.data))
 
     # +1 to check if there are more results than requested
     return base_query.limit(form.limit.data + 1).all()

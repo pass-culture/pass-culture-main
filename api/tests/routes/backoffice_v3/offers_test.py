@@ -354,7 +354,7 @@ class ListOffersTest:
                     self.endpoint,
                     status=[offers_models.OfferValidationStatus.PENDING.value],
                     only_validated_offerers="on",
-                    sort="on",
+                    sort="dateCreated",
                 )
             )
             assert response.status_code == 200
