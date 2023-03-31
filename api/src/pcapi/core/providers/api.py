@@ -384,29 +384,19 @@ def _get_stocks_to_upsert(
 
     for stock_detail in stock_details:
         stock_provider_reference = stock_detail.stocks_provider_reference
-        product = products_by_provider_reference[stock_detail.products_provider_reference]
-        if stock_detail.price is not None:
-            book_price = stock_detail.price
-        else:
-            extra_data_price = product.extraData.get("prix_livre") if product.extraData else None
-            if extra_data_price is None:
-                raise AttributeError("Cannot compute book_price because product extraData.prix_livre is None")
-            book_price = float(extra_data_price)
         if stock_provider_reference in stocks_by_provider_reference:
             stock = stocks_by_provider_reference[stock_provider_reference]
 
-            # FIXME (dbaty, 2021-05-18): analyze logs to see if the
-            # provider sometimes stops sending a price after having
-            # sent a specific price before. Should we keep the
-            # possibly specific price that we have received before? Or
-            # should we override with the (generic) product price?
-            if not stock_detail.price and float(stock["price"]) != book_price:
+            # FIXME (dbaty, 2023-04-05): providers sometimes change
+            # the price to zero. I checked a few cases and it does not
+            # seem right.
+            if not stock_detail.price and float(stock["price"]) != stock_detail.price:
                 logger.warning(
-                    "Stock specific price has been overriden by product price because provider price is missing",
+                    "Stock price has been changed to zero",
                     extra={
                         "stock": stock["id"],
-                        "previous_stock_price": float(stock["price"]),
-                        "new_price": book_price,
+                        "previous_stock_price": stock["price"],
+                        "new_price": stock_detail.price,
                     },
                 )
 
@@ -415,11 +405,11 @@ def _get_stocks_to_upsert(
                     "id": stock["id"],
                     "quantity": stock_detail.available_quantity + stock["booking_quantity"],
                     "rawProviderQuantity": stock_detail.available_quantity,
-                    "price": book_price,
+                    "price": stock_detail.price,
                     "lastProviderId": provider_id,
                 }
             )
-            if _should_reindex_offer(stock_detail.available_quantity, book_price, stock):
+            if _should_reindex_offer(stock_detail.available_quantity, stock_detail.price, stock):
                 offer_ids.add(offers_by_provider_reference[stock_detail.offers_provider_reference])
 
         else:
@@ -434,7 +424,6 @@ def _get_stocks_to_upsert(
             stock = _build_stock_from_stock_detail(
                 stock_detail,
                 offer_id,
-                book_price,
                 provider_id,
             )
             if not _validate_stock_or_offer(stock):
@@ -447,14 +436,14 @@ def _get_stocks_to_upsert(
 
 
 def _build_stock_from_stock_detail(
-    stock_detail: providers_models.StockDetail, offers_id: int, price: float, provider_id: int | None
+    stock_detail: providers_models.StockDetail, offers_id: int, provider_id: int | None
 ) -> offers_models.Stock:
     return offers_models.Stock(
         quantity=stock_detail.available_quantity,
         rawProviderQuantity=stock_detail.available_quantity,
         bookingLimitDatetime=None,
         offerId=offers_id,
-        price=decimal.Decimal(price),
+        price=decimal.Decimal(stock_detail.price),
         dateModified=datetime.utcnow(),
         idAtProviders=stock_detail.stocks_provider_reference,
         lastProviderId=provider_id,
