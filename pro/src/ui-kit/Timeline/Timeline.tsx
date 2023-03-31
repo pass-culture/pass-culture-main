@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import React, { ReactNode } from 'react'
 
+import { InfoWrongIcon } from 'icons'
 import { ReactComponent as ErrorSvg } from 'icons/ico-clear.svg'
 import { ReactComponent as SuccessSvg } from 'icons/ico-notification-success.svg'
 
@@ -14,6 +15,7 @@ export enum TimelineStepType {
   WAITING = 'WAITING',
   DISABLED = 'DISABLED',
   CANCELLED = 'CANCELLED',
+  REFUSED = 'REFUSED',
 }
 
 export interface ITimelineStep {
@@ -65,6 +67,13 @@ const getIconComponent = (type: TimelineStepType, hasErrorSteps: boolean) => {
         <ErrorSvg
           title="Étape annulée"
           className={cn(styles.icon, styles['icon-error'])}
+        />
+      )
+    case TimelineStepType.REFUSED:
+      return (
+        <InfoWrongIcon
+          title="Étape refusée"
+          className={cn(styles.icon, styles['icon-wrong'])}
         />
       )
     default:

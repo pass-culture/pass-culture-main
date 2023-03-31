@@ -200,6 +200,36 @@ const CollectiveDmsTimeline = ({
     ),
   }
 
+  const refusedByDms = {
+    type: TimelineStepType.REFUSED,
+    content: (
+      <>
+        <div className={styles['timeline-step-title']}>
+          Votre demande de référencement a été refusée
+        </div>
+        <div>
+          <br />
+          Votre dossier a été refusé le 2 mars 2023 par la commission régionale
+          DAAC et DRAC de la région où est déclaré votre siège social. Nous vous
+          invitons à consulter votre messagerie sur Démarches Simplifiées afin
+          d’en savoir plus sur les raisons de ce refus.
+          <div className={styles['timeline-step-button']}>
+            <ButtonLink
+              variant={ButtonVariant.TERNARY}
+              link={{
+                to: collectiveDmsApplicationLink,
+                isExternal: true,
+              }}
+              Icon={ExternalLinkIcon}
+            >
+              Consulter ma messagerie sur Démarches Simplifiées
+            </ButtonLink>
+          </div>
+        </div>
+      </>
+    ),
+  }
+
   switch (collectiveDmsApplication.state) {
     case DMSApplicationstatus.EN_CONSTRUCTION:
       return (
@@ -243,6 +273,8 @@ const CollectiveDmsTimeline = ({
           ]}
         />
       )
+    case DMSApplicationstatus.REFUSE:
+      return <Timeline steps={[refusedByDms]} />
     default:
       throw new Error('Invalid dms status')
   }
