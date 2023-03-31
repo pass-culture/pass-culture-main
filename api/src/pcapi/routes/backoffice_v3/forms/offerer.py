@@ -93,8 +93,14 @@ class OffererValidationListForm(utils.PCForm):
         validators=(wtforms.validators.Optional(),),
     )
 
-    order = wtforms.HiddenField("order", default="desc", validators=(wtforms.validators.Optional(),))
-    sort = wtforms.HiddenField("sort", default="dateCreated", validators=(wtforms.validators.Optional(),))
+    order = wtforms.HiddenField(
+        "order", default="desc", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("asc", "desc")))
+    )
+    sort = wtforms.HiddenField(
+        "sort",
+        default="dateCreated",
+        validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("dateCreated",))),
+    )
 
     def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
         if q.data and q.data.isnumeric() and len(q.data) not in (2, 3, 5, 9):
@@ -102,17 +108,6 @@ class OffererValidationListForm(utils.PCForm):
                 "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
             )
         return q
-
-    def validate_order(self, order: wtforms.HiddenField) -> wtforms.HiddenField:
-        order.data = order.data.lower()
-        if order.data not in ("asc", "desc"):
-            raise wtforms.validators.ValidationError("L'ordre ne peut être qu'ascendant ou descendant")
-        return order
-
-    def validate_sort(self, sort: wtforms.HiddenField) -> wtforms.HiddenField:
-        if sort.data not in ("dateCreated"):
-            raise wtforms.validators.ValidationError(f"Le tri par {sort.data} n'est pas autorisé")
-        return sort
 
 
 class UserOffererValidationListForm(utils.PCForm):
@@ -143,8 +138,14 @@ class UserOffererValidationListForm(utils.PCForm):
         default="100",
         validators=(wtforms.validators.Optional(),),
     )
-    order = wtforms.HiddenField("order", default="desc", validators=(wtforms.validators.Optional(),))
-    sort = wtforms.HiddenField("sort", default="id", validators=(wtforms.validators.Optional(),))
+    order = wtforms.HiddenField(
+        "order", default="desc", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("asc", "desc")))
+    )
+    sort = wtforms.HiddenField(
+        "sort",
+        default="id",
+        validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("id", "dateCreated"))),
+    )
 
     def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
         if q.data and q.data.isnumeric() and len(q.data) not in (2, 3, 5, 9):
@@ -152,17 +153,6 @@ class UserOffererValidationListForm(utils.PCForm):
                 "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
             )
         return q
-
-    def validate_order(self, order: wtforms.HiddenField) -> wtforms.HiddenField:
-        order.data = order.data.lower()
-        if order.data not in ("asc", "desc"):
-            raise wtforms.validators.ValidationError("L'ordre ne peut être qu'ascendant ou descendant")
-        return order
-
-    def validate_sort(self, sort: wtforms.HiddenField) -> wtforms.HiddenField:
-        if sort.data not in ("id", "dateCreated"):
-            raise wtforms.validators.ValidationError(f"Le tri par {sort.data} n'est pas autorisé")
-        return sort
 
 
 class CommentForm(FlaskForm):
