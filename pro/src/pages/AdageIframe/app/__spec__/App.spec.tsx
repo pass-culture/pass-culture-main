@@ -1,9 +1,4 @@
-import {
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
@@ -179,7 +174,6 @@ describe('app', () => {
       await waitFor(() => {
         expect(Configure).toHaveBeenCalledTimes(2)
       })
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         [`venue.id:${venue.id}`],
@@ -224,7 +218,6 @@ describe('app', () => {
       await waitFor(() => {
         expect(Configure).toHaveBeenCalledTimes(2)
       })
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         [`venue.id:${venue.id}`],
@@ -286,7 +279,6 @@ describe('app', () => {
           'Lieu inconnu. Tous les résultats sont affichés.'
         )
       ).toBeInTheDocument()
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     })
 
     it('should add all related venues in facet filters when siret is provided and "all" query param is true', async () => {
@@ -317,7 +309,6 @@ describe('app', () => {
           ],
         ])
       })
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     })
 
     it('should add all related venues in facet filters when venue is provided and "all" query param is true', async () => {
@@ -348,7 +339,6 @@ describe('app', () => {
           ],
         ])
       })
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     })
 
     it('should remove venue filter on click', async () => {
@@ -364,8 +354,8 @@ describe('app', () => {
       })
 
       // When
-      userEvent.click(venueFilter)
-      userEvent.click(launchSearchButton)
+      await userEvent.click(venueFilter)
+      await userEvent.click(launchSearchButton)
 
       // Then
       await waitFor(() => expect(Configure).toHaveBeenCalledTimes(4))
@@ -404,8 +394,8 @@ describe('app', () => {
         name: 'Lancer la recherche',
       })
       // When
-      userEvent.click(onlyInMyDptFilter)
-      userEvent.click(launchSearchButton)
+      await userEvent.click(onlyInMyDptFilter)
+      await userEvent.click(launchSearchButton)
 
       // Then
       await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
