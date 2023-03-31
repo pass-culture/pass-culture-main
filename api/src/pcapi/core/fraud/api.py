@@ -150,23 +150,45 @@ def validate_id_piece_number_format_fraud_item(id_piece_number: str | None) -> m
             reason_code=models.FraudReasonCode.EMPTY_ID_PIECE_NUMBER,
         )
 
-    # https://regex101.com/ FTW
+    # Outil de test de regex: https://regex101.com/ FTW
+    # Doc des formats acceptés: https://www.notion.so/passcultureapp/Tableau-des-ID-trang-res-sur-FA-440ab8cbb31d4ae9a16debe3eb5aab24
     regexp = "|".join(
         (
-            r"^\d{18}$",  # ID Algérienne
+            # --- Titre de séjour français ---
+            r"^\d{6}\w{1}$",
+            # --- CNI Française ---
+            r"^[\s\w]{14}$",
+            # --- Passeports ---
+            # Passeport chiffres
+            r"^\d{7,10}$",  # Cameroune, Ile Maurice, Lithuanie, Danemark, Roumanie, Russie, Equateur
+            # Passeports x lettres + y chiffres
+            r"^\w{1} ?\d{6,9}$",  # Portugal, Tunisie, Bolivie, Honduras, Suisse, Mongolie, Sri Lanka, Angola, Autriche, Corée, Guinée, Mexique, Turquie, Egypte, Kosovo
+            r"^\w{2} ?\d{6,7}$",  # Bengladesh, Albanie, Chine, Congo, Maroc, Pakistan, Togo, Brésil, Canada, Laos, Liban, Pologne
+            r"^\w{3} ?\d{6}$",  # Norvège
+            # Passeports chiffres + lettres
+            r"^[A-Z0-9]{8,9}$",  # Lybie, Pays-Bas
+            # Passeports autres
+            r"^\d{2}\w{2}\d{5}$",  # Géorgie, Côte d’Ivoire, Bénin
+            r"^\d{3}-\d{2}-\w{1}\d{6}$",  # Syrie
+            # --- Cartes d'identité ---
+            # CNIs chiffres
+            r"^\d{8,9}$",  # Autriche, Albanie,Algérie,Finlande,Tchéquie,Bulgarie,Serbie
+            r"^\d{11}$",  # Togo
+            r"^(\d *){17}$",  # Sénégal
+            r"^(\d *){13}$",  # Sénégal (ancien)
+            # CNIs lettre
             r"^\w{8,12}$",  # ID Europeene
-            r"^[\s\w]{14}$",  # ID Française
-            r"^\w{1}\d{6}$",  # ID Tunisienne
-            r"^\w{1} *\d{8}$",  # ID Turque
-            r"^\w{2} *\d{7}$",  # Ancienne ID Italienne
-            r"^\d{3}-\d{7}-\d{2}$",  # ID Belge
-            r"^\d{7}$",  # ID Congolaise, Camerounaise, Mauricienne
-            r"^\w{3} *\d{6}$",  # ID Polonaise
-            r"^(\d *){17}$",  # ID Sénégalaise
-            r"^\d{6}\w{1}$",  # Titre de séjour français
+            # CNIs chiffres + lettres
+            r"^\w{1}\d{7}$",  # Burkina Faso
+            r"^\w{2}\d{6}$",  # Roumanie, Maroc
+            r"^\w{3} \d{6}$",  # Pologne
+            # CNIs autres
+            r"^\d{3}-\d{7}-\d{2}$",  # Belgique
+            r"^\d{8}( \d+)? ?[A-Z0-9]{3}$",  # Portugal
             r"^\d{6,8}-\d{4}$",  # ID Suédoise
         )
     )
+
     match = re.match(regexp, id_piece_number)
     if not match or match.group(0) != id_piece_number:
         return models.FraudItem(
