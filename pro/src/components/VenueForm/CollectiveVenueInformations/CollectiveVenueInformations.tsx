@@ -1,3 +1,4 @@
+import { addDays, isBefore } from 'date-fns'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
@@ -8,7 +9,7 @@ import NewEACInformation from '../EACInformation/NewEACInformation'
 import CollectiveDmsTimeline from './CollectiveDmsTimeline/CollectiveDmsTimeline'
 
 export interface ICollectiveVenueInformationsProps {
-  venue?: IVenue | null
+  venue?: IVenue
   isCreatingVenue: boolean
 }
 
@@ -16,27 +17,32 @@ const CollectiveVenueInformations = ({
   venue,
   isCreatingVenue,
 }: ICollectiveVenueInformationsProps) => {
-  //const isAcceptedOnAdage = venue.adageId !== null // TO FIX : venue.adageId is not yet a property of IVenue
-  const isAcceptedOnAdage = false
+  const shouldEACInformationSection =
+    (venue?.hasAdageId &&
+      venue.adageInscriptionDate &&
+      isBefore(
+        new Date(venue.adageInscriptionDate),
+        addDays(new Date(), -30)
+      )) ||
+    isCreatingVenue
+
   return (
     <FormLayout.Section
       title="A destination des scolaires"
       description={
-        // istanbul ignore next: FIX ME not yet implemented
-        isAcceptedOnAdage
+        venue?.hasAdageId
           ? ''
           : 'Pour publier des offres à destination des scolaires, votre lieu doit être référencé sur ADAGE, la plateforme dédiée aux enseignants et aux chefs d’établissements.'
       }
     >
-      {
-        // istanbul ignore next: FIX ME not yet implemented
-        isAcceptedOnAdage ? (
-          <NewEACInformation venue={venue} isCreatingVenue={isCreatingVenue} />
-        ) : (
-          //collectiveDmsStatus = venue.collectiveDmsStatus // FIX ME : collectiveDmsStatus is not yet a property of IVenue
-          <CollectiveDmsTimeline collectiveDmsStatus="DRAFT" />
-        )
-      }
+      {shouldEACInformationSection && (
+        <NewEACInformation venue={venue} isCreatingVenue={isCreatingVenue} />
+      )}
+      {!shouldEACInformationSection && venue && (
+        <CollectiveDmsTimeline
+          collectiveDmsApplication={venue.collectiveDmsApplication}
+        />
+      )}
     </FormLayout.Section>
   )
 }
