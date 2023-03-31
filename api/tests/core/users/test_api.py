@@ -972,6 +972,19 @@ class BeneficiaryInformationUpdateTest:
 
         assert user.firstName == "Julie"
 
+    def should_not_update_date_of_birth_if_already_validated(self):
+        # Given
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.date(2000, 1, 1),
+            validatedBirthDate=datetime.date(2000, 1, 1),
+        )
+
+        # When
+        users_api.update_user_information_from_external_source(user, fraud_factories.DMSContentFactory())
+
+        # Then
+        assert user.birth_date == datetime.date(2000, 1, 1)
+
 
 class UpdateUserLastConnectionDateTest:
     @freeze_time("2021-9-20 11:11:11")
