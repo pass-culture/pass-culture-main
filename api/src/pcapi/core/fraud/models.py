@@ -15,6 +15,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pcapi.serialization.utils import to_camel
 
 from .common import models as common_models
 from .ubble import models as ubble_fraud_models
@@ -323,17 +324,19 @@ class PhoneValidationFraudData(pydantic.BaseModel):
 
 
 class ProfileCompletionContent(pydantic.BaseModel):
-    activity: str
+    activity: users_models.ActivityEnum | str  # str for backward compatibility. All new data should be ActivityEnum
     address: str | None  # Optional because it was not saved up until now
     city: str
     first_name: str
     last_name: str
     origin: str  # Where the profile was completed by the user. Can be the APP or DMS
-    postal_code: str = pydantic.Field(..., alias="postalCode")  # keep alias for old data
+    postal_code: str
     school_type: users_models.SchoolTypeEnum | None
 
     class Config:
         allow_population_by_field_name = True
+        use_enum_values = True
+        alias_generator = to_camel
 
 
 FRAUD_CHECK_CONTENT_MAPPING = {

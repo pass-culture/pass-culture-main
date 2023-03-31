@@ -805,14 +805,41 @@ class GetProfileTest:
 
     def test_get_profile_with_obsolete_profile_info(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
-        content = fraud_factories.ProfileCompletionContentFactory(activity="Étudiant")
-        fraud_factories.ProfileCompletionFraudCheckFactory(resultContent=content, user=user)
+        content = fraud_factories.ProfileCompletionContentFactory()
+        fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(resultContent=content, user=user)
+        fraud_check.resultContent["activity"] = "NOT_AN_ACTIVITY"
 
         client.with_token(user.email)
         response = client.get("/native/v1/subscription/profile")
 
         assert response.status_code == 200
         assert response.json["profile"] is None
+
+    def test_post_profile_then_get(self, client):
+        user = users_factories.EligibleGrant18Factory()
+        profile_data = {
+            "firstName": "Lucy",
+            "lastName": "Ellingson",
+            "address": "Chez ma maman",
+            "city": "Kennet",
+            "postalCode": "77000",
+            "activityId": "HIGH_SCHOOL_STUDENT",
+            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+        }
+
+        client.with_token(user.email)
+        client.post("/native/v1/subscription/profile", profile_data)
+
+        response = client.get("/native/v1/subscription/profile")
+
+        assert response.status_code == 200
+        assert response.json["profile"]["firstName"] == profile_data["firstName"]
+        assert response.json["profile"]["lastName"] == profile_data["lastName"]
+        assert response.json["profile"]["address"] == profile_data["address"]
+        assert response.json["profile"]["city"] == profile_data["city"]
+        assert response.json["profile"]["postalCode"] == profile_data["postalCode"]
+        assert response.json["profile"]["activity"] == users_models.ActivityEnum.HIGH_SCHOOL_STUDENT.value
+        assert response.json["profile"]["schoolType"] == users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL.value
 
 
 class UpdateProfileTest:
