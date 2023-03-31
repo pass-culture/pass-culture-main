@@ -162,16 +162,15 @@ const VenueForm = ({
               <EACInformation isCreatingVenue={isCreatingVenue} venue={venue} />
             )
         }
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          isCollectiveDmsTrackingActive &&
-            ((isCreatingVenue && isSiretValued) || !isCreatingVenue) && (
-              <CollectiveVenueInformations
-                venue={venue}
-                isCreatingVenue={isCreatingVenue}
-              />
-            )
-        }
+        {isCollectiveDmsTrackingActive &&
+          (canOffererCreateCollectiveOffer ||
+            !!venue?.collectiveDmsApplication) &&
+          ((isCreatingVenue && isSiretValued) || !isCreatingVenue) && (
+            <CollectiveVenueInformations
+              venue={venue}
+              isCreatingVenue={isCreatingVenue}
+            />
+          )}
         {!isCreatingVenue && venue && (
           <ReimbursementFields
             offerer={offerer}

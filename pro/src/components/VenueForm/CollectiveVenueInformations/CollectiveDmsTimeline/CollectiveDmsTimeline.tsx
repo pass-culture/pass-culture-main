@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { DMSApplicationForEAC } from 'apiClient/v1'
 import { ExternalLinkIcon, PenIcon } from 'icons'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -17,9 +18,9 @@ export const DMS_STATUS = {
 }
 
 const CollectiveDmsTimeline = ({
-  collectiveDmsStatus,
+  collectiveDmsApplication,
 }: {
-  collectiveDmsStatus: string
+  collectiveDmsApplication: DMSApplicationForEAC | null
 }) => {
   // const collectiveDmsApplicationLink = link to venue.collectiveDmsApplicationId // FIX ME : collectiveDmsApplicationId is not yet a property of IVenue
   const collectiveDmsApplicationLink = DMS_STATUS.ADDED_IN_ADAGE
@@ -232,7 +233,7 @@ const CollectiveDmsTimeline = ({
     ),
   }
 
-  switch (collectiveDmsStatus) {
+  switch (collectiveDmsApplication?.state) {
     case DMS_STATUS.DRAFT:
       return (
         <Timeline

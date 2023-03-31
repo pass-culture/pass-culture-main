@@ -1,4 +1,5 @@
 import {
+  DMSApplicationForEAC,
   GetVenueDomainResponseModel,
   GetVenueManagingOffererResponseModel,
   GetVenueResponseModel,
@@ -86,6 +87,9 @@ export interface IVenue {
   collectivePhone: string
   collectiveStudents: Array<StudentLevels>
   collectiveWebsite: string
+  adageInscriptionDate: string | null
+  hasAdageId: boolean
+  collectiveDmsApplication: DMSApplicationForEAC | null
 }
 
 export type IProviders = {

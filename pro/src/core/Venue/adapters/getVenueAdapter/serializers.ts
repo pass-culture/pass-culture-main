@@ -1,4 +1,8 @@
-import { BannerMetaModel, GetVenueResponseModel } from 'apiClient/v1'
+import {
+  BannerMetaModel,
+  DMSApplicationForEAC,
+  GetVenueResponseModel,
+} from 'apiClient/v1'
 import { AccessiblityEnum } from 'core/shared'
 import { IVenue } from 'core/Venue'
 import { IVenueBannerMetaProps } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
@@ -69,6 +73,11 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
     collectivePhone: venue.collectivePhone || '',
     collectiveStudents: venue.collectiveStudents || [],
     collectiveWebsite: venue.collectiveWebsite || '',
+    adageInscriptionDate: venue.adageInscriptionDate || null,
+    hasAdageId: venue.hasAdageId,
+    collectiveDmsApplication: getLastCollectiveDmsApplication(
+      venue.collectiveDmsApplications
+    ),
   }
 }
 
@@ -86,4 +95,16 @@ const serializeBannerMetaApi = (
       height_crop_percent: apiBannerMeta.crop_params?.height_crop_percent || 0,
     },
   }
+}
+const getLastCollectiveDmsApplication = (
+  collectiveDmsApplications: DMSApplicationForEAC[]
+) => {
+  if (!collectiveDmsApplications || collectiveDmsApplications.length === 0) {
+    return null
+  }
+  return collectiveDmsApplications.reduce((previous, current) =>
+    new Date(previous.lastChangeDate) > new Date(current.lastChangeDate)
+      ? previous
+      : current
+  )
 }
