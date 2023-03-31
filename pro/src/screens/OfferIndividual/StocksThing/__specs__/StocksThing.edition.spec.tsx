@@ -299,7 +299,11 @@ describe('screens:StocksThing', () => {
     await screen.findByTestId('stock-thing-form')
 
     // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
-    await userEvent.dblClick(screen.getAllByTitle('Supprimer le stock')[1])
+    await userEvent.dblClick(
+      (
+        await screen.findAllByTitle('Supprimer le stock')
+      )[1]
+    )
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
@@ -307,7 +311,9 @@ describe('screens:StocksThing', () => {
     apiOffer.stocks = []
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
-    expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
+    expect(
+      await screen.findByText('Le stock a été supprimé.')
+    ).toBeInTheDocument()
 
     await waitFor(() => {
       expect(screen.getByLabelText('Prix')).toHaveValue(null)
@@ -320,6 +326,7 @@ describe('screens:StocksThing', () => {
     )
     expect(api.upsertStocks).not.toHaveBeenCalled()
   })
+
   it('should allow user to delete stock from a synchronized offer', async () => {
     apiOffer.lastProvider = {
       id: 'PROVIDER_ID',
@@ -343,7 +350,9 @@ describe('screens:StocksThing', () => {
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
-    expect(screen.getByText('Le stock a été supprimé.')).toBeInTheDocument()
+    expect(
+      await screen.findByText('Le stock a été supprimé.')
+    ).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.nonHumanizedId)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
@@ -390,13 +399,18 @@ describe('screens:StocksThing', () => {
 
     expect(screen.getByText(/Next page/)).toBeInTheDocument()
   })
+
   it('should not display any message when user delete empty stock', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
     renderStockThingScreen(storeOverride)
     apiOffer.stocks = []
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await screen.findByTestId('stock-thing-form')
-    await userEvent.click(screen.getAllByTitle('Supprimer le stock')[1])
+    await userEvent.click(
+      (
+        await screen.findAllByTitle('Supprimer le stock')
+      )[1]
+    )
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')
     ).not.toBeInTheDocument()
