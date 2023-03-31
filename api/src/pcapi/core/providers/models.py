@@ -258,7 +258,7 @@ class StockDetail:
     venue_reference: str
     stocks_provider_reference: str
     available_quantity: int
-    price: float
+    price: decimal.Decimal
 
 
 class AllocinePivot(PcObject, Base, Model):
