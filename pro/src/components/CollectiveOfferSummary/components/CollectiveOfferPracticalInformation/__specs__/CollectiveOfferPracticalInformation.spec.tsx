@@ -33,7 +33,7 @@ describe('CollectiveOfferPracticalInformation', () => {
     await waitFor(() => {
       expect(api.getVenue).toHaveBeenCalledTimes(1)
     })
-    const priceDetail = screen.getByText(/Informations sur le prix/)
+    const priceDetail = await screen.findByText(/Informations sur le prix/)
     expect(priceDetail).toBeInTheDocument()
     expect(screen.getByText('Le détail du prix')).toBeInTheDocument()
   })
