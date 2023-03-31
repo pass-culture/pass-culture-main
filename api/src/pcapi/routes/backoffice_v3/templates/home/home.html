@@ -35,12 +35,12 @@
         pending_individual_offers_count,
         "offre individuelle en attente",
         "offres individuelles en attente",
-        url_for("backoffice_v3_web.offer.list_offers", status="PENDING", only_validated_offerers="on", sort="on")) }}
+        url_for("backoffice_v3_web.offer.list_offers", status="PENDING", only_validated_offerers="on", sort="dateCreated")) }}
         {{ stats_card(
         pending_collective_offers_count,
         "offre collective en attente",
         "offres collectives en attente",
-        url_for("backoffice_v3_web.collective_offer.list_collective_offers", status="PENDING", only_validated_offerers="on", sort="on")) }}
+        url_for("backoffice_v3_web.collective_offer.list_collective_offers", status="PENDING", only_validated_offerers="on", sort="dateCreated")) }}
         {{ stats_card(
         pending_collective_templates_count,
         "offre collective vitrine en attente",
