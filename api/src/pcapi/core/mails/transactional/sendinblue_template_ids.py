@@ -26,6 +26,9 @@ class TransactionalEmail(Enum):
     BOOKING_EVENT_REMINDER_TO_BENEFICIARY = models.Template(
         id_prod=665, id_not_prod=82, tags=["jeunes_rappel_evenement_j-1"]
     )
+    BOOKING_EVENT_REMINDER_TO_BENEFICIARY_WITH_METADATA = models.Template(
+        id_prod=941, id_not_prod=124, tags=["jeunes_rappel_evenement_j-1"]
+    )
     BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY = models.Template(
         id_prod=224, id_not_prod=36, tags=["jeunes_offre_reportee_pro"]
     )
