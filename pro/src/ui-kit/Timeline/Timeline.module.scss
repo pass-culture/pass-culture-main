@@ -50,6 +50,10 @@ $time-line-width: rem.torem(2px);
   fill: colors.$grey-medium;
 }
 
+.icon-wrong {
+  fill: colors.$red-warning;
+}
+
 .step {
   position: relative;
   margin-bottom: $margin-between-steps;
