@@ -390,7 +390,7 @@ def _get_stocks_to_upsert(
             # FIXME (dbaty, 2023-04-05): providers sometimes change
             # the price to zero. I checked a few cases and it does not
             # seem right.
-            if not stock_detail.price and float(stock["price"]) != stock_detail.price:
+            if not stock_detail.price and stock["price"] != stock_detail.price:
                 logger.warning(
                     "Stock price has been changed to zero",
                     extra={
@@ -443,7 +443,7 @@ def _build_stock_from_stock_detail(
         rawProviderQuantity=stock_detail.available_quantity,
         bookingLimitDatetime=None,
         offerId=offers_id,
-        price=decimal.Decimal(stock_detail.price),
+        price=stock_detail.price,
         dateModified=datetime.utcnow(),
         idAtProviders=stock_detail.stocks_provider_reference,
         lastProviderId=provider_id,
@@ -484,7 +484,7 @@ def _build_new_offer(
     )
 
 
-def _should_reindex_offer(new_quantity: int, new_price: float, existing_stock: dict) -> bool:
+def _should_reindex_offer(new_quantity: int, new_price: decimal.Decimal, existing_stock: dict) -> bool:
     if existing_stock["price"] != new_price:
         return True
 
