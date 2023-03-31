@@ -76,11 +76,9 @@ def _build_stock_details_from_raw_stocks(
     stock_details = {}
 
     for stock in raw_stocks:
-        price = stock.get("price")  # if missing, we'll use `Product.price`
-        if price is not None:
-            price = Decimal(price).quantize(Decimal("0.01"))
-            if provider.pricesInCents:
-                price /= 100
+        price = Decimal(stock["price"]).quantize(Decimal("0.01"))
+        if provider.pricesInCents:
+            price /= 100
 
         stock_details[stock["ref"]] = StockDetail(
             products_provider_reference=stock["ref"],

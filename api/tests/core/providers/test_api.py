@@ -161,15 +161,15 @@ class SynchronizeStocksTest:
     def test_execution(self, mock_async_index_offer_ids):
         # Given
         spec = [
-            {"ref": "3010000101789", "available": 6},
-            {"ref": "3010000101797", "available": 4},
-            {"ref": "3010000103769", "available": 18},
-            {"ref": "3010000107163", "available": 12},
-            {"ref": "3010000108123", "available": 17},
-            {"ref": "3010000108124", "available": 17},
-            {"ref": "3010000108125", "available": 17},
-            {"ref": "3010000102735", "available": 1},
-            {"ref": "3010000105566", "available": 3},
+            {"ref": "3010000101789", "available": 6, "price": 12},
+            {"ref": "3010000101797", "available": 4, "price": 12},
+            {"ref": "3010000103769", "available": 18, "price": 12},
+            {"ref": "3010000107163", "available": 12, "price": 12},
+            {"ref": "3010000108123", "available": 17, "price": 12},
+            {"ref": "3010000108124", "available": 17, "price": 12},
+            {"ref": "3010000108125", "available": 17, "price": 12},
+            {"ref": "3010000102735", "available": 1, "price": 12},
+            {"ref": "3010000105566", "available": 3, "price": 12},
         ]
         providers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue = offerers_factories.VenueFactory()
@@ -318,7 +318,7 @@ class SynchronizeStocksTest:
     def test_get_stocks_to_upsert(self):
         # Given
         spec = [
-            providers_models.StockDetail(  # existing, will update
+            providers_models.StockDetail(  # existing, will be updated
                 offers_provider_reference="offer_ref1",
                 available_quantity=15,
                 price=15.78,
@@ -342,10 +342,10 @@ class SynchronizeStocksTest:
                 stocks_provider_reference="stock_ref3",
                 venue_reference="venue_ref3",
             ),
-            providers_models.StockDetail(  # existing, will update but set product's price
+            providers_models.StockDetail(  # existing, will be updated
                 offers_provider_reference="offer_ref4",
                 available_quantity=15,
-                price=None,
+                price=0,
                 products_provider_reference="product_ref4",
                 stocks_provider_reference="stock_ref4",
                 venue_reference="venue_ref4",
@@ -385,7 +385,7 @@ class SynchronizeStocksTest:
             {
                 "id": 2,
                 "quantity": 15 + 3,
-                "price": 7.01,
+                "price": 0,
                 "rawProviderQuantity": 15,
                 "lastProviderId": 1,
             },

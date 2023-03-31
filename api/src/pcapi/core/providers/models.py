@@ -258,7 +258,7 @@ class StockDetail:
     venue_reference: str
     stocks_provider_reference: str
     available_quantity: int
-    price: float | None
+    price: float
 
 
 class AllocinePivot(PcObject, Base, Model):
