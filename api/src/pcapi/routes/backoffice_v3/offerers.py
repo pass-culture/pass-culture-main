@@ -330,6 +330,10 @@ def _get_serialized_offerer_last_comment(offerer: offerers_models.Offerer, user_
     )
 
 
+def _get_all_dms_adage_status(offerer: offerers_models.Offerer) -> list[str]:
+    return [venue.dms_adage_status for venue in offerer.managedVenues if venue.dms_adage_status is not None]
+
+
 def _redirect_after_offerer_validation_action(code: int = 303) -> utils.BackofficeResponse:
     if request.referrer:
         return redirect(request.referrer, code)
@@ -391,6 +395,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
         next_pages_urls=next_pages_urls,
         is_top_actor_func=offerers_api.is_top_actor,
         get_last_comment_func=_get_serialized_offerer_last_comment,
+        get_all_dms_adage_status=_get_all_dms_adage_status,
         date_created_sort_url=date_created_sort_url,
         stats=stats,
     )

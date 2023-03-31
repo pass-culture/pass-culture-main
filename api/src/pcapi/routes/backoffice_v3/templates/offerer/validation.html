@@ -1,3 +1,5 @@
+{% from "components/offerer_validation/extra_row.html" import build_offerer_validation_toggle_extra_row_button with context %}
+{% from "components/offerer_validation/extra_row.html" import build_offerer_validation_extra_row with context %}
 {% from "components/badges.html" import build_offerer_status_badge %}
 {% from "components/forms.html" import build_filters_form with context %}
 {% import "components/links.html" as links %}
@@ -74,38 +76,41 @@
               {% set owner = offerer.first_user %}
               <tr>
                 <td>
-                  <div class="dropdown">
-                    <button type="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                            class="btn p-0">
-                      <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                      <li class="dropdown-item p-0">
-                        <form action="{{ url_for("backoffice_v3_web.validation.validate_offerer", offerer_id=offerer.id) }}"
-                              name="{{ url_for("backoffice_v3_web.validation.validate_offerer", offerer_id=offerer.id) | action_to_name }}"
-                              method="post">
-                          {{ csrf_token }}
-                          <button type="submit"
-                                  class="btn btn-sm d-block w-100 text-start px-3">Valider</button>
-                        </form>
-                      </li>
-                      <li class="dropdown-item p-0">
-                        <a class="btn btn-sm d-block w-100 text-start px-3"
-                           data-bs-toggle="modal"
-                           data-bs-target="#reject-modal-{{ offerer.id }}">
-                          Rejeter
-                        </a>
-                      </li>
-                      <li class="dropdown-item p-0">
-                        <a class="btn btn-sm d-block w-100 text-start px-3"
-                           data-bs-toggle="modal"
-                           data-bs-target="#pending-modal-{{ offerer.id }}">
-                          Mettre en attente
-                        </a>
-                      </li>
-                    </ul>
+                  <div class="d-flex">
+                    <div class="dropdown">
+                      <button type="button"
+                              data-bs-toggle="dropdown"
+                              aria-expanded="false"
+                              class="btn p-0">
+                        <i class="bi bi-three-dots-vertical"></i>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li class="dropdown-item p-0">
+                          <form action="{{ url_for("backoffice_v3_web.validation.validate_offerer", offerer_id=offerer.id) }}"
+                                name="{{ url_for("backoffice_v3_web.validation.validate_offerer", offerer_id=offerer.id) | action_to_name }}"
+                                method="post">
+                            {{ csrf_token }}
+                            <button type="submit"
+                                    class="btn btn-sm d-block w-100 text-start px-3">Valider</button>
+                          </form>
+                        </li>
+                        <li class="dropdown-item p-0">
+                          <a class="btn btn-sm d-block w-100 text-start px-3"
+                             data-bs-toggle="modal"
+                             data-bs-target="#reject-modal-{{ offerer.id }}">
+                            Rejeter
+                          </a>
+                        </li>
+                        <li class="dropdown-item p-0">
+                          <a class="btn btn-sm d-block w-100 text-start px-3"
+                             data-bs-toggle="modal"
+                             data-bs-target="#pending-modal-{{ offerer.id }}">
+                            Mettre en attente
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                    {{ build_offerer_validation_toggle_extra_row_button(offerer) }}
                   </div>
                 </td>
                 <td>{{ offerer.id }}</td>
@@ -142,6 +147,7 @@
                   {{ offerer.city | empty_string_if_null }}
                 </td>
               </tr>
+              {{ build_offerer_validation_extra_row(offerer) }}
             {% endfor %}
           </tbody>
         </table>
