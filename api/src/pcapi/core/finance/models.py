@@ -532,17 +532,15 @@ class Cashflow(Base, Model):
     # fully switched to `reimbursementPointId`
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=True)
     businessUnit: BusinessUnit | None = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
-    # We denormalize `BusinessUnit.bankAccountId` here because it may
+    # We denormalize `reimbursementPoint.bankAccountId` here because it may
     # change. Here we want to store the bank account that was used at
     # the time the cashflow was created.
     bankAccountId: int = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=False
     )
     bankAccount: BankInformation = sqla_orm.relationship(BankInformation, foreign_keys=[bankAccountId])
-    # FIXME (dbaty, 2022-06-20): set non-NULLABLE once cashflow code
-    # has been updated and old data has been migrated.
-    reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
-    reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
+    reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
+    reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
         "Venue", foreign_keys=[reimbursementPointId]
     )
 
