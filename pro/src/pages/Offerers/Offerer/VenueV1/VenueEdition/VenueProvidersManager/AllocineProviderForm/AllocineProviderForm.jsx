@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 import { Form } from 'react-final-form'
+import { Tooltip } from 'react-tooltip'
 
+import 'react-tooltip/dist/react-tooltip.css'
 import { CheckboxField } from 'ui-kit'
 import NumberField from 'ui-kit/form_rff/fields/NumberField'
 import Icon from 'ui-kit/Icon/Icon'
 import Insert from 'ui-kit/Insert/Insert'
 import { getCanSubmit } from 'utils/react-final-form'
-
 const AllocineProviderForm = ({
   saveVenueProvider,
   providerId,
@@ -63,13 +64,19 @@ const AllocineProviderForm = ({
                     <span className="field-asterisk">*</span>
                   </label>
                   <span
-                    className="apf-tooltip react-tooltip-anchor"
+                    className="apf-tooltip"
                     data-tooltip-place="bottom"
                     data-tooltip-html="<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>"
+                    data-tooltip-id="tooltip-price"
                     data-type="info"
                   >
                     <Icon svg="picto-info" />
                   </span>
+                  <Tooltip
+                    className="type-info flex-center items-center"
+                    delayHide={500}
+                    id="tooltip-price"
+                  />
                 </div>
                 <NumberField
                   onKeyPress={e =>
@@ -102,13 +109,19 @@ const AllocineProviderForm = ({
                   name="isDuo"
                 />
                 <span
-                  className="apf-tooltip react-tooltip-anchor"
+                  className="apf-tooltip"
                   data-tooltip-place="bottom"
                   data-tooltip-html="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>"
                   data-tooltip-type="info"
+                  data-tooltip-id="tooltip-duo"
                 >
                   <Icon svg="picto-info" />
                 </span>
+                <Tooltip
+                  className="type-info flex-center items-center"
+                  delayHide={500}
+                  id="tooltip-duo"
+                />
               </div>
 
               <Insert className="blue-insert" icon="picto-info-solid-black">

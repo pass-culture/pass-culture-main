@@ -2,7 +2,9 @@ import './CinemaProviderForm.scss'
 
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
+import { Tooltip } from 'react-tooltip'
 
+import 'react-tooltip/dist/react-tooltip.css'
 import FormLayout from 'components/FormLayout'
 import { Checkbox, SubmitButton } from 'ui-kit'
 import Icon from 'ui-kit/Icon/Icon'
@@ -63,13 +65,19 @@ export const CinemaProviderForm = ({
                   value={formik.values.isDuo}
                 />
                 <span
-                  className="cpf-tooltip react-tooltip-anchor"
+                  className="cpf-tooltip"
                   data-tooltip-place="bottom"
                   data-tooltip-html="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>"
                   data-tooltip-type="info"
+                  data-tooltip-id="tooltip-duo"
                 >
                   <Icon svg="picto-info" />
                 </span>
+                <Tooltip
+                  className="type-info flex-center items-center"
+                  delayHide={500}
+                  id="tooltip-duo"
+                />
               </FormLayout.Row>
               {isCreatedEntity ? (
                 <div className="cpf-provider-import-button">
