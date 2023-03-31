@@ -1008,6 +1008,9 @@ class ListOfferersToValidateTest:
             assert rows[0]["Responsable Structure"] == user_offerer.offerer.first_user.full_name
             assert rows[0]["Ville"] == user_offerer.offerer.city
 
+            dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")
+            assert dms_adage_data == []
+
         def test_payload_content_no_action(self, authenticated_client):
             # given
             user_offerer = offerers_factories.UserNotValidatedOffererFactory(
@@ -1027,6 +1030,29 @@ class ListOfferersToValidateTest:
             assert rows[0]["État"] == "Nouvelle"
             assert rows[0]["Date de la demande"] == "03/10/2022"
             assert rows[0]["Dernier commentaire"] == ""
+
+        def test_dms_adage_additional_data(self, authenticated_client):
+            # given
+            user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+            educational_factories.CollectiveDmsApplicationFactory(venue=venue, state="accepte")
+            other_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+            educational_factories.CollectiveDmsApplicationFactory(venue=other_venue, state="accepte")
+
+            # when
+            with assert_no_duplicated_queries():
+                response = authenticated_client.get(url_for("backoffice_v3_web.validation.list_offerers_to_validate"))
+
+            # then
+            assert response.status_code == 200
+            rows = html_parser.extract_table_rows(response.data)
+            assert len(rows) == 1
+            assert rows[0]["ID"] == str(user_offerer.offerer.id)
+
+            dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
+            assert f"Nom : {venue.name}" in dms_adage_data
+            assert f"SIRET : {venue.siret}" in dms_adage_data
+            assert "Statut du dossier DMS Adage : Accepté" in dms_adage_data
 
         @pytest.mark.parametrize(
             "total_items, pagination_config, expected_total_pages, expected_page, expected_items",
