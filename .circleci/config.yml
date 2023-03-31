@@ -671,72 +671,73 @@ jobs:
             - notify-slack:
                 channel: dev
 
-#  tests-pro-e2e-tests:
-#    machine:
-#      image: ubuntu-2004:202101-01
-#      docker_layer_caching: true
-#    resource_class: large
-#    working_directory: ~/pass-culture
-#    steps:
-#      - checkout
-#      - skip_unchanged:
-#          paths: pro
-#      - run: sudo chown -R 1000:1000 .
-#      - run: ./install_lib_ci_with_chrome.sh
-#      - run: sudo ./pc symlink
-#      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
-#      - run:
-#          name: Running API server
-#          command: |
-#            cd api
-#            pc start-backend
-#          background: true
-#      - unless:
-#          condition:
-#            equal: ["master", << pipeline.git.branch >>]
-#          steps:
-#            - restore_cache:
-#                name: Restore Yarn Package Cache
-#                key: << pipeline.parameters.pro_cache_key >>
-#      - run:
-#          name: Run Frontend PRO
-#          command: |
-#            export NVM_DIR="/opt/circleci/.nvm"
-#            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-#            cd pro
-#            nvm install
-#            yarn install
-#            yarn start
-#          background: true
-#      - run:
-#          name: Running Sandbox
-#          command: |
-#            dockerize -wait http://localhost/health/api -timeout 10m -wait-retry-interval 5s
-#            dockerize -wait http://localhost/health/database -timeout 10m -wait-retry-interval 5s
-#      - run:
-#          name: Running functional tests PRO
-#          command: |
-#            cd pro
-#            nvm use
-#            dockerize -wait http://localhost:3001 -timeout 5m -wait-retry-interval 5s
-#            yarn test:cafe
-#      - run:
-#          name: Step for measure to know if e2e tests have been run
-#          command: |
-#            mkdir -p /tmp/workspace
-#            echo "Has run e2e test" > /tmp/workspace/e2e-test-launched.txt
-#      - persist_to_workspace:
-#          root: /tmp/workspace
-#          paths:
-#            - e2e-test-launched.txt
-#      - store_artifacts:
-#          path: ~/pass-culture/pro/testcafe_screenshots
-#      - when:
-#          condition:
-#            equal: ["master", << pipeline.git.branch >>]
-#          steps:
-#            - notify-slack:
-#                channel: dev
+  tests-pro-e2e-tests:
+    machine:
+      image: ubuntu-2004:202101-01
+      docker_layer_caching: true
+    resource_class: large
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - skip_unchanged:
+          paths: pro
+      - run: sudo chown -R 1000:1000 .
+      - run: ./install_lib_ci_with_chrome.sh
+      - run: sudo ./pc symlink
+      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
+      - run:
+          name: Running API server
+          command: |
+            cd api
+            pc start-backend
+          background: true
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - restore_cache:
+                name: Restore Yarn Package Cache
+                key: << pipeline.parameters.pro_cache_key >>
+      - run:
+          name: Run Frontend PRO
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            cd pro
+            nvm install
+            yarn install
+            yarn build:development
+            yarn serve -p 3001
+          background: true
+      - run:
+          name: Running Sandbox
+          command: |
+            dockerize -wait http://localhost/health/api -timeout 10m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/database -timeout 10m -wait-retry-interval 5s
+      - run:
+          name: Running functional tests PRO
+          command: |
+            cd pro
+            nvm use
+            dockerize -wait http://localhost:3001 -timeout 5m -wait-retry-interval 5s
+            yarn test:cafe
+      - run:
+          name: Step for measure to know if e2e tests have been run
+          command: |
+            mkdir -p /tmp/workspace
+            echo "Has run e2e test" > /tmp/workspace/e2e-test-launched.txt
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - e2e-test-launched.txt
+      - store_artifacts:
+          path: ~/pass-culture/pro/testcafe_screenshots
+      - when:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - notify-slack:
+                channel: dev
 
   build-and-push-image:
     executor: gcp-sdk-alpine
@@ -1090,85 +1091,85 @@ workflows:
           requires:
             - build-and-push-image
       - tests-adage-front:
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-               - docs
-         context: Slack
-         requires:
-           - type-checking-adage-front
-#      - tests-pro-e2e-tests:
-#         filters:
-#           branches:
-#             ignore:
-#               - production
-#               - staging
-#               - integration
-#               - docs
-#         context: Slack
-#         requires:
-#           - type-checking-pro
-#      - generate-pcapi-helm-values-files:
-#          filters:
-#            branches:
-#              only:
-#                - master
-#          requires:
-#            - build-and-push-image
-#          context:
-#            - GCP
-#            - GCP_EHP
-#      - deploy-pcapi:
-#         filters:
-#           branches:
-#             only:
-#               - master
-#         requires:
-#           - generate-pcapi-helm-values-files
-#         context:
-#           - GCP
-#           - GCP_EHP
-#         helm_environment: testing
-#         app_version: ${CIRCLE_SHA1}
-#      - restart-pcapi:
-#         filters:
-#           branches:
-#             only:
-#               - master
-#         requires:
-#           - deploy-pcapi
-#         context:
-#           - GCP
-#           - GCP_EHP
-#         helm_environment: testing
-#      - deploy-pro:
-#         filters:
-#           branches:
-#             only:
-#               - master
-#         requires:
-#           - tests-pro-e2e-tests
-#           - restart-pcapi
-#         context:
-#           - GCP
-#           - GCP_EHP
-#         app_environment: testing
-#      - deploy-adage-front:
-#         filters:
-#           branches:
-#             only:
-#               - master
-#         requires:
-#           - quality-adage-front
-#           - tests-adage-front
-#           - restart-pcapi
-#         context:
-#           - GCP
-#           - GCP_EHP
-#         app_environment: testing
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+                - docs
+          context: Slack
+          requires:
+            - type-checking-adage-front
+      - tests-pro-e2e-tests:
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+                - docs
+          context: Slack
+          requires:
+            - type-checking-pro
+  #      - generate-pcapi-helm-values-files:
+  #          filters:
+  #            branches:
+  #              only:
+  #                - master
+  #          requires:
+  #            - build-and-push-image
+  #          context:
+  #            - GCP
+  #            - GCP_EHP
+  #      - deploy-pcapi:
+  #         filters:
+  #           branches:
+  #             only:
+  #               - master
+  #         requires:
+  #           - generate-pcapi-helm-values-files
+  #         context:
+  #           - GCP
+  #           - GCP_EHP
+  #         helm_environment: testing
+  #         app_version: ${CIRCLE_SHA1}
+  #      - restart-pcapi:
+  #         filters:
+  #           branches:
+  #             only:
+  #               - master
+  #         requires:
+  #           - deploy-pcapi
+  #         context:
+  #           - GCP
+  #           - GCP_EHP
+  #         helm_environment: testing
+  #      - deploy-pro:
+  #         filters:
+  #           branches:
+  #             only:
+  #               - master
+  #         requires:
+  #           - tests-pro-e2e-tests
+  #           - restart-pcapi
+  #         context:
+  #           - GCP
+  #           - GCP_EHP
+  #         app_environment: testing
+  #      - deploy-adage-front:
+  #         filters:
+  #           branches:
+  #             only:
+  #               - master
+  #         requires:
+  #           - quality-adage-front
+  #           - tests-adage-front
+  #           - restart-pcapi
+  #         context:
+  #           - GCP
+  #           - GCP_EHP
+  #         app_environment: testing
   gcp-ehp:
     jobs:
       - generate-pcapi-helm-values-files:
