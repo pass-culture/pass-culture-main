@@ -36,7 +36,6 @@ $small-gap: rem.torem(8px);
 
         li::before {
             content: "-";
-            font-weight: bold;
             display: inline-block;
             width: 1em;
             margin-left: $small-gap;
