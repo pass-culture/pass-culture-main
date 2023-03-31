@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+import logging
 from unittest.mock import patch
 
 from flask_jwt_extended import decode_token
@@ -33,13 +34,15 @@ from tests.scripts.beneficiary.fixture import make_single_application
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def test_account_is_active_account_state(client):
+def test_account_is_active_account_state(client, caplog):
     data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
     users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
 
-    response = client.post("/native/v1/signin", json=data)
+    with caplog.at_level(logging.INFO):
+        response = client.post("/native/v1/signin", json=data)
     assert response.status_code == 200
     assert response.json["accountState"] == AccountState.ACTIVE.value
+    assert "Successful authentication attempt" in caplog.messages
 
 
 def test_account_suspended_upon_user_request_account_state(client):
@@ -111,24 +114,28 @@ def test_user_logs_in_and_refreshes_token(client):
     assert decoded["user_claims"]["user_id"] == user.id
 
 
-def test_user_logs_in_with_wrong_password(client):
+def test_user_logs_in_with_wrong_password(client, caplog):
     data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
     users_factories.UserFactory(email=data["identifier"], password=data["password"])
 
     # signin with invalid password and ensures the result messsage is generic
     data["password"] = data["password"][:-2]
-    response = client.post("/native/v1/signin", json=data)
+    with caplog.at_level(logging.INFO):
+        response = client.post("/native/v1/signin", json=data)
     assert response.status_code == 400
     assert response.json == {"general": ["Identifiant ou Mot de passe incorrect"]}
+    assert "Failed authentication attempt" in caplog.messages
 
 
-def test_unknown_user_logs_in(client):
+def test_unknown_user_logs_in(client, caplog):
     data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
 
     # signin with invalid password and ensures the result messsage is generic
-    response = client.post("/native/v1/signin", json=data)
+    with caplog.at_level(logging.INFO):
+        response = client.post("/native/v1/signin", json=data)
     assert response.status_code == 400
     assert response.json == {"general": ["Identifiant ou Mot de passe incorrect"]}
+    assert "Failed authentication attempt" in caplog.messages
 
 
 def test_user_logs_in_with_missing_fields(client):

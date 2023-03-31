@@ -1,4 +1,5 @@
 import datetime
+import logging
 import secrets
 
 from flask import redirect
@@ -21,6 +22,9 @@ from pcapi.models import db
 
 from . import blueprint
 from . import utils
+
+
+logger = logging.getLogger(__name__)
 
 
 @blueprint.backoffice_v3_web.route("/login", methods=["GET"])
@@ -59,6 +63,11 @@ def authorize() -> utils.BackofficeResponse:
     user = users_repository.find_user_by_email(google_email)
 
     if user and not user.isActive:
+        logger.info(
+            "Failed authentication attempt",
+            extra={"identifier": google_email, "user": user.id, "avoid_current_user": True, "success": False},
+            technical_message_id="backoffice_v3.authorize",
+        )
         return werkzeug.exceptions.Forbidden()
 
     if settings.IS_TESTING or settings.IS_DEV or settings.IS_INTEGRATION:
@@ -74,9 +83,19 @@ def authorize() -> utils.BackofficeResponse:
         db.session.commit()
     else:
         if not user:
+            logger.info(
+                "Failed authentication attempt",
+                extra={"identifier": google_email, "user": "not found", "avoid_current_user": True, "success": False},
+                technical_message_id="backoffice_v3.authorize",
+            )
             session["google_email"] = google_email
             return redirect(url_for(".user_not_found"))
 
+        logger.info(
+            "Successful authentication attempt",
+            extra={"identifier": google_email, "user": user.id, "avoid_current_user": True, "success": True},
+            technical_message_id="backoffice_v3.authorize",
+        )
         roles = fetch_user_roles_from_google_workspace(user)
         backoffice_api.upsert_roles(user, roles)
         db.session.commit()

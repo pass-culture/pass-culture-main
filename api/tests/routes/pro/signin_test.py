@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 import pytest
 
@@ -11,7 +12,7 @@ from pcapi.utils.human_ids import humanize
 
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
-    def when_account_is_known(self, client):
+    def when_account_is_known(self, client, caplog):
         # given
         user = users_factories.BeneficiaryGrant18Factory(
             civility=users_models.GenderEnum.M.value,
@@ -30,7 +31,8 @@ class Returns200Test:
         data = {"identifier": user.email, "password": user.clearTextPassword}
 
         # when
-        response = client.post("/users/signin", json=data)
+        with caplog.at_level(logging.INFO):
+            response = client.post("/users/signin", json=data)
 
         # then
         assert response.status_code == 200
@@ -60,6 +62,7 @@ class Returns200Test:
             "publicName": "Toto",
             "roles": ["BENEFICIARY"],
         }
+        assert "Failed authentication attempt" not in caplog.messages
 
     @pytest.mark.usefixtures("db_session")
     def when_user_has_no_departement_code(self, client):
@@ -115,30 +118,34 @@ class Returns200Test:
 
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
-    def when_identifier_is_missing(self, client):
+    def when_identifier_is_missing(self, client, caplog):
         # Given
         user = users_factories.UserFactory()
         data = {"identifier": None, "password": user.clearTextPassword}
 
         # When
-        response = client.post("/users/signin", json=data)
+        with caplog.at_level(logging.INFO):
+            response = client.post("/users/signin", json=data)
 
         # Then
         assert response.status_code == 400
         assert response.json["identifier"] == ["Ce champ ne peut pas être nul"]
+        assert "Failed authentication attempt" not in caplog.messages
 
     @pytest.mark.usefixtures("db_session")
-    def when_identifier_is_incorrect(self, client):
+    def when_identifier_is_incorrect(self, client, caplog):
         # Given
         user = users_factories.UserFactory()
         data = {"identifier": "random.email@test.com", "password": user.clearTextPassword}
 
         # When
-        response = client.post("/users/signin", json=data)
+        with caplog.at_level(logging.INFO):
+            response = client.post("/users/signin", json=data)
 
         # Then
         assert response.status_code == 401
         assert response.json["identifier"] == ["Identifiant ou mot de passe incorrect"]
+        assert "Failed authentication attempt" in caplog.messages
 
     @pytest.mark.usefixtures("db_session")
     def when_password_is_missing(self, client):
@@ -154,17 +161,19 @@ class Returns401Test:
         assert response.json["password"] == ["Ce champ ne peut pas être nul"]
 
     @pytest.mark.usefixtures("db_session")
-    def when_password_is_incorrect(self, client):
+    def when_password_is_incorrect(self, client, caplog):
         # Given
         user = users_factories.UserFactory()
         data = {"identifier": user.email, "password": "wr0ng_p455w0rd"}
 
         # When
-        response = client.post("/users/signin", json=data)
+        with caplog.at_level(logging.INFO):
+            response = client.post("/users/signin", json=data)
 
         # Then
         assert response.status_code == 401
         assert response.json["identifier"] == ["Identifiant ou mot de passe incorrect"]
+        assert "Failed authentication attempt" in caplog.messages
 
     @pytest.mark.usefixtures("db_session")
     def when_account_is_not_validated(self, client):
