@@ -38,7 +38,32 @@ class BankInformationFactory(BaseFactory):
     status = models.BankInformationStatus.ACCEPTED
 
 
-class PricingFactory(BaseFactory):
+class _BasePricingFactory(BaseFactory):
+    pricingPointId = None  # see `_create()` below
+
+    @classmethod
+    def _create(
+        cls,
+        model_class: typing.Type[models.Pricing],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.Pricing:
+        if not kwargs["pricingPointId"]:
+            booking = kwargs.get("booking") or kwargs.get("collectiveBooking")
+            assert booking  # make mypy happy
+            venue = booking.venue
+            pricing_point_id = venue.current_pricing_point_id
+            if not pricing_point_id:
+                offerers_factories.VenuePricingPointLinkFactory(
+                    venue=venue,
+                    pricingPoint=venue,
+                )
+                pricing_point_id = venue.id
+            kwargs["pricingPointId"] = pricing_point_id
+        return super()._create(model_class, *args, **kwargs)
+
+
+class PricingFactory(_BasePricingFactory):
     class Meta:
         model = models.Pricing
 
@@ -46,14 +71,13 @@ class PricingFactory(BaseFactory):
     booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
     venue = factory.SelfAttribute("booking.venue")
     siret = factory.LazyAttribute(lambda pricing: pricing.booking.venue.siret)
-    pricingPointId = factory.SelfAttribute("booking.venue.current_pricing_point_id")
     valueDate = factory.SelfAttribute("booking.dateUsed")
     amount = factory.LazyAttribute(lambda pricing: -int(100 * pricing.booking.total_amount))
     standardRule = "Remboursement total pour les offres physiques"
     revenue = factory.LazyAttribute(lambda pricing: int(100 * pricing.booking.total_amount))
 
 
-class CollectivePricingFactory(BaseFactory):
+class CollectivePricingFactory(_BasePricingFactory):
     class Meta:
         model = models.Pricing
 

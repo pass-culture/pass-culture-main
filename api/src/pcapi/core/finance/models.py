@@ -276,10 +276,8 @@ class Pricing(Base, Model):
     # SIRET of its business unit (at the time of the creation of the
     # pricing).
     siret = sqla.Column(sqla.String(14), nullable=True, index=True)
-    # FIXME (dbaty, 2022-06-20): set non-NULLABLE once pricing code
-    # has been updated and old data has been migrated.
-    pricingPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
-    pricingPoint: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
+    pricingPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
+    pricingPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
         "Venue", foreign_keys=[pricingPointId]
     )
 
