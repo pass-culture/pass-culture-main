@@ -5,6 +5,7 @@ import pytest
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.models import feature as feature_models
 
 from .helpers import html_parser
 from .helpers import unauthorized as unauthorized_helpers
@@ -104,6 +105,89 @@ class UpdateRoleTest:
         authenticated_client.get(edit_url)
 
         url = url_for("backoffice_v3_web.update_role", role_id=role_to_edit.id)
+
+        form["csrf_token"] = g.get("csrf_token", "")
+        return authenticated_client.post(url, form=form)
+
+
+class ListFeatureFlagsTest:
+    endpoint = "backoffice_v3_web.list_feature_flags"
+
+    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+        endpoint = "backoffice_v3_web.list_feature_flags"
+        needed_permission = perm_models.Permissions.FEATURE_FLIPPING
+
+    def test_list_feature_flags(self, authenticated_client):
+        first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
+        first_feature_flag.isActive = True
+
+        response = authenticated_client.get(url_for(self.endpoint))
+
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert "Vous allez désactiver" in rows[0]["Activé"]  # "Vous allez désactiver" is inside the modal
+        assert rows[0]["Nom"] == first_feature_flag.name
+        assert rows[0]["Description"] == first_feature_flag.description
+
+        first_feature_flag.isActive = False
+
+        response = authenticated_client.get(url_for(self.endpoint))
+
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert "Vous allez activer" in rows[0]["Activé"]  # "Vous allez activer" is inside the modal
+        assert rows[0]["Nom"] == first_feature_flag.name
+        assert rows[0]["Description"] == first_feature_flag.description
+
+    def test_enable_feature_flag(self, authenticated_client):
+        first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
+        first_feature_flag.isActive = False
+
+        response = self.toggle_feature_flag(authenticated_client, first_feature_flag, {}, set_to_active=True)
+        assert response.status_code == 303
+
+        assert first_feature_flag.isActive == True
+        response = authenticated_client.get(url_for(self.endpoint))
+        assert f"Le feature flag {first_feature_flag.name} a été activé" in response.data.decode("utf-8")
+
+    def test_enable_already_active_feature_flag(self, authenticated_client):
+        first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
+        first_feature_flag.isActive = True
+
+        response = self.toggle_feature_flag(authenticated_client, first_feature_flag, {}, set_to_active=True)
+        assert response.status_code == 303
+        response = authenticated_client.get(url_for(self.endpoint))
+        assert f"Le feature flag {first_feature_flag.name} est déjà activé" in response.data.decode("utf-8")
+
+    def test_disable_feature_flag(self, authenticated_client):
+        first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
+        first_feature_flag.isActive = True
+
+        response = self.toggle_feature_flag(authenticated_client, first_feature_flag, {}, set_to_active=False)
+        assert response.status_code == 303
+
+        assert first_feature_flag.isActive == False
+        response = authenticated_client.get(url_for(self.endpoint))
+        assert f"Le feature flag {first_feature_flag.name} a été désactivé" in response.data.decode("utf-8")
+
+    def test_disable_already_inactive_feature_flag(self, authenticated_client):
+        first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
+        first_feature_flag.isActive = False
+
+        response = self.toggle_feature_flag(authenticated_client, first_feature_flag, {}, set_to_active=False)
+        assert response.status_code == 303
+        response = authenticated_client.get(url_for(self.endpoint))
+        assert f"Le feature flag {first_feature_flag.name} est déjà désactivé" in response.data.decode("utf-8")
+
+    def toggle_feature_flag(self, authenticated_client, feature_flag_to_toggle, form, set_to_active):
+        # generate csrf token
+        edit_url = url_for("backoffice_v3_web.list_feature_flags")
+        authenticated_client.get(edit_url)
+
+        if set_to_active:
+            url = url_for("backoffice_v3_web.enable_feature_flag", feature_flag_id=feature_flag_to_toggle.id)
+        else:
+            url = url_for("backoffice_v3_web.disable_feature_flag", feature_flag_id=feature_flag_to_toggle.id)
 
         form["csrf_token"] = g.get("csrf_token", "")
         return authenticated_client.post(url, form=form)
