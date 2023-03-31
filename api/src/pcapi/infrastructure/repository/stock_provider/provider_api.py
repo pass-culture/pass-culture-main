@@ -89,9 +89,9 @@ class ProviderAPI:
                 )
                 continue
 
-            if "price" not in stock_response:
+            if stock_response.get("price", None) is None:
                 logger.error(
-                    "[%s SYNC] missing price key in response with ref %s",
+                    "[%s SYNC] missing price in response with ref %s",
                     self.name,
                     stock_response_ref,
                     extra={"stock": stock_response, "siret": siret},
