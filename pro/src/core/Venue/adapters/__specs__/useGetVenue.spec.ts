@@ -150,6 +150,9 @@ describe('useGetVenue', () => {
       collectivePhone: '',
       collectiveStudents: [],
       collectiveWebsite: '',
+      adageInscriptionDate: null,
+      hasAdageId: false,
+      collectiveDmsApplication: null,
     }
 
     await waitForNextUpdate()

@@ -30,6 +30,7 @@ describe('CollectiveVenueInformations', () => {
         },
       },
       isCreatingVenue: false,
+      canCreateCollectiveOffer: false,
     })
     expect(
       screen.getByText(
@@ -49,6 +50,7 @@ describe('CollectiveVenueInformations', () => {
         },
       },
       isCreatingVenue: false,
+      canCreateCollectiveOffer: true,
     })
     expect(
       screen.getByText(
@@ -68,6 +70,7 @@ describe('CollectiveVenueInformations', () => {
         },
       },
       isCreatingVenue: false,
+      canCreateCollectiveOffer: true,
     })
     expect(
       screen.getByRole('heading', {
