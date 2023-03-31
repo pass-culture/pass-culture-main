@@ -4,6 +4,7 @@ import {
   CollectiveBookingBankInformationStatus,
   CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
+  DMSApplicationForEAC,
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
   GetCollectiveOfferCollectiveStockResponseModel,
@@ -18,6 +19,7 @@ import {
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
+import { IVenue } from 'core/Venue'
 
 let offerId = 1
 let stockId = 1
@@ -296,4 +298,89 @@ export const defaultEducationalRedactor: EducationalRedactorResponseModel = {
   email: 'Jean.Dupont@example.com',
   firstName: 'Jean',
   lastName: 'Dupont',
+}
+
+export const defaultCollectiveDmsApplication: DMSApplicationForEAC = {
+  application: 123,
+  depositDate: new Date().toISOString(),
+  lastChangeDate: new Date().toISOString(),
+  procedure: 456,
+  state: 'DRAFT',
+  venueId: 1,
+}
+
+// FIXME : to remove while this type should be used in the future
+export const defaultIVenue: IVenue = {
+  id: 'V1',
+  name: 'Lieu de test',
+  address: '1 rue de test',
+  city: 'Paris',
+  postalCode: '75000',
+  latitude: 48.856614,
+  longitude: 2.3522219,
+  collectiveDomains: [],
+  dateCreated: '',
+  fieldsUpdated: [],
+  isVirtual: false,
+  managingOffererId: '',
+  accessibility: {
+    none: false,
+    visual: false,
+    audio: false,
+    motor: false,
+    mental: false,
+  },
+  bannerMeta: undefined,
+  bannerUrl: '',
+  hasPendingBankInformationApplication: null,
+  demarchesSimplifieesApplicationId: null,
+  comment: '',
+  contact: {
+    email: null,
+    phoneNumber: null,
+    webSite: null,
+  },
+  description: '',
+  departmentCode: '',
+  dmsToken: '',
+  isPermanent: false,
+  isVenueVirtual: false,
+  mail: '',
+  managingOfferer: {
+    address: undefined,
+    bic: undefined,
+    city: '',
+    dateCreated: '',
+    dateModifiedAtLastProvider: undefined,
+    demarchesSimplifieesApplicationId: undefined,
+    fieldsUpdated: [],
+    iban: undefined,
+    id: '',
+    idAtProviders: undefined,
+    isValidated: false,
+    lastProviderId: undefined,
+    name: '',
+    postalCode: '',
+    siren: undefined,
+  },
+  nonHumanizedId: 0,
+  pricingPoint: null,
+  publicName: '',
+  siret: '',
+  venueType: '',
+  venueLabel: null,
+  reimbursementPointId: null,
+  withdrawalDetails: '',
+  collectiveAccessInformation: '',
+  collectiveDescription: '',
+  collectiveEmail: '',
+  collectiveInterventionArea: [],
+  collectiveLegalStatus: null,
+  collectiveNetwork: [],
+  collectivePhone: '',
+  collectiveStudents: [],
+  collectiveWebsite: '',
+  adageInscriptionDate: null,
+  hasAdageId: false,
+  collectiveDmsApplication: null,
 }
