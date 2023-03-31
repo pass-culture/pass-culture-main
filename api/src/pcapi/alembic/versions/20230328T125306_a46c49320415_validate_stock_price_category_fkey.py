@@ -14,6 +14,10 @@ depends_on = None
 
 
 def upgrade() -> None:
+    # This upgrade failed in staging, it will fail certainly in production.
+    # We will have to run it manually
+    if settings.IS_PROD:
+        return
     op.execute("COMMIT")
     # The timeout here has the same value (5 minutes) as `helm upgrade`.
     # If this migration fails, you'll have to execute it manually.
