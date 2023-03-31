@@ -14,6 +14,7 @@ from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficia
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import override_features
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -29,6 +30,17 @@ class SendEventReminderEmailToBeneficiaryTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
             TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value
+        )
+
+    @override_features(WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY=True)
+    def should_use_template_with_metadata_when_FF_is_enabled(self):
+        booking = BookingFactory(stock=offers_factories.EventStockFactory())
+
+        send_individual_booking_event_reminder_email_to_beneficiary(booking)
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY_WITH_METADATA.value
         )
 
     def should_not_try_to_send_email_when_there_is_no_data(self):
