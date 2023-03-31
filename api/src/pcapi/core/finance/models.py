@@ -659,10 +659,8 @@ class Invoice(Base, Model):
     businessUnit: "BusinessUnit | None" = sqla_orm.relationship(
         "BusinessUnit", back_populates="invoices", uselist=False
     )
-    # FIXME (dbaty, 2022-06-20): set non-NULLABLE once invoice code
-    # has been updated and old data has been migrated.
-    reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
-    reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
+    reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
+    reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
         "Venue", foreign_keys=[reimbursementPointId]
     )
     # See the note about `amount` at the beginning of this module.
