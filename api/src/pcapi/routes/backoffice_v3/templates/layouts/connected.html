@@ -117,13 +117,16 @@
                 </div>
                 <hr/>
               {% endif %}
-              {% if has_permission("MANAGE_PERMISSIONS") %}
-                <div class="nav nav-pills flex-column">
-                  {% call menu_section("Admin") %}
+              <div class="nav nav-pills flex-column">
+                {% call menu_section("Admin") %}
+                  {% if has_permission("MANAGE_PERMISSIONS") %}
                     {{ menu_section_item("Gestion des rôles", "backoffice_v3_web.get_roles") }}
-                  {% endcall %}
-                </div>
-              {% endif %}
+                  {% endif %}
+                  {% if has_permission("FEATURE_FLIPPING") %}
+                    {{ menu_section_item("Feature flipping", "backoffice_v3_web.list_feature_flags") }}
+                  {% endif %}
+                {% endcall %}
+              </div>
             </nav>
           </div>
         </div>

@@ -85,7 +85,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_OFFERS,
     ],
     "homologation": [],
-    "product-management": [],
+    "product-management": [perm_models.Permissions.FEATURE_FLIPPING],
     "charge-developpement": [],
 }
 
