@@ -251,7 +251,7 @@ def update_user_information_from_external_source(
 ) -> models.User:
     first_name = data.get_first_name()
     last_name = data.get_last_name()
-    birth_date = data.get_birth_date()
+    birth_date = user.validatedBirthDate or data.get_birth_date()
 
     if not first_name or not last_name or not birth_date:
         raise exceptions.IncompleteDataException()
