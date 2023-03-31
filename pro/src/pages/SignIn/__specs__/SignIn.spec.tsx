@@ -30,6 +30,19 @@ jest.mock('apiClient/api', () => ({
 const mockLogEvent = jest.fn()
 
 const renderSignIn = (storeOverrides?: any) => {
+  const store = {
+    user: {},
+    app: {},
+    features: {
+      list: [
+        {
+          isActive: true,
+          nameKey: 'API_SIRENE_AVAILABLE',
+        },
+      ],
+    },
+    ...storeOverrides,
+  }
   renderWithProviders(
     <>
       <SignIn />
@@ -53,27 +66,15 @@ const renderSignIn = (storeOverrides?: any) => {
       </Routes>
       <Notification />
     </>,
-    { storeOverrides, initialRouterEntries: ['/connexion'] }
+    {
+      storeOverrides: store,
+      initialRouterEntries: ['/connexion'],
+    }
   )
 }
 
 describe('src | components | pages | SignIn', () => {
-  let storeOverrides: any
-
   beforeEach(() => {
-    storeOverrides = {
-      user: {},
-      app: {},
-      features: {
-        list: [
-          {
-            isActive: true,
-            nameKey: 'API_SIRENE_AVAILABLE',
-          },
-        ],
-      },
-    }
-
     jest
       .spyOn(api, 'getProfile')
       .mockResolvedValue({} as SharedCurrentUserResponseModel)
@@ -84,7 +85,7 @@ describe('src | components | pages | SignIn', () => {
 
   it('should display 2 inputs and one link to account creation and one button to login', () => {
     // When
-    renderSignIn(storeOverrides)
+    renderSignIn()
 
     // Then
     expect(screen.getByLabelText('Adresse e-mail')).toBeInTheDocument()
@@ -105,7 +106,7 @@ describe('src | components | pages | SignIn', () => {
   describe('when user clicks on the eye on password input', () => {
     it('should reveal password', async () => {
       // When
-      renderSignIn(storeOverrides)
+      renderSignIn()
       const eyePasswordButton = screen.getByRole('button', {
         name: 'Afficher le mot de passe',
       })
@@ -121,7 +122,7 @@ describe('src | components | pages | SignIn', () => {
 
     it('should hide password when user re-click on eye', async () => {
       // Given
-      renderSignIn(storeOverrides)
+      renderSignIn()
       const eyePasswordButton = screen.getByRole('button', {
         name: 'Afficher le mot de passe',
       })
@@ -141,7 +142,7 @@ describe('src | components | pages | SignIn', () => {
   describe("when user clicks on 'Créer un compte'", () => {
     it('should redirect to the creation page when the API sirene is available', () => {
       // when
-      renderSignIn(storeOverrides)
+      renderSignIn()
 
       // then
       expect(
@@ -149,14 +150,17 @@ describe('src | components | pages | SignIn', () => {
       ).toHaveAttribute('href', '/inscription')
     })
 
-    it('should redirect to the unavailable error page when the API sirene feature is disabled', () => {
-      storeOverrides.features.list = [
-        {
-          isActive: false,
-          nameKey: 'API_SIRENE_AVAILABLE',
+    it('should redirect to the unavailable error page when the API sirene feature is disabled', async () => {
+      renderSignIn({
+        features: {
+          list: [
+            {
+              isActive: false,
+              nameKey: 'API_SIRENE_AVAILABLE',
+            },
+          ],
         },
-      ]
-      renderSignIn(storeOverrides)
+      })
 
       // then
       expect(
@@ -170,8 +174,7 @@ describe('src | components | pages | SignIn', () => {
         setLogEvent: null,
       }))
 
-      storeOverrides.user = { initialized: true, currentUser: null }
-      renderSignIn(storeOverrides)
+      renderSignIn({ user: { initialized: true, currentUser: null } })
       await userEvent.click(
         screen.getByRole('link', {
           name: 'Créer un compte',
@@ -187,7 +190,7 @@ describe('src | components | pages | SignIn', () => {
   })
 
   it('should call submit prop when user clicks on "Se connecter"', async () => {
-    renderSignIn(storeOverrides)
+    renderSignIn()
 
     const email = screen.getByLabelText('Adresse e-mail')
     await userEvent.type(email, 'MonPetitEmail@exemple.com')
@@ -206,32 +209,32 @@ describe('src | components | pages | SignIn', () => {
 
   describe('when user is signed in', () => {
     it('should redirect to homepage if user is admin', async () => {
-      storeOverrides.user = {
-        currentUser: {
-          id: 'user_id',
-          publicName: 'François',
-          isAdmin: true,
+      renderSignIn({
+        user: {
+          currentUser: {
+            id: 'user_id',
+            publicName: 'François',
+            isAdmin: true,
+          },
+          initialized: true,
         },
-        initialized: true,
-      }
-
-      renderSignIn(storeOverrides)
+      })
       expect(
         screen.getByText("I'm logged admin redirect route")
       ).toBeInTheDocument()
     })
 
     it('should redirect to offerers page if user is not admin', async () => {
-      storeOverrides.user = {
-        currentUser: {
-          id: 'user_id',
-          publicName: 'François',
-          isAdmin: false,
+      renderSignIn({
+        user: {
+          currentUser: {
+            id: 'user_id',
+            publicName: 'François',
+            isAdmin: false,
+          },
+          initialized: true,
         },
-        initialized: true,
-      }
-
-      renderSignIn(storeOverrides)
+      })
       expect(
         screen.getByText("I'm logged standard user redirect route")
       ).toBeInTheDocument()
@@ -239,7 +242,7 @@ describe('src | components | pages | SignIn', () => {
   })
 
   it('should display an error message when login failed', async () => {
-    renderSignIn(storeOverrides)
+    renderSignIn()
 
     const email = screen.getByLabelText('Adresse e-mail')
     await userEvent.type(email, 'MonPetitEmail@exemple.com')
@@ -270,7 +273,7 @@ describe('src | components | pages | SignIn', () => {
   })
 
   it('should display an error message when login rate limit exceeded', async () => {
-    renderSignIn(storeOverrides)
+    renderSignIn()
 
     const email = screen.getByLabelText('Adresse e-mail')
     await userEvent.type(email, 'MonPetitEmail@exemple.com')
@@ -307,15 +310,17 @@ describe('src | components | pages | SignIn', () => {
   })
 
   describe('sign in with new onboarding feature', () => {
-    beforeEach(() => {
-      storeOverrides.features.list = [
-        {
-          isActive: true,
-          nameKey: 'API_SIRENE_AVAILABLE',
-        },
-        { nameKey: 'WIP_ENABLE_NEW_ONBOARDING', isActive: true },
-      ]
-    })
+    const featureOverride = {
+      features: {
+        list: [
+          {
+            isActive: true,
+            nameKey: 'API_SIRENE_AVAILABLE',
+          },
+          { nameKey: 'WIP_ENABLE_NEW_ONBOARDING', isActive: true },
+        ],
+      },
+    }
 
     it('should not call listOfferersNames if user is admin', async () => {
       const listOfferersNamesRequest = jest
@@ -335,16 +340,17 @@ describe('src | components | pages | SignIn', () => {
           ],
         })
 
-      storeOverrides.user = {
-        currentUser: {
-          id: 'user_id',
-          publicName: 'François',
-          isAdmin: true,
+      renderSignIn({
+        user: {
+          currentUser: {
+            id: 'user_id',
+            publicName: 'François',
+            isAdmin: true,
+          },
+          initialized: true,
         },
-        initialized: true,
-      }
-
-      renderSignIn(storeOverrides)
+        ...featureOverride,
+      })
 
       expect(listOfferersNamesRequest).toHaveBeenCalledTimes(0)
     })
@@ -356,7 +362,7 @@ describe('src | components | pages | SignIn', () => {
           offerersNames: [],
         })
 
-      renderSignIn(storeOverrides)
+      renderSignIn({ ...featureOverride })
 
       const email = screen.getByLabelText('Adresse e-mail')
       await userEvent.type(email, 'MonPetitEmail@exemple.com')
@@ -390,7 +396,7 @@ describe('src | components | pages | SignIn', () => {
         ],
       })
 
-      renderSignIn(storeOverrides)
+      renderSignIn({ ...featureOverride })
 
       const email = screen.getByLabelText('Adresse e-mail')
       await userEvent.type(email, 'MonPetitEmail@exemple.com')
