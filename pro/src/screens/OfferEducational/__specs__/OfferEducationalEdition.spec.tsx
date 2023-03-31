@@ -33,7 +33,7 @@ describe('screens | OfferEducational', () => {
     props = defaultEditionProps
   })
 
-  it('should disable all fiels when mode is READONLY', async () => {
+  it('should disable all fields when mode is READONLY', async () => {
     props.userOfferers = [
       ...props.userOfferers,
       userOffererFactory({
@@ -59,6 +59,7 @@ describe('screens | OfferEducational', () => {
       mode: Mode.READ_ONLY,
     }
     renderWithProviders(<OfferEducational {...props} />)
+    await screen.findByLabelText(VENUE_LABEL)
 
     const inputs = [
       screen.getByLabelText(CATEGORY_LABEL),
@@ -76,7 +77,7 @@ describe('screens | OfferEducational', () => {
       screen.getByLabelText(NOTIFICATIONS_EMAIL_LABEL),
       screen.getByLabelText(INTERVENTION_AREA_LABEL),
     ]
-    const submitButton = await screen.getByRole('button', {
+    const submitButton = screen.getByRole('button', {
       name: 'Enregistrer',
     })
     await waitFor(() => {
