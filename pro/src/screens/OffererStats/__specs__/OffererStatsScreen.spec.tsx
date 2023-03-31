@@ -99,6 +99,7 @@ describe('OffererStatsScreen', () => {
     expect(virtualVenueOption).toBeInTheDocument()
     expect(venueOption).toBeInTheDocument()
   })
+
   it('should not display virtual venue if offerer has no digital offer', async () => {
     offerers[0].hasDigitalVenueAtLeastOneOffer = false
     renderOffererStatsScreen(offererOptions)
@@ -111,6 +112,7 @@ describe('OffererStatsScreen', () => {
     expect(virtualVenueOption).not.toBeInTheDocument()
     expect(venueOption).toBeInTheDocument()
   })
+
   it('should update venues  when selecting offerer and display offerer iframe', async () => {
     renderOffererStatsScreen(offererOptions)
     await waitFor(() => {
@@ -126,6 +128,7 @@ describe('OffererStatsScreen', () => {
     expect(screen.getByText('Terre de livres')).toBeInTheDocument()
     expect(screen.getByText('La voie aux chapitres')).toBeInTheDocument()
   })
+
   it('should display not display venue select if offerer has no venue', async () => {
     jest
       .spyOn(api, 'getOfferer')
@@ -138,6 +141,7 @@ describe('OffererStatsScreen', () => {
     const venueSelect = screen.queryByLabelText('Lieu')
     expect(venueSelect).not.toBeInTheDocument()
   })
+
   it('should display venue iframe when selecting a venue', async () => {
     renderOffererStatsScreen(offererOptions)
     await waitFor(() => {
@@ -150,13 +154,14 @@ describe('OffererStatsScreen', () => {
     expect(iframe).toBeInTheDocument()
     expect(iframe).toHaveAttribute('src', 'venueIframeUrl')
   })
+
   it('should display offerer stats when selecting all venues', async () => {
     renderOffererStatsScreen(offererOptions)
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
 
-    const venueSelect = screen.getByLabelText('Lieu')
+    const venueSelect = await screen.findByLabelText('Lieu')
     await userEvent.selectOptions(venueSelect, 'all')
     expect(api.getOffererStatsDashboardUrl).toHaveBeenCalledTimes(1)
   })
