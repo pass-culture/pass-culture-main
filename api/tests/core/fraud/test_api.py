@@ -31,23 +31,57 @@ class CommonTest:
         [
             # Some edge cases examples come from here:
             # https://www.notion.so/passcultureapp/79afb2e511544bfcb2da83826cde0043?v=48070c75add24820ac1cae498199d469
-            "321070751234",
-            "090435303687",
-            "Y808952",  # Tunisie
-            "U 13884935",  # Turquie
-            "AZ 1461290",  # Ancienne id italienne
-            "595-0103264-74",  # ID Belge
-            "1277367",  # ID Congolaise, Camerounaise, Mauricienne
-            "100030595009080004",  # ID Algerienne
-            "00000000 0 ZU4",  # portugal format
-            "03146310",  # andora CNI format
-            "53 1278779",  # Passeport Russe
-            "2 99 20030915 00001 3",  # ID Sénégalaise
-            "CES 177869",  # ID Polonaise
-            "040211-5703",  # ID Suédoise
-            "339546T",  # Titre de séjour Français
-            "32363144 4 ZZ7",  # ID Portugaise
-            "323631444ZZ7",  # ID Portugaise
+            # https://www.notion.so/passcultureapp/Tableau-des-ID-trang-res-sur-FA-440ab8cbb31d4ae9a16debe3eb5aab24
+            "210238320",
+            "12121L000454",
+            "593-0169535-39",
+            "CKKPZ0YH",
+            "B0715645",
+            "EB5853834",
+            "H394589",
+            "114454304",
+            "N1795170",
+            "PA1356204",
+            "YE227383",
+            "040211-5703",
+            "1774519",
+            "53 1278779",
+            "AU0443438",
+            "11658590",
+            "EK 1122107",
+            "037316896",
+            "M62082473",
+            "RL 4052317",
+            "AQ543939",
+            "2 99 20030915 00001 3",
+            "1 808 2011 01857",
+            "00825128061",
+            "A02621372",
+            "NND5PF684",
+            "FC5729729",
+            "25359693",
+            "MZ785199",
+            "1314109248",
+            "AQ1510973",
+            "20AA63328",
+            "32363144 4 ZZ7",
+            "1112338",
+            "339546T",
+            "AZ 3099856",
+            "CES 177869",
+            "FGRGJJTEF",
+            "0A0445529",
+            "CCF620343",
+            "121-21-L000454",
+            "PA 0473778",
+            "EB509436",
+            "C975773",
+            "X6372552",
+            "EJ0618532",
+            "1026070",
+            "S0010042",
+            "N 013057163",
+            "A02L8Z01",
         ],
     )
     def test_id_piece_number_valid_format(self, id_piece_number):
