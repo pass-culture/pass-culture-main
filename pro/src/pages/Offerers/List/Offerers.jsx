@@ -4,7 +4,9 @@ import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { Tooltip } from 'react-tooltip'
 
+import 'react-tooltip/dist/react-tooltip.css'
 import { api } from 'apiClient/api'
 import PageTitle from 'components/PageTitle/PageTitle'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -21,7 +23,6 @@ import { mapApiToBrowser } from 'utils/translate'
 import OffererItem from './OffererItem/OffererItem'
 import PendingOffererItem from './OffererItem/PendingOffererItem'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
-
 /* eslint-disable */
 function withRouterAndApiSiren(Component) {
   return props => (
@@ -196,10 +197,15 @@ class Offerers extends PureComponent {
         </ButtonLink>
         <Icon
           data-tooltip-place="bottom"
-          className="react-tooltip-anchor"
           data-tooltip-html="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
           data-tooltip-type="info"
+          data-tooltip-id="tooltip-siren"
           svg="picto-tip"
+        />
+        <Tooltip
+          className="type-info flex-center items-center"
+          delayHide={500}
+          id="tooltip-siren"
         />
       </span>
     )
