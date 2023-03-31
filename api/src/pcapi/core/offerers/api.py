@@ -1517,6 +1517,13 @@ def list_offerers_to_be_validated(
         .joinedload(offerers_models.OffererTag.categories)
         .load_only(offerers_models.OffererTagCategory.name),
         sa.orm.joinedload(offerers_models.Offerer.action_history).joinedload(history_models.ActionHistory.authorUser),
+        sa.orm.joinedload(offerers_models.Offerer.managedVenues)
+        .load_only(offerers_models.Venue.name, offerers_models.Venue.siret)
+        .joinedload(offerers_models.Venue.collectiveDmsApplications)
+        .load_only(
+            educational_models.CollectiveDmsApplication.state,
+            educational_models.CollectiveDmsApplication.lastChangeDate,
+        ),
     )
 
     if q:
