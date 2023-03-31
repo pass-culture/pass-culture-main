@@ -169,6 +169,7 @@ const VenueForm = ({
             <CollectiveVenueInformations
               venue={venue}
               isCreatingVenue={isCreatingVenue}
+              canCreateCollectiveOffer={canOffererCreateCollectiveOffer}
             />
           )}
         {!isCreatingVenue && venue && (

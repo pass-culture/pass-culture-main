@@ -20,6 +20,7 @@ import { IVenueFormValues } from 'components/VenueForm'
 import { IOfferer } from 'core/Offerers/types'
 import { IVenue } from 'core/Venue'
 import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
+import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueFormScreen } from '../index'
@@ -229,9 +230,9 @@ const venueResponse: GetVenueResponseModel = {
   collectivePhone: 'string',
   collectiveStudents: [],
   collectiveWebsite: 'string',
+  adageInscriptionDate: null,
   hasAdageId: false,
   collectiveDmsApplications: [],
-
   managingOfferer: {
     address: null,
     bic: null,
@@ -366,6 +367,9 @@ describe('screen | VenueForm', () => {
         postalCode: 'string',
         siren: null,
       },
+      hasAdageId: false,
+      adageInscriptionDate: null,
+      collectiveDmsApplication: null,
     }
   })
   describe('Navigation', () => {
@@ -1016,6 +1020,123 @@ describe('screen | VenueForm', () => {
           'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
         )
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('EAC Section', () => {
+    it('should display dms timeline if venue has dms application and ff active', async () => {
+      jest
+        .spyOn(api, 'canOffererCreateEducationalOffer')
+        .mockRejectedValueOnce('error')
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: false,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        {
+          ...venue,
+          hasAdageId: false,
+          collectiveDmsApplication: { ...defaultCollectiveDmsApplication },
+        },
+        {
+          list: [
+            { isActive: true, nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING' },
+          ],
+        }
+      )
+      await waitFor(
+        () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
+      )
+      expect(
+        screen.getByText('Déposez votre demande de référencement')
+      ).toBeInTheDocument()
+    })
+    it('should display eac section if offerer is eligble to eac and ff active', async () => {
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: false,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        {
+          ...venue,
+          hasAdageId: true,
+        },
+        {
+          list: [
+            { isActive: true, nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING' },
+          ],
+        }
+      )
+      await waitFor(
+        () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
+      )
+      expect(
+        screen.getByRole('heading', {
+          name: 'Mes informations pour les enseignants',
+        })
+      ).toBeInTheDocument()
+    })
+    it('should not display eac section if offerer is not eligble and has not dms application', async () => {
+      jest
+        .spyOn(api, 'canOffererCreateEducationalOffer')
+        .mockRejectedValueOnce('error')
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: false,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        {
+          ...venue,
+          hasAdageId: false,
+        },
+        {
+          list: [
+            { isActive: true, nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING' },
+          ],
+        }
+      )
+      await waitFor(
+        () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
+      )
+      expect(
+        screen.queryByRole('heading', {
+          name: 'Mes informations pour les enseignants',
+        })
+      ).not.toBeInTheDocument()
+    })
+    it('should display eac section during venue creation if venue has siret and is eligible to eac', async () => {
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: false,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        true,
+        undefined,
+        {
+          list: [
+            { isActive: true, nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING' },
+          ],
+        }
+      )
+      await waitFor(
+        () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
+      )
+      expect(
+        screen.queryByRole('heading', {
+          name: 'Mes informations pour les enseignants',
+        })
+      ).toBeInTheDocument()
     })
   })
 })
