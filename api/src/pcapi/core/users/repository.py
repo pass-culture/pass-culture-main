@@ -35,7 +35,7 @@ def check_user_and_credentials(user: models.User | None, password: str, allow_in
     if not (user.checkPassword(password) and (user.isActive or allow_inactive)):
         logger.info(
             "Failed authentication attempt",
-            extra={"user": user.id, "avoid_current_user": True, "success": False},
+            extra={"identifier": user.email, "user": user.id, "avoid_current_user": True, "success": False},
             technical_message_id="users.login",
         )
         raise exceptions.InvalidIdentifier()
@@ -45,11 +45,17 @@ def check_user_and_credentials(user: models.User | None, password: str, allow_in
 
 def get_user_with_credentials(identifier: str, password: str, allow_inactive: bool = False) -> models.User:
     user = find_user_by_email(identifier)
+    if not user:
+        logger.info(
+            "Failed authentication attempt",
+            extra={"identifier": identifier, "user": "not found", "avoid_current_user": True, "success": False},
+            technical_message_id="users.login",
+        )
     check_user_and_credentials(user, password, allow_inactive)
     if user:
         logger.info(
             "Successful authentication attempt",
-            extra={"user": user.id, "avoid_current_user": True, "success": True},
+            extra={"identifier": identifier, "user": user.id, "avoid_current_user": True, "success": True},
             technical_message_id="users.login",
         )
     return typing.cast(models.User, user)
