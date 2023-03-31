@@ -585,7 +585,7 @@ def complete_profile(
         user,
         user.eligibility,
         fraud_models.ProfileCompletionContent(
-            activity=activity.value,
+            activity=activity,
             address=address,
             city=city,
             first_name=first_name,
