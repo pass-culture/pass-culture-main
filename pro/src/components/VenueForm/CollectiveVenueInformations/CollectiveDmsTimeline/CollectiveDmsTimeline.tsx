@@ -20,7 +20,7 @@ export const DMS_STATUS = {
 const CollectiveDmsTimeline = ({
   collectiveDmsApplication,
 }: {
-  collectiveDmsApplication: DMSApplicationForEAC | null
+  collectiveDmsApplication: DMSApplicationForEAC
 }) => {
   // const collectiveDmsApplicationLink = link to venue.collectiveDmsApplicationId // FIX ME : collectiveDmsApplicationId is not yet a property of IVenue
   const collectiveDmsApplicationLink = DMS_STATUS.ADDED_IN_ADAGE
@@ -233,7 +233,7 @@ const CollectiveDmsTimeline = ({
     ),
   }
 
-  switch (collectiveDmsApplication?.state) {
+  switch (collectiveDmsApplication.state) {
     case DMS_STATUS.DRAFT:
       return (
         <Timeline

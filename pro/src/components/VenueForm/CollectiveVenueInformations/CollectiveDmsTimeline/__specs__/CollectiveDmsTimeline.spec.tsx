@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import { DMSApplicationForEAC } from 'apiClient/v1'
@@ -72,4 +72,17 @@ describe('CollectiveDmsTimeline', () => {
       expect(screen.getByText(expectedLabel)).toBeInTheDocument()
     }
   )
+
+  it('should throw error if dms status doesnt exist', () => {
+    expect(() =>
+      render(
+        <CollectiveDmsTimeline
+          collectiveDmsApplication={{
+            ...defaultCollectiveDmsApplication,
+            state: 'NOT_EXISTING_STATUS',
+          }}
+        />
+      )
+    ).toThrowError()
+  })
 })

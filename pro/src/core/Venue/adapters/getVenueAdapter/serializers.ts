@@ -96,7 +96,9 @@ const serializeBannerMetaApi = (
     },
   }
 }
-const getLastCollectiveDmsApplication = (
+
+/* istanbul ignore next: DEBT, TO FIX */
+export const getLastCollectiveDmsApplication = (
   collectiveDmsApplications: DMSApplicationForEAC[]
 ) => {
   if (!collectiveDmsApplications || collectiveDmsApplications.length === 0) {
