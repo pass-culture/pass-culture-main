@@ -94,6 +94,7 @@ describe('creationLinks', () => {
         hasMissingBankInformation: false,
         iban: 'test iban 01',
         id: 'GE',
+        nonHumanizedId: 6,
         isValidated: true,
         isActive: true,
         lastProviderId: null,
@@ -122,6 +123,7 @@ describe('creationLinks', () => {
         hasMissingBankInformation: false,
         iban: 'test iban 02',
         id: 'FQ',
+        nonHumanizedId: 12,
         isValidated: true,
         isActive: true,
         lastProviderId: null,
@@ -134,6 +136,7 @@ describe('creationLinks', () => {
     baseOfferersNames = baseOfferers.map(offerer => ({
       id: offerer.id,
       name: offerer.name,
+      nonHumanizedId: offerer.nonHumanizedId,
     }))
 
     api.getOfferer.mockResolvedValue(baseOfferers[0])
