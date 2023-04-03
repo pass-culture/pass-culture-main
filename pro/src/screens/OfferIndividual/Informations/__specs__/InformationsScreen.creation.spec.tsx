@@ -22,6 +22,7 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
+import { dehumanizeId } from 'utils/dehumanize'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { IInformationsProps, Informations as InformationsScreen } from '..'
@@ -148,7 +149,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     ]
 
     const venue: TOfferIndividualVenue = {
-      id: 'AA',
+      id: 'AK',
       name: 'Lieu offline AA',
       managingOffererId: 'A',
       isVirtual: false,
@@ -237,7 +238,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       name: 'Le nom de mon offre',
       subcategoryId: 'physical',
       url: null,
-      venueId: 'AA',
+      venueId: dehumanizeId('AK'),
       visualDisabilityCompliant: false,
       withdrawalDelay: null,
       withdrawalDetails: null,
@@ -327,7 +328,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       name: 'Le nom de mon offre',
       subcategoryId: 'virtual',
       url: 'http://example.com/',
-      venueId: 'BB',
+      venueId: dehumanizeId('BB'),
       visualDisabilityCompliant: false,
       withdrawalDelay: null,
       withdrawalDetails: null,
@@ -369,7 +370,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       name: 'Le nom de mon offre',
       subcategoryId: 'physical',
       url: null,
-      venueId: 'AA',
+      venueId: dehumanizeId('AK'),
       visualDisabilityCompliant: false,
       withdrawalDelay: null,
       withdrawalDetails: null,

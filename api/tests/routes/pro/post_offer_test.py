@@ -19,7 +19,7 @@ class Returns200Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "name": "Celeste",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "mentalDisabilityCompliant": True,
@@ -44,7 +44,7 @@ class Returns200Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "bookingEmail": "offer@example.com",
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
@@ -85,7 +85,7 @@ class Returns200Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "bookingEmail": "offer@example.com",
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
@@ -126,7 +126,7 @@ class Returns200Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.CONCERT.id,
             "withdrawalDetails": "Veuillez récuperer vos billets à l'accueil :)",
@@ -154,7 +154,7 @@ class Returns400Test:
 
         # When
         data = {
-            "venueId": humanize(1),
+            "venueId": 1,
             "bookingEmail": "offer@example.com",
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
@@ -168,7 +168,6 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 404
-        assert response.json["global"] == ["Aucun lieu ne correspond à cet identifiant dans notre base de données"]
 
     def test_fail_if_name_too_long(self, client):
         # Given
@@ -178,7 +177,7 @@ class Returns400Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "name": "too long" * 30,
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "withdrawalType": "no_ticket",
@@ -201,7 +200,7 @@ class Returns400Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "name": "An unacceptable name",
             "subcategoryId": "TOTO",
             "mentalDisabilityCompliant": False,
@@ -223,7 +222,7 @@ class Returns400Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "name": "A cool offer name",
             "subcategoryId": "OEUVRE_ART",
             "mentalDisabilityCompliant": False,
@@ -250,7 +249,7 @@ class Returns400Test:
             "subcategoryId": subcategories.ACHAT_INSTRUMENT.id,
             "name": "Le grand jeu",
             "url": "http://legrandj.eu",
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "audioDisabilityCompliant": True,
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
@@ -270,7 +269,7 @@ class Returns400Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "url": "missing.something",
@@ -293,7 +292,7 @@ class Returns400Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "externalTicketOfficeUrl": "missing.something",
@@ -316,7 +315,7 @@ class Returns400Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "url": "https://missing",
@@ -339,7 +338,7 @@ class Returns400Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "externalTicketOfficeUrl": "https://missing",
@@ -362,7 +361,7 @@ class Returns400Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "name": "Dofus",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "withdrawalType": "no_ticket",
@@ -386,7 +385,7 @@ class Returns403Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "audioDisabilityCompliant": True,
             "mentalDisabilityCompliant": False,

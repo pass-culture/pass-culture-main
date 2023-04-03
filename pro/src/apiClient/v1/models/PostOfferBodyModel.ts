@@ -18,7 +18,7 @@ export type PostOfferBodyModel = {
   name: string;
   subcategoryId: string;
   url?: string | null;
-  venueId: string;
+  venueId: number;
   visualDisabilityCompliant: boolean;
   withdrawalDelay?: number | null;
   withdrawalDetails?: string | null;
