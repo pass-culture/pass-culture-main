@@ -182,7 +182,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     }
 
     offer = {
-      id: 'AA',
+      id: 'AK',
       nonHumanizedId: 12,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
@@ -437,7 +437,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     await userEvent.click(screen.getByRole('button', { name: /Supprimer/ }))
     await screen.findByText('Souhaitez-vous vraiment supprimer cette image ?')
     await userEvent.click(screen.getByTestId('confirm-dialog-button-confirm'))
-    expect(api.deleteThumbnail).toHaveBeenCalledWith('AA')
+    expect(api.deleteThumbnail).toHaveBeenCalledWith(dehumanizeId('AK'))
     expect(
       await screen.findByRole('button', { name: /Ajouter une image/ })
     ).toBeInTheDocument()
@@ -474,7 +474,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         { exact: false }
       )
     ).toBeInTheDocument()
-    expect(api.deleteThumbnail).toHaveBeenCalledWith('AA')
+    expect(api.deleteThumbnail).toHaveBeenCalledWith(dehumanizeId('AK'))
 
     expect(
       screen.queryByRole('button', { name: /Ajouter une image/ })
@@ -519,7 +519,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         from: 'informations',
         isDraft: false,
         isEdition: true,
-        offerId: 'AA',
+        offerId: 'AK',
         to: 'Offers',
         used: 'StickyButtons',
       }

@@ -1375,7 +1375,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public deleteThumbnail(
-    offerId: string,
+    offerId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
