@@ -1574,6 +1574,10 @@ def test_public_api(client):
                 },
                 "SubscriptionStepperResponse": {
                     "properties": {
+                        "allowedIdentityCheckMethods": {
+                            "items": {"$ref": "#/components/schemas/IdentityCheckMethod"},
+                            "type": "array",
+                        },
                         "errorMessage": {"nullable": True, "title": "Errormessage", "type": "string"},
                         "subscriptionStepsToDisplay": {
                             "items": {"$ref": "#/components/schemas/SubscriptionStepDetailsResponse"},
@@ -1583,7 +1587,7 @@ def test_public_api(client):
                         "subtitle": {"nullable": True, "title": "Subtitle", "type": "string"},
                         "title": {"title": "Title", "type": "string"},
                     },
-                    "required": ["subscriptionStepsToDisplay", "title"],
+                    "required": ["subscriptionStepsToDisplay", "allowedIdentityCheckMethods", "title"],
                     "title": "SubscriptionStepperResponse",
                     "type": "object",
                 },
