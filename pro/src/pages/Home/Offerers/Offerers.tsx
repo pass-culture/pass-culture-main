@@ -69,7 +69,7 @@ const Offerers = ({
       if (receivedOffererNames.offerersNames.length > 0) {
         const initialOffererOptions = sortByDisplayName(
           receivedOffererNames.offerersNames.map(item => ({
-            id: item['id'].toString(),
+            id: item['nonHumanizedId'].toString(),
             displayName: item['name'],
           }))
         )

@@ -136,6 +136,7 @@ describe('offererDetailsLegacy', () => {
         hasMissingBankInformation: true,
         iban: 'test iban 02',
         id: 'FQ',
+        nonHumanizedId: 6,
         isValidated: true,
         isActive: true,
         lastProviderId: null,
@@ -166,6 +167,7 @@ describe('offererDetailsLegacy', () => {
         hasMissingBankInformation: true,
         iban: 'test iban 01',
         id: 'GE',
+        nonHumanizedId: 12,
         isValidated: true,
         isActive: true,
         lastProviderId: null,
@@ -183,6 +185,7 @@ describe('offererDetailsLegacy', () => {
     baseOfferersNames = baseOfferers.map(offerer => ({
       id: offerer.id,
       name: offerer.name,
+      nonHumanizedId: offerer.nonHumanizedId,
     }))
 
     api.listOfferersNames.mockResolvedValue({
@@ -464,6 +467,7 @@ describe('offererDetailsLegacy', () => {
           {
             id: offererWithNoPhysicalVenues.id,
             name: offererWithNoPhysicalVenues.name,
+            nonHumanizedId: offererWithNoPhysicalVenues.nonHumanizedId,
           },
         ],
       })
@@ -556,6 +560,7 @@ describe('offererDetailsLegacy', () => {
           {
             id: offererWithPhysicalVenues.id,
             name: offererWithPhysicalVenues.name,
+            nonHumanizedId: offererWithPhysicalVenues.nonHumanizedId,
           },
         ],
       })
@@ -626,7 +631,11 @@ describe('offererDetailsLegacy', () => {
       }
       api.listOfferersNames.mockResolvedValue({
         offerersNames: [
-          { name: nonValidatedOfferer.name, id: nonValidatedOfferer.id },
+          {
+            name: nonValidatedOfferer.name,
+            id: nonValidatedOfferer.id,
+            nonHumanizedId: nonValidatedOfferer.nonHumanizedId,
+          },
         ],
       })
       api.getOfferer.mockResolvedValue(nonValidatedOfferer)
@@ -678,8 +687,13 @@ describe('offererDetailsLegacy', () => {
           {
             name: firstOffererByAlphabeticalOrder.name,
             id: firstOffererByAlphabeticalOrder.id,
+            nonHumanizedId: firstOffererByAlphabeticalOrder.nonHumanizedId,
           },
-          { name: baseOfferers[0].name, id: baseOfferers[0].id },
+          {
+            name: baseOfferers[0].name,
+            id: baseOfferers[0].id,
+            nonHumanizedId: baseOfferers[0].nonHumanizedId,
+          },
         ],
       })
       api.getOfferer.mockRejectedValue({ status: 403 })
@@ -739,22 +753,11 @@ describe('offererDetailsLegacy', () => {
     })
 
     it('should not show venues of previously selected offerer', async () => {
-      // Given
-      api.listOfferersNames.mockResolvedValue({
-        offerersNames: [
-          { name: baseOfferers[0].name, id: baseOfferers[0].id },
-          {
-            name: firstOffererByAlphabeticalOrder.name,
-            id: firstOffererByAlphabeticalOrder.id,
-          },
-        ],
+      // // Given
+      api.getOfferer.mockResolvedValueOnce({
+        ...firstOffererByAlphabeticalOrder,
+        managedVenues: [virtualVenue, physicalVenue],
       })
-      api.getOfferer
-        .mockResolvedValueOnce({
-          ...firstOffererByAlphabeticalOrder,
-          managedVenues: [virtualVenue, physicalVenue],
-        })
-        .mockRejectedValueOnce({ status: 403 })
 
       const { waitForElements } = await renderHomePage(store)
       await waitForElements()
@@ -762,11 +765,11 @@ describe('offererDetailsLegacy', () => {
       // When
       await userEvent.selectOptions(
         screen.getByDisplayValue(firstOffererByAlphabeticalOrder.name),
-        baseOfferers[0].id
+        firstOffererByAlphabeticalOrder.nonHumanizedId.toString()
       )
 
       // Then
-      expect(api.getOfferer).toHaveBeenCalledTimes(2)
+      expect(api.getOfferer).toHaveBeenCalledTimes(1)
 
       const previouslySelectedOfferersPhysicalVenueName = screen.queryByRole(
         'heading',

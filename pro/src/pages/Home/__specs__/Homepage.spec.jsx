@@ -90,6 +90,7 @@ describe('homepage', () => {
         hasMissingBankInformation: true,
         iban: 'test iban 01',
         id: 'GE',
+        nonHumanizedId: 6,
         isValidated: true,
         lastProviderId: null,
         name: 'Bar des amis',
@@ -141,6 +142,7 @@ describe('homepage', () => {
         hasMissingBankInformation: true,
         iban: 'test iban 02',
         id: 'FQ',
+        nonHumanizedId: 12,
         isValidated: true,
         lastProviderId: null,
         name: 'Club Dorothy',
@@ -153,6 +155,7 @@ describe('homepage', () => {
     baseOfferersNames = baseOfferers.map(offerer => ({
       id: offerer.id,
       name: offerer.name,
+      nonHumanizedId: offerer.nonHumanizedId,
     }))
     api.getOfferer.mockResolvedValue(baseOfferers[0])
     api.listOfferersNames.mockResolvedValue({
