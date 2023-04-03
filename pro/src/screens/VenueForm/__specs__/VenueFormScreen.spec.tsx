@@ -1024,6 +1024,34 @@ describe('screen | VenueForm', () => {
   })
 
   describe('EAC Section', () => {
+    it('should display eac section if offerer is eligble to eac and ff active', async () => {
+      renderForm(
+        {
+          id: 'EY',
+          isAdmin: false,
+          publicName: 'USER',
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        false,
+        {
+          ...venue,
+          hasAdageId: true,
+        },
+        {
+          list: [
+            { isActive: true, nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING' },
+          ],
+        }
+      )
+      await waitFor(
+        () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
+      )
+      expect(
+        screen.getByRole('heading', {
+          name: 'Mes informations pour les enseignants',
+        })
+      ).toBeInTheDocument()
+    })
     it('should display dms timeline if venue has dms application and ff active', async () => {
       jest
         .spyOn(api, 'canOffererCreateEducationalOffer')
@@ -1054,34 +1082,7 @@ describe('screen | VenueForm', () => {
         screen.getByText('Déposez votre demande de référencement')
       ).toBeInTheDocument()
     })
-    it('should display eac section if offerer is eligble to eac and ff active', async () => {
-      renderForm(
-        {
-          id: 'EY',
-          isAdmin: false,
-          publicName: 'USER',
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        false,
-        {
-          ...venue,
-          hasAdageId: true,
-        },
-        {
-          list: [
-            { isActive: true, nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING' },
-          ],
-        }
-      )
-      await waitFor(
-        () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
-      )
-      expect(
-        screen.getByRole('heading', {
-          name: 'Mes informations pour les enseignants',
-        })
-      ).toBeInTheDocument()
-    })
+
     it('should not display eac section if offerer is not eligble and has not dms application', async () => {
       jest
         .spyOn(api, 'canOffererCreateEducationalOffer')
