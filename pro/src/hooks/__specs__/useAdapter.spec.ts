@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react'
+import { renderHook } from '@testing-library/react-hooks'
 
 import { useAdapter } from '..'
 
@@ -40,7 +40,7 @@ describe('useAdapter', () => {
     const successCall = jest
       .fn()
       .mockResolvedValue(new Promise(r => setTimeout(r, 200)))
-    const { result } = renderHook(() =>
+    const { result, waitForNextUpdate } = renderHook(() =>
       useAdapter<ISuccessPayload, IFailurePayload>(
         getTestingAdapter(successCall)
       )
@@ -54,17 +54,16 @@ describe('useAdapter', () => {
     const expectedData = {
       success: 'success data',
     }
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
-    })
-    expect(result.current.data).toEqual(expectedData)
-    expect(result.current.error).toBeUndefined()
+    await waitForNextUpdate()
+    const updatedState = result.current
+    expect(updatedState.data).toEqual(expectedData)
+    expect(updatedState.isLoading).toBe(false)
+    expect(updatedState.error).toBeUndefined()
   })
 
   it('should return loading payload then failure payload', async () => {
     const failureCall = jest.fn().mockRejectedValue('Api error')
-    const { result } = renderHook(() =>
+    const { result, waitForNextUpdate } = renderHook(() =>
       useAdapter<ISuccessPayload, IFailurePayload>(
         getTestingAdapter(failureCall)
       )
@@ -78,11 +77,11 @@ describe('useAdapter', () => {
     const expectedData = {
       error: 'failure data',
     }
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
-    })
-    expect(result.current.error?.payload).toEqual(expectedData)
-    expect(result.current.error?.message).toBe("i'm a response in error.")
+    await waitForNextUpdate()
+    const errorState = result.current
+    expect(loadingState.data).toBeUndefined()
+    expect(errorState.isLoading).toBe(false)
+    expect(errorState.error?.payload).toEqual(expectedData)
+    expect(errorState.error?.message).toBe("i'm a response in error.")
   })
 })
