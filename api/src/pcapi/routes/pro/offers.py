@@ -205,26 +205,20 @@ def patch_all_offers_active_status(
     return offers_serialize.PatchAllOffersActiveStatusResponseModel()
 
 
-@private_api.route("/offers/<offer_id>", methods=["PATCH"])
+@private_api.route("/offers/<int:offer_id>", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
     api=blueprint.pro_private_schema,
 )
 def patch_offer(
-    offer_id: str, body: offers_serialize.PatchOfferBodyModel
+    offer_id: int, body: offers_serialize.PatchOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
-    offer = (
-        models.Offer.query.options(
-            sqla_orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
-            sqla_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
-            sqla_orm.joinedload(models.Offer.product).joinedload(models.Product.owningOfferer),
-        )
-        .filter(
-            models.Offer.id == human_ids.dehumanize(offer_id),
-        )
-        .one_or_none()
-    )
+    offer = models.Offer.query.options(
+        sqla_orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
+        sqla_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
+        sqla_orm.joinedload(models.Offer.product).joinedload(models.Product.owningOfferer),
+    ).get(offer_id)
     if not offer:
         raise api_errors.ResourceNotFoundError
 

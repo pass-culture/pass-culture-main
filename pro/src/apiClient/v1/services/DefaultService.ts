@@ -1420,7 +1420,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchOffer(
-    offerId: string,
+    offerId: number,
     requestBody?: PatchOfferBodyModel,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({

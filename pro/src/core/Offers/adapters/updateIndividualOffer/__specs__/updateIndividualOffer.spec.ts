@@ -84,9 +84,10 @@ describe('updateIndividualOffer', () => {
       shouldSendMail: false,
     }
 
-    const offerId = 'AAAA'
+    const nonHumanizedofferId = 1234
     const offer = {
-      id: offerId,
+      id: 'AAAA',
+      nonHumanizedId: nonHumanizedofferId,
     } as IOfferIndividual
 
     jest
@@ -95,9 +96,12 @@ describe('updateIndividualOffer', () => {
 
     await updateIndividualOffer({
       serializedOffer: serializePatchOffer({ offer, formValues }),
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
     })
-    expect(api.patchOffer).toHaveBeenCalledWith(offerId, expectedBody)
+    expect(api.patchOffer).toHaveBeenCalledWith(
+      nonHumanizedofferId,
+      expectedBody
+    )
   })
 
   it('should sent PatchOfferBodyModel to api with provider editable params', async () => {
@@ -159,9 +163,10 @@ describe('updateIndividualOffer', () => {
       shouldSendMail: false,
     }
 
-    const offerId = 'AAAA'
+    const nonHumanizedofferId = 1234
     const offer = {
-      id: offerId,
+      id: 'AAAA',
+      nonHumanizedId: nonHumanizedofferId,
       lastProvider: {
         name: 'provider',
       },
@@ -172,8 +177,11 @@ describe('updateIndividualOffer', () => {
 
     await updateIndividualOffer({
       serializedOffer: serializePatchOffer({ offer, formValues }),
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
     })
-    expect(api.patchOffer).toHaveBeenCalledWith(offerId, expectedBody)
+    expect(api.patchOffer).toHaveBeenCalledWith(
+      nonHumanizedofferId,
+      expectedBody
+    )
   })
 })
