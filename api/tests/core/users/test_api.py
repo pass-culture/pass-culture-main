@@ -501,10 +501,12 @@ class ChangeUserEmailTest:
 class CreateBeneficiaryTest:
     def test_with_eligible_user(self):
         user = users_factories.UserFactory(roles=[])
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
-        user = subscription_api.activate_beneficiary_for_eligibility(user, "test", users_models.EligibilityType.AGE18)
+        user = subscription_api.activate_beneficiary_for_eligibility(
+            user, fraud_check, users_models.EligibilityType.AGE18
+        )
         assert user.has_beneficiary_role
         assert len(user.deposits) == 1
 
@@ -512,7 +514,7 @@ class CreateBeneficiaryTest:
         user = users_factories.UserFactory(
             roles=[], validatedBirthDate=datetime.date.today() - relativedelta(years=16, months=4)
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.EDUCONNECT,
             status=fraud_models.FraudCheckStatus.OK,
@@ -520,7 +522,7 @@ class CreateBeneficiaryTest:
             resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.datetime.utcnow()),
         )
         user = subscription_api.activate_beneficiary_for_eligibility(
-            user, "test", users_models.EligibilityType.UNDERAGE
+            user, fraud_check, users_models.EligibilityType.UNDERAGE
         )
         assert user.has_underage_beneficiary_role
         assert len(user.deposits) == 1
@@ -529,10 +531,10 @@ class CreateBeneficiaryTest:
 
     def test_external_users_updated(self):
         user = users_factories.UserFactory(roles=[])
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
-        subscription_api.activate_beneficiary_for_eligibility(user, "test", users_models.EligibilityType.AGE18)
+        subscription_api.activate_beneficiary_for_eligibility(user, fraud_check, users_models.EligibilityType.AGE18)
 
         assert len(batch_testing.requests) == 3
         assert len(sendinblue_testing.sendinblue_requests) == 1
@@ -549,7 +551,7 @@ class CreateBeneficiaryTest:
 
         fifteen_year_old = users_factories.UserFactory(validatedBirthDate=fifteen_years_and_one_week_ago)
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=fifteen_year_old,
             type=fraud_models.FraudCheckType.EDUCONNECT,
             status=fraud_models.FraudCheckStatus.OK,
@@ -558,7 +560,7 @@ class CreateBeneficiaryTest:
         )
 
         subscription_api.activate_beneficiary_for_eligibility(
-            fifteen_year_old, "test", users_models.EligibilityType.UNDERAGE
+            fifteen_year_old, fraud_check, users_models.EligibilityType.UNDERAGE
         )
 
         assert fifteen_year_old.is_beneficiary
