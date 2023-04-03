@@ -2,6 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { DMSApplicationstatus } from './DMSApplicationstatus';
+
 export type DMSApplicationForEAC = {
   application: number;
   buildDate?: string | null;
@@ -11,7 +13,7 @@ export type DMSApplicationForEAC = {
   lastChangeDate: string;
   procedure: number;
   processingDate?: string | null;
-  state: string;
+  state: DMSApplicationstatus;
   userDeletionDate?: string | null;
   venueId: number;
 };
