@@ -32,7 +32,7 @@ def list_offerers_names(
     query: offerers_serialize.GetOfferersNamesQueryModel,
 ) -> offerers_serialize.GetOfferersNamesResponseModel:
     if query.offerer_id is not None:
-        offerers = offerers_models.Offerer.query.filter(offerers_models.Offerer.id == dehumanize(query.offerer_id))
+        offerers = offerers_models.Offerer.query.filter(offerers_models.Offerer.id == query.offerer_id)
     else:
         offerers = repository.get_all_offerers_for_user(
             user=current_user,

@@ -11,6 +11,7 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { dehumanizeId } from 'utils/dehumanize'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OfferIndividualWizard } from '..'
@@ -108,7 +109,7 @@ describe('OfferIndividualWizard', () => {
     expect(api.listOfferersNames).toHaveBeenCalledWith(
       null, // validated
       null, // validatedForUser
-      'CU' // offererId
+      dehumanizeId('CU') // offererId
     )
 
     expect(api.getCategories).toHaveBeenCalledWith()
