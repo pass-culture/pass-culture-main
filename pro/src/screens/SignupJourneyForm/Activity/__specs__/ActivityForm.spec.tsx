@@ -4,7 +4,7 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { Target } from 'apiClient/v1'
+import { Target, VenueTypeCode } from 'apiClient/v1'
 import {
   ISignupJourneyContext,
   SignupJourneyContext,
@@ -121,7 +121,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
 
   it('should render activity form with initialValues', async () => {
     initialValues = {
-      venueType: venueTypes[0].value,
+      venueTypeCode: venueTypes[0].value as VenueTypeCode,
       socialUrls: ['https://example.com', 'https://exampleTwo.fr'],
       targetCustomer: Target.INDIVIDUAL_AND_EDUCATIONAL,
     }
