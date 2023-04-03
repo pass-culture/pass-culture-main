@@ -774,6 +774,20 @@ class StepperTest:
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
 
+    def should_contain_identity_check_methods(self, client):
+        user = users_factories.EligibleUnderageFactory()
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/stepper")
+        assert "educonnect" in response.json["allowedIdentityCheckMethods"]
+
 
 class GetProfileTest:
     def test_get_profile(self, client):
