@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 export type GetOfferersNamesQueryModel = {
-  offerer_id?: string | null;
+  offerer_id?: number | null;
   validated?: boolean | null;
   validated_for_user?: boolean | null;
 };
