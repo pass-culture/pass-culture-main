@@ -20,6 +20,18 @@ class CGRGetServiceProxyTest:
         assert service._binding_options["address"] == "http://example.com/web_service"
         assert service._operations["GetSeancesPassCulture"]
 
+    def test_cache_wsdl_files(self, requests_mock):
+        # Use a different service url than before
+        adapter = requests_mock.get(
+            "http://example.com/another_web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
+        )
+
+        get_cgr_service_proxy(cinema_url="http://example.com/another_web_service")
+        get_cgr_service_proxy(cinema_url="http://example.com/another_web_service")
+        get_cgr_service_proxy(cinema_url="http://example.com/another_web_service")
+
+        assert adapter.call_count == 1
+
 
 def _get_seances_pass_culture_xml_response_template(body_response: str) -> str:
     return f"""
