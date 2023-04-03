@@ -4,7 +4,7 @@
 
 export type VenueListQueryModel = {
   activeOfferersOnly?: boolean | null;
-  offererId?: string | null;
+  offererId?: number | null;
   validated?: boolean | null;
   validatedForUser?: boolean | null;
 };

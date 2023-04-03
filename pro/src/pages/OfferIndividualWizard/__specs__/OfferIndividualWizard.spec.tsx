@@ -16,6 +16,7 @@ import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { dehumanizeId } from 'utils/dehumanize'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferIndividualWizard from '../OfferIndividualWizard'
@@ -207,7 +208,7 @@ describe('test OfferIndividualWisard', () => {
       null, // validatedForUser
       null, // validated
       true, // activeOfferersOnly,
-      'CU' // offererId
+      dehumanizeId('CU') // offererId
     )
     expect(api.getCategories).toHaveBeenCalledWith()
     expect(api.getOffer).not.toHaveBeenCalled()
@@ -265,7 +266,7 @@ describe('test OfferIndividualWisard', () => {
       null, // validatedForUser
       null, // validated
       true, // activeOfferersOnly,
-      apiOffer.venue.managingOfferer.id // offererId
+      dehumanizeId(apiOffer.venue.managingOfferer.id) // offererId
     )
     expect(api.getCategories).toHaveBeenCalledWith()
     expect(api.getOffer).toHaveBeenCalledWith(offerId)
