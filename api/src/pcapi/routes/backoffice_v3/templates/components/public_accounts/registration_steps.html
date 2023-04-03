@@ -1,0 +1,195 @@
+{% macro build_idcheck_histories(id_check_histories) %}
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th>Date de création</th>
+          <th>ID Technique</th>
+          <th>Type</th>
+          <th>Eligibilité</th>
+          <th>Statut</th>
+          <th>Explication</th>
+          <th>Code d'erreur</th>
+          <th>Détails technique</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if id_check_histories|length == 0 %}
+          <tr>
+            <td colspan="8">Aucune données</td>
+          </tr>
+        {% else %}
+          {% for id_check_item in id_check_histories if id_check_histories|length > 0 %}
+            <tr>
+              <td>
+                <time datetime="{{ id_check_item.dateCreated }}">{{ id_check_item.dateCreated | format_date_time }}</time>
+              </td>
+              <td>{{ id_check_item.thirdPartyId }}</td>
+              <td>
+                {% if id_check_item | format_fraud_check_url %}
+                  <a href="{{ id_check_item | format_fraud_check_url }}"
+                     target="_blank">
+                    {{ id_check_item.type }}
+                    <i class="bi bi-folder"></i>
+                  </a>
+                {% else %}
+                  {{ id_check_item.type }}
+                {% endif %}
+              </td>
+              <td>
+                {% if id_check_item.applicable_eligibilities|length == 0 %}
+                  <span class="badge rounded-pill bg-secondary px-3 py-2">NA</span>
+                {% else %}
+                  {% for applicable_eligibility in id_check_item.applicable_eligibilities if id_check_item.applicable_eligibilities|length > 0 %}
+                    <span class="badge rounded-pill bg-primary px-3 py-2">{{ applicable_eligibility | i18n_public_account }}</span>
+                  {% endfor %}
+                {% endif %}
+              </td>
+              <td>
+                {% if id_check_item.status == 'ok' %}
+                  <span class="badge rounded-pill text-bg-success align-middle px-3 py-2">
+                    <i class="bi bi-check-circle"></i> {{ id_check_item.status.upper() }}
+                  </span>
+                {% elif id_check_item.status == 'ko' %}
+                  <span class="badge rounded-pill text-bg-danger align-middle px-3 py-2">
+                    <i class="bi bi-exclamation-circle"></i> {{ id_check_item.status.upper() }}
+                  </span>
+                {% elif id_check_item.status == 'suspicious' %}
+                  <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
+                    <i class="bi bi-shield-shaded"></i> {{ id_check_item.status.upper() }}
+                  </span>
+                {% elif id_check_item.status %}
+                  <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
+                    <i class="bi bi-exclamation-circle"></i> {{ id_check_item.status.upper() }}
+                  </span>
+                {% endif %}
+              </td>
+              <td>{{ id_check_item.reason | empty_string_if_null | pc_backoffice_public_account_link_in_comment | safe }}</td>
+              <td>{{ id_check_item.reasonCodes | format_string_list }}</td>
+              <td>
+                {% set idcheck_history_random_id = random_hash() %}
+                <button class="btn btn-light"
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target=".technical-details-{{ idcheck_history_random_id }}">
+                  <i class="bi bi-zoom-in"></i>
+                </button>
+                <div class="modal modal-lg fade text-start technical-details-{{ idcheck_history_random_id }}"
+                     tabindex="-1"
+                     aria-labelledby="view-technical-details"
+                     aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Détails technique</h5>
+                      </div>
+                      <div class="modal-body">
+                        <div class="form-floating my-3">
+                          <pre>
+                             <code><br />{{ id_check_item.technicalDetails  | tojson(indent=4) | safe | empty_string_if_null }}</code>
+                          </pre>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                data-bs-dismiss="modal">Fermer</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endmacro %}
+{% macro build_step(step_id, description, status_text, icon, status) %}
+  <li>
+    <div class="steps d-flex flex-column flex-grow-1 justify-content-center align-items-center position-relative {{ ' step-success' if status.success }}{{ ' step-warning' if status.warning }}{{ ' step-error' if status.error }}{{ ' step-active' if status.active }}{{ ' step-disabled' if status.disabled }}"
+         disabled
+         role="button"
+         data-step-id="{{ step_id }}"
+         title="{{ status_text }}">
+      <span class="step-number d-flex justify-content-center align-items-center pe-none position-relative">
+        {% if icon == 'bi-house-check-fill' %}
+          <svg xmlns="http://www.w3.org/2000/svg"
+               width="16"
+               height="16"
+               fill="currentColor"
+               class="bi bi-house-check-fill pe-none"
+               viewBox="0 0 16 16">
+            <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"
+            class="pe-none"/>
+            <path d="m8 3.293 4.712 4.712A4.5 4.5 0 0 0 8.758 15H3.5A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"
+            class="pe-none"/>
+            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.707l.547.547 1.17-1.951a.5.5 0 1 1 .858.514Z"
+            class="pe-none"/>
+          </svg>
+        {% elif icon.startswith('bi-') %}
+          <i class="bi {{ icon }} pe-none"></i>
+        {% else %}
+          {{ icon }}
+        {% endif %}
+        <div class="icon-container position-absolute">
+          {% if status_text == 'ok' %}
+            <i class="bi bi-check-circle-fill text-success me-5 fs-4"
+               title="{{ status_text }}"></i>
+          {% elif status_text == 'ko' %}
+            <i class="bi bi-exclamation-circle-fill text-danger me-5 fs-4"
+               title="{{ status_text }}"></i>
+          {% elif status_text == 'error' %}
+            <i class="bi bi-x-circle-fill text-danger me-5 fs-4"
+               title="{{ status_text }}"></i>
+          {% elif status_text == 'canceled' %}
+            <i class="bi bi-trash3-fill text-danger me-5 fs-4"
+               title="{{ status_text }}"></i>
+          {% else %}
+            <i class="bi bi-exclamation-circle-fill text-warning me-5 fs-4"
+               title="{{ status_text }}"></i>
+          {% endif %}
+        </div>
+      </span>
+      <span class="step-text center-smallcontainer pe-none">{{ description | i18n_subscription_type }}</span>
+    </div>
+  </li>
+{% endmacro %}
+{% macro build_step_content(step) %}
+  <div class="row step-content step {{ ' d-block' if step.status.active else ' d-none' }}{{ ' step-' + step.step_id|string }}">
+    <div class="col-xs-12">
+      <div class="col-md-12 well text-center">{{ caller() }}</div>
+    </div>
+  </div>
+{% endmacro %}
+{% macro build_registration_steps(tunnel, builded_steps) %}
+  <div class="card my-4 pc-personal-information-registration-view">
+    <div class="card-body">
+      <h5 class="card-title text-bold fs-2 m-3">
+        Parcours d'inscription
+        <span class="badge rounded-pill text-bg-primary fs-6 align-middle mx-4">{{ tunnel.type.value | i18n_public_account }}</span>
+      </h5>
+      <div class="card-body">
+        <div class="row py-1"
+             data-registration-steps-id="{{ tunnel.type.value }}">
+          <div class="col-12 position-relative">
+            <div class="progress position-absolute">
+              <div class="progress-bar"
+                   role="progressbar"
+                   aria-valuenow="{{ tunnel.progress }}"
+                   aria-valuemin="0"
+                   aria-valuemax="100"
+                   style="width: {{ tunnel.progress }}%"></div>
+            </div>
+            <ol class="breadcrumb-container position-relative d-flex p-0 justify-content-between">
+              {% for builded_step in builded_steps %}{{ builded_step }}{% endfor %}
+            </ol>
+          </div>
+          {{ caller() }}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endmacro %}
