@@ -1,10 +1,6 @@
 import { api } from 'apiClient/api'
 
-interface Params {
-  offerId: string
-}
-
-export type TDeleteThumbnailAdapter = Adapter<Params, null, null>
+export type TDeleteThumbnailAdapter = Adapter<number, null, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -13,7 +9,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const deleteThumbnailAdapter: TDeleteThumbnailAdapter = async ({ offerId }) => {
+const deleteThumbnailAdapter = async (offerId: number) => {
   try {
     await api.deleteThumbnail(offerId)
     return {
