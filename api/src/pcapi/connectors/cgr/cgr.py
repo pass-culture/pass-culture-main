@@ -3,6 +3,7 @@ import logging
 
 from pydantic import parse_obj_as
 from zeep import Client
+from zeep.cache import InMemoryCache
 from zeep.proxy import ServiceProxy
 
 from pcapi import settings
@@ -16,7 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 def get_cgr_service_proxy(cinema_url: str) -> ServiceProxy:
-    transport = requests.CustomZeepTransport(timeout=10, operation_timeout=10)
+    # https://docs.python-zeep.org/en/master/transport.html#caching
+    cache = InMemoryCache()
+    transport = requests.CustomZeepTransport(cache=cache, timeout=10, operation_timeout=10)
     client = Client(wsdl=f"{cinema_url}?wsdl", transport=transport)
     service = client.create_service(binding_name="{urn:GestionCinemaWS}GestionCinemaWSSOAPBinding", address=cinema_url)
     return service
