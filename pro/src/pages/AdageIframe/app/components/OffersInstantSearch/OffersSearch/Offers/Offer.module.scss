@@ -105,6 +105,13 @@ $offer-image-width: rem(176px);
       }
     }
 
+    .offer-domains-tag {
+      background-color: colors.$grey-light;
+      color: colors.$black;
+      border: none;
+      padding: rem(4px) rem(8px);
+    }
+
     & > *:not(:last-child) {
       margin-bottom: rem(8px);
     }
