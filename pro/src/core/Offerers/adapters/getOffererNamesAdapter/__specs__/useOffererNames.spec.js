@@ -1,18 +1,16 @@
-import { waitFor, renderHook } from '@testing-library/react'
+import { renderHook } from '@testing-library/react-hooks'
 
 import { api } from 'apiClient/api'
-import { GetOffererNameResponseModel } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 import { useGetOffererNames } from '..'
 
 describe('useOffererNames', () => {
   it('should return loading payload then success payload', async () => {
-    const offererNames: GetOffererNameResponseModel[] = [
+    const offererNames = [
       {
         id: 'AA',
         name: 'Structure AA',
-        nonHumanizedId: 123,
       },
     ]
 
@@ -20,19 +18,22 @@ describe('useOffererNames', () => {
       .spyOn(api, 'listOfferersNames')
       .mockResolvedValue({ offerersNames: offererNames })
 
-    const { result } = renderHook(() => useGetOffererNames({}))
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useGetOffererNames({})
+    )
     const loadingState = result.current
 
     expect(loadingState.data).toBeUndefined()
     expect(loadingState.isLoading).toBe(true)
     expect(loadingState.error).toBeUndefined()
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
-    })
+    await waitForNextUpdate()
     expect(api.listOfferersNames).toHaveBeenCalled()
-    expect(result.current.data).toEqual(offererNames)
-    expect(result.current.error).toBeUndefined()
+
+    const updatedState = result.current
+    expect(updatedState.data).toEqual(offererNames)
+    expect(updatedState.isLoading).toBe(false)
+    expect(updatedState.error).toBeUndefined()
   })
 
   it('should return loading payload then error payload', async () => {
@@ -40,18 +41,21 @@ describe('useOffererNames', () => {
       .spyOn(api, 'listOfferersNames')
       .mockRejectedValue(new Error('Api error'))
 
-    const { result } = renderHook(() => useGetOffererNames({}))
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useGetOffererNames({})
+    )
     const loadingState = result.current
 
     expect(loadingState.data).toBeUndefined()
     expect(loadingState.isLoading).toBe(true)
     expect(loadingState.error).toBeUndefined()
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
-    })
+    await waitForNextUpdate()
     expect(api.listOfferersNames).toHaveBeenCalled()
-    expect(result.current?.error?.payload).toEqual([])
-    expect(result.current?.error?.message).toBe(GET_DATA_ERROR_MESSAGE)
+
+    const updatedState = result.current
+    expect(updatedState.isLoading).toBe(false)
+    expect(updatedState.error.payload).toEqual([])
+    expect(updatedState.error.message).toBe(GET_DATA_ERROR_MESSAGE)
   })
 })

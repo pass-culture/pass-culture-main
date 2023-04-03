@@ -1,4 +1,5 @@
-import { act, renderHook } from '@testing-library/react'
+import { act } from '@testing-library/react'
+import { renderHook } from '@testing-library/react-hooks'
 
 import { AttachImageResponseModel } from 'apiClient/v1'
 import { imageUploadArgsFactory } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/__tests-utils__/imageUploadArgsFactory'
