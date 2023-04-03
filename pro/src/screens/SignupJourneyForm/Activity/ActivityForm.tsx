@@ -2,6 +2,7 @@ import cn from 'classnames'
 import { FieldArray, useFormikContext } from 'formik'
 import React from 'react'
 
+import { VenueTypeCode } from 'apiClient/v1'
 import { Target } from 'apiClient/v1/models/Target'
 import FormLayout from 'components/FormLayout'
 import { PlusCircleIcon, TrashFilledIcon } from 'icons'
@@ -12,7 +13,7 @@ import styles from './ActivityForm.module.scss'
 import { activityTargetCustomerTypeRadios } from './constants'
 
 export interface IActivityFormValues {
-  venueType: string
+  venueTypeCode: VenueTypeCode | ''
   socialUrls: string[]
   targetCustomer: Target | undefined | null
 }
@@ -38,7 +39,7 @@ const ActivityForm = ({ venueTypes }: IActivityFormProps): JSX.Element => {
             },
             ...venueTypes,
           ]}
-          name="venueType"
+          name="venueTypeCode"
           label="Activité principale"
           className={styles['venue-type-select']}
         />

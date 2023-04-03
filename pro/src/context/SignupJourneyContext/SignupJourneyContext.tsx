@@ -9,6 +9,7 @@ import { IOffererFormValues } from 'screens/SignupJourneyForm/Offerer/OffererFor
 export interface IOfferer extends IOffererFormValues, IAddress {
   name: string
   publicName?: string
+  createVenueWithoutSiret?: boolean
 }
 
 export interface ISignupJourneyContext {

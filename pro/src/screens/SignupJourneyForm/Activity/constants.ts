@@ -1,7 +1,9 @@
 import { Target } from 'apiClient/v1'
 
-export const DEFAULT_ACTIVITY_FORM_VALUES = {
-  venueType: '',
+import { IActivityFormValues } from './ActivityForm'
+
+export const DEFAULT_ACTIVITY_FORM_VALUES: IActivityFormValues = {
+  venueTypeCode: '',
   socialUrls: [''],
   targetCustomer: undefined,
 }

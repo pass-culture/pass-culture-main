@@ -4,7 +4,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { Target } from 'apiClient/v1'
+import { Target, VenueTypeCode } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import {
   ISignupJourneyContext,
@@ -63,7 +63,7 @@ describe('screens:SignupJourney::Activity', () => {
       setOfferer: () => {},
     }
     jest.spyOn(api, 'getVenueTypes').mockResolvedValue([
-      { id: 'venue1', label: 'first venue label' },
+      { id: VenueTypeCode.MUS_E, label: 'first venue label' },
       { id: 'venue2', label: 'second venue label' },
     ])
   })
@@ -117,7 +117,7 @@ describe('screens:SignupJourney::Activity', () => {
 
   it('should display validation screen on click next step button', async () => {
     contextValue.activity = {
-      venueType: 'venue1',
+      venueTypeCode: VenueTypeCode.MUS_E,
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL_AND_EDUCATIONAL,
     }
