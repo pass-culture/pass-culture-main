@@ -29,6 +29,7 @@ import {
 } from 'core/Offers/utils/getOfferIndividualUrl'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
+import { serializeThingBookingLimitDatetime } from '../adapters/serializers'
 import StocksThing, { IStocksThingProps } from '../StocksThing'
 
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
@@ -362,7 +363,7 @@ describe('screens:StocksThing', () => {
             quantity: 5,
             activationCodes: ['ABH', 'JHB', 'IOP', 'KLM', 'MLK'],
             activationCodesExpirationDatetime:
-              date.toISOString().slice(0, -5) + 'Z',
+              serializeThingBookingLimitDatetime(date, '75'),
           },
         ],
       })
