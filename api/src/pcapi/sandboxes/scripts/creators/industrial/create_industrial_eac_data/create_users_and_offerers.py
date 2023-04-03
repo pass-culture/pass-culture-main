@@ -45,9 +45,40 @@ def create_users_offerers() -> list[offerers_models.Offerer]:
         offerer__name="eac_rejected",
     )
     offeres.append(user_offerer.offerer)
+    # DMS state
     user_offerer = offerers_factories.UserOffererFactory(
-        user__email="pending_eac@example.com",
-        offerer__name="pending_eac",
+        user__email="eac_accepte@example.com",
+        offerer__name="eac_accepte",
+    )
+    offeres.append(user_offerer.offerer)
+    user_offerer = offerers_factories.UserOffererFactory(
+        user__email="eac_sans_suite@example.com",
+        offerer__name="eac_sans_suite",
+    )
+    offeres.append(user_offerer.offerer)
+    user_offerer = offerers_factories.UserOffererFactory(
+        user__email="eac_en_construction@example.com",
+        offerer__name="eac_en_construction",
+    )
+    offeres.append(user_offerer.offerer)
+    user_offerer = offerers_factories.UserOffererFactory(
+        user__email="eac_refuse@example.com",
+        offerer__name="eac_refuse",
+    )
+    offeres.append(user_offerer.offerer)
+    user_offerer = offerers_factories.UserOffererFactory(
+        user__email="eac_en_instruction@example.com",
+        offerer__name="eac_en_instruction",
+    )
+    offeres.append(user_offerer.offerer)
+    user_offerer = offerers_factories.UserOffererFactory(
+        user__email="eac_complete_30d@example.com",
+        offerer__name="eac_complete_30+d",
+    )
+    offeres.append(user_offerer.offerer)
+    user_offerer = offerers_factories.UserOffererFactory(
+        user__email="eac_complete_30-d@example.com",
+        offerer__name="eac_complete_30-d",
     )
     offeres.append(user_offerer.offerer)
 
