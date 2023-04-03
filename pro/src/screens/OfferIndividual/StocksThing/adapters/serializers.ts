@@ -6,7 +6,7 @@ import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
 
 import { IStockThingFormValues } from '../'
 
-const serializeThingBookingLimitDatetime = (
+export const serializeThingBookingLimitDatetime = (
   bookingLimitDatetime: Date,
   departementCode: string
 ) => {
