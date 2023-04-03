@@ -8,7 +8,7 @@ from flask import request
 from werkzeug.wrappers import Response
 
 from pcapi import settings
-from pcapi.analytics.amplitude.events import identity_check_events
+from pcapi.analytics.amplitude.events.subscriptions import identity_check_events
 from pcapi.connectors.beneficiaries.educonnect import educonnect_connector
 from pcapi.connectors.beneficiaries.educonnect import exceptions as educonnect_exceptions
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models

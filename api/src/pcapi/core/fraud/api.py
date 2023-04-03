@@ -647,7 +647,7 @@ def handle_ok_manual_review(
             raise EligibilityError("Aucune éligibilité trouvée. Veuillez renseigner une éligibilité.")
 
     try:
-        subscription_api.activate_beneficiary_for_eligibility(user, fraud_check.get_detailed_source(), eligibility)
+        subscription_api.activate_beneficiary_for_eligibility(user, fraud_check, eligibility)
 
     except subscription_exceptions.InvalidEligibilityTypeException as err:
         raise EligibilityError(f"L'égibilité '{eligibility.value}' n'existe pas !") from err

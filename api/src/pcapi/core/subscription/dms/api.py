@@ -3,7 +3,7 @@ import hashlib
 import logging
 
 from pcapi import settings
-from pcapi.analytics.amplitude.events import identity_check_events
+from pcapi.analytics.amplitude.events.subscriptions import identity_check_events
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer

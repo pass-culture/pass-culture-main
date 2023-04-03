@@ -3,6 +3,7 @@ import logging
 import typing
 
 from pcapi import settings
+from pcapi.analytics.amplitude.events.subscriptions import deposit_activation
 from pcapi.core.external import batch
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.finance.api as finance_api
@@ -56,7 +57,7 @@ def _get_age_at_first_registration(user: users_models.User, eligibility: users_m
 
 def activate_beneficiary_for_eligibility(
     user: users_models.User,
-    deposit_source: str,
+    fraud_check: fraud_models.BeneficiaryFraudCheck,
     eligibility: users_models.EligibilityType,
 ) -> users_models.User:
     if eligibility == users_models.EligibilityType.UNDERAGE:
@@ -74,14 +75,14 @@ def activate_beneficiary_for_eligibility(
 
     deposit = finance_api.create_deposit(
         user,
-        deposit_source=deposit_source,
+        deposit_source=fraud_check.get_detailed_source(),
         eligibility=eligibility,
         age_at_registration=age_at_registration,
     )
 
     db.session.add_all((user, deposit))
     db.session.commit()
-    logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit_source})
+    logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit.source})
 
     is_email_sent = transactional_mails.send_accepted_as_beneficiary_email(user=user)
     if not is_email_sent:
@@ -89,6 +90,7 @@ def activate_beneficiary_for_eligibility(
 
     external_attributes_api.update_external_user(user)
     batch.track_deposit_activated_event(user.id, deposit)
+    deposit_activation.track_deposit_granted_event(user.id, deposit, fraud_check)
 
     return user
 
@@ -646,9 +648,7 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
     users_api.update_user_information_from_external_source(user, source_data, commit=False)
 
     try:
-        activate_beneficiary_for_eligibility(
-            user, subscription_state.identity_fraud_check.get_detailed_source(), user.eligibility
-        )
+        activate_beneficiary_for_eligibility(user, subscription_state.identity_fraud_check, user.eligibility)
     except (finance_exceptions.DepositTypeAlreadyGrantedException, finance_exceptions.UserHasAlreadyActiveDeposit):
         # this error may happen on identity provider concurrent requests
         logger.info("A deposit already exists for user %s", user.id)
