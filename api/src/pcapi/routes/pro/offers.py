@@ -290,22 +290,15 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     return CreateThumbnailResponseModel(id=thumbnail.id, url=thumbnail.thumbUrl, credit=thumbnail.credit)  # type: ignore [arg-type]
 
 
-@private_api.route("/offers/thumbnails/<offer_id>", methods=["DELETE"])
+@private_api.route("/offers/thumbnails/<int:offer_id>", methods=["DELETE"])
 @login_required
 @spectree_serialize(
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
 def delete_thumbnail(offer_id: str) -> None:
-    try:
-        offer: models.Offer = rest.load_or_raise_error(models.Offer, human_id=offer_id)
-    except human_ids.NonDehumanizableId:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
-        )
+    offer = models.Offer.query.get_or_404(offer_id)
+
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     with transaction():
