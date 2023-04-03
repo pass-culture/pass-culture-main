@@ -37,6 +37,7 @@ class IdCheckItemModel(BaseModel):
 
         return super().from_orm(fraud_check)
 
+    id: int
     type: fraud_models.FraudCheckType
     dateCreated: datetime.datetime
     thirdPartyId: str
@@ -45,6 +46,8 @@ class IdCheckItemModel(BaseModel):
     reasonCodes: list[fraud_models.FraudReasonCode] | None
     technicalDetails: dict | None
     sourceId: str | None = None  # DMS only
+    eligibilityType: users_models.EligibilityType | None
+    applicable_eligibilities: list[users_models.EligibilityType]
 
 
 class EligibilitySubscriptionHistoryModel(BaseModel):

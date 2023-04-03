@@ -13,6 +13,10 @@ def i18n_public_account(term: str) -> str:
             return "Pass 15-17"
         case "age-18":
             return "Pass 18"
+        case "underage+age-18":
+            return "Pass 15-17+18"
+        case "not-eligible":
+            return "Non éligible"
         case "offerer":  # pro
             return "Structure"
         case "venue":  # pro
@@ -36,7 +40,7 @@ def i18n_subscription_type(term: str) -> str:
         case "email-validation":
             return "Validation E-mail"
         case "phone-validation":
-            return "Validation Numéro de téléphone"
+            return "Validation N° téléphone"
         case "user-profiling":
             return "Profil Utilisateur"
         case "profile-completion":

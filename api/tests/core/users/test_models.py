@@ -232,6 +232,41 @@ class UserTest:
                 assert user_models._get_latest_birthday(birth_date) == latest_birthday
 
     class EligibilityTest:
+        def test_received_pass_15_17(self):
+            dateOfBirth = datetime.utcnow() - relativedelta(years=16, days=1)
+            user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
+            user.add_beneficiary_role()
+            yesterday = datetime.utcnow() - timedelta(days=1)
+            users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
+            assert user.received_pass_15_17 is True
+            assert user.received_pass_18 is False
+
+        def test_received_pass_18(self):
+            dateOfBirth = datetime.utcnow() - relativedelta(years=18, days=1)
+            user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
+            user.add_beneficiary_role()
+            yesterday = datetime.utcnow() - timedelta(days=1)
+            users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
+
+            assert user.received_pass_15_17 is False
+            assert user.received_pass_18 is True
+
+        def test_received_pass_15_17_and_18(self):
+            dateOfBirth16 = datetime.utcnow() - relativedelta(years=16, days=1)
+            dateOfBirth18 = datetime.utcnow() - relativedelta(years=18, days=1)
+            user = users_factories.UserFactory(dateOfBirth=dateOfBirth16, validatedBirthDate=dateOfBirth16)
+            user.add_beneficiary_role()
+            yesterday = datetime.utcnow() - timedelta(days=1)
+            users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
+
+            assert user.received_pass_15_17 is True
+
+            user.dateOfBirth = dateOfBirth18
+            user.validatedBirthDate = dateOfBirth18
+
+            users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
+            assert user.received_pass_18 is True
+
         def test_not_eligible_when_19(self):
             user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=19, days=1))
             assert user.eligibility is None

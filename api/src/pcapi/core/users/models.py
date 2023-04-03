@@ -22,6 +22,7 @@ from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.functions import func
 
 from pcapi import settings
+from pcapi.core.finance.models import DepositType
 from pcapi.core.users import constants
 from pcapi.core.users import utils as users_utils
 from pcapi.models import Base
@@ -37,7 +38,6 @@ from pcapi.utils.phone_number import ParsedPhoneNumber
 
 if typing.TYPE_CHECKING:
     from pcapi.core.finance.models import Deposit
-    from pcapi.core.finance.models import DepositType
     from pcapi.core.offerers.models import UserOfferer
 
 
@@ -373,6 +373,14 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     @property
     def deposit_type(self) -> "DepositType | None":
         return self.deposit.type if self.deposit else None
+
+    @property
+    def received_pass_15_17(self) -> bool:
+        return DepositType.GRANT_15_17 in [deposit.type for deposit in self.deposits]
+
+    @property
+    def received_pass_18(self) -> bool:
+        return DepositType.GRANT_18 in [deposit.type for deposit in self.deposits]
 
     @property
     def deposit_version(self) -> int | None:
