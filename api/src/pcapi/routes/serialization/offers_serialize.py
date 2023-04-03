@@ -88,7 +88,7 @@ class PostOfferBodyModel(BaseModel):
     name: str
     subcategory_id: str
     url: HttpUrl | None
-    venue_humanized_id: str = Field(..., alias="venueId")
+    venue_id: int
     visual_disability_compliant: bool
     withdrawal_delay: int | None
     withdrawal_details: str | None

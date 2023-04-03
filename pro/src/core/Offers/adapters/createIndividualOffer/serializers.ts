@@ -3,6 +3,7 @@ import { PostOfferBodyModel } from 'apiClient/v1'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { IOfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
+import { dehumanizeId } from 'utils/dehumanize'
 
 /* istanbul ignore next: DEBT, TO FIX */
 export const serializeExtraData = (
@@ -76,7 +77,8 @@ export const serializePostOffer = (
     motorDisabilityCompliant: formValues.accessibility[AccessiblityEnum.MOTOR],
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
-    venueId: formValues.venueId,
+    // FIXME mageoffray (2023-04-03) : This is a dirty fix until GET /venues route returns dehumanized Id
+    venueId: dehumanizeId(formValues.venueId) || 0,
     visualDisabilityCompliant:
       formValues.accessibility[AccessiblityEnum.VISUAL],
     withdrawalDelay:
