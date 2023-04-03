@@ -157,7 +157,9 @@ jobs:
       - run: npm install --global yarn
       - run: yarn install
       - run: |
-          set -a; source ../config/run_envs/${{ inputs.environment }};
+          set -a; 
+          source ../config/run_envs/${{ inputs.environment }};
+          source .env.${{ inputs.environment }};
           yarn build:${{ inputs.environment }}
 
   deploy-adage-front:
