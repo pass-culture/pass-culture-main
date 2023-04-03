@@ -13,6 +13,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
+import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
@@ -1410,6 +1411,9 @@ class GetFilteredCollectiveOffersTest:
 @pytest.mark.usefixtures("db_session")
 class ExcludeOffersFromInactiveVenueProviderTest:
     def test_exclude_offers_from_inactive_venue_provider(self):
+        stock_api_provider = providers_factories.ProviderFactory(
+            localClass=providers_constants.PASS_CULTURE_STOCKS_FAKE_CLASS_NAME
+        )
         active_venue_provider = providers_factories.VenueProviderFactory(isActive=True)
         inactive_venue_provider = providers_factories.VenueProviderFactory(isActive=False)
         offer_from_active_venue_provider = factories.OfferFactory(
@@ -1424,11 +1428,13 @@ class ExcludeOffersFromInactiveVenueProviderTest:
         offer_from_deleted_venue_provider = factories.OfferFactory(
             lastProvider=inactive_venue_provider.provider,
         )
+        offer_from_stock_api = factories.OfferFactory(lastProvider=stock_api_provider)
 
         result_query = repository.exclude_offers_from_inactive_venue_provider(models.Offer.query)
         selected_offers = result_query.all()
 
         assert offer_from_active_venue_provider in selected_offers
         assert offer_not_from_provider in selected_offers
+        assert offer_from_stock_api in selected_offers
         assert offer_from_inactive_venue_provider not in selected_offers
         assert offer_from_deleted_venue_provider not in selected_offers

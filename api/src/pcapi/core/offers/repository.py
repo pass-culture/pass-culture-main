@@ -11,6 +11,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.domain.pro_offers import offers_recap
@@ -740,6 +741,7 @@ def exclude_offers_from_inactive_venue_provider(query: flask_sqlalchemy.BaseQuer
             sa.or_(
                 models.Offer.lastProviderId.is_(None),
                 providers_models.VenueProvider.isActive == True,
+                providers_models.Provider.localClass == providers_constants.PASS_CULTURE_STOCKS_FAKE_CLASS_NAME,
             )
         )
     )
