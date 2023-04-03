@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 from decimal import InvalidOperation
+import enum
 from io import BytesIO
 import typing
 
@@ -32,9 +33,17 @@ MAX_LONGITUDE = 180
 MAX_LATITUDE = 90
 
 
+class DMSApplicationstatus(enum.Enum):
+    ACCEPTED = "accepte"
+    DROPPED = "sans_suite"
+    BUILDING = "en_construction"
+    REFUSED = "refuse"
+    INSTRUCTING = "en_instruction"
+
+
 class DMSApplicationForEAC(BaseModel):
     venueId: int
-    state: str
+    state: DMSApplicationstatus
     procedure: int
     application: int
     lastChangeDate: datetime
