@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react'
+import { renderHook } from '@testing-library/react-hooks'
 
 import { useGetImageBitmap } from 'hooks/useGetBitmap'
 
@@ -19,15 +19,17 @@ describe('image', () => {
       value: 800,
       configurable: true,
     })
-    const { result } = renderHook(() => useGetImageBitmap(imageFile))
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useGetImageBitmap(imageFile)
+    )
     const image = result.current
 
     expect(image.width).toEqual(0)
     expect(image.height).toEqual(0)
 
-    await waitFor(() => {
-      expect(result.current.width).toEqual(600)
-      expect(result.current.height).toEqual(800)
-    })
+    await waitForNextUpdate()
+    const updatedImage = result.current
+    expect(updatedImage.width).toEqual(600)
+    expect(updatedImage.height).toEqual(800)
   })
 })

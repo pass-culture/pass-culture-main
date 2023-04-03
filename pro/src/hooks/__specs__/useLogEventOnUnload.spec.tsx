@@ -1,4 +1,4 @@
-import { cleanup, renderHook } from '@testing-library/react'
+import { cleanup, renderHook } from '@testing-library/react-hooks'
 
 import useLogEventOnUnload from 'hooks/useLogEventOnUnload'
 
