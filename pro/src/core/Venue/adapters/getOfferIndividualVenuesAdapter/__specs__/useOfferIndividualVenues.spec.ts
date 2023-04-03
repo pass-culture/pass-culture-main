@@ -7,6 +7,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { ApiError } from 'apiClient/v2'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import { dehumanizeId } from 'utils/dehumanize'
 
 import getOfferIndividualVenuesAdapter from '../getOfferIndividualVenuesAdapter'
 import useGetOfferIndividualVenues from '../useOfferIndividualVenues'
@@ -94,7 +95,7 @@ describe('useGetOfferIndividualVenues', () => {
 
     it('should call api for venues of given offerer', async () => {
       const { result, waitForNextUpdate } = renderHook(() =>
-        useGetOfferIndividualVenues({ isAdmin: false, offererId: 'AA' })
+        useGetOfferIndividualVenues({ isAdmin: false, offererId: 'AK' })
       )
       const loadingState = result.current
 
@@ -103,7 +104,12 @@ describe('useGetOfferIndividualVenues', () => {
       expect(loadingState.error).toBeUndefined()
 
       await waitForNextUpdate()
-      expect(api.getVenues).toHaveBeenCalledWith(null, null, true, 'AA')
+      expect(api.getVenues).toHaveBeenCalledWith(
+        null,
+        null,
+        true,
+        dehumanizeId('AK')
+      )
       const updatedState = result.current
       expect(updatedState.isLoading).toBe(false)
       expect(updatedState.data).toEqual(offerIndividualVenues)

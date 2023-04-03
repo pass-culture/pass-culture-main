@@ -4,6 +4,7 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { ALL_OFFERERS } from 'core/Offers'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { dehumanizeId } from 'utils/dehumanize'
 
 import getVenuesForOffererAdapter from '../getVenuesForOffererAdapter'
 
@@ -35,8 +36,13 @@ describe('getVenuesForOffererAdapter', () => {
     })
     expect(api.getVenues).toHaveBeenCalledWith(true, undefined, true, undefined)
 
-    await getVenuesForOffererAdapter({ offererId: 'A1' })
-    expect(api.getVenues).toHaveBeenCalledWith(false, undefined, false, 'A1')
+    await getVenuesForOffererAdapter({ offererId: 'AK' })
+    expect(api.getVenues).toHaveBeenCalledWith(
+      false,
+      undefined,
+      false,
+      dehumanizeId('AK')
+    )
   })
 
   it('should return error payload when api call fails', async () => {

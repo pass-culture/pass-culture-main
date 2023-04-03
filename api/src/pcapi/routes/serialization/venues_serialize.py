@@ -416,7 +416,7 @@ class VenueListQueryModel(BaseModel):
     validated_for_user: bool | None
     validated: bool | None
     active_offerers_only: bool | None
-    offerer_id: str | None
+    offerer_id: int | None
 
     _string_to_boolean_validated_for_user = string_to_boolean_field("validated_for_user")
     _string_to_boolean_validated = string_to_boolean_field("validated")
