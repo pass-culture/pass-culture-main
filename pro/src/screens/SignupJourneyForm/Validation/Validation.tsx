@@ -49,13 +49,17 @@ const Validation = (): JSX.Element => {
 
   const onSubmit = async () => {
     const data: SaveNewOnboardingDataQueryModel = {
-      name: offerer.publicName ?? '',
+      name: offerer.name,
+      publicName: offerer.publicName ?? '',
       siret: offerer.siret.replaceAll(' ', ''),
-      venueType: activity.venueType,
+      venueTypeCode:
+        /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
+        activity.venueTypeCode === '' ? null : activity.venueTypeCode,
       webPresence: activity.socialUrls.join(', '),
       target:
         /* istanbul ignore next: the form validation already handles this */
         activity.targetCustomer ?? Target.EDUCATIONAL,
+      createVenueWithoutSiret: offerer?.createVenueWithoutSiret ?? false,
     }
 
     try {
@@ -124,7 +128,7 @@ const Validation = (): JSX.Element => {
           <div className={styles['data-line']}>
             {
               venueTypes?.find(
-                venueType => venueType.value === activity.venueType
+                venueType => venueType.value === activity.venueTypeCode
               )?.label
             }
           </div>

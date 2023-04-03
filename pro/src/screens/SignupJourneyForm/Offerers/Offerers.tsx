@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { CreateOffererQueryModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import { useSignupJourneyContext } from 'context/SignupJourneyContext'
+import { IOfferer, useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { humanizeSiren } from 'core/Offerers/utils'
 import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter'
@@ -26,7 +26,7 @@ const Offerers = (): JSX.Element => {
   const [isVenueListOpen, setIsVenueListOpen] = useState<boolean>(false)
   const [showLinkDialog, setShowLinkDialog] = useState<boolean>(false)
 
-  const { offerer } = useSignupJourneyContext()
+  const { offerer, setOfferer } = useSignupJourneyContext()
 
   /* istanbul ignore next: redirect to offerer if there is no siret */
   const {
@@ -49,6 +49,15 @@ const Offerers = (): JSX.Element => {
 
   if (isLoadingVenues) {
     return <Spinner />
+  }
+
+  const redirectToOnboarding = () => {
+    const newOfferer: IOfferer = {
+      ...(offerer as IOfferer),
+      createVenueWithoutSiret: true,
+    }
+    setOfferer(newOfferer)
+    navigate('/parcours-inscription/authentification')
   }
 
   const doLinkAccount = async () => {
@@ -129,7 +138,7 @@ const Offerers = (): JSX.Element => {
       </div>
       <Button
         className={styles['button-add-new-offerer']}
-        onClick={() => navigate('/parcours-inscription/authentification')}
+        onClick={redirectToOnboarding}
         variant={ButtonVariant.SECONDARY}
       >
         Ajouter une nouvelle structure
