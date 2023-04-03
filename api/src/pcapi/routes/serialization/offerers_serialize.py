@@ -161,7 +161,7 @@ class GetOfferersNamesQueryModel(BaseModel):
     validated: bool | None
     # FIXME (dbaty, 2022-05-04): rename to something clearer, e.g. `include_non_validated_user_offerers`
     validated_for_user: bool | None
-    offerer_id: str | None
+    offerer_id: int | None
 
     class Config:
         extra = "forbid"

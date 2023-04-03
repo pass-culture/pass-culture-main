@@ -1,6 +1,7 @@
 import { api } from 'apiClient/api'
 import { TOffererName } from 'core/Offerers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { dehumanizeId } from 'utils/dehumanize'
 
 interface IParams {
   offererId?: string
@@ -15,11 +16,13 @@ const FAILING_RESPONSE = {
 const getOffererNamesAdapter: TGetOffererNamesAdapter = async ({
   offererId,
 }) => {
+  let dehumanizedId = undefined
+  if (offererId != undefined) dehumanizedId = dehumanizeId(offererId)
   try {
     const response = await api.listOfferersNames(
       null, // validated
       null, // validatedForUser
-      offererId
+      dehumanizedId
     )
 
     return {

@@ -2,6 +2,7 @@ import { api } from 'apiClient/api'
 import { TOffererName } from 'core/Offerers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { useAdapter } from 'hooks'
+import { dehumanizeId } from 'utils/dehumanize'
 
 type TGetOffererNamesAdapter = Adapter<void, TOffererName[], TOffererName[]>
 
@@ -29,10 +30,11 @@ const getOffererNamesAdapter: TOffererNamesAdapterGetterName = (
 
   const offererNamesAdapter: TGetOffererNamesAdapter = async () => {
     try {
+      const dehumanizedId = offererId ? dehumanizeId(offererId) : undefined
       const response = await api.listOfferersNames(
         null, // validated
         null, // validatedForUser
-        isAdmin ? offererId : null // offererId
+        isAdmin ? dehumanizedId : null // offererId
       )
       return {
         isOk: true,

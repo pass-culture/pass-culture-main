@@ -64,7 +64,7 @@ class Returns200ForProUserTest:
         response = (
             TestClient(app.test_client())
             .with_session_auth(pro_user.email)
-            .get(f'/offerers/names?offerer_id={humanize(offerers["owned_offerer_validated"].id)}')
+            .get(f'/offerers/names?offerer_id={offerers["owned_offerer_validated"].id}')
         )
 
         # then

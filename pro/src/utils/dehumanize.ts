@@ -11,7 +11,7 @@ import { parse } from 'utils/query-string'
 const paramsToRedirect = ['offererId']
 const queryParamsToRedirect = ['structure']
 
-const dehumanizeId = (humanId: string) => {
+export const dehumanizeId = (humanId: string) => {
   try {
     return byteArrayToInt(
       decode.asBytes(humanId.replace(/8/g, 'O').replace(/9/g, 'I'))

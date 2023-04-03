@@ -1036,7 +1036,7 @@ export class DefaultService {
   public listOfferersNames(
     validated?: boolean | null,
     validatedForUser?: boolean | null,
-    offererId?: string | null,
+    offererId?: number | null,
   ): CancelablePromise<GetOfferersNamesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
