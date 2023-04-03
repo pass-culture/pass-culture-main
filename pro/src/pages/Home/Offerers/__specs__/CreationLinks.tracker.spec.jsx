@@ -77,6 +77,7 @@ describe('trackers creationLinks', () => {
           maxAllowed: 5,
           prefixes: ['development_41'],
         },
+        nonHumanizedId: 6,
         bic: 'test bic 01',
         city: 'Cayenne',
         dateCreated: '2021-11-03T16:31:17.240807Z',
@@ -105,6 +106,7 @@ describe('trackers creationLinks', () => {
           maxAllowed: 5,
           prefixes: ['development_41'],
         },
+        nonHumanizedId: 12,
         bic: 'test bic 02',
         city: 'Drancy',
         dateCreated: '2021-11-03T16:31:17.240807Z',
@@ -127,6 +129,7 @@ describe('trackers creationLinks', () => {
     baseOfferersNames = baseOfferers.map(offerer => ({
       id: offerer.id,
       name: offerer.name,
+      nonHumanizedId: offerer.nonHumanizedId,
     }))
 
     api.getOfferer.mockResolvedValue(baseOfferers[0])
