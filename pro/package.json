@@ -128,7 +128,7 @@
     "babel-loader": "^9.0.0",
     "babel-plugin-typescript-to-proptypes": "^2.0.0",
     "count-lines-in-file": "^1.1.0",
-    "eslint-config-prettier": "^8.7.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
     "jest-axe": "^7.0.0",
