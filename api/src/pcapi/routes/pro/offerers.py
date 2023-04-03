@@ -9,7 +9,6 @@ from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
 import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
-from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
@@ -146,12 +145,11 @@ def get_available_reimbursement_points(
 
     reimbursement_points = repository.find_available_reimbursement_points_for_offerer(offerer_id)
     # TODO(fseguin, 2023-03-01): cleanup when WIP_ENABLE_NEW_ONBOARDING FF is removed
-    is_new_onboarding_enabled = feature.FeatureToggle.WIP_ENABLE_NEW_ONBOARDING.is_active()
     return offerers_serialize.ReimbursementPointListResponseModel(
         __root__=[
             offerers_serialize.ReimbursementPointResponseModel(  # type: ignore [call-arg]
                 venueId=reimbursement_point.id,
-                venueName=reimbursement_point.name if is_new_onboarding_enabled else reimbursement_point.common_name,  # type: ignore [arg-type]
+                venueName=reimbursement_point.common_name,  # type: ignore [arg-type]
                 siret=reimbursement_point.siret,
                 iban=reimbursement_point.iban,  # type: ignore [arg-type]
                 bic=reimbursement_point.bic,
