@@ -1,5 +1,6 @@
 ## Backoffice CSS code convention
 
+
 This documentation describe CSS class names code convention.
 
 We use scss as a preprocessing language for css, read their [documentation](https://sass-lang.com/documentation/).

@@ -1,0 +1,112 @@
+[data-registration-steps-id] {
+  & .progress {
+    top: 1.4rem;
+    left: 0;
+    right: 0;
+    height: .3rem;
+    & > .progress-bar {
+      height: .3rem;
+    }
+  }
+
+  & .breadcrumb-container {
+    list-style-type: none;
+
+    & .steps {
+      flex-basis: 0;
+
+      &.step-disabled {
+      cursor: not-allowed;
+        .step-number {
+          color: #fff;
+          background-color: $gray-600;
+          border: 4px solid $gray-600;
+        }
+      }
+    }
+
+    & .step-number {
+      border-radius: 50%;
+      width: 3rem;
+      height: 3rem;
+      background-color: #E9ECEE;
+      border: 4px solid #E9ECEE;
+      z-index: 100;
+    }
+
+    & .step-success .step-number {
+      background-color: $success;
+      color: #fff;
+      border: 4px solid $success;
+    }
+
+    & .step-warning .step-number {
+      background-color: $warning;
+      color: #fff;
+      border: 4px solid $warning;
+    }
+
+    & .step-error .step-number {
+      background-color: $primary;
+      color: #fff;
+      border: 4px solid $primary;
+    }
+
+    & .step-active .step-number {
+      border: 4px solid $primary;
+    }
+
+    & .icon-container {
+      left: 2.5em;
+      top: 1.3em;
+    }
+    & .step-text {
+      display: none;
+
+      @media(min-width: 568px) {
+        display: flex;
+        color: #68737a;
+        font-size: 1rem;
+        justify-content: center;
+        line-height: 1.5rem;
+        text-align: center;
+        max-width: 5.5rem;
+        padding-top: 10px;
+      }
+    }
+  }
+}
+
+.pc-personal-information-registration-view {
+  .form-switch-show-all-steps {
+    &:has(> input[name="show_all_steps"]:checked) {
+      & ~ .step-content.d-block {
+        display: none !important;
+      }
+      & ~ .all-id-check-history-container {
+        display: block !important;
+      }
+    }
+  }
+}
+
+.registration-workflow-tab-pane {
+  .form-switch-show-registration-as-steps {
+    &:has(> input[name="show_registration_as_steps"]:checked) {
+      & ~ .new-view {
+        display: block;
+      }
+      & ~ .old-view {
+        display: none;
+      }
+    }
+    &:has(> input[name="show_registration_as_steps"]:not(:checked)) {
+      & ~ .new-view {
+        display: none;
+      }
+      & ~ .old-view {
+        display: block;
+      }
+    }
+  }
+}

@@ -16,16 +16,37 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 import pcapi.core.permissions.models as perm_models
+from pcapi.core.subscription.models import SubscriptionItemStatus
+from pcapi.core.subscription.models import SubscriptionStep
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.core.users import utils as users_utils
+from pcapi.core.users.models import EligibilityType
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.repository import repository
+from pcapi.routes.backoffice_v3.accounts import RegistrationStep
+from pcapi.routes.backoffice_v3.accounts import RegistrationStepStatus
+from pcapi.routes.backoffice_v3.accounts import TunnelType
+from pcapi.routes.backoffice_v3.accounts import _get_id_check_histories_desc
+from pcapi.routes.backoffice_v3.accounts import _get_progress
+from pcapi.routes.backoffice_v3.accounts import _get_status
+from pcapi.routes.backoffice_v3.accounts import _get_steps_for_tunnel
+from pcapi.routes.backoffice_v3.accounts import _get_steps_tunnel_age18
+from pcapi.routes.backoffice_v3.accounts import _get_steps_tunnel_underage
+from pcapi.routes.backoffice_v3.accounts import _get_steps_tunnel_underage_age18
+from pcapi.routes.backoffice_v3.accounts import _get_steps_tunnel_unspecified
+from pcapi.routes.backoffice_v3.accounts import _get_subscription_item_status_by_eligibility
+from pcapi.routes.backoffice_v3.accounts import _get_tunnel
+from pcapi.routes.backoffice_v3.accounts import _get_tunnel_type
+from pcapi.routes.backoffice_v3.accounts import _set_steps_with_active_and_disabled
+from pcapi.routes.backoffice_v3.accounts import get_eligibility_history
 from pcapi.routes.backoffice_v3.accounts import get_public_account_history
+from pcapi.routes.backoffice_v3.filters import format_date_time
 import pcapi.utils.email as email_utils
 
 from .helpers import accounts as accounts_helpers
@@ -574,24 +595,41 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         parsed_html = html_parser.get_soup(response.data)
         underage_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.UNDERAGE.value}")
         age18_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.AGE18.value}")
-
+        bfc_date_created = datetime.datetime.utcnow() - datetime.timedelta(days=3)
         assert underage_subscription_card is None
         assert age18_subscription_card is not None
 
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
-            dateCreated=datetime.date.today() - datetime.timedelta(days=3),
+            dateCreated=bfc_date_created,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
         response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
 
         parsed_html = html_parser.get_soup(response.data)
+        #  step-3 profil completion, not completed here
+        html_no_bfc_data = html_parser.extract(response.data, "div", class_="step-3")
+        #  step-4 is identity check, completed with a beneficiary fraud check
+        rows_with_bfc_data = html_parser.extract_table_rows(response.data, parent_class="step-4")
         underage_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.UNDERAGE.value}")
         age18_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.AGE18.value}")
-
+        expected_rows_with_bfc_data = {
+            "Code d'erreur": "",
+            "Date de création": format_date_time(bfc_date_created),
+            "Eligibilité": "Pass 15-17",
+            "Explication": "",
+            "Statut": "PENDING",
+            "Type": "ubble",
+        }
         assert underage_subscription_card is not None
         assert age18_subscription_card is not None
+
+        assert "Aucune données" in html_no_bfc_data[0]
+
+        for key, value in rows_with_bfc_data[0].items():
+            if key not in ("ID Technique", "Détails technique"):
+                assert value == expected_rows_with_bfc_data[key]
 
     def test_fraud_check_link(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -1547,3 +1585,532 @@ class GetPublicAccountHistoryTest:
         assert len(history) == 8
         datetimes = [item.actionDate for item in history]
         assert datetimes == sorted(datetimes, reverse=True)
+
+
+class RegistrationStepTest:
+    @pytest.mark.parametrize(
+        "steps,expected_progress",
+        [
+            (
+                [
+                    RegistrationStep(
+                        step_id=1,
+                        description="Test 1",
+                        subscription_item_status=SubscriptionItemStatus.SUSPICIOUS.value,
+                        icon="bi-test",
+                        is_active=True,
+                    ),
+                    RegistrationStep(
+                        step_id=2,
+                        description="Test 2",
+                        subscription_item_status=SubscriptionItemStatus.VOID.value,
+                        icon="bi-test",
+                    ),
+                ],
+                0,
+            ),
+            (
+                [
+                    RegistrationStep(
+                        step_id=1,
+                        description="Test 1",
+                        subscription_item_status=SubscriptionItemStatus.OK.value,
+                        icon="bi-test",
+                    ),
+                    RegistrationStep(
+                        step_id=2,
+                        description="Test 2",
+                        subscription_item_status=SubscriptionItemStatus.TODO.value,
+                        icon="bi-test",
+                        is_active=True,
+                    ),
+                ],
+                100,
+            ),
+            (
+                [
+                    RegistrationStep(
+                        step_id=1,
+                        description="Test 1",
+                        subscription_item_status=SubscriptionItemStatus.OK.value,
+                        icon="bi-test",
+                    ),
+                    RegistrationStep(
+                        step_id=2,
+                        description="Test 2",
+                        subscription_item_status=SubscriptionItemStatus.TODO.value,
+                        icon="bi-test",
+                        is_active=True,
+                    ),
+                    RegistrationStep(
+                        step_id=3,
+                        description="Test 3",
+                        subscription_item_status=SubscriptionItemStatus.VOID.value,
+                        icon="bi-test",
+                    ),
+                ],
+                50,
+            ),
+        ],
+    )
+    def test_get_progress(self, steps, expected_progress):
+        progress = _get_progress(steps)
+
+        assert progress == expected_progress
+
+    @pytest.mark.parametrize(
+        "subscription_item_status,registration_step_status",
+        [
+            (SubscriptionItemStatus.OK, RegistrationStepStatus.SUCCESS),
+            (SubscriptionItemStatus.NOT_APPLICABLE, RegistrationStepStatus.SUCCESS),
+            (SubscriptionItemStatus.NOT_ENABLED, RegistrationStepStatus.SUCCESS),
+            (SubscriptionItemStatus.SKIPPED, RegistrationStepStatus.SUCCESS),
+            (SubscriptionItemStatus.KO, RegistrationStepStatus.ERROR),
+            (SubscriptionItemStatus.PENDING, RegistrationStepStatus.WARNING),
+            (SubscriptionItemStatus.SUSPICIOUS, RegistrationStepStatus.WARNING),
+            (SubscriptionItemStatus.TODO, None),
+            (SubscriptionItemStatus.VOID, None),
+        ],
+    )
+    def test_get_status(self, subscription_item_status, registration_step_status):
+        assert _get_status(subscription_item_status.value) == registration_step_status
+
+    @pytest.mark.parametrize(
+        "dateCreated,dateOfBirth,tunnel_type",
+        [
+            (
+                datetime.datetime.utcnow(),
+                None,
+                TunnelType.NOT_ELIGIBLE,
+            ),
+            (
+                datetime.datetime.utcnow(),
+                datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18 + 1, days=1),
+                TunnelType.NOT_ELIGIBLE,
+            ),
+            (
+                datetime.datetime.utcnow(),
+                datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
+                TunnelType.AGE18,
+            ),
+            (
+                datetime.datetime.utcnow(),
+                datetime.date.today() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=1),
+                TunnelType.UNDERAGE,
+            ),
+            (
+                datetime.datetime.utcnow() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2),
+                datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
+                TunnelType.UNDERAGE_AGE18,
+            ),
+        ],
+    )
+    def test_get_tunnel_type(self, dateCreated, dateOfBirth, tunnel_type):
+        user = users_factories.UserFactory(
+            dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth, dateCreated=dateCreated
+        )
+
+        user.add_beneficiary_role()
+        users_factories.DepositGrantFactory(user=user)
+        assert _get_tunnel_type(user) is tunnel_type
+
+    @pytest.mark.parametrize(
+        "dateCreated,dateOfBirth,age",
+        [
+            (
+                datetime.datetime.utcnow(),
+                datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
+                users_constants.ELIGIBILITY_AGE_18,
+            ),
+            (
+                datetime.datetime.utcnow(),
+                datetime.date.today() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=1),
+                users_constants.ACCOUNT_CREATION_MINIMUM_AGE,
+            ),
+            (
+                datetime.datetime.utcnow() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2),
+                datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
+                users_constants.ELIGIBILITY_AGE_18,
+            ),
+        ],
+    )
+    def test_get_subscription_item_status_by_eligibility(self, dateCreated, dateOfBirth, age):
+        user = users_factories.UserFactory(
+            dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth, dateCreated=dateCreated
+        )
+        user.add_beneficiary_role()
+
+        eligibility_history = get_eligibility_history(user)
+        subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
+        if (
+            age == users_constants.ELIGIBILITY_AGE_18
+            and users_utils.get_age_at_date(user.birth_date, user.dateCreated) < users_constants.ELIGIBILITY_AGE_18
+        ):
+            assert len(subscription_item_status[EligibilityType.UNDERAGE.value]) > 0
+            assert len(subscription_item_status[EligibilityType.AGE18.value]) > 0
+            assert (
+                subscription_item_status[EligibilityType.AGE18.value][SubscriptionStep.EMAIL_VALIDATION.value]
+                == SubscriptionItemStatus.OK.value
+            )
+            assert (
+                subscription_item_status[EligibilityType.UNDERAGE.value][SubscriptionStep.EMAIL_VALIDATION.value]
+                == SubscriptionItemStatus.OK.value
+            )
+        elif age == users_constants.ELIGIBILITY_AGE_18:
+            assert len(subscription_item_status[EligibilityType.UNDERAGE.value]) == 0
+            assert len(subscription_item_status[EligibilityType.AGE18.value]) > 0
+            assert (
+                subscription_item_status[EligibilityType.AGE18.value][SubscriptionStep.EMAIL_VALIDATION.value]
+                == SubscriptionItemStatus.OK.value
+            )
+        else:
+            assert len(subscription_item_status[EligibilityType.AGE18.value]) == 0
+            assert len(subscription_item_status[EligibilityType.UNDERAGE.value]) > 0
+            assert (
+                subscription_item_status[EligibilityType.UNDERAGE.value][SubscriptionStep.EMAIL_VALIDATION.value]
+                == SubscriptionItemStatus.OK.value
+            )
+
+    @pytest.mark.parametrize(
+        "item_status_15_17,item_status_18",
+        [
+            ({SubscriptionStep.EMAIL_VALIDATION.value: SubscriptionItemStatus.OK.value}, {}),
+            ({}, {SubscriptionStep.EMAIL_VALIDATION.value: SubscriptionItemStatus.OK.value}),
+            (
+                {SubscriptionStep.EMAIL_VALIDATION.value: SubscriptionItemStatus.OK.value},
+                {SubscriptionStep.EMAIL_VALIDATION.value: SubscriptionItemStatus.OK.value},
+            ),
+        ],
+    )
+    def test_get_steps_tunnel_unspecified(self, item_status_15_17, item_status_18):
+        steps = _get_steps_tunnel_unspecified(item_status_15_17, item_status_18)
+        assert len(steps) == 2
+        for index, step in enumerate(steps):
+            assert step.step_id == index + 1
+
+        if item_status_15_17 and item_status_15_17[SubscriptionStep.EMAIL_VALIDATION.value] is not None:
+            email_status = item_status_15_17[SubscriptionStep.EMAIL_VALIDATION.value]
+        elif item_status_18 and item_status_18[SubscriptionStep.EMAIL_VALIDATION.value] is not None:
+            email_status = item_status_18[SubscriptionStep.EMAIL_VALIDATION.value]
+        else:
+            email_status = SubscriptionItemStatus.PENDING.value
+
+        assert steps[0].description == SubscriptionStep.EMAIL_VALIDATION.value
+        assert steps[0].icon == "bi-envelope-fill"
+        assert steps[0].subscription_item_status == email_status
+
+        assert steps[1].description == TunnelType.NOT_ELIGIBLE.value
+        assert steps[1].icon == "bi-question-circle-fill"
+        assert steps[1].subscription_item_status == email_status
+
+    def test_get_id_check_histories_desc(self):
+        dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1)
+        user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
+            resultContent=fraud_factories.UbbleContentFactory(),
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        user.add_beneficiary_role()
+        users_factories.DepositGrantFactory(user=user)
+        eligibility_history = get_eligibility_history(user)
+        id_check_histories = _get_id_check_histories_desc(eligibility_history)
+
+        before_sort_id_check_histories = eligibility_history[EligibilityType.AGE18.value].idCheckHistory
+        before_ids = [history.id for history in before_sort_id_check_histories]
+        after_ids = [h.id for h in id_check_histories]
+
+        assert before_ids != after_ids
+        assert sorted(before_ids, reverse=True) == after_ids
+
+    def test_get_steps_tunnel_age18(self):
+        dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1)
+        user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
+        user.add_beneficiary_role()
+        users_factories.DepositGrantFactory(user=user)
+        eligibility_history = get_eligibility_history(user)
+        id_check_histories = _get_id_check_histories_desc(eligibility_history)
+        subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
+        item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
+
+        steps = _get_steps_tunnel_age18(user, id_check_histories, item_status_18)
+        steps_description = [
+            SubscriptionStep.EMAIL_VALIDATION.value,
+            SubscriptionStep.PHONE_VALIDATION.value,
+            SubscriptionStep.PROFILE_COMPLETION.value,
+            SubscriptionStep.IDENTITY_CHECK.value,
+            SubscriptionStep.HONOR_STATEMENT.value,
+            "Pass 18",
+        ]
+        assert len(steps) == len(steps_description)
+        for index, step in enumerate(steps):
+            assert step.step_id == index + 1
+            assert step.description == steps_description[index]
+
+    def test_get_steps_tunnel_underage(self):
+        dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=1)
+        user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
+        user.add_beneficiary_role()
+        users_factories.DepositGrantFactory(user=user)
+        eligibility_history = get_eligibility_history(user)
+        id_check_histories = _get_id_check_histories_desc(eligibility_history)
+        subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
+        item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
+
+        steps = _get_steps_tunnel_underage(user, id_check_histories, item_status_15_17)
+        steps_description = [
+            SubscriptionStep.EMAIL_VALIDATION.value,
+            SubscriptionStep.PROFILE_COMPLETION.value,
+            SubscriptionStep.IDENTITY_CHECK.value,
+            SubscriptionStep.HONOR_STATEMENT.value,
+            "Pass 15-17",
+        ]
+        assert len(steps) == len(steps_description)
+        for index, step in enumerate(steps):
+            assert step.step_id == index + 1
+            assert step.description == steps_description[index]
+
+    def test_get_steps_tunnel_underage_age18(self):
+        dateCreated = datetime.datetime.utcnow() - relativedelta(
+            years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2
+        )
+        dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1)
+        user = users_factories.UserFactory(
+            dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth, dateCreated=dateCreated
+        )
+        user.add_beneficiary_role()
+        users_factories.DepositGrantFactory(user=user)
+        eligibility_history = get_eligibility_history(user)
+        id_check_histories = _get_id_check_histories_desc(eligibility_history)
+        subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
+        item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
+        item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
+
+        steps = _get_steps_tunnel_underage_age18(user, id_check_histories, item_status_15_17, item_status_18)
+        steps_description = [
+            SubscriptionStep.EMAIL_VALIDATION.value,
+            SubscriptionStep.PROFILE_COMPLETION.value,
+            SubscriptionStep.IDENTITY_CHECK.value,
+            SubscriptionStep.HONOR_STATEMENT.value,
+            "Pass 15-17",
+            SubscriptionStep.PHONE_VALIDATION.value,
+            SubscriptionStep.PROFILE_COMPLETION.value,
+            SubscriptionStep.IDENTITY_CHECK.value,
+            SubscriptionStep.HONOR_STATEMENT.value,
+            "Pass 18",
+        ]
+        assert len(steps) == len(steps_description)
+        for index, step in enumerate(steps):
+            assert step.step_id == index + 1
+            assert step.description == steps_description[index]
+
+    @pytest.mark.parametrize(
+        "dateCreated,dateOfBirth,tunnel_type",
+        [
+            (
+                datetime.datetime.utcnow(),
+                datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
+                TunnelType.AGE18,
+            ),
+            (
+                datetime.datetime.utcnow(),
+                datetime.date.today() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=1),
+                TunnelType.UNDERAGE,
+            ),
+            (
+                datetime.datetime.utcnow() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2),
+                datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
+                TunnelType.UNDERAGE_AGE18,
+            ),
+            (
+                datetime.datetime.utcnow(),
+                datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18 + 1, days=1),
+                TunnelType.NOT_ELIGIBLE,
+            ),
+        ],
+    )
+    def test_get_steps_for_tunnel(self, dateCreated, dateOfBirth, tunnel_type):
+        user = users_factories.UserFactory(
+            dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth, dateCreated=dateCreated
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        if tunnel_type in (TunnelType.UNDERAGE, TunnelType.UNDERAGE_AGE18):
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+                type=fraud_models.FraudCheckType.UBBLE,
+                status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+                reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
+                resultContent=fraud_factories.UbbleContentFactory(),
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+                status=fraud_models.FraudCheckStatus.OK,
+            )
+        if tunnel_type in (TunnelType.AGE18, TunnelType.UNDERAGE_AGE18):
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=users_models.EligibilityType.AGE18,
+                type=fraud_models.FraudCheckType.UBBLE,
+                status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+                reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
+                resultContent=fraud_factories.UbbleContentFactory(),
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=users_models.EligibilityType.AGE18,
+                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+                status=fraud_models.FraudCheckStatus.OK,
+            )
+        eligibility_history = get_eligibility_history(user)
+        subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
+        item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
+        item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
+        id_check_histories = _get_id_check_histories_desc(eligibility_history)
+        tunnel_type = _get_tunnel_type(user)
+        steps = _get_steps_for_tunnel(user, tunnel_type, subscription_item_status, id_check_histories)
+
+        if tunnel_type is TunnelType.UNDERAGE:
+            steps_to_compare = _get_steps_tunnel_underage(user, id_check_histories, item_status_15_17)
+            assert steps != steps_to_compare
+        elif tunnel_type is TunnelType.AGE18:
+            steps_to_compare = _get_steps_tunnel_age18(user, id_check_histories, item_status_18)
+            assert steps != steps_to_compare
+        elif tunnel_type is TunnelType.UNDERAGE_AGE18:
+            steps_to_compare = _get_steps_tunnel_underage_age18(
+                user, id_check_histories, item_status_15_17, item_status_18
+            )
+            assert steps != steps_to_compare
+        else:
+            steps_to_compare = _get_steps_tunnel_unspecified(item_status_15_17, item_status_18)
+            assert steps == steps_to_compare
+
+        assert len(steps) == len(steps_to_compare)
+
+    @pytest.mark.parametrize(
+        "dateCreated,dateOfBirth,tunnel_type",
+        [
+            (
+                datetime.datetime.utcnow(),
+                datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
+                TunnelType.AGE18,
+            ),
+            (
+                datetime.datetime.utcnow(),
+                datetime.date.today() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=1),
+                TunnelType.UNDERAGE,
+            ),
+            (
+                datetime.datetime.utcnow() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2),
+                datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1),
+                TunnelType.UNDERAGE_AGE18,
+            ),
+        ],
+    )
+    def test_set_steps_with_active_and_disabled(self, dateCreated, dateOfBirth, tunnel_type):
+        user = users_factories.UserFactory(
+            dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth, dateCreated=dateCreated
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        if tunnel_type in (TunnelType.UNDERAGE, TunnelType.UNDERAGE_AGE18):
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+                type=fraud_models.FraudCheckType.UBBLE,
+                status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+                reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
+                resultContent=fraud_factories.UbbleContentFactory(),
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+                status=fraud_models.FraudCheckStatus.OK,
+            )
+        if tunnel_type in (TunnelType.AGE18, TunnelType.UNDERAGE_AGE18):
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=users_models.EligibilityType.AGE18,
+                type=fraud_models.FraudCheckType.UBBLE,
+                status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+                reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
+                resultContent=fraud_factories.UbbleContentFactory(),
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                eligibilityType=users_models.EligibilityType.AGE18,
+                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+                status=fraud_models.FraudCheckStatus.OK,
+            )
+        eligibility_history = get_eligibility_history(user)
+        subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
+        item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
+        item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
+        id_check_histories = _get_id_check_histories_desc(eligibility_history)
+
+        if tunnel_type is TunnelType.UNDERAGE:
+            steps = _get_steps_tunnel_underage(user, id_check_histories, item_status_15_17)
+            assert steps[3].status["active"] is False
+            assert steps[4].status["disabled"] is False
+        elif tunnel_type is TunnelType.AGE18:
+            steps = _get_steps_tunnel_age18(user, id_check_histories, item_status_18)
+            assert steps[4].status["active"] is False
+            assert steps[5].status["disabled"] is False
+        else:
+            steps = _get_steps_tunnel_underage_age18(user, id_check_histories, item_status_15_17, item_status_18)
+            assert steps[8].status["active"] is False
+            assert steps[9].status["disabled"] is False
+
+        _set_steps_with_active_and_disabled(steps)
+
+        if tunnel_type is TunnelType.UNDERAGE:
+            assert steps[3].status["active"] is True
+            assert steps[4].status["disabled"] is True
+        elif tunnel_type is TunnelType.AGE18:
+            assert steps[4].status["active"] is True
+            assert steps[5].status["disabled"] is True
+        else:
+            assert steps[8].status["active"] is True
+            assert steps[9].status["disabled"] is True
+
+    def test_get_tunnel(self):
+        dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=1)
+        user = users_factories.UserFactory(
+            dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth, isEmailValidated=True
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        eligibility_history = get_eligibility_history(user)
+        tunnel = _get_tunnel(user, eligibility_history)
+        assert tunnel["type"] == TunnelType.UNDERAGE
+        assert tunnel["progress"] == 75
+
+        users_factories.DepositGrantFactory(user=user)
+        tunnel_end = _get_tunnel(user, eligibility_history)
+        assert tunnel_end["progress"] == 100
