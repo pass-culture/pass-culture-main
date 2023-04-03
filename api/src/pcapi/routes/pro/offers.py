@@ -104,17 +104,7 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     api=blueprint.pro_private_schema,
 )
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
-    venue_id = human_ids.dehumanize(body.venue_humanized_id)
-    if not venue_id:
-        raise api_errors.ApiErrors(errors={"venueId": ["L'id n'est pas au bon format"]}, status_code=404)
-    venue: offerers_models.Venue | None = offerers_models.Venue.query.get(venue_id)
-    if not venue:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["Aucun lieu ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
-        )
+    venue: offerers_models.Venue = offerers_models.Venue.query.get_or_404(body.venue_id)
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
         with repository.transaction():
