@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 from itertools import chain
+from itertools import count
 from itertools import cycle
 
 from pcapi.core.educational import factories as educational_factories
@@ -113,24 +114,158 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
     )
-    # pending_eac
+    # DMS venues
+    application_id_generator = count(11922836)
+    # eac_accepte
     offerer = next(offerer_iterator)
     venue = create_venue(
         managingOfferer=offerer,
-        name=f"waiting_dms 1 {offerer.name}",
+        name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret="42883745400050",
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue,
-        application=11922836,
-        procedure=71675,
-        lastChangeDate=datetime.fromisoformat("2023-03-23T16:08:35+01:00"),
+        application=next(application_id_generator),
+        procedure=57189,
+        lastChangeDate=datetime.fromisoformat("2023-03-26T16:08:35+01:00"),
         depositDate=datetime.fromisoformat("2024-03-23T16:08:33+01:00"),
-        expirationDate=datetime.fromisoformat("2024-03-23T16:08:33+01:00"),
-        buildDate=datetime.fromisoformat("2023-03-23T16:08:33+01:00"),
+        expirationDate=datetime.fromisoformat("2025-03-23T16:08:33+01:00"),
+        buildDate=datetime.fromisoformat("2023-03-23T16:08:35+01:00"),
+        instructionDate=datetime.fromisoformat("2025-03-24T16:08:33+01:00"),
+        processingDate=datetime.fromisoformat("2025-03-25T16:08:33+01:00"),
+        state="accepte",
+    )
+    # eac_sans_suite
+    offerer = next(offerer_iterator)
+    venue = create_venue(
+        managingOfferer=offerer,
+        name=f"accepted_dms {offerer.name}",
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="42883745400051",
+    )
+    educational_factories.CollectiveDmsApplicationFactory(
+        venue=venue,
+        application=next(application_id_generator),
+        procedure=57189,
+        lastChangeDate=datetime.fromisoformat("2023-03-26T16:08:35+01:00"),
+        depositDate=datetime.fromisoformat("2024-03-23T16:08:33+01:00"),
+        expirationDate=datetime.fromisoformat("2025-03-23T16:08:33+01:00"),
+        buildDate=datetime.fromisoformat("2023-03-23T16:08:35+01:00"),
+        instructionDate=datetime.fromisoformat("2025-03-24T16:08:33+01:00"),
+        processingDate=datetime.fromisoformat("2025-03-25T16:08:33+01:00"),
+        state="sans_suite",
+    )
+    # eac_en_construction
+    offerer = next(offerer_iterator)
+    venue = create_venue(
+        managingOfferer=offerer,
+        name=f"accepted_dms {offerer.name}",
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="42883745400052",
+    )
+    educational_factories.CollectiveDmsApplicationFactory(
+        venue=venue,
+        application=next(application_id_generator),
+        procedure=57189,
+        lastChangeDate=datetime.fromisoformat("2023-03-26T16:08:35+01:00"),
+        depositDate=datetime.fromisoformat("2024-03-23T16:08:33+01:00"),
+        expirationDate=datetime.fromisoformat("2025-03-23T16:08:33+01:00"),
+        buildDate=datetime.fromisoformat("2023-03-23T16:08:35+01:00"),
+        instructionDate=None,
+        processingDate=None,
         state="en_construction",
+    )
+    # eac_refuse
+    offerer = next(offerer_iterator)
+    venue = create_venue(
+        managingOfferer=offerer,
+        name=f"accepted_dms {offerer.name}",
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="42883745400053",
+    )
+    educational_factories.CollectiveDmsApplicationFactory(
+        venue=venue,
+        application=next(application_id_generator),
+        procedure=57189,
+        lastChangeDate=datetime.fromisoformat("2023-03-26T16:08:35+01:00"),
+        depositDate=datetime.fromisoformat("2024-03-23T16:08:33+01:00"),
+        expirationDate=datetime.fromisoformat("2025-03-23T16:08:33+01:00"),
+        buildDate=datetime.fromisoformat("2023-03-23T16:08:35+01:00"),
+        instructionDate=datetime.fromisoformat("2025-03-24T16:08:33+01:00"),
+        processingDate=datetime.fromisoformat("2025-03-25T16:08:33+01:00"),
+        state="refuse",
+    )
+    # eac_en_instruction
+    offerer = next(offerer_iterator)
+    venue = create_venue(
+        managingOfferer=offerer,
+        name=f"accepted_dms {offerer.name}",
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="42883745400054",
+    )
+    educational_factories.CollectiveDmsApplicationFactory(
+        venue=venue,
+        application=next(application_id_generator),
+        procedure=57189,
+        lastChangeDate=datetime.fromisoformat("2023-03-26T16:08:35+01:00"),
+        depositDate=datetime.fromisoformat("2024-03-23T16:08:33+01:00"),
+        expirationDate=None,
+        buildDate=datetime.fromisoformat("2023-03-23T16:08:35+01:00"),
+        instructionDate=datetime.fromisoformat("2025-03-24T16:08:33+01:00"),
+        processingDate=None,
+        state="en_instruction",
+    )
+    # eac_complete_30+d
+    offerer = next(offerer_iterator)
+    venue = create_venue(
+        managingOfferer=offerer,
+        name=f"accepted_dms {offerer.name}",
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="42883745400055",
+        adageId="98763",
+        adageInscriptionDate=datetime.utcnow() - timedelta(days=30),
+    )
+    educational_factories.CollectiveDmsApplicationFactory(
+        venue=venue,
+        application=next(application_id_generator),
+        procedure=57189,
+        lastChangeDate=datetime.fromisoformat("2022-11-08 14:09:33+00:00"),
+        depositDate=datetime.fromisoformat("2022-05-17 14:43:22+00:00"),
+        expirationDate=datetime.fromisoformat("2025-11-08 14:09:31+00:00"),
+        buildDate=datetime.fromisoformat("2022-05-17 14:43:22+00:00"),
+        instructionDate=datetime.fromisoformat("2022-10-25 12:40:41+00:00"),
+        processingDate=datetime.fromisoformat("2022-11-08 14:09:31+00:00"),
+        state="accepte",
+    )
+    # eac_complete_30-d
+    offerer = next(offerer_iterator)
+    venue = create_venue(
+        managingOfferer=offerer,
+        name=f"accepted_dms {offerer.name}",
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="42883745400056",
+        adageId="98763",
+        adageInscriptionDate=datetime.utcnow(),
+    )
+    educational_factories.CollectiveDmsApplicationFactory(
+        venue=venue,
+        application=next(application_id_generator),
+        procedure=57189,
+        lastChangeDate=datetime.utcnow(),
+        depositDate=datetime.fromisoformat("2022-05-17 14:43:22+00:00"),
+        expirationDate=datetime.fromisoformat("2025-11-08 14:09:31+00:00"),
+        buildDate=datetime.fromisoformat("2022-05-17 14:43:22+00:00"),
+        instructionDate=datetime.fromisoformat("2022-10-25 12:40:41+00:00"),
+        processingDate=datetime.utcnow(),
+        state="accepte",
     )
 
 
