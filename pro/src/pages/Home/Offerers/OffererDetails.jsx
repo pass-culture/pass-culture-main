@@ -110,7 +110,7 @@ const OffererDetails = ({
             label=""
             name="offererId"
             options={offererOptions}
-            selectedValue={selectedOfferer.id}
+            selectedValue={selectedOfferer.nonHumanizedId.toString()}
           />
           <div className="od-separator vertical" />
           {!newOfferCreation && (
