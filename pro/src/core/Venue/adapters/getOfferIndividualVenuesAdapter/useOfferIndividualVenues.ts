@@ -3,6 +3,7 @@ import { VenueListItemResponseModel } from 'apiClient/v1'
 import { AccessiblityEnum, GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useAdapter } from 'hooks'
+import { dehumanizeId } from 'utils/dehumanize'
 
 type Params = void
 type IPayload = TOfferIndividualVenue[]
@@ -29,7 +30,8 @@ const getOfferIndividualVenuesAdapter = (
   const offererInvidivualVenueAdapter: TGetOfferIndividualVenuesAdapter =
     async () => {
       try {
-        const response = await api.getVenues(null, null, true, offererId)
+        const dehumanizedId = offererId ? dehumanizeId(offererId) : undefined
+        const response = await api.getVenues(null, null, true, dehumanizedId)
 
         const serializeVenue = (
           venue: VenueListItemResponseModel

@@ -161,9 +161,7 @@ def test_invalid_offerer_id(app):
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
     offerers_factories.VenueFactory(managingOfferer=offerer)
 
-    query_params = [
-        f"offererId={humanize(666)}",
-    ]
+    query_params = ["offererId=666"]
 
     # when
     response = TestClient(app.test_client()).with_session_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
@@ -184,7 +182,7 @@ def test_full_valid_call(app):
     query_params = [
         "validated=true",
         "validatedForUser=true",
-        f"offererId={humanize(offerer.id)}",
+        f"offererId={offerer.id}",
         "activeOfferersOnly=true",
     ]
 
@@ -204,7 +202,7 @@ def test_full_valid_call_with_false(app):
     query_params = [
         "validated=false",
         "validatedForUser=false",
-        f"offererId={humanize(offerer.id)}",
+        f"offererId={offerer.id}",
         "activeOfferersOnly=false",
     ]
 

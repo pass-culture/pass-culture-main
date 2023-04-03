@@ -104,7 +104,7 @@ describe('OfferIndividualWizard', () => {
       null, // validatedForUser,
       null, // validated,
       true, // activeOfferersOnly,
-      'CU' // offererId
+      dehumanizeId('CU') // offererId
     )
     expect(api.listOfferersNames).toHaveBeenCalledWith(
       null, // validated
@@ -189,7 +189,7 @@ describe('OfferIndividualWizard', () => {
       null, // validatedForUser
       null, // validated
       true, // activeOfferersOnly,
-      apiOffer.venue.managingOfferer.id // offererId
+      dehumanizeId(apiOffer.venue.managingOfferer.id) // offererId
     )
     expect(api.getCategories).toHaveBeenCalledWith()
 
