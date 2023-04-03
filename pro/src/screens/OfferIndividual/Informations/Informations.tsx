@@ -200,7 +200,7 @@ const Informations = ({
             formValues,
             shouldSendMail,
           }),
-          offerId: offer.id,
+          offerId: offer.nonHumanizedId,
         })
 
     const nextStep = computeNextStep(

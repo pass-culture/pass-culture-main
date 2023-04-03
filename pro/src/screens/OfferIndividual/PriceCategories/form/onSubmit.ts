@@ -27,7 +27,7 @@ export const onSubmit = async (
   })
   const { isOk: isOfferOk, message: offerMessage } =
     await updateIndividualOffer({
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
       serializedOffer: serializedOffer,
     })
   if (!isOfferOk) {

@@ -26,6 +26,7 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
+import { dehumanizeId } from 'utils/dehumanize'
 import { individualStockFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -312,7 +313,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     )
 
     expect(api.patchOffer).toHaveBeenCalledTimes(1)
-    expect(api.patchOffer).toHaveBeenCalledWith('AA', {
+    expect(api.patchOffer).toHaveBeenCalledWith(offer.nonHumanizedId, {
       audioDisabilityCompliant: true,
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
@@ -375,7 +376,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     )
 
     expect(api.patchOffer).toHaveBeenCalledTimes(1)
-    expect(api.patchOffer).toHaveBeenCalledWith('AA', {
+    expect(api.patchOffer).toHaveBeenCalledWith(offer.nonHumanizedId, {
       audioDisabilityCompliant: true,
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
@@ -638,7 +639,10 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       ).not.toBeInTheDocument()
 
       expect(api.patchOffer).toHaveBeenCalledTimes(1)
-      expect(api.patchOffer).toHaveBeenCalledWith('AA', expectedBody)
+      expect(api.patchOffer).toHaveBeenCalledWith(
+        offer.nonHumanizedId,
+        expectedBody
+      )
       expect(api.getOffer).toHaveBeenCalledTimes(1)
       expect(
         await screen.findByText('There is the summary route content')
@@ -782,7 +786,10 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         ).not.toBeInTheDocument()
 
         expect(api.patchOffer).toHaveBeenCalledTimes(1)
-        expect(api.patchOffer).toHaveBeenCalledWith('AA', expectedBody)
+        expect(api.patchOffer).toHaveBeenCalledWith(
+          offer.nonHumanizedId,
+          expectedBody
+        )
         await waitFor(() => {
           expect(api.getOffer).toHaveBeenCalledTimes(1)
         })
@@ -958,7 +965,10 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         ).not.toBeInTheDocument()
 
         expect(api.patchOffer).toHaveBeenCalledTimes(1)
-        expect(api.patchOffer).toHaveBeenCalledWith('AA', expectedBody)
+        expect(api.patchOffer).toHaveBeenCalledWith(
+          offer.nonHumanizedId,
+          expectedBody
+        )
         expect(api.getOffer).toHaveBeenCalledTimes(1)
         expect(
           await screen.findByText('There is the summary route content')
