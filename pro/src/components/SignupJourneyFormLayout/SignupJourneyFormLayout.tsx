@@ -14,7 +14,7 @@ const SignupJourneyFormLayout = ({
 }: ISignupOffererFormLayoutProps): JSX.Element => (
   <div className={styles['signup-offerer-layout-wrapper']}>
     <SignupJourneyBreadcrumb />
-    <div className={styles['content']}>{children}</div>
+    {children}
   </div>
 )
 

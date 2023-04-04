@@ -71,8 +71,8 @@ const Validation = (): JSX.Element => {
   }
 
   return (
-    <>
-      <section className={styles['validation-screen']}>
+    <div className={styles['validation-screen']}>
+      <section>
         <h1 className={styles['title']}>Vérification</h1>
         <h2 className={styles['subtitle']}>
           Informations structure
@@ -151,7 +151,7 @@ const Validation = (): JSX.Element => {
         withRightIcon={false}
         nextStepTitle="Valider et créer mon espace"
       />
-    </>
+    </div>
   )
 }
 
