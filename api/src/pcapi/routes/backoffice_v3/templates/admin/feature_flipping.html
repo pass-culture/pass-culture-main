@@ -39,7 +39,7 @@
                         </div>
                         <div class="modal-body row">
                           <p>
-                            Vous allez {{ "désactiver" if feature_flag.isActive else "activer" }} le feature flag {{ feature_flag.name }}. Veuillez confirmer ce choix.
+                            Vous allez {{ "désactiver" if feature_flag.isActive else "activer" }} le feature flag {{ feature_flag.name }} dans l'environnement <strong>{{ env | upper }}</strong>. Veuillez confirmer ce choix.
                           </p>
                           {{ build_form_fields_group(toggle_feature_flag_form) }}
                         </div>
