@@ -148,15 +148,6 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             params={"film": film} if film else None,
         )
 
-    def get_showtime_remaining_online_seats(self, showtime_id: int) -> int:
-        json_data = boost.get_resource(
-            self.cinema_str_id,
-            boost.ResourceBoost.SHOWTIME,
-            pattern_values={"id": showtime_id},
-        )
-        res = parse_obj_as(boost_serializers.ShowTimeDetails, json_data)
-        return res.data.numberSeatsRemaining
-
     def get_showtime(self, showtime_id: int) -> boost_serializers.ShowTime:
         json_data = boost.get_resource(
             self.cinema_str_id,
