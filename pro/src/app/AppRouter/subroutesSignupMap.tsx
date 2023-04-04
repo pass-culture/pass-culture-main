@@ -6,7 +6,7 @@ import SignupConfirmation from 'pages/Signup/SignupConfirmation/SignupConfirmati
 import SignupContainer from 'pages/Signup/SignupContainer/SignupContainer'
 import SignUpValidation from 'pages/Signup/SignUpValidation'
 
-import type { IRoute, RouteDefinition } from './routes_map'
+import type { IRoute } from './routesMap'
 
 export const routesSignup: IRoute[] = [
   {
@@ -29,8 +29,4 @@ export const routesSignup: IRoute[] = [
   },
 ]
 
-export const routesSignupDefinitions: RouteDefinition[] = routesSignup.map(
-  ({ path, parentPath, title }) => {
-    return { path, parentPath, title }
-  }
-)
+export default routesSignup

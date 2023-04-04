@@ -51,14 +51,10 @@ interface IRouteMeta {
   withoutLayout?: boolean
   shouldRedirect?: boolean
 }
-
-export interface RouteDefinition {
+export interface IRoute {
   parentPath?: string
   path: string
   title?: string
-}
-
-export interface IRoute extends RouteDefinition {
   element: JSX.Element
   meta?: IRouteMeta
   featureName?: string
@@ -331,11 +327,5 @@ const routes: IRoute[] = [
     meta: { withoutLayout: true },
   },
 ]
-
-export const routesDefinitions: RouteDefinition[] = routes.map(
-  ({ path, parentPath, title }) => {
-    return { path, parentPath, title }
-  }
-)
 
 export default routes
