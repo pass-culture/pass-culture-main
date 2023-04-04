@@ -4,7 +4,7 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ResetPassword from '../ResetPassword'
+import ResetPassword from '../LostPassword'
 
 jest.mock('utils/recaptcha', () => ({
   initReCaptchaScript: jest.fn().mockReturnValue({ remove: jest.fn() }),
@@ -14,7 +14,7 @@ jest.mock('utils/recaptcha', () => ({
 jest.mock('apiClient/api', () => ({
   api: {
     getProfile: jest.fn().mockResolvedValue({}),
-    postNewPassword: jest.fn().mockResolvedValue({}),
+    resetPassword: jest.fn().mockResolvedValue({}),
   },
 }))
 
@@ -24,28 +24,25 @@ const renderLostPassword = (url: string) => {
   })
 }
 
-describe('ResetPassword', () => {
-  describe('when user arrive from his reset password link', () => {
-    it('should be able to sent his password', async () => {
+describe('LostPassword', () => {
+  describe('when user arrive on reset password page', () => {
+    it('should be able to sent his email', async () => {
       // given
-      const url = '/mot-de-passe-perdu?token=ABC'
+      const url = '/demande-mot-de-passe'
 
       // when
       renderLostPassword(url)
 
       // then
-      // user can fill and submit new password
+      // user can fill and submit email
       await userEvent.type(
-        screen.getByLabelText(/Nouveau mot de passe/),
-        'MyN3wP4$$w0rd'
+        screen.getByLabelText(/Adresse e-mail/),
+        'coucou@example.com'
       )
       await userEvent.click(screen.getByText(/Envoyer/))
 
-      // he has been redirected to final step
-      expect(
-        await screen.findByText(/Mot de passe changé !/)
-      ).toBeInTheDocument()
-      expect(screen.getByText(/Se connecter/)).toBeInTheDocument()
+      // he has been redirected to next step
+      expect(screen.getByText(/Merci/)).toBeInTheDocument()
     })
   })
 })

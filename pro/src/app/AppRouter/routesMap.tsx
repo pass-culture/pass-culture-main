@@ -22,6 +22,7 @@ import { EmailChangeValidation } from 'pages/EmailChangeValidation'
 import Unavailable from 'pages/Errors/Unavailable/Unavailable'
 import Homepage from 'pages/Home/Homepage'
 import { Logout } from 'pages/Logout'
+import LostPassword from 'pages/LostPassword'
 import OffererDetails from 'pages/Offerers/Offerer/OffererDetails/OffererDetails'
 import CollectiveDataEdition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition'
 import OffererCreation from 'pages/Offerers/OffererCreation'
@@ -288,6 +289,15 @@ const routes: IRoute[] = [
     element: <ResetPassword />,
     path: '/mot-de-passe-perdu',
     title: 'Mot de passe perdu',
+    meta: {
+      public: true,
+      withoutLayout: true,
+    },
+  },
+  {
+    element: <LostPassword />,
+    path: '/demande-mot-de-passe',
+    title: 'Demande de mot de passe',
     meta: {
       public: true,
       withoutLayout: true,
