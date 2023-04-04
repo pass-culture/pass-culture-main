@@ -27,8 +27,8 @@ const PrebookingModal = ({
         <br />
         <br />
         <b>1) Rattachez votre préréservation à un projet </b>: pour cela
-        rendez-vous sous la rubrique <b>Recensement</b>, puis cliquez sur{' '}
-        <b>Recenser </b>
+        rendez-vous sous la rubrique <b>Projets EAC</b>, puis cliquez sur{' '}
+        <b>Les projets </b>
         pour créer un projet et rattacher votre préréservation à votre nouveau
         projet ou à un projet existant.
         <br />
