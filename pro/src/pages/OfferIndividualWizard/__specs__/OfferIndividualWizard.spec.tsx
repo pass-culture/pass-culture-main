@@ -269,7 +269,7 @@ describe('test OfferIndividualWisard', () => {
       dehumanizeId(apiOffer.venue.managingOfferer.id) // offererId
     )
     expect(api.getCategories).toHaveBeenCalledWith()
-    expect(api.getOffer).toHaveBeenCalledWith(offerId)
+    expect(api.getOffer).toHaveBeenCalledWith(dehumanizeId(offerId))
   })
 
   describe('stepper', () => {

@@ -348,7 +348,6 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
           mode={mode}
           stocks={offer.stocks}
           setOffer={setOffer}
-          humanizedOfferId={offer.id}
           isDisabled={isDisabled}
           canBeDuo={canBeDuo}
         />

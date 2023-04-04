@@ -194,6 +194,6 @@ describe('OfferIndividualWizard', () => {
     expect(api.getCategories).toHaveBeenCalledWith()
 
     expect(api.listOfferersNames).not.toHaveBeenCalled()
-    expect(api.getOffer).toHaveBeenCalledWith(offerId)
+    expect(api.getOffer).toHaveBeenCalledWith(dehumanizeId(offerId))
   })
 })

@@ -57,10 +57,7 @@ const renderStockEventScreen = () => {
             mode: OFFER_WIZARD_MODE.EDITION,
           })}
           element={
-            <OfferIndividualContextProvider
-              isUserAdmin={false}
-              offerId="OFFER_ID"
-            >
+            <OfferIndividualContextProvider isUserAdmin={false} offerId="BQ">
               <Stocks />
             </OfferIndividualContextProvider>
           }
@@ -88,7 +85,7 @@ const renderStockEventScreen = () => {
         getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.EDITION,
-          offerId: 'OFFER_ID',
+          offerId: 'BQ',
         }),
       ],
     }
@@ -108,7 +105,7 @@ describe('screens:StocksEventEdition', () => {
     isEventDeletable: true,
     isEventExpired: false,
     isSoftDeleted: false,
-    offerId: 'OFFER_ID',
+    offerId: 'BQ',
     price: 10.01,
     quantity: 10,
     remainingQuantity: 6,
@@ -132,7 +129,7 @@ describe('screens:StocksEventEdition', () => {
       extraData: null,
       fieldsUpdated: [],
       hasBookingLimitDatetimesPassed: true,
-      id: 'OFFER_ID',
+      id: 'BQ',
       isActive: true,
       isBookable: false,
       isDigital: false,
@@ -145,7 +142,7 @@ describe('screens:StocksEventEdition', () => {
       audioDisabilityCompliant: false,
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: false,
-      nonHumanizedId: 192,
+      nonHumanizedId: 12,
       visualDisabilityCompliant: false,
       lastProvider: null,
       lastProviderId: null,
@@ -299,7 +296,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should allow user to delete a stock', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
     apiOffer.stocks = [
       ...apiOffer.stocks,
       {
@@ -313,7 +310,7 @@ describe('screens:StocksEventEdition', () => {
         isEventDeletable: true,
         isEventExpired: false,
         isSoftDeleted: false,
-        offerId: 'OFFER_ID',
+        offerId: 'BQ',
         price: 30.01,
         quantity: 40,
         remainingQuantity: 35,
@@ -351,7 +348,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it("should allow user to delete a stock he just created (and didn't save)", async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
     renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
 
@@ -374,7 +371,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should keep user modifications when deleting a exiting stock', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
     const previousApiOffer = { ...apiOffer }
     const stockToDeleteId = 2
     apiOffer.stocks = [
@@ -390,7 +387,7 @@ describe('screens:StocksEventEdition', () => {
         isEventDeletable: true,
         isEventExpired: false,
         isSoftDeleted: false,
-        offerId: 'OFFER_ID',
+        offerId: 'BQ',
         price: 30.01,
         quantity: 40,
         remainingQuantity: 35,
@@ -439,7 +436,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should not allow user to delete a stock undeletable', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
     apiOffer.stocks = [
       {
         ...apiOffer.stocks[0],
@@ -461,7 +458,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should allow user to delete stock from a synchronized offer', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
     apiOffer.lastProvider = {
       ...apiOffer.lastProvider,
       id: 'PROVIDER_ID',
@@ -493,7 +490,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should not allow user to add a date for a synchronized offer', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
     apiOffer.lastProvider = {
       ...apiOffer.lastProvider,
       id: 'PROVIDER_ID',
@@ -618,7 +615,7 @@ describe('screens:StocksEventEdition', () => {
     expect(screen.getByText(/Next page/)).toBeInTheDocument()
   })
   it('should not display any message when user delete empty stock', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
     renderStockEventScreen()
     apiOffer.stocks = []
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)

@@ -191,7 +191,6 @@ const Informations = ({
     if (isWithdrawalDialogOpen) {
       return
     }
-
     const { isOk, payload } = !offer
       ? await createIndividualOffer(formValues)
       : await updateIndividualOffer({
@@ -209,12 +208,11 @@ const Informations = ({
       Boolean(isOfferSubtypeEvent(offerSubtype)),
       isPriceCategoriesActive
     )
-
     if (isOk) {
       const receivedOfferId = payload.id
       await handleImageOnSubmit(payload.nonHumanizedId)
 
-      const response = await getOfferIndividualAdapter(payload.id)
+      const response = await getOfferIndividualAdapter(payload.nonHumanizedId)
       // This do not trigger a visal change, it's complicated to test
       /* istanbul ignore next: DEBT, TO FIX */
       if (response.isOk) {
