@@ -25,9 +25,15 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "es6"
+    "target": "es6",
+    "types": ["node", "cypress", "@testing-library/cypress"]
   },
-  "include": ["./src/**/*.ts", "./src/**/*.tsx"],
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "./cypress/**/*.ts",
+    "cypress.config.ts"
+  ],
   "exclude": [
     "node_modules",
     "__mocks__/**",
