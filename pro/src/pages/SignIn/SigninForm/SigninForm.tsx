@@ -115,7 +115,7 @@ const SigninForm = (): JSX.Element => {
                     from: location.pathname,
                   })
                 }
-                to="/mot-de-passe-perdu"
+                to="/demande-mot-de-passe"
               >
                 <KeyIcon className="ico-key" />
                 Mot de passe oublié ?
