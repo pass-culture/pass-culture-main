@@ -5,7 +5,7 @@ import DomainNameBanner from 'components/DomainNameBanner'
 import Header from 'components/Header/Header'
 import TutorialDialog from 'components/TutorialDialog'
 
-import { ILayoutConfig } from './AppRouter/routes_map'
+import { ILayoutConfig } from './AppRouter/routesMap'
 
 export interface AppLayoutProps {
   children?: React.ReactNode
