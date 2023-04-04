@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import AppLayout from 'app/AppLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
-import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Hero from 'ui-kit/Hero'
 import Logo from 'ui-kit/Logo/Logo'
@@ -16,13 +15,12 @@ import styles from './ResetPassword.module.scss'
 
 const ResetPassword = (): JSX.Element => {
   const [passwordChanged, setPasswordChanged] = useState(false)
+  const [isBadToken, setIsBadToken] = useState(false)
   const location = useLocation()
   const { search } = location
   const { token } = parse(search)
 
   useRedirectLoggedUser()
-
-  const notification = useNotification()
 
   useEffect(() => {
     const gcaptchaScript = initReCaptchaScript()
@@ -38,9 +36,7 @@ const ResetPassword = (): JSX.Element => {
       await api.postNewPassword({ newPassword: newPasswordValue, token })
       setPasswordChanged(true)
     } catch {
-      notification.error(
-        'Une erreur est survenue, veuillez réessayer ultérieurement.'
-      )
+      setIsBadToken(true)
     }
   }
 
@@ -59,7 +55,7 @@ const ResetPassword = (): JSX.Element => {
 
         <div className={styles['scrollable-content-side']}>
           <div className={styles['content']}>
-            {passwordChanged && (
+            {passwordChanged && !isBadToken && (
               <Hero
                 linkLabel="Se connecter"
                 linkTo="/connexion"
@@ -67,7 +63,15 @@ const ResetPassword = (): JSX.Element => {
                 title="Mot de passe changé !"
               />
             )}
-            {token && !passwordChanged && (
+            {(!token || isBadToken) && (
+              <Hero
+                linkLabel="Recevoir un nouveau lien"
+                linkTo="/demande-mot-de-passe"
+                text="Le lien pour réinitialiser votre mot de passe a expiré. Veuillez recommencer la procédure pour recevoir un nouveau lien par e-mail."
+                title="Ce lien a expiré !"
+              />
+            )}
+            {token && !passwordChanged && !isBadToken && (
               <ChangePasswordForm onSubmit={submitChangePassword} />
             )}
           </div>
