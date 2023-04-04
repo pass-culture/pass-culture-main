@@ -1,5 +1,6 @@
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import { dehumanizeId } from 'utils/dehumanize'
 
 export const buildOffererOptions = (
   offererNames: TOffererName[]
@@ -9,7 +10,7 @@ export const buildOffererOptions = (
 } => {
   let offererOptions = offererNames
     .map(offerer => ({
-      value: offerer.id.toString(),
+      value: offerer.nonHumanizedId.toString(),
       label: offerer.name,
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
@@ -37,7 +38,8 @@ export const buildVenueOptions = (
     if (!offererId) {
       return false
     }
-    return venue.managingOffererId === offererId
+    const dehumanizedId = dehumanizeId(venue.managingOffererId) || ''
+    return dehumanizedId.toString() === offererId
   })
 
   let venueOptions = offererVenues

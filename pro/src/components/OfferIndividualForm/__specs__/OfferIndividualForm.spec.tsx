@@ -82,6 +82,7 @@ describe('OfferIndividualForm', () => {
   let subCategories: IOfferSubCategory[] = []
   let offererNames: TOffererName[]
   let venueList: TOfferIndividualVenue[]
+  const offererId = 2
 
   beforeEach(() => {
     categories = [
@@ -132,7 +133,7 @@ describe('OfferIndividualForm', () => {
     offererNames = [
       {
         id: 'virtualAndPhysical',
-        nonHumanizedId: 1,
+        nonHumanizedId: offererId,
         name: 'Offerer virtual and physical',
       },
     ]
@@ -295,7 +296,7 @@ describe('OfferIndividualForm', () => {
         musicSubType: '',
         musicType: '',
         name: 'Le nom de mon offre',
-        offererId: 'virtualAndPhysical',
+        offererId: offererId.toString(),
         performer: '',
         receiveNotificationEmails: false,
         showSubType: '',
@@ -365,7 +366,7 @@ describe('OfferIndividualForm', () => {
         musicSubType: '',
         musicType: '',
         name: 'Le nom de mon offre',
-        offererId: 'virtualAndPhysical',
+        offererId: offererId.toString(),
         performer: '',
         receiveNotificationEmails: false,
         showSubType: '',

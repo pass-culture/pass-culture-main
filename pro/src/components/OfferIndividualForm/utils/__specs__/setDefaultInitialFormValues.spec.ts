@@ -17,7 +17,7 @@ describe('setDefaultInitialFormValues', () => {
   beforeEach(() => {
     expectedInitialValues = {
       ...FORM_DEFAULT_VALUES,
-      offererId: 'A',
+      offererId: '1',
       venueId: 'C',
       isVenueVirtual: true,
       withdrawalDetails: 'détails de retrait',
@@ -25,15 +25,15 @@ describe('setDefaultInitialFormValues', () => {
     }
 
     offererNames = [
-      { id: 'A', name: 'offerer A', nonHumanizedId: 1 },
+      { id: 'AE', name: 'offerer A', nonHumanizedId: 1 },
       { id: 'B', name: 'offerer B', nonHumanizedId: 2 },
     ]
-    offererId = 'A'
+    offererId = '1'
     venueId = 'C'
     venueList = [
       {
         id: 'C',
-        managingOffererId: 'A',
+        managingOffererId: 'AE',
         name: 'Venue Name',
         isVirtual: true,
         withdrawalDetails: 'détails de retrait',
@@ -49,7 +49,7 @@ describe('setDefaultInitialFormValues', () => {
       },
       {
         id: 'D',
-        managingOffererId: 'A',
+        managingOffererId: 'AE',
         name: 'Venue Name 2',
         isVirtual: true,
         withdrawalDetails: 'détails de retrait',
@@ -82,8 +82,8 @@ describe('setDefaultInitialFormValues', () => {
 
   it('should return initial values when there is only one offererName', () => {
     // given
-    offererNames = [{ id: 'B', name: 'offerer B', nonHumanizedId: 1 }]
-
+    offererNames = [{ id: 'A9', name: 'offerer B', nonHumanizedId: 2 }]
+    offererId = 'A9'
     // when
     const initialValues = setDefaultInitialFormValues(
       FORM_DEFAULT_VALUES,
@@ -94,7 +94,7 @@ describe('setDefaultInitialFormValues', () => {
     )
 
     // then
-    expectedInitialValues.offererId = 'B'
+    expectedInitialValues.offererId = '2'
     expect(initialValues).toStrictEqual(expectedInitialValues)
   })
 

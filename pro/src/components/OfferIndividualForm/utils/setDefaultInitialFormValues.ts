@@ -16,11 +16,12 @@ export const setDefaultInitialFormValues = (
 ): IOfferIndividualFormValues => {
   let initialOffererId = FORM_DEFAULT_VALUES.offererId
   if (offererNames.length === 1) {
-    initialOffererId = offererNames[0]
-      .id as IOfferIndividualFormValues['offererId']
+    initialOffererId = offererNames[0].nonHumanizedId.toString()
   } else if (
     offererId &&
-    offererNames.find(offerer => offerer.id === offererId)
+    offererNames.find(
+      offerer => offerer.nonHumanizedId.toString() === offererId
+    )
   ) {
     initialOffererId = offererId
   }
