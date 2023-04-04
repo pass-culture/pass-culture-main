@@ -91,3 +91,36 @@ def synchronise_adage_and_institution(
             institution.isActive = False
         repository.save(institution)
     db.session.commit()
+
+
+def refund_institution(collective_booking_id: int, amount: float, ticket: str) -> None:
+    """Logic for command refund_institution do not use in code it doesn't raise any exceptions."""
+    booking = educational_models.CollectiveBooking.query.filter(
+        educational_models.CollectiveBooking.id == collective_booking_id
+    ).one_or_none()
+    if not booking:
+        print("Collective_booking not found.")
+        return
+    if booking.status != educational_models.CollectiveBookingStatus.REIMBURSED:
+        print("Collective_booking is not reimbursed yet please modify it instead of refunding it.")
+        return
+    if amount > booking.collectiveStock.price:
+        print("Refund cannot be greater than the booking price.")
+        return
+    deposit = educational_models.EducationalDeposit.query.filter(
+        educational_models.EducationalDeposit.educationalYearId == booking.educationalYearId,
+        educational_models.EducationalDeposit.educationalInstitutionId == booking.educationalInstitutionId,
+    ).one_or_none()
+    if not deposit:
+        print("No deposit found for this booking.")
+        return
+
+    refund = educational_models.CollectiveRefund(
+        amount=amount,
+        ticket=ticket,
+        ministry=deposit.ministry,
+        educationalYearId=booking.educationalYearId,
+        educationalInstitutionId=booking.educationalInstitutionId,
+    )
+    db.session.add(refund)
+    db.session.commit()

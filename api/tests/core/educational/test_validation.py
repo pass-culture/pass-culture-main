@@ -4,6 +4,7 @@ import pytest
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.factories import CancelledCollectiveBookingFactory
+from pcapi.core.educational.factories import CollectiveRefundFactory
 from pcapi.core.educational.factories import ConfirmedCollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
@@ -47,6 +48,28 @@ class EducationalValidationTest:
             collectiveStock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
+        )
+
+        check_institution_fund(
+            educational_institution.id, educational_year.adageId, Decimal(200.00), educational_deposit
+        )
+
+    def test_institution_fund_is_ok_with_refund(self, db_session):
+        educational_institution = EducationalInstitutionFactory()
+        educational_year = EducationalYearFactory(adageId="1")
+        educational_deposit = EducationalDeposit(
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
+            amount=Decimal(500.00),
+        )
+        UsedCollectiveBookingFactory(
+            collectiveStock__price=Decimal(400.00),
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
+        )
+        CollectiveRefundFactory(
+            educationalYear=educational_year,
+            educationalInstitution=educational_institution,
         )
 
         check_institution_fund(

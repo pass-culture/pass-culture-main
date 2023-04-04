@@ -57,7 +57,8 @@ def check_institution_fund(
     deposit: models.EducationalDeposit,
 ) -> None:
     spent_amount = repository.get_confirmed_collective_bookings_amount(educational_institution_id, educational_year_id)
-    total_amount = booking_amount + spent_amount
+    refund_amount = repository.get_refunds_amount(educational_institution_id, educational_year_id)
+    total_amount = booking_amount + spent_amount - refund_amount
     deposit.check_has_enough_fund(total_amount)
 
 
@@ -72,7 +73,10 @@ def check_ministry_fund(
     spent_amount = repository.get_confirmed_collective_bookings_amount_for_ministry(
         educational_year_id=educational_year_id, ministry=ministry
     )
-    total_spent_amount = spent_amount + booking_amount
+    refund_amount = repository.get_refunds_amount_for_ministry(
+        educational_year_id=educational_year_id, ministry=ministry
+    )
+    total_spent_amount = spent_amount + booking_amount - refund_amount
     yearly_available_amount = repository.get_ministry_budget_for_year(
         educational_year_id=educational_year_id, ministry=ministry
     )

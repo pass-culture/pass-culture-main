@@ -141,10 +141,10 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
             educational_institution_id, educational_year_id
         )
         validation.check_institution_fund(
-            educational_institution_id,
-            educational_year_id,
-            decimal.Decimal(collective_booking.collectiveStock.price),
-            deposit,
+            educational_institution_id=educational_institution_id,
+            educational_year_id=educational_year_id,
+            booking_amount=decimal.Decimal(collective_booking.collectiveStock.price),
+            deposit=deposit,
         )
         if FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION.is_active():
             validation.check_ministry_fund(

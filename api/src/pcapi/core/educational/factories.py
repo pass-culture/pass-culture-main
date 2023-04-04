@@ -285,3 +285,14 @@ class CollectiveDmsApplicationFactory(BaseFactory):
     depositDate = datetime.datetime.utcnow() - datetime.timedelta(days=10)
     expirationDate = datetime.datetime.utcnow() + datetime.timedelta(days=365)
     buildDate = factory.SelfAttribute("lastChangeDate")
+
+
+class CollectiveRefundFactory(BaseFactory):
+    class Meta:
+        model = models.CollectiveRefund
+
+    educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
+    educationalYear = factory.SubFactory(EducationalYearFactory)
+    amount = 150.00
+    ministry = models.Ministry.EDUCATION_NATIONALE.name
+    ticket = "PC-20001"

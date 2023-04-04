@@ -1,10 +1,13 @@
 import logging
 
+import click
+
 from pcapi import settings
 from pcapi.core import search
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api.adage import synchronize_adage_ids_on_venues
 from pcapi.core.educational.api.dms import import_dms_applications
+from pcapi.core.educational.api.institution import refund_institution as api_refund_institution
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
@@ -37,6 +40,14 @@ def generate_fake_adage_token() -> None:
 @blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")
 def synchronize_venues_from_adage_cultural_partners() -> None:
     synchronize_adage_ids_on_venues()
+
+
+@blueprint.cli.command("refund_institution")
+@click.option("--ticket", help="ticket jira de la demande", required=True)
+@click.option("--collective_booking", type=int, help="id du booking", required=True)
+@click.option("--amount", type=float, help="Valeur du refund", required=True)
+def refund_institution(ticket: str, collective_booking: int, amount: float) -> None:
+    api_refund_institution(ticket=ticket, collective_booking_id=collective_booking, amount=amount)
 
 
 @blueprint.cli.command("eac_notify_pro_one_day")

@@ -127,6 +127,18 @@ def get_confirmed_collective_bookings_amount_for_ministry(
     return query.first().amount or Decimal(0)
 
 
+def get_refunds_amount_for_ministry(
+    ministry: educational_models.Ministry | None,
+    educational_year_id: str,
+) -> Decimal:
+    query = db.session.query(sa.func.sum(educational_models.CollectiveRefund.amount).label("amount"))
+    query = query.filter(
+        educational_models.CollectiveRefund.ministry == ministry,
+        educational_models.CollectiveRefund.educationalYearId == educational_year_id,
+    )
+    return query.first().amount or Decimal(0)
+
+
 def get_confirmed_collective_bookings_amount(
     educational_institution_id: int,
     educational_year_id: str,
@@ -139,6 +151,18 @@ def get_confirmed_collective_bookings_amount(
         ~educational_models.CollectiveBooking.status.in_(
             [educational_models.CollectiveBookingStatus.CANCELLED, educational_models.CollectiveBookingStatus.PENDING]
         ),
+    )
+    return query.first().amount or Decimal(0)
+
+
+def get_refunds_amount(
+    educational_institution_id: int,
+    educational_year_id: str,
+) -> Decimal:
+    query = db.session.query(sa.func.sum(educational_models.CollectiveRefund.amount).label("amount"))
+    query = query.filter(
+        educational_models.CollectiveRefund.educationalInstitutionId == educational_institution_id,
+        educational_models.CollectiveRefund.educationalYearId == educational_year_id,
     )
     return query.first().amount or Decimal(0)
 

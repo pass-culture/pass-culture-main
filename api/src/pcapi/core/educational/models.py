@@ -1126,6 +1126,25 @@ class CollectiveDmsApplication(PcObject, Base, Model):
     userDeletionDate = sa.Column(sa.DateTime, nullable=True)
 
 
+class CollectiveRefund(PcObject, Base, Model):
+    __tablename__ = "collective_refund"
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    amount: float = sa.Column(
+        sa.Numeric(10, 2), sa.CheckConstraint("amount >= 0", name="check_amount_is_not_negative"), nullable=False
+    )
+    ticket: str = sa.Column(sa.String(10), nullable=False)
+    ministry = sa.Column(sa.Enum(Ministry), nullable=False)
+
+    educationalInstitutionId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False
+    )
+    educationalInstitution: sa_orm.Mapped["EducationalInstitution"] = relationship(
+        EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="collectiveRefunds"
+    )
+    educationalYearId: str = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False)
+    educationalYear: sa_orm.Mapped["EducationalYear"] = relationship(EducationalYear, foreign_keys=[educationalYearId])
+
+
 CollectiveBooking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
     CREATE OR REPLACE FUNCTION save_collective_booking_cancellation_date()
     RETURNS TRIGGER AS $$
