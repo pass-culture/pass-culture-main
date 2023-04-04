@@ -22,7 +22,6 @@ import { EmailChangeValidation } from 'pages/EmailChangeValidation'
 import Unavailable from 'pages/Errors/Unavailable/Unavailable'
 import Homepage from 'pages/Home/Homepage'
 import { Logout } from 'pages/Logout'
-import LostPassword from 'pages/LostPassword/LostPassword'
 import OffererDetails from 'pages/Offerers/Offerer/OffererDetails/OffererDetails'
 import CollectiveDataEdition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition'
 import OffererCreation from 'pages/Offerers/OffererCreation'
@@ -31,6 +30,7 @@ import { OfferIndividualWizard } from 'pages/OfferIndividualWizard'
 import OffersRoute from 'pages/Offers'
 import OfferType from 'pages/OfferType'
 import Reimbursements from 'pages/Reimbursements'
+import ResetPassword from 'pages/ResetPassword/ResetPassword'
 import SignIn from 'pages/SignIn/SignIn'
 import Signup from 'pages/Signup/Signup'
 import { SignupJourneyRoutes } from 'pages/SignupJourneyRoutes'
@@ -285,7 +285,7 @@ const routes: IRoute[] = [
     title: 'Edition d’une offre collective',
   },
   {
-    element: <LostPassword />,
+    element: <ResetPassword />,
     path: '/mot-de-passe-perdu',
     title: 'Mot de passe perdu',
     meta: {
