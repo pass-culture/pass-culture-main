@@ -7,6 +7,7 @@ import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/c
 
 import { SIGNUP_JOURNEY_STEP_IDS } from './constants'
 import { useActiveStep } from './hooks'
+import styles from './SignupJourneyBreadcrumb.module.scss'
 
 const SignupJourneyBreadcrumb = () => {
   const { activity, offerer } = useSignupJourneyContext()
@@ -52,6 +53,7 @@ const SignupJourneyBreadcrumb = () => {
       activeStep={activeStep}
       steps={signupJourneyBreadcrumbSteps}
       styleType={BreadcrumbStyle.STEPPER}
+      className={styles['signup-breadcrumb']}
     />
   )
 }
