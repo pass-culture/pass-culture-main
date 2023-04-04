@@ -6,6 +6,9 @@
 # testing
 /coverage
 /testcafe_screenshots
+/cypress/downloads
+/cypress/screenshots
+/cypress/videos
 
 # production
 /build
