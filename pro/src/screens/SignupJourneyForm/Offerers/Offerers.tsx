@@ -52,8 +52,9 @@ const Offerers = (): JSX.Element => {
   }
 
   const redirectToOnboarding = () => {
+    // @ts-expect-error offerer cannot be null at this step
     const newOfferer: IOfferer = {
-      ...(offerer as IOfferer),
+      ...offerer,
       createVenueWithoutSiret: true,
     }
     setOfferer(newOfferer)
