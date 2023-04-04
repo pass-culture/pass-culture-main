@@ -39,10 +39,10 @@ class Returns200Test:
         assert created_venue.address == "3 RUE DE VALOIS"
         assert created_venue.bookingEmail == ""
         assert created_venue.city == "Paris"
-        assert created_venue.audioDisabilityCompliant is False
-        assert created_venue.mentalDisabilityCompliant is False
-        assert created_venue.motorDisabilityCompliant is False
-        assert created_venue.visualDisabilityCompliant is False
+        assert created_venue.audioDisabilityCompliant is None
+        assert created_venue.mentalDisabilityCompliant is None
+        assert created_venue.motorDisabilityCompliant is None
+        assert created_venue.visualDisabilityCompliant is None
         assert created_venue.comment is None
         assert created_venue.departementCode == "75"
         assert created_venue.name == "MINISTERE DE LA CULTURE"

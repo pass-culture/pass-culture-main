@@ -29,7 +29,7 @@ def validate_coordinates(raw_latitude: float | str, raw_longitude: float | str) 
         raise api_errors
 
 
-def check_venue_creation(data: dict[str, typing.Any]) -> None:
+def check_venue_creation(data: dict[str, typing.Any], strict_accessibility_compliance: bool) -> None:
     offerer_id = dehumanize(data.get("managingOffererId"))
     if not offerer_id:
         raise ApiErrors(errors={"managingOffererId": ["Vous devez choisir une structure pour votre lieu."]})
@@ -37,7 +37,7 @@ def check_venue_creation(data: dict[str, typing.Any]) -> None:
     if not offerer:
         raise ApiErrors(errors={"managingOffererId": ["La structure que vous avez choisie n'existe pas."]})
 
-    if None in [
+    if strict_accessibility_compliance and None in [
         data.get("audioDisabilityCompliant"),
         data.get("mentalDisabilityCompliant"),
         data.get("motorDisabilityCompliant"),
