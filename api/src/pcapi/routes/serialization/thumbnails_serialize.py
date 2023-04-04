@@ -2,7 +2,6 @@ import flask
 
 from pcapi.core.offers import validation
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.image_conversion import CropParams
@@ -15,8 +14,6 @@ class CreateThumbnailBodyModel(BaseModel):
     cropping_rect_y: float | None
     cropping_rect_height: float | None
     cropping_rect_width: float | None
-
-    _dehumanize_offer_id = dehumanize_field("offer_id")
 
     class Config:
         alias_generator = to_camel

@@ -38,7 +38,7 @@ class CreateThumbnailWithoutImageTest:
         # given
         client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         data = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
         }
 
         # when
@@ -56,7 +56,7 @@ class CreateThumbnailFromFileTest:
         client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         data = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "credit": "John Do",
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
@@ -79,7 +79,7 @@ class CreateThumbnailFromFileTest:
         client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_fake_jpg.jpg").read_bytes()
         data = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 
@@ -97,7 +97,7 @@ class CreateThumbnailFromFileTest:
         client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_small.jpg").read_bytes()
         data = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 
@@ -116,7 +116,7 @@ class CreateThumbnailFromFileTest:
         client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         data = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 
@@ -131,7 +131,7 @@ class CreateThumbnailFromFileTest:
         client = client.with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_landscape_bigger.jpg").read_bytes()
         data = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 
@@ -146,7 +146,7 @@ class CreateThumbnailFromFileTest:
         client = client.with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_landscape_bigger.jpg").read_bytes()
         data = {
-            "offerId": humanize(offer.id + 1),
+            "offerId": offer.id + 1,
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 

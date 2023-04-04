@@ -2,7 +2,7 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { PatchOfferBodyModel } from 'apiClient/v1'
 
-type TSuccessPayload = { id: string }
+type TSuccessPayload = { id: string; nonHumanizedId: number }
 type TFailurePayload = { errors: Record<string, string> }
 export type TUpdateIndividualOffer = Adapter<
   { serializedOffer: PatchOfferBodyModel; offerId: number },
@@ -22,6 +22,7 @@ const updateIndividualOffer: TUpdateIndividualOffer = async ({
       message: '',
       payload: {
         id: response.id,
+        nonHumanizedId: response.nonHumanizedId,
       },
     }
   } catch (error) {
