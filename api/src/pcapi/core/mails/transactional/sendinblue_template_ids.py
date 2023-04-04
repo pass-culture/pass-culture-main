@@ -4,9 +4,8 @@ from pcapi.core.mails import models
 
 
 class TransactionalEmail(Enum):
-    ACCEPTED_AS_BENEFICIARY = models.Template(
-        id_prod=96, id_not_prod=25, tags=["jeunes_pass_credite_18"], use_priority_queue=True
-    )
+    # Empty tags when it is set directly in Sendinblue template
+    ACCEPTED_AS_BENEFICIARY = models.Template(id_prod=96, id_not_prod=25, use_priority_queue=True)
     ACCEPTED_AS_EAC_BENEFICIARY = models.Template(
         id_prod=257, id_not_prod=27, tags=["jeunes_pass_credite_eac"], use_priority_queue=True
     )
