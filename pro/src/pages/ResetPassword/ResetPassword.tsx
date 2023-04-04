@@ -14,15 +14,16 @@ import { getReCaptchaToken, initReCaptchaScript } from 'utils/recaptcha'
 
 import ChangePasswordForm from './ChangePasswordForm'
 import ChangePasswordRequestForm from './ChangePasswordRequestForm'
-import styles from './LostPassword.module.scss'
+import styles from './ResetPassword.module.scss'
 
-const LostPassword = (): JSX.Element => {
+const ResetPassword = (): JSX.Element => {
   const [emailValue, setEmailValue] = useState('')
   const [passwordSent, setPasswordSent] = useState(false)
   const [passwordChanged, setPasswordChanged] = useState(false)
   const location = useLocation()
   const { search } = location
   const { token } = parse(search)
+
   useRedirectLoggedUser()
 
   const notification = useNotification()
@@ -124,4 +125,4 @@ const LostPassword = (): JSX.Element => {
   )
 }
 
-export default LostPassword
+export default ResetPassword

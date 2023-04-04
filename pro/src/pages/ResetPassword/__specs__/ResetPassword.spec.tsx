@@ -4,7 +4,7 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import LostPassword from '../LostPassword'
+import ResetPassword from '../ResetPassword'
 
 jest.mock('repository/pcapi/pcapi', () => ({}))
 jest.mock('utils/recaptcha', () => ({
@@ -21,7 +21,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 const renderLostPassword = (url: string) => {
-  renderWithProviders(<LostPassword />, {
+  renderWithProviders(<ResetPassword />, {
     initialRouterEntries: [url],
   })
 }
