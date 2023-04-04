@@ -65,7 +65,7 @@ const Offerer = (): JSX.Element => {
   })
 
   return (
-    <FormLayout>
+    <FormLayout className={styles['offerer-layout']}>
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} data-testid="signup-offerer-form">
           <OffererForm />
