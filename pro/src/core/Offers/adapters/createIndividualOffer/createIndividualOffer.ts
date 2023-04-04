@@ -6,7 +6,7 @@ import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 
 import { serializePostOffer } from './serializers'
 
-type TSuccessPayload = { id: string }
+type TSuccessPayload = { id: string; nonHumanizedId: number }
 type TFailurePayload = { errors: Record<string, string> }
 export type TCreateIndividualOffer = Adapter<
   IOfferIndividualFormValues,
@@ -22,6 +22,7 @@ const createIndividualOffer: TCreateIndividualOffer = async formValues => {
       message: '',
       payload: {
         id: response.id,
+        nonHumanizedId: response.nonHumanizedId,
       },
     }
   } catch (error) {

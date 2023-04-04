@@ -3,7 +3,7 @@ import { IOfferIndividualImage } from 'core/Offers/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 interface Params extends IOnImageUploadArgs {
-  offerId: string
+  offerId: number
 }
 
 export type TCreateThumbnailAdapter = Adapter<
@@ -26,7 +26,7 @@ const createThumbnailAdapter: TCreateThumbnailAdapter = async ({
 }) => {
   try {
     const response = await pcapi.postThumbnail(
-      offerId,
+      offerId.toString(),
       imageFile,
       credit,
       undefined, // api don't use thumbUrl
