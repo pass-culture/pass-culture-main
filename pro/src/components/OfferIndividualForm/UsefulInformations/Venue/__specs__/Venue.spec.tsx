@@ -39,31 +39,34 @@ describe('OfferIndividual section: venue', () => {
   let initialValues: Partial<IOfferIndividualFormValues>
   let props: IVenueProps
   const onSubmit = jest.fn()
+  const firstOfferer = {
+    id: 'AE',
+    nonHumanizedId: 1,
+    name: 'Offerer AE',
+  }
+  const secondOfferer = {
+    id: 'A9',
+    nonHumanizedId: 2,
+    name: 'Offerer A9',
+  }
+  const thirdOfferer = {
+    id: 'AM',
+    nonHumanizedId: 3,
+    name: 'Offerer AM',
+  }
 
   beforeEach(() => {
     const offererNames: TOffererName[] = [
-      {
-        id: 'AA',
-        nonHumanizedId: 1,
-        name: 'Offerer AA',
-      },
-      {
-        id: 'BB',
-        nonHumanizedId: 2,
-        name: 'Offerer BB',
-      },
-      {
-        id: 'CC',
-        nonHumanizedId: 3,
-        name: 'Offerer CC',
-      },
+      firstOfferer,
+      secondOfferer,
+      thirdOfferer,
     ]
 
     const venueList: TOfferIndividualVenue[] = [
       {
         id: 'AAAA',
         name: 'Venue AAAA',
-        managingOffererId: 'AA',
+        managingOffererId: 'AE',
         isVirtual: false,
         withdrawalDetails: '',
         accessibility: {
@@ -79,7 +82,7 @@ describe('OfferIndividual section: venue', () => {
       {
         id: 'BBAA',
         name: 'Venue BBAA',
-        managingOffererId: 'BB',
+        managingOffererId: 'A9',
         isVirtual: false,
         withdrawalDetails: '',
         accessibility: {
@@ -95,7 +98,7 @@ describe('OfferIndividual section: venue', () => {
       {
         id: 'CCAA',
         name: 'Venue CCAA',
-        managingOffererId: 'CC',
+        managingOffererId: 'AM',
         isVirtual: false,
         withdrawalDetails: '',
         accessibility: {
@@ -111,7 +114,7 @@ describe('OfferIndividual section: venue', () => {
       {
         id: 'CCBB',
         name: 'Venue CCBB',
-        managingOffererId: 'CC',
+        managingOffererId: 'AM',
         isVirtual: false,
         withdrawalDetails: '',
         accessibility: {
@@ -188,7 +191,7 @@ describe('OfferIndividual section: venue', () => {
     const selectOfferer = screen.getByLabelText('Structure')
 
     await waitFor(() => {
-      expect(selectOfferer).toHaveValue('AA')
+      expect(selectOfferer).toHaveValue(firstOfferer.nonHumanizedId.toString())
       expect(selectOfferer).toBeDisabled()
       expect(selectOfferer.childNodes.length).toBe(1)
       expect(selectVenue).toHaveValue('AAAA')
@@ -207,8 +210,11 @@ describe('OfferIndividual section: venue', () => {
     const selectOfferer = screen.getByLabelText('Structure')
 
     // select a offerer with 1 venue
-    await userEvent.selectOptions(selectOfferer, 'AA')
-    expect(selectOfferer).toHaveValue('AA')
+    await userEvent.selectOptions(
+      selectOfferer,
+      firstOfferer.nonHumanizedId.toString()
+    )
+    expect(selectOfferer).toHaveValue(firstOfferer.nonHumanizedId.toString())
 
     expect(selectVenue).toBeDisabled()
     expect(selectVenue).toHaveValue('AAAA')
@@ -224,8 +230,11 @@ describe('OfferIndividual section: venue', () => {
     const selectVenue = screen.getByLabelText('Lieu')
     const selectOfferer = screen.getByLabelText('Structure')
 
-    await userEvent.selectOptions(selectOfferer, 'CC')
-    expect(selectOfferer).toHaveValue('CC')
+    await userEvent.selectOptions(
+      selectOfferer,
+      thirdOfferer.nonHumanizedId.toString()
+    )
+    expect(selectOfferer).toHaveValue(thirdOfferer.nonHumanizedId.toString())
 
     await waitFor(() => {
       expect(selectVenue).not.toBeDisabled()
@@ -245,7 +254,10 @@ describe('OfferIndividual section: venue', () => {
     const selectOfferer = screen.getByLabelText('Structure')
 
     // select a other offerer with 1 venue
-    await userEvent.selectOptions(selectOfferer, 'BB')
+    await userEvent.selectOptions(
+      selectOfferer,
+      secondOfferer.nonHumanizedId.toString()
+    )
 
     // unselect offerer id
     await userEvent.selectOptions(selectOfferer, 'Selectionner une structure')
@@ -271,7 +283,10 @@ describe('OfferIndividual section: venue', () => {
       screen.queryByText('Veuillez sélectionner un lieu')
     ).not.toBeInTheDocument()
 
-    await userEvent.selectOptions(selectOfferer, 'Offerer CC')
+    await userEvent.selectOptions(
+      selectOfferer,
+      thirdOfferer.nonHumanizedId.toString()
+    )
     await userEvent.selectOptions(selectVenue, 'Venue CCBB')
 
     await userEvent.selectOptions(selectVenue, 'Selectionner un lieu')

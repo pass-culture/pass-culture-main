@@ -70,16 +70,16 @@ describe('OfferIndividual section: venue', () => {
   beforeEach(() => {
     const offererNames: TOffererName[] = [
       {
-        id: 'AA',
+        id: 'AE',
         nonHumanizedId: 1,
-        name: 'Offerer AA',
+        name: 'Offerer AE',
       },
     ]
 
     const venueAccessible: TOfferIndividualVenue = {
       id: 'AAAA',
       name: 'Venue AAAA',
-      managingOffererId: 'AA',
+      managingOffererId: 'AE',
       isVirtual: false,
       withdrawalDetails: '',
       accessibility: {
@@ -95,7 +95,7 @@ describe('OfferIndividual section: venue', () => {
     const venueNotAccessible: TOfferIndividualVenue = {
       id: 'AABB',
       name: 'Venue AABB',
-      managingOffererId: 'AA',
+      managingOffererId: 'AE',
       isVirtual: false,
       withdrawalDetails: '',
       accessibility: {
@@ -114,7 +114,7 @@ describe('OfferIndividual section: venue', () => {
     ]
 
     initialValues = {
-      offererId: 'AA',
+      offererId: '1',
       venueId: '',
       accessibility: {
         [AccessiblityEnum.VISUAL]: false,

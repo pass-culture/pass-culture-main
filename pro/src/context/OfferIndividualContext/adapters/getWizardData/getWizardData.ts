@@ -40,7 +40,8 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
   queryOffererId,
   isAdmin,
 }) => {
-  const offererId = isAdmin && offerer ? offerer.id : queryOffererId
+  const offererId = isAdmin && offerer ? offerer.nonHumanizedId : queryOffererId
+
   const successPayload: IOfferWizardData = {
     offererNames: [],
     venueList: [],
@@ -65,7 +66,9 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
     return Promise.resolve(FAILING_RESPONSE)
   }
 
-  const venuesResponse = await getOfferIndividualVenuesAdapter({ offererId })
+  const venuesResponse = await getOfferIndividualVenuesAdapter({
+    offererId: offererId ? Number(offererId) : undefined,
+  })
   /* istanbul ignore next: DEBT, TO FIX */
   if (venuesResponse.isOk) {
     successPayload.venueList = venuesResponse.payload
@@ -84,7 +87,7 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
     ]
   } else {
     const offererResponse = await getOffererNamesAdapter({
-      offererId: isAdmin ? offererId : undefined,
+      offererId: isAdmin ? Number(offererId) : undefined,
     })
     /* istanbul ignore next: DEBT, TO FIX */
     if (offererResponse.isOk) {

@@ -297,6 +297,7 @@ const routes: IRoute[] = [
     element: <OfferIndividualWizard />,
     path: '/offre/individuelle/:offerId/*',
     title: 'Offre étape par étape',
+    meta: { shouldRedirect: true },
   },
   {
     element: <Reimbursements />,

@@ -50,13 +50,14 @@ describe('OfferIndividual section: UsefulInformations', () => {
   let initialValues: Partial<IOfferIndividualFormValues>
   let props: IUsefulInformationsProps
   const onSubmit = jest.fn()
+  const offererId = 1
 
   beforeEach(() => {
     const offererNames: TOffererName[] = [
       {
-        id: 'AA',
-        nonHumanizedId: 1,
-        name: 'Offerer AA',
+        id: 'AE',
+        nonHumanizedId: offererId,
+        name: 'Offerer AE',
       },
     ]
 
@@ -64,7 +65,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       {
         id: 'AAAA',
         name: 'Venue AAAA',
-        managingOffererId: 'AA',
+        managingOffererId: 'AE',
         isVirtual: false,
         withdrawalDetails: '',
         accessibility: {
@@ -80,7 +81,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       {
         id: 'BBBB',
         name: 'Venue BBBB',
-        managingOffererId: 'AA',
+        managingOffererId: 'AE',
         isVirtual: true,
         withdrawalDetails: '',
         accessibility: {
@@ -133,7 +134,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     })
 
     const offererSelect = screen.getByLabelText('Structure')
-    await userEvent.selectOptions(offererSelect, 'AA')
+    await userEvent.selectOptions(offererSelect, offererId.toString())
     const venueSelect = screen.getByLabelText('Lieu')
     await userEvent.selectOptions(venueSelect, 'AAAA')
     const withEmail = screen.getByLabelText('Envoi par e-mail')
@@ -151,7 +152,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
           visual: false,
         },
         isVenueVirtual: false,
-        offererId: 'AA',
+        offererId: offererId.toString(),
         subCategoryFields: ['withdrawalType'],
         url: '',
         subcategoryId: 'CONCERT',
@@ -169,7 +170,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       ...initialValues,
       name: 'Set offer',
       venueId: 'AAAA',
-      offererId: 'AA',
+      offererId: 'AE',
       subcategoryId: 'CONCERT',
       subCategoryFields: ['withdrawalType'],
       withdrawalDelay: 7200,
@@ -187,7 +188,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'Set offer',
-        offererId: 'AA',
+        offererId: 'AE',
         subCategoryFields: ['withdrawalType'],
         url: '',
         subcategoryId: 'CONCERT',
@@ -266,7 +267,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       })
 
       const offererSelect = screen.getByLabelText('Structure')
-      await userEvent.selectOptions(offererSelect, 'AA')
+      await userEvent.selectOptions(offererSelect, offererId.toString())
       const venueSelect = screen.getByLabelText('Lieu')
       await userEvent.selectOptions(venueSelect, 'BBBB')
 
@@ -289,7 +290,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
             visual: false,
           },
           isVenueVirtual: true,
-          offererId: 'AA',
+          offererId: offererId.toString(),
           subCategoryFields: [],
           subcategoryId: 'VIRTUAL_SUB_CATEGORY',
           url: 'http://example.com/routes?params={offerId}',
@@ -310,7 +311,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       })
 
       const offererSelect = screen.getByLabelText('Structure')
-      await userEvent.selectOptions(offererSelect, 'AA')
+      await userEvent.selectOptions(offererSelect, offererId.toString())
       const venueSelect = screen.getByLabelText('Lieu')
       await userEvent.selectOptions(venueSelect, 'BBBB')
 
