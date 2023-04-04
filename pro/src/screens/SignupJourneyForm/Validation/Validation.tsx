@@ -72,7 +72,7 @@ const Validation = (): JSX.Element => {
 
   return (
     <>
-      <section>
+      <section className={styles['validation-screen']}>
         <h1 className={styles['title']}>Vérification</h1>
         <h2 className={styles['subtitle']}>
           Informations structure
@@ -99,7 +99,7 @@ const Validation = (): JSX.Element => {
           <div className={styles['data-line']}>{offerer?.siret}</div>
         </Banner>
       </section>
-      <section>
+      <section className={styles['validation-screen']}>
         <h2 className={styles['subtitle']}>
           Activité
           <ButtonLink
