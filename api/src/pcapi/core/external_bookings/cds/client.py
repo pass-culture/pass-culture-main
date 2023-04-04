@@ -46,13 +46,6 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
             f"for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
-    def get_show_remaining_places(self, show_id: int) -> int:
-        show = self.get_show(show_id)
-        internet_sale_gauge_active = self.get_internet_sale_gauge_active()
-        if internet_sale_gauge_active:
-            return show.internet_remaining_place
-        return show.remaining_place
-
     def get_shows_remaining_places(self, show_ids: list[int]) -> dict[int, int]:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SHOWS)
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
@@ -108,18 +101,6 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
             for voucher_type in voucher_types
             if voucher_type.code == cds_constants.PASS_CULTURE_VOUCHER_CODE and voucher_type.tariff
         ]
-
-    def get_tariff(self) -> cds_serializers.TariffCDS:
-        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.TARIFFS)
-        tariffs = parse_obj_as(list[cds_serializers.TariffCDS], data)
-
-        for tariff in tariffs:
-            if tariff.label == cds_constants.PASS_CULTURE_TARIFF_LABEL_CDS:
-                return tariff
-        raise cds_exceptions.CineDigitalServiceAPIException(
-            f"Tariff Pass Culture not found in Cine Digital Service API for cinemaId={self.cinema_id}"
-            f" & url={self.api_url}"
-        )
 
     def get_screen(self, screen_id: int) -> cds_serializers.ScreenCDS:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SCREENS)
