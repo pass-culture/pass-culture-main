@@ -1,10 +1,14 @@
 import * as yup from 'yup'
 
-import { Target } from 'apiClient/v1'
+import { Target, VenueTypeCode } from 'apiClient/v1'
 
 export const validationSchema = yup.object().shape({
   venueTypeCode: yup
     .string()
+    .oneOf(
+      Object.values(VenueTypeCode),
+      'Veuillez sélectionner une activité principale'
+    )
     .required('Veuillez sélectionner une activité principale'),
   socialUrls: yup
     .array()

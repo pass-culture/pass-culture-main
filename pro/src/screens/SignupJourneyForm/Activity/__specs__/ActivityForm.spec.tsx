@@ -121,7 +121,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
 
   it('should render activity form with initialValues', async () => {
     initialValues = {
-      venueTypeCode: venueTypes[0].value as VenueTypeCode,
+      venueTypeCode: VenueTypeCode.MUS_E,
       socialUrls: ['https://example.com', 'https://exampleTwo.fr'],
       targetCustomer: Target.INDIVIDUAL_AND_EDUCATIONAL,
     }
