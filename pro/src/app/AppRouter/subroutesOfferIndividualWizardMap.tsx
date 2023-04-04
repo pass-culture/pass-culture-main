@@ -8,7 +8,7 @@ import { PriceCategories } from 'pages/OfferIndividualWizard/PriceCategories'
 import { Stocks } from 'pages/OfferIndividualWizard/Stocks'
 import { Summary } from 'pages/OfferIndividualWizard/Summary'
 
-import type { IRoute, RouteDefinition } from './routes_map'
+import type { IRoute } from './routesMap'
 
 export const routesOfferIndividualWizard: IRoute[] = [
   {
@@ -103,7 +103,4 @@ export const routesOfferIndividualWizard: IRoute[] = [
   },
 ]
 
-export const routesOfferIndividualWizardDefinitions: RouteDefinition[] =
-  routesOfferIndividualWizard.map(({ path, parentPath, title }) => {
-    return { path, parentPath, title }
-  })
+export default routesOfferIndividualWizard

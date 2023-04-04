@@ -10,7 +10,7 @@ import {
 
 import App from 'app/App/App'
 import AppLayout from 'app/AppLayout'
-import { IRoute } from 'app/AppRouter/routes_map'
+import { IRoute } from 'app/AppRouter/routesMap'
 import useCurrentUser from 'hooks/useCurrentUser'
 import NotFound from 'pages/Errors/NotFound/NotFound'
 import { selectActiveFeatures } from 'store/features/selectors'

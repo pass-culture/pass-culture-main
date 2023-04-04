@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { AppRouter } from 'app'
-import routes from 'app/AppRouter/routes_map'
+import routes from 'app/AppRouter/routesMap'
 import { AnalyticsContextProvider } from 'context/analyticsContext'
 import StoreProvider from 'store/StoreProvider/StoreProvider'
 

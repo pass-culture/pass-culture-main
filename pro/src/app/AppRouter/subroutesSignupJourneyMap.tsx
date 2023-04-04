@@ -10,7 +10,7 @@ import { Offerers as SignupJourneyOfferers } from 'screens/SignupJourneyForm/Off
 import { Validation } from 'screens/SignupJourneyForm/Validation'
 import { Welcome } from 'screens/SignupJourneyForm/Welcome'
 
-import type { IRoute, RouteDefinition } from './routes_map'
+import type { IRoute } from './routesMap'
 
 export const routesSignupJourney: IRoute[] = [
   {
@@ -63,7 +63,4 @@ export const routesSignupJourney: IRoute[] = [
   },
 ]
 
-export const routesSignupJourneyDefinitions: RouteDefinition[] =
-  routesSignupJourney.map(({ path, parentPath, title }) => {
-    return { path, parentPath, title }
-  })
+export default routesSignupJourney

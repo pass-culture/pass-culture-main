@@ -2,23 +2,23 @@ import type { LocationListener } from 'history'
 import { useEffect } from 'react'
 import { matchPath, useLocation } from 'react-router-dom'
 
-import { routesDefinitions, RouteDefinition } from 'app/AppRouter/routes_map'
-import { routesOfferIndividualWizardDefinitions } from 'app/AppRouter/subroutes_offerindividualwizard_map'
-import { routesSignupDefinitions } from 'app/AppRouter/subroutes_signup_map'
-import { routesSignupJourneyDefinitions } from 'app/AppRouter/subroutes_signupjourney_map'
+import routes, { IRoute } from 'app/AppRouter/routesMap'
+import routesOfferIndividualWizardDefinitions from 'app/AppRouter/subroutesOfferIndividualWizardMap'
+import routesSignupJourneyDefinitions from 'app/AppRouter/subroutesSignupJourneyMap'
+import routesSignupDefinitions from 'app/AppRouter/subroutesSignupMap'
 
 const usePageTitle = (): LocationListener | void => {
   const location = useLocation()
 
   useEffect(() => {
     const currentRoute = [
-      ...routesDefinitions,
+      ...routes,
       ...routesOfferIndividualWizardDefinitions,
       ...routesSignupDefinitions,
       ...routesSignupJourneyDefinitions,
       // @ts-expect-error Property findLast does not exist on RouteDefinition[]
     ].findLast(
-      ({ path, parentPath }: RouteDefinition) =>
+      ({ path, parentPath }: IRoute) =>
         matchPath(`${parentPath || ''}${path}`, location.pathname) !== null
     )
 
