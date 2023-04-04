@@ -101,7 +101,7 @@ describe('OfferIndividualForm', () => {
     ]
     offererNames = [
       {
-        id: 'virtualAndPhysical',
+        id: 'AE',
         nonHumanizedId: 1,
         name: 'Offerer virtual and physical',
       },
@@ -110,7 +110,7 @@ describe('OfferIndividualForm', () => {
       {
         id: 'physical',
         name: 'Venue AAAA',
-        managingOffererId: 'virtualAndPhysical',
+        managingOffererId: 'AE',
         isVirtual: false,
         withdrawalDetails: '',
         accessibility: {
@@ -126,7 +126,7 @@ describe('OfferIndividualForm', () => {
       {
         id: 'virtual',
         name: 'Venue AAAA',
-        managingOffererId: 'virtualAndPhysical',
+        managingOffererId: 'AE',
         isVirtual: true,
         withdrawalDetails: '',
         accessibility: {

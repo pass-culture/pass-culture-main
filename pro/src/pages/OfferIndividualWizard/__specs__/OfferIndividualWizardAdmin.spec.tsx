@@ -10,13 +10,23 @@ import {
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import {
+  GetIndividualOfferFactory,
+  getOfferVenueFactory,
+  offererFactory,
+} from 'utils/apiFactories'
 import { dehumanizeId } from 'utils/dehumanize'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OfferIndividualWizard } from '..'
 
-const apiOffer: GetIndividualOfferResponseModel = GetIndividualOfferFactory()
+const offerer = offererFactory({ id: 'AM' })
+const venue = getOfferVenueFactory(undefined, offerer)
+const apiOffer: GetIndividualOfferResponseModel = GetIndividualOfferFactory(
+  undefined,
+  undefined,
+  venue
+)
 
 const renderOfferIndividualWizardRoute = (
   storeOverrides: any,
@@ -94,7 +104,9 @@ describe('OfferIndividualWizard', () => {
           mode: OFFER_WIZARD_MODE.CREATION,
           isCreation: true,
         })
-      ) + '?structure=CU'
+      ) +
+        '?structure=' +
+        offerer.nonHumanizedId
     )
     expect(
       await screen.findByRole('heading', { name: 'Créer une offre' })
@@ -104,12 +116,12 @@ describe('OfferIndividualWizard', () => {
       null, // validatedForUser,
       null, // validated,
       true, // activeOfferersOnly,
-      dehumanizeId('CU') // offererId
+      offerer.nonHumanizedId // offererId
     )
     expect(api.listOfferersNames).toHaveBeenCalledWith(
       null, // validated
       null, // validatedForUser
-      dehumanizeId('CU') // offererId
+      offerer.nonHumanizedId // offererId
     )
 
     expect(api.getCategories).toHaveBeenCalledWith()
@@ -180,7 +192,9 @@ describe('OfferIndividualWizard', () => {
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
         { offerId }
-      ) + '?structure=CU'
+      ) +
+        '?structure=' +
+        offerer.nonHumanizedId
     )
     expect(
       await screen.findByRole('heading', { name: 'Modifier l’offre' })
@@ -189,7 +203,7 @@ describe('OfferIndividualWizard', () => {
       null, // validatedForUser
       null, // validated
       true, // activeOfferersOnly,
-      dehumanizeId(apiOffer.venue.managingOfferer.id) // offererId
+      offerer.nonHumanizedId // offererId
     )
     expect(api.getCategories).toHaveBeenCalledWith()
 
