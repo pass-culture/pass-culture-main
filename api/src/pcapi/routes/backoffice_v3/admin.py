@@ -4,6 +4,7 @@ from flask import render_template
 from flask import url_for
 from flask_login import current_user
 
+from pcapi import settings
 from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import feature as feature_models
@@ -68,7 +69,9 @@ def update_role(role_id: int) -> utils.BackofficeResponse:
 def list_feature_flags() -> utils.BackofficeResponse:
     feature_flags = feature_models.Feature.query.order_by(feature_models.Feature.name).all()
     form = empty_forms.EmptyForm()
-    return render_template("admin/feature_flipping.html", rows=feature_flags, toggle_feature_flag_form=form)
+    return render_template(
+        "admin/feature_flipping.html", rows=feature_flags, toggle_feature_flag_form=form, env=settings.ENV
+    )
 
 
 @blueprint.backoffice_v3_web.route("/admin/feature-flipping/<int:feature_flag_id>/enable", methods=["POST"])
