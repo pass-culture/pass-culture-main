@@ -21,7 +21,7 @@ const ChangePasswordRequestForm = ({
 }: IChangePasswordRequestForm): JSX.Element => (
   <section className={styles['change-password-request-form']}>
     <div className={styles['hero-body']}>
-      <h1>Mot de passe égaré ?</h1>
+      <h1>Mot de passe oublié ?</h1>
       <p>
         Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre
         compte.
