@@ -201,9 +201,11 @@ def upsert_venue_contact(venue: models.Venue, contact_data: serialize_base.Venue
     return venue
 
 
-def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venue:
+def create_venue(
+    venue_data: venues_serialize.PostVenueBodyModel, strict_accessibility_compliance: bool = True
+) -> models.Venue:
     data = venue_data.dict(by_alias=True)
-    validation.check_venue_creation(data)
+    validation.check_venue_creation(data, strict_accessibility_compliance)
     venue = models.Venue()
     data["dmsToken"] = generate_dms_token()
     venue.populate_from_dict(data, skipped_keys=("contact",))
@@ -1732,10 +1734,10 @@ def create_from_onboarding_data(
             withdrawalDetails=None,
             description=None,
             contact=None,
-            audioDisabilityCompliant=False,
-            mentalDisabilityCompliant=False,
-            motorDisabilityCompliant=False,
-            visualDisabilityCompliant=False,
+            audioDisabilityCompliant=None,
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=None,
         )
         if onboarding_data.createVenueWithoutSiret:
             comment_and_siret = dict(
@@ -1749,6 +1751,6 @@ def create_from_onboarding_data(
             )
         venue_kwargs = common_kwargs | comment_and_siret
         venue_creation_info = venues_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore [arg-type]
-        create_venue(venue_creation_info)
+        create_venue(venue_creation_info, strict_accessibility_compliance=False)
 
     return user_offerer

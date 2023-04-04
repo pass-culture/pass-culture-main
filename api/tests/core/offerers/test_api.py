@@ -1395,10 +1395,10 @@ class CreateFromOnboardingDataTest:
         assert venue.postalCode == "75001"
         assert venue.publicName == "Nom public de mon lieu"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.MOVIE
-        assert venue.audioDisabilityCompliant is False
-        assert venue.mentalDisabilityCompliant is False
-        assert venue.motorDisabilityCompliant is False
-        assert venue.visualDisabilityCompliant is False
+        assert venue.audioDisabilityCompliant is None
+        assert venue.mentalDisabilityCompliant is None
+        assert venue.motorDisabilityCompliant is None
+        assert venue.visualDisabilityCompliant is None
 
     def assert_common_action_history_extra_data(self, action: history_models.ActionHistory) -> None:
         assert action.extraData["target"] == offerers_models.Target.INDIVIDUAL.name
