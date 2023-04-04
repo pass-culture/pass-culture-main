@@ -751,7 +751,7 @@ describe('screen | VenueForm', () => {
 
       await userEvent.click(
         screen.getByText(
-          'Appliquer le changement à toutes les offres déjà existantes.'
+          'Appliquer le changement à toutes les offres déjà existantes'
         )
       )
       expectedEditVenue.shouldSendMail = true
@@ -822,7 +822,7 @@ describe('screen | VenueForm', () => {
 
       await userEvent.click(
         screen.getByText(
-          'Appliquer le changement à toutes les offres déjà existantes.'
+          'Appliquer le changement à toutes les offres déjà existantes'
         )
       )
       expectedEditVenue.isWithdrawalAppliedOnAllOffers = true
@@ -946,7 +946,7 @@ describe('screen | VenueForm', () => {
 
       await userEvent.click(
         screen.getByText(
-          'Appliquer le changement à toutes les offres déjà existantes.'
+          'Appliquer le changement à toutes les offres déjà existantes'
         )
       )
       expectedEditVenue.isWithdrawalAppliedOnAllOffers = true
@@ -1005,7 +1005,7 @@ describe('screen | VenueForm', () => {
       })
       await userEvent.click(
         screen.getByText(
-          'Appliquer le changement à toutes les offres déjà existantes.'
+          'Appliquer le changement à toutes les offres déjà existantes'
         )
       )
       expectedEditVenue.isWithdrawalAppliedOnAllOffers = true
