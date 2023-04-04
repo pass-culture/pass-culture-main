@@ -118,7 +118,7 @@ const SigninForm = (): JSX.Element => {
                 to="/mot-de-passe-perdu"
               >
                 <KeyIcon className="ico-key" />
-                Mot de passe égaré ?
+                Mot de passe oublié ?
               </Link>
               <div className={styles['buttons-field']}>
                 <Link
