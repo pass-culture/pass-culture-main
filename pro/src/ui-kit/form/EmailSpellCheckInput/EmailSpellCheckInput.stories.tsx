@@ -20,7 +20,7 @@ const Template: Story<Args> = args => (
 const defaultProps: Args = {
   name: 'email',
   label: 'Adresse e-mail',
-  placeholder: 'mail@exemple.com',
+  placeholder: 'email@exemple.com',
   overrideInitialTip: 'marie.dupont@gmail.com',
 }
 

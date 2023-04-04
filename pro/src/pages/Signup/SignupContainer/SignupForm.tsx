@@ -66,7 +66,7 @@ const SignupForm = (): JSX.Element => {
         <FormLayout.Row>
           <EmailSpellCheckInput
             name="email"
-            placeholder="mail@exemple.com"
+            placeholder="email@exemple.com"
             label="Adresse e-mail"
           />
         </FormLayout.Row>
