@@ -7,6 +7,7 @@ from markupsafe import Markup
 from markupsafe import escape
 from wtforms import BooleanField
 from wtforms import Form
+from wtforms.fields import DecimalField
 from wtforms.fields import IntegerField
 from wtforms.form import BaseForm
 from wtforms.validators import Optional
@@ -101,7 +102,7 @@ class VenueProviderView(BaseAdminView):
             else None
         )
         form_class.allocine_price = (
-            IntegerField(
+            DecimalField(
                 default=obj.priceRules[0].price if is_allocine and obj.priceRules else None,
                 label="Prix (allociné)",
                 validators=[Optional()],
