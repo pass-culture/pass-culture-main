@@ -40,7 +40,7 @@ const WithdrawalDetails = ({ isCreatedEntity }: IWithdrawalDetails) => {
         <FormLayout.Row>
           <Checkbox
             name="isWithdrawalAppliedOnAllOffers"
-            label="Appliquer le changement à toutes les offres déjà existantes."
+            label="Appliquer le changement à toutes les offres déjà existantes"
           />
         </FormLayout.Row>
       )}
