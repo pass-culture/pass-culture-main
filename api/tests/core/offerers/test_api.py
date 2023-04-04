@@ -1385,7 +1385,7 @@ class GetAdditionalInfoFromOnboardingDataTest:
 class CreateFromOnboardingDataTest:
     def assert_common_venue_attrs(self, venue: offerers_models.Venue) -> None:
         assert venue.address == "3 RUE DE VALOIS"
-        assert venue.bookingEmail == ""
+        assert venue.bookingEmail == "pro@example.com"
         assert venue.city == "Paris"
         assert not venue.current_reimbursement_point_id
         assert venue.dmsToken
@@ -1418,7 +1418,7 @@ class CreateFromOnboardingDataTest:
         )
 
     def test_new_siren_new_siret(self):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
 
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
@@ -1460,7 +1460,7 @@ class CreateFromOnboardingDataTest:
     def test_existing_siren_new_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
         offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
 
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
@@ -1493,7 +1493,7 @@ class CreateFromOnboardingDataTest:
     def test_existing_siren_new_venue_without_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
         offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
 
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=True)

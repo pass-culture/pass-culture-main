@@ -22,7 +22,7 @@ REQUEST_BODY = {
 
 class Returns200Test:
     def test_nominal(self, client):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(email="pro@example.com")
 
         client = client.with_session_auth(user.email)
 
@@ -37,7 +37,7 @@ class Returns200Test:
         assert created_offerer.postalCode == "75001"
         created_venue = offerers_models.Venue.query.filter(offerers_models.Venue.isVirtual.is_(False)).one()
         assert created_venue.address == "3 RUE DE VALOIS"
-        assert created_venue.bookingEmail == ""
+        assert created_venue.bookingEmail == "pro@example.com"
         assert created_venue.city == "Paris"
         assert created_venue.audioDisabilityCompliant is None
         assert created_venue.mentalDisabilityCompliant is None

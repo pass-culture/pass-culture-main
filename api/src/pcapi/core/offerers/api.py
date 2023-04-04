@@ -1719,7 +1719,7 @@ def create_from_onboarding_data(
     if not offerers_repository.find_venue_by_siret(onboarding_data.siret) or onboarding_data.createVenueWithoutSiret:
         common_kwargs = dict(
             address=additional_info.address,
-            bookingEmail="",
+            bookingEmail=user.email,
             city=additional_info.city,
             latitude=additional_info.latitude,
             longitude=additional_info.longitude,
