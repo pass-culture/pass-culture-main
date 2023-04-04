@@ -1,10 +1,7 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
 
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import {
@@ -13,23 +10,20 @@ import {
   Template,
 } from 'screens/OfferIndividual'
 import { StocksEventCreation } from 'screens/OfferIndividual/StocksEventCreation/StocksEventCreation'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 const Stocks = (): JSX.Element | null => {
   const { offer } = useOfferIndividualContext()
-  const navigate = useNavigate()
   const mode = useOfferWizardMode()
   const isRecurrenceActive = useActiveFeature('WIP_RECURRENCE')
 
-  // if we've no offer, we are redirect from parent route.
-  /* istanbul ignore next: DEBT, TO FIX */
+  // Here we display a spinner because when the router transitions from
+  // Informations form to Stocks form the setOffer after the submit is not
+  // propagated yet so there is a quick moment where the offer is null.
+  // This is a temporary fix until we use a better pattern than the OfferIndividualWizard
+  // to share the offer context
   if (offer === null) {
-    navigate(
-      getOfferIndividualUrl({
-        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        mode: OFFER_WIZARD_MODE.CREATION,
-      })
-    )
-    return null
+    return <Spinner />
   }
 
   return (
