@@ -88,7 +88,7 @@ describe('src | components | pages | SignIn', () => {
     expect(screen.getByLabelText('Mot de passe')).toBeInTheDocument()
     expect(screen.getByText('Se connecter')).toBeInTheDocument()
     expect(screen.getByText('Créer un compte')).toBeInTheDocument()
-    expect(screen.getByText('Mot de passe égaré ?')).toBeInTheDocument()
+    expect(screen.getByText('Mot de passe oublié ?')).toBeInTheDocument()
     expect(
       screen.getByRole('link', {
         name: 'Consulter nos recommandations de sécurité',
