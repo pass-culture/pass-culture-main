@@ -444,62 +444,6 @@ class CineDigitalServiceGetPCVoucherTypesTest:
         assert pc_voucher_types[1].tariff.id == 4
 
 
-class CineDigitalServiceGetTariffTest:
-    @patch("pcapi.core.external_bookings.cds.client.get_resource")
-    def test_should_return_tariffs_with_pass_culture_tariff(self, mocked_get_resource):
-        json_tariffs = [
-            {
-                "id": 1,
-                "price": 10,
-                "label": "Pass Culture 5€",
-                "is_active": True,
-            },
-            {
-                "id": 2,
-                "price": 3.5,
-                "label": "Other tariff",
-                "is_active": True,
-            },
-        ]
-        mocked_get_resource.return_value = json_tariffs
-        cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="cinema_id_test",
-            account_id="accountid_test",
-            cinema_api_token="token_test",
-            api_url="apiUrl_test",
-        )
-        tariff = cine_digital_service.get_tariff()
-
-        assert tariff.label == "Pass Culture 5€"
-
-    @patch("pcapi.core.external_bookings.cds.client.get_resource")
-    def test_should_raise_exception_if_tariff_not_found(self, mocked_get_resource):
-        json_tariffs = [
-            {
-                "id": 1,
-                "price": 10,
-                "label": "Another Tariff",
-                "is_active": True,
-            },
-            {
-                "id": 2,
-                "price": 3.5,
-                "label": "Other tariff",
-                "is_active": True,
-            },
-        ]
-        mocked_get_resource.return_value = json_tariffs
-        cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
-        )
-        with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
-            cine_digital_service.get_tariff()
-        assert (
-            str(cds_exception.value)
-            == "Tariff Pass Culture not found in Cine Digital Service API for cinemaId=test_id & url=test_url"
-        )
-
-
 class CineDigitalServiceGetScreenTest:
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_return_screen_corresponding_to_screen_id(self, mocked_get_resource):
