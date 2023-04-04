@@ -34,7 +34,7 @@ export const useIndividualOfferImageUpload = () => {
 
   const handleImageOnSubmit = useCallback(
     async (
-      imageOfferId: string,
+      imageOfferId: number,
       imageEditionCreationArgs?: IOnImageUploadArgs
     ) => {
       // Param is passed through state when the offer is not created yet and through param
@@ -114,7 +114,9 @@ export const useIndividualOfferImageUpload = () => {
       })
     } else {
       try {
-        await handleImageOnSubmit(offerId, creationArgs)
+        const dehumanizedId = dehumanizeId(offerId)
+        if (dehumanizedId)
+          await handleImageOnSubmit(dehumanizedId, creationArgs)
         logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
           from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,

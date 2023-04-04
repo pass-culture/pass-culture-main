@@ -5,13 +5,13 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import createThumbnailAdapter from '../createThumbnailAdapter'
 
 describe('test createThumbnailAdapter', () => {
-  let offerId: string
+  let offerId: number
   let imageFile: File
   let credit: string
   let cropParams: CroppedRect
 
   beforeEach(() => {
-    offerId = 'AA'
+    offerId = 12
     imageFile = new File([''], 'hello.png')
     credit = 'John Do'
     cropParams = { x: 1, y: 1, width: 1, height: 1 }

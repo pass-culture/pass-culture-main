@@ -212,7 +212,7 @@ const Informations = ({
 
     if (isOk) {
       const receivedOfferId = payload.id
-      await handleImageOnSubmit(receivedOfferId)
+      await handleImageOnSubmit(payload.nonHumanizedId)
 
       const response = await getOfferIndividualAdapter(payload.id)
       // This do not trigger a visal change, it's complicated to test
