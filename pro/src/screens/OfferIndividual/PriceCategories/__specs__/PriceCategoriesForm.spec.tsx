@@ -39,7 +39,6 @@ const renderPriceCategoriesForm = (
         mode={OFFER_WIZARD_MODE.DRAFT}
         stocks={[individualStockFactory({ priceCategoryId: 144 })]}
         setOffer={jest.fn()}
-        humanizedOfferId="AA"
         isDisabled={false}
         canBeDuo={canBeDuo}
       />

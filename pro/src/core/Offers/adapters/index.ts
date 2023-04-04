@@ -5,7 +5,6 @@ export {
 } from './useGetCategories'
 export {
   getOfferIndividualAdapter,
-  useGetOfferIndividual,
   serializeOfferApi,
 } from './getOfferIndividualAdapter'
 export type { GetOfferIndividualAdapter } from './getOfferIndividualAdapter'

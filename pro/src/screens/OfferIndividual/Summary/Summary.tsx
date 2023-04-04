@@ -81,7 +81,7 @@ const Summary = () => {
       offerId: offer.nonHumanizedId,
     })
     if (response.isOk) {
-      const response = await getOfferIndividualAdapter(offer.id)
+      const response = await getOfferIndividualAdapter(offer.nonHumanizedId)
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }

@@ -134,7 +134,7 @@ export const StocksEventCreation = ({
       })
 
       if (isOk) {
-        const response = await getOfferIndividualAdapter(offer.id)
+        const response = await getOfferIndividualAdapter(offer.nonHumanizedId)
         if (response.isOk) {
           const updatedOffer = response.payload
           setOffer && setOffer(updatedOffer)

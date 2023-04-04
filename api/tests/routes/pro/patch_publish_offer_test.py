@@ -6,7 +6,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
@@ -20,7 +19,7 @@ class Returns404Test:
         other_stock = offers_factories.StockFactory()
 
         response = client.with_session_auth("user@example.com").patch(
-            "/offers/publish", json={"id": humanize(other_stock.offer.id)}
+            "/offers/publish", json={"id": other_stock.offer.id}
         )
         assert response.status_code == 403
 
@@ -42,7 +41,7 @@ class Returns204Test:
         )
 
         client = client.with_session_auth("user@example.com")
-        response = client.patch("/offers/publish", json={"id": humanize(stock.offerId)})
+        response = client.patch("/offers/publish", json={"id": stock.offerId})
 
         assert response.status_code == 204
         offer = offers_models.Offer.query.get(stock.offer.id)

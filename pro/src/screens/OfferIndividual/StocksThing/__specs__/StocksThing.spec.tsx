@@ -224,7 +224,7 @@ describe('screens:StocksThing', () => {
         /Les bénéficiaires ont 30 jours pour faire valider leur contremarque/
       )
     ).toBeInTheDocument()
-    expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
+    expect(api.getOffer).toHaveBeenCalledWith(offer.nonHumanizedId)
   })
 
   it('should submit stock form when click on "Étape suivante"', async () => {
@@ -256,7 +256,7 @@ describe('screens:StocksThing', () => {
       ],
     })
     expect(screen.getByText('Next page')).toBeInTheDocument()
-    expect(api.getOffer).toHaveBeenCalledWith('OFFER_ID')
+    expect(api.getOffer).toHaveBeenCalledWith(offer.nonHumanizedId)
   })
 
   it('should not submit stock form when click on "Étape précédente"', async () => {

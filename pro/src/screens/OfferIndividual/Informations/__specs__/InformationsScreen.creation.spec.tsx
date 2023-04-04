@@ -198,9 +198,10 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
-    jest
-      .spyOn(api, 'postOffer')
-      .mockResolvedValue({ id: 'AA' } as GetIndividualOfferResponseModel)
+    jest.spyOn(api, 'postOffer').mockResolvedValue({
+      id: 'BQ',
+      nonHumanizedId: 12,
+    } as GetIndividualOfferResponseModel)
     jest
       .spyOn(utils, 'filterCategories')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -403,7 +404,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         from: 'informations',
         isDraft: true,
         isEdition: false,
-        offerId: 'AA',
+        offerId: 'BQ',
         to: 'stocks',
         used: 'StickyButtons',
       }
@@ -430,7 +431,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         from: 'informations',
         isDraft: true,
         isEdition: false,
-        offerId: 'AA',
+        offerId: 'BQ',
         to: 'informations',
         used: 'DraftButtons',
       }

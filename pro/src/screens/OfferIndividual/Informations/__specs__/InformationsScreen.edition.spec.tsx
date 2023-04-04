@@ -26,7 +26,6 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
-import { dehumanizeId } from 'utils/dehumanize'
 import { individualStockFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -182,7 +181,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     }
 
     offer = {
-      id: 'AK',
+      id: 'BQ',
       nonHumanizedId: 12,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
@@ -286,12 +285,14 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       .spyOn(utils, 'filterCategories')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((c, s, _v) => [c, s])
-    jest
-      .spyOn(api, 'patchOffer')
-      .mockResolvedValue({ id: 'AA' } as GetIndividualOfferResponseModel)
-    jest
-      .spyOn(api, 'postOffer')
-      .mockResolvedValue({ id: 'AA' } as GetIndividualOfferResponseModel)
+    jest.spyOn(api, 'patchOffer').mockResolvedValue({
+      id: 'AA',
+      nonHumanizedId: 12,
+    } as GetIndividualOfferResponseModel)
+    jest.spyOn(api, 'postOffer').mockResolvedValue({
+      id: 'AA',
+      nonHumanizedId: 12,
+    } as GetIndividualOfferResponseModel)
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
@@ -437,7 +438,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     await userEvent.click(screen.getByRole('button', { name: /Supprimer/ }))
     await screen.findByText('Souhaitez-vous vraiment supprimer cette image ?')
     await userEvent.click(screen.getByTestId('confirm-dialog-button-confirm'))
-    expect(api.deleteThumbnail).toHaveBeenCalledWith(dehumanizeId('AK'))
+    expect(api.deleteThumbnail).toHaveBeenCalledWith(offer.nonHumanizedId)
     expect(
       await screen.findByRole('button', { name: /Ajouter une image/ })
     ).toBeInTheDocument()
@@ -474,7 +475,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         { exact: false }
       )
     ).toBeInTheDocument()
-    expect(api.deleteThumbnail).toHaveBeenCalledWith(dehumanizeId('AK'))
+    expect(api.deleteThumbnail).toHaveBeenCalledWith(offer.nonHumanizedId)
 
     expect(
       screen.queryByRole('button', { name: /Ajouter une image/ })
@@ -519,7 +520,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         from: 'informations',
         isDraft: false,
         isEdition: true,
-        offerId: 'AK',
+        offerId: 'BQ',
         to: 'Offers',
         used: 'StickyButtons',
       }

@@ -26,7 +26,7 @@ class Returns403Test:
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
-        response = client.get(f"/offers/{humanize(offer.id)}")
+        response = client.get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 403
@@ -38,7 +38,7 @@ class Returns403Test:
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=pro_user.email)
-        response = client.get(f"/offers/{humanize(offer.id)}")
+        response = client.get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 403
@@ -55,7 +55,7 @@ class Returns200Test:
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = client.get(f"/offers/{humanize(offer.id)}")
+        response = client.get(f"/offers/{offer.id}")
 
         # Then
         response_json = response.json
@@ -76,10 +76,9 @@ class Returns200Test:
 
         # When
         client.with_session_auth(email=user_offerer.user.email)
-        humanized_offer_id = humanize(offer.id)
 
         with testing.assert_no_duplicated_queries():
-            client.get(f"/offers/{humanized_offer_id}")
+            client.get(f"/offers/{offer.id}")
 
     def test_access_even_if_offerer_has_no_siren(self, app):
         # Given
@@ -91,7 +90,7 @@ class Returns200Test:
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = client.get(f"/offers/{humanize(offer.id)}")
+        response = client.get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 200
@@ -105,7 +104,7 @@ class Returns200Test:
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = client.get(f"/offers/{humanize(offer.id)}")
+        response = client.get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 200
@@ -157,7 +156,7 @@ class Returns200Test:
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = client.get(f"/offers/{humanize(offer.id)}")
+        response = client.get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 200
@@ -309,7 +308,7 @@ class Returns200Test:
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = client.get(f"/offers/{humanize(offer.id)}")
+        response = client.get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 200
@@ -331,7 +330,7 @@ class Returns200Test:
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
 
-        response = client.get(f"/offers/{humanize(offer.id)}")
+        response = client.get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 200
@@ -349,7 +348,7 @@ class Returns200Test:
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = client.get(f"/offers/{humanize(deleted_stock.offer.id)}")
+        response = client.get(f"/offers/{deleted_stock.offer.id}")
 
         # Then
         assert response.status_code == 200

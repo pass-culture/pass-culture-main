@@ -51,10 +51,7 @@ const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
             mode: OFFER_WIZARD_MODE.EDITION,
           })}
           element={
-            <OfferIndividualContextProvider
-              isUserAdmin={false}
-              offerId="OFFER_ID"
-            >
+            <OfferIndividualContextProvider isUserAdmin={false} offerId="BQ">
               <Stocks />
             </OfferIndividualContextProvider>
           }
@@ -89,7 +86,7 @@ const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
         getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.EDITION,
-          offerId: 'OFFER_ID',
+          offerId: 'BQ',
         }),
       ],
     }
@@ -133,7 +130,7 @@ describe('screens:StocksThing', () => {
       extraData: null,
       fieldsUpdated: [],
       hasBookingLimitDatetimesPassed: true,
-      id: 'OFFER_ID',
+      id: 'BQ',
       isActive: true,
       isBookable: false,
       isDigital: false,
@@ -146,7 +143,7 @@ describe('screens:StocksThing', () => {
       audioDisabilityCompliant: false,
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: false,
-      nonHumanizedId: 192,
+      nonHumanizedId: 12,
       visualDisabilityCompliant: false,
       lastProvider: null,
       lastProviderId: null,
@@ -294,7 +291,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should allow user to delete a stock', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
     renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
 
@@ -335,7 +332,7 @@ describe('screens:StocksThing', () => {
       enabledForPro: true,
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
     renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
 
@@ -401,7 +398,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should not display any message when user delete empty stock', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'OFFER_ID' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
     renderStockThingScreen(storeOverride)
     apiOffer.stocks = []
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
