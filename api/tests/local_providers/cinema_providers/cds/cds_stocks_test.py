@@ -5,11 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.serialization.cine_digital_service_serializers import IdObjectCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowTariffCDS
 from pcapi.core.categories import subcategories
-from pcapi.core.external_bookings.models import Movie
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import PriceCategoryLabel
@@ -25,6 +21,8 @@ from pcapi.utils.human_ids import humanize
 
 import tests
 
+from . import fixtures
+
 
 @pytest.mark.usefixtures("db_session")
 class CDSStocksTest:
@@ -39,43 +37,9 @@ class CDSStocksTest:
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-        mocked_movies = [
-            Movie(
-                id="123",
-                title="Coupez !",
-                duration=120,
-                description="Ca tourne mal",
-                visa="123456",
-                posterpath="fakeUrl/coupez.png",
-            ),
-            Movie(
-                id="51",
-                title="Top Gun",
-                duration=150,
-                description="Film sur les avions",
-                visa="333333",
-                posterpath="fakeUrl/topgun.png",
-            ),
-        ]
+        mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
         mock_get_venue_movies.return_value = mocked_movies
-        mocked_shows = [
-            {
-                "show_information": ShowCDS(
-                    id=1,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=77,
-                    internet_remaining_place=10,
-                    showtime=datetime(2022, 6, 20, 11, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=51),
-                ),
-                "price": 5,
-            }
-        ]
+        mocked_shows = [{"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5}]
         mock_get_shows.return_value = mocked_shows
         # When
         cds_stocks = CDSStocks(venue_provider=venue_provider)
@@ -96,50 +60,11 @@ class CDSStocksTest:
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-        mocked_movies = [
-            Movie(
-                id="123",
-                title="Coupez !",
-                duration=120,
-                description="Ca tourne mal",
-                visa="123456",
-                posterpath="fakeUrl/coupez.png",
-            ),
-        ]
+        mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
         mocked_shows = [
-            {
-                "show_information": ShowCDS(
-                    id=1,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=77,
-                    internet_remaining_place=10,
-                    showtime=datetime(2022, 6, 20, 11, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=123),
-                ),
-                "price": 5,
-            },
-            {
-                "show_information": ShowCDS(
-                    id=2,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=77,
-                    internet_remaining_place=10,
-                    showtime=datetime(2022, 7, 1, 12, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=51),
-                ),
-                "price": 5,
-            },
+            {"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5},
+            {"show_information": fixtures.MOVIE_2_SHOW_1, "price": 5},
         ]
         mock_get_shows.return_value = mocked_shows
         # When
@@ -178,52 +103,13 @@ class CDSStocksTest:
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-        mocked_movies = [
-            Movie(
-                id="123",
-                title="Coupez !",
-                duration=120,
-                description="Ca tourne mal",
-                visa="123456",
-                posterpath="fakeUrl/coupez.png",
-            ),
-        ]
+        mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
 
         # these shows are not matching movies (by mediaid)
         mocked_shows = [
-            {
-                "show_information": ShowCDS(
-                    id=1,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=77,
-                    internet_remaining_place=10,
-                    showtime=datetime(2022, 6, 20, 11, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=88888),
-                ),
-                "price": 5,
-            },
-            {
-                "show_information": ShowCDS(
-                    id=2,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=77,
-                    internet_remaining_place=10,
-                    showtime=datetime(2022, 7, 1, 12, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=88888),
-                ),
-                "price": 5,
-            },
+            {"show_information": fixtures.MOVIE_OTHER_SHOW_1, "price": 5},
+            {"show_information": fixtures.MOVIE_OTHER_SHOW_2, "price": 5},
         ]
         mock_get_shows.return_value = mocked_shows
         # When
@@ -240,7 +126,9 @@ class CDSStocksTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
-    def should_create_offers_for_each_movie(self, mock_get_venue_movies, mock_get_shows, mock_get_internet_sale_gauge):
+    def should_create_offers_for_each_movie(
+        self, mock_get_venue_movies, mock_get_shows, mock_get_internet_sale_gauge, requests_mock
+    ):
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         venue_provider = VenueProviderFactory(provider=cds_provider)
@@ -248,62 +136,15 @@ class CDSStocksTest:
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-        mocked_movies = [
-            Movie(
-                id="123",
-                title="Coupez !",
-                duration=120,
-                description="Ca tourne mal",
-                visa="123456",
-                posterpath="fakeUrl/coupez.png",
-            ),
-            Movie(
-                id="51",
-                title="Top Gun",
-                duration=150,
-                description="Film sur les avions",
-                visa="333333",
-                posterpath="fakeUrl/topgun.png",
-            ),
-        ]
+        mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
         mock_get_venue_movies.return_value = mocked_movies
         mocked_shows = [
-            {
-                "show_information": ShowCDS(
-                    id=1,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=77,
-                    internet_remaining_place=10,
-                    showtime=datetime(2022, 6, 20, 11, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=123),
-                ),
-                "price": 5,
-                "price_label": "pass Culture",
-            },
-            {
-                "show_information": ShowCDS(
-                    id=2,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=77,
-                    internet_remaining_place=10,
-                    showtime=datetime(2022, 7, 1, 12, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=51),
-                ),
-                "price": 5,
-                "price_label": "pass Culture",
-            },
+            {"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5, "price_label": "pass Culture"},
+            {"show_information": fixtures.MOVIE_2_SHOW_1, "price": 5, "price_label": "pass Culture"},
         ]
         mock_get_shows.return_value = mocked_shows
+        requests_mock.get("https://example.com/coupez.png", content=bytes())
+        requests_mock.get("https://example.com/topgun.png", content=bytes())
 
         cds_stocks = CDSStocks(venue_provider=venue_provider)
 
@@ -331,64 +172,15 @@ class CDSStocksTest:
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-        mocked_movies = [
-            Movie(
-                id="123",
-                title="Coupez !",
-                duration=120,
-                description="Ca tourne mal",
-                visa="123456",
-                posterpath="http://fakeUrl/coupez.png",
-            ),
-            Movie(
-                id="51",
-                title="Top Gun",
-                duration=150,
-                description="Film sur les avions",
-                visa="333333",
-                posterpath="http://fakeUrl/topgun.png",
-            ),
-        ]
+        mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
         mock_get_venue_movies.return_value = mocked_movies
 
-        requests_mock.get("http://fakeUrl/coupez.png", content=bytes())
-        requests_mock.get("http://fakeUrl/topgun.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=bytes())
+        requests_mock.get("https://example.com/topgun.png", content=bytes())
 
         mocked_shows = [
-            {
-                "show_information": ShowCDS(
-                    id=1,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=77,
-                    internet_remaining_place=10,
-                    showtime=datetime(2022, 6, 20, 11, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=123),
-                ),
-                "price": 5.0,
-                "price_label": "pass Culture",
-            },
-            {
-                "show_information": ShowCDS(
-                    id=2,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=78,
-                    internet_remaining_place=11,
-                    showtime=datetime(2022, 7, 1, 12, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=51),
-                ),
-                "price": 6.5,
-                "price_label": "pass Culture",
-            },
+            {"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5.0, "price_label": "pass Culture"},
+            {"show_information": fixtures.MOVIE_2_SHOW_1, "price": 6.5, "price_label": "pass Culture"},
         ]
         mock_get_shows.return_value = mocked_shows
 
@@ -473,56 +265,15 @@ class CDSStocksTest:
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-        mocked_movies = [
-            Movie(
-                id="123",
-                title="Coupez !",
-                duration=120,
-                description="Ca tourne mal",
-                visa="123456",
-                posterpath="http://fakeUrl/coupez.png",
-            )
-        ]
+        mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
         mocked_same_film_shows = [
-            {
-                "show_information": ShowCDS(
-                    id=1,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=77,
-                    internet_remaining_place=10,
-                    showtime=datetime(2022, 6, 20, 11, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=123),
-                ),
-                "price": 5.0,
-                "price_label": "Diffusion 2D",
-            },
-            {
-                "show_information": ShowCDS(
-                    id=2,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=78,
-                    internet_remaining_place=11,
-                    showtime=datetime(2022, 7, 1, 12, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=123),
-                ),
-                "price": 6.5,
-                "price_label": "Diffusion 3D",
-            },
+            {"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5.0, "price_label": "Diffusion 2D"},
+            {"show_information": fixtures.MOVIE_1_SHOW_2, "price": 6.5, "price_label": "Diffusion 3D"},
         ]
         mock_get_shows.return_value = mocked_same_film_shows
 
-        requests_mock.get("http://fakeUrl/coupez.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=bytes())
 
         cds_stocks = CDSStocks(venue_provider=venue_provider)
 
@@ -597,39 +348,14 @@ class CDSStocksTest:
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-        mocked_movies = [
-            Movie(
-                id="123",
-                title="Coupez !",
-                duration=120,
-                description="Ca tourne mal",
-                visa="123456",
-                posterpath="http://fakeUrl/coupez.png",
-            )
-        ]
+        mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
         mocked_shows = [
-            {
-                "show_information": ShowCDS(
-                    id=1,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=77,
-                    internet_remaining_place=10,
-                    showtime=datetime(2022, 6, 20, 11, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=123),
-                ),
-                "price": 6.9,
-                "price_label": "pass Culture",
-            },
+            {"show_information": fixtures.MOVIE_1_SHOW_1, "price": 6.9, "price_label": "pass Culture"},
         ]
         mock_get_shows.return_value = mocked_shows
 
-        requests_mock.get("http://fakeUrl/coupez.png", content=bytes())
+        requests_mock.get("https://example.com/coupez.png", content=bytes())
 
         # When
         CDSStocks(venue_provider=venue_provider).updateObjects()
@@ -658,61 +384,12 @@ class CDSStocksTest:
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-        mocked_movies = [
-            Movie(
-                id="123",
-                title="Coupez !",
-                duration=120,
-                description="Ca tourne mal",
-                visa="123456",
-                posterpath="fakeUrl/coupez.png",
-            ),
-            Movie(
-                id="51",
-                title="Top Gun",
-                duration=150,
-                description="Film sur les avions",
-                visa="333333",
-                posterpath="fakeUrl/topgun.png",
-            ),
-        ]
+        mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
         mock_get_venue_movies.return_value = mocked_movies
 
         mocked_shows = [
-            {
-                "show_information": ShowCDS(
-                    id=1,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=77,
-                    internet_remaining_place=10,
-                    showtime=datetime(2022, 6, 20, 11, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=123),
-                ),
-                "price": 5,
-                "price_label": "pass Culture",
-            },
-            {
-                "show_information": ShowCDS(
-                    id=2,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=78,
-                    internet_remaining_place=11,
-                    showtime=datetime(2022, 7, 1, 12, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=51),
-                ),
-                "price": 6,
-                "price_label": "pass Culture",
-            },
+            {"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5, "price_label": "pass Culture"},
+            {"show_information": fixtures.MOVIE_2_SHOW_1, "price": 6, "price_label": "pass Culture"},
         ]
         mock_get_shows.return_value = mocked_shows
 
@@ -759,37 +436,10 @@ class CDSStocksTest:
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-        mocked_movies = [
-            Movie(
-                id="123",
-                title="Coupez !",
-                duration=120,
-                description="Ca tourne mal",
-                visa="123456",
-                posterpath="fakeUrl/coupez.png",
-            ),
-        ]
+        mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
 
-        mocked_shows = [
-            {
-                "show_information": ShowCDS(
-                    id=1,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=77,
-                    internet_remaining_place=10,
-                    showtime=datetime(2022, 6, 20, 11, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=123),
-                ),
-                "price": 5,
-                "price_label": "pass Culture",
-            },
-        ]
+        mocked_shows = [{"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5, "price_label": "pass Culture"}]
         mock_get_shows.return_value = mocked_shows
 
         cds_stocks = CDSStocks(venue_provider=venue_provider)
@@ -812,7 +462,7 @@ class CDSStocksQuantityTest:
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def should_update_cds_stock_with_correct_stock_quantity(
-        self, mock_get_venue_movies, mock_get_shows, mock_get_internet_sale_gauge
+        self, mock_get_venue_movies, mock_get_shows, mock_get_internet_sale_gauge, requests_mock
     ):
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
@@ -822,38 +472,11 @@ class CDSStocksQuantityTest:
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
 
-        mocked_movies = [
-            Movie(
-                id="123",
-                title="Coupez !",
-                duration=120,
-                description="Ca tourne mal",
-                visa="123456",
-                posterpath="fakeUrl/coupez.png",
-            ),
-        ]
+        mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
-        mocked_shows = [
-            {
-                "show_information": ShowCDS(
-                    id=1,
-                    is_cancelled=False,
-                    is_deleted=False,
-                    is_disabled_seatmap=False,
-                    is_empty_seatmap=False,
-                    remaining_place=77,
-                    internet_remaining_place=10,
-                    showtime=datetime(2022, 6, 20, 11, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=123),
-                ),
-                "price": 5,
-                "price_label": "pass Culture",
-            }
-        ]
+        mocked_shows = [{"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5, "price_label": "pass Culture"}]
         mock_get_shows.return_value = mocked_shows
-
+        requests_mock.get("https://example.com/coupez.png", content=bytes())
         # When
         cds_stocks_provider = CDSStocks(venue_provider=cds_venue_provider)
         cds_stocks_provider.updateObjects()
