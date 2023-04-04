@@ -56,15 +56,15 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
     return offers_serialize.ListOffersResponseModel(__root__=serialize_offers_recap_paginated(paginated_offers))  # type: ignore [arg-type]
 
 
-@private_api.route("/offers/<offer_id>", methods=["GET"])
+@private_api.route("/offers/<int:offer_id>", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
     api=blueprint.pro_private_schema,
 )
-def get_offer(offer_id: str) -> offers_serialize.GetIndividualOfferResponseModel:
+def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferResponseModel:
     try:
-        offer = offers_repository.get_offer_by_id(human_ids.dehumanize(offer_id))  # type: ignore [arg-type]
+        offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
         raise api_errors.ApiErrors(
             errors={

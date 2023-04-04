@@ -34,7 +34,7 @@ const Template = ({
 
   /* istanbul ignore next: DEBT, TO FIX */
   const reloadOffer = async () => {
-    const response = await getOfferIndividualAdapter(offer?.id)
+    const response = await getOfferIndividualAdapter(offer?.nonHumanizedId)
     if (response.isOk) {
       setOffer && setOffer(response.payload)
     } else {

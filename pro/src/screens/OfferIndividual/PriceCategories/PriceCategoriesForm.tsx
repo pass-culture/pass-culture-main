@@ -29,7 +29,6 @@ import styles from './PriceCategoriesForm.module.scss'
 
 interface IPriceCategoriesForm {
   offerId: number
-  humanizedOfferId: string
   stocks: IOfferIndividualStock[]
   mode: OFFER_WIZARD_MODE
   setOffer: ((offer: IOfferIndividual | null) => void) | null
@@ -39,7 +38,6 @@ interface IPriceCategoriesForm {
 
 export const PriceCategoriesForm = ({
   offerId,
-  humanizedOfferId,
   stocks,
   mode,
   setOffer,
@@ -90,7 +88,7 @@ export const PriceCategoriesForm = ({
       })
       if (isOk) {
         arrayHelpers.remove(index)
-        const response = await getOfferIndividualAdapter(humanizedOfferId)
+        const response = await getOfferIndividualAdapter(offerId)
         if (response.isOk) {
           const updatedOffer = response.payload
           setOffer && setOffer(updatedOffer)
@@ -122,7 +120,7 @@ export const PriceCategoriesForm = ({
           requestBody: requestBody,
         })
       }
-      const response = await getOfferIndividualAdapter(humanizedOfferId)
+      const response = await getOfferIndividualAdapter(offerId)
       if (response.isOk) {
         const updatedOffer = response.payload
         setOffer && setOffer(updatedOffer)

@@ -182,7 +182,7 @@ const StocksEventEdition = ({
 
     /* istanbul ignore next: DEBT, TO FIX */
     if (isOk) {
-      const response = await getOfferIndividualAdapter(offer.id)
+      const response = await getOfferIndividualAdapter(offer.nonHumanizedId)
       if (response.isOk) {
         const updatedOffer = response.payload
         setOffer && setOffer(updatedOffer)
@@ -231,7 +231,7 @@ const StocksEventEdition = ({
     }
     try {
       await api.deleteStock(stockId)
-      const response = await getOfferIndividualAdapter(offer.id)
+      const response = await getOfferIndividualAdapter(offer.nonHumanizedId)
       /* istanbul ignore next: DEBT, TO FIX */
       if (response.isOk) {
         setOffer && setOffer(response.payload)

@@ -1397,7 +1397,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getOffer(
-    offerId: string,
+    offerId: number,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'GET',

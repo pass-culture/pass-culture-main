@@ -149,7 +149,6 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 
 class PatchOfferPublishBodyModel(BaseModel):
     id: int
-    _dehumanize_id = dehumanize_field("id")
 
 
 class PatchOfferActiveStatusBodyModel(BaseModel):

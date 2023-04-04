@@ -95,7 +95,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
     /* istanbul ignore next: DEBT, TO FIX */
     if (isOk) {
-      const response = await getOfferIndividualAdapter(offer.id)
+      const response = await getOfferIndividualAdapter(offer.nonHumanizedId)
       if (response.isOk) {
         setOffer && setOffer(response.payload)
         formik.resetForm({ values: buildInitialValues(response.payload) })
@@ -235,7 +235,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     }
     try {
       await api.deleteStock(formik.values.stockId)
-      const response = await getOfferIndividualAdapter(offer.id)
+      const response = await getOfferIndividualAdapter(offer.nonHumanizedId)
       /* istanbul ignore next: DEBT, TO FIX */
       if (response.isOk) {
         setOffer && setOffer(response.payload)
