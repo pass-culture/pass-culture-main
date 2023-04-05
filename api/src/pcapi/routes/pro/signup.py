@@ -1,10 +1,8 @@
 from pcapi.core.subscription.phone_validation import exceptions as phone_exceptions
-from pcapi.core.users.api import create_pro_user_V2
-from pcapi.core.users.api import create_pro_user_and_offerer
+from pcapi.core.users import api as users_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization.users import ProUserCreationBodyModel
-from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
+from pcapi.routes.serialization import users as users_serialize
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
@@ -12,17 +10,17 @@ from . import blueprint
 
 @private_api.route("/users/signup/pro", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def signup_pro(body: ProUserCreationBodyModel) -> None:
+def signup_pro(body: users_serialize.ProUserCreationBodyModel) -> None:
     try:
-        create_pro_user_and_offerer(body)
+        users_api.create_pro_user_and_offerer(body)
     except phone_exceptions.InvalidPhoneNumber:
         raise ApiErrors(errors={"phoneNumber": ["Le numéro de téléphone est invalide"]})
 
 
 @private_api.route("/v2/users/signup/pro", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def signup_pro_V2(body: ProUserCreationBodyV2Model) -> None:
+def signup_pro_V2(body: users_serialize.ProUserCreationBodyV2Model) -> None:
     try:
-        create_pro_user_V2(body)
+        users_api.create_pro_user_V2(body)
     except phone_exceptions.InvalidPhoneNumber:
         raise ApiErrors(errors={"phoneNumber": ["Le numéro de téléphone est invalide"]})
