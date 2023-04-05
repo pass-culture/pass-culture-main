@@ -116,7 +116,7 @@ class CGRStocksTest:
         assert created_stocks[0].offer == created_offers[0]
         assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 1, 29, 14)
         assert created_stocks[0].priceCategory.price == Decimal("6.9")
-        assert created_stocks[0].priceCategory.priceCategoryLabel.label == "Tarif 2D salle ICE"
+        assert created_stocks[0].priceCategory.priceCategoryLabel.label == "Tarif Standard ICE"
 
         assert created_offers[1].name == "Super Mario Bros, Le Film"
         assert created_offers[1].product == created_products[1]
@@ -140,7 +140,7 @@ class CGRStocksTest:
         assert created_stocks[1].offer == created_offers[1]
         assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 3, 4, 16)
         assert created_stocks[1].priceCategory.price == Decimal(11.00)
-        assert created_stocks[1].priceCategory.priceCategoryLabel.label == "Tarif 3D salle ICE"
+        assert created_stocks[1].priceCategory.priceCategoryLabel.label == "Tarif standard 3D"
 
     def should_fill_stocks_and_price_categories_for_a_movie(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
@@ -196,7 +196,7 @@ class CGRStocksTest:
         assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 3, 4, 16)
         assert created_price_categories[0].price == 11.0
         assert created_price_categories[0].priceCategoryLabel == created_price_category_labels[0]
-        assert created_price_category_labels[0].label == "Tarif 3D salle ICE"
+        assert created_price_category_labels[0].label == "Tarif standard 3D"
 
         assert created_stocks[1].quantity == 56
         assert created_stocks[1].price == Decimal("7.2")
@@ -207,7 +207,7 @@ class CGRStocksTest:
         assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 3, 5, 16)
         assert created_price_categories[1].price == Decimal("7.2")
         assert created_price_categories[1].priceCategoryLabel == created_price_category_labels[1]
-        assert created_price_category_labels[1].label == "Tarif 2D avant première"
+        assert created_price_category_labels[1].label == "Tarif Standard ICE"
 
         assert created_stocks[2].quantity == 132
         assert created_stocks[2].price == 11.00
@@ -218,7 +218,7 @@ class CGRStocksTest:
         assert created_stocks[2].beginningDatetime == datetime.datetime(2023, 3, 6, 16)
         assert created_price_categories[2].price == 11.00
         assert created_price_categories[2].priceCategoryLabel == created_price_category_labels[2]
-        assert created_price_category_labels[2].label == "Tarif 2D avant première salle ICE"
+        assert created_price_category_labels[2].label == "Tarif Standard"
 
     def should_reuse_price_category(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)

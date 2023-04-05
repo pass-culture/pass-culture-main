@@ -16,6 +16,7 @@ class Seance(BaseModel):
     Version: str
     bAVP: bool
     PrixUnitaire: Decimal
+    libTarif: str
 
 
 class Film(BaseModel):
