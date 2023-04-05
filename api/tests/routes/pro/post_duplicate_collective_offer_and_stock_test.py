@@ -89,6 +89,7 @@ class Returns200Test:
                     "thumbCount": 0,
                 },
                 "managingOffererId": humanize(offerer.id),
+                "nonHumanizedId": venue.id,
                 "name": venue.name,
                 "postalCode": "75000",
                 "publicName": venue.publicName,

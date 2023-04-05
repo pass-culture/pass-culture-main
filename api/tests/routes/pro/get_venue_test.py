@@ -156,8 +156,7 @@ class Returns200Test:
         db.session.commit()  # clear SQLA cached objects
 
         with testing.assert_no_duplicated_queries():
-            response = auth_request.get("/venues/%s" % humanize(venue_id))
-
+            response = auth_request.get("/venues/%s" % venue_id)
         assert response.status_code == 200
         assert response.json == expected_serialized_venue
 
@@ -176,8 +175,7 @@ class Returns200Test:
         db.session.commit()  # clear SQLA cached objects
 
         with testing.assert_no_duplicated_queries():
-            response = auth_request.get("/venues/%s" % humanize(venue_id))
-
+            response = auth_request.get("/venues/%s" % venue_id)
         assert response.status_code == 200
         assert response.json["adageInscriptionDate"] == None
         assert response.json["hasAdageId"] == False
@@ -202,7 +200,7 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % humanize(venue.id))
+        response = auth_request.get("/venues/%s" % venue.id)
 
         assert response.json["bannerMeta"] == {
             "crop_params": {
@@ -223,7 +221,7 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % humanize(venue.id))
+        response = auth_request.get("/venues/%s" % venue.id)
 
         assert response.json["bannerMeta"] is None
 
@@ -237,7 +235,7 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % humanize(venue.id))
+        response = auth_request.get("/venues/%s" % venue.id)
 
         assert response.json["bannerMeta"]["crop_params"] == {
             "x_crop_percent": DO_NOT_CROP.x_crop_percent,
@@ -256,7 +254,7 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % humanize(venue.id))
+        response = auth_request.get("/venues/%s" % venue.id)
 
         assert response.json["bannerMeta"] == {
             "crop_params": {
@@ -287,7 +285,7 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % humanize(venue.id))
+        response = auth_request.get("/venues/%s" % venue.id)
 
         assert response.json["bannerMeta"] == {
             "crop_params": {
@@ -310,7 +308,7 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % humanize(venue.id))
+        response = auth_request.get("/venues/%s" % venue.id)
 
         assert response.json["bannerMeta"]["crop_params"] == {
             "x_crop_percent": 0.29,
@@ -337,7 +335,7 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % humanize(venue.id))
+        response = auth_request.get("/venues/%s" % venue.id)
 
         assert response.json["bannerMeta"]["crop_params"] == {
             "x_crop_percent": 0.29,
@@ -356,7 +354,7 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % humanize(venue.id))
+        response = auth_request.get("/venues/%s" % venue.id)
 
         assert response.json["bannerMeta"] == {
             "crop_params": {
@@ -379,7 +377,7 @@ class Returns403Test:
 
         # when
         auth_request = TestClient(app.test_client()).with_session_auth(email=pro.email)
-        response = auth_request.get("/venues/%s" % humanize(venue.id))
+        response = auth_request.get("/venues/%s" % venue.id)
 
         # then
         assert response.status_code == 403

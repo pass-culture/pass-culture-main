@@ -2222,7 +2222,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getVenue(
-    venueId: string,
+    venueId: number,
   ): CancelablePromise<GetVenueResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
