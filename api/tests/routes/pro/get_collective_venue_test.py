@@ -52,7 +52,7 @@ class Returns200Test:
         }
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s/collective-data" % humanize(venue.id))
+        response = auth_request.get("/venues/%s/collective-data" % venue.id)
 
         assert response.status_code == 200
         assert response.json == expected_serialized_venue

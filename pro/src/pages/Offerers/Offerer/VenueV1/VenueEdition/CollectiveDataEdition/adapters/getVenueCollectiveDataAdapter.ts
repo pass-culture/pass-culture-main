@@ -3,7 +3,7 @@ import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 type GetVenueCollectiveDataAdapter = Adapter<
-  string,
+  number,
   GetCollectiveVenueResponseModel,
   null
 >

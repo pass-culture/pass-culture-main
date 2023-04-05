@@ -82,7 +82,7 @@ const CollectiveDataEdition = (): JSX.Element | null => {
         getEducationalDomainsAdapter(),
         getVenueEducationalStatusesAdapter(),
         getCulturalPartnersAdapter(),
-        getVenueCollectiveDataAdapter(venueId ?? ''),
+        getVenueCollectiveDataAdapter(Number(venueId) ?? ''),
         getEducationalCategoriesAdapter(),
       ])
 

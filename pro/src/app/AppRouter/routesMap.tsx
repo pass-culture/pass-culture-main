@@ -193,6 +193,7 @@ const routes: IRoute[] = [
     element: <CollectiveDataEdition />,
     path: '/structures/:offererId/lieux/:venueId/eac',
     title: 'Mes informations pour les enseignants',
+    meta: { shouldRedirect: true },
   },
   {
     element: <OfferType />,
