@@ -56,7 +56,7 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         # then
         assert response.status_code == 200
@@ -83,7 +83,7 @@ class Returns200Test:
             },
             venue,
         )
-        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         assert response.status_code == 200
         assert venue.bookingEmail == "no.update@email.com"
@@ -98,7 +98,7 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         assert response.status_code == 200
         assert venue.bookingEmail == "new.venue@email.com"
@@ -139,7 +139,7 @@ class Returns200Test:
             },
             venue,
         )
-        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         assert response.status_code == 200
         assert venue.withdrawalDetails == "Ceci est un texte de modalités de retrait"
@@ -172,7 +172,7 @@ class Returns200Test:
             },
             venue,
         )
-        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         assert response.status_code == 200
         assert venue.withdrawalDetails == "Ceci est un texte de modalités de retrait"
@@ -202,7 +202,7 @@ class Returns200Test:
             venue,
         )
 
-        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         assert response.status_code == 200
         assert venue.audioDisabilityCompliant == True
@@ -231,7 +231,7 @@ class Returns200Test:
         auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
 
         # when
-        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         # Then
         assert response.status_code == 200
@@ -250,9 +250,7 @@ class Returns200Test:
             {"reimbursementPointId": new_reimbursement_point.id},
             venue,
         )
-        response = client.with_session_auth(email=user_offerer.user.email).patch(
-            f"/venues/{humanize(venue.id)}", json=venue_data
-        )
+        response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 200
         assert response.json["reimbursementPointId"] == new_reimbursement_point.id
@@ -276,9 +274,7 @@ class Returns200Test:
             {"reimbursementPointId": None},
             venue,
         )
-        response = client.with_session_auth(email=user_offerer.user.email).patch(
-            f"/venues/{humanize(venue.id)}", json=venue_data
-        )
+        response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
         assert not venue.current_reimbursement_point_id
         assert response.status_code == 200
@@ -295,7 +291,7 @@ class Returns400Test:
         )
 
         client = client.with_session_auth(user_offerer.user.email)
-        venue_id = humanize(venue.id)
+        venue_id = venue.id
         response = client.patch(f"/venues/{venue_id}", json=data)
 
         assert response.status_code == 400
@@ -312,9 +308,7 @@ class Returns400Test:
             {"reimbursementPointId": new_reimbursement_point.id},
             venue,
         )
-        response = client.with_session_auth(email=user_offerer.user.email).patch(
-            f"/venues/{humanize(venue.id)}", json=venue_data
-        )
+        response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
         assert response.json["reimbursementPointId"] == [
@@ -329,9 +323,7 @@ class Returns400Test:
             {"comment": "No SIRET " * 60},
             venue,
         )
-        response = client.with_session_auth(email=user_offerer.user.email).patch(
-            f"/venues/{humanize(venue.id)}", json=venue_data
-        )
+        response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
         assert response.json["comment"] == ["ensure this value has at most 500 characters"]
@@ -344,9 +336,7 @@ class Returns400Test:
             {"withdrawalDetails": "blabla " * 100},
             venue,
         )
-        response = client.with_session_auth(email=user_offerer.user.email).patch(
-            f"/venues/{humanize(venue.id)}", json=venue_data
-        )
+        response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
         assert response.status_code == 400
         assert response.json["withdrawalDetails"] == ["ensure this value has at most 500 characters"]

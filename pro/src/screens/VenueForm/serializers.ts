@@ -5,7 +5,7 @@ import { unhumanizeSiret } from 'core/Venue'
 
 interface VenueBodyModelParams {
   hideSiret: boolean
-  offererId: string
+  offererId: number
 }
 
 type HideSiretParam = Pick<VenueBodyModelParams, 'hideSiret'>

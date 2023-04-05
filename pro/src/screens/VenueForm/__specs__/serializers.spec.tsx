@@ -50,7 +50,7 @@ describe('screen | VenueForm | serializers', () => {
   it('Serialize form value for venue creation with siret', async () => {
     const result = serializePostVenueBodyModel(formValues, {
       hideSiret: false,
-      offererId: 'EA',
+      offererId: 12,
     })
 
     expect(result.siret).toBeDefined()
@@ -60,7 +60,7 @@ describe('screen | VenueForm | serializers', () => {
   it('Serialize form value for venue creation with venueLabelId', async () => {
     const result = serializePostVenueBodyModel(formValues, {
       hideSiret: true,
-      offererId: 'EA',
+      offererId: 13,
     })
 
     expect(result.venueLabelId).not.toBeNull()
@@ -124,7 +124,7 @@ describe('screen | VenueForm | serializers', () => {
     }
     const result = serializePostVenueBodyModel(formValues, {
       hideSiret: true,
-      offererId: 'EA',
+      offererId: 13,
     })
 
     expect(result.venueLabelId).toBeNull()
@@ -191,7 +191,7 @@ describe('screen | VenueForm | serializers', () => {
         },
         {
           hideSiret: false,
-          offererId: 'EA',
+          offererId: 12,
         }
       )
 
@@ -291,7 +291,7 @@ describe('screen | VenueForm | serializers', () => {
         },
         {
           hideSiret: false,
-          offererId: 'EA',
+          offererId: 12,
         }
       )
 

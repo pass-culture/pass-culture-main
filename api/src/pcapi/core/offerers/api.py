@@ -1730,7 +1730,7 @@ def create_from_onboarding_data(
             city=additional_info.city,
             latitude=additional_info.latitude,
             longitude=additional_info.longitude,
-            managingOffererId=human_ids.humanize(user_offerer.offererId),
+            managingOffererId=user_offerer.offererId,
             name=additional_info.name,
             # FIXME(fseguin, 2023-03-27): use only publicName when pcpro is updated
             publicName=onboarding_data.publicName or onboarding_data.name,
