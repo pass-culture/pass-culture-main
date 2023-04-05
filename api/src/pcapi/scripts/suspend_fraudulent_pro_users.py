@@ -26,8 +26,8 @@ def suspend_fraudulent_pro_by_email_providers(
     else:
         print(f"dry run: would suspend {len(fraudulent_pros)} fraudulent pro user")
         print("dry run: all emails of fraudulent pro user:")
-        for _, pros in enumerate(fraudulent_pros):
-            print(f"{pros.publicName}: {pros.email}")
+        for pro in fraudulent_pros:
+            print(f"{pro.full_name}: {pro.email}")
 
 
 def _suspend_fraudulent_pro_users(users: list[User], admin_user: User) -> None:

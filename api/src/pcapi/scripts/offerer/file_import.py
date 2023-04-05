@@ -91,7 +91,6 @@ def fill_user_offerer_from(user_offerer: UserOfferer, created_user: User, create
 def fill_user_from(csv_row: list[str], user: User) -> User:
     user.lastName = csv_row[USER_LAST_NAME_COLUMN_INDEX]
     user.firstName = csv_row[USER_FIRST_NAME_COLUMN_INDEX].split(" ")[0]
-    user.publicName = "%s %s" % (user.firstName, user.lastName)
     user.email = sanitize_email(csv_row[USER_EMAIL_COLUMN_INDEX])
     user.departementCode = csv_row[USER_DEPARTMENT_CODE_COLUMN_INDEX]
     user.remove_beneficiary_role()

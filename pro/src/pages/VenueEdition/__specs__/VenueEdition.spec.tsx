@@ -24,7 +24,6 @@ const renderVenueEdition = (venueId: string, offererId: string) => {
       currentUser: {
         id: 'EY',
         isAdmin: false,
-        publicName: 'USER',
       },
     },
   }

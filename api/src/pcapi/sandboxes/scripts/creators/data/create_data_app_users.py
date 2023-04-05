@@ -49,7 +49,6 @@ def create_data_app_beneficiaries() -> dict[str, User]:
             lastName=f"DATA {departement_code} {short_tag} {deposit_version} {index}",
             needsToFillCulturalSurvey=False,
             postalCode="{}310".format(departement_code),
-            publicName=f"DATA Test Jeune {departement_code} {short_tag} {deposit_version} {index}",
             deposit__source="sandbox",
             deposit__version=deposit_version,
         )
@@ -93,7 +92,6 @@ def create_data_app_underage_beneficiaries() -> dict[str, User]:
             lastName=f"DATA {departement_code} {short_tag} {index}",
             needsToFillCulturalSurvey=False,
             postalCode="{}100".format(departement_code),
-            publicName=f"DATA Test Mineur {departement_code} {short_tag} {index}",
             deposit__source="sandbox",
         )
 

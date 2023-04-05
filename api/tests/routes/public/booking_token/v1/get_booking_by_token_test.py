@@ -44,7 +44,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, client):
         # Given
-        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com", publicName="John Doe")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         user_admin = users_factories.AdminFactory(email="admin@example.com")
         booking = BookingFactory(user=user)
         booking_token = booking.token.lower()

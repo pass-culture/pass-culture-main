@@ -25,7 +25,6 @@ def create_industrial_admin_users() -> dict[str, User]:
                 firstName="PC Test Admin",
                 lastName="{} {}".format(departement_code, admin_count),
                 postalCode="{}100".format(departement_code),
-                publicName="PC Test Admin {} {}".format(departement_code, admin_count),
             )
 
     logger.info("created %d users", len(users_by_name))

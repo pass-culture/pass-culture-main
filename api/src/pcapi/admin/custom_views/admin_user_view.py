@@ -39,7 +39,6 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
         "firstName",
         "lastName",
         "email",
-        "publicName",
         "has_beneficiary_role",
         "has_underage_beneficiary_role",
         "isEmailValidated",
@@ -55,10 +54,9 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
         has_beneficiary_role="Bénéficiaire 18 ans ?",
         has_underage_beneficiary_role="Bénéficiaire 15-17 ?",
         isEmailValidated="Email validé ?",
-        publicName="Nom d'utilisateur",
         suspension_history="Historique de suspension",
     )
-    column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
+    column_searchable_list = ["id", "email", "firstName", "lastName"]
     column_filters = ["email", "isEmailValidated"]
     column_details_list = ["suspension_history", "comment"]
 
@@ -92,7 +90,6 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
             # Necessary because Flask-Admin calls a function of SQLAlchemy
             # that uses __new__, not __init__ (that sets `roles`).
             model.roles = []
-        model.publicName = f"{model.firstName} {model.lastName}"
         model.add_admin_role()
         model.hasSeenProTutorials = True
         model.hasSeenProRgs = True

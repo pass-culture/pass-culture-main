@@ -27,7 +27,6 @@ export type SharedLoginUserResponseModel = {
   nonHumanizedId: string;
   phoneNumber?: string | null;
   postalCode?: string | null;
-  publicName?: string | null;
   roles: Array<UserRole>;
 };
 

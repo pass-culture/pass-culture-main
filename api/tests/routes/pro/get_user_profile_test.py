@@ -24,7 +24,6 @@ class Returns200Test:
             lastName="Smisse",
             dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18),
             phoneNumber="0612345678",
-            publicName="Toto",
             isEmailValidated=True,
         )
 
@@ -60,7 +59,6 @@ class Returns200Test:
             "phoneNumber": "+33612345678",
             "phoneValidationStatus": None,
             "postalCode": None,
-            "publicName": "Toto",
             "roles": ["BENEFICIARY"],
         }
 

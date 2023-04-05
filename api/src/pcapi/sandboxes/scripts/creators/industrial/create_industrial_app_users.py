@@ -73,7 +73,6 @@ def create_industrial_app_beneficiaries() -> dict[str, User]:
             lastName=f"{departement_code} {short_tag} {deposit_version}",
             needsToFillCulturalSurvey=False,
             postalCode="{}100".format(departement_code),
-            publicName=f"PC Test Jeune {departement_code} {short_tag} {deposit_version}",
             deposit__source="sandbox",
             deposit__version=deposit_version,
         )
@@ -117,7 +116,6 @@ def create_industrial_app_underage_beneficiaries() -> dict[str, User]:
             lastName=f"{departement_code} {short_tag}",
             needsToFillCulturalSurvey=False,
             postalCode="{}100".format(departement_code),
-            publicName=f"PC Test Mineur {departement_code} {short_tag}",
             deposit__source="sandbox",
         )
 
@@ -160,7 +158,6 @@ def create_industrial_app_other_users() -> dict[str, User]:
             lastName=f"{departement_code} {short_tag}",
             needsToFillCulturalSurvey=needs_to_fill_cultural_survey,
             postalCode="{}100".format(departement_code),
-            publicName=f"PC Test Utilisateur {departement_code} {short_tag}",
         )
 
         if reset_password_token:
@@ -208,7 +205,6 @@ def create_industrial_app_general_public_users() -> dict[str, User]:
             lastName=f"{short_age}",
             needsToFillCulturalSurvey=True,
             postalCode="{}100".format(departement_code),
-            publicName=f"PC Test Grand Public {short_age}",
         )
         user_key = f"grandpublic{age}"
         users_by_name[user_key] = user

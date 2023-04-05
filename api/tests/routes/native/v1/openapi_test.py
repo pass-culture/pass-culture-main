@@ -1653,7 +1653,6 @@ def test_public_api(client):
                         "lastName": {"nullable": True, "title": "Lastname", "type": "string"},
                         "needsToFillCulturalSurvey": {"title": "Needstofillculturalsurvey", "type": "boolean"},
                         "phoneNumber": {"nullable": True, "title": "Phonenumber", "type": "string"},
-                        "pseudo": {"nullable": True, "title": "Pseudo", "type": "string"},
                         "recreditAmountToShow": {"nullable": True, "title": "Recreditamounttoshow", "type": "integer"},
                         "roles": {"items": {"$ref": "#/components/schemas/UserRole"}, "type": "array"},
                         "showEligibleCard": {"title": "Showeligiblecard", "type": "boolean"},

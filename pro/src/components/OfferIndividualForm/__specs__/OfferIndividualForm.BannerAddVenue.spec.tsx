@@ -30,7 +30,7 @@ const renderOfferIndividualForm = ({
   props: IOfferIndividualFormProps
 }) => {
   const storeOverrides = {
-    user: { currentUser: { publicName: 'François', isAdmin: false } },
+    user: { currentUser: { isAdmin: false } },
   }
   return renderWithProviders(
     <Formik

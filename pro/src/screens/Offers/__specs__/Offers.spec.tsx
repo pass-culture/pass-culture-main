@@ -86,7 +86,6 @@ describe('screen Offers', () => {
     id: string
     isAdmin: boolean
     name: string
-    publicName: string
     roles: Array<UserRole>
   }
   let store: any
@@ -99,7 +98,6 @@ describe('screen Offers', () => {
       id: 'EY',
       isAdmin: false,
       name: 'Current User',
-      publicName: 'USER',
       roles: [UserRole.PRO],
     }
     store = {

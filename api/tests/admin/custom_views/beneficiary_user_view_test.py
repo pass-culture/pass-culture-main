@@ -142,7 +142,6 @@ class BeneficiaryUserViewTest:
         user_created = User.query.filter_by(email="toto@example.com").one()
         assert user_created.firstName == "Serge"
         assert user_created.lastName == "Lama"
-        assert user_created.publicName == "Serge Lama"
         assert user_created.validatedBirthDate == self.AGE18_ELIGIBLE_BIRTH_DATE
         assert user_created.departementCode == "93"
         assert user_created.postalCode == "93000"

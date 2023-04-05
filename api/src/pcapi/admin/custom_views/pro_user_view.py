@@ -62,7 +62,6 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         "email",
         "firstName",
         "lastName",
-        "publicName",
         "dateOfBirth",
         "departementCode",
         "phoneNumber",
@@ -77,7 +76,6 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         isActive="Est activé",
         firstName="Prénom",
         lastName="Nom",
-        publicName="Nom d'utilisateur",
         dateOfBirth="Date de naissance",
         departementCode="Département",
         phoneNumber="Numéro de téléphone",
@@ -88,7 +86,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         has_underage_beneficiary_role="Bénéficiaire 15-17 ?",
         suspension_history="Historique de suspension",
     )
-    column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
+    column_searchable_list = ["id", "email", "firstName", "lastName"]
     column_filters = ["postalCode", "has_beneficiary_role", "has_underage_beneficiary_role", "isEmailValidated"]
     column_details_list = ["suspension_history", "comment"]
 
@@ -130,10 +128,6 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         form.email = StringField("Email", [DataRequired()], filters=[filter_email])
         form.phoneNumber = StringField("Numéro de téléphone", [PhoneNumberValidator()])
         return form
-
-    def on_model_change(self, form: Form, model: User, is_created: bool) -> None:
-        model.publicName = f"{model.firstName} {model.lastName}"
-        super().on_model_change(form, model, is_created)
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         super().after_model_change(form, model, is_created)

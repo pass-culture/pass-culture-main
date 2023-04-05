@@ -51,7 +51,6 @@ describe('src | App', () => {
         initialized: true,
         currentUser: {
           id: 'user_id',
-          publicName: 'François',
           isAdmin: false,
         },
       },

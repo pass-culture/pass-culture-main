@@ -38,7 +38,6 @@ def create_industrial_pro_users(offerers_by_name: dict) -> dict[str, User]:
                 firstName="PC Test Pro",
                 lastName="{} {}".format(departement_code, pro_count),
                 postalCode="{}100".format(departement_code),
-                publicName="PC Test Pro {} {}".format(departement_code, pro_count),
             )
             users_by_name["pro{} {}".format(departement_code, pro_count)] = user
             user_offerer = (

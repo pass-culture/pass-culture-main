@@ -156,7 +156,6 @@ class DmsWebhookApplicationTest:
             dateOfBirth=datetime.datetime.combine(datetime.date(2003, 5, 5), datetime.time(0, 0)),
             firstName="Young",
             lastName="Beneficiary",
-            publicName="Young Beneficiary",
             phoneNumber="+33746050403",
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )

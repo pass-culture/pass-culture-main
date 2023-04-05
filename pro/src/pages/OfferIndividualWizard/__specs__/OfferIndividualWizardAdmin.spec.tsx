@@ -52,7 +52,6 @@ describe('OfferIndividualWizard', () => {
       user: {
         initialized: true,
         currentUser: {
-          publicName: 'John Do',
           isAdmin: true,
           email: 'email@example.com',
         },
