@@ -84,9 +84,24 @@ def test_basics(client):
                 "audioDisabilityCompliant": False,
                 "bookingEmail": venue.bookingEmail,
                 "city": venue.city,
+                "collectiveDmsApplications": [
+                    {
+                        "venueId": a.venueId,
+                        "state": a.state,
+                        "procedure": a.procedure,
+                        "application": a.application,
+                        "lastChangeDate": format_into_utc_date(a.lastChangeDate),
+                        "depositDate": format_into_utc_date(a.depositDate),
+                        "expirationDate": format_into_utc_date(a.expirationDate) if a.expirationDate else None,
+                        "buildDate": format_into_utc_date(a.buildDate) if a.buildDate else None,
+                        "instructionDate": format_into_utc_date(a.instructionDate) if a.instructionDate else None,
+                        "processingDate": format_into_utc_date(a.processingDate) if a.processingDate else None,
+                        "userDeletionDate": format_into_utc_date(a.userDeletionDate) if a.userDeletionDate else None,
+                    }
+                    for a in venue.collectiveDmsApplications
+                ],
                 "comment": venue.comment,
                 "departementCode": venue.departementCode,
-                "DMSApplicationIdForEAC": [a.application for a in venue.collectiveDmsApplications],
                 "hasAdageId": bool(venue.adageId),
                 "hasMissingReimbursementPoint": venue.hasMissingReimbursementPoint,
                 "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
