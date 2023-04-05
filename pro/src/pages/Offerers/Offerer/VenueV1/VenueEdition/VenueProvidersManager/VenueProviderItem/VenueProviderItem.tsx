@@ -14,7 +14,7 @@ import ToggleVenueProviderStatusButton from '../ToggleVenueProviderStatusButton/
 import style from './VenueProviderItem.module.scss'
 
 export interface IVenueProviderItemV2Props {
-  afterDelete: (deletedVenueProvider: string) => void
+  afterDelete: (deletedVenueProvider: number) => void
   afterSubmit: (editedVenueProvider: VenueProviderResponse) => void
   venueProvider: VenueProviderResponse
   venueDepartmentCode: string
@@ -45,7 +45,7 @@ const VenueProviderItem = ({
             />
             <DeleteVenueProviderButton
               afterDelete={afterDelete}
-              venueProviderId={venueProvider.id.toString()}
+              venueProviderId={venueProvider.id}
             />
           </div>
         </div>

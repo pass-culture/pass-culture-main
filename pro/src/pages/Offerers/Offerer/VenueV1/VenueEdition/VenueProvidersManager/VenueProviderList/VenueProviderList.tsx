@@ -6,7 +6,7 @@ import { IVenue } from 'core/Venue/types'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 
 export interface IVenueProviderListV2Props {
-  afterVenueProviderDelete: (deletedVenueProvider: string) => void
+  afterVenueProviderDelete: (deletedVenueProvider: number) => void
   afterVenueProviderEdit: (editedVenueProvider: VenueProviderResponse) => void
   venue: IVenue
   venueProviders: VenueProviderResponse[]
