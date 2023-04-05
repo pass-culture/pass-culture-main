@@ -120,7 +120,10 @@ const CollectiveDataForm = ({
 
   const onSubmit = async (values: CollectiveDataFormValues) => {
     setIsLoading(true)
-    const response = await editVenueCollectiveDataAdapter({ venueId, values })
+    const response = await editVenueCollectiveDataAdapter({
+      venueId: Number(venueId),
+      values,
+    })
 
     if (!response.isOk) {
       notify.error(response.message)
