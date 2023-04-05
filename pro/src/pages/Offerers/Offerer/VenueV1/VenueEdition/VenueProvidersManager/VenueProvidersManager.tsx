@@ -49,9 +49,9 @@ const VenueProvidersManager = ({
     setVenueProviders(newVenueProviders)
   }
 
-  const afterVenueProviderDelete = (deletedVenueProviderId: string) => {
+  const afterVenueProviderDelete = (deletedVenueProviderId: number) => {
     const newVenueProviders = venueProviders.filter(
-      venueProvider => venueProvider.id.toString() !== deletedVenueProviderId
+      venueProvider => venueProvider.id !== deletedVenueProviderId
     )
     setVenueProviders(newVenueProviders)
   }

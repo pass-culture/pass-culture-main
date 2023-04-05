@@ -14,7 +14,6 @@ from pcapi.routes.serialization.venue_provider_serialize import ListVenueProvide
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.routes.serialization.venue_provider_serialize import VenueProviderResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.serialization.utils import dehumanize_id
 from pcapi.validation.routes.users_authorizations import check_user_can_alter_venue
 from pcapi.workers.venue_provider_job import venue_provider_job
 
@@ -121,14 +120,13 @@ def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     return VenueProviderResponse.from_orm(updated)
 
 
-@private_api.route("/venueProviders/<venue_provider_id>", methods=["DELETE"])
+@private_api.route("/venueProviders/<int:venue_provider_id>", methods=["DELETE"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def delete_venue_provider(venue_provider_id: str) -> None:
-    dehumanized_venue_provider_id = dehumanize_id(venue_provider_id)
-    assert dehumanized_venue_provider_id is not None, "a not None provider_id is required"
+def delete_venue_provider(venue_provider_id: int) -> None:
+    assert venue_provider_id is not None, "a not None provider_id is required"
 
-    venue_provider = repository.get_venue_provider_by_id(int(dehumanized_venue_provider_id))
+    venue_provider = repository.get_venue_provider_by_id(int(venue_provider_id))
 
     check_user_can_alter_venue(current_user, venue_provider.venueId)
 
