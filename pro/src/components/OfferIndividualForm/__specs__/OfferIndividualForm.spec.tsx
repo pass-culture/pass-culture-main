@@ -41,7 +41,7 @@ const renderOfferIndividualForm = ({
   contextOverride?: Partial<IOfferIndividualContext>
 }) => {
   const storeOverrides = {
-    user: { currentUser: { publicName: 'François', isAdmin: false } },
+    user: { currentUser: { isAdmin: false } },
   }
   const contextValues: IOfferIndividualContext = {
     offerId: null,

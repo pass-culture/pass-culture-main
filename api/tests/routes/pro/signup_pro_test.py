@@ -12,7 +12,6 @@ from pcapi.models.validation_status_mixin import ValidationStatus
 
 BASE_DATA_PRO = {
     "email": "toto_pro@example.com",
-    "publicName": "Toto Pro",
     "firstName": "Toto",
     "lastName": "Pro",
     "password": "__v4l1d_P455sw0rd__",
@@ -49,7 +48,6 @@ class Returns204Test:
         assert user.lastName == "Pro"
         assert user.phoneNumber == "+33102030405"
         assert user.postalCode == "92000"
-        assert user.publicName == "Toto Pro"
         assert user.dateOfBirth is None
         assert user.dateCreated is not None
         assert user.notificationSubscriptions == {"marketing_push": True, "marketing_email": False}
@@ -102,7 +100,7 @@ class Returns204Test:
     def when_successful_and_existing_offerer_creates_editor_user_offerer_and_does_not_log_in(self, client):
         # Given
         offerer = offerers_factories.NotValidatedOffererFactory(siren="349974931")
-        pro = ProFactory(email="bobby@test.com", publicName="bobby")
+        pro = ProFactory(email="bobby@test.com")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         data = BASE_DATA_PRO.copy()
@@ -248,32 +246,6 @@ class Returns400Test:
         error = response.json
         assert "email" in error
 
-    def test_when_public_name_is_missing(self, client):
-        # Given
-        data = BASE_DATA_PRO.copy()
-        del data["publicName"]
-
-        # When
-        response = client.post("/users/signup/pro", json=data)
-
-        # Then
-        assert response.status_code == 400
-        error = response.json
-        assert "publicName" in error
-
-    def test_when_public_name_is_too_long(self, client):
-        # Given
-        data = BASE_DATA_PRO.copy()
-        data["publicName"] = "x" * 300
-
-        # When
-        response = client.post("/users/signup/pro", json=data)
-
-        # Then
-        assert response.status_code == 400
-        error = response.json
-        assert "publicName" in error
-
     def test_when_password_is_missing(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
@@ -362,7 +334,6 @@ class Returns400Test:
         # Given
         user_json = {
             "email": "toto_pro@example.com",
-            "publicName": "Toto Pro",
             "firstName": "Toto",
             "lastName": "Pro",
             "password": "__v4l1d_P455sw0rd__",

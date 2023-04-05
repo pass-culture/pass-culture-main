@@ -41,7 +41,6 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
         "isActive",
         "firstName",
         "lastName",
-        "publicName",
         "email",
         "dateOfBirth",
         "departementCode",
@@ -57,7 +56,6 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
         email="Email",
         firstName="Prénom",
         lastName="Nom",
-        publicName="Nom d'utilisateur",
         dateOfBirth="Date de naissance",
         departementCode="Département",
         phoneNumber="Numéro de téléphone",
@@ -68,7 +66,7 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
         idPieceNumber="N° de pièce d'identité",
     )
 
-    column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
+    column_searchable_list = ["id", "email", "firstName", "lastName"]
     column_filters = ["isEmailValidated"]
     column_details_list = ["suspension_history", "comment"]
 
@@ -110,7 +108,6 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
             fulfill_account_password(model)
             model.needsToFillCulturalSurvey = False
 
-        model.publicName = f"{model.firstName} {model.lastName}"
         model.remove_admin_role()
         model.remove_beneficiary_role()
 

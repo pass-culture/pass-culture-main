@@ -19,7 +19,6 @@ const renderVanueFormActionBar = ({
       currentUser: {
         id: 'EY',
         isAdmin: true,
-        publicName: 'USER',
       } as SharedCurrentUserResponseModel,
     },
     features: {

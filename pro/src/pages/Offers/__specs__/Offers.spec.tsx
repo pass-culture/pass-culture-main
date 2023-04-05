@@ -102,7 +102,6 @@ describe('route Offers', () => {
     id: string
     isAdmin: boolean
     name: string
-    publicName: string
   }
   let store: any
   let offersRecap: Offer[]
@@ -112,7 +111,6 @@ describe('route Offers', () => {
       id: 'EY',
       isAdmin: false,
       name: 'Current User',
-      publicName: 'USER',
     }
     store = {
       user: {

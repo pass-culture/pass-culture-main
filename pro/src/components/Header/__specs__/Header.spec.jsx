@@ -17,7 +17,6 @@ jest.mock('apiClient/api', () => ({
 const defaultStore = {
   user: {
     currentUser: {
-      publicName: 'François',
       isAdmin: false,
       email: 'test@toto.com',
     },

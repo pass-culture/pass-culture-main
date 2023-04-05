@@ -110,7 +110,6 @@ class AdminIndexView(AdminIndexBaseView):
         local_admin.roles = [users_models.UserRole.ADMIN]
         local_admin.firstName = first_name
         local_admin.lastName = last_name
-        local_admin.publicName = given_name if given_name is not None else f"{first_name} {last_name}"
         # generate a random password as the user won't login to anything else.
         local_admin.setPassword(secrets.token_urlsafe(20))
         return local_admin

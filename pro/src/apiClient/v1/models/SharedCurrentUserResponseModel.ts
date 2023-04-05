@@ -32,7 +32,6 @@ export type SharedCurrentUserResponseModel = {
   phoneNumber?: string | null;
   phoneValidationStatus?: PhoneValidationStatusType | null;
   postalCode?: string | null;
-  publicName?: string | null;
   roles: Array<UserRole>;
 };
 

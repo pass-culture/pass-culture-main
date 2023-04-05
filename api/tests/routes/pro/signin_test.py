@@ -24,7 +24,6 @@ class Returns200Test:
             lastName="Smisse",
             phoneNumber="0612345678",
             postalCode="93020",
-            publicName="Toto",
             lastConnectionDate=datetime.datetime(2019, 1, 1),
         )
 
@@ -59,7 +58,6 @@ class Returns200Test:
             "needsToFillCulturalSurvey": False,
             "phoneNumber": "+33612345678",
             "postalCode": "93020",
-            "publicName": "Toto",
             "roles": ["BENEFICIARY"],
         }
         assert "Failed authentication attempt" not in caplog.messages

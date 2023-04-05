@@ -112,7 +112,6 @@ describe('components | BookingsRecap | Pro user', () => {
     jest.spyOn(api, 'getBookingsPro').mockResolvedValue(emptyBookingsRecapPage)
 
     user = {
-      publicName: 'René',
       isAdmin: false,
       email: 'rené@example.com',
     } as SharedCurrentUserResponseModel

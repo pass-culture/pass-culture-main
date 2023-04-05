@@ -42,7 +42,7 @@ class BeneficiaryImportStatus(PcObject, Base, Model):
     """
 
     def __repr__(self) -> str:
-        author = self.author.publicName if self.author else "import automatisé"
+        author = self.author.full_name if self.author else "import automatisé"
         updated_at = datetime.strftime(self.date, "%d/%m/%Y")
         return f"{self.status.value}, le {updated_at} par {author}"
 

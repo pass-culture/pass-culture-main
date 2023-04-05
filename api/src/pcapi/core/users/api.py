@@ -159,7 +159,6 @@ def create_account(
         email=email,
         dateOfBirth=datetime.datetime.combine(birthdate, datetime.datetime.min.time()),
         isEmailValidated=is_email_validated,
-        publicName=models.VOID_PUBLIC_NAME,  # Required because model validation requires 3+ chars
         notificationSubscriptions=asdict(
             models.NotificationSubscriptions(marketing_email=marketing_email_subscription)
         ),
@@ -210,8 +209,6 @@ def update_user_information(
         user.firstName = first_name
     if last_name is not None:
         user.lastName = last_name
-    if first_name is not None or last_name is not None:
-        user.publicName = "%s %s" % (first_name, last_name)
     if validated_birth_date is not None:
         user.validatedBirthDate = validated_birth_date
     if activity is not None:
@@ -557,7 +554,6 @@ def update_user_info(
     last_name: str | T_UNCHANGED = UNCHANGED,
     needs_to_fill_cultural_survey: bool | T_UNCHANGED = UNCHANGED,
     phone_number: str | T_UNCHANGED = UNCHANGED,
-    public_name: str | T_UNCHANGED = UNCHANGED,
     address: str | T_UNCHANGED = UNCHANGED,
     postal_code: str | T_UNCHANGED = UNCHANGED,
     city: str | T_UNCHANGED = UNCHANGED,
@@ -587,8 +583,6 @@ def update_user_info(
         if user_phone_number != phone_number:
             snapshot.set("phoneNumber", old=user_phone_number, new=phone_number)
         user.phoneNumber = phone_number  # type: ignore [assignment]
-    if public_name is not UNCHANGED:
-        user.publicName = public_name
     if address is not UNCHANGED:
         if address != user.address:
             snapshot.set("address", old=user.address, new=address)
@@ -1147,12 +1141,12 @@ def public_account_history(user: models.User) -> list[dict]:
         {
             "action": "revue manuelle",
             "datetime": review.dateReviewed,
-            "message": f"revue {review.review.value} par {review.author.publicName}: {review.reason}",
+            "message": f"revue {review.review.value} par {review.author.full_name}: {review.reason}",
         }
         for review in reviews
     ]
 
-    default_public_name = lambda author: author.publicName if author else ""
+    default_public_name = lambda author: author.full_name if author else ""
     imports_history = [
         {
             "action": f"import {import_.source}",

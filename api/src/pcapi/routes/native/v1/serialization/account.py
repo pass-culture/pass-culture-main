@@ -8,7 +8,6 @@ from jwt import InvalidSignatureError
 from jwt import InvalidTokenError
 import pydantic
 from pydantic.class_validators import validator
-from pydantic.fields import Field
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings import models as bookings_models
@@ -137,7 +136,6 @@ class UserProfileResponse(BaseModel):
     lastName: str | None
     needsToFillCulturalSurvey: bool
     phoneNumber: str | None
-    publicName: str | None = Field(None, alias="pseudo")
     recreditAmountToShow: int | None
     roles: list[users_models.UserRole]
     show_eligible_card: bool
@@ -153,10 +151,6 @@ class UserProfileResponse(BaseModel):
         allow_population_by_field_name = True
         json_encoders = {datetime.datetime: format_into_utc_date}
         use_enum_values = True
-
-    @validator("publicName", pre=True)
-    def format_public_name(cls, publicName: str) -> str | None:
-        return publicName if publicName != users_models.VOID_PUBLIC_NAME else None
 
     @validator("firstName", pre=True)
     def format_first_name(cls, firstName: str | None) -> str | None:

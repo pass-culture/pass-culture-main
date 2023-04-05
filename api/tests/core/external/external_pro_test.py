@@ -74,7 +74,6 @@ def test_update_external_pro_user_attributes(
     email = "juste.leblanc@example.net"
 
     pro_user = ProFactory(
-        publicName="Juste Leblanc",
         firstName="Juste",
         lastName="Leblanc",
         email=email,

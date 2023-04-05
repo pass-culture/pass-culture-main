@@ -1606,7 +1606,7 @@ class GetPublicAccountHistoryTest:
         assert history[0] == {
             "action": "revue manuelle",
             "datetime": review.dateReviewed.isoformat(),
-            "message": f"revue {review.review.value} par {review.author.publicName}: {review.reason}",
+            "message": f"revue {review.review.value} par {review.author.full_name}: {review.reason}",
         }
         assert history[1] == {
             "action": "fraud check",

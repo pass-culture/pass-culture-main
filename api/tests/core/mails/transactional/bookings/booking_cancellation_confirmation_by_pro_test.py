@@ -21,7 +21,7 @@ class BookingCancellationConfirmationByProEmailData:
     def test_should_return_email_data_with_correct_information_when_offer_is_an_event(self):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory(
-            publicName="John Doe", firstName="John", lastName="Doe", email="john@example.com"
+            firstName="John", lastName="Doe", email="john@example.com"
         )
         offer = offers_factories.EventOfferFactory(
             venue__name="Venue name",
@@ -55,7 +55,7 @@ class BookingCancellationConfirmationByProEmailData:
     def test_should_return_email_data_when_multiple_bookings_and_offer_is_a_thing(self):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory(
-            publicName="John Doe", firstName="John", lastName="Doe", email="john@example.com"
+            firstName="John", lastName="Doe", email="john@example.com"
         )
         offer = offers_factories.ThingOfferFactory(
             venue__name="La petite librairie",
@@ -71,7 +71,7 @@ class BookingCancellationConfirmationByProEmailData:
         )
 
         other_beneficiary = users_factories.BeneficiaryGrant18Factory(
-            publicName="James Bond", firstName="James", lastName="Bond", email="bond@example.com"
+            firstName="James", lastName="Bond", email="bond@example.com"
         )
         booking2 = booking_factories.BookingFactory(
             user=other_beneficiary,

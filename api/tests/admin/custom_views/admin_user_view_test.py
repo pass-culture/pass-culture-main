@@ -24,7 +24,7 @@ class AdminUserViewTest:
 
         data = dict(
             email="NEW-ADMIN@example.com",
-            firstName="Powerfull",
+            firstName="Powerful",
             lastName="Admin",
             departementCode="76",
             postalCode="76001",
@@ -36,9 +36,8 @@ class AdminUserViewTest:
         assert response.status_code == 302
 
         user_created = User.query.filter_by(email="new-admin@example.com").one()
-        assert user_created.firstName == "Powerfull"
+        assert user_created.firstName == "Powerful"
         assert user_created.lastName == "Admin"
-        assert user_created.publicName == "Powerfull Admin"
         assert user_created.dateOfBirth is None
         assert user_created.departementCode == "76"
         assert user_created.postalCode == "76001"
@@ -60,7 +59,7 @@ class AdminUserViewTest:
 
         data = dict(
             email="new-admin@example.com",
-            firstName="Powerfull",
+            firstName="Powerful",
             lastName="Admin",
             departementCode="76",
             postalCode="76000",
@@ -88,7 +87,7 @@ class AdminUserViewTest:
 
         data = dict(
             email="new-admin@example.com",
-            firstName="Powerfull",
+            firstName="Powerful",
             lastName="Admin",
             departementCode="76",
             postalCode="76000",

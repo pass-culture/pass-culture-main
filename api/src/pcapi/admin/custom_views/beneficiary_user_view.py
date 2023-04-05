@@ -171,7 +171,6 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         "email",
         "firstName",
         "lastName",
-        "publicName",
         "validatedBirthDate",
         "departementCode",
         "phoneNumber",
@@ -212,7 +211,6 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         "phoneNumber",
         "phoneValidationStatus",
         "postalCode",
-        "publicName",
         "recreditAmountToShow",
         "roles",
         "suspension_history",
@@ -238,13 +236,11 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         phoneNumber="Numéro de téléphone",
         physical_remaining="Crédit physique restant",
         postalCode="Code postal",
-        publicName="Nom d'utilisateur",
         suspension_history="Historique de suspension",
         total_remaining="Crédit global restant",
         total_initial="Crédit initial",
     )
 
-    column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters = [
         "postalCode",
         "has_beneficiary_role",
@@ -306,8 +302,6 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         return form_class
 
     def on_model_change(self, form: Form, model: User, is_created: bool) -> None:
-        model.publicName = f"{model.firstName} {model.lastName}"
-
         if is_created:
             # Necessary because Flask-Admin calls a function of SQLAlchemy
             # that uses __new__, not __init__ (that sets `roles`).

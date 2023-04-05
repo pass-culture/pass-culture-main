@@ -64,7 +64,6 @@ describe('Signup', () => {
     store.user = {
       currentUser: {
         id: 'user_id',
-        publicName: 'François',
         isAdmin: false,
       },
       initialized: true,
@@ -326,7 +325,6 @@ describe('Signup', () => {
           password: 'user@AZERTY123', // NOSONAR
           phoneNumber: '+33722332233',
           postalCode: '22350',
-          publicName: 'Prénom',
           siren: '881457238',
         })
         await expect(
@@ -486,7 +484,6 @@ describe('Signup', () => {
           lastName: 'Nom',
           password: 'user@AZERTY123', // NOSONAR
           phoneNumber: '+33722332233',
-          publicName: 'Prénom',
         })
         await expect(
           screen.findByText("I'm the confirmation page")

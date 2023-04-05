@@ -92,7 +92,6 @@ class AccountTest:
             # `freeze_time()`.
             deposit__expirationDate=datetime(2040, 1, 1),
             notificationSubscriptions={"marketing_push": True},
-            publicName="jdo",
             validatedBirthDate=datetime(2000, 1, 11),
             **USER_DATA,
         )
@@ -123,7 +122,6 @@ class AccountTest:
             "isBeneficiary": True,
             "isEligibleForBeneficiaryUpgrade": False,
             "roles": ["BENEFICIARY"],
-            "pseudo": "jdo",
             "recreditAmountToShow": None,
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
@@ -160,7 +158,7 @@ class AccountTest:
         assert not response.json["domainsCredit"]
 
     def test_get_user_profile_empty_first_name(self, client, app):
-        users_factories.UserFactory(email=self.identifier, firstName="", publicName=users_models.VOID_PUBLIC_NAME)
+        users_factories.UserFactory(email=self.identifier, firstName="")
 
         client.with_token(email=self.identifier)
         response = client.get("/native/v1/me")
@@ -168,7 +166,6 @@ class AccountTest:
         assert response.status_code == 200
         assert response.json["email"] == self.identifier
         assert response.json["firstName"] is None
-        assert response.json["pseudo"] is None
         assert not response.json["isBeneficiary"]
         assert response.json["roles"] == []
 

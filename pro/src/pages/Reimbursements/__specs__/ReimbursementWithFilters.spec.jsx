@@ -152,7 +152,6 @@ describe('reimbursementsWithFilters', () => {
     storeOverride = {
       user: {
         currentUser: {
-          publicName: 'François',
           isAdmin: false,
           hasSeenProTutorials: true,
         },

@@ -24,7 +24,7 @@ describe('src | AppLayout', () => {
   beforeEach(() => {
     props = {}
     storeOverrides = {
-      user: { currentUser: { publicName: 'François', isAdmin: false } },
+      user: { currentUser: { isAdmin: false } },
     }
   })
 

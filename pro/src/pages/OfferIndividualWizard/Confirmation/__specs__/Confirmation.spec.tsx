@@ -49,7 +49,6 @@ const renderOffer = (
     user: {
       initialized: true,
       currentUser: {
-        publicName: 'John Do',
         isAdmin: false,
         email: 'email@example.com',
       },
@@ -84,7 +83,6 @@ describe('Confirmation', () => {
       user: {
         initialized: true,
         currentUser: {
-          publicName: 'John Do',
           isAdmin: false,
           email: 'email@example.com',
         },

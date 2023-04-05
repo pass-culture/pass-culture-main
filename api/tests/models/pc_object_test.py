@@ -49,7 +49,6 @@ class PopulateFromDictTest:
             "firstName": "John   ",
             "lastName": None,
             "postalCode": "   93100   ",
-            "publicName": "",
         }
 
         # When
@@ -60,7 +59,6 @@ class PopulateFromDictTest:
         assert user.firstName == "John"
         assert user.lastName == None
         assert user.postalCode == "93100"
-        assert user.publicName == ""
 
     def test_on_pc_object_for_sql_integer_value_with_string_raises_decimal_cast_error(self):
         # Given
