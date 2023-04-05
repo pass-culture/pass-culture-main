@@ -9,6 +9,7 @@ from pcapi.core.cultural_survey.models import CulturalSurveyAnswerEnum
 from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.utils.string import u_nbsp
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -29,7 +30,7 @@ class CulturalSurveyQuestionsTest:
             "questions": [
                 {
                     "id": "SORTIES",
-                    "title": "Au cours de l'année précédente, tu as été au moins une fois ...",
+                    "title": f"Au cours de l'année précédente, tu as été au moins une fois{u_nbsp}...",
                     "answers": [
                         {
                             "id": "FESTIVAL",
@@ -85,7 +86,7 @@ class CulturalSurveyQuestionsTest:
                 },
                 {
                     "id": "FESTIVALS",
-                    "title": "À quels types de festivals as-tu participé ?",
+                    "title": f"À quels types de festivals as-tu participé{u_nbsp}?",
                     "answers": [
                         {
                             "id": "FESTIVAL_MUSIQUE",
@@ -122,7 +123,7 @@ class CulturalSurveyQuestionsTest:
                 },
                 {
                     "id": "SPECTACLES",
-                    "title": "À quels types de spectacles as-tu assisté ?",
+                    "title": f"À quels types de spectacles as-tu assisté{u_nbsp}?",
                     "answers": [
                         {
                             "id": "SPECTACLE_HUMOUR",
@@ -150,7 +151,7 @@ class CulturalSurveyQuestionsTest:
                 },
                 {
                     "id": "ACTIVITES",
-                    "title": "Au cours de l'année précédente, tu as au moins une fois ...",
+                    "title": f"Au cours de l'année précédente, tu as au moins une fois{u_nbsp}...",
                     "answers": [
                         {
                             "id": "MATERIEL_ART_CREATIF",
@@ -189,13 +190,13 @@ class CulturalSurveyQuestionsTest:
                 },
                 {
                     "id": "PROJECTIONS",
-                    "title": "Cette année, tu aimerais ...",
+                    "title": f"Cette année, tu aimerais{u_nbsp}...",
                     "answers": [
                         {
                             "id": "PROJECTION_FESTIVAL",
                             "title": "Aller à un festival",
                             "sub_question": None,
-                            "subtitle": "Musique, cinéma, littéraire, ...",
+                            "subtitle": "Musique, cinéma, littéraire...",
                         },
                         {
                             "id": "PROJECTION_CINEMA",
@@ -207,7 +208,7 @@ class CulturalSurveyQuestionsTest:
                             "id": "PROJECTION_VISITE",
                             "title": "Faire des visites",
                             "sub_question": None,
-                            "subtitle": "Une exposition, un monument, ...",
+                            "subtitle": "Une exposition, un monument...",
                         },
                         {
                             "id": "PROJECTION_CONCERT",
@@ -225,13 +226,13 @@ class CulturalSurveyQuestionsTest:
                             "id": "PROJECTION_SPECTACLE",
                             "title": "Voir un spectacle",
                             "sub_question": None,
-                            "subtitle": "Pièce de théâtre, cirque, humour, ...",
+                            "subtitle": "Pièce de théâtre, cirque, humour...",
                         },
                         {
                             "id": "PROJECTION_ACTIVITE_ARTISTIQUE",
                             "title": "Faire une activité artistique",
                             "sub_question": None,
-                            "subtitle": "Dessin, danse, théâtre, musique, ...",
+                            "subtitle": "Dessin, danse, théâtre, musique...",
                         },
                         {
                             "id": "PROJECTION_LIVRE",
@@ -249,7 +250,7 @@ class CulturalSurveyQuestionsTest:
                             "id": "PROJECTION_JEU",
                             "title": "Faire des jeux en solo ou en duo",
                             "sub_question": None,
-                            "subtitle": "Escape games, jeux vidéo, ...",
+                            "subtitle": "Escape games, jeux vidéo...",
                         },
                         {
                             "id": "PROJECTION_AUTRE",

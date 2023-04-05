@@ -8,6 +8,7 @@ import pcapi.core.fraud.models as fraud_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import models as users_models
 import pcapi.core.users.factories as users_factories
+from pcapi.utils.string import u_nbsp
 
 
 @pytest.mark.usefixtures("db_session")
@@ -29,7 +30,7 @@ class BannerTest:
         self.activation_banner = {
             "banner": {
                 "name": "activation_banner",
-                "title": "Débloque tes 300 €",
+                "title": f"Débloque tes 300{u_nbsp}€",
                 "text": "à dépenser sur l'application",
             }
         }
@@ -143,7 +144,7 @@ class BannerTest:
         assert response.json == {
             "banner": {
                 "name": "activation_banner",
-                "title": "Débloque tes 20 €",
+                "title": f"Débloque tes 20{u_nbsp}€",
                 "text": "à dépenser sur l'application",
             }
         }

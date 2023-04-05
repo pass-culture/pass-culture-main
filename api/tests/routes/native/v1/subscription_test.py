@@ -15,6 +15,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.notifications.push import testing as push_testing
 import pcapi.repository
+from pcapi.utils.string import u_nbsp
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -661,8 +662,8 @@ class StepperTest:
             self.get_step("identity_check_step", SubscriptionStepCompletionState.DISABLED.value),
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
-        assert response.json["title"] == "C'est très rapide !"
-        assert response.json["subtitle"] == "Pour débloquer tes 300€ tu dois suivre les étapes suivantes :"
+        assert response.json["title"] == f"C'est très rapide{u_nbsp}!"
+        assert response.json["subtitle"] == f"Pour débloquer tes 300€ tu dois suivre les étapes suivantes{u_nbsp}:"
 
     def should_contain_all_subscription_steps_for_15yo_user(self, client):
         user = users_factories.UserFactory(
@@ -681,8 +682,8 @@ class StepperTest:
             self.get_step("identity_check_step", SubscriptionStepCompletionState.DISABLED.value),
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
-        assert response.json["title"] == "C'est très rapide !"
-        assert response.json["subtitle"] == "Pour débloquer tes 20€ tu dois suivre les étapes suivantes :"
+        assert response.json["title"] == f"C'est très rapide{u_nbsp}!"
+        assert response.json["subtitle"] == f"Pour débloquer tes 20€ tu dois suivre les étapes suivantes{u_nbsp}:"
 
     def should_not_contain_id_check_in_steps_if_ubble_or_dms_done_for_underage(self, client):
         user = users_factories.UnderageBeneficiaryFactory(
