@@ -237,14 +237,6 @@ class Pricing(Base, Model):
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
     venue: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship("Venue", foreign_keys=[venueId])
 
-    # FIXME (dbaty, 2022-06-20): remove `businessUnitId` and `siret`
-    # columns once we have fully switched to `pricingPointId`
-    businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=True)
-    businessUnit: BusinessUnit | None = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
-    # `siret` is either the SIRET of the venue if it has one, or the
-    # SIRET of its business unit (at the time of the creation of the
-    # pricing).
-    siret = sqla.Column(sqla.String(14), nullable=True, index=True)
     pricingPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
     pricingPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
         "Venue", foreign_keys=[pricingPointId]
@@ -497,10 +489,6 @@ class Cashflow(Base, Model):
     creationDate: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     status: CashflowStatus = sqla.Column(db_utils.MagicEnum(CashflowStatus), index=True, nullable=False)
 
-    # FIXME (dbaty, 2022-06-20): remove `businessUnitId` once we have
-    # fully switched to `reimbursementPointId`
-    businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=True)
-    businessUnit: BusinessUnit | None = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
     # We denormalize `reimbursementPoint.bankAccountId` here because it may
     # change. Here we want to store the bank account that was used at
     # the time the cashflow was created.
@@ -622,12 +610,6 @@ class Invoice(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     date: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     reference: str = sqla.Column(sqla.Text, nullable=False, unique=True)
-    # FIXME (dbaty, 2022-06-20): remove `businessUnitId` once we have
-    # fully switched to `reimbursementPointId`
-    businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=True)
-    businessUnit: "BusinessUnit | None" = sqla_orm.relationship(
-        "BusinessUnit", back_populates="invoices", uselist=False
-    )
     reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
     reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
         "Venue", foreign_keys=[reimbursementPointId]
