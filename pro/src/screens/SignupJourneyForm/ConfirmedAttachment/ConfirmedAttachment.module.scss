@@ -8,6 +8,7 @@ $confirmed-attachment-gap: rem.torem(32px);
     display: flex;
     flex-direction: column;
     gap: $confirmed-attachment-gap;
+    margin: auto;
 }
 
 .title {
