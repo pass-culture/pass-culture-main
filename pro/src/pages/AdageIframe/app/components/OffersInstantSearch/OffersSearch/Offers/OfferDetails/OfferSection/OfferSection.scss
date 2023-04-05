@@ -1,4 +1,4 @@
-@import 'sass-rem';
+@import "sass-rem";
 
 .offer-details-section {
   &:not(:last-of-type) {
@@ -6,7 +6,8 @@
   }
 
   &-title {
-    font-weight: bold;
+    font-size: rem(15px);
+    font-weight: 700;
     color: #67686b;
     margin: 0 0 rem(5px);
   }
