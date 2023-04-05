@@ -9,6 +9,7 @@ from pcapi.core.offerers.models import Target
 import pcapi.core.offerers.repository as offerers_repository
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
 from pcapi.serialization.utils import humanize_field
 import pcapi.utils.date as date_utils
 
@@ -34,7 +35,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     venueLabelId: str | None
     venueTypeCode: offerers_models.VenueTypeCode
     withdrawalDetails: str | None
-    DMSApplicationIdForEAC: list[int]
+    collectiveDmsApplications: list[DMSApplicationForEAC]
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
     _humanize_venue_label_id = humanize_field("venueLabelId")
@@ -57,7 +58,6 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
         )
         venue.hasCreatedOffer = venue.id in ids_of_venues_with_offers
         venue.hasAdageId = bool(venue.adageId)
-        venue.DMSApplicationIdForEAC = [application.application for application in venue.collectiveDmsApplications]
         return super().from_orm(venue)
 
     class Config:
