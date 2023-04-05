@@ -145,6 +145,7 @@ describe('screens:OfferIndividual::Informations', () => {
     beforeEach(async () => {
       const venue: TOfferIndividualVenue = {
         id: 'AA',
+        nonHumanizedId: 1,
         name: 'Lieu offline AA',
         managingOffererId: 'A',
         isVirtual: false,
@@ -164,6 +165,7 @@ describe('screens:OfferIndividual::Informations', () => {
         venue,
         {
           id: 'BB',
+          nonHumanizedId: 1,
           name: 'Lieu offline BB',
           managingOffererId: 'A',
           isVirtual: false,

@@ -57,6 +57,7 @@ describe('useGetOfferIndividualVenues', () => {
       offerIndividualVenues = [
         {
           id: 'AAAA',
+          nonHumanizedId: 1,
           isVirtual: false,
           managingOffererId: 'AA',
           name: 'Entreprise AA',

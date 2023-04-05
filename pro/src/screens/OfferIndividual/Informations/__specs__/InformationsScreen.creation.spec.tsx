@@ -22,7 +22,6 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
-import { dehumanizeId } from 'utils/dehumanize'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { IInformationsProps, Informations as InformationsScreen } from '..'
@@ -109,6 +108,7 @@ const scrollIntoViewMock = jest.fn()
 describe('screens:OfferIndividual::Informations::creation', () => {
   let props: IInformationsProps
   let contextOverride: Partial<IOfferIndividualContext>
+  const offererId = 1
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
@@ -149,9 +149,10 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     ]
 
     const venue: TOfferIndividualVenue = {
-      id: 'AK',
+      id: 'AE',
+      nonHumanizedId: 1,
       name: 'Lieu offline AA',
-      managingOffererId: 'A',
+      managingOffererId: 'AE',
       isVirtual: false,
       withdrawalDetails: '',
       accessibility: {
@@ -169,9 +170,10 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       venueList: [
         venue,
         {
-          id: 'BB',
+          id: 'A9',
+          nonHumanizedId: 2,
           name: 'Lieu online BB',
-          managingOffererId: 'A',
+          managingOffererId: 'AE',
           isVirtual: true,
           withdrawalDetails: '',
           accessibility: {
@@ -185,14 +187,16 @@ describe('screens:OfferIndividual::Informations::creation', () => {
           hasCreatedOffer: true,
         },
       ],
-      offererNames: [{ id: 'A', nonHumanizedId: 1, name: 'mon offerer A' }],
+      offererNames: [
+        { id: 'AE', nonHumanizedId: offererId, name: 'mon offerer A' },
+      ],
       categories,
       subCategories,
     }
 
     props = {
-      offererId: venue.managingOffererId,
-      venueId: venue.id,
+      offererId: offererId.toString(),
+      venueId: venue.nonHumanizedId.toString(),
     }
 
     jest
@@ -239,7 +243,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       name: 'Le nom de mon offre',
       subcategoryId: 'physical',
       url: null,
-      venueId: dehumanizeId('AK'),
+      venueId: 1,
       visualDisabilityCompliant: false,
       withdrawalDelay: null,
       withdrawalDetails: null,
@@ -297,7 +301,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
 
   it('should submit minimal virtual offer', async () => {
     // Use virtual venue
-    props.venueId = 'BB'
+    props.venueId = '2'
     renderInformationsScreen(props, contextOverride)
 
     const categorySelect = await screen.findByLabelText('Catégorie')
@@ -329,7 +333,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       name: 'Le nom de mon offre',
       subcategoryId: 'virtual',
       url: 'http://example.com/',
-      venueId: dehumanizeId('BB'),
+      venueId: 2,
       visualDisabilityCompliant: false,
       withdrawalDelay: null,
       withdrawalDetails: null,
@@ -371,7 +375,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       name: 'Le nom de mon offre',
       subcategoryId: 'physical',
       url: null,
-      venueId: dehumanizeId('AK'),
+      venueId: 1,
       visualDisabilityCompliant: false,
       withdrawalDelay: null,
       withdrawalDetails: null,

@@ -44,6 +44,7 @@ const getOfferIndividualVenuesAdapter = (
           }
           return {
             id: venue.id,
+            nonHumanizedId: venue.nonHumanizedId,
             managingOffererId: venue.managingOffererId,
             name: venue.publicName || venue.name,
             isVirtual: venue.isVirtual,

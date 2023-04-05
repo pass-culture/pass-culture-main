@@ -124,6 +124,9 @@ describe('screens:OfferIndividual::Informations:edition', () => {
   let contextOverride: Partial<IOfferIndividualContext>
   let offer: IOfferIndividual
   let subCategories: IOfferSubCategory[]
+  const offererId = 1
+  const physicalVenueId = 1
+  const virtualVenueId = 2
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
@@ -164,7 +167,8 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     ]
 
     const venue: TOfferIndividualVenue = {
-      id: 'VID physical',
+      id: 'AE',
+      nonHumanizedId: physicalVenueId,
       name: 'Venue name',
       isVirtual: false,
       accessibility: {
@@ -204,7 +208,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       name: 'Offer name',
       musicSubType: '',
       musicType: '',
-      offererId: 'OFID',
+      offererId: 'AE',
       offererName: '',
       performer: 'Offer performer',
       ean: '',
@@ -216,9 +220,9 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       image: undefined,
       url: 'http://offer.example.com',
       externalTicketOfficeUrl: 'http://external.example.com',
-      venueId: 'VID physical',
+      venueId: 'AE',
       venue: {
-        id: 'VID physical',
+        id: 'AE',
         name: 'Venue name',
         publicName: 'Venue publicName',
         isVirtual: false,
@@ -226,7 +230,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         postalCode: '75001',
         city: 'Paris',
         offerer: {
-          id: 'OFID',
+          id: 'AE',
           nonHumanizedId: 1,
           name: 'Offerer name',
         },
@@ -255,7 +259,8 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       venueList: [
         venue,
         {
-          id: 'VID virtual',
+          id: 'A9',
+          nonHumanizedId: virtualVenueId,
           name: 'Lieu online BB',
           managingOffererId: 'OFID',
           isVirtual: true,
@@ -271,14 +276,16 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           hasCreatedOffer: true,
         },
       ],
-      offererNames: [{ id: 'OFID', nonHumanizedId: 1, name: 'Offerer name' }],
+      offererNames: [
+        { id: 'AE', nonHumanizedId: offererId, name: 'Offerer name' },
+      ],
       categories,
       subCategories,
     }
 
     props = {
-      venueId: venue.id,
-      offererId: venue.managingOffererId,
+      venueId: physicalVenueId.toString(),
+      offererId: offererId.toString(),
     }
 
     jest
@@ -286,12 +293,12 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((c, s, _v) => [c, s])
     jest.spyOn(api, 'patchOffer').mockResolvedValue({
-      id: 'AA',
-      nonHumanizedId: 12,
+      id: 'AE',
+      nonHumanizedId: 1,
     } as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'postOffer').mockResolvedValue({
-      id: 'AA',
-      nonHumanizedId: 12,
+      id: 'AE',
+      nonHumanizedId: 1,
     } as GetIndividualOfferResponseModel)
     jest
       .spyOn(api, 'getOffer')
@@ -356,15 +363,15 @@ describe('screens:OfferIndividual::Informations:edition', () => {
   it('should submit minimal virtual offer and redirect to summary', async () => {
     contextOverride.offer = {
       ...offer,
-      venueId: 'VID virtual',
+      venueId: 'AE',
       subcategoryId: 'SCID virtual',
       isEvent: false,
       withdrawalDelay: undefined,
       withdrawalType: null,
     }
     props = {
-      venueId: offer.venue.id,
-      offererId: offer.venue.offerer.id,
+      venueId: virtualVenueId.toString(),
+      offererId: offererId.toString(),
     }
 
     renderInformationsScreen(props, contextOverride)
@@ -426,8 +433,8 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       },
     }
     props = {
-      venueId: offer.venue.id,
-      offererId: offer.venue.offerer.id,
+      venueId: physicalVenueId.toString(),
+      offererId: offererId.toString(),
     }
     renderInformationsScreen(props, contextOverride)
     await screen.findByRole('heading', { name: /Type d’offre/ })
@@ -453,8 +460,8 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       },
     }
     props = {
-      venueId: offer.venue.id,
-      offererId: offer.venue.offerer.id,
+      venueId: virtualVenueId.toString(),
+      offererId: offererId.toString(),
     }
 
     renderInformationsScreen(props, contextOverride)
@@ -500,7 +507,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         from: 'informations',
         isDraft: false,
         isEdition: true,
-        offerId: 'AA',
+        offerId: 'AE',
         to: 'recapitulatif',
         used: 'StickyButtons',
       }
@@ -575,14 +582,14 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       const individualStock = individualStockFactory({ offerId: 'AA' })
       contextOverride.offer = {
         ...offer,
-        venueId: 'VID virtual',
+        venueId: 'AE',
         subcategoryId: 'SCID virtual',
         isEvent: false,
         stocks: [individualStock],
       }
       props = {
-        venueId: offer.venue.id,
-        offererId: offer.venue.offerer.id,
+        venueId: virtualVenueId.toString(),
+        offererId: offererId.toString(),
       }
       expectedBody.withdrawalDelay = 140
       expectedBody.withdrawalType = WithdrawalTypeEnum.ON_SITE
@@ -654,14 +661,14 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       const individualStock = individualStockFactory({ offerId: 'AA' })
       contextOverride.offer = {
         ...offer,
-        venueId: 'VID virtual',
+        venueId: 'AE',
         subcategoryId: 'SCID virtual',
         isEvent: false,
         stocks: [individualStock],
       }
       props = {
-        venueId: offer.venue.id,
-        offererId: offer.venue.offerer.id,
+        venueId: virtualVenueId.toString(),
+        offererId: offererId.toString(),
       }
 
       renderInformationsScreen(props, contextOverride, features)
@@ -741,7 +748,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         }
         contextOverride.offer = {
           ...offer,
-          venueId: 'VID virtual',
+          venueId: 'AE',
           subcategoryId: 'SCID virtual',
           isEvent: true,
           withdrawalDelay: undefined,
@@ -749,8 +756,8 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           stocks: [individualStock],
         }
         props = {
-          venueId: offer.venue.id,
-          offererId: offer.venue.offerer.id,
+          venueId: virtualVenueId.toString(),
+          offererId: offererId.toString(),
         }
         renderInformationsScreen(props, contextOverride, features)
 
@@ -804,7 +811,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       const individualStock = individualStockFactory({ offerId: 'AA' })
       contextOverride.offer = {
         ...offer,
-        venueId: 'VID virtual',
+        venueId: 'AE',
         subcategoryId: 'SCID virtual',
         isEvent: true,
         withdrawalDelay: undefined,
@@ -813,8 +820,8 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         isActive: false,
       }
       props = {
-        venueId: offer.venue.id,
-        offererId: offer.venue.offerer.id,
+        venueId: virtualVenueId.toString(),
+        offererId: offererId.toString(),
       }
       renderInformationsScreen(props, contextOverride, features)
 
@@ -878,7 +885,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         const individualStock = individualStockFactory({ offerId: 'AA' })
         contextOverride.offer = {
           ...offer,
-          venueId: 'VID virtual',
+          venueId: 'AE',
           subcategoryId: 'SCID virtual',
           isEvent: false,
           withdrawalType: WithdrawalTypeEnum.ON_SITE,
@@ -897,8 +904,8 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         expectedBody.shouldSendMail = true
 
         props = {
-          venueId: offer.venue.id,
-          offererId: offer.venue.offerer.id,
+          venueId: virtualVenueId.toString(),
+          offererId: offererId.toString(),
         }
         renderInformationsScreen(props, contextOverride, features)
 

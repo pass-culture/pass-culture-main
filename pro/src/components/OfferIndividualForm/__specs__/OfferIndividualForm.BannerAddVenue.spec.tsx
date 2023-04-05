@@ -109,6 +109,7 @@ describe('OfferIndividualForm', () => {
     venueList = [
       {
         id: 'physical',
+        nonHumanizedId: 1,
         name: 'Venue AAAA',
         managingOffererId: 'AE',
         isVirtual: false,
@@ -125,6 +126,7 @@ describe('OfferIndividualForm', () => {
       },
       {
         id: 'virtual',
+        nonHumanizedId: 2,
         name: 'Venue AAAA',
         managingOffererId: 'AE',
         isVirtual: true,
@@ -165,6 +167,7 @@ describe('OfferIndividualForm', () => {
         {
           id: 'virtual',
           name: 'Venue AAAA',
+          nonHumanizedId: 3,
           managingOffererId: 'virtualAndPhysical',
           isVirtual: true,
           withdrawalDetails: '',
@@ -200,6 +203,7 @@ describe('OfferIndividualForm', () => {
         {
           id: 'virtual',
           name: 'Venue AAAA',
+          nonHumanizedId: 4,
           managingOffererId: 'virtualAndPhysical',
           isVirtual: true,
           withdrawalDetails: '',

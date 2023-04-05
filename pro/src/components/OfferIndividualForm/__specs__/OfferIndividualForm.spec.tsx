@@ -83,6 +83,8 @@ describe('OfferIndividualForm', () => {
   let offererNames: TOffererName[]
   let venueList: TOfferIndividualVenue[]
   const offererId = 2
+  const physicalVenueId = 1
+  const virtualVenueId = 2
 
   beforeEach(() => {
     categories = [
@@ -132,16 +134,17 @@ describe('OfferIndividualForm', () => {
     ]
     offererNames = [
       {
-        id: 'virtualAndPhysical',
+        id: 'AE',
         nonHumanizedId: offererId,
         name: 'Offerer virtual and physical',
       },
     ]
     venueList = [
       {
-        id: 'physical',
+        id: 'AE',
+        nonHumanizedId: physicalVenueId,
         name: 'Venue AAAA',
-        managingOffererId: 'virtualAndPhysical',
+        managingOffererId: 'AE',
         isVirtual: false,
         withdrawalDetails: '',
         accessibility: {
@@ -155,9 +158,10 @@ describe('OfferIndividualForm', () => {
         hasCreatedOffer: true,
       },
       {
-        id: 'virtual',
+        id: 'A9',
+        nonHumanizedId: virtualVenueId,
         name: 'Venue AAAA',
-        managingOffererId: 'virtualAndPhysical',
+        managingOffererId: 'AE',
         isVirtual: true,
         withdrawalDetails: '',
         accessibility: {
@@ -201,10 +205,10 @@ describe('OfferIndividualForm', () => {
   it('should render synchronized banner when lastProviderName is set', async () => {
     const offer = {
       nonHumanizedId: 12,
-      venueId: 'VID physical',
+      venueId: 'AE',
       venue: {
         offerer: {
-          id: 'OFID',
+          id: 'AE',
           name: 'Offerer name',
         },
       },
@@ -254,7 +258,7 @@ describe('OfferIndividualForm', () => {
       FORM_DEFAULT_VALUES,
       offererNames,
       null,
-      'physical',
+      physicalVenueId.toString(),
       venueList
     )
     renderOfferIndividualForm({
@@ -306,7 +310,7 @@ describe('OfferIndividualForm', () => {
         subCategoryFields: ['isDuo'],
         subcategoryId: 'physical',
         url: '',
-        venueId: 'physical',
+        venueId: physicalVenueId,
         visa: '',
         withdrawalDelay: undefined,
         withdrawalDetails: '',
@@ -321,7 +325,7 @@ describe('OfferIndividualForm', () => {
       FORM_DEFAULT_VALUES,
       offererNames,
       null,
-      'virtual',
+      virtualVenueId.toString(),
       venueList
     )
     renderOfferIndividualForm({
@@ -376,7 +380,7 @@ describe('OfferIndividualForm', () => {
         subCategoryFields: [],
         subcategoryId: 'virtual',
         url: 'http://example.com/',
-        venueId: 'virtual',
+        venueId: virtualVenueId,
         visa: '',
         withdrawalDelay: undefined,
         withdrawalDetails: '',
