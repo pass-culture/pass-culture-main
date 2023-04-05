@@ -10,7 +10,10 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StocksEventList, { IStocksEvent } from '../StocksEventList'
+import StocksEventList, {
+  IStocksEvent,
+  STOCKS_PER_PAGE,
+} from '../StocksEventList'
 
 const mockLogEvent = jest.fn()
 
@@ -133,6 +136,54 @@ describe('StocksEventList', () => {
     )
   })
 
+  // test added because pagination has created a bug
+  // where the last page was not changed when needed
+  // user could have been to an empty page
+  it('should bring me on new last page when deleting more than one page by action bar', async () => {
+    renderStocksEventList({
+      stocks: Array(STOCKS_PER_PAGE * 2 + 1).fill(
+        individualStockEventListFactory({ priceCategoryId: 1 })
+      ),
+    })
+
+    // select all lines but not first page
+    const firstPageCheckboxes = screen.getAllByRole('checkbox')
+    for (let i = 0; i <= STOCKS_PER_PAGE; i++) {
+      await userEvent.click(firstPageCheckboxes[i])
+    }
+    expect(
+      screen.getByText(`${STOCKS_PER_PAGE + 1} dates sélectionnées`)
+    ).toBeInTheDocument()
+
+    // going page 2 ...and select one less line
+    await userEvent.click(screen.getByAltText('Page suivante'))
+    expect(screen.getByText('Page 2/3')).toBeInTheDocument()
+    const secondPageCheckboxes = screen.getAllByRole('checkbox')
+    await userEvent.click(secondPageCheckboxes[1])
+    expect(
+      screen.getByText(`${STOCKS_PER_PAGE} dates sélectionnées`)
+    ).toBeInTheDocument()
+
+    await userEvent.click(screen.getByAltText('Page suivante'))
+    expect(screen.getByText('Page 3/3')).toBeInTheDocument()
+
+    // delete by action bar
+    await userEvent.click(screen.getByText('Supprimer ces dates'))
+    expect(mockSetSotcks).toBeCalledTimes(1)
+    expect(mockSetSotcks).toHaveBeenNthCalledWith(
+      1,
+      Array(STOCKS_PER_PAGE + 1).fill({
+        beginningDatetime: '2021-10-15T12:00:00.000Z',
+        bookingLimitDatetime: '2021-09-15T12:00:00.000Z',
+        priceCategoryId: 1,
+        quantity: 18,
+      })
+    )
+
+    // we are on page 2 now (setStocks is mocked so lines are still here)
+    expect(screen.getByText('Page 2/3')).toBeInTheDocument()
+  })
+
   it('should delete line when clicking on trash icon', async () => {
     renderStocksEventList({
       stocks: [
@@ -170,5 +221,27 @@ describe('StocksEventList', () => {
         to: 'stocks',
       }
     )
+  })
+
+  // test added because pagination has created a bug
+  // where several lines where deleted at the same time
+  // and the last page was not changed when needed
+  it('should bring me on previous page when deleting only one line by trash icon', async () => {
+    renderStocksEventList({
+      stocks: Array(STOCKS_PER_PAGE * 2 + 1).fill(
+        individualStockEventListFactory({ priceCategoryId: 1 })
+      ),
+    })
+
+    // going page 3 (last page)
+    await userEvent.click(screen.getByAltText('Page suivante'))
+    await userEvent.click(screen.getByAltText('Page suivante'))
+    expect(screen.getByText('Page 3/3')).toBeInTheDocument()
+    // delete by trash icon
+    await userEvent.click(screen.getAllByText('Supprimer')[0])
+
+    // only one line has been removed, last page is full
+    expect(screen.getByText('Page 2/2')).toBeInTheDocument()
+    expect(screen.getAllByText('12,38 € - Label')).toHaveLength(STOCKS_PER_PAGE)
   })
 })
