@@ -105,6 +105,7 @@ describe('screens:SignupJourney::Offerers', () => {
         id: '6',
         siret: '12345678963333',
         name: 'venue 6',
+        publicName: 'public venue 6',
       },
     ]
 
@@ -136,7 +137,7 @@ describe('screens:SignupJourney::Offerers', () => {
 
     expect(screen.getAllByRole('listitem')).toHaveLength(4)
     expect(screen.queryByText('venue 5')).not.toBeVisible()
-    expect(screen.queryByText('venue 6')).not.toBeVisible()
+    expect(screen.queryByText('public venue 6')).not.toBeVisible()
 
     expect(
       await screen.findByRole('button', {
@@ -199,7 +200,7 @@ describe('screens:SignupJourney::Offerers', () => {
 
     expect(await screen.findAllByRole('listitem')).toHaveLength(4)
     expect(await screen.queryByText('venue 5')).not.toBeVisible()
-    expect(await screen.queryByText('venue 6')).not.toBeVisible()
+    expect(await screen.queryByText('public venue 6')).not.toBeVisible()
 
     await userEvent.click(screen.getByText('Afficher plus de structures'))
 
@@ -219,7 +220,7 @@ describe('screens:SignupJourney::Offerers', () => {
 
     expect(await screen.findAllByRole('listitem')).toHaveLength(6)
     expect(await screen.queryByText('venue 5')).toBeVisible()
-    expect(await screen.queryByText('venue 6')).toBeVisible()
+    expect(await screen.queryByText('public venue 6')).toBeVisible()
 
     await userEvent.click(screen.getByText('Afficher moins de structures'))
 
