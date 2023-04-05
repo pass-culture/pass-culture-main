@@ -1,7 +1,5 @@
 from unittest.mock import patch
 
-from wtforms.form import Form
-
 from pcapi.admin.custom_views.pro_user_view import ProUserView
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
@@ -77,20 +75,6 @@ class ProUserViewTest:
         assert updated_user.departementCode == pro_user.departementCode
         assert updated_user.postalCode == pro_user.postalCode
         assert updated_user.phoneNumber == pro_user.phoneNumber
-
-    def test_should_create_the_public_name(self, app, db_session):
-        # Given
-        user = User()
-        user.firstName = "Ken"
-        user.lastName = "Thompson"
-        user.publicName = None
-        view = ProUserView(model=User, session=db_session)
-
-        # When
-        view.on_model_change(Form(), model=user, is_created=False)
-
-        # Then
-        assert user.publicName == "Ken Thompson"
 
     def test_order_by_works(self, app, db_session):
         view = ProUserView(model=User, session=db_session)

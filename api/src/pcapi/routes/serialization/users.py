@@ -88,7 +88,6 @@ class ProUserCreationBodyModel(BaseModel):
     password: str
     phone_number: str
     postal_code: str
-    public_name: str
     siren: str
     contact_ok: bool
 
@@ -106,7 +105,6 @@ class ProUserCreationBodyV2Model(BaseModel):
     email: pydantic.EmailStr
     first_name: str
     last_name: str
-    public_name: str
     password: str
     phone_number: str
     contact_ok: bool
@@ -150,7 +148,6 @@ class SharedLoginUserResponseModel(BaseModel):
     needsToFillCulturalSurvey: bool | None
     phoneNumber: str | None
     postalCode: str | None
-    publicName: str | None
     roles: list[users_models.UserRole]
 
     _normalize_id = humanize_field("id")
@@ -196,7 +193,6 @@ class SharedCurrentUserResponseModel(BaseModel):
     phoneNumber: str | None
     phoneValidationStatus: users_models.PhoneValidationStatusType | None
     postalCode: str | None
-    publicName: str | None
     roles: list[users_models.UserRole]
 
     _normalize_id = humanize_field("id")

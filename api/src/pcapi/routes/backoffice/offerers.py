@@ -138,10 +138,10 @@ def get_offerer_history(offerer_id: int) -> serialization.HistoryResponseModel:
                 type=action.actionType,
                 date=format_into_utc_date(action.actionDate) if action.actionDate else None,
                 authorId=action.authorUserId,
-                authorName=action.authorUser.publicName if action.authorUser else None,
+                authorName=action.authorUser.full_name if action.authorUser else None,
                 comment=action.comment,
                 accountId=action.userId,
-                accountName=action.user.publicName if action.user else None,
+                accountName=action.user.full_name if action.user else None,
             )
             for action in history
         ]

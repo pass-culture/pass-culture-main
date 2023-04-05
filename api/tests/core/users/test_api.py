@@ -663,15 +663,15 @@ class UpdateUserInfoTest:
     def test_update_user_info(self):
         user = users_factories.UserFactory(email="initial@example.com")
 
-        users_api.update_user_info(user, author=user, public_name="New Name")
+        users_api.update_user_info(user, author=user, first_name="New", last_name="Name")
         user = users_models.User.query.one()
         assert user.email == "initial@example.com"
-        assert user.publicName == "New Name"
+        assert user.full_name == "New Name"
 
         users_api.update_user_info(user, author=user, email="new@example.com")
         user = users_models.User.query.one()
         assert user.email == "new@example.com"
-        assert user.publicName == "New Name"
+        assert user.full_name == "New Name"
 
     def test_update_user_info_sanitizes_email(self):
         user = users_factories.UserFactory(email="initial@example.com")
@@ -785,7 +785,6 @@ class CreateProUserTest:
         "contactOk": False,
         "phoneNumber": "0666666666",
         "name": "Le Petit Rintintin",
-        "publicName": "Le Petit Rintintin",
         "siren": "123456789",
         "address": "1 rue du test",
         "postalCode": "44000",
@@ -835,7 +834,6 @@ class CreateProUserAndOffererTest:
             password="The p@ssw0rd",
             phoneNumber="0607080910",
             postalCode="75017",
-            publicName="The public name",
             siren=777084122,
             contactOk=True,
         )
@@ -860,7 +858,6 @@ class BeneficiaryInformationUpdateTest:
             firstName=None,
             lastName=None,
             postalCode=None,
-            publicName="UNSET",
             dateOfBirth=declared_on_signup_date_of_birth,
         )
         beneficiary_information = fraud_models.DMSContent(
@@ -884,7 +881,6 @@ class BeneficiaryInformationUpdateTest:
         # Then
         assert beneficiary.lastName == "Doe"
         assert beneficiary.firstName == "Jane"
-        assert beneficiary.publicName == "Jane Doe"
         assert beneficiary.postalCode == "67200"
         assert beneficiary.address == "11 Rue du Test"
         assert beneficiary.validatedBirthDate == declared_on_dms_date_of_birth
@@ -1205,12 +1201,12 @@ class PublicAccountHistoryTest:
         assert {
             "action": "revue manuelle",
             "datetime": ko.dateReviewed,
-            "message": f"revue {ko.review.value} par {ko.author.publicName}: {ko.reason}",
+            "message": f"revue {ko.review.value} par {ko.author.full_name}: {ko.reason}",
         } in history
         assert {
             "action": "revue manuelle",
             "datetime": dms.dateReviewed,
-            "message": f"revue {dms.review.value} par {dms.author.publicName}: {dms.reason}",
+            "message": f"revue {dms.review.value} par {dms.author.full_name}: {dms.reason}",
         } in history
 
     def test_history_contains_imports(self):
@@ -1275,13 +1271,13 @@ class PublicAccountHistoryTest:
             assert {
                 "action": "import demarches_simplifiees",
                 "datetime": status.date,
-                "message": f"par {status.author.publicName}: {status.status.value} ({status.detail})",
+                "message": f"par {status.author.full_name}: {status.status.value} ({status.detail})",
             } in history
         for status in ubble.statuses:
             assert {
                 "action": "import ubble",
                 "datetime": status.date,
-                "message": f"par {status.author.publicName}: {status.status.value} ({status.detail})",
+                "message": f"par {status.author.full_name}: {status.status.value} ({status.detail})",
             } in history
 
     def test_history_is_sorted_antichronologically(self):

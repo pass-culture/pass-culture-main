@@ -78,20 +78,6 @@ class PartnerUserViewTest:
         # then
         assert user.needsToFillCulturalSurvey == False
 
-    def test_should_create_the_public_name(self, app, db_session):
-        # given
-        user = User()
-        user.firstName = "Ken"
-        user.lastName = "Thompson"
-        user.publicName = None
-        view = PartnerUserView(model=User, session=db_session)
-
-        # when
-        view.on_model_change(Form(), model=user, is_created=False)
-
-        # then
-        assert user.publicName == "Ken Thompson"
-
     @clean_database
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")

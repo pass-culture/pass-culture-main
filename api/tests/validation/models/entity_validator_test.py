@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import pytest
 
 from pcapi.core.categories import subcategories
@@ -7,7 +5,6 @@ import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.users.factories as users_factories
 from pcapi.validation.models.entity_validator import validate
 
 
@@ -165,18 +162,4 @@ class StockValidationTest:
     def test_valid_infinite_quantity(self):
         stock = offers_factories.StockFactory.build(quantity=None)
         api_errors = validate(stock)
-        assert not api_errors.errors
-
-
-class UserValidationTest:
-    @patch("pcapi.validation.models.user.user_queries.count_users_by_email", lambda email: 0)
-    def test_public_name_too_short(self):
-        user = users_factories.UserFactory.build(publicName="")
-        api_errors = validate(user)
-        assert api_errors.errors == {"publicName": ["Tu dois saisir au moins 1 caractères."]}
-
-    @patch("pcapi.validation.models.user.user_queries.count_users_by_email", lambda email: 0)
-    def test_valid_public_name(self):
-        user = users_factories.UserFactory.build(publicName="Joe la bricole")
-        api_errors = validate(user)
         assert not api_errors.errors

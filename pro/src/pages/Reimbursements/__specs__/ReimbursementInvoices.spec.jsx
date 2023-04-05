@@ -26,7 +26,6 @@ const renderReimbursements = props => {
   const storeOverrides = {
     user: {
       currentUser: {
-        publicName: 'François',
         isAdmin: false,
         hasSeenProTutorials: true,
       },

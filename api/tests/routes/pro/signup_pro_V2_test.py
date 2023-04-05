@@ -8,7 +8,6 @@ BASE_DATA_PRO = {
     "email": "toto_pro@example.com",
     "firstName": "Toto",
     "lastName": "Pro",
-    "publicName": "Toto Pro",
     "password": "__v4l1d_P455sw0rd__",
     "phoneNumber": "0102030405",
     "contactOk": False,
@@ -37,7 +36,6 @@ class Returns204Test:
         assert not user.has_admin_role
         assert user.lastName == "Pro"
         assert user.phoneNumber == "+33102030405"
-        assert user.publicName == "Toto Pro"
         assert user.dateOfBirth is None
         assert user.dateCreated is not None
         assert user.notificationSubscriptions == {"marketing_push": True, "marketing_email": False}
@@ -187,16 +185,3 @@ class Returns400Test:
         error = response.json
         assert "phoneNumber" in error
         assert "Le numéro de téléphone est invalide" in error["phoneNumber"]
-
-    def test_when_public_name_is_missing(self, client):
-        # Given
-        data = BASE_DATA_PRO.copy()
-        del data["publicName"]
-
-        # When
-        response = client.post("/users/signup/pro", json=data)
-
-        # Then
-        assert response.status_code == 400
-        error = response.json
-        assert "publicName" in error

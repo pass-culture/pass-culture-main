@@ -138,6 +138,5 @@ def create_local_admin_user(
     local_admin.roles = [users_models.UserRole.ADMIN]
     local_admin.firstName = first_name
     local_admin.lastName = last_name
-    local_admin.publicName = given_name if given_name is not None else f"{first_name} {last_name}"
 
     return local_admin

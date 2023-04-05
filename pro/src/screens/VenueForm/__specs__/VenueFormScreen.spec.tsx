@@ -384,7 +384,6 @@ describe('screen | VenueForm', () => {
           {
             id: 'EY',
             isAdmin: true,
-            publicName: 'USER',
           } as SharedCurrentUserResponseModel,
           formValues,
           true,
@@ -404,7 +403,6 @@ describe('screen | VenueForm', () => {
           {
             id: 'EY',
             isAdmin: false,
-            publicName: 'USER',
           } as SharedCurrentUserResponseModel,
           formValues,
           true,
@@ -427,7 +425,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: true,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         true,
@@ -451,7 +448,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: true,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         true,
@@ -484,7 +480,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: true,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
@@ -517,7 +512,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: true,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         true,
@@ -544,7 +538,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: true,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
@@ -568,7 +561,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: false,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
@@ -617,7 +609,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: false,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
@@ -650,7 +641,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: false,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         true,
@@ -719,7 +709,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: false,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
@@ -790,7 +779,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: false,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
@@ -865,7 +853,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: false,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
@@ -914,7 +901,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: false,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
@@ -982,7 +968,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: false,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
@@ -1029,7 +1014,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: false,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
@@ -1060,7 +1044,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: false,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
@@ -1089,7 +1072,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: false,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
@@ -1117,7 +1099,6 @@ describe('screen | VenueForm', () => {
         {
           id: 'EY',
           isAdmin: false,
-          publicName: 'USER',
         } as SharedCurrentUserResponseModel,
         formValues,
         true,

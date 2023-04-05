@@ -104,7 +104,6 @@ UPDATE api_key SET secret = pg_temp.random_text(32)::bytea;
 UPDATE "user"
 SET
     "email" = 'user' || "id" || '@anonymized.email',
-    "publicName" = pg_temp.fake_first_name(id) || ' ' || pg_temp.fake_last_name(id),
     "password" = 'fake-hashed-password'::bytea,
     "firstName" = pg_temp.fake_first_name(id),
     "lastName" = pg_temp.fake_last_name(id),

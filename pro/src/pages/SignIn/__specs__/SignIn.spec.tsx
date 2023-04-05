@@ -209,7 +209,6 @@ describe('src | components | pages | SignIn', () => {
         user: {
           currentUser: {
             id: 'user_id',
-            publicName: 'François',
             isAdmin: false,
           },
           initialized: true,
@@ -324,7 +323,6 @@ describe('src | components | pages | SignIn', () => {
         user: {
           currentUser: {
             id: 'user_id',
-            publicName: 'François',
             isAdmin: true,
           },
           initialized: true,

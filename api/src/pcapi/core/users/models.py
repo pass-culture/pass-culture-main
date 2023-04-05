@@ -42,7 +42,6 @@ if typing.TYPE_CHECKING:
 
 
 VOID_FIRST_NAME = ""
-VOID_PUBLIC_NAME = "   "
 
 
 class TokenType(enum.Enum):
@@ -212,7 +211,6 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     _phoneNumber = sa.Column(sa.String(20), nullable=True, index=True, name="phoneNumber")
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
     postalCode = sa.Column(sa.String(5), nullable=True)
-    publicName: str = sa.Column(sa.String(255), nullable=False)
     recreditAmountToShow = sa.Column(sa.Numeric(10, 2), nullable=True)
     UserOfferers: list["UserOfferer"] = orm.relationship("UserOfferer", back_populates="user")
     roles: list[UserRole] = sa.Column(
@@ -390,7 +388,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def full_name(self) -> str:
         # full_name is used for display and should never be empty, which would be confused with no user.
         # We use the email as a fallback because it is the most human-readable way to identify a single user
-        return (f"{self.firstName or ''} {self.lastName or ''}".strip()) or self.publicName.strip() or self.email
+        return (f"{self.firstName or ''} {self.lastName or ''}".strip()) or self.email
 
     @property
     def has_active_deposit(self):  # type: ignore [no-untyped-def]

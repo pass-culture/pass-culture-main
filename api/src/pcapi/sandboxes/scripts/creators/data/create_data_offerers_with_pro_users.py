@@ -112,7 +112,6 @@ def create_data_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str,
             lastName=last_name,
             postalCode=f"{departement_code}100",
             phoneNumber="+33100000001",
-            publicName=f"{first_name} {last_name}",
             validationToken=user_validation_token,
         )
         users_by_name[user_name] = pro
@@ -142,7 +141,6 @@ def create_data_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str,
                 lastName=last_name,
                 postalCode=f"{departement_code}100",
                 phoneNumber="+33100000002",
-                publicName=f"{first_name} {last_name}",
                 validationToken=user_validation_token,
             )
             users_by_name[user_name] = pro

@@ -143,7 +143,6 @@ class FillUserFromTest:
         # then
         assert user.lastName == "Mortimer"
         assert user.firstName == "Philip"
-        assert user.publicName == "Philip Mortimer"
         assert user.email == "pmortimer@bletchley.co.uk"
         assert user.departementCode == "29"
         assert user.has_beneficiary_role == False
@@ -166,7 +165,6 @@ class FillUserFromTest:
 
         # then
         assert user.firstName == "John"
-        assert user.publicName == "John Mortimer"
 
     def test_sets_default_properties_on_the_user(self):
         # when

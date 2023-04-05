@@ -16,7 +16,6 @@ class AsDictTest:
         dict_result = as_dict(user, includes=USER_INCLUDES)
 
         # then
-        assert "publicName" in dict_result
         assert "lastName" in dict_result
         assert "firstName" in dict_result
 

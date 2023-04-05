@@ -23,7 +23,6 @@ def save_allocine_sandbox() -> None:
     pro = users_factories.ProFactory(
         firstName="Didier",
         lastName="Champion",
-        publicName="Didier Champion",
         email="pro.exploitant-cinema@example.net",
     )
 

@@ -59,7 +59,6 @@ class UserFactory(BaseFactory):
     dateOfBirth = datetime.combine(date(1980, 1, 1), time(0, 0))
     firstName = "Jean"
     lastName = "Neige"
-    publicName = "Jean Neige"
     isEmailValidated = True
     roles: list[models.UserRole] = []
     hasSeenProTutorials = True
@@ -102,7 +101,6 @@ class AdminFactory(BaseFactory):
     departementCode = "33"
     firstName = "Frank"
     lastName = "Columbo"
-    publicName = "Frank Columbo"
     isEmailValidated = True
     roles = [models.UserRole.ADMIN]
     hasSeenProTutorials = True
@@ -162,8 +160,6 @@ class BeneficiaryGrant18Factory(BaseFactory):
     ) -> models.User:
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
-        if "publicName" not in kwargs and kwargs["firstName"] and kwargs["lastName"]:
-            kwargs["publicName"] = "%s %s" % (kwargs["firstName"], kwargs["lastName"])
         if "validatedBirthDate" not in kwargs:
             kwargs["validatedBirthDate"] = kwargs["dateOfBirth"]
         instance = super()._create(model_class, *args, **kwargs)
@@ -179,8 +175,6 @@ class BeneficiaryGrant18Factory(BaseFactory):
     ) -> models.User:
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
-        if "publicName" not in kwargs and kwargs["firstName"] and kwargs["lastName"]:
-            kwargs["publicName"] = "%s %s" % (kwargs["firstName"], kwargs["lastName"])
         instance = super()._build(model_class, *args, **kwargs)
         instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
         return instance
@@ -377,7 +371,6 @@ class ProFactory(BaseFactory):
     departementCode = "31"
     firstName = "René"
     lastName = "Coty"
-    publicName = "René Coty"
     isEmailValidated = True
     roles = [models.UserRole.PRO]
     hasSeenProTutorials = True

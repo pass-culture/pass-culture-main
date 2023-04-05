@@ -74,7 +74,6 @@ def _create_pro_user(row: dict) -> User:
             password=_get_password(row),
             phoneNumber=row["Téléphone"],
             postalCode=row["Code postal"],
-            publicName=f'{row["Prénom"]} {row["Nom"]}',
             siren=row["SIREN"],
             contactOk=True,
         )
@@ -118,7 +117,6 @@ def _add_or_update_user_from_row(row: dict, update_if_exists: bool) -> User | No
 
     user.lastName = row["Nom"]
     user.firstName = row["Prénom"]
-    user.publicName = f"{user.firstName} {user.lastName}"
     user.phoneNumber = row["Téléphone"]  # type: ignore [method-assign]
     user.departementCode = row["Département"]
     user.postalCode = row["Code postal"]
@@ -151,7 +149,6 @@ def _add_or_update_admin(update_if_exists: bool) -> None:
     admin.add_admin_role()
     admin.firstName = "Jeanne"
     admin.lastName = "Admin"
-    admin.publicName = f"{admin.firstName} {admin.lastName}"
     repository.save(admin)
     logger.info("Created or updated admin user=%s", admin.id)
 

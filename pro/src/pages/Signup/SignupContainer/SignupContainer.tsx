@@ -47,7 +47,6 @@ const SignupContainer = (): JSX.Element => {
 
   const onSubmit = (values: ISignupFormValues) => {
     const { legalUnitValues, siren, ...flattenvalues } = values
-    const { firstName } = flattenvalues
 
     let promise
     if (!newOnboardingActive) {
@@ -55,12 +54,10 @@ const SignupContainer = (): JSX.Element => {
         ...flattenvalues,
         ...legalUnitValues,
         siren: removeWhitespaces(siren),
-        publicName: firstName,
       })
     } else {
       promise = api.signupProV2({
         ...flattenvalues,
-        publicName: firstName,
       })
     }
     promise

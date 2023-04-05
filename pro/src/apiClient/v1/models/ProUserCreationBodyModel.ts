@@ -15,7 +15,6 @@ export type ProUserCreationBodyModel = {
   password: string;
   phoneNumber: string;
   postalCode: string;
-  publicName: string;
   siren: string;
 };
 

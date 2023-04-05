@@ -50,7 +50,6 @@ const renderSummary = (
     user: {
       initialized: true,
       currentUser: {
-        publicName: 'John Do',
         isAdmin: false,
         email: 'email@example.com',
       },

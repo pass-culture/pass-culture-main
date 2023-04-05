@@ -102,7 +102,6 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
             lastName=last_name,
             postalCode="{}100".format(departement_code),
             phoneNumber="+33100000000",
-            publicName="{} {}".format(first_name, last_name),
             validationToken="{}{}".format(user_validation_prefix, user_validation_suffix),
         )
         users_by_name[user_name] = pro
@@ -190,7 +189,6 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
             lastName=last_name,
             postalCode="{}100".format(departement_code),
             phoneNumber="+33100000001",
-            publicName="{} {}".format(first_name, last_name),
             validationToken=user_validation_token,
         )
         users_by_name[user_name] = pro
@@ -224,7 +222,6 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
                 lastName=last_name,
                 postalCode="{}100".format(departement_code),
                 phoneNumber="+33100000002",
-                publicName="{} {}".format(first_name, last_name),
                 validationToken=user_validation_token,
             )
             users_by_name[user_name] = pro

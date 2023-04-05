@@ -107,7 +107,6 @@ describe('route CollectiveOffers', () => {
     id: string
     isAdmin: boolean
     name: string
-    publicName: string
   }
   let store: any
   let offersRecap: Offer[]
@@ -117,7 +116,6 @@ describe('route CollectiveOffers', () => {
       id: 'EY',
       isAdmin: false,
       name: 'Current User',
-      publicName: 'USER',
     }
     store = {
       user: {
