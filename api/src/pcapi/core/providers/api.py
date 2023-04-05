@@ -391,14 +391,16 @@ def _get_stocks_to_upsert(
             # the price to zero. I checked a few cases and it does not
             # seem right.
             if not stock_detail.price and stock["price"] != stock_detail.price:
-                logger.warning(
-                    "Stock price has been changed to zero",
+                logger.error(
+                    "Ignored new stock price that has been changed to zero",
                     extra={
+                        "provider": provider_id,
                         "stock": stock["id"],
                         "previous_stock_price": stock["price"],
                         "new_price": stock_detail.price,
                     },
                 )
+                continue
 
             update_stock_mapping.append(
                 {
