@@ -1,7 +1,7 @@
 import React from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog/ConfirmDialog'
-import { ReactComponent as Logo } from 'icons/loader-pc.svg'
+import { ReactComponent as PasscultureIcon } from 'icons/ico-passculture.svg'
 
 interface IPrebookingModal {
   closeModal: () => void
@@ -13,12 +13,13 @@ const PrebookingModal = ({
 }: IPrebookingModal): JSX.Element => {
   return (
     <ConfirmDialog
-      icon={Logo}
+      icon={PasscultureIcon}
       onConfirm={preBookCurrentStock}
       onCancel={closeModal}
       title="Êtes-vous sûr de vouloir préréserver ?"
       confirmText="Préréserver"
       cancelText="Fermer"
+      extraClassNames="prebooking-modal"
     >
       <p className="prebooking-modal-text">
         Si oui, une fois votre préréservation confirmée :
