@@ -119,7 +119,6 @@ def create_collective_offer(
     # sometimes offerer_id is sent in body but it should not be there
     if body.offerer_id is not None:
         logger.error("offerer_id sent in body", extra={"offerer_id": body.offerer_id})
-
     try:
         offer = educational_api_offer.create_collective_offer(offer_data=body, user=current_user)
     except offerers_exceptions.CannotFindOffererSiren:
@@ -503,7 +502,6 @@ def create_collective_offer_template(
     # sometimes offerer_id is sent in body but it should not be there
     if body.offerer_id is not None:
         logger.error("offerer_id sent in body", extra={"offerer_id": body.offerer_id})
-
     try:
         offer = educational_api_offer.create_collective_offer_template(offer_data=body, user=current_user)
     except offerers_exceptions.CannotFindOffererSiren:
@@ -715,3 +713,34 @@ def get_autocomplete_educational_redactors_for_uai(
             for redactor in redactors
         ]
     )
+
+
+@private_api.route("/collective/offers/<int:offer_id>/duplicate", methods=["POST"])
+@login_required
+@spectree_serialize(
+    response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+)
+def duplicate_collective_offer(
+    offer_id: int,
+) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
+    try:
+        offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    check_user_has_access_to_offerer(current_user, offerer.id)
+
+    try:
+        original_offer = educational_api_offer.get_collective_offer_by_id(offer_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
+
+    try:
+        offer = educational_api_offer.duplicate_offer_and_stock(original_offer=original_offer)
+    except educational_exceptions.ValidationFailedOnCollectiveOffer:
+        raise ApiErrors({"validation": ["l'offre ne passe pas la validation"]}, status_code=403)
+    except educational_exceptions.OffererNotAllowedToDuplicate:
+        raise ApiErrors({"offerer": ["la structure n'est pas autorisée à dupliquer l'offre"]}, status_code=403)
+
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
