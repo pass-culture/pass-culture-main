@@ -17,7 +17,6 @@ class SaveIndustrialSandboxTest:
 
         assert offerers_models.Offerer.query.count() == 32
         assert offerers_models.Venue.query.count() == 46
-        assert finance_models.BusinessUnit.query.count() == 46
         assert offers_models.Offer.query.count() == 127
         assert offers_models.Stock.query.count() == 128
         assert 170 <= bookings_models.Booking.query.count() <= 200
