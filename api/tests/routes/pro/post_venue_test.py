@@ -31,7 +31,7 @@ def create_valid_venue_data(user=None):
         "postalCode": "75200",
         "bookingEmail": "toto@example.com",
         "city": "Paris",
-        "managingOffererId": humanize(user_offerer.offerer.id),
+        "managingOffererId": user_offerer.offerer.id,
         "latitude": 48.82387,
         "longitude": 2.35284,
         "publicName": "Ma venue publique",

@@ -123,12 +123,12 @@ const VenueFormScreen = ({
       ? api.postCreateVenue(
           serializePostVenueBodyModel(value, {
             hideSiret: !isSiretValued,
-            offererId: offerer.id,
+            offererId: offerer.nonHumanizedId,
           })
         )
       : api.editVenue(
           /* istanbul ignore next: there will always be a venue id on update screen */
-          venue?.id || '',
+          venue?.nonHumanizedId || 0,
           serializeEditVenueBodyModel(
             value,
             {

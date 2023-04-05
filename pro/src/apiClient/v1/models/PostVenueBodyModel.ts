@@ -14,7 +14,7 @@ export type PostVenueBodyModel = {
   description?: string | null;
   latitude: number;
   longitude: number;
-  managingOffererId: string;
+  managingOffererId: number;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
