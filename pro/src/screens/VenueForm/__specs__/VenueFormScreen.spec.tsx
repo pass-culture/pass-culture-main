@@ -1078,9 +1078,7 @@ describe('screen | VenueForm', () => {
       await waitFor(
         () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
       )
-      expect(
-        screen.getByText('Déposez votre demande de référencement')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Votre dossier a été déposé')).toBeInTheDocument()
     })
 
     it('should not display eac section if offerer is not eligble and has not dms application', async () => {

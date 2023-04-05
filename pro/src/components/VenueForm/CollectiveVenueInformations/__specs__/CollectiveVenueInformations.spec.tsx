@@ -2,13 +2,13 @@ import { screen } from '@testing-library/react'
 import { addDays } from 'date-fns'
 import React from 'react'
 
+import { DMSApplicationstatus } from 'apiClient/v1'
 import {
   defaultCollectiveDmsApplication,
   defaultIVenue,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { DMS_STATUS } from '../CollectiveDmsTimeline/CollectiveDmsTimeline'
 import CollectiveVenueInformations, {
   ICollectiveVenueInformationsProps,
 } from '../CollectiveVenueInformations'
@@ -26,7 +26,7 @@ describe('CollectiveVenueInformations', () => {
         ...defaultIVenue,
         collectiveDmsApplication: {
           ...defaultCollectiveDmsApplication,
-          state: DMS_STATUS.DRAFT,
+          state: DMSApplicationstatus.EN_CONSTRUCTION,
         },
       },
       isCreatingVenue: false,
@@ -46,7 +46,7 @@ describe('CollectiveVenueInformations', () => {
         adageInscriptionDate: addDays(new Date(), -10).toISOString(),
         collectiveDmsApplication: {
           ...defaultCollectiveDmsApplication,
-          state: 'ADDED_IN_ADAGE',
+          state: DMSApplicationstatus.ACCEPTE,
         },
       },
       isCreatingVenue: false,
@@ -66,7 +66,7 @@ describe('CollectiveVenueInformations', () => {
         adageInscriptionDate: addDays(new Date(), -32).toISOString(),
         collectiveDmsApplication: {
           ...defaultCollectiveDmsApplication,
-          state: DMS_STATUS.ADDED_IN_ADAGE,
+          state: DMSApplicationstatus.ACCEPTE,
         },
       },
       isCreatingVenue: false,
