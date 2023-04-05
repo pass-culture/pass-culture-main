@@ -178,13 +178,14 @@ describe('offer', () => {
       expect(
         within(summaryAndDomainList[1]).getByText('Cinéma')
       ).toBeInTheDocument()
-      expect(
-        within(summaryAndDomainList[1]).getByText('16/09/2022 à 02:00')
-      ).toBeInTheDocument()
+
       expect(
         within(summaryAndDomainList[1]).getByText('75000, Paris')
       ).toBeInTheDocument()
       // second summary line
+      expect(
+        within(summaryAndDomainList[2]).getByText('16/09/2022 à 02:00')
+      ).toBeInTheDocument()
       expect(
         within(summaryAndDomainList[2]).getByText('Jusqu’à 10 places')
       ).toBeInTheDocument()
@@ -217,13 +218,14 @@ describe('offer', () => {
       expect(
         within(summaryAndDomainList[1]).getByText('Cinéma')
       ).toBeInTheDocument()
-      expect(
-        within(summaryAndDomainList[1]).getByText('25/09/2021 à 19:00')
-      ).toBeInTheDocument()
+
       expect(
         within(summaryAndDomainList[1]).getByText('A la mairie')
       ).toBeInTheDocument()
       // second summary line
+      expect(
+        within(summaryAndDomainList[2]).getByText('25/09/2021 à 19:00')
+      ).toBeInTheDocument()
       expect(
         within(summaryAndDomainList[2]).queryByText('Jusqu’à', { exact: false })
       ).not.toBeInTheDocument()

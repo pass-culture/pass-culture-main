@@ -98,18 +98,18 @@ const OfferSummary = ({
           <SubcategoryIcon className="offer-summary-item-icon" />
           {subcategoryLabel}
         </li>
-        {beginningDatetime && (
-          <li className="offer-summary-item">
-            <DateIcon className="offer-summary-item-icon" />
-            {getLocalBeginningDatetime(beginningDatetime, venue.postalCode)}
-          </li>
-        )}
         <li className="offer-summary-item">
           <LocationIcon className="offer-summary-item-icon" />
           {offerVenueLabel}
         </li>
       </ul>
       <ul className="offer-summary">
+        {beginningDatetime && (
+          <li className="offer-summary-item">
+            <DateIcon className="offer-summary-item-icon" />
+            {getLocalBeginningDatetime(beginningDatetime, venue.postalCode)}
+          </li>
+        )}
         {numberOfTickets && (
           <li className="offer-summary-item">
             <UserIcon className="offer-summary-item-icon" />

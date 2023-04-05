@@ -12,6 +12,7 @@
   &-item {
     display: flex;
     align-items: center;
+    font-size: rem(12px);
 
     &:not(:last-of-type) {
       margin-right: rem(20px);
