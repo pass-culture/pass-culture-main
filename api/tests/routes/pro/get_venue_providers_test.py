@@ -40,13 +40,13 @@ class Returns200Test:
 
         # when
         auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venueProviders?venueId=" + humanize(venue_provider.venue.id))
+        response = auth_request.get(f"/venueProviders?venueId={venue_provider.venue.id}")
 
         # then
         assert response.status_code == 200
         assert response.json["venue_providers"][0].get("nOffers") == 1
-        assert response.json["venue_providers"][0].get("id") == humanize(venue_provider.id)
-        assert response.json["venue_providers"][0].get("venueId") == humanize(venue_provider.venue.id)
+        assert response.json["venue_providers"][0].get("id") == venue_provider.id
+        assert response.json["venue_providers"][0].get("venueId") == venue_provider.venue.id
         assert response.json["venue_providers"][0].get("lastSyncDate") == "2021-08-16T00:00:00Z"
 
     @pytest.mark.usefixtures("db_session")
@@ -65,12 +65,12 @@ class Returns200Test:
 
         # when
         auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venueProviders?venueId=" + humanize(allocine_venue_provider.venue.id))
+        response = auth_request.get(f"/venueProviders?venueId={allocine_venue_provider.venue.id}")
 
         # then
         assert response.status_code == 200
-        assert response.json["venue_providers"][0].get("id") == humanize(allocine_venue_provider.id)
-        assert response.json["venue_providers"][0].get("venueId") == humanize(allocine_venue_provider.venue.id)
+        assert response.json["venue_providers"][0].get("id") == allocine_venue_provider.id
+        assert response.json["venue_providers"][0].get("venueId") == allocine_venue_provider.venue.id
         assert response.json["venue_providers"][0].get("price") == 123.2
 
 

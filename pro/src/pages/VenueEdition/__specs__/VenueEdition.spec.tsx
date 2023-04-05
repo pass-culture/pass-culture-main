@@ -82,7 +82,7 @@ describe('route VenueEdition', () => {
 
     venueProviders = [
       {
-        id: 'BY',
+        id: 1,
         idAtProviders: undefined,
         dateModifiedAtLastProvider: '2022-09-19T12:01:18.708794Z',
         isActive: true,
@@ -90,8 +90,8 @@ describe('route VenueEdition', () => {
         lastProviderId: undefined,
         lastSyncDate: undefined,
         nOffers: 0,
-        providerId: 'BY',
-        venueId: 'DE',
+        providerId: 1,
+        venueId: 2,
         venueIdAtOfferProvider: 'cdsdemorc1',
         provider: {
           name: 'Ciné Office',

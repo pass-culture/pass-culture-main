@@ -7,7 +7,7 @@ import type { ProviderResponse } from './ProviderResponse';
 export type VenueProviderResponse = {
   dateModifiedAtLastProvider?: string;
   fieldsUpdated: Array<string>;
-  id: string;
+  id: number;
   idAtProviders?: string;
   isActive: boolean;
   isDuo?: boolean;
@@ -17,9 +17,9 @@ export type VenueProviderResponse = {
   nOffers: number;
   price?: number;
   provider: ProviderResponse;
-  providerId: string;
+  providerId: number;
   quantity?: number;
-  venueId: string;
+  venueId: number;
   venueIdAtOfferProvider: string;
 };
 
