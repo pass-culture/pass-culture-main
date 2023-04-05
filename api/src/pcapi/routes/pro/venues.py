@@ -98,18 +98,17 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
     response_model=venues_serialize.VenueResponseModel, on_success_status=201, api=blueprint.pro_private_schema
 )
 def post_create_venue(body: venues_serialize.PostVenueBodyModel) -> venues_serialize.VenueResponseModel:
-    dehumanized_managing_offerer_id = dehumanize(body.managingOffererId)
-    check_user_has_access_to_offerer(current_user, dehumanized_managing_offerer_id)  # type: ignore [arg-type]
+    check_user_has_access_to_offerer(current_user, body.managingOffererId)
     venue = offerers_api.create_venue(body)
 
     return venues_serialize.VenueResponseModel.from_orm(venue)
 
 
-@private_api.route("/venues/<venue_id>", methods=["PATCH"])
+@private_api.route("/venues/<int:venue_id>", methods=["PATCH"])
 @login_required
 @spectree_serialize(response_model=venues_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
-def edit_venue(venue_id: str, body: venues_serialize.EditVenueBodyModel) -> venues_serialize.GetVenueResponseModel:
-    venue = load_or_404(Venue, venue_id)
+def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venues_serialize.GetVenueResponseModel:
+    venue = Venue.query.get_or_404(venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     not_venue_fields = {

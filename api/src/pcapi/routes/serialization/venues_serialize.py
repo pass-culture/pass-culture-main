@@ -66,7 +66,7 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     comment: base.VenueComment | None
     latitude: float
     longitude: float
-    managingOffererId: str
+    managingOffererId: int
     name: base.VenueName
     publicName: base.VenuePublicName | None
     postalCode: base.VenuePostalCode

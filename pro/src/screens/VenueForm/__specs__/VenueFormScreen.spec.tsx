@@ -331,7 +331,7 @@ describe('screen | VenueForm', () => {
       longitude: 0,
       mail: 'a@b.c',
       name: 'name',
-      nonHumanizedId: 0,
+      nonHumanizedId: 15,
       pricingPoint: null,
       postalCode: '75008',
       publicName: 'name',
@@ -548,7 +548,7 @@ describe('screen | VenueForm', () => {
         .mockResolvedValue(venueResponse)
 
       await userEvent.click(screen.getByText(/Enregistrer/))
-      expect(editVenue).toHaveBeenCalledWith('id', { reimbursementPointId: 91 })
+      expect(editVenue).toHaveBeenCalledWith(15, { reimbursementPointId: 91 })
     })
   })
 
@@ -764,7 +764,7 @@ describe('screen | VenueForm', () => {
         )
       ).not.toBeInTheDocument()
 
-      expect(editVenue).toHaveBeenCalledWith('id', expectedEditVenue)
+      expect(editVenue).toHaveBeenCalledWith(15, expectedEditVenue)
 
       await waitFor(() => {
         expect(
@@ -836,7 +836,7 @@ describe('screen | VenueForm', () => {
         ).not.toBeInTheDocument()
       })
 
-      expect(editVenue).toHaveBeenCalledWith('id', expectedEditVenue)
+      expect(editVenue).toHaveBeenCalledWith(15, expectedEditVenue)
 
       await waitFor(() => {
         expect(
@@ -862,7 +862,7 @@ describe('screen | VenueForm', () => {
 
       const editVenue = jest
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ id: 'id' } as GetVenueResponseModel)
+        .mockResolvedValue({ id: 'AA' } as GetVenueResponseModel)
 
       await waitFor(() => {
         expect(
@@ -886,7 +886,7 @@ describe('screen | VenueForm', () => {
       venue.withdrawalDetails = 'Nouvelle information de retrait'
 
       await userEvent.click(screen.getByText(/Enregistrer et quitter/))
-      expect(editVenue).toHaveBeenCalledWith('id', expectedEditVenue)
+      expect(editVenue).toHaveBeenCalledWith(15, expectedEditVenue)
 
       await waitFor(() => {
         expect(

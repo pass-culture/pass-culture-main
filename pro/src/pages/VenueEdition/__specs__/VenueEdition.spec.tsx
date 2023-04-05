@@ -17,7 +17,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import VenueEdition from '../VenueEdition'
 
-const renderVenueEdition = (venueId: string, offererId: string) => {
+const renderVenueEdition = (venueId: number, offererId: number) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -117,6 +117,7 @@ describe('route VenueEdition', () => {
 
     offerer = {
       id: 'ABCD',
+      nonHumanizedId: 13,
     } as GetOffererResponseModel
 
     jest.spyOn(api, 'getVenue').mockResolvedValue(venue)
@@ -130,7 +131,7 @@ describe('route VenueEdition', () => {
   })
   it('should call getVenue and display Venue Form screen on success', async () => {
     // When
-    renderVenueEdition(venue.id, offerer.id)
+    renderVenueEdition(venue.nonHumanizedId, offerer.nonHumanizedId)
 
     // Then
     const venuePublicName = await screen.findByRole('heading', {
@@ -154,7 +155,7 @@ describe('route VenueEdition', () => {
       )
     )
     // When
-    renderVenueEdition(venue.id, offerer.id)
+    renderVenueEdition(venue.nonHumanizedId, offerer.nonHumanizedId)
 
     // Then
     expect(api.getVenue).toHaveBeenCalledTimes(1)

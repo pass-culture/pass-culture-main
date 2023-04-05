@@ -5,7 +5,6 @@ import sqlalchemy.orm as sqla_orm
 
 import pcapi.core.finance.models as finance_models
 from pcapi.models.api_errors import ApiErrors
-from pcapi.utils.human_ids import dehumanize
 
 from . import models
 
@@ -30,7 +29,7 @@ def validate_coordinates(raw_latitude: float | str, raw_longitude: float | str) 
 
 
 def check_venue_creation(data: dict[str, typing.Any], strict_accessibility_compliance: bool) -> None:
-    offerer_id = dehumanize(data.get("managingOffererId"))
+    offerer_id = data.get("managingOffererId")
     if not offerer_id:
         raise ApiErrors(errors={"managingOffererId": ["Vous devez choisir une structure pour votre lieu."]})
     offerer = models.Offerer.query.filter(models.Offerer.id == offerer_id).one_or_none()

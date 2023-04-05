@@ -70,7 +70,7 @@ class CreateVenueTest:
             "postalCode": "75000",
             "latitude": 1,
             "longitude": 1,
-            "managingOffererId": humanize(offerer.id),
+            "managingOffererId": offerer.id,
             "name": "La Venue",
             "venueTypeCode": "VISUAL_ARTS",
             "bookingEmail": "venue@example.com",

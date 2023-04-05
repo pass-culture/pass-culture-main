@@ -2245,7 +2245,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public editVenue(
-    venueId: string,
+    venueId: number,
     requestBody?: EditVenueBodyModel,
   ): CancelablePromise<GetVenueResponseModel> {
     return this.httpRequest.request({
