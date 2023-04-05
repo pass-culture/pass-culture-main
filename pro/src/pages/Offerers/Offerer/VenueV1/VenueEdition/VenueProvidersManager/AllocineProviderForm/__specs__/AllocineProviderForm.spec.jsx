@@ -38,10 +38,14 @@ describe('components | AllocineProviderForm', () => {
   let props
   let provider
   let createdVenueProvider
+  const venueId = 1
+  const providerId = 2
+  const venueProviderId = 3
 
   beforeEach(async () => {
     const venue = {
-      id: 'venueId',
+      id: 'AE',
+      nonHumanizedId: venueId,
       managingOffererId: 'managingOffererId',
       name: 'Le lieu',
       siret: '12345678901234',
@@ -54,7 +58,7 @@ describe('components | AllocineProviderForm', () => {
 
     api.listVenueProviders.mockResolvedValue({ venue_providers: [] })
 
-    provider = { id: 'providerId', name: 'Allociné' }
+    provider = { id: providerId, name: 'Allociné' }
     pcapi.loadProviders.mockResolvedValue([provider])
   })
 
@@ -64,7 +68,8 @@ describe('components | AllocineProviderForm', () => {
     const importOffersButton = screen.getByText('Synchroniser des offres')
     await userEvent.click(importOffersButton)
     const providersSelect = screen.getByRole('combobox')
-    await userEvent.selectOptions(providersSelect, provider.id)
+
+    await userEvent.selectOptions(providersSelect, provider.id.toString())
   }
 
   it('should display the price field with minimum value set to 0', async () => {
@@ -94,7 +99,7 @@ describe('components | AllocineProviderForm', () => {
   describe('import form allocine provider for the first time', () => {
     beforeEach(async () => {
       createdVenueProvider = {
-        id: 'venueProviderId',
+        id: venueProviderId,
         provider,
         providerId: provider.id,
         venueId: props.venue.id,
@@ -156,7 +161,7 @@ describe('components | AllocineProviderForm', () => {
         quantity: 5,
         isDuo: false,
         providerId: provider.id,
-        venueId: props.venue.id,
+        venueId: props.venue.nonHumanizedId,
       })
     })
 
@@ -180,7 +185,7 @@ describe('components | AllocineProviderForm', () => {
         quantity: undefined,
         isDuo: true,
         providerId: provider.id,
-        venueId: props.venue.id,
+        venueId: props.venue.nonHumanizedId,
       })
     })
 
@@ -204,7 +209,7 @@ describe('components | AllocineProviderForm', () => {
         quantity: undefined,
         isDuo: true,
         providerId: provider.id,
-        venueId: props.venue.id,
+        venueId: props.venue.nonHumanizedId,
       })
     })
 
@@ -280,13 +285,14 @@ describe('components | AllocineProviderForm', () => {
 
   describe('edit existing allocine provider', () => {
     let allocineProvider
+    const allocineProviderId = 2
 
     beforeEach(async () => {
       allocineProvider = {
-        id: 'venueProviderId',
+        id: allocineProviderId,
         provider,
         providerId: provider.id,
-        venueId: props.venue.id,
+        venueId: props.venue.nonHumanizedId,
         venueIdAtOfferProvider: props.venue.siret,
         lastSyncDate: '2018-01-01T00:00:00Z',
         nOffers: 0,
@@ -426,7 +432,7 @@ describe('components | AllocineProviderForm', () => {
         quantity: editedAllocineProvider.quantity,
         isDuo: editedAllocineProvider.isDuo,
         providerId: provider.id,
-        venueId: props.venue.id,
+        venueId: props.venue.nonHumanizedId,
       })
     })
 
@@ -467,7 +473,7 @@ describe('components | AllocineProviderForm', () => {
         quantity: editedAllocineProvider.quantity,
         isDuo: editedAllocineProvider.isDuo,
         providerId: provider.id,
-        venueId: props.venue.id,
+        venueId: props.venue.nonHumanizedId,
       })
     })
 

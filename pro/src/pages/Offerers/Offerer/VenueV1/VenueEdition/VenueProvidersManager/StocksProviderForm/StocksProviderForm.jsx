@@ -91,10 +91,10 @@ const StocksProviderForm = ({
 }
 
 StocksProviderForm.propTypes = {
-  providerId: PropTypes.string.isRequired,
+  providerId: PropTypes.number.isRequired,
   saveVenueProvider: PropTypes.func.isRequired,
   siret: PropTypes.string.isRequired,
-  venueId: PropTypes.string.isRequired,
+  venueId: PropTypes.number.isRequired,
 }
 
 export default StocksProviderForm

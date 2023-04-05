@@ -10,8 +10,8 @@ interface ICinemaProviderFormDialogProps {
   onCancel: () => void
   onConfirm: (payload: any) => void
   initialValues: any
-  providerId: string
-  venueId: string
+  providerId: number
+  venueId: number
 }
 
 export const CinemaProviderFormDialog = ({
