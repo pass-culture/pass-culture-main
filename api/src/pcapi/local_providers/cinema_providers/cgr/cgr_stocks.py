@@ -149,11 +149,7 @@ class CGRStocks(LocalProvider):
             stock.quantity = showtime.NbPlacesRestantes
 
         show_price = decimal.Decimal(str(showtime.PrixUnitaire))
-        price_label = f"Tarif {showtime.Relief}"
-        if showtime.bAVP:
-            price_label += f" {PREVIEW_SHOW}"
-        if showtime.bICE:
-            price_label += f" {ICE_CINE_SHOW}"
+        price_label = showtime.libTarif
 
         if "price" not in stock.fieldsUpdated:
             stock.price = show_price

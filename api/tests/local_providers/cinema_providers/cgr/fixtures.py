@@ -104,6 +104,7 @@ SEANCE_177182 = {
     "Version": "VF",
     "bAVP": False,
     "PrixUnitaire": 6.9,
+    "libTarif": "Tarif Standard ICE",
 }
 
 FILM_138473 = {
@@ -130,6 +131,7 @@ SEANCE_182019 = {
     "Version": "VF",
     "bAVP": False,
     "PrixUnitaire": 11,
+    "libTarif": "Tarif standard 3D",
 }
 
 FILM_234099 = {
@@ -156,6 +158,7 @@ SEANCE_182020 = {
     "Version": "VF",
     "bAVP": True,
     "PrixUnitaire": 7.2,
+    "libTarif": "Tarif Standard ICE",
 }
 
 SEANCE_182021 = {
@@ -170,6 +173,7 @@ SEANCE_182021 = {
     "Version": "VF",
     "bAVP": True,
     "PrixUnitaire": 11,
+    "libTarif": "Tarif Standard",
 }
 
 
@@ -197,6 +201,7 @@ SEANCE_182022 = {
     "Version": "VF",
     "bAVP": True,
     "PrixUnitaire": 11,
+    "libTarif": "Tarif Standard ICE",
 }
 
 FILM_234099_WITH_TWO_SEANCES = {
