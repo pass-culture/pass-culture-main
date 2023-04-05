@@ -12,7 +12,9 @@ from . import blueprint
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def signup_pro(body: users_serialize.ProUserCreationBodyModel) -> None:
     try:
-        users_api.create_pro_user_and_offerer(body)
+        user = users_api.create_pro_user_and_offerer(body)
+        firebase_value = {"BETTER_OFFER_CREATION": False}
+        users_api.save_firebase_flags(user, firebase_value)
     except phone_exceptions.InvalidPhoneNumber:
         raise ApiErrors(errors={"phoneNumber": ["Le numéro de téléphone est invalide"]})
 
@@ -21,6 +23,8 @@ def signup_pro(body: users_serialize.ProUserCreationBodyModel) -> None:
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def signup_pro_V2(body: users_serialize.ProUserCreationBodyV2Model) -> None:
     try:
-        users_api.create_pro_user_V2(body)
+        user = users_api.create_pro_user_V2(body)
+        firebase_value = {"BETTER_OFFER_CREATION": True}
+        users_api.save_firebase_flags(user, firebase_value)
     except phone_exceptions.InvalidPhoneNumber:
         raise ApiErrors(errors={"phoneNumber": ["Le numéro de téléphone est invalide"]})
