@@ -15,6 +15,7 @@ export const setDefaultInitialFormValues = (
   venueList: TOfferIndividualVenue[]
 ): IOfferIndividualFormValues => {
   let initialOffererId = FORM_DEFAULT_VALUES.offererId
+
   if (offererNames.length === 1) {
     initialOffererId = offererNames[0].nonHumanizedId.toString()
   } else if (
@@ -38,7 +39,9 @@ export const setDefaultInitialFormValues = (
   let initialAccessibility = FORM_DEFAULT_VALUES.accessibility
   let initialIsVenueVirtual
 
-  const venue = venueList.find(venue => venue.id === initialVenueId)
+  const venue = venueList.find(
+    venue => venue.nonHumanizedId.toString() === initialVenueId
+  )
 
   if (initialVenueId && venue) {
     initialAccessibility = venue.accessibility

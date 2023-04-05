@@ -51,6 +51,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
   let props: IUsefulInformationsProps
   const onSubmit = jest.fn()
   const offererId = 1
+  let venueList: TOfferIndividualVenue[]
 
   beforeEach(() => {
     const offererNames: TOffererName[] = [
@@ -61,9 +62,10 @@ describe('OfferIndividual section: UsefulInformations', () => {
       },
     ]
 
-    const venueList: TOfferIndividualVenue[] = [
+    venueList = [
       {
         id: 'AAAA',
+        nonHumanizedId: 1,
         name: 'Venue AAAA',
         managingOffererId: 'AE',
         isVirtual: false,
@@ -80,6 +82,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       },
       {
         id: 'BBBB',
+        nonHumanizedId: 2,
         name: 'Venue BBBB',
         managingOffererId: 'AE',
         isVirtual: true,
@@ -136,7 +139,10 @@ describe('OfferIndividual section: UsefulInformations', () => {
     const offererSelect = screen.getByLabelText('Structure')
     await userEvent.selectOptions(offererSelect, offererId.toString())
     const venueSelect = screen.getByLabelText('Lieu')
-    await userEvent.selectOptions(venueSelect, 'AAAA')
+    await userEvent.selectOptions(
+      venueSelect,
+      venueList[0].nonHumanizedId.toString()
+    )
     const withEmail = screen.getByLabelText('Envoi par e-mail')
     await userEvent.click(withEmail)
 
@@ -156,7 +162,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
         subCategoryFields: ['withdrawalType'],
         url: '',
         subcategoryId: 'CONCERT',
-        venueId: 'AAAA',
+        venueId: venueList[0].nonHumanizedId.toString(),
         withdrawalDelay: '0',
         withdrawalDetails: '',
         withdrawalType: 'by_email',
@@ -269,7 +275,10 @@ describe('OfferIndividual section: UsefulInformations', () => {
       const offererSelect = screen.getByLabelText('Structure')
       await userEvent.selectOptions(offererSelect, offererId.toString())
       const venueSelect = screen.getByLabelText('Lieu')
-      await userEvent.selectOptions(venueSelect, 'BBBB')
+      await userEvent.selectOptions(
+        venueSelect,
+        venueList[1].nonHumanizedId.toString()
+      )
 
       const urlField = await screen.findByLabelText('URL d’accès à l’offre')
 
@@ -294,7 +303,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
           subCategoryFields: [],
           subcategoryId: 'VIRTUAL_SUB_CATEGORY',
           url: 'http://example.com/routes?params={offerId}',
-          venueId: 'BBBB',
+          venueId: venueList[1].nonHumanizedId.toString(),
           withdrawalDelay: undefined,
           withdrawalDetails: '',
           withdrawalType: undefined,
@@ -313,7 +322,10 @@ describe('OfferIndividual section: UsefulInformations', () => {
       const offererSelect = screen.getByLabelText('Structure')
       await userEvent.selectOptions(offererSelect, offererId.toString())
       const venueSelect = screen.getByLabelText('Lieu')
-      await userEvent.selectOptions(venueSelect, 'BBBB')
+      await userEvent.selectOptions(
+        venueSelect,
+        venueList[1].nonHumanizedId.toString()
+      )
 
       const urlField = await screen.findByLabelText('URL d’accès à l’offre')
       await userEvent.click(urlField)

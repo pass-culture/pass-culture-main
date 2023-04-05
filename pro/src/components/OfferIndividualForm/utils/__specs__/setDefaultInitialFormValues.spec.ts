@@ -18,7 +18,7 @@ describe('setDefaultInitialFormValues', () => {
     expectedInitialValues = {
       ...FORM_DEFAULT_VALUES,
       offererId: '1',
-      venueId: 'C',
+      venueId: '1',
       isVenueVirtual: true,
       withdrawalDetails: 'détails de retrait',
       accessibility: { ...FORM_DEFAULT_VALUES.accessibility, none: true },
@@ -29,10 +29,11 @@ describe('setDefaultInitialFormValues', () => {
       { id: 'B', name: 'offerer B', nonHumanizedId: 2 },
     ]
     offererId = '1'
-    venueId = 'C'
+    venueId = '1'
     venueList = [
       {
         id: 'C',
+        nonHumanizedId: 1,
         managingOffererId: 'AE',
         name: 'Venue Name',
         isVirtual: true,
@@ -49,6 +50,7 @@ describe('setDefaultInitialFormValues', () => {
       },
       {
         id: 'D',
+        nonHumanizedId: 2,
         managingOffererId: 'AE',
         name: 'Venue Name 2',
         isVirtual: true,
@@ -83,7 +85,7 @@ describe('setDefaultInitialFormValues', () => {
   it('should return initial values when there is only one offererName', () => {
     // given
     offererNames = [{ id: 'A9', name: 'offerer B', nonHumanizedId: 2 }]
-    offererId = 'A9'
+    offererId = '2'
     // when
     const initialValues = setDefaultInitialFormValues(
       FORM_DEFAULT_VALUES,

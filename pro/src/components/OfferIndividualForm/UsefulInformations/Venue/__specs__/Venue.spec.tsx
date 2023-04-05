@@ -39,6 +39,7 @@ describe('OfferIndividual section: venue', () => {
   let initialValues: Partial<IOfferIndividualFormValues>
   let props: IVenueProps
   const onSubmit = jest.fn()
+  let venueList: TOfferIndividualVenue[]
   const firstOfferer = {
     id: 'AE',
     nonHumanizedId: 1,
@@ -62,9 +63,10 @@ describe('OfferIndividual section: venue', () => {
       thirdOfferer,
     ]
 
-    const venueList: TOfferIndividualVenue[] = [
+    venueList = [
       {
         id: 'AAAA',
+        nonHumanizedId: 1,
         name: 'Venue AAAA',
         managingOffererId: 'AE',
         isVirtual: false,
@@ -81,6 +83,7 @@ describe('OfferIndividual section: venue', () => {
       },
       {
         id: 'BBAA',
+        nonHumanizedId: 2,
         name: 'Venue BBAA',
         managingOffererId: 'A9',
         isVirtual: false,
@@ -97,6 +100,7 @@ describe('OfferIndividual section: venue', () => {
       },
       {
         id: 'CCAA',
+        nonHumanizedId: 3,
         name: 'Venue CCAA',
         managingOffererId: 'AM',
         isVirtual: false,
@@ -113,6 +117,7 @@ describe('OfferIndividual section: venue', () => {
       },
       {
         id: 'CCBB',
+        nonHumanizedId: 4,
         name: 'Venue CCBB',
         managingOffererId: 'AM',
         isVirtual: false,
@@ -194,7 +199,7 @@ describe('OfferIndividual section: venue', () => {
       expect(selectOfferer).toHaveValue(firstOfferer.nonHumanizedId.toString())
       expect(selectOfferer).toBeDisabled()
       expect(selectOfferer.childNodes.length).toBe(1)
-      expect(selectVenue).toHaveValue('AAAA')
+      expect(selectVenue).toHaveValue(venueList[0].nonHumanizedId.toString())
       expect(selectVenue).toBeDisabled()
       expect(selectVenue.childNodes.length).toBe(1)
     })
@@ -217,7 +222,7 @@ describe('OfferIndividual section: venue', () => {
     expect(selectOfferer).toHaveValue(firstOfferer.nonHumanizedId.toString())
 
     expect(selectVenue).toBeDisabled()
-    expect(selectVenue).toHaveValue('AAAA')
+    expect(selectVenue).toHaveValue(venueList[0].nonHumanizedId.toString())
     expect(selectVenue.childNodes.length).toBe(1)
   })
 
