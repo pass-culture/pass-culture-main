@@ -65,6 +65,8 @@ const renderVenue = async ({
 describe('OfferIndividual section: venue', () => {
   let initialValues: IInitialValues
   let venueProps: IVenueProps
+  let venueAccessible: TOfferIndividualVenue
+  let venueNotAccessible: TOfferIndividualVenue
   const onSubmit = jest.fn()
 
   beforeEach(() => {
@@ -76,8 +78,9 @@ describe('OfferIndividual section: venue', () => {
       },
     ]
 
-    const venueAccessible: TOfferIndividualVenue = {
+    venueAccessible = {
       id: 'AAAA',
+      nonHumanizedId: 1,
       name: 'Venue AAAA',
       managingOffererId: 'AE',
       isVirtual: false,
@@ -92,8 +95,9 @@ describe('OfferIndividual section: venue', () => {
       hasMissingReimbursementPoint: false,
       hasCreatedOffer: true,
     }
-    const venueNotAccessible: TOfferIndividualVenue = {
+    venueNotAccessible = {
       id: 'AABB',
+      nonHumanizedId: 2,
       name: 'Venue AABB',
       managingOffererId: 'AE',
       isVirtual: false,
@@ -145,14 +149,20 @@ describe('OfferIndividual section: venue', () => {
     })
     await screen.findByRole('heading', { name: 'Accessibilité' })
 
-    await userEvent.selectOptions(selectVenue, 'AAAA')
+    await userEvent.selectOptions(
+      selectVenue,
+      venueAccessible.nonHumanizedId.toString()
+    )
     expect(checkboxVisuel).not.toBeChecked()
     expect(checkboxMental).toBeChecked()
     expect(checkboxAuditif).toBeChecked()
     expect(checkboxMoteur).not.toBeChecked()
     expect(checkboxNone).not.toBeChecked()
 
-    await userEvent.selectOptions(selectVenue, 'AABB')
+    await userEvent.selectOptions(
+      selectVenue,
+      venueNotAccessible.nonHumanizedId.toString()
+    )
     expect(checkboxVisuel).not.toBeChecked()
     expect(checkboxMental).not.toBeChecked()
     expect(checkboxAuditif).not.toBeChecked()

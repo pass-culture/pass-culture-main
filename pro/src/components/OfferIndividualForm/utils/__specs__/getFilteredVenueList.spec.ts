@@ -53,6 +53,7 @@ describe('getFilteredVenueList', () => {
   const venueList = [
     {
       id: 'AA',
+      nonHumanizedId: 2,
       name: 'Lieu offline AA',
       managingOffererId: 'A',
       isVirtual: false,
@@ -69,6 +70,7 @@ describe('getFilteredVenueList', () => {
     },
     {
       id: 'BB',
+      nonHumanizedId: 3,
       name: 'Lieu offline BB',
       managingOffererId: 'A',
       isVirtual: false,
@@ -87,6 +89,7 @@ describe('getFilteredVenueList', () => {
 
   beforeEach(() => {
     virtualVenue = {
+      nonHumanizedId: 1,
       id: 'CC',
       name: 'Lieu online CC',
       managingOffererId: 'A',

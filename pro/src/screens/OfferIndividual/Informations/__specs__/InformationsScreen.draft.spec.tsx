@@ -110,6 +110,9 @@ describe('screens:OfferIndividual::Informations:draft', () => {
   let contextOverride: Partial<IOfferIndividualContext>
   let offer: IOfferIndividual
   let subCategories: IOfferSubCategory[]
+  const offererId = 1
+  const physicalVenueId = 1
+  const virtualVenueId = 1
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
@@ -150,7 +153,8 @@ describe('screens:OfferIndividual::Informations:draft', () => {
     ]
 
     const venue: TOfferIndividualVenue = {
-      id: 'VID physical',
+      id: 'AE',
+      nonHumanizedId: physicalVenueId,
       name: 'Venue name',
       isVirtual: false,
       accessibility: {
@@ -202,9 +206,9 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       image: undefined,
       url: 'http://offer.example.com',
       externalTicketOfficeUrl: 'http://external.example.com',
-      venueId: 'VID physical',
+      venueId: 'AE',
       venue: {
-        id: 'VID physical',
+        id: 'AE',
         name: 'Venue name',
         publicName: 'Venue publicName',
         isVirtual: false,
@@ -236,12 +240,13 @@ describe('screens:OfferIndividual::Informations:draft', () => {
     }
 
     contextOverride = {
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId.toString(),
       offer: offer,
       venueList: [
         venue,
         {
-          id: 'VID virtual',
+          id: 'A9',
+          nonHumanizedId: 2,
           name: 'Lieu online BB',
           managingOffererId: 'OFID',
           isVirtual: true,
@@ -263,8 +268,8 @@ describe('screens:OfferIndividual::Informations:draft', () => {
     }
 
     props = {
-      offererId: venue.managingOffererId,
-      venueId: venue.id,
+      offererId: offererId.toString(),
+      venueId: physicalVenueId.toString(),
     }
 
     jest
@@ -308,15 +313,15 @@ describe('screens:OfferIndividual::Informations:draft', () => {
   it('should submit minimal virtual offer', async () => {
     contextOverride.offer = {
       ...offer,
-      venueId: 'VID virtual',
+      venueId: 'AE',
       subcategoryId: 'SCID virtual',
       isEvent: false,
       withdrawalDelay: null,
       withdrawalType: null,
     }
     props = {
-      offererId: offer.venue.offerer.id,
-      venueId: offer.venue.id,
+      offererId: offererId.toString(),
+      venueId: virtualVenueId.toString(),
     }
 
     renderInformationsScreen(props, contextOverride)

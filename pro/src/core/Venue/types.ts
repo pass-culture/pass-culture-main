@@ -11,6 +11,7 @@ import { IVenueBannerMetaProps } from 'pages/Offerers/Offerer/VenueV1/VenueEditi
 
 export type TOfferIndividualVenue = {
   id: string
+  nonHumanizedId: number
   managingOffererId: string
   name: string
   isVirtual: boolean

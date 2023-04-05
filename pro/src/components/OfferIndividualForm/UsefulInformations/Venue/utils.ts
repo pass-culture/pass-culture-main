@@ -44,7 +44,7 @@ export const buildVenueOptions = (
 
   let venueOptions = offererVenues
     .map(venue => ({
-      value: venue.id.toString(),
+      value: venue.nonHumanizedId.toString(),
       label: venue.name,
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
