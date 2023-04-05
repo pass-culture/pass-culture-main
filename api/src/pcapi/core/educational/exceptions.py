@@ -167,3 +167,11 @@ class EducationalRedactorNotFound(Exception):
 
 class StudentsNotOpenedYet(Exception):
     pass
+
+
+class ValidationFailedOnCollectiveOffer(Exception):
+    pass
+
+
+class OffererNotAllowedToDuplicate(Exception):
+    pass
