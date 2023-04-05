@@ -20,7 +20,7 @@ import { formatLocalTimeDateString } from 'utils/timezone'
 
 import styles from './StocksEventList.module.scss'
 
-const STOCKS_PER_PAGE = 20
+export const STOCKS_PER_PAGE = 20
 
 export interface IStocksEvent {
   id?: string
@@ -65,6 +65,7 @@ const StocksEventList = ({
     (page - 1) * STOCKS_PER_PAGE,
     page * STOCKS_PER_PAGE
   )
+  const pageCount = Math.ceil(stocks.length / STOCKS_PER_PAGE)
   const areAllChecked = isCheckedArray.every(isChecked => isChecked)
 
   const handleOnChangeSelected = (index: number) => {
@@ -97,10 +98,14 @@ const StocksEventList = ({
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
       offerId: offerId,
     })
+    if (stocks.length % STOCKS_PER_PAGE === 0 && page === pageCount) {
+      previousPage()
+    }
   }
 
   const onBulkDelete = () => {
     const newStocks = stocks.filter((stock, index) => !isCheckedArray[index])
+    const deletedStocksCount = stocks.length - newStocks.length
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OFFER_WIZARD_STEP_IDS.STOCKS,
       to: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -112,6 +117,14 @@ const StocksEventList = ({
     })
     setIsCheckedArray(stocks.map(() => false))
     setStocks([...newStocks])
+
+    const newLastPage = Math.ceil(newStocks.length / STOCKS_PER_PAGE)
+    if (
+      deletedStocksCount >= stocks.length % STOCKS_PER_PAGE &&
+      page > newLastPage
+    ) {
+      setPage(newLastPage)
+    }
   }
 
   const onCancelClick = () => {
@@ -216,12 +229,14 @@ const StocksEventList = ({
               }`
             }
 
+            const currentStockIndex = (page - 1) * STOCKS_PER_PAGE + index
+
             return (
               <tr key={index} className={styles['row']}>
                 <td className={styles['data']}>
                   <input
-                    checked={isCheckedArray[index]}
-                    onChange={() => handleOnChangeSelected(index)}
+                    checked={isCheckedArray[currentStockIndex]}
+                    onChange={() => handleOnChangeSelected(currentStockIndex)}
                     type="checkbox"
                   />
                 </td>
@@ -242,7 +257,7 @@ const StocksEventList = ({
                 <td className={cn(styles['data'], styles['clear-icon'])}>
                   <Button
                     variant={ButtonVariant.TERNARY}
-                    onClick={() => onDeleteStock(index)}
+                    onClick={() => onDeleteStock(currentStockIndex)}
                     Icon={TrashFilledIcon}
                     hasTooltip
                   >
@@ -257,7 +272,7 @@ const StocksEventList = ({
 
       <Pagination
         currentPage={page}
-        pageCount={Math.ceil(stocks.length / STOCKS_PER_PAGE)}
+        pageCount={pageCount}
         onPreviousPageClick={previousPage}
         onNextPageClick={nextPage}
       />
