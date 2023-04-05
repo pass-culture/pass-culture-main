@@ -4,6 +4,7 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import getVenueCollectiveDataAdapter from '../getVenueCollectiveDataAdapter'
 
 describe('getVenueCollectiveDataAdapter', () => {
+  const venueId = 1
   it('should return an error', async () => {
     // given
     jest.spyOn(api, 'getVenueCollectiveData').mockRejectedValue({
@@ -11,7 +12,7 @@ describe('getVenueCollectiveDataAdapter', () => {
     })
 
     // when
-    const response = await getVenueCollectiveDataAdapter('V1')
+    const response = await getVenueCollectiveDataAdapter(venueId)
 
     // then
     expect(response.isOk).toBeFalsy()
@@ -19,7 +20,7 @@ describe('getVenueCollectiveDataAdapter', () => {
   })
   it('should return a collective data', async () => {
     const payload = {
-      id: 'V1',
+      id: 'AE',
       collectiveDescription: '',
       collectiveDomains: [],
       collectiveEmail: '',
@@ -34,7 +35,7 @@ describe('getVenueCollectiveDataAdapter', () => {
     jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValueOnce(payload)
 
     // when
-    const response = await getVenueCollectiveDataAdapter('V1')
+    const response = await getVenueCollectiveDataAdapter(venueId)
 
     // then
     expect(response.isOk).toBeTruthy()

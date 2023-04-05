@@ -4,7 +4,7 @@ import { GetVenueResponseModel } from 'apiClient/v1'
 import { CollectiveDataFormValues } from '../CollectiveDataForm/type'
 
 type EditVenueCollectiveDataAdapter = Adapter<
-  { venueId: string; values: CollectiveDataFormValues },
+  { venueId: number; values: CollectiveDataFormValues },
   GetVenueResponseModel,
   null
 >

@@ -4,7 +4,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -47,7 +46,7 @@ class Returns200Test:
             "collectiveSubCategoryId": "SPECTACLE_REPRESENTATION",
         }
 
-        response = client.patch(f"/venues/{humanize(venue.id)}/collective-data", json=venue_data)
+        response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
 
         # then
         assert response.status_code == 200
@@ -100,7 +99,7 @@ class Returns200Test:
             "collectiveSubCategoryId": None,
         }
 
-        response = client.patch(f"/venues/{humanize(venue.id)}/collective-data", json=venue_data)
+        response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
 
         # then
         assert response.status_code == 200
@@ -145,7 +144,7 @@ class Returns200Test:
             "venueEducationalStatusId": educational_status_2.id,
         }
 
-        response = client.patch(f"/venues/{humanize(venue.id)}/collective-data", json=venue_data)
+        response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
 
         # then
         assert response.status_code == 200

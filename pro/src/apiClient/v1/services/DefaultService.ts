@@ -2292,7 +2292,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getVenueCollectiveData(
-    venueId: string,
+    venueId: number,
   ): CancelablePromise<GetCollectiveVenueResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -2315,7 +2315,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public editVenueCollectiveData(
-    venueId: string,
+    venueId: number,
     requestBody?: EditVenueCollectiveDataBodyModel,
   ): CancelablePromise<GetVenueResponseModel> {
     return this.httpRequest.request({

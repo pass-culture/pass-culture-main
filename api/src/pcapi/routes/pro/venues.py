@@ -17,7 +17,6 @@ from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.human_ids import dehumanize_or_raise
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
 from pcapi.workers.update_all_venue_offers_accessibility_job import update_all_venue_offers_accessibility_job
@@ -50,13 +49,12 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
     return venues_serialize.GetVenueResponseModel.from_orm(venue)
 
 
-@private_api.route("/venues/<venue_id>/collective-data", methods=["GET"])
+@private_api.route("/venues/<int:venue_id>/collective-data", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=venues_serialize.GetCollectiveVenueResponseModel, api=blueprint.pro_private_schema)
-def get_venue_collective_data(venue_id: str) -> venues_serialize.GetCollectiveVenueResponseModel:
-    dehumanized_id = dehumanize(venue_id)
+def get_venue_collective_data(venue_id: int) -> venues_serialize.GetCollectiveVenueResponseModel:
     venue = (
-        models.Venue.query.filter(models.Venue.id == dehumanized_id)
+        models.Venue.query.filter(models.Venue.id == venue_id)
         .options(sqla_orm.joinedload(models.Venue.venueEducationalStatus))
         .options(sqla_orm.joinedload(models.Venue.collectiveDomains))
     ).one_or_none()
@@ -148,14 +146,13 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     return venues_serialize.GetVenueResponseModel.from_orm(venue)
 
 
-@private_api.route("/venues/<venue_id>/collective-data", methods=["PATCH"])
+@private_api.route("/venues/<int:venue_id>/collective-data", methods=["PATCH"])
 @login_required
 @spectree_serialize(response_model=venues_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
 def edit_venue_collective_data(
-    venue_id: str, body: venues_serialize.EditVenueCollectiveDataBodyModel
+    venue_id: int, body: venues_serialize.EditVenueCollectiveDataBodyModel
 ) -> venues_serialize.GetVenueResponseModel:
-    dehumanized_venue_id = dehumanize_or_raise(venue_id)
-    venue = offerers_api.get_venue_by_id(dehumanized_venue_id)
+    venue = offerers_api.get_venue_by_id(venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
