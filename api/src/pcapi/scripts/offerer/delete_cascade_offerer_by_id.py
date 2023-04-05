@@ -126,17 +126,6 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         )
         .with_entities(finance_models.BankInformation.id)
     }
-    deleted_business_unit_venue_link_count = finance_models.BusinessUnitVenueLink.query.filter(
-        finance_models.BusinessUnitVenueLink.businessUnitId.in_(business_unit_ids_to_delete)
-    ).delete(synchronize_session=False)
-    business_unit_venue_link_ids = (
-        finance_models.BusinessUnitVenueLink.query.join(finance_models.BusinessUnitVenueLink.venue)
-        .filter(offerers_models.Venue.managingOffererId == offerer_id)
-        .with_entities(finance_models.BusinessUnitVenueLink.id)
-    )
-    deleted_business_unit_venue_link_count += finance_models.BusinessUnitVenueLink.query.filter(
-        finance_models.BusinessUnitVenueLink.id.in_(business_unit_venue_link_ids)
-    ).delete(synchronize_session=False)
     deleted_business_unit_count = finance_models.BusinessUnit.query.filter(
         finance_models.BusinessUnit.id.in_(business_unit_ids_to_delete)
     ).delete(synchronize_session=False)
@@ -189,7 +178,6 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         "deleted_user_offerers_count": deleted_user_offerers_count,
         "deleted_bank_informations_count": deleted_bank_informations_count,
         "deleted_business_unit_count": deleted_business_unit_count,
-        "deleted_business_unit_venue_link_count": deleted_business_unit_venue_link_count,
         "deleted_product_count": deleted_product_count,
         "deleted_venues_count": deleted_venues_count,
         "deleted_venue_providers_count": deleted_venue_providers_count,

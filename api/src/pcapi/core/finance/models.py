@@ -219,37 +219,6 @@ class BusinessUnit(Base, Model):
     invoices: list["Invoice"] = sqla_orm.relationship("Invoice", back_populates="businessUnit")
 
 
-class BusinessUnitVenueLink(Base, Model):
-    """Represent the period of time during which a venue was linked to a
-    specific business unit.
-    """
-
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
-    venueId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
-    venue: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship("Venue", foreign_keys=[venueId])
-    businessUnitId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=False)
-    businessUnit: BusinessUnit = sqla_orm.relationship(
-        "BusinessUnit", foreign_keys=[businessUnitId], backref="venue_links"
-    )
-    # The lower bound is inclusive and required. The upper bound is
-    # exclusive and optional. If there is no upper bound, it means
-    # that the venue is still linked to the business unit.
-    # Because business units have been linked to venues before this
-    # table was created, the lower bound was set to the Epoch for
-    # existing links when this table was first populated.
-    timespan: psycopg2.extras.DateTimeRange = sqla.Column(sqla_psql.TSRANGE, nullable=False)
-
-    __table_args__ = (
-        # A venue cannot be linked to multiple business units at the
-        # same time.
-        sqla_psql.ExcludeConstraint(("venueId", "="), ("timespan", "&&")),
-    )
-
-    def __init__(self, **kwargs: typing.Any) -> None:
-        kwargs["timespan"] = db_utils.make_timerange(*kwargs["timespan"])
-        super().__init__(**kwargs)
-
-
 class Pricing(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 

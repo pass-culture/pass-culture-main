@@ -124,10 +124,6 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
         providers_models.VenueProvider.venueId == venue_id
     ).delete(synchronize_session=False)
 
-    deleted_business_unit_venue_links_count = finance_models.BusinessUnitVenueLink.query.filter_by(
-        venueId=venue_id
-    ).delete(synchronize_session=False)
-
     deleted_bank_informations_count = finance_models.BankInformation.query.filter(
         finance_models.BankInformation.venueId == venue_id
     ).delete(synchronize_session=False)
@@ -167,7 +163,6 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
         "deleted_venue_providers_count": deleted_venue_providers_count,
         "deleted_allocine_venue_providers_count": deleted_allocine_venue_providers_count,
         "deleted_allocine_pivot_count": deleted_allocine_pivot_count,
-        "deleted_business_unit_venue_links": deleted_business_unit_venue_links_count,
         "deleted_offers_count": deleted_offers_count,
         "deleted_collective_offers_count": deleted_collective_offers_count,
         "deleted_collective_offer_templates_count": deleted_collective_offer_templates_count,
