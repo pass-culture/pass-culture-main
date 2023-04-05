@@ -60,7 +60,7 @@ class AllocineStocks(LocalProvider):
         self.last_vf_offer_id: int | None = None
         self.last_vo_offer_id: int | None = None
         self.label: offers_models.PriceCategoryLabel = offers_api.get_or_create_label("Tarif unique", self.venue)
-        self.price_category_by_offer: dict[offers_models.Offer, offers_models.PriceCategory] = {}
+        self.price_categories_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
 
     def __next__(self) -> list[ProvidableInfo]:
         raw_movie_information = next(self.movies_showtimes)  # type: ignore [var-annotated]
@@ -125,7 +125,9 @@ class AllocineStocks(LocalProvider):
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
-    def update_from_movie_information(self, obj: offers_models.Offer | offers_models.Product, movie_information: dict):  # type: ignore [no-untyped-def]
+    def update_from_movie_information(
+        self, obj: offers_models.Offer | offers_models.Product, movie_information: dict
+    ) -> None:
         if self.movie_information and "description" in self.movie_information:
             obj.description = movie_information["description"]
         if self.movie_information and "duration" in self.movie_information:
@@ -197,7 +199,7 @@ class AllocineStocks(LocalProvider):
         else:
             self.last_vf_offer = allocine_offer
 
-    def fill_stock_attributes(self, allocine_stock: offers_models.Stock):  # type: ignore [no-untyped-def]
+    def fill_stock_attributes(self, allocine_stock: offers_models.Stock) -> None:
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)  # type: ignore [arg-type]
         showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)  # type: ignore [arg-type]
 
@@ -222,26 +224,34 @@ class AllocineStocks(LocalProvider):
 
         if "price" not in allocine_stock.fieldsUpdated:
             price = self.apply_allocine_price_rule(allocine_stock)
-            allocine_stock.price = price
-            if not allocine_stock.priceCategory:
-                if not allocine_stock.offer in self.price_category_by_offer:
-                    self.price_category_by_offer[allocine_stock.offer] = self.get_or_create_allocine_price_category(
-                        price, allocine_stock.offer
-                    )
-                allocine_stock.priceCategory = self.price_category_by_offer[allocine_stock.offer]
-            else:
+            if allocine_stock.priceCategory is None:
+                allocine_stock.price = price
+                allocine_stock.priceCategory = self.get_or_create_allocine_price_category(price, allocine_stock)
+
+            if allocine_stock.priceCategory.label == "Tarif unique":
+                allocine_stock.price = price
                 allocine_stock.priceCategory.price = price
 
     def get_or_create_allocine_price_category(
-        self, price: decimal.Decimal, offer: offers_models.Offer
+        self, price: decimal.Decimal, allocine_stock: offers_models.Stock
     ) -> offers_models.PriceCategory:
-        price_category = (
-            offers_models.PriceCategory.query.filter_by(price=price, offer=offer).one_or_none() if offer.id else None
-        )
+        offer = allocine_stock.offer
+        if not offer in self.price_categories_by_offer:
+            self.price_categories_by_offer[offer] = (
+                offers_models.PriceCategory.query.filter_by(offer=offer)
+                .order_by(offers_models.PriceCategory.id.desc())
+                .all()
+                if offer.id
+                else []
+            )
+        price_categories = (category for category in self.price_categories_by_offer[offer] if category.price == price)
+        price_category = next(price_categories, None)
         if price_category:
             return price_category
 
-        return offers_models.PriceCategory(priceCategoryLabel=self.label, price=price, offer=offer)
+        price_category = offers_models.PriceCategory(priceCategoryLabel=self.label, price=price, offer=offer)
+        self.price_categories_by_offer[offer].insert(0, price_category)
+        return price_category
 
     def apply_allocine_price_rule(self, allocine_stock: offers_models.Stock) -> decimal.Decimal:
         for price, price_rule in self.price_and_price_rule_tuples:
@@ -311,7 +321,7 @@ def _find_showtime_by_showtime_uuid(showtimes: list[dict], showtime_uuid: str) -
     return None
 
 
-def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str):  # type: ignore [no-untyped-def]
+def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str) -> str:
     return id_at_provider.split("#")[1]
 
 
