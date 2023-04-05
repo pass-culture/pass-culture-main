@@ -96,7 +96,7 @@ const Button = ({
     </button>
   )
 
-  if (hasTooltip) {
+  if (hasTooltip && !buttonAttrs?.disabled) {
     return (
       <Tooltip id={tooltipId} content={children}>
         {button}
