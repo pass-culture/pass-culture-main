@@ -2,11 +2,12 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as sizes;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_forms.scss" as forms;
 
 .sign-up-confirmation-page {
   min-height: rem.torem(600px);
-  overflow: auto;
   position: relative;
+  left: forms.$sign-form-space-left;
   width: 100%;
 
   .content {
