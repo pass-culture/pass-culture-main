@@ -41,15 +41,14 @@ def list_venue_providers(query: ListVenueProviderQuery) -> ListVenueProviderResp
 @spectree_serialize(on_success_status=201, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)  # type: ignore [arg-type]
 def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     body.venueIdAtOfferProvider = None
-    venue_id = dehumanize_id(body.venueId)
-    if venue_id is None:
+    if body.venueId is None:
         raise ApiErrors({"venue": ["Lieu introuvable."]}, 404)
-    check_user_can_alter_venue(current_user, venue_id)
+    check_user_can_alter_venue(current_user, body.venueId)
 
     try:
         new_venue_provider = api.create_venue_provider(
-            dehumanize_id(body.providerId),  # type: ignore [arg-type]
-            venue_id,
+            body.providerId,
+            body.venueId,
             VenueProviderCreationPayload(
                 isDuo=body.isDuo,
                 price=body.price,
@@ -108,14 +107,12 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
 @login_required
 @spectree_serialize(on_success_status=200, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)  # type: ignore [arg-type]
 def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
-    venue_id = dehumanize_id(body.venueId)
-    provider_id = dehumanize_id(body.providerId)
-    assert venue_id is not None, "a not None venue_id is required"
-    assert provider_id is not None, "a not None provider_id is required"
+    assert body.venueId is not None, "a not None venue_id is required"
+    assert body.providerId is not None, "a not None provider_id is required"
 
-    check_user_can_alter_venue(current_user, venue_id)
+    check_user_can_alter_venue(current_user, body.venueId)
 
-    venue_provider = get_venue_provider_by_venue_and_provider_ids(venue_id, provider_id)
+    venue_provider = get_venue_provider_by_venue_and_provider_ids(body.venueId, body.providerId)
 
     updated = api.update_venue_provider(venue_provider, body)
     if updated.isFromAllocineProvider:

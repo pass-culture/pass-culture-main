@@ -35,10 +35,14 @@ const renderVenueProvidersManager = async props => {
 describe('src | StocksProviderForm', () => {
   let props
   let provider
+  const venueId = 1
+  const providerId = 2
+  const venueProviderId = 3
 
   beforeEach(async () => {
     const venue = {
-      id: 'venueId',
+      id: 'AE',
+      nonHumanizedId: venueId,
       managingOffererId: 'managingOffererId',
       name: 'Le lieu',
       siret: '12345678901234',
@@ -51,7 +55,7 @@ describe('src | StocksProviderForm', () => {
 
     api.listVenueProviders.mockResolvedValue({ venue_providers: [] })
     provider = {
-      id: 'providerId',
+      id: providerId,
       name: 'TiteLive Stocks (Epagine / Place des libraires.com)',
     }
     pcapi.loadProviders.mockResolvedValue([provider])
@@ -63,7 +67,7 @@ describe('src | StocksProviderForm', () => {
     const importOffersButton = screen.getByText('Synchroniser des offres')
     await userEvent.click(importOffersButton)
     const providersSelect = screen.getByRole('combobox')
-    await userEvent.selectOptions(providersSelect, provider.id)
+    await userEvent.selectOptions(providersSelect, provider.id.toString())
   }
 
   it('should display an import button and the venue siret as provider identifier', async () => {
@@ -105,7 +109,7 @@ describe('src | StocksProviderForm', () => {
       ).toBeInTheDocument()
       expect(api.createVenueProvider).toHaveBeenCalledWith({
         providerId: provider.id,
-        venueId: props.venue.id,
+        venueId: props.venue.nonHumanizedId,
         venueIdAtOfferProvider: props.venue.siret,
       })
     })
@@ -113,10 +117,10 @@ describe('src | StocksProviderForm', () => {
     it('should remove the spinner and display a success notification when venue provider was correctly saved', async () => {
       // given
       const createdVenueProvider = {
-        id: 'venueProviderId',
+        id: venueProviderId,
         provider,
         providerId: provider.id,
-        venueId: props.venue.id,
+        venueId: props.venue.nonHumanizedId,
         venueIdAtOfferProvider: props.venue.siret,
         lastSyncDate: '2018-01-01T00:00:00Z',
         nOffers: 0,

@@ -14,8 +14,6 @@ from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users import factories as user_factories
 from pcapi.models.api_errors import ApiErrors
-from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import clean_database
 
@@ -34,8 +32,8 @@ class Returns201Test:
         provider = providers_factories.APIProviderFactory()
 
         venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
         }
         mock_siret_can_be_synchronized.return_value = True
 
@@ -53,7 +51,7 @@ class Returns201Test:
         assert "id" in response.json
 
         venue_provider_id = response.json["id"]
-        mock_synchronize_venue_provider.assert_called_once_with(dehumanize(venue_provider_id))
+        mock_synchronize_venue_provider.assert_called_once_with(venue_provider_id)
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
@@ -67,8 +65,8 @@ class Returns201Test:
         provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
             "price": "9.99",
             "quantity": 50,
             "isDuo": True,
@@ -97,8 +95,8 @@ class Returns201Test:
         provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
             "price": "9.99",
             "quantity": 50,
             "isDuo": True,
@@ -130,8 +128,8 @@ class Returns201Test:
         provider = providers_factories.APIProviderFactory()
 
         venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
         }
 
         auth_request = client.with_session_auth(email=user.email)
@@ -181,8 +179,8 @@ class Returns201Test:
         provider = providers_factories.APIProviderFactory()
 
         venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
             "venueIdAtOfferProvider": "====VY24G1AGF56",
         }
 
@@ -200,7 +198,7 @@ class Returns201Test:
         assert venue_provider.venueIdAtOfferProvider == "12345678912345"
         assert "id" in response.json
         venue_provider_id = response.json["id"]
-        mock_synchronize_venue_provider.assert_called_once_with(dehumanize(venue_provider_id))
+        mock_synchronize_venue_provider.assert_called_once_with(venue_provider_id)
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized", lambda *args: True)
@@ -211,8 +209,8 @@ class Returns201Test:
 
         client = client.with_session_auth(email=admin.email)
         venue_provider_data = {
-            "providerId": humanize(venue_provider.providerId),
-            "venueId": humanize(venue_provider.venueId),
+            "providerId": venue_provider.providerId,
+            "venueId": venue_provider.venueId,
         }
 
         # When
@@ -242,8 +240,8 @@ class Returns201Test:
         providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cds_pivot, cinemaApiToken="test_token")
 
         venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
             # TODO AMARINIER : add isDuo to payload when we implement cds modal
         }
 
@@ -310,8 +308,8 @@ class Returns201Test:
 
         # Then
         assert response.json["nOffers"] == 2
-        assert response.json["providerId"] == humanize(provider.id)
-        assert response.json["venueId"] == humanize(venue.id)
+        assert response.json["providerId"] == provider.id
+        assert response.json["venueId"] == venue.id
         assert response.json["venueIdAtOfferProvider"] == cds_pivot.idAtProvider
 
 
@@ -340,8 +338,8 @@ class Returns400Test:
         provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
             "isDuo": True,
             "price": "wrong_price",
         }
@@ -365,8 +363,8 @@ class Returns400Test:
         provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
         }
 
         auth_request = client.with_session_auth(email=user.email)
@@ -399,8 +397,8 @@ class Returns404Test:
         provider = providers_factories.APIProviderFactory()
 
         venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": "AZERT",
+            "providerId": provider.id,
+            "venueId": "1234",
         }
 
         auth_request = client.with_session_auth(email=user.email)
@@ -419,8 +417,8 @@ class Returns404Test:
         provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
         }
 
         auth_request = client.with_session_auth(email=user.email)
@@ -449,8 +447,8 @@ class Returns422Test:
         provider = providers_factories.APIProviderFactory()
 
         venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
         }
 
         auth_request = client.with_session_auth(email=user.email)
@@ -488,8 +486,8 @@ class ConnectProviderToVenueTest:
         provider = providers_factories.APIProviderFactory()
 
         venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
         }
 
         auth_request = client.with_session_auth(email=user.email)
@@ -515,8 +513,8 @@ class ConnectProviderToVenueTest:
         provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
             "price": "33.33",
             "isDuo": True,
         }

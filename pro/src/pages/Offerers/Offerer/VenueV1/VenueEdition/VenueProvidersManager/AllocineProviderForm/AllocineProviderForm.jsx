@@ -196,9 +196,9 @@ AllocineProviderForm.propTypes = {
   }),
   isCreatedEntity: PropTypes.bool,
   onCancel: PropTypes.func,
-  providerId: PropTypes.string.isRequired,
+  providerId: PropTypes.number.isRequired,
   saveVenueProvider: PropTypes.func.isRequired,
-  venueId: PropTypes.string.isRequired,
+  venueId: PropTypes.number.isRequired,
 }
 
 export default AllocineProviderForm

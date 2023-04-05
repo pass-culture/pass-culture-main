@@ -28,8 +28,8 @@ class Returns200Test:
         providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider, price=10)
 
         updated_venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
             "isDuo": True,
             "quantity": 77,
             "price": 64,
@@ -44,7 +44,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert response.json["provider"]["id"] == humanize(provider.id)
-        assert response.json["venueId"] == humanize(venue.id)
+        assert response.json["venueId"] == venue.id
         assert response.json["quantity"] == updated_venue_provider_data["quantity"]
         assert response.json["price"] == updated_venue_provider_data["price"]
         assert response.json["isDuo"] == updated_venue_provider_data["isDuo"]
@@ -60,8 +60,8 @@ class Returns200Test:
         providers_factories.VenueProviderFactory(venue=venue, provider=cds_provider, isDuoOffers=False, isActive=False)
 
         updated_venue_provider_data = {
-            "providerId": humanize(cds_provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": cds_provider.id,
+            "venueId": venue.id,
             "isDuo": True,
             "isActive": True,
         }
@@ -71,7 +71,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json["provider"]["id"] == humanize(cds_provider.id)
-        assert response.json["venueId"] == humanize(venue.id)
+        assert response.json["venueId"] == venue.id
         assert response.json["isDuo"] == updated_venue_provider_data["isDuo"]
         assert response.json["isActive"] == updated_venue_provider_data["isActive"]
 
@@ -86,8 +86,8 @@ class Returns200Test:
         providers_factories.VenueProviderFactory(venue=venue, provider=provider, isActive=True)
 
         updated_venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
             "isActive": False,
         }
 
@@ -129,8 +129,8 @@ class Returns403Test:
         providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider, price=10)
 
         updated_venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": provider.id,
+            "venueId": venue.id,
             "isDuo": True,
             "quantity": 77,
             "price": 64,

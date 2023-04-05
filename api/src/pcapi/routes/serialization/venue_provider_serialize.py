@@ -11,8 +11,8 @@ from pcapi.utils.date import format_into_utc_date
 
 
 class PostVenueProviderBody(BaseModel):
-    venueId: str
-    providerId: str
+    venueId: int
+    providerId: int
     venueIdAtOfferProvider: str | None
     price: str | None
     # absent/ignored for regular providers, required for cinema-related providers

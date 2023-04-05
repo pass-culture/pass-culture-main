@@ -35,10 +35,15 @@ describe('src | VenueProvidersManager', () => {
   let props
   let providers
   let venueProviders
+  const venueId = 1
+  const providerId = 2
+  const otherProviderId = 3
+  const venueProviderId = 4
 
   beforeEach(() => {
     const venue = {
       id: 'venueId',
+      nonHumanizedId: venueId,
       managingOffererId: 'managingOffererId',
       name: 'Le lieu',
       siret: '12345678901234',
@@ -50,8 +55,8 @@ describe('src | VenueProvidersManager', () => {
     }
 
     providers = [
-      { id: 'providerId1', name: 'Cinema provider' },
-      { id: 'providerId2', name: 'Movies provider' },
+      { id: providerId, name: 'Cinema provider' },
+      { id: otherProviderId, name: 'Movies provider' },
     ]
     venueProviders = []
     pcapi.loadProviders.mockResolvedValue(providers)
@@ -74,10 +79,10 @@ describe('src | VenueProvidersManager', () => {
       // Given
       venueProviders = [
         {
-          id: 'AD',
+          id: venueProviderId,
           nOffers: 1,
-          provider: { id: 'providerId', name: 'TiteLive' },
-          venueId: props.venue.id,
+          provider: { id: providerId, name: 'TiteLive' },
+          venueId: props.venue.nonHumanizedId,
           lastSyncDate: '2018-01-01T10:00:00',
         },
       ]
@@ -99,10 +104,10 @@ describe('src | VenueProvidersManager', () => {
       // given
       venueProviders = [
         {
-          id: 'AD',
+          id: venueProviderId,
           nOffers: 0,
-          provider: { id: 'providerId', name: 'FNAC' },
-          venueId: props.venue.id,
+          provider: { id: providerId, name: 'FNAC' },
+          venueId: props.venue.nonHumanizedId,
           lastSyncDate: '2018-01-01T10:00:00',
         },
       ]
@@ -124,10 +129,10 @@ describe('src | VenueProvidersManager', () => {
       // given
       venueProviders = [
         {
-          id: 'AD',
+          id: venueProviderId,
           nOffers: 0,
-          provider: { id: 'providerId', name: 'Allocine' },
-          venueId: props.venue.id,
+          provider: { id: providerId, name: 'Allocine' },
+          venueId: props.venue.nonHumanizedId,
           lastSyncDate: '2018-01-01T10:00:00',
           isActive: true,
         },
@@ -147,10 +152,10 @@ describe('src | VenueProvidersManager', () => {
       // given
       venueProviders = [
         {
-          id: 'AD',
+          id: venueProviderId,
           nOffers: 0,
-          provider: { id: 'providerId', name: 'Allocine' },
-          venueId: props.venue.id,
+          provider: { id: providerId, name: 'Allocine' },
+          venueId: props.venue.nonHumanizedId,
           lastSyncDate: '2018-01-01T10:00:00',
           isActive: false,
         },
@@ -170,10 +175,10 @@ describe('src | VenueProvidersManager', () => {
       // Given
       venueProviders = [
         {
-          id: 'AD',
+          id: venueProviderId,
           nOffers: 1,
-          provider: { id: 'providerId', name: 'TiteLive' },
-          venueId: props.venue.id,
+          provider: { id: providerId, name: 'TiteLive' },
+          venueId: props.venue.nonHumanizedId,
           lastSyncDate: '2018-01-01T10:00:00',
         },
       ]
@@ -192,10 +197,10 @@ describe('src | VenueProvidersManager', () => {
       //Given
       venueProviders = [
         {
-          id: 'AD',
+          id: venueProviderId,
           nOffers: 1,
-          provider: { id: 'providerId', name: 'TiteLive' },
-          venueId: props.venue.id,
+          provider: { id: providerId, name: 'TiteLive' },
+          venueId: props.venue.nonHumanizedId,
           lastSyncDate: '2018-01-01T10:00:00',
         },
       ]
@@ -232,10 +237,10 @@ describe('src | VenueProvidersManager', () => {
       // Given
       venueProviders = [
         {
-          id: 'AD',
+          id: venueProviderId,
           nOffers: 1,
-          provider: { id: 'providerId', name: 'Allociné' },
-          venueId: props.venue.id,
+          provider: { id: providerId, name: 'Allociné' },
+          venueId: props.venue.nonHumanizedId,
           lastSyncDate: '2018-01-01T10:00:00',
           isDuo: true,
           price: 5,
@@ -268,11 +273,11 @@ describe('src | VenueProvidersManager', () => {
       // Given
       venueProviders = [
         {
-          id: 'AD',
+          id: venueProviderId,
           nOffers: 1,
-          provider: { id: 'BC', name: 'Allociné' },
-          providerId: 'BC',
-          venueId: props.venue.id,
+          provider: { id: providerId, name: 'Allociné' },
+          providerId: providerId,
+          venueId: props.venue.nonHumanizedId,
           lastSyncDate: '2018-01-01T10:00:00',
           isDuo: true,
           price: 5,
@@ -305,9 +310,9 @@ describe('src | VenueProvidersManager', () => {
       expect(api.updateVenueProvider).toBeCalledWith({
         isDuo: true,
         price: 10,
-        providerId: 'BC',
+        providerId: providerId,
         quantity: 20,
-        venueId: 'venueId',
+        venueId: props.venue.nonHumanizedId,
       })
     })
 
@@ -315,11 +320,11 @@ describe('src | VenueProvidersManager', () => {
       // Given
       venueProviders = [
         {
-          id: 'AD',
+          id: venueProviderId,
           nOffers: 1,
-          provider: { id: 'BC', name: 'ciné office' },
-          providerId: 'BC',
-          venueId: props.venue.id,
+          provider: { id: providerId, name: 'ciné office' },
+          providerId: providerId,
+          venueId: props.venue.nonHumanizedId,
           lastSyncDate: '2018-01-01T10:00:00',
           isDuo: false,
           isActive: true,
@@ -350,8 +355,8 @@ describe('src | VenueProvidersManager', () => {
 
       expect(api.updateVenueProvider).toBeCalledWith({
         isDuo: true,
-        venueId: 'venueId',
-        providerId: 'BC',
+        venueId: venueId,
+        providerId: providerId,
         isActive: true,
       })
     })
@@ -360,11 +365,11 @@ describe('src | VenueProvidersManager', () => {
       // Given
       venueProviders = [
         {
-          id: 'AD',
+          id: venueProviderId,
           nOffers: 1,
-          provider: { id: 'BC', name: 'ciné office' },
-          providerId: 'BC',
-          venueId: props.venue.id,
+          provider: { id: providerId, name: 'ciné office' },
+          providerId: providerId,
+          venueId: props.venue.nonHumanizedId,
           lastSyncDate: '2018-01-01T10:00:00',
           isDuo: false,
         },
@@ -386,10 +391,10 @@ describe('src | VenueProvidersManager', () => {
       //Given
       venueProviders = [
         {
-          id: 'AD',
+          id: venueProviderId,
           nOffers: 1,
-          provider: { id: 'providerId', name: 'TiteLive' },
-          venueId: props.venue.id,
+          provider: { id: providerId, name: 'TiteLive' },
+          venueId: props.venue.nonHumanizedId,
           lastSyncDate: '2018-01-01T10:00:00',
           isActive: true,
         },
@@ -428,10 +433,10 @@ describe('src | VenueProvidersManager', () => {
       //Given
       venueProviders = [
         {
-          id: 'AD',
+          id: venueProviderId,
           nOffers: 1,
-          provider: { id: 'providerId', name: 'TiteLive' },
-          venueId: props.venue.id,
+          provider: { id: providerId, name: 'TiteLive' },
+          venueId: props.venue.nonHumanizedId,
           lastSyncDate: '2018-01-01T10:00:00',
           isActive: false,
         },
@@ -522,7 +527,7 @@ describe('src | VenueProvidersManager', () => {
         // given
         providers = [
           {
-            id: 'providerId',
+            id: providerId,
             name: 'Allociné',
             lastSyncDate: '2020-01-01T10:00:00',
           },
@@ -534,7 +539,10 @@ describe('src | VenueProvidersManager', () => {
         const providersSelect = screen.getByRole('combobox')
 
         // when
-        await userEvent.selectOptions(providersSelect, providers[0].id)
+        await userEvent.selectOptions(
+          providersSelect,
+          providers[0].id.toString()
+        )
 
         // then
         expect(screen.getByText('Prix de vente/place')).toBeInTheDocument()
@@ -546,7 +554,7 @@ describe('src | VenueProvidersManager', () => {
 
       it('should display the stock form when the user choose another provider than Allociné', async () => {
         // given
-        providers = [{ id: 'providerId', name: 'My little provider' }]
+        providers = [{ id: providerId, name: 'My little provider' }]
         pcapi.loadProviders.mockResolvedValue(providers)
         await renderVenueProvidersManager(props)
         const importOffersButton = screen.getByText('Synchroniser des offres')
@@ -554,7 +562,10 @@ describe('src | VenueProvidersManager', () => {
         const providersSelect = screen.getByRole('combobox')
 
         // when
-        await userEvent.selectOptions(providersSelect, providers[0].id)
+        await userEvent.selectOptions(
+          providersSelect,
+          providers[0].id.toString()
+        )
 
         // then
         expect(screen.getByText('Compte')).toBeInTheDocument()

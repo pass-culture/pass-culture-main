@@ -77,7 +77,7 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
         label="Source"
         name="provider"
         options={providersOptions}
-        selectedValue={selectedProvider.id}
+        selectedValue={selectedProvider.id.toString()}
       />
       {selectedProvider.id !== DEFAULT_PROVIDER_OPTION.id && (
         <VenueProviderForm
