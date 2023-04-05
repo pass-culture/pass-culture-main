@@ -24,6 +24,7 @@ from pcapi.core.offers import validation as offer_validation
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.models import validation_status_mixin
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
 from pcapi.routes.serialization import collective_offers_serialize
@@ -665,3 +666,47 @@ def _get_expired_collective_offer_ids(
     collective_offers = educational_repository.get_expired_collective_offers(interval)
     collective_offers = collective_offers.offset(page * limit).limit(limit)
     return [offer_id for offer_id, in collective_offers.with_entities(educational_models.CollectiveOffer.id)]
+
+
+def duplicate_offer_and_stock(original_offer: educational_models.CollectiveOffer) -> educational_models.CollectiveOffer:
+    if original_offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
+        raise exceptions.ValidationFailedOnCollectiveOffer()
+    offerer = original_offer.venue.managingOfferer
+    if offerer.validationStatus != validation_status_mixin.ValidationStatus.VALIDATED:
+        raise exceptions.OffererNotAllowedToDuplicate()
+    offer = educational_models.CollectiveOffer(
+        isActive=original_offer.isActive,
+        venue=original_offer.venue,
+        name=original_offer.name,
+        bookingEmails=original_offer.bookingEmails,
+        description=original_offer.description,
+        durationMinutes=original_offer.durationMinutes,
+        subcategoryId=original_offer.subcategoryId,
+        students=original_offer.students,
+        contactEmail=original_offer.contactEmail,
+        contactPhone=original_offer.contactPhone,
+        offerVenue=original_offer.offerVenue,
+        interventionArea=original_offer.interventionArea,
+        domains=original_offer.domains,
+        template=original_offer.template,
+        lastValidationDate=original_offer.lastValidationDate,
+        lastValidationType=original_offer.lastValidationType,
+        validation=original_offer.validation,
+        audioDisabilityCompliant=original_offer.audioDisabilityCompliant,
+        mentalDisabilityCompliant=original_offer.mentalDisabilityCompliant,
+        motorDisabilityCompliant=original_offer.motorDisabilityCompliant,
+        visualDisabilityCompliant=original_offer.visualDisabilityCompliant,
+    )
+
+    educational_models.CollectiveStock(
+        beginningDatetime=original_offer.collectiveStock.beginningDatetime,
+        collectiveOffer=offer,
+        price=original_offer.collectiveStock.price,
+        bookingLimitDatetime=original_offer.collectiveStock.bookingLimitDatetime,
+        numberOfTickets=original_offer.collectiveStock.numberOfTickets,
+        priceDetail=original_offer.collectiveStock.priceDetail,
+    )
+
+    db.session.add(offer)
+    db.session.commit()
+    return offer
