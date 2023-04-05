@@ -110,8 +110,8 @@ const AllocineProviderParameters = ({
           initialValues={initialValues}
           onCancel={closeFormDialog}
           onConfirm={onConfirmDialog}
-          providerId={venueProvider.providerId}
-          venueId={venueProvider.venueId}
+          providerId={venueProvider.providerId.toString()}
+          venueId={venueProvider.venueId.toString()}
         />
       )}
     </div>

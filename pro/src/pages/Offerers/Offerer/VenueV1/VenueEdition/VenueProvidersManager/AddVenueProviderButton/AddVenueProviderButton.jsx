@@ -38,7 +38,7 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
   const handleChange = useCallback(
     event => {
       const selectedProvider = providers.find(
-        provider => provider.id === event.target.value
+        provider => provider.id.toString() === event.target.value
       )
       setSelectedProvider(
         selectedProvider ? selectedProvider : DEFAULT_PROVIDER_OPTION

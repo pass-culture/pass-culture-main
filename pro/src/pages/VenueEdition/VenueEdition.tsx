@@ -52,12 +52,12 @@ const VenueEdition = (): JSX.Element | null => {
     isLoading: isLoadingProviders,
     error: errorProviders,
     data: providers,
-  } = useGetProviders(venueId)
+  } = useGetProviders(Number(venueId))
   const {
     isLoading: isLoadingVenueProviders,
     error: errorVenueProviders,
     data: venueProviders,
-  } = useGetVenueProviders(venueId)
+  } = useGetVenueProviders(Number(venueId))
 
   const apiFilters = {
     ...DEFAULT_SEARCH_FILTERS,

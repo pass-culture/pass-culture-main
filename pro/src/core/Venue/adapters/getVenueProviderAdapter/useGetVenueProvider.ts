@@ -2,7 +2,7 @@ import { useAdapter } from 'hooks'
 
 import getVenueProvidersAdapter from './getVenueProvidersAdapter'
 
-const useGetVenueProvider = (venueId?: string) =>
+const useGetVenueProvider = (venueId?: number) =>
   useAdapter(() => getVenueProvidersAdapter(venueId))
 
 export default useGetVenueProvider

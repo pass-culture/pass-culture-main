@@ -41,7 +41,7 @@ const OffersSynchronization = ({
 
   const afterVenueProviderDelete = (deletedVenueProviderId: string) => {
     const newVenueProviders = venueProviders.filter(
-      venueProvider => venueProvider.id !== deletedVenueProviderId
+      venueProvider => venueProvider.id.toString() !== deletedVenueProviderId
     )
     setVenueProviders(newVenueProviders)
   }

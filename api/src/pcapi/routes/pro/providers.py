@@ -7,12 +7,11 @@ from pcapi.core.providers.repository import get_providers_to_exclude
 from pcapi.routes.serialization.providers_serialize import ListProviderResponse
 from pcapi.routes.serialization.providers_serialize import ProviderResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.rest import load_or_404
 
 from . import blueprint
 
 
-@blueprint.pro_private_api.route("/providers/<venue_id>", methods=["GET"])
+@blueprint.pro_private_api.route("/providers/<int:venue_id>", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=ListProviderResponse,  # type: ignore [arg-type]
@@ -20,8 +19,8 @@ from . import blueprint
     on_error_statuses=[401, 404],
     api=blueprint.pro_private_schema,
 )
-def get_providers_by_venue(venue_id: str) -> ListProviderResponse:
-    venue = load_or_404(Venue, venue_id)
+def get_providers_by_venue(venue_id: int) -> ListProviderResponse:
+    venue = Venue.query.get_or_404(venue_id)
     provider_to_excludes = get_providers_to_exclude(venue)
     if len(provider_to_excludes) > 0:
         providers = get_providers_enabled_for_pro_excluding_specific_providers(provider_to_excludes)
