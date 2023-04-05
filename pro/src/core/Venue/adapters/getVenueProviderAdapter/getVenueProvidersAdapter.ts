@@ -4,7 +4,7 @@ import { VenueProviderResponse } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from '../../../shared'
 
 export type GetVenueProvidersAdapter = Adapter<
-  string | undefined,
+  number | undefined,
   VenueProviderResponse[],
   VenueProviderResponse[]
 >
@@ -20,7 +20,6 @@ const getVenueProvidersAdapter: GetVenueProvidersAdapter = async venueId => {
     return FAILING_RESPONSE
   }
   try {
-    // @ts-expect-error string is not assignable to type number
     const venueProvidersResponse = await api.listVenueProviders(venueId)
     return {
       isOk: true,

@@ -45,7 +45,7 @@ const VenueProviderItem = ({
             />
             <DeleteVenueProviderButton
               afterDelete={afterDelete}
-              venueProviderId={venueProvider.id}
+              venueProviderId={venueProvider.id.toString()}
             />
           </div>
         </div>

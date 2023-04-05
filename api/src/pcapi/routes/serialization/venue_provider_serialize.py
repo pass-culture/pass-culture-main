@@ -5,7 +5,6 @@ from typing import List
 from pydantic.main import BaseModel
 
 from pcapi.core.providers.models import VenueProvider
-from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -37,7 +36,7 @@ class ProviderResponse(BaseModel):
 
 
 class VenueProviderResponse(BaseModel):
-    id: str
+    id: int
     idAtProviders: str | None
     dateModifiedAtLastProvider: datetime | None
     isActive: bool
@@ -45,8 +44,8 @@ class VenueProviderResponse(BaseModel):
     lastProviderId: str | None
     lastSyncDate: datetime | None
     nOffers: int
-    providerId: str
-    venueId: str
+    providerId: int
+    venueId: int
     venueIdAtOfferProvider: str
     provider: ProviderResponse
     # TODO(asaunier): Check if this field is necessary
@@ -54,10 +53,6 @@ class VenueProviderResponse(BaseModel):
     quantity: int | None
     isDuo: bool | None
     price: float | None
-
-    _humanize_id = humanize_field("id")
-    _humanize_venue_id = humanize_field("venueId")
-    _humanize_provider_id = humanize_field("providerId")
 
     @classmethod
     def from_orm(cls: Any, venue_provider: VenueProvider) -> "VenueProviderResponse":
@@ -81,8 +76,6 @@ class ListVenueProviderResponse(BaseModel):
 
 class ListVenueProviderQuery(BaseModel):
     venue_id: int
-
-    _dehumanize_venue_id = dehumanize_field("venue_id")
 
     class Config:
         alias_generator = to_camel
