@@ -226,11 +226,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
     contact: sa_orm.Mapped["VenueContact | None"] = relationship("VenueContact", back_populates="venue", uselist=False)
 
-    businessUnitId = Column(Integer, ForeignKey("business_unit.id"), nullable=True)
-    businessUnit: sa_orm.Mapped["finance_models.BusinessUnit"] = relationship(
-        "BusinessUnit", foreign_keys=[businessUnitId], backref="venues"
-    )
-
     # bannerUrl should provide a safe way to retrieve the banner,
     # whereas bannerMeta should provide extra information that might be
     # helpful like image type, author, etc. that can change over time.

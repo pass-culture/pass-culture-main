@@ -98,24 +98,7 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         offerers_models.Venue.managingOffererId == offerer_id,
     ).delete(synchronize_session=False)
 
-    # Handle relationship loop: Venue->BusinessUnit->BankInformation->Venue.
-    business_unit_ids_to_delete = {
-        id_
-        for id_, in offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).with_entities(
-            offerers_models.Venue.businessUnitId
-        )
-    }
-    offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).update(
-        {"businessUnitId": None}, synchronize_session=False
-    )
     bank_information_ids_to_delete = {
-        id_
-        for id_, in finance_models.BusinessUnit.query.filter(
-            finance_models.BusinessUnit.id.in_(business_unit_ids_to_delete)
-        ).with_entities(finance_models.BusinessUnit.bankAccountId)
-    } | {  # handle old-style BankInformation that are linked to the
-        # offerer or one of its venues, where one of the
-        # Venue.businessUnit has been cleared.
         id_
         for id_, in finance_models.BankInformation.query.outerjoin(finance_models.BankInformation.venue)
         .filter(
@@ -126,9 +109,6 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         )
         .with_entities(finance_models.BankInformation.id)
     }
-    deleted_business_unit_count = finance_models.BusinessUnit.query.filter(
-        finance_models.BusinessUnit.id.in_(business_unit_ids_to_delete)
-    ).delete(synchronize_session=False)
 
     deleted_bank_informations_count = 0
     deleted_bank_informations_count += finance_models.BankInformation.query.filter(
@@ -177,7 +157,6 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         "deleted_api_key_count": deleted_api_key_count,
         "deleted_user_offerers_count": deleted_user_offerers_count,
         "deleted_bank_informations_count": deleted_bank_informations_count,
-        "deleted_business_unit_count": deleted_business_unit_count,
         "deleted_product_count": deleted_product_count,
         "deleted_venues_count": deleted_venues_count,
         "deleted_venue_providers_count": deleted_venue_providers_count,
