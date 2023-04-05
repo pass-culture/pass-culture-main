@@ -249,6 +249,7 @@ class GetCollectiveOfferVenueResponseModel(BaseModel, AccessibilityComplianceMix
     departementCode: str | None
     fieldsUpdated: list[str]
     id: str
+    nonHumanizedId: int
     idAtProviders: str | None
     isVirtual: bool
     lastProviderId: str | None

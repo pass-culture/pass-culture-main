@@ -80,7 +80,7 @@ const ReimbursementPoint = ({
 
   const closeDmsDialog = useCallback(async () => {
     setIsDmsDialogOpen(false)
-    const venueRequest = await api.getVenue(venue.id)
+    const venueRequest = await api.getVenue(venue.nonHumanizedId)
     setVenue(serializeVenueApi(venueRequest))
   }, [])
 

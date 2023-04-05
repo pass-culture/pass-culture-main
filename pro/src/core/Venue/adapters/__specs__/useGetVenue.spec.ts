@@ -71,7 +71,7 @@ describe('useGetVenue', () => {
 
     jest.spyOn(api, 'getVenue').mockResolvedValue(apiVenue)
 
-    const { result } = renderHook(() => useGetVenue('AE'))
+    const { result } = renderHook(() => useGetVenue(12))
     const loadingState = result.current
 
     expect(loadingState.data).toBeUndefined()
@@ -158,7 +158,7 @@ describe('useGetVenue', () => {
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
     })
-    expect(api.getVenue).toHaveBeenCalledWith('AE')
+    expect(api.getVenue).toHaveBeenCalledWith(12)
     expect(result.current.data).toEqual(venue)
     expect(result.current.error).toBeUndefined()
   })
