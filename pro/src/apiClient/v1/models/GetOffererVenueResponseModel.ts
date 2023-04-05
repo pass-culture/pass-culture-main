@@ -2,15 +2,16 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { DMSApplicationForEAC } from './DMSApplicationForEAC';
 import type { VenueTypeCode } from './VenueTypeCode';
 
 export type GetOffererVenueResponseModel = {
-  DMSApplicationIdForEAC: Array<number>;
   adageInscriptionDate?: string | null;
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;
   bookingEmail?: string | null;
   city?: string | null;
+  collectiveDmsApplications: Array<DMSApplicationForEAC>;
   comment?: string | null;
   departementCode?: string | null;
   hasAdageId: boolean;
