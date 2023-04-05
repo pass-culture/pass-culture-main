@@ -2,16 +2,21 @@
 
 .contact-modal {
   &-dialog {
-    width: rem(450px);
+    max-width: rem(548px);
+    align-self: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: rem(16px);
+  }
+
+  &-text {
+    margin-top: rem(32px);
   }
 
   &-text,
   &-list {
     text-align: center;
+    margin-bottom: rem(32px);
   }
 
   &-list {
