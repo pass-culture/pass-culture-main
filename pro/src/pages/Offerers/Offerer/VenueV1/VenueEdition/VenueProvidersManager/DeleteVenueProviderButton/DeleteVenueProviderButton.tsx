@@ -11,8 +11,8 @@ import DeleteVenueProviderDialog from '../DeleteVenueProviderDialog/DeleteVenueP
 import style from '../VenueProviderItem/VenueProviderItem.module.scss'
 
 export interface IDeleteVenueProviderButtonProps {
-  venueProviderId: string
-  afterDelete: (deletedVenueProvider: string) => void
+  venueProviderId: number
+  afterDelete: (deletedVenueProvider: number) => void
 }
 
 const DeleteVenueProviderButton = ({

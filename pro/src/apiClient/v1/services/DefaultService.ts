@@ -2066,7 +2066,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public deleteVenueProvider(
-    venueProviderId: string,
+    venueProviderId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
