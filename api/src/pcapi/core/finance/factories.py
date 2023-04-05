@@ -70,7 +70,6 @@ class PricingFactory(_BasePricingFactory):
     status = models.PricingStatus.VALIDATED
     booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
     venue = factory.SelfAttribute("booking.venue")
-    siret = factory.LazyAttribute(lambda pricing: pricing.booking.venue.siret)
     valueDate = factory.SelfAttribute("booking.dateUsed")
     amount = factory.LazyAttribute(lambda pricing: -int(100 * pricing.booking.total_amount))
     standardRule = "Remboursement total pour les offres physiques"
@@ -84,7 +83,6 @@ class CollectivePricingFactory(_BasePricingFactory):
     status = models.PricingStatus.VALIDATED
     collectiveBooking = factory.SubFactory(UsedCollectiveBookingFactory)
     venue = factory.SelfAttribute("collectiveBooking.venue")
-    siret = factory.SelfAttribute("collectiveBooking.venue.siret")
     valueDate = factory.SelfAttribute("collectiveBooking.dateUsed")
     amount = factory.LazyAttribute(lambda pricing: -int(100 * pricing.collectiveBooking.collectiveStock.price))
     standardRule = "Remboursement total pour les offres éducationnelles"
