@@ -23,16 +23,16 @@ describe('usePageTitle', () => {
             <>
               <PageTitle />
               <span>Main page</span>
-              <Link to="/structures">Structures</Link>
+              <Link to="/guichet">Guichet</Link>
             </>
           }
         />
         <Route
-          path="/structures"
+          path="/guichet"
           element={
             <>
               <PageTitle />
-              <span>Structure page</span>
+              <span>Guichet page</span>
             </>
           }
         />
@@ -44,9 +44,7 @@ describe('usePageTitle', () => {
     expect(document.title).toEqual('Accueil - pass Culture Pro')
   })
   it('should update page title when user navigates to another page', async () => {
-    await userEvent.click(screen.getByRole('link', { name: 'Structures' }))
-    expect(document.title).toEqual(
-      'Vos structures juridiques - pass Culture Pro'
-    )
+    await userEvent.click(screen.getByRole('link', { name: 'Guichet' }))
+    expect(document.title).toEqual('Guichet - pass Culture Pro')
   })
 })
