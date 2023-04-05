@@ -12,7 +12,6 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { dehumanizeId } from 'utils/dehumanize'
 
 import { getWizardData } from './adapters'
 
@@ -94,11 +93,7 @@ export function OfferIndividualContextProvider({
 
   useEffect(() => {
     async function loadOffer() {
-      const nonHumanizedId = offerId ? dehumanizeId(offerId) : undefined
-
-      const response = await getOfferIndividualAdapter(
-        nonHumanizedId ? nonHumanizedId : undefined
-      )
+      const response = await getOfferIndividualAdapter(Number(offerId))
       if (response.isOk) {
         setOffer(response.payload)
         setVenueId(response.payload.venueId)
