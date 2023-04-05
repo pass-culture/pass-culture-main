@@ -15,7 +15,6 @@ import {
   getOfferVenueFactory,
   offererFactory,
 } from 'utils/apiFactories'
-import { dehumanizeId } from 'utils/dehumanize'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OfferIndividualWizard } from '..'
@@ -183,7 +182,7 @@ describe('OfferIndividualWizard', () => {
         },
       ],
     })
-    const offerId = 'YA'
+    const offerId = 12
     await renderOfferIndividualWizardRoute(
       store,
       generatePath(
@@ -208,6 +207,6 @@ describe('OfferIndividualWizard', () => {
     expect(api.getCategories).toHaveBeenCalledWith()
 
     expect(api.listOfferersNames).not.toHaveBeenCalled()
-    expect(api.getOffer).toHaveBeenCalledWith(dehumanizeId(offerId))
+    expect(api.getOffer).toHaveBeenCalledWith(offerId)
   })
 })
