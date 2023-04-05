@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { DMSApplicationForEAC } from 'apiClient/v1'
+import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { ExternalLinkIcon, PenIcon } from 'icons'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -8,48 +8,15 @@ import Timeline, { TimelineStepType } from 'ui-kit/Timeline/Timeline'
 
 import styles from './CollectiveDmsTimeline.module.scss'
 
-// Modify status value with backend status value when it's ready
-export const DMS_STATUS = {
-  DRAFT: 'DRAFT',
-  SUBMITTED: 'SUBMITTED',
-  INSTRUCTION: 'INSTRUCTION',
-  ADD_IN_ADAGE: 'ADD_IN_ADAGE',
-  ADDED_IN_ADAGE: 'ADDED_IN_ADAGE',
-}
-
 const CollectiveDmsTimeline = ({
   collectiveDmsApplication,
+  hasAdageId,
 }: {
   collectiveDmsApplication: DMSApplicationForEAC
+  hasAdageId: boolean
 }) => {
   // const collectiveDmsApplicationLink = link to venue.collectiveDmsApplicationId // FIX ME : collectiveDmsApplicationId is not yet a property of IVenue
-  const collectiveDmsApplicationLink = DMS_STATUS.ADDED_IN_ADAGE
-  const waitingDraftStep = {
-    type: TimelineStepType.WAITING,
-    content: (
-      <>
-        <div className={styles['timeline-step-title']}>
-          Déposez votre demande de référencement
-        </div>
-        <div className={styles['timeline-infobox']}>
-          <div className={styles['timeline-infobox-text']}>
-            Votre dossier est au statut “brouillon”. Vous devez le publier si
-            vous souhaitez qu’il soit traité.
-          </div>
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
-            link={{
-              to: collectiveDmsApplicationLink,
-              isExternal: true,
-            }}
-            Icon={ExternalLinkIcon}
-          >
-            Modifier mon dossier sur Démarches Simplifiées
-          </ButtonLink>
-        </div>
-      </>
-    ),
-  }
+  const collectiveDmsApplicationLink = 'fake link'
 
   const successSubmittedStep = {
     type: TimelineStepType.SUCCESS,
@@ -234,18 +201,7 @@ const CollectiveDmsTimeline = ({
   }
 
   switch (collectiveDmsApplication.state) {
-    case DMS_STATUS.DRAFT:
-      return (
-        <Timeline
-          steps={[
-            waitingDraftStep,
-            disabledInstructionStep,
-            disabledDoneStep,
-            disabledAcceptedAdageStep,
-          ]}
-        />
-      )
-    case DMS_STATUS.SUBMITTED:
+    case DMSApplicationstatus.EN_CONSTRUCTION:
       return (
         <Timeline
           steps={[
@@ -256,7 +212,7 @@ const CollectiveDmsTimeline = ({
           ]}
         />
       )
-    case DMS_STATUS.INSTRUCTION:
+    case DMSApplicationstatus.EN_INSTRUCTION:
       return (
         <Timeline
           steps={[
@@ -267,8 +223,8 @@ const CollectiveDmsTimeline = ({
           ]}
         />
       )
-    case DMS_STATUS.ADD_IN_ADAGE:
-      return (
+    case DMSApplicationstatus.ACCEPTE:
+      return !hasAdageId ? (
         <Timeline
           steps={[
             successSubmittedStep,
@@ -277,9 +233,7 @@ const CollectiveDmsTimeline = ({
             waitingAdageStep,
           ]}
         />
-      )
-    case DMS_STATUS.ADDED_IN_ADAGE:
-      return (
+      ) : (
         <Timeline
           steps={[
             successSubmittedStep,

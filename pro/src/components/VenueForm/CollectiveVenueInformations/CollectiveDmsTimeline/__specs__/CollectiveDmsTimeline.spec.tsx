@@ -1,27 +1,30 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { DMSApplicationForEAC } from 'apiClient/v1'
+import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveDmsTimeline from '..'
-import { DMS_STATUS } from '../CollectiveDmsTimeline'
 
 const renderCollectiveDmsTimeline = ({
   collectiveDmsApplication,
+  hasAdageId = false,
 }: {
   collectiveDmsApplication: DMSApplicationForEAC
+  hasAdageId?: boolean
 }) => {
   renderWithProviders(
     <CollectiveDmsTimeline
       collectiveDmsApplication={collectiveDmsApplication}
+      hasAdageId={hasAdageId}
     />
   )
 }
 
 interface ITestCaseProps {
   collectiveDmsApplication: DMSApplicationForEAC
+  hasAdageId?: boolean
   expectedLabel: string
 }
 
@@ -30,28 +33,21 @@ describe('CollectiveDmsTimeline', () => {
     {
       collectiveDmsApplication: {
         ...defaultCollectiveDmsApplication,
-        state: DMS_STATUS.DRAFT,
-      },
-      expectedLabel: 'Déposez votre demande de référencement',
-    },
-    {
-      collectiveDmsApplication: {
-        ...defaultCollectiveDmsApplication,
-        state: DMS_STATUS.SUBMITTED,
+        state: DMSApplicationstatus.EN_CONSTRUCTION,
       },
       expectedLabel: 'Votre dossier a été déposé',
     },
     {
       collectiveDmsApplication: {
         ...defaultCollectiveDmsApplication,
-        state: DMS_STATUS.INSTRUCTION,
+        state: DMSApplicationstatus.EN_INSTRUCTION,
       },
       expectedLabel: "Votre dossier est en cours d'instruction",
     },
     {
       collectiveDmsApplication: {
         ...defaultCollectiveDmsApplication,
-        state: DMS_STATUS.ADD_IN_ADAGE,
+        state: DMSApplicationstatus.ACCEPTE,
       },
       expectedLabel: 'Votre demande de référencement a été acceptée',
     },
@@ -59,30 +55,18 @@ describe('CollectiveDmsTimeline', () => {
     {
       collectiveDmsApplication: {
         ...defaultCollectiveDmsApplication,
-        state: DMS_STATUS.ADDED_IN_ADAGE,
+        state: DMSApplicationstatus.ACCEPTE,
       },
+      hasAdageId: true,
       expectedLabel:
         'Votre lieu a été ajouté dans ADAGE par le Ministère de l’Education Nationale',
     },
   ]
   it.each(testCases)(
     'should render %s status',
-    ({ collectiveDmsApplication, expectedLabel }) => {
-      renderCollectiveDmsTimeline({ collectiveDmsApplication })
+    ({ collectiveDmsApplication, hasAdageId, expectedLabel }) => {
+      renderCollectiveDmsTimeline({ collectiveDmsApplication, hasAdageId })
       expect(screen.getByText(expectedLabel)).toBeInTheDocument()
     }
   )
-
-  it('should throw error if dms status doesnt exist', () => {
-    expect(() =>
-      render(
-        <CollectiveDmsTimeline
-          collectiveDmsApplication={{
-            ...defaultCollectiveDmsApplication,
-            state: 'NOT_EXISTING_STATUS',
-          }}
-        />
-      )
-    ).toThrowError()
-  })
 })

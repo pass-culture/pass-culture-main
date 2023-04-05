@@ -41,6 +41,7 @@ const CollectiveVenueInformations = ({
       {venue?.collectiveDmsApplication && (
         <CollectiveDmsTimeline
           collectiveDmsApplication={venue.collectiveDmsApplication}
+          hasAdageId={venue.hasAdageId}
         />
       )}
       {shouldEACInformationSection && (

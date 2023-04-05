@@ -5,6 +5,7 @@ import {
   CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
   DMSApplicationForEAC,
+  DMSApplicationstatus,
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
   GetCollectiveOfferCollectiveStockResponseModel,
@@ -305,7 +306,7 @@ export const defaultCollectiveDmsApplication: DMSApplicationForEAC = {
   depositDate: new Date().toISOString(),
   lastChangeDate: new Date().toISOString(),
   procedure: 456,
-  state: 'DRAFT',
+  state: DMSApplicationstatus.EN_CONSTRUCTION,
   venueId: 1,
 }
 
