@@ -255,7 +255,7 @@ describe('test OfferIndividualWisard', () => {
         },
       ],
     })
-    const offerId = 'YA'
+    const offerId = 12
     renderOfferIndividualWizardRoute(
       store,
       generatePath(
@@ -281,7 +281,7 @@ describe('test OfferIndividualWisard', () => {
       dehumanizeId(apiOffer.venue.managingOfferer.id) // offererId
     )
     expect(api.getCategories).toHaveBeenCalledWith()
-    expect(api.getOffer).toHaveBeenCalledWith(dehumanizeId(offerId))
+    expect(api.getOffer).toHaveBeenCalledWith(offerId)
   })
 
   describe('stepper', () => {

@@ -302,12 +302,14 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
-    jest
-      .spyOn(api, 'postOffer')
-      .mockResolvedValue({ id: 'AA' } as GetIndividualOfferResponseModel)
-    jest
-      .spyOn(api, 'patchOffer')
-      .mockResolvedValue({ id: 'AA' } as GetIndividualOfferResponseModel)
+    jest.spyOn(api, 'postOffer').mockResolvedValue({
+      id: 'AA',
+      nonHumanizedId: 1,
+    } as GetIndividualOfferResponseModel)
+    jest.spyOn(api, 'patchOffer').mockResolvedValue({
+      id: 'AA',
+      nonHumanizedId: 1,
+    } as GetIndividualOfferResponseModel)
     jest
       .spyOn(utils, 'filterCategories')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
