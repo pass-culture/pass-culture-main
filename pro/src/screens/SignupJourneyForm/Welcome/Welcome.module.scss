@@ -9,6 +9,7 @@ $welcome-gap: rem.torem(40px);
     flex-direction: column;
     text-align: center;
     gap: $welcome-gap;
+    margin: auto;
 }
 
 .title {
