@@ -6,9 +6,9 @@ export type PostVenueProviderBody = {
   isActive?: boolean;
   isDuo?: boolean;
   price?: string;
-  providerId: string;
+  providerId: number;
   quantity?: number;
-  venueId: string;
+  venueId: number;
   venueIdAtOfferProvider?: string;
 };
 

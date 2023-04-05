@@ -14,8 +14,8 @@ import { ICinemaProviderFormValues } from './types'
 
 interface ICinemaProviderFormProps {
   saveVenueProvider: (values: ICinemaProviderFormValues) => void
-  providerId: string
-  venueId: string
+  providerId: number
+  venueId: number
   isCreatedEntity?: boolean
   initialValues?: ICinemaProviderFormValues
   onCancel?: () => void

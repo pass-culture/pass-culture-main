@@ -38,21 +38,21 @@ const VenueProviderForm = ({ afterSubmit, provider, venue }) => {
       isCreatedEntity
       providerId={provider.id}
       saveVenueProvider={createVenueProvider}
-      venueId={venue.id}
+      venueId={venue.nonHumanizedId}
     />
   ) : displayCDSProviderForm ? (
     <CinemaProviderForm
       isCreatedEntity
       providerId={provider.id}
       saveVenueProvider={createVenueProvider}
-      venueId={venue.id}
+      venueId={venue.nonHumanizedId}
     />
   ) : (
     <StocksProviderForm
       providerId={provider.id}
       saveVenueProvider={createVenueProvider}
       siret={venue.siret}
-      venueId={venue.id}
+      venueId={venue.nonHumanizedId}
     />
   )
 }

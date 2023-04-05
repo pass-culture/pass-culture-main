@@ -3,6 +3,6 @@ export interface IAllocineProviderParametersValues {
   quantity: number
   price: string
   isActive: boolean
-  providerId: string
-  venueId: string
+  providerId: number
+  venueId: number
 }

@@ -46,8 +46,8 @@ AllocineProviderFormDialog.propTypes = {
   }).isRequired,
   onCancel: PropTypes.func.isRequired,
   onConfirm: PropTypes.func.isRequired,
-  providerId: PropTypes.string.isRequired,
-  venueId: PropTypes.string.isRequired,
+  providerId: PropTypes.number.isRequired,
+  venueId: PropTypes.number.isRequired,
 }
 
 export default AllocineProviderFormDialog

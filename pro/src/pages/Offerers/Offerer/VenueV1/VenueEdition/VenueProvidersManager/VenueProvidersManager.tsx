@@ -26,16 +26,17 @@ const VenueProvidersManager = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      const providersResponse = await pcapi.loadProviders(venue.id)
+      const providersResponse = await pcapi.loadProviders(venue.nonHumanizedId)
       setProviders(providersResponse)
 
-      // @ts-expect-error string is not assignable to type number
-      const venueProvidersResponse = await api.listVenueProviders(venue.id)
+      const venueProvidersResponse = await api.listVenueProviders(
+        venue.nonHumanizedId
+      )
       setVenueProviders(venueProvidersResponse.venue_providers)
       setIsLoading(false)
     }
     fetchData()
-  }, [venue.id])
+  }, [venue.nonHumanizedId])
 
   const afterVenueProviderEdit = (
     editedVenueProvider: VenueProviderResponse
