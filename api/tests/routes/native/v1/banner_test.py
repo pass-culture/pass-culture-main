@@ -168,3 +168,21 @@ class BannerTest:
                 "text": "Réessaie dès maintenant",
             }
         }
+
+    def should_get_15_18_transition_banner(self, client):
+        user = users_factories.ExUnderageBeneficiaryFactory()
+
+        client.with_token(email=user.email)
+        with assert_num_queries(
+            self.expected_num_queries_without_subscription_check + 1
+        ):  # FF ENABLE_PHONE_VALIDATION checked
+            response = client.get("/native/v1/banner")
+            assert response.status_code == 200
+
+        assert response.json == {
+            "banner": {
+                "name": "transition_17_18_banner",
+                "text": "Confirme ton identité",
+                "title": f"Débloque tes 300{u_nbsp}€",
+            },
+        }

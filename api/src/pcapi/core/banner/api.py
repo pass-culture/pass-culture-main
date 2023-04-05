@@ -1,6 +1,10 @@
+import decimal
+
 import pcapi.core.finance.conf as finance_conf
+import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
+import pcapi.core.users.models as users_models
 import pcapi.routes.native.v1.serialization.banner as serializers
 from pcapi.utils.string import u_nbsp
 
@@ -20,21 +24,62 @@ GEOLOCATION_BANNER = serializers.Banner(
 
 
 def get_banner(
-    user_subscription_state: subscription_models.UserSubscriptionState, user_age: int | None, is_geolocated: bool
+    user_subscription_state: subscription_models.UserSubscriptionState,
+    user: users_models.User,
+    is_geolocated: bool,
 ) -> serializers.Banner | None:
     banner = None
     if user_subscription_state.next_step in ACTIVATION_BANNER_NEXT_STEPS:
-        banner = _get_activation_banner(user_age, user_subscription_state)
+        banner = _get_activation_banner(user, user_subscription_state)
     elif not is_geolocated:
         banner = GEOLOCATION_BANNER
 
     return banner
 
 
-def _get_activation_banner(
-    user_age: int | None, user_subscription_state: subscription_models.UserSubscriptionState
+def _is_17_18_transition(user: users_models.User) -> bool:
+    return (
+        users_models.UserRole.UNDERAGE_BENEFICIARY in user.roles and users_models.UserRole.BENEFICIARY not in user.roles
+    )
+
+
+def _get_17_18_transition_banner_information_text(
+    user_subscription_state: subscription_models.UserSubscriptionState,
+) -> str:
+    if user_subscription_state.identity_fraud_check and user_subscription_state.identity_fraud_check.type in [
+        fraud_models.FraudCheckType.DMS,
+        fraud_models.FraudCheckType.UBBLE,
+    ]:
+        return serializers.BannerText.TRANSITION_17_18_BANNER_ID_CHECK_DONE.value
+
+    return serializers.BannerText.TRANSITION_17_18_BANNER_ID_CHECK_TODO.value
+
+
+def _get_17_18_transition_banner_information(
+    user_subscription_state: subscription_models.UserSubscriptionState,
+    amount_to_display: decimal.Decimal,
 ) -> serializers.Banner | None:
-    if not user_age:
+    banner_text = _get_17_18_transition_banner_information_text(user_subscription_state)
+    return serializers.Banner(
+        name=serializers.BannerName.TRANSITION_17_18_BANNER,
+        title=serializers.BannerTitle.TRANSITION_17_18_BANNER.value.format(f"{amount_to_display}{u_nbsp}"),
+        text=banner_text,
+    )
+
+
+def _get_activation_banner(
+    user: users_models.User, user_subscription_state: subscription_models.UserSubscriptionState
+) -> serializers.Banner | None:
+    """
+    Return the activation banner
+    Business rules:
+        - if the user is not eligible, return None
+        - if the user failed and can retry the id check step, return the retry identity check banner
+        - if the user was a 15-17 beneficiary, and is eligible for the 18yo grant, return the birthday activation banner
+        - Else, return the default activation banner
+    """
+
+    if not user.age:
         return None
 
     if subscription_api.should_retry_identity_check(user_subscription_state):
@@ -44,10 +89,12 @@ def _get_activation_banner(
             text=serializers.BannerText.RETRY_IDENTITY_CHECK_BANNER.value,
         )
 
-    amount_to_display = finance_conf.get_amount_to_display(user_age)
-
+    amount_to_display = finance_conf.get_amount_to_display(user.age)
     if amount_to_display is None:
         return None
+
+    if _is_17_18_transition(user):
+        return _get_17_18_transition_banner_information(user_subscription_state, amount_to_display)
 
     return serializers.Banner(
         name=serializers.BannerName.ACTIVATION_BANNER,

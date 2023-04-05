@@ -37,5 +37,5 @@ def get_banner(user: users_models.User, query: serializers.BannerQueryParams) ->
 
     subscription_state = subscription_api.get_user_subscription_state(joined_user)
 
-    banner = banner_api.get_banner(subscription_state, joined_user.age, query.is_geolocated)
+    banner = banner_api.get_banner(subscription_state, joined_user, query.is_geolocated)
     return serializers.BannerResponse(banner=banner)
