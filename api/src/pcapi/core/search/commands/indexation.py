@@ -129,32 +129,6 @@ def _partially_index(
         page += 1
 
 
-# FIXME (dbaty, 2023-02-17): remove `process_offers_from_database`
-# command when it's been replaced by `partially_index_offers` command
-# in staging rebuild process (after v230, probably).
-@blueprint.cli.command("process_offers_from_database")
-@click.option("--clear", help="Clear search index first", type=bool, default=False)
-@click.option("-ep", "--ending-page", help="Ending page", type=int, default=None)
-@click.option("-l", "--limit", help="Number of offers per page", type=int, default=10_000)
-@click.option("-sp", "--starting-page", help="Starting page (first is 0)", type=int, default=0)
-def process_offers_from_database(
-    clear: bool,
-    ending_page: int | None,
-    limit: int,
-    starting_page: int,
-) -> None:
-    if clear:
-        search.unindex_all_offers()
-    _partially_index(
-        what="offers",
-        getter=offers_repository.get_paginated_active_offer_ids,
-        indexation_callback=search.reindex_offer_ids,
-        starting_page=starting_page + 1,
-        last_page=ending_page,
-        batch_size=limit,
-    )
-
-
 @blueprint.cli.command("partially_index_offers")
 @click.option("--clear", help="Clear search index first", type=bool, default=False)
 @click.option("--batch-size", help="Number of offers per page", type=int, default=10_000)
@@ -234,19 +208,6 @@ def partially_index_collective_offer_templates(
         starting_page=starting_page,
         last_page=last_page,
     )
-
-
-# FIXME (dbaty, 2023-02-17): remove `process_venues_from_database`
-# command when it's been replaced by `partially_index_venues` command
-# in staging rebuild process.
-@blueprint.cli.command("process_venues_from_database")
-@click.option("--clear", help="Clear search index first", type=bool, default=False)
-@click.option("--batch-size", help="Batch size (Algolia)", type=int, default=10_000)
-@click.option("--max-venues", help="Max number of venues (total)", type=int, default=10_000)
-def process_venues_from_database(clear: bool, batch_size: int, max_venues: int) -> None:
-    if clear:
-        search.unindex_all_venues()
-    _reindex_all_eligible_venues(batch_size, max_venues)
 
 
 @blueprint.cli.command("partially_index_venues")

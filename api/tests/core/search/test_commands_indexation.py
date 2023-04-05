@@ -26,21 +26,6 @@ def test_partially_index_offers(app):
         bookable_offer1.id,
     }
 
-    # test of legacy command, will be deleted until "---" below
-    # fmt: off
-    run_command(
-        app,
-        "process_offers_from_database",
-        "--ending-page", 2,
-        "--limit", 1,
-    )
-    # fmt: on
-
-    assert set(search_testing.search_store["offers"].keys()) == expected_to_be_reindexed
-
-    search_testing.reset_search_store()
-    # --- delete until here when legacy command is removed
-
     # fmt: off
     run_command(
         app,
@@ -116,20 +101,6 @@ def test_partially_index_venues(app):
         # venues, which are _not_indexable_venue and indexable_venue1.
         # Only the latter is indexed.
     }
-
-    # test of legacy command, will be deleted until "---" below
-    # fmt: off
-    run_command(
-        app,
-        "process_venues_from_database",
-        "--max-venues", 2,
-    )
-    # fmt: on
-
-    assert set(search_testing.search_store["venues"].keys()) == expected_to_be_reindexed
-
-    search_testing.reset_search_store()
-    # --- delete until here when legacy command is removed
 
     # fmt: off
     run_command(
