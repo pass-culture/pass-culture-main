@@ -91,6 +91,11 @@ def test_public_api(client):
                     ],
                     "title": "BannerName",
                 },
+                "BannerQueryParams": {
+                    "properties": {"isGeolocated": {"default": False, "title": "Isgeolocated", "type": "boolean"}},
+                    "title": "BannerQueryParams",
+                    "type": "object",
+                },
                 "BannerResponse": {
                     "properties": {"banner": {"anyOf": [{"$ref": "#/components/schemas/Banner"}], "nullable": True}},
                     "title": "BannerResponse",
@@ -1055,11 +1060,6 @@ def test_public_api(client):
                     },
                     "required": ["activityId", "address", "city", "firstName", "lastName", "postalCode"],
                     "title": "ProfileUpdateRequest",
-                    "type": "object",
-                },
-                "BannerQueryParams": {
-                    "properties": {"isGeolocated": {"default": False, "title": "Isgeolocated", "type": "boolean"}},
-                    "title": "BannerQueryParams",
                     "type": "object",
                 },
                 "Reason": {
