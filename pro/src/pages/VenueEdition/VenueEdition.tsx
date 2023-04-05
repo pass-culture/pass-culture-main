@@ -32,7 +32,7 @@ const VenueEdition = (): JSX.Element | null => {
     isLoading: isLoadingVenue,
     error: errorVenue,
     data: venue,
-  } = useGetVenue(venueId)
+  } = useGetVenue(Number(venueId))
   const {
     isLoading: isLoadingVenueTypes,
     error: errorVenueTypes,

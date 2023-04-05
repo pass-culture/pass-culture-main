@@ -25,6 +25,7 @@ export type GetCollectiveOfferVenueResponseModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
+  nonHumanizedId: number;
   postalCode?: string | null;
   publicName?: string | null;
   siret?: string | null;

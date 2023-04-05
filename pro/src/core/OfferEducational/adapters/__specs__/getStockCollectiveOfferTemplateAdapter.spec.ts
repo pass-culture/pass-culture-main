@@ -67,6 +67,7 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
           fieldsUpdated: [],
           id: 'A1',
           isVirtual: false,
+          nonHumanizedId: 1,
           managingOfferer: {
             city: 'Vélizy',
             dateCreated: 'date',

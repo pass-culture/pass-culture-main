@@ -61,8 +61,8 @@ jest.mock('repository/pcapi/pcapi', () => ({
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: () => ({
-    offererId: 'ABCD',
-    venueId: 'AE',
+    offererId: '1234',
+    venueId: '12',
   }),
 }))
 
@@ -75,6 +75,7 @@ describe('route VenueEdition', () => {
   beforeEach(() => {
     venue = {
       id: 'AE',
+      nonHumanizedId: 12,
       publicName: 'Cinéma des iles',
       dmsToken: 'dms-token-12345',
     } as GetVenueResponseModel
@@ -137,7 +138,7 @@ describe('route VenueEdition', () => {
     const venuePublicName = await screen.findByRole('heading', {
       name: 'Cinéma des iles',
     })
-    expect(api.getVenue).toHaveBeenCalledWith('AE')
+    expect(api.getVenue).toHaveBeenCalledWith(12)
     expect(venuePublicName).toBeInTheDocument()
   })
 

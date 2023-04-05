@@ -122,6 +122,7 @@ export const collectiveOfferVenueFactory = (
     managingOffererId: customOfferer.id,
     postalCode: '11100',
     publicName: 'Mon Lieu',
+    nonHumanizedId: currentVenueId,
     departementCode: '973',
     fieldsUpdated: [],
     thumbCount: 0,

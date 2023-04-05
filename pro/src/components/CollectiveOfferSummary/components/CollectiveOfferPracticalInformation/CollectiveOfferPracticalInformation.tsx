@@ -21,7 +21,7 @@ const CollectiveOfferPracticalInformationSection = ({
     error,
     isLoading,
     data: venue,
-  } = useGetVenue(offer.offerVenue.venueId)
+  } = useGetVenue(offer.venue.nonHumanizedId)
   if (isLoading) {
     return <Spinner />
   }
