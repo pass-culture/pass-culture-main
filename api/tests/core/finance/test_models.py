@@ -105,8 +105,8 @@ class CustomReimbursementRuleTest:
         single = bookings_factories.BookingFactory(quantity=1)
         double = bookings_factories.BookingFactory(quantity=2)
 
-        assert rule.apply(single) == 8
-        assert rule.apply(double) == 16
+        assert rule.apply(single) == Decimal("8.08")
+        assert rule.apply(double) == Decimal("16.16")
 
 
 class DepositSpecificCapsTest:

@@ -374,9 +374,9 @@ class ListIndividualBookingsTest:
         # then
         assert response.status_code == 200
         reimbursement_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
-        assert "Total payé par l'utilisateur : 10,00 €" in reimbursement_data
+        assert "Total payé par l'utilisateur : 10,10 €" in reimbursement_data
         assert f"Date de remboursement : {reimbursed.reimbursementDate.strftime('%d/%m/%Y à ')}" in reimbursement_data
-        assert "Montant remboursé : 10,00 €" in reimbursement_data
+        assert "Montant remboursé : 10,10 €" in reimbursement_data
         assert f"N° de virement : {cashflow.batch.label}" in reimbursement_data
         assert "Taux de remboursement : 100,0 %" in reimbursement_data
 

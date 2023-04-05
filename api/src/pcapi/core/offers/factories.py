@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import typing
 import uuid
 
@@ -126,7 +127,7 @@ class PriceCategoryFactory(BaseFactory):
     class Meta:
         model = models.PriceCategory
 
-    price = 10
+    price = decimal.Decimal("10.1")
     offer = factory.SubFactory(EventOfferFactory)
     priceCategoryLabel = factory.SubFactory(PriceCategoryLabelFactory, venue=factory.SelfAttribute("..offer.venue"))
 
@@ -136,7 +137,7 @@ class StockFactory(BaseFactory):
         model = models.Stock
 
     offer = factory.SubFactory(OfferFactory)
-    price = 10
+    price = decimal.Decimal("10.1")
     quantity = 1000
 
     beginningDatetime = factory.Maybe(
