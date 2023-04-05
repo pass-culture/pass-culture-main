@@ -1,8 +1,8 @@
-@import 'sass-rem';
-@import 'styles';
+@import "sass-rem";
+@import "styles";
 
 .prebooking-button-booking-limit {
-  margin-top: rem(10px);
+  margin-top: rem(8px);
 }
 
 .prebooking-button-container {
@@ -10,7 +10,7 @@
   flex-direction: column;
   align-items: center;
   font-size: rem(12px);
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .prebooking-tag {

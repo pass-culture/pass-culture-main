@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
 import { apiAdage } from 'apiClient/api'
-import DialogBox from 'components/DialogBox/DialogBox'
-import { ReactComponent as MailIcon } from 'pages/AdageIframe/assets/mail.svg'
+import Dialog from 'components/Dialog/Dialog'
+import { ReactComponent as MailOutlineIcon } from 'icons/ico-mail-outline.svg'
 import { logClickOnOffer } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit'
 
@@ -45,13 +45,12 @@ const ContactButton = ({
         </Button>
       </div>
       {isModalOpen && (
-        <DialogBox
-          onDismiss={closeModal}
-          labelledBy={'contacter le partenaire culturel'}
+        <Dialog
+          onCancel={closeModal}
+          title={'Contacter le partenaire culturel'}
           extraClassNames={styles['contact-modal-dialog']}
-          hasCloseButton
+          icon={MailOutlineIcon}
         >
-          <MailIcon className={styles['contact-modal-icon']} />
           <p className={styles['contact-modal-text']}>
             Afin de personnaliser cette offre, nous vous invitons à entrer en
             contact avec votre partenaire culturel :
@@ -73,7 +72,7 @@ const ContactButton = ({
           >
             Fermer
           </Button>
-        </DialogBox>
+        </Dialog>
       )}
     </>
   )
