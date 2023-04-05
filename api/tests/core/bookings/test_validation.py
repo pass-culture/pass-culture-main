@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+import decimal
 
 import pytest
 import sqlalchemy.exc
@@ -266,7 +267,7 @@ class InsufficientFundsSQLCheckTest:
         # The user once booked.
         user = users_factories.BeneficiaryGrant18Factory()
         factories.BookingFactory(user=user)
-        assert user.wallet_balance == 290
+        assert user.wallet_balance == decimal.Decimal("289.90")
 
         # But now their deposit expired.
         self._expire_deposit(user)

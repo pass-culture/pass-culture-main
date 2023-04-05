@@ -1091,18 +1091,20 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            created_stock = offers_models.Stock.query.order_by(offers_models.Stock.beginningDatetime).all()
+            created_stocks = offers_models.Stock.query.order_by(offers_models.Stock.beginningDatetime).all()
             vf_offer = offers_models.Offer.query.first()
 
-            first_stock = created_stock[0]
-            second_stock = created_stock[1]
+            first_stock = created_stocks[0]
+            second_stock = created_stocks[1]
 
-            assert len(created_stock) == 2
+            assert len(created_stocks) == 2
             assert first_stock.offerId == vf_offer.id
             assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
 
             assert second_stock.offerId == vf_offer.id
             assert second_stock.beginningDatetime == datetime(2019, 12, 4, 17, 0)
+
+            assert offers_models.PriceCategory.query.count() == 1
 
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")

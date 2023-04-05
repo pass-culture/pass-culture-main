@@ -1,5 +1,6 @@
 import base64
 import datetime
+import decimal
 import random
 import secrets
 
@@ -156,4 +157,4 @@ class AllocineVenueProviderPriceRuleFactory(BaseFactory):
 
     allocineVenueProvider = factory.SubFactory(AllocineVenueProviderFactory)
     priceRule = "default"
-    price = 5.5
+    price = decimal.Decimal("5.7")
