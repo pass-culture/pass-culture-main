@@ -2,6 +2,7 @@ import pcapi.core.finance.conf as finance_conf
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
 import pcapi.routes.native.v1.serialization.banner as serializers
+from pcapi.utils.string import u_nbsp
 
 
 ACTIVATION_BANNER_NEXT_STEPS = [
@@ -50,6 +51,6 @@ def _get_activation_banner(
 
     return serializers.Banner(
         name=serializers.BannerName.ACTIVATION_BANNER,
-        title=serializers.BannerTitle.ACTIVATION_BANNER.value.format(amount_to_display),
+        title=serializers.BannerTitle.ACTIVATION_BANNER.value.format(f"{amount_to_display}{u_nbsp}"),
         text=serializers.BannerText.ACTIVATION_BANNER.value,
     )
