@@ -1,5 +1,6 @@
 import copy
 from datetime import datetime
+import decimal
 from pathlib import Path
 from unittest.mock import patch
 
@@ -1285,11 +1286,11 @@ class UpdateObjectsTest:
             assert second_stock.priceCategory.label == "Tarif unique"
             assert second_stock.bookingLimitDatetime == datetime(2019, 12, 4, 15, 0)
 
+    @pytest.mark.usefixtures("db_session")
     class WhenOfferHasBeenManuallyUpdatedTest:
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
-        @pytest.mark.usefixtures("db_session")
         def test_should_preserve_manual_modification(self, mock_poster_get_allocine, mock_call_allocine_api, app):
             # Given
             mock_poster_get_allocine.return_value = bytes()
@@ -1367,6 +1368,147 @@ class UpdateObjectsTest:
             # Then
             created_offer = offers_models.Offer.query.one()
             assert created_offer.isDuo is True
+
+        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
+        @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
+        def test_should_succeed_when_additional_price_categories_were_created(
+            self, mock_poster_get_allocine, mock_call_allocine_api, app
+        ):
+            # Given
+            mock_poster_get_allocine.return_value = bytes()
+            mock_call_allocine_api.side_effect = [
+                iter(
+                    [
+                        {
+                            "node": {
+                                "movie": MOVIE_INFO,
+                                "showtimes": [
+                                    {
+                                        "startsAt": "2019-12-03T10:00:00",
+                                        "diffusionVersion": "ORIGINAL",
+                                        "projection": ["DIGITAL"],
+                                        "experience": None,
+                                    },
+                                ],
+                            }
+                        }
+                    ]
+                )
+            ]
+
+            venue = offerers_factories.VenueFactory(
+                managingOfferer__siren="775671464",
+                name="Cinema Allocine",
+                siret="77567146400110",
+                bookingEmail="toto@example.com",
+            )
+            allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+            price_rule = providers_factories.AllocineVenueProviderPriceRuleFactory(
+                allocineVenueProvider=allocine_venue_provider
+            )
+
+            offer = offers_factories.OfferFactory(
+                name="Test event",
+                durationMinutes=60,
+                idAtProvider="TW92aWU6Mzc4MzI=%77567146400110-VO",
+                venue=venue,
+            )
+            offers_factories.PriceCategoryFactory(offer=offer, price=price_rule.price)
+            newest_price_category = offers_factories.PriceCategoryFactory(
+                offer=offer, price=price_rule.price, priceCategoryLabel__label="Nouveau tarif"
+            )
+
+            # When
+            allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
+            allocine_stocks_provider.updateObjects()
+
+            # Then
+            stock = offers_models.Stock.query.one()
+            assert stock.priceCategory == newest_price_category
+
+            assert allocine_stocks_provider.erroredObjects == 0
+            assert allocine_stocks_provider.erroredThumbs == 0
+
+        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
+        @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
+        def test_should_only_update_default_price_category(self, mock_poster_get_allocine, mock_call_allocine_api, app):
+            # Given
+            mock_poster_get_allocine.return_value = bytes()
+            mock_call_allocine_api.side_effect = [
+                iter(
+                    [
+                        {
+                            "node": {
+                                "movie": MOVIE_INFO,
+                                "showtimes": [
+                                    {
+                                        "startsAt": "2019-12-03T10:00:00",
+                                        "diffusionVersion": "ORIGINAL",
+                                        "projection": ["DIGITAL"],
+                                        "experience": None,
+                                    },
+                                    {
+                                        "startsAt": "2019-12-04T10:00:00",
+                                        "diffusionVersion": "ORIGINAL",
+                                        "projection": ["DIGITAL"],
+                                        "experience": None,
+                                    },
+                                ],
+                            }
+                        }
+                    ]
+                )
+            ]
+
+            venue = offerers_factories.VenueFactory(
+                managingOfferer__siren="775671464",
+                name="Cinema Allocine",
+                siret="77567146400110",
+                bookingEmail="toto@example.com",
+            )
+
+            offer = offers_factories.OfferFactory(
+                name="Test event",
+                durationMinutes=60,
+                idAtProvider="TW92aWU6Mzc4MzI=%77567146400110-VO",
+                venue=venue,
+            )
+            default_price_category = offers_factories.PriceCategoryFactory(offer=offer, price=decimal.Decimal("10.1"))
+            stock_with_price_to_edit = offers_factories.EventStockFactory(
+                offer=offer,
+                idAtProviders="TW92aWU6Mzc4MzI=%77567146400110#ORIGINAL/2019-12-03T10:00:00",
+                priceCategory=default_price_category,
+            )
+
+            manually_created_price_category = offers_factories.PriceCategoryFactory(
+                offer=offer, price=decimal.Decimal("10.1"), priceCategoryLabel__label="price should not change"
+            )
+            stock_with_unchanging_price = offers_factories.EventStockFactory(
+                offer=offer,
+                idAtProviders="TW92aWU6Mzc4MzI=%77567146400110#ORIGINAL/2019-12-04T10:00:00",
+                priceCategory=manually_created_price_category,
+            )
+
+            allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+            new_price_rule = providers_factories.AllocineVenueProviderPriceRuleFactory(
+                allocineVenueProvider=allocine_venue_provider, price=decimal.Decimal("1.2")
+            )
+
+            # When
+            allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
+            allocine_stocks_provider.updateObjects()
+
+            # Then
+            assert stock_with_price_to_edit.price == new_price_rule.price
+            assert default_price_category.price == new_price_rule.price
+
+            assert manually_created_price_category.price != new_price_rule.price
+            assert stock_with_unchanging_price.price != new_price_rule.price
+
+            assert allocine_stocks_provider.erroredObjects == 0
+            assert allocine_stocks_provider.erroredThumbs == 0
 
     class WhenStockHasBeenManuallyDeletedTest:
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
