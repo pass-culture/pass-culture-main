@@ -20,7 +20,7 @@ class BannerName(enum.Enum):
 
 class BannerTitle(enum.Enum):
     GEOLOCATION_BANNER = "Géolocalise-toi"
-    ACTIVATION_BANNER = "Débloque tes {}\u00a0€"
+    ACTIVATION_BANNER = "Débloque tes {}€"
     RETRY_IDENTITY_CHECK_BANNER = "Nous n’avons pas pu vérifier ton identité"
 
 

@@ -25,6 +25,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users import young_status
+from pcapi.utils.string import u_nbsp
 
 
 @pytest.mark.usefixtures("db_session")
@@ -2352,8 +2353,8 @@ class StepperTest:
         assert subscription_api.get_stepper_title_and_subtitle(
             user, subscription_api.get_user_subscription_state(user)
         ) == subscription_models.SubscriptionStepperDetails(
-            title="C'est très rapide !",
-            subtitle="Pour débloquer tes 300€ tu dois suivre les étapes suivantes :",
+            title=f"C'est très rapide{u_nbsp}!",
+            subtitle=f"Pour débloquer tes 300€ tu dois suivre les étapes suivantes{u_nbsp}:",
         )
 
     @pytest.mark.parametrize(
@@ -2369,8 +2370,8 @@ class StepperTest:
         assert subscription_api.get_stepper_title_and_subtitle(
             user, subscription_api.get_user_subscription_state(user)
         ) == subscription_models.SubscriptionStepperDetails(
-            title="C'est très rapide !",
-            subtitle=f"Pour débloquer tes {amount}€ tu dois suivre les étapes suivantes :",
+            title=f"C'est très rapide{u_nbsp}!",
+            subtitle=f"Pour débloquer tes {amount}€ tu dois suivre les étapes suivantes{u_nbsp}:",
         )
 
     def test_get_stepper_title_18_yo_retrying_ubble(self):

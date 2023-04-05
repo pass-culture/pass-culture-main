@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from pcapi.core.cultural_survey.models import CulturalSurveyAnswerEnum
 from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
+from pcapi.utils.string import u_nbsp
 
 
 @dataclass()
@@ -161,7 +162,7 @@ SANS_ACTIVITES = CulturalSurveyAnswer(
 PROJECTION_FESTIVAL = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_FESTIVAL,
     title="Aller à un festival",
-    subtitle="Musique, cinéma, littéraire, ...",
+    subtitle="Musique, cinéma, littéraire...",
 )
 
 
@@ -173,7 +174,7 @@ PROJECTION_CINEMA = CulturalSurveyAnswer(
 PROJECTION_VISITE = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_VISITE,
     title="Faire des visites",
-    subtitle="Une exposition, un monument, ...",
+    subtitle="Une exposition, un monument...",
 )
 
 PROJECTION_CONCERT = CulturalSurveyAnswer(
@@ -191,14 +192,14 @@ PROJECTION_CD_VINYLE = CulturalSurveyAnswer(
 PROJECTION_SPECTACLE = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_SPECTACLE,
     title="Voir un spectacle",
-    subtitle="Pièce de théâtre, cirque, humour, ...",
+    subtitle="Pièce de théâtre, cirque, humour...",
 )
 
 
 PROJECTION_ACTIVITE_ARTISTIQUE = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_ACTIVITE_ARTISTIQUE,
     title="Faire une activité artistique",
-    subtitle="Dessin, danse, théâtre, musique, ...",
+    subtitle="Dessin, danse, théâtre, musique...",
 )
 
 
@@ -216,7 +217,7 @@ PROJECTION_CONFERENCE = CulturalSurveyAnswer(
 PROJECTION_JEU = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_JEU,
     title="Faire des jeux en solo ou en duo",
-    subtitle="Escape games, jeux vidéo, ...",
+    subtitle="Escape games, jeux vidéo...",
 )
 
 PROJECTION_AUTRE = CulturalSurveyAnswer(
@@ -315,31 +316,31 @@ PROJECTION_ANSWERS = [
 
 SORTIES = CulturalSurveyQuestion(
     id=CulturalSurveyQuestionEnum.SORTIES,
-    title="Au cours de l'année précédente, tu as été au moins une fois ...",
+    title=f"Au cours de l'année précédente, tu as été au moins une fois{u_nbsp}...",
     answers=SORTIES_ANSWERS,
 )
 
 FESTIVALS = CulturalSurveyQuestion(
     id=CulturalSurveyQuestionEnum.FESTIVALS,
-    title="À quels types de festivals as-tu participé ?",
+    title=f"À quels types de festivals as-tu participé{u_nbsp}?",
     answers=FESTIVALS_ANSWERS,
 )
 
 SPECTACLES = CulturalSurveyQuestion(
     id=CulturalSurveyQuestionEnum.SPECTACLES,
-    title="À quels types de spectacles as-tu assisté ?",
+    title=f"À quels types de spectacles as-tu assisté{u_nbsp}?",
     answers=SPECTACLES_ANSWERS,
 )
 
 ACTIVITES = CulturalSurveyQuestion(
     id=CulturalSurveyQuestionEnum.ACTIVITES,
-    title="Au cours de l'année précédente, tu as au moins une fois ...",
+    title=f"Au cours de l'année précédente, tu as au moins une fois{u_nbsp}...",
     answers=ACTIVITES_ANSWERS,
 )
 
 PROJECTIONS = CulturalSurveyQuestion(
     id=CulturalSurveyQuestionEnum.PROJECTIONS,
-    title="Cette année, tu aimerais ...",
+    title=f"Cette année, tu aimerais{u_nbsp}...",
     answers=PROJECTION_ANSWERS,
 )
 
