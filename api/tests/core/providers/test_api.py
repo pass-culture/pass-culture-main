@@ -342,7 +342,7 @@ class SynchronizeStocksTest:
                 stocks_provider_reference="stock_ref3",
                 venue_reference="venue_ref3",
             ),
-            providers_models.StockDetail(  # existing, will be updated
+            providers_models.StockDetail(  # existing, now free, will be ignored
                 offers_provider_reference="offer_ref4",
                 available_quantity=15,
                 price=0,
@@ -379,13 +379,6 @@ class SynchronizeStocksTest:
                 "id": 1,
                 "quantity": 15 + 3,
                 "price": 15.78,
-                "rawProviderQuantity": 15,
-                "lastProviderId": 1,
-            },
-            {
-                "id": 2,
-                "quantity": 15 + 3,
-                "price": 0,
                 "rawProviderQuantity": 15,
                 "lastProviderId": 1,
             },
