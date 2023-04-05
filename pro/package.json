@@ -46,7 +46,7 @@
     "@fontsource/barlow": "^4.5.9",
     "@reach/dialog": "^0.18.0",
     "@reach/menu-button": "^0.18.0",
-    "@reduxjs/toolkit": "^1.8.5",
+    "@reduxjs/toolkit": "^1.9.3",
     "@sentry/browser": "^7.1.1",
     "@sentry/react": "^7.46.0",
     "@sentry/tracing": "^7.1.1",
