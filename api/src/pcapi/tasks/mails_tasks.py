@@ -1,9 +1,13 @@
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.settings import GCP_SENDINBLUE_TRANSACTIONAL_EMAILS_WITHDRAWAL_UPDATED_QUEUE_NAME
 from pcapi.tasks.decorator import task
 from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailRequest
 
 
-@task("withdrawal_details_changed_notification", "/mails/withdrawal_notification")
+@task(
+    GCP_SENDINBLUE_TRANSACTIONAL_EMAILS_WITHDRAWAL_UPDATED_QUEUE_NAME,  # type: ignore [arg-type]
+    "/sendinblue/send-withdrawal-updated-emails",
+)
 def send_withdrawal_detail_changed_emails(payload: WithdrawalChangedMailRequest) -> None:
     for booker in payload.bookers:
         transactional_mails.send_booking_withdrawal_updated(
