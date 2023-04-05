@@ -62,7 +62,6 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     offers_models.PriceCategory.query.delete()
     offers_models.PriceCategoryLabel.query.delete()
     offers_models.Product.query.delete()
-    finance_models.BusinessUnit.query.delete()
     BankInformation.query.delete()
     providers_models.CDSCinemaDetails.query.delete()
     providers_models.BoostCinemaDetails.query.delete()

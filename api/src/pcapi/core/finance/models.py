@@ -140,11 +140,6 @@ class PricingStatus(enum.Enum):
     INVOICED = "invoiced"  # has an associated invoice (whose cashflows are "accepted")
 
 
-class BusinessUnitStatus(enum.Enum):
-    ACTIVE = "active"
-    DELETED = "deleted"
-
-
 CANCELLABLE_PRICING_STATUSES = {PricingStatus.PENDING, PricingStatus.VALIDATED, PricingStatus.REJECTED}
 DELETABLE_PRICING_STATUSES = CANCELLABLE_PRICING_STATUSES | {PricingStatus.CANCELLED}
 
@@ -196,27 +191,6 @@ class BankInformation(PcObject, Base, Model):
     applicationId = sqla.Column(sqla.Integer, nullable=True, index=True, unique=True)
     status: BankInformationStatus = sqla.Column(sqla.Enum(BankInformationStatus), nullable=False)
     dateModified = sqla.Column(sqla.DateTime, nullable=True)
-
-
-class BusinessUnit(Base, Model):
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
-    name = sqla.Column(sqla.Text)
-    siret = sqla.Column(sqla.String(14), unique=True)
-    status: BusinessUnitStatus = sqla.Column(
-        db_utils.MagicEnum(BusinessUnitStatus), nullable=False, server_default=BusinessUnitStatus.ACTIVE.value
-    )
-
-    bankAccountId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=True)
-    bankAccount: BankInformation | None = sqla_orm.relationship(BankInformation, foreign_keys=[bankAccountId])
-
-    cashflowFrequency: Frequency = sqla.Column(
-        db_utils.MagicEnum(Frequency), nullable=False, default=Frequency.EVERY_TWO_WEEKS
-    )
-    invoiceFrequency: Frequency = sqla.Column(
-        db_utils.MagicEnum(Frequency), nullable=False, default=Frequency.EVERY_TWO_WEEKS
-    )
-
-    invoices: list["Invoice"] = sqla_orm.relationship("Invoice", back_populates="businessUnit")
 
 
 class Pricing(Base, Model):
