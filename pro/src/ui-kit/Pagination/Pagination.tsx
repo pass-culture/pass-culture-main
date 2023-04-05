@@ -33,7 +33,7 @@ export const Pagination = ({
       </span>
 
       <button
-        disabled={currentPage === pageCount}
+        disabled={currentPage >= pageCount}
         onClick={onNextPageClick}
         type="button"
         className={styles['button']}
