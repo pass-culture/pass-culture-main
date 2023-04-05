@@ -28,10 +28,14 @@ const WrongStudentsModal = ({
       explanation={
         <>
           <p>
-            Le dispositif pass Culture sera étendu aux classes de 6e et 5e au
-            1er septembre 2023. Pour créer une offre à destination de ces
-            niveaux scolaires, vous devez proposer une date à partir du 1er
-            septembre 2023.
+            Le dispositif pass Culture sera étendu aux classes de 6e et 5e à
+            partir du{' '}
+            <span className={style['wrong-student-modal-important']}>
+              1er septembre 2023.
+            </span>{' '}
+            Pour créer une offre à destination de ces niveaux scolaires, vous
+            devez proposer une date à partir du <br />
+            1er septembre 2023.
           </p>
           {!hasOnlyWrongStudents && (
             <>
