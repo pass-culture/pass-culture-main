@@ -26,7 +26,12 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es6",
-    "types": ["node", "cypress", "@testing-library/cypress"]
+    "types": [
+      "node",
+      "cypress"
+      // TODO Albéric: can be re-added when this issue is solved: https://github.com/testing-library/cypress-testing-library/issues/252
+      // "@testing-library/cypress"
+    ]
   },
   "include": [
     "./src/**/*.ts",

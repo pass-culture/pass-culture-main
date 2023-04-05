@@ -36,4 +36,6 @@
 //   }
 // }
 
-import '@testing-library/cypress/add-commands'
+// TODO Albéric: can be re-added when this issue is solved: https://github.com/testing-library/cypress-testing-library/issues/252
+// import '@testing-library/cypress/add-commands'
+export {}
