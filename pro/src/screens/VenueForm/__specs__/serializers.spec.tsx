@@ -199,6 +199,7 @@ describe('screen | VenueForm | serializers', () => {
       expect(result.contact?.website).toBeNull()
       expect(result.contact?.phoneNumber).toBeNull()
     })
+
     it("User should be able to delete a venue's contact info", async () => {
       const result: EditVenueBodyModel = serializeEditVenueBodyModel(
         {

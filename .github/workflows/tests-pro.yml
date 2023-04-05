@@ -154,3 +154,34 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+  tests-pro-e2e-tests:
+    name: "E2E tests"
+    runs-on: [self-hosted, linux, x64]
+    needs: read-node-version
+    steps:
+      - uses: actions/checkout@v3
+      - if: ${{ env.use_cache == false }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ needs.read-node-version.outputs.node_version }}
+      - name: Run API server
+        working-directory: api
+        run: ../pc start-backend &
+      # Doc : https://github.com/cypress-io/github-action
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          build: yarn build:development
+          start: yarn serve
+          config: baseUrl=http://localhost:3001
+          browser: chrome
+          wait-on: "http://localhost:3001,http://localhost/health/api,http://localhost/health/database"
+          wait-on-timeout: 600
+          working-directory: pro
+      - name: Archive E2E results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: e2e-artifacts
+          path: pro/cypress/screenshots
