@@ -206,7 +206,7 @@ class GetBookingsTest:
                 },
             },
             "token": used2.token,
-            "totalAmount": 1000,
+            "totalAmount": 1010,
             "externalBookings": [],
         }
 

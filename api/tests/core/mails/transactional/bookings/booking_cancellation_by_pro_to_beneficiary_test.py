@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timezone
+import decimal
 
 import pytest
 
@@ -43,7 +44,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
             "IS_THING": True,
             "IS_ONLINE": False,
             "OFFER_NAME": booking.stock.offer.name,
-            "OFFER_PRICE": 10.00,
+            "OFFER_PRICE": decimal.Decimal("10.10"),
             "OFFERER_NAME": booking.offerer.name,
             "USER_FIRST_NAME": "Jeanne",
             "USER_LAST_NAME": "Doux",
@@ -77,7 +78,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "IS_ONLINE": False,
             "IS_THING": False,
             "OFFER_NAME": booking.stock.offer.name,
-            "OFFER_PRICE": 10.00,
+            "OFFER_PRICE": decimal.Decimal("10.10"),
             "OFFERER_NAME": booking.offerer.name,
             "USER_FIRST_NAME": "Georges",
             "USER_LAST_NAME": "Moustiquos",
@@ -107,7 +108,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "IS_ONLINE": False,
             "IS_THING": True,
             "OFFER_NAME": booking.stock.offer.name,
-            "OFFER_PRICE": 10.00,
+            "OFFER_PRICE": decimal.Decimal("10.10"),
             "OFFERER_NAME": booking.offerer.name,
             "USER_FIRST_NAME": "Georges",
             "USER_LAST_NAME": "Doux",
@@ -136,7 +137,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "IS_ONLINE": True,
             "IS_THING": False,
             "OFFER_NAME": booking.stock.offer.name,
-            "OFFER_PRICE": 10.00,
+            "OFFER_PRICE": decimal.Decimal("10.10"),
             "OFFERER_NAME": booking.offerer.name,
             "USER_FIRST_NAME": "Georges",
             "USER_LAST_NAME": "Georges",

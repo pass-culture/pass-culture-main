@@ -61,7 +61,7 @@ class Returns200Test:
             "offerName": "An offer you cannot refuse",
             "offerType": "EVENEMENT",
             "phoneNumber": "+33101010101",
-            "price": 10.0,
+            "price": 10.1,
             "priceCategoryLabel": None,
             "publicOfferId": humanize(booking.stock.offerId),
             "quantity": 1,

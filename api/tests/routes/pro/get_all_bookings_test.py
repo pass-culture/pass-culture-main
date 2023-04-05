@@ -140,7 +140,7 @@ class Returns200Test:
                 "bookingDate": isoformat(
                     booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),
                 ),
-                "bookingAmount": 10.0,
+                "bookingAmount": 10.1,
                 "bookingToken": "ABCDEF",
                 "bookingStatus": "validated",
                 "bookingIsDuo": False,
