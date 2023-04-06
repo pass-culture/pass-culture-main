@@ -5,6 +5,7 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.common import models as common_fraud_models
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
+from pcapi.utils.string import u_nbsp
 
 from . import models
 
@@ -99,19 +100,19 @@ def get_ubble_not_retryable_message(
         call_to_action = subscription_messages.compute_support_call_to_action(fraud_check.user.id)
 
     elif fraud_models.FraudReasonCode.AGE_TOO_YOUNG in reason_codes:
-        user_message = "Ton dossier a été refusé : tu n'as pas encore l'âge pour bénéficier du pass Culture. Reviens à tes 15 ans pour profiter de ton crédit."
+        user_message = f"Ton dossier a été refusé{u_nbsp}: tu n'as pas encore l'âge pour bénéficier du pass Culture. Reviens à tes 15 ans pour profiter de ton crédit."
         pop_over_icon = subscription_models.PopOverIcon.ERROR
 
     elif fraud_models.FraudReasonCode.AGE_TOO_OLD in reason_codes:
-        user_message = "Ton dossier a été refusé : tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans."
+        user_message = f"Ton dossier a été refusé{u_nbsp}: tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans."
         pop_over_icon = subscription_models.PopOverIcon.ERROR
 
     elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in reason_codes:
-        user_message = "Ton dossier a été refusé : tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans."
+        user_message = f"Ton dossier a été refusé{u_nbsp}: tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans."
         pop_over_icon = subscription_models.PopOverIcon.ERROR
 
     elif fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in reason_codes:
-        user_message = "Ton dossier a été refusé : le prénom et le nom que tu as renseignés ne correspondent pas à ta pièce d'identité. Tu peux contacter le support si tu penses qu’il s’agit d’une erreur."
+        user_message = f"Ton dossier a été refusé{u_nbsp}: le prénom et le nom que tu as renseignés ne correspondent pas à ta pièce d'identité. Tu peux contacter le support si tu penses qu’il s’agit d’une erreur."
         call_to_action = subscription_messages.compute_support_call_to_action(fraud_check.user.id)
 
     elif fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in reason_codes:

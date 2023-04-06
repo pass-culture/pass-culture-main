@@ -19,6 +19,7 @@ from pcapi.routes.serialization.reimbursement_csv_serialize import _legacy_get_v
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_all_offerer_reimbursement_details
 from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
 from pcapi.utils.date import utc_datetime_to_department_timezone
+from pcapi.utils.string import u_nbsp
 
 
 today = datetime.utcnow().date()
@@ -101,7 +102,7 @@ class ReimbursementDetailsTest:
         # reimbursement
         assert row[next(row_number)] == booking.priceCategoryLabel
         assert row[next(row_number)] == "21,00"
-        assert row[next(row_number)] == "100 %"
+        assert row[next(row_number)] == f"100{u_nbsp}%"
         assert row[next(row_number)] == "21,00"
         assert row[next(row_number)] == "offre grand public"
 
@@ -174,7 +175,7 @@ class ReimbursementDetailsTest:
 
         # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        assert row[21] == "12,34 %"
+        assert row[21] == f"12,34{u_nbsp}%"
 
         # legacy payment data
         row = ReimbursementDetails(payments_info[1]).as_csv_row()
@@ -233,7 +234,7 @@ def test_generate_reimbursement_details_csv() -> None:
     )
     assert (  # new pricing+cashflow data
         rows[1]
-        == f'''"Validées et remboursables sur juin : 2nde quinzaine";"{invoice_date_as_str}";"F220000001";"VIR1";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"";"21,00";"100 %";"21,00";"offre grand public"'''
+        == f'''"Validées et remboursables sur juin : 2nde quinzaine";"{invoice_date_as_str}";"F220000001";"VIR1";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"";"21,00";"100{u_nbsp}%";"21,00";"offre grand public"'''
     )
     assert (  # legacy payment data
         rows[2]
@@ -359,7 +360,7 @@ class CollectiveReimbursementDetailsTest:
             booking3.dateUsed,
             None,
             "100,00",
-            "100 %",
+            f"100{u_nbsp}%",
             "100,00",
             "offre collective",
         ]
@@ -428,7 +429,7 @@ class CollectiveReimbursementDetailsTest:
         # reimbursement
         assert row[next(row_number)] is None
         assert row[next(row_number)] == "21,00"
-        assert row[next(row_number)] == "100 %"
+        assert row[next(row_number)] == f"100{u_nbsp}%"
         assert row[next(row_number)] == "21,00"
         assert row[next(row_number)] == "offre collective"
 

@@ -17,6 +17,7 @@ from pcapi.core.offers.serialize import serialize_offer_type_educational_or_indi
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.date import MONTHS_IN_FRENCH
 from pcapi.utils.date import utc_datetime_to_department_timezone
+from pcapi.utils.string import u_nbsp
 
 
 def format_number_as_french(num: int | float) -> str:
@@ -183,7 +184,7 @@ class ReimbursementDetails:
                 rate = decimal.Decimal(rule.rate * 100).quantize(decimal.Decimal("0.01"))
                 if rate == int(rate):  # omit decimals if round number
                     rate = int(rate)
-                rate = format_number_as_french(rate) + " %"
+                rate = format_number_as_french(rate) + f"{u_nbsp}%"
             else:
                 rate = ""
         self.reimbursement_rate = rate
