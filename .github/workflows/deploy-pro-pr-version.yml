@@ -27,7 +27,6 @@ jobs:
         with:
           secrets: |-
             FIREBASE_TOKEN:passculture-metier-ehp/pc_pro_testing_firebase_json
-      - run: sudo npm install --global yarn
       - run: yarn install
       - run: |
           set -a; 
