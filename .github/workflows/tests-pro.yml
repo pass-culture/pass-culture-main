@@ -167,6 +167,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ needs.read-node-version.outputs.node_version }}
+      - run: npm install yarn
       - name: Run API server
         working-directory: api
         run: ../pc start-backend &
