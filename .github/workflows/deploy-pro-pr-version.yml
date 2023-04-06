@@ -13,6 +13,7 @@ jobs:
       run:
         working-directory: pro
     runs-on: [self-hosted, linux, x64]
+    if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v3
       - id: openid-auth
