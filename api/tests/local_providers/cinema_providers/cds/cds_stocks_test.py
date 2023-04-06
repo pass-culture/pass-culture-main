@@ -174,7 +174,7 @@ class CDSStocksTest:
             cinemaProviderPivot=cinema_provider_pivot, accountId="account_id", cinemaApiToken="token"
         )
 
-        requests_mock.get(
+        get_cinemas_adapter = requests_mock.get(
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_FALSE],
         )
@@ -253,6 +253,8 @@ class CDSStocksTest:
 
         assert cds_stocks.erroredObjects == 0
         assert cds_stocks.erroredThumbs == 0
+
+        assert get_cinemas_adapter.call_count == 1
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
