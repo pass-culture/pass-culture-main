@@ -162,11 +162,11 @@ def edit_venue_collective_data(
     return venues_serialize.GetVenueResponseModel.from_orm(venue)
 
 
-@private_api.route("/venues/<venue_id>/pricing-point", methods=["POST"])
+@private_api.route("/venues/<int:venue_id>/pricing-point", methods=["POST"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def link_venue_to_pricing_point(venue_id: str, body: venues_serialize.LinkVenueToPricingPointBodyModel) -> None:
-    venue = load_or_404(Venue, venue_id)
+def link_venue_to_pricing_point(venue_id: int, body: venues_serialize.LinkVenueToPricingPointBodyModel) -> None:
+    venue = Venue.query.get_or_404(venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
         offerers_api.link_venue_to_pricing_point(venue, body.pricingPointId)

@@ -41,9 +41,9 @@ const PricingPoint = ({
 
   const handleClick = async () => {
     const pricingPointId = pricingPointSelectField.value
-    if (venue?.id) {
+    if (venue?.nonHumanizedId) {
       api
-        .linkVenueToPricingPoint(venue.id, {
+        .linkVenueToPricingPoint(venue.nonHumanizedId, {
           pricingPointId: pricingPointId,
         })
         .then(() => {
