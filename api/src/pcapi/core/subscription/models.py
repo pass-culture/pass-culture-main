@@ -28,7 +28,6 @@ class SubscriptionStep(enum.Enum):
     PHONE_VALIDATION = "phone-validation"
     PROFILE_COMPLETION = "profile-completion"
     IDENTITY_CHECK = "identity-check"
-    USER_PROFILING = "user-profiling"
     HONOR_STATEMENT = "honor-statement"
 
 
