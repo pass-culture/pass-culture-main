@@ -161,12 +161,6 @@ class DmsWebhookApplicationTest:
         )
 
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=None,
-        )
 
         execute_query.return_value = {
             "dossier": {
@@ -988,12 +982,6 @@ class UbbleWebhookTest:
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.HONOR_STATEMENT, user=user, status=fraud_models.FraudCheckStatus.OK
         )
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1364,12 +1352,6 @@ class UbbleWebhookTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             eligibilityType=users_models.EligibilityType.AGE18,
             status=fraud_models.FraudCheckStatus.OK,
@@ -1494,16 +1476,6 @@ class UbbleWebhookTest:
     ) -> typing.Tuple[users_models.User, fraud_models.BeneficiaryFraudCheck, ubble_routes.WebhookRequest]:
         birth_date = datetime.datetime.utcnow().date() - relativedelta.relativedelta(years=18, months=6)
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.combine(birth_date, datetime.time(0, 0)))
-        profiling_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent={},
-            status=fraud_models.FraudCheckStatus.OK,
-            reason=None,
-            reasonCodes=None,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
-        repository.save(profiling_fraud_check)
         identification_id = str(uuid.uuid4())
         ubble_fraud_check = fraud_models.BeneficiaryFraudCheck(
             user=user,

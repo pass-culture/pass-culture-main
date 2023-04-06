@@ -53,9 +53,6 @@ class UbbleEndToEndTest:
             user=user,
             resultContent=fraud_factories.ProfileCompletionContentFactory(first_name="Raoul", last_name="de Toulouz"),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
-        )
 
         ubble_client = TestClient(app.test_client())
         client.with_token(user.email)

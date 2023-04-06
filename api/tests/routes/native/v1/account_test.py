@@ -194,15 +194,6 @@ class AccountTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(
-                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-            ),
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=fraud_models.FraudCheckStatus.OK,
-        )
         client.with_token(user.email)
 
         response = client.get("/native/v1/me")
@@ -1170,9 +1161,6 @@ class ValidatePhoneNumberTest:
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
@@ -1449,19 +1437,12 @@ class IdentificationSessionTest:
             (fraud_models.FraudCheckStatus.KO, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED),
         ],
     )
-    def test_request_ubble_second_check_blocked(self, client, ubble_mock, fraud_check_status, ubble_status):
+    def test_request_ubble_second_check_blocked(self, client, fraud_check_status, ubble_status):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
         client.with_token(user.email)
 
-        # Perform phone validation and user profiling
+        # Perform phone validation
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(
-                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-            ),
-        )
 
         # Perform first id check with Ubble
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1477,21 +1458,11 @@ class IdentificationSessionTest:
 
         assert response.status_code == 400
         assert response.json["code"] == "IDCHECK_ALREADY_PROCESSED"
-        assert len(user.beneficiaryFraudChecks) == 2
+        assert len(user.beneficiaryFraudChecks) == 1
 
     def test_request_ubble_second_check_after_first_aborted(self, client, ubble_mock):
         user = build_user_at_id_check(18)
         client.with_token(user.email)
-
-        # Perform user profiling
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(
-                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-            ),
-            status=fraud_models.FraudCheckStatus.OK,
-        )
 
         # Perform first id check with Ubble
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1508,11 +1479,11 @@ class IdentificationSessionTest:
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 200
-        assert len(user.beneficiaryFraudChecks) == 4
+        assert len(user.beneficiaryFraudChecks) == 3
         assert ubble_mock.call_count == 1
 
         sorted_fraud_checks = sorted(user.beneficiaryFraudChecks, key=lambda x: x.id)
-        check = sorted_fraud_checks[3]
+        check = sorted_fraud_checks[-1]
         assert check.type == fraud_models.FraudCheckType.UBBLE
         assert response.json["identificationUrl"] == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
 
@@ -1531,16 +1502,6 @@ class IdentificationSessionTest:
     def test_request_ubble_retry(self, client, ubble_mock, reason, retry_number, expected_status):
         user = build_user_at_id_check(18)
         client.with_token(user.email)
-
-        # Perform user profiling
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(
-                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-            ),
-            status=fraud_models.FraudCheckStatus.OK,
-        )
 
         # Perform previous Ubble identifications
         for _ in range(0, retry_number):
@@ -1578,15 +1539,6 @@ class IdentificationSessionTest:
         user = build_user_at_id_check(18)
         client.with_token(user.email)
 
-        # Perform user profiling
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(
-                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-            ),
-        )
-
         # Perform previous Ubble identification
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -1601,7 +1553,7 @@ class IdentificationSessionTest:
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 400
-        assert len(user.beneficiaryFraudChecks) == 3  # 2 previous + 1 user profiling
+        assert len(user.beneficiaryFraudChecks) == 2  # 2 previous ubble checks
 
     def test_allow_rerun_identification_from_started(self, client, ubble_mock):
         user = build_user_at_id_check(18)
@@ -1622,7 +1574,7 @@ class IdentificationSessionTest:
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 200
-        assert len(user.beneficiaryFraudChecks) == 2  # 1 for user profiling, 1 for ubble
+        assert len(user.beneficiaryFraudChecks) == 2  # profile, ubble
         assert ubble_mock.call_count == 0
 
         check = [

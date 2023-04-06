@@ -5,8 +5,6 @@ from dateutil.relativedelta import relativedelta
 from wtforms import Form
 
 from pcapi.admin.custom_views.partner_user_view import PartnerUserView
-import pcapi.core.fraud.factories as fraud_factories
-import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import override_settings
@@ -129,13 +127,6 @@ class PartnerUserViewTest:
             postalCode="06000",
             city="Nice",
             idPieceNumber="123123123",
-        )
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            status=fraud_models.FraudCheckStatus.OK,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted"),
         )
 
         client.with_session_auth(admin.email)

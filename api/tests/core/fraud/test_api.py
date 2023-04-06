@@ -549,9 +549,6 @@ class HasUserPerformedIdentityCheckTest:
 
     def test_has_user_performed_identity_check_without_identity_fraud_check(self):
         user = user = build_user_at_id_check(18)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING, user=user, status=fraud_models.FraudCheckStatus.OK
-        )
 
         assert not fraud_api.has_user_performed_identity_check(user)
 

@@ -148,7 +148,6 @@ class NextSubscriptionStepTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT,
         )
         assert subscription_api.get_next_subscription_step(user) in (
-            subscription_models.SubscriptionStep.USER_PROFILING,
             subscription_models.SubscriptionStep.PROFILE_COMPLETION,
             subscription_models.SubscriptionStep.IDENTITY_CHECK,
             subscription_models.SubscriptionStep.HONOR_STATEMENT,
@@ -209,62 +208,11 @@ class NextSubscriptionStepTest:
         )
         assert subscription_api.get_next_subscription_step(user) == None
 
-    def test_next_subscription_step_user_profiling_disabled(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=self.eighteen_years_ago,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            city=None,
-        )
-        assert (
-            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
-        )
-
-    def test_next_subscription_step_user_profiling_ko(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=self.eighteen_years_ago,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            city=None,
-        )
-        content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="high")
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=content,
-            user=user,
-            status=fraud_models.FraudCheckStatus.KO,
-        )
-
-        assert subscription_api.get_next_subscription_step(user) == None
-
     def test_next_subscription_step_profile_completion(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             city=None,
-        )
-        content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=content,
-            user=user,
-            status=fraud_models.FraudCheckStatus.OK,
-        )
-
-        assert (
-            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
-        )
-
-    def test_next_subscription_step_profile_completion_if_user_profiling_suspicious(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=self.eighteen_years_ago,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            city=None,
-        )
-        content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="medium")
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=content,
-            user=user,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
         )
 
         assert (
@@ -279,13 +227,6 @@ class NextSubscriptionStepTest:
             activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=content,
-            user=user,
-            status=fraud_models.FraudCheckStatus.OK,
-        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
@@ -303,13 +244,6 @@ class NextSubscriptionStepTest:
             activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=content,
-            user=user,
-            status=fraud_models.FraudCheckStatus.OK,
-        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
@@ -327,13 +261,6 @@ class NextSubscriptionStepTest:
             activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=content,
-            user=user,
-            status=fraud_models.FraudCheckStatus.OK,
-        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.DMS,
@@ -351,13 +278,6 @@ class NextSubscriptionStepTest:
             activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=content,
-            user=user,
-            status=fraud_models.FraudCheckStatus.OK,
-        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
@@ -375,13 +295,6 @@ class NextSubscriptionStepTest:
             activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=content,
-            user=user,
-            status=fraud_models.FraudCheckStatus.OK,
-        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
@@ -584,13 +497,6 @@ class NextSubscriptionStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-        )
-        # User profiling
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted"),
-            user=user,
-            status=fraud_models.FraudCheckStatus.OK,
         )
         # Pending DMS application
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1530,36 +1436,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.source == f"dossier FraudCheckType.EDUCONNECT [{identity_fraud_check.thirdPartyId}]"
         assert user.deposit.amount == 30
 
-    def test_no_missing_step_with_user_profiling_disabled(self):
-        user = self.eligible_user(validate_phone=True, is_underage=False)
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-
-        assert subscription_api.activate_beneficiary_if_no_missing_step(user)
-        assert user.is_beneficiary
-
-    def test_missing_step_with_user_profiling_disabled_but_profiling_ko(self):
-        user = self.eligible_user(validate_phone=True, is_underage=False)
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.KO
-        )
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
-
-        assert not subscription_api.activate_beneficiary_if_no_missing_step(user)
-
     @override_features(ENABLE_PHONE_VALIDATION=False)
     def test_rejected_identity(self):
         user = self.eligible_user(validate_phone=False)
@@ -1579,9 +1455,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         user = self.eligible_user(validate_phone=True, city=None)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
