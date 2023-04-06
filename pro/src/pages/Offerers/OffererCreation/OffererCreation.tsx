@@ -13,6 +13,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { addressAndDesignationFromSirenDecorator } from 'ui-kit/form_rff/fields/SirenField'
 import Titles from 'ui-kit/Titles/Titles'
 
+import styles from './OffererCreation.module.scss'
 import OffererCreationForm from './OffererCreationForm/OffererCreationForm'
 import OffererCreationUnavailable from './OffererCreationUnavailable/OffererCreationUnavailable'
 
@@ -54,12 +55,12 @@ const OffererCreation = (): JSX.Element => {
   }
 
   return (
-    <div className="offerer-page">
+    <div className={styles['offerer-page']}>
       <ButtonLink
         link={{ to: '/accueil', isExternal: false }}
         variant={ButtonVariant.QUATERNARY}
         Icon={CircleArrowIcon}
-        className="offerer-page-go-back-link"
+        className={styles['offerer-page-go-back-link']}
       >
         Accueil
       </ButtonLink>

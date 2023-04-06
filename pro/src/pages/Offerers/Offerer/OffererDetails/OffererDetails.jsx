@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -12,6 +13,7 @@ import Titles from 'ui-kit/Titles/Titles'
 
 import ApiKey from './ApiKey/ApiKey'
 import { Offerer } from './Offerer'
+import styles from './OffererDetails.module.scss'
 import Venues from './Venues/Venues'
 
 const OffererDetails = () => {
@@ -58,42 +60,36 @@ const OffererDetails = () => {
   }, [offererId, loadOfferer, resetOfferer])
 
   if (isLoading) {
-    return (
-      <div className="h-card h-card-secondary h-card-placeholder">
-        <div className="h-card-inner">
-          <Spinner />
-        </div>
-      </div>
-    )
+    return <Spinner />
   }
 
   return offerer ? (
-    <div className="offerer-page">
+    <div className={styles['offerer-page']}>
       <ButtonLink
         link={{ to: `/accueil?structure=${offerer.id}`, isExternal: false }}
         variant={ButtonVariant.QUATERNARY}
         Icon={CircleArrowIcon}
-        className="offerer-page-go-back-link"
+        className={styles['offerer-page-go-back-link']}
       >
         Accueil
       </ButtonLink>
       <PageTitle title="Détails de votre structure" />
       <Titles subtitle={offerer.name} title="Structure" />
-      <p className="op-teaser">
+      <p className={styles['op-teaser']}>
         Détails de la structure rattachée, des lieux et des fournisseurs de ses
         offres.
       </p>
-      <div className="section op-content-section">
-        <h2 className="main-list-title">Informations structure</h2>
-        <div className="op-detail">
+      <div className={cn(styles['section'], styles['op-content-section'])}>
+        <h2 className={styles['main-list-title']}>Informations structure</h2>
+        <div className={styles['op-detail']}>
           <span>{'SIREN : '}</span>
           <span>{offerer.formattedSiren}</span>
         </div>
-        <div className="op-detail">
+        <div className={styles['op-detail']}>
           <span>{'Désignation : '}</span>
           <span>{offerer.name}</span>
         </div>
-        <div className="op-detail">
+        <div className={styles['op-detail']}>
           <span>{'Siège social : '}</span>
           <span>
             {`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}

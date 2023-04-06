@@ -43,8 +43,6 @@
   }
 
   .field-siren-label {
-    @extend .field-label;
-
     flex: 0;
     margin: rem.torem(6px) 0 0;
     padding-bottom: 0;
@@ -69,5 +67,33 @@
 
   .offerer-page-go-back-link {
     margin-bottom: rem.torem(30px);
+  }
+}
+
+.section {
+  margin-bottom: rem.torem(32px);
+  padding-bottom: 0;
+  padding-top: 0;
+
+  .main-list-title {
+    @include fonts.title4;
+
+    border-bottom: thin solid colors.$grey-medium;
+    margin: rem.torem(12px) 0;
+    padding-bottom: rem.torem(8px);
+
+    .main-list-title-text {
+      @include fonts.title4;
+    }
+
+    span {
+      margin-top: rem.torem(3.5px);
+    }
+  }
+
+  .title-actions-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
   }
 }
