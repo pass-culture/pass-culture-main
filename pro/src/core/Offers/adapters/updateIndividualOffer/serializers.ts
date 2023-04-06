@@ -93,9 +93,12 @@ export const serializePatchOffer = ({
       sentValues.accessibility[AccessiblityEnum.VISUAL],
     withdrawalType: sentValues.withdrawalType,
     durationMinutes: serializeDurationMinutes(sentValues.durationMinutes || ''),
-    bookingEmail: sentValues.receiveNotificationEmails
-      ? sentValues.bookingEmail
-      : null,
+    bookingEmail:
+      sentValues.receiveNotificationEmails === undefined
+        ? undefined
+        : sentValues.receiveNotificationEmails === false
+        ? null
+        : sentValues.bookingEmail,
     externalTicketOfficeUrl: sentValues.externalTicketOfficeUrl || undefined,
     url: sentValues.url || undefined,
     shouldSendMail: shouldSendMail,
