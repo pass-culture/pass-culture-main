@@ -16,9 +16,7 @@ from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
-from pcapi.utils.rest import load_or_404
 from pcapi.workers.update_all_venue_offers_accessibility_job import update_all_venue_offers_accessibility_job
 from pcapi.workers.update_all_venue_offers_email_job import update_all_venue_offers_email_job
 from pcapi.workers.update_all_venue_offers_withdrawal_details_job import update_all_venue_offers_withdrawal_details_job
@@ -216,13 +214,13 @@ def delete_venue_banner(venue_id: int) -> None:
     offerers_api.delete_venue_banner(venue)
 
 
-@private_api.route("/venues/<humanized_venue_id>/stats", methods=["GET"])
+@private_api.route("/venues/<int:venue_id>/stats", methods=["GET"])
 @login_required
 @spectree_serialize(
     on_success_status=200, response_model=venues_serialize.VenueStatsResponseModel, api=blueprint.pro_private_schema
 )
-def get_venue_stats(humanized_venue_id: str) -> venues_serialize.VenueStatsResponseModel:
-    venue: Venue = load_or_404(Venue, humanized_venue_id)
+def get_venue_stats(venue_id: int) -> venues_serialize.VenueStatsResponseModel:
+    venue: Venue = Venue.query.get_or_404(venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     (
