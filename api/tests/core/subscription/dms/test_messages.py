@@ -8,6 +8,7 @@ from pcapi.core.subscription import messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import messages as dms_messages
 from pcapi.core.users import factories as users_factories
+from pcapi.utils.string import u_nbsp
 
 
 class DmsMessagesTest:
@@ -106,7 +107,7 @@ class DmsMessagesTest:
         ]
         application_content = fraud_factories.DMSContentFactory(field_errors=errors)
         expected_message = subscription_models.SubscriptionMessage(
-            user_message=f"Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : {expected_error_message} Tu peux contacter le support pour mettre à jour ton dossier.",
+            user_message=f"Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé{u_nbsp}: {expected_error_message} Tu peux contacter le support pour mettre à jour ton dossier.",
             call_to_action=subscription_models.CallToActionMessage(
                 title="Contacter le support",
                 link=f"{messages.MAILTO_SUPPORT}{messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
@@ -135,7 +136,7 @@ class DmsMessagesTest:
         ]
         application_content = fraud_factories.DMSContentFactory(field_errors=errors)
         expected_message = subscription_models.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : le format des date de naissance et prénom renseignés est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
+            user_message=f"Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé{u_nbsp}: le format des date de naissance et prénom renseignés est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
             call_to_action=subscription_models.CallToActionMessage(
                 title="Contacter le support",
                 link=f"{messages.MAILTO_SUPPORT}{messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
@@ -160,7 +161,7 @@ class DmsMessagesTest:
         user = users_factories.UserFactory()
         application_content = fraud_factories.DMSContentFactory()
         expected_message = subscription_models.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour plus d'informations.",
+            user_message=f"Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé{u_nbsp}: le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour plus d'informations.",
             call_to_action=subscription_models.CallToActionMessage(
                 title="Contacter le support",
                 link=f"{messages.MAILTO_SUPPORT}{messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",

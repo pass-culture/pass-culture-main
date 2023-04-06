@@ -3,6 +3,8 @@ import typing
 import wtforms.fields as wtf_fields
 from wtforms.form import Form
 
+from pcapi.utils.string import u_nbsp
+
 from . import widgets
 
 
@@ -35,4 +37,4 @@ class SelectMultipleFieldWithOptgroups(wtf_fields.SelectMultipleField):
         if self.data:
             invalid = set(self.data) - self.flattened_choices
             if invalid:
-                raise ValueError("Les choix suivants ne sont pas valides : %s" % ", ".join(invalid))
+                raise ValueError("Les choix suivants ne sont pas valides%s: %s" % (u_nbsp, ", ".join(invalid)))
