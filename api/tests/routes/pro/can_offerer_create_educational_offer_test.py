@@ -7,7 +7,6 @@ import requests_mock
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.human_ids import humanize
 
 
 @override_settings(ADAGE_API_URL="https://adage-api-url")
@@ -53,7 +52,7 @@ class CanOffererCreateEducationalOfferTest:
                 ],
             )
 
-            response = client.with_session_auth(pro.email).get(f"/offerers/{humanize(offerer.id)}/eac-eligibility")
+            response = client.with_session_auth(pro.email).get(f"/offerers/{offerer.id}/eac-eligibility")
 
         assert response.status_code == 204
 
@@ -62,8 +61,7 @@ class CanOffererCreateEducationalOfferTest:
         pro = users_factories.ProFactory()
 
         with unittest.mock.patch("pcapi.core.educational.adage_backends") as adage_client:
-            offerer_id = humanize(venue.managingOffererId)
-            response = client.with_session_auth(pro.email).get(f"/offerers/{offerer_id}/eac-eligibility")
+            response = client.with_session_auth(pro.email).get(f"/offerers/{venue.managingOffererId}/eac-eligibility")
             adage_client.assert_not_called()
 
         assert response.status_code == 204
@@ -81,7 +79,7 @@ class CanOffererCreateEducationalOfferTest:
                 status_code=404,
             )
 
-            response = client.with_session_auth(pro.email).get(f"/offerers/{humanize(offerer.id)}/eac-eligibility")
+            response = client.with_session_auth(pro.email).get(f"/offerers/{offerer.id}/eac-eligibility")
 
         assert response.status_code == 404
         assert response.json == {"offerer": "not found in adage"}
@@ -99,7 +97,7 @@ class CanOffererCreateEducationalOfferTest:
                 status_code=500,
             )
 
-            response = client.with_session_auth(pro.email).get(f"/offerers/{humanize(offerer.id)}/eac-eligibility")
+            response = client.with_session_auth(pro.email).get(f"/offerers/{offerer.id}/eac-eligibility")
 
         assert response.status_code == 500
         assert response.json == {"adage_api": "error"}

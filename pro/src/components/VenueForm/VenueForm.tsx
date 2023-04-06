@@ -70,10 +70,11 @@ const VenueForm = ({
   const [isSiretValued, setIsSiretValued] = useState(true)
 
   useEffect(() => {
-    canOffererCreateCollectiveOfferAdapter(offerer.id).then(response =>
-      setCanOffererCreateCollectiveOffer(
-        response.payload.isOffererEligibleToEducationalOffer
-      )
+    canOffererCreateCollectiveOfferAdapter(offerer.nonHumanizedId).then(
+      response =>
+        setCanOffererCreateCollectiveOffer(
+          response.payload.isOffererEligibleToEducationalOffer
+        )
     )
   }, [])
 

@@ -40,6 +40,7 @@ import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapt
 import { Banner } from 'ui-kit'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { dehumanizeId } from 'utils/dehumanize'
 
 import ActionsBar from './ActionsBar/ActionsBar'
 import styles from './OfferType.module.scss'
@@ -102,7 +103,9 @@ const OfferType = (): JSX.Element => {
 
       if (offererId) {
         const { isOk, message, payload } =
-          await canOffererCreateCollectiveOfferAdapter(offererId)
+          await canOffererCreateCollectiveOfferAdapter(
+            dehumanizeId(offererId) || 0
+          )
 
         if (!isOk) {
           notify.error(message)

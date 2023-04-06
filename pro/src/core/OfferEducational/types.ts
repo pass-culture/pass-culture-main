@@ -54,7 +54,7 @@ export type IOfferEducationalFormValues = {
 }
 
 export type CanOffererCreateCollectiveOffer = Adapter<
-  string,
+  number,
   { isOffererEligibleToEducationalOffer: boolean },
   { isOffererEligibleToEducationalOffer: false }
 >
