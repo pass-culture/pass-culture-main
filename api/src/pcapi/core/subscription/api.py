@@ -36,8 +36,6 @@ from . import repository
 
 logger = logging.getLogger(__name__)
 
-USER_PROFILING_BLOCKING_STATUS = fraud_models.FraudCheckStatus.KO
-
 
 def _get_age_at_first_registration(user: users_models.User, eligibility: users_models.EligibilityType) -> int | None:
     if not user.birth_date:
@@ -185,30 +183,6 @@ def get_phone_validation_subscription_item(
 def _should_validate_phone(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
     phone_subscription_item = get_phone_validation_subscription_item(user, eligibility)
     return phone_subscription_item.status in (models.SubscriptionItemStatus.TODO, models.SubscriptionItemStatus.KO)
-
-
-def get_user_profiling_subscription_item(
-    user: users_models.User, eligibility: users_models.EligibilityType | None
-) -> models.SubscriptionItem:
-    if eligibility != users_models.EligibilityType.AGE18:
-        status = models.SubscriptionItemStatus.NOT_APPLICABLE
-    else:
-        user_profiling = fraud_repository.get_last_user_profiling_fraud_check(user)
-        if user_profiling:
-            if user_profiling.status == fraud_models.FraudCheckStatus.OK:
-                status = models.SubscriptionItemStatus.OK
-            elif user_profiling.status == USER_PROFILING_BLOCKING_STATUS:
-                status = models.SubscriptionItemStatus.KO
-            elif user_profiling.status == fraud_models.FraudCheckStatus.SUSPICIOUS:
-                status = models.SubscriptionItemStatus.SUSPICIOUS
-            else:
-                logger.exception("Unexpected UserProfiling status %s", user_profiling.status)
-                status = models.SubscriptionItemStatus.KO
-
-        else:
-            status = models.SubscriptionItemStatus.NOT_ENABLED
-
-    return models.SubscriptionItem(type=models.SubscriptionStep.USER_PROFILING, status=status)
 
 
 def get_profile_completion_subscription_item(
@@ -426,26 +400,6 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
             young_status=young_status_module.Eligible(
                 subscription_status=young_status_module.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
             ),
-        )
-
-    # Step 3: user profiling
-    user_profiling_item = get_user_profiling_subscription_item(user, user.eligibility)
-    if user_profiling_item.status == models.SubscriptionItemStatus.TODO:
-        return subscription_models.UserSubscriptionState(
-            fraud_status=models.SubscriptionItemStatus.TODO,
-            next_step=models.SubscriptionStep.USER_PROFILING,
-            young_status=young_status_module.Eligible(
-                subscription_status=young_status_module.SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION
-            ),
-        )
-    if user_profiling_item.status == models.SubscriptionItemStatus.KO:
-        return subscription_models.UserSubscriptionState(
-            fraud_status=models.SubscriptionItemStatus.KO,
-            next_step=None,
-            young_status=young_status_module.Eligible(
-                subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
-            ),
-            subscription_message=subscription_messages.get_generic_ko_message(user.id),
         )
 
     # Step 4: profile completion

@@ -30,6 +30,7 @@ class FraudCheckType(enum.Enum):
     PHONE_VALIDATION = "phone_validation"
     PROFILE_COMPLETION = "profile_completion"
     UBBLE = "ubble"
+    # Deprecated. We keep USER_PROFILING for backward compatibility.
     USER_PROFILING = "user_profiling"
 
 
@@ -268,6 +269,8 @@ class HonorStatementContent(pydantic.BaseModel):
     pass
 
 
+### ---------------------------------------- DEPRECATED ---------------------------------------- ###
+# We keep USER_PROFILING for backward compatibility. ###
 class UserProfilingRiskRating(enum.Enum):
     HIGH = "high"
     LOW = "low"
@@ -309,6 +312,9 @@ class UserProfilingFraudData(pydantic.BaseModel):
     unknown_session: str | None
 
 
+### --------------------------------- END OF DEPRECATED CLASSES -------------------------------- ###
+
+
 class InternalReviewSource(enum.Enum):
     BLACKLISTED_PHONE_NUMBER = "blacklisted_phone_number"
     DOCUMENT_VALIDATION_ERROR = "document_validation_error"
@@ -348,6 +354,7 @@ FRAUD_CHECK_CONTENT_MAPPING = {
     FraudCheckType.PHONE_VALIDATION: PhoneValidationFraudData,
     FraudCheckType.PROFILE_COMPLETION: ProfileCompletionContent,
     FraudCheckType.UBBLE: ubble_fraud_models.UbbleContent,
+    # Deprecated. We keep USER_PROFILING for backward compatibility.
     FraudCheckType.USER_PROFILING: UserProfilingFraudData,
 }
 
@@ -358,6 +365,7 @@ FraudCheckContent = typing.TypeVar(
     EduconnectContent,
     JouveContent,
     ubble_fraud_models.UbbleContent,
+    # Deprecated. We keep USER_PROFILING for backward compatibility.
     UserProfilingFraudData,
     ProfileCompletionContent,
 )

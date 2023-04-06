@@ -431,7 +431,6 @@ def get_eligibility_history(user: users_models.User) -> dict[str, accounts.Eligi
         subscription_api.get_profile_completion_subscription_item,
         subscription_api.get_phone_validation_subscription_item,
         subscription_api.get_identity_check_subscription_item,
-        subscription_api.get_user_profiling_subscription_item,
         subscription_api.get_honor_statement_subscription_item,
     ]
     # Do not show information about eligibility types which are not possible depending on known user age
