@@ -17,7 +17,6 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import dehumanize_or_raise
 from pcapi.utils.rest import check_user_has_access_to_offerer
-from pcapi.utils.rest import load_or_404
 
 from . import blueprint
 
@@ -79,12 +78,12 @@ def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
     return offerers_serialize.GetOffererResponseModel.from_orm(offerer)
 
 
-@private_api.route("/offerers/<offerer_id>/api_keys", methods=["POST"])
+@private_api.route("/offerers/<int:offerer_id>/api_keys", methods=["POST"])
 @login_required
 @spectree_serialize(response_model=offerers_serialize.GenerateOffererApiKeyResponse, api=blueprint.pro_private_schema)
-def generate_api_key_route(offerer_id: str) -> offerers_serialize.GenerateOffererApiKeyResponse:
-    check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))  # type: ignore [arg-type]
-    offerer = load_or_404(offerers_models.Offerer, offerer_id)
+def generate_api_key_route(offerer_id: int) -> offerers_serialize.GenerateOffererApiKeyResponse:
+    check_user_has_access_to_offerer(current_user, offerer_id)
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
     try:
         clear_key = api.generate_and_save_api_key(offerer.id)
     except offerers_exceptions.ApiKeyCountMaxReached:

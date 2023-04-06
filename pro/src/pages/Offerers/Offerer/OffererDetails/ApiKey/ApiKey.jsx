@@ -176,7 +176,7 @@ const ApiKey = ({
 }
 ApiKey.propTypes = {
   maxAllowedApiKeys: PropTypes.number.isRequired,
-  offererId: PropTypes.string.isRequired,
+  offererId: PropTypes.number.isRequired,
   reloadOfferer: PropTypes.func.isRequired,
   savedApiKeys: PropTypes.arrayOf(PropTypes.string).isRequired,
 }

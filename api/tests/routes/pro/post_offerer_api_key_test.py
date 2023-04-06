@@ -5,7 +5,6 @@ from pcapi.core.offerers.api import find_api_key
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.models import ApiKey
-from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
@@ -14,7 +13,7 @@ def test_api_key_journey(client):
     user_offerer = UserOffererFactory(offerer=booking.offerer)
     client.with_session_auth(user_offerer.user.email)
 
-    response = client.post(f"/offerers/{humanize(user_offerer.offerer.id)}/api_keys")
+    response = client.post(f"/offerers/{user_offerer.offerer.id}/api_keys")
 
     assert response.status_code == 200
 
@@ -41,7 +40,7 @@ def test_maximal_api_key_reached(client):
         ApiKeyFactory(prefix=f"prefix_{i}", offerer=user_offerer.offerer)
 
     client.with_session_auth(user_offerer.user.email)
-    response = client.post(f"/offerers/{humanize(user_offerer.offerer.id)}/api_keys")
+    response = client.post(f"/offerers/{user_offerer.offerer.id}/api_keys")
 
     assert response.status_code == 400
     assert response.json["api_key_count_max"] == "Le nombre de clés maximal a été atteint"
