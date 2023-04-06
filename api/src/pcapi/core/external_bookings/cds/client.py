@@ -99,6 +99,7 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
             f" & url={self.api_url}"
         )
 
+    @lru_cache
     def get_pc_voucher_types(self) -> list[cds_serializers.VoucherTypeCDS]:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.VOUCHER_TYPE)
         voucher_types = parse_obj_as(list[cds_serializers.VoucherTypeCDS], data)

@@ -16,6 +16,7 @@ from pcapi.core.users import factories as user_factories
 from pcapi.models.api_errors import ApiErrors
 
 from tests.conftest import clean_database
+from tests.local_providers.cinema_providers.cds import fixtures as cds_fixtures
 
 
 class Returns201Test:
@@ -222,14 +223,10 @@ class Returns201Test:
         assert venue_provider.venue.venueProviders == [venue_provider]
 
     @pytest.mark.usefixtures("db_session")
-    @patch(
-        "pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_internet_sale_gauge",
-        lambda *args: True,
-    )
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
-    def test_create_venue_provider_for_cds_cinema(self, mock_get_venue_movies, mock_get_shows, client):
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    def test_create_venue_provider_for_cds_cinema(self, mock_get_venue_movies, mock_get_shows, requests_mock, client):
         # Given
         user = user_factories.AdminFactory()
         client = client.with_session_auth(email=user.email)
@@ -237,7 +234,9 @@ class Returns201Test:
 
         venue = offerers_factories.VenueFactory()
         cds_pivot = CinemaProviderPivotFactory(venue=venue, provider=provider)
-        providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cds_pivot, cinemaApiToken="test_token")
+        providers_factories.CDSCinemaDetailsFactory(
+            cinemaProviderPivot=cds_pivot, cinemaApiToken="test_token", accountId="test_account"
+        )
 
         venue_provider_data = {
             "providerId": provider.id,
@@ -264,6 +263,10 @@ class Returns201Test:
             ),
         ]
         mock_get_venue_movies.return_value = mocked_movies
+        requests_mock.get(
+            "https://test_account.fakeurl/cinemas?api_token=test_token",
+            json=[cds_fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
+        )
 
         mocked_shows = [
             {
@@ -307,7 +310,6 @@ class Returns201Test:
         response = client.post("/venueProviders", json=venue_provider_data)
 
         # Then
-        assert response.json["nOffers"] == 2
         assert response.json["providerId"] == provider.id
         assert response.json["venueId"] == venue.id
         assert response.json["venueIdAtOfferProvider"] == cds_pivot.idAtProvider

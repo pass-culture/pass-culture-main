@@ -15,6 +15,7 @@ from pcapi.core.providers.factories import CDSCinemaDetailsFactory
 from pcapi.core.providers.factories import CDSCinemaProviderPivotFactory
 from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.models import Provider
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
@@ -156,12 +157,9 @@ class CDSStocksTest:
         assert Offer.query.count() == 2
         assert Product.query.count() == 2
 
-    @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
-    def should_fill_offer_and_product_and_stock_informations_for_each_movie(
-        self, mock_get_venue_movies, mock_get_shows, requests_mock
-    ):
+    def should_fill_offer_and_product_and_stock_informations_for_each_movie(self, mock_get_venue_movies, requests_mock):
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         venue_provider = VenueProviderFactory(
@@ -184,11 +182,11 @@ class CDSStocksTest:
         requests_mock.get("https://example.com/coupez.png", content=bytes())
         requests_mock.get("https://example.com/topgun.png", content=bytes())
 
-        mocked_shows = [
-            {"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5.0, "price_label": "pass Culture"},
-            {"show_information": fixtures.MOVIE_2_SHOW_1, "price": 6.5, "price_label": "pass Culture"},
-        ]
-        mock_get_shows.return_value = mocked_shows
+        requests_mock.get("https://account_id.fakeurl/shows?api_token=token", json=[fixtures.SHOW_1, fixtures.SHOW_2])
+        get_voucher_types_adapter = requests_mock.get(
+            "https://account_id.fakeurl/vouchertype?api_token=token",
+            json=[fixtures.VOUCHER_TYPE_PC_1, fixtures.VOUCHER_TYPE_PC_2],
+        )
 
         cds_stocks = CDSStocks(venue_provider=venue_provider)
 
@@ -255,6 +253,7 @@ class CDSStocksTest:
         assert cds_stocks.erroredThumbs == 0
 
         assert get_cinemas_adapter.call_count == 1
+        assert get_voucher_types_adapter.call_count == 1
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
@@ -474,6 +473,39 @@ class CDSStocksTest:
         cds_stocks.updateObjects()
 
         assert mocked_get_movie_poster.call_count == 1
+
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    def should_use_new_cache_for_each_synchronisation(self, requests_mock):
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        venue_provider = VenueProviderFactory(provider=cds_provider, venueIdAtOfferProvider="cinema_id_test")
+        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        CDSCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, accountId="account_id", cinemaApiToken="token"
+        )
+
+        requests_mock.get("https://account_id.fakeurl/media?api_token=token", json=[fixtures.MOVIE_3])
+        requests_mock.get("https://account_id.fakeurl/shows?api_token=token", json=[fixtures.SHOW_1])
+        get_voucher_type_adapter = requests_mock.get(
+            "https://account_id.fakeurl/vouchertype?api_token=token", json=[fixtures.VOUCHER_TYPE_PC_1]
+        )
+        get_cinemas_adapter = requests_mock.get(
+            "https://account_id.fakeurl/cinemas?api_token=token",
+            json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
+        )
+
+        cds_stocks = CDSStocks(venue_provider=venue_provider)
+        cds_stocks.updateObjects()
+
+        assert get_cinemas_adapter.call_count == 1
+        assert get_voucher_type_adapter.call_count == 1
+
+        cds_stocks = CDSStocks(venue_provider=venue_provider)
+        cds_stocks.updateObjects()
+
+        assert get_cinemas_adapter.call_count == 2
+        assert get_voucher_type_adapter.call_count == 2
 
 
 @pytest.mark.usefixtures("db_session")
