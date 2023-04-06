@@ -9,7 +9,7 @@ import { postImageToVenue } from 'repository/pcapi/pcapi'
 import styles from './ImageVenueUploaderSection.module.scss'
 
 type ImageVenueUploaderSectionProps = {
-  venueId: string
+  venueId: number
   venueImage: string | null
   venueBanner?: IVenueBannerMetaProps | null
   onImageUpload: ({

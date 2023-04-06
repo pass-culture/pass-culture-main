@@ -13,7 +13,7 @@ export interface IVenueFormValues {
   description: string
   departmentCode: string
   email: string | null
-  id: string
+  id: number | undefined
   isAccessibilityAppliedOnAllOffers: boolean
   isPermanent: boolean
   isVenueVirtual: boolean

@@ -17,7 +17,7 @@ import { stringify } from 'utils/query-string'
 //
 
 export const postImageToVenue = async (
-  venueId: string,
+  venueId: number,
   banner: File,
   imageCredit: string | null,
   xCropPercent?: number,

@@ -51,7 +51,7 @@ const ImageUploaderVenue = () => {
   }: IOnImageUploadArgs) => {
     try {
       const editedVenue = await postImageToVenue(
-        venueId,
+        venueId || 0,
         imageFile,
         credit,
         cropParams?.x,
@@ -74,7 +74,7 @@ const ImageUploaderVenue = () => {
 
   const handleOnImageDelete = async () => {
     try {
-      await api.deleteVenueBanner(venueId)
+      await api.deleteVenueBanner(venueId || 0)
 
       setFieldValue('bannerUrl', undefined)
       setFieldValue('bannerMeta', undefined)

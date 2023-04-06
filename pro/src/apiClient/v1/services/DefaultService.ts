@@ -2270,7 +2270,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public deleteVenueBanner(
-    venueId: string,
+    venueId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
