@@ -8,7 +8,6 @@ import sqlalchemy as sqla
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_settings
-from pcapi.utils.human_ids import humanize
 
 import tests
 
@@ -50,7 +49,7 @@ class ImageRatioErrorTest:
             image_content = (images_dir / "mouette_small.jpg").read_bytes()
             file = {"banner": (io.BytesIO(image_content), "upsert_banner.jpg")}
 
-            url = f"/venues/{humanize(venue.id)}/banner"
+            url = f"/venues/{venue.id}/banner"
             url += (
                 "?x_crop_percent=0.0"
                 "&y_crop_percent=0.0"

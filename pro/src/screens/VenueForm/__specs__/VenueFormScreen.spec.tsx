@@ -288,7 +288,7 @@ describe('screen | VenueForm', () => {
       email: 'em@ail.com',
       webSite: 'https://www.site.web',
       isPermanent: false,
-      id: '',
+      id: undefined,
       bannerUrl: '',
       withdrawalDetails: 'withdrawal details field',
       venueSiret: null,

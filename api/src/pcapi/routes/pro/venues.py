@@ -174,11 +174,11 @@ def link_venue_to_pricing_point(venue_id: str, body: venues_serialize.LinkVenueT
         raise ApiErrors({"code": "CANNOT_LINK_VENUE_TO_PRICING_POINT", "message": str(exc)}, status_code=400)
 
 
-@private_api.route("/venues/<venue_id>/banner", methods=["POST"])
+@private_api.route("/venues/<int:venue_id>/banner", methods=["POST"])
 @login_required
 @spectree_serialize(response_model=venues_serialize.GetVenueResponseModel, on_success_status=201)
-def upsert_venue_banner(venue_id: str) -> venues_serialize.GetVenueResponseModel:
-    venue = load_or_404(Venue, venue_id)
+def upsert_venue_banner(venue_id: int) -> venues_serialize.GetVenueResponseModel:
+    venue = Venue.query.get_or_404(venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
@@ -206,11 +206,11 @@ def upsert_venue_banner(venue_id: str) -> venues_serialize.GetVenueResponseModel
     return venues_serialize.GetVenueResponseModel.from_orm(venue)
 
 
-@private_api.route("/venues/<venue_id>/banner", methods=["DELETE"])
+@private_api.route("/venues/<int:venue_id>/banner", methods=["DELETE"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def delete_venue_banner(venue_id: str) -> None:
-    venue = load_or_404(Venue, venue_id)
+def delete_venue_banner(venue_id: int) -> None:
+    venue = Venue.query.get_or_404(venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     offerers_api.delete_venue_banner(venue)

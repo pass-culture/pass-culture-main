@@ -24,7 +24,7 @@ class VenueBannerTest:
 
         client = client.with_session_auth(email=user_offerer.user.email)
 
-        response = client.delete(f"/venues/{humanize(venue.id)}/banner")
+        response = client.delete(f"/venues/{venue.id}/banner")
         assert response.status_code == 204
 
         assert mock_delete_public_object.call_args_list == [
@@ -46,7 +46,7 @@ class VenueBannerTest:
 
         client = client.with_session_auth(email=user_offerer.user.email)
 
-        response = client.delete(f"/venues/{humanize(venue.id)}/banner")
+        response = client.delete(f"/venues/{venue.id}/banner")
         assert response.status_code == 204
 
         mock_delete_public_object.assert_called_once_with("thumbs", expected_thumb_base_path)
@@ -64,7 +64,7 @@ class VenueBannerTest:
 
         client = client.with_session_auth(email=user_offerer.user.email)
 
-        response = client.delete(f"/venues/{humanize(venue.id)}/banner")
+        response = client.delete(f"/venues/{venue.id}/banner")
         assert response.status_code == 204
 
         mock_delete_public_object.assert_not_called()
@@ -73,7 +73,7 @@ class VenueBannerTest:
         user_offerer = offerers_factories.UserOffererFactory()
         client = client.with_session_auth(email=user_offerer.user.email)
 
-        response = client.delete("/venues/AZERTYUIOP1234567890/banner")
+        response = client.delete("/venues/1234/banner")
         assert response.status_code == 404
 
     @patch("pcapi.core.offerers.api.delete_venue_banner")
@@ -83,7 +83,7 @@ class VenueBannerTest:
 
         client = client.with_session_auth(email=user.user.email)
 
-        response = client.delete(f"/venues/{humanize(venue.id)}/banner")
+        response = client.delete(f"/venues/{venue.id}/banner")
         assert response.status_code == 403
 
         mock_delete_venue_banner.assert_not_called()
