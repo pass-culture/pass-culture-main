@@ -441,7 +441,7 @@ class NextStepTest:
         "age, stepper_includes_phone_validation", [(15, False), (16, False), (17, False), (18, True)]
     )
     @freeze_time("2022-09-08T12:45:13.534068")
-    def test_ubble_subcription_limited(self, client, age, stepper_includes_phone_validation):
+    def test_ubble_subscription_limited(self, client, age, stepper_includes_phone_validation):
         birth_date = datetime.datetime.utcnow() - relativedelta(years=age + 1)
         birth_date += relativedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS - 1)
         # the user has:
