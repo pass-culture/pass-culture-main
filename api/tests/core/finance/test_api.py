@@ -1007,7 +1007,7 @@ class GenerateCashflowsTest:
         n_queries += 1  # insert CashflowBatch
         n_queries += 1  # commit
         n_queries += 1  # select CashflowBatch again after commit
-        n_queries += 1  # select business unit and bank account ids to process
+        n_queries += 1  # select reimbursement points and bank account ids to process
         n_queries += 2 * sum(  # 2 reimbursement points
             (
                 1,  # check integration of pricings
@@ -1069,7 +1069,7 @@ def test_generate_reimbursement_points_file():
     factories.BankInformationFactory(venue=point1, iban="some-iban", bic="some-bic")
     offerers_factories.VenueReimbursementPointLinkFactory(reimbursementPoint=point1)
 
-    n_queries = 1  # select business unit data
+    n_queries = 1  # select reimbursement point data
     with assert_num_queries(n_queries):
         path = api._generate_reimbursement_points_file()
 
@@ -1089,8 +1089,8 @@ def test_generate_reimbursement_points_file():
 @clean_temporary_files
 def test_generate_payments_file():
     used_date = datetime.datetime(2020, 1, 2)
-    # This pricing belong to a business unit whose venue is the same
-    # as the venue of the offer.
+    # This pricing belongs to a reimbursement point that is the venue
+    # of the offer.
     venue1 = offerers_factories.VenueFactory(
         name='Le Petit Rintintin "test"\n',
         siret='123456 "test"\n',
@@ -1115,8 +1115,8 @@ def test_generate_payments_file():
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=venue1,
     )
-    # These other pricings belong to a business unit whose venue is
-    # NOT the venue of the offers.
+    # These other pricings belong to a reimbursement point that is NOT
+    # the venue of the offers.
     reimbursement_point_2 = offerers_factories.VenueFactory(
         siret="22222222233333",
         name="Point de remboursement du Gigantesque Cubitus\n",
