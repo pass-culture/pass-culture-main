@@ -6,7 +6,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
