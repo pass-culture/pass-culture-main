@@ -1,5 +1,6 @@
 name: Tests pro
-on: workflow_call
+on:
+  push:
 
 env:
   use_cache: ${{ github.ref != 'refs/heads/master' }}
