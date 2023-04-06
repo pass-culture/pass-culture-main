@@ -67,19 +67,6 @@
     margin-bottom: rem.torem(48px);
   }
 
-  .op-creation-form {
-    margin: rem.torem(60px) 0 rem.torem(48px);
-  }
-
-  .op-detail-creation-form {
-    margin: rem.torem(8px) 0 rem.torem(30px) 0;
-
-    > :first-child {
-      color: colors.$grey-dark;
-      margin-right: rem.torem(5px);
-    }
-  }
-
   .offerer-page-go-back-link {
     margin-bottom: rem.torem(30px);
   }
