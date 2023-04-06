@@ -41,4 +41,11 @@
       font-weight: 500;
     }
   }
+
+  &-added-in-adage {
+    display: flex;
+    align-items: center;
+    margin-bottom: rem.torem(32px);
+    gap: rem.torem(10px);
+  }
 }

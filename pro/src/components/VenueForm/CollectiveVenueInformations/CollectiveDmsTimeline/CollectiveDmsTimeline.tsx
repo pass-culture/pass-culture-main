@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
-import { ExternalLinkIcon, PenIcon } from 'icons'
+import { ExternalLinkIcon, PenIcon, ValidCircleIcon } from 'icons'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Timeline, { TimelineStepType } from 'ui-kit/Timeline/Timeline'
@@ -11,9 +11,11 @@ import styles from './CollectiveDmsTimeline.module.scss'
 const CollectiveDmsTimeline = ({
   collectiveDmsApplication,
   hasAdageId,
+  hasAdageIdForMoreThan30Days,
 }: {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId: boolean
+  hasAdageIdForMoreThan30Days: boolean
 }) => {
   // const collectiveDmsApplicationLink = link to venue.collectiveDmsApplicationId // FIX ME : collectiveDmsApplicationId is not yet a property of IVenue
   const collectiveDmsApplicationLink = 'fake link'
@@ -254,24 +256,35 @@ const CollectiveDmsTimeline = ({
         />
       )
     case DMSApplicationstatus.ACCEPTE:
-      return !hasAdageId ? (
-        <Timeline
-          steps={[
-            successSubmittedStep,
-            successInstructionStep,
-            successDoneReferencement,
-            waitingAdageStep,
-          ]}
-        />
-      ) : (
-        <Timeline
-          steps={[
-            successSubmittedStep,
-            successInstructionStep,
-            successDoneReferencement,
-            successAdageStep,
-          ]}
-        />
+      if (!hasAdageId) {
+        return (
+          <Timeline
+            steps={[
+              successSubmittedStep,
+              successInstructionStep,
+              successDoneReferencement,
+              waitingAdageStep,
+            ]}
+          />
+        )
+      }
+      if (!hasAdageIdForMoreThan30Days) {
+        return (
+          <Timeline
+            steps={[
+              successSubmittedStep,
+              successInstructionStep,
+              successDoneReferencement,
+              successAdageStep,
+            ]}
+          />
+        )
+      }
+      return (
+        <div className={styles['timeline-added-in-adage']}>
+          <ValidCircleIcon />
+          <span>Ce lieu est référencé sur ADAGE</span>
+        </div>
       )
     case DMSApplicationstatus.REFUSE:
       return <Timeline steps={[refusedByDms]} />

@@ -10,14 +10,17 @@ import CollectiveDmsTimeline from '..'
 const renderCollectiveDmsTimeline = ({
   collectiveDmsApplication,
   hasAdageId = false,
+  hasAdageIdForMoreThan30Days = false,
 }: {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId?: boolean
+  hasAdageIdForMoreThan30Days?: boolean
 }) => {
   renderWithProviders(
     <CollectiveDmsTimeline
       collectiveDmsApplication={collectiveDmsApplication}
       hasAdageId={hasAdageId}
+      hasAdageIdForMoreThan30Days={hasAdageIdForMoreThan30Days}
     />
   )
 }
@@ -25,6 +28,7 @@ const renderCollectiveDmsTimeline = ({
 interface ITestCaseProps {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId?: boolean
+  hasAdageIdForMoreThan30Days?: boolean
   expectedLabel: string
 }
 
@@ -68,11 +72,29 @@ describe('CollectiveDmsTimeline', () => {
       },
       expectedLabel: 'Votre demande de référencement a été refusée',
     },
+    {
+      collectiveDmsApplication: {
+        ...defaultCollectiveDmsApplication,
+        state: DMSApplicationstatus.ACCEPTE,
+      },
+      hasAdageId: true,
+      hasAdageIdForMoreThan30Days: true,
+      expectedLabel: 'Ce lieu est référencé sur ADAGE',
+    },
   ]
   it.each(testCases)(
     'should render %s status',
-    ({ collectiveDmsApplication, hasAdageId, expectedLabel }) => {
-      renderCollectiveDmsTimeline({ collectiveDmsApplication, hasAdageId })
+    ({
+      collectiveDmsApplication,
+      hasAdageId,
+      hasAdageIdForMoreThan30Days,
+      expectedLabel,
+    }) => {
+      renderCollectiveDmsTimeline({
+        collectiveDmsApplication,
+        hasAdageId,
+        hasAdageIdForMoreThan30Days,
+      })
       expect(screen.getByText(expectedLabel)).toBeInTheDocument()
     }
   )
