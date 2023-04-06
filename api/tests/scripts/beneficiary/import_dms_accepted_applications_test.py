@@ -196,12 +196,6 @@ class RunIntegrationTest:
                 phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
         details = fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         details.draft_date = datetime.utcnow().isoformat()
         get_applications_with_details.return_value = [details]
@@ -304,12 +298,6 @@ class RunIntegrationTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
 
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
@@ -332,7 +320,7 @@ class RunIntegrationTest:
         assert user.dateOfBirth.date() == self.BENEFICIARY_BIRTH_DATE
         assert user.validatedBirthDate == dms_validated_birth_date
 
-        assert len(user.beneficiaryFraudChecks) == 4
+        assert len(user.beneficiaryFraudChecks) == 3  # DMS, HONOR_STATEMENT, PROFILE_COMPLETION
 
         dms_fraud_check = next(
             fraud_check
@@ -368,12 +356,6 @@ class RunIntegrationTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         ]
@@ -479,12 +461,6 @@ class RunIntegrationTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
         push_testing.reset_requests()
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
@@ -581,16 +557,6 @@ class RunIntegrationTest:
             dateOfBirth=self.BENEFICIARY_BIRTH_DATE,
             city=None,
         )
-        # Perform user profiling
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(
-                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-            ),
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=fraud_models.FraudCheckStatus.OK,
-        )
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
                 email=user.email,
@@ -611,16 +577,6 @@ class RunIntegrationTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             dateOfBirth=self.BENEFICIARY_BIRTH_DATE,
             city=None,
-        )
-        # Perform user profiling
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(
-                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-            ),
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=fraud_models.FraudCheckStatus.OK,
         )
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
@@ -675,9 +631,6 @@ class GraphQLSourceProcessApplicationTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
-        )
 
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(123, "accepte", email=user.email),
@@ -685,7 +638,7 @@ class GraphQLSourceProcessApplicationTest:
 
         import_all_updated_dms_applications(6712558)
 
-        assert len(user.beneficiaryFraudChecks) == 4  # profile, user profiling, DMS, honor statement
+        assert len(user.beneficiaryFraudChecks) == 3  # profile, DMS, honor statement
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
@@ -694,13 +647,9 @@ class GraphQLSourceProcessApplicationTest:
             dateOfBirth=datetime.utcnow() - relativedelta(years=19, months=4),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_factories.ProfileCompletionFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            status=fraud_models.FraudCheckStatus.OK,
             dateCreated=datetime.utcnow() - relativedelta(years=1, months=2),
-            eligibilityType=users_models.EligibilityType.AGE18,
         )
 
         get_applications_with_details.return_value = [
@@ -715,7 +664,7 @@ class GraphQLSourceProcessApplicationTest:
 
         import_all_updated_dms_applications(6712558)
 
-        assert len(user.beneficiaryFraudChecks) == 4  # profile, user profiling, DMS, honor statement
+        assert len(user.beneficiaryFraudChecks) == 3  # profile, DMS, honor statement
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")

@@ -1551,7 +1551,6 @@ def test_public_api(client):
                         "phone-validation",
                         "profile-completion",
                         "identity-check",
-                        "user-profiling",
                         "honor-statement",
                     ],
                     "title": "SubscriptionStep",
