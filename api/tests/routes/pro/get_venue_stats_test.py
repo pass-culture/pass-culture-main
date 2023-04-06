@@ -9,7 +9,6 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
@@ -55,7 +54,7 @@ class Returns200Test:
         auth_request = TestClient(app.test_client()).with_session_auth(email=venue_owner.email)
 
         # when
-        response = auth_request.get("/venues/%s/stats" % humanize(venue.id))
+        response = auth_request.get("/venues/%s/stats" % venue.id)
 
         # then
         assert response.status_code == 200
@@ -76,7 +75,7 @@ class Returns403Test:
         auth_request = TestClient(app.test_client()).with_session_auth(email=pro_user.email)
 
         # when
-        response = auth_request.get("/venues/%s/stats" % humanize(venue.id))
+        response = auth_request.get("/venues/%s/stats" % venue.id)
 
         # then
         assert response.status_code == 403

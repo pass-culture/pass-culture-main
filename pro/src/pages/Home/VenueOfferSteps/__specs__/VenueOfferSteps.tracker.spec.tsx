@@ -70,7 +70,7 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should track creation offer', async () => {
-    renderVenueOfferSteps('CD')
+    renderVenueOfferSteps('venueId')
 
     await userEvent.click(screen.getByText(/Créer une offre/))
 
@@ -87,7 +87,7 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should track ReimbursementPoint', async () => {
-    renderVenueOfferSteps('CD')
+    renderVenueOfferSteps('venueId')
 
     await userEvent.click(
       screen.getByText(/Renseigner des coordonnées bancaires/)
@@ -97,7 +97,7 @@ describe('VenueOfferSteps', () => {
     expect(mockLogEvent).toHaveBeenCalledWith(
       VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
       {
-        venue_id: 'CD',
+        venue_id: 'venueId',
         from: 'Home',
       }
     )
