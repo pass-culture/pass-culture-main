@@ -646,6 +646,28 @@ export class DefaultService {
   }
 
   /**
+   * duplicate_collective_offer <POST>
+   * @param offerId
+   * @returns GetCollectiveOfferResponseModel Created
+   * @throws ApiError
+   */
+  public duplicateCollectiveOffer(
+    offerId: number,
+  ): CancelablePromise<GetCollectiveOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/collective/offers/{offer_id}/duplicate',
+      path: {
+        'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * patch_collective_offers_educational_institution <PATCH>
    * @param offerId
    * @param requestBody
