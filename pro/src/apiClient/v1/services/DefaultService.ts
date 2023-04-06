@@ -2172,28 +2172,6 @@ export class DefaultService {
   }
 
   /**
-   * get_venue_stats_dashboard_url <GET>
-   * @param humanizedVenueId
-   * @returns OffererStatsResponseModel OK
-   * @throws ApiError
-   */
-  public getVenueStatsDashboardUrl(
-    humanizedVenueId: string,
-  ): CancelablePromise<OffererStatsResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/venues/{humanized_venue_id}/dashboard',
-      path: {
-        'humanized_venue_id': humanizedVenueId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
    * get_venue_stats <GET>
    * @param humanizedVenueId
    * @returns VenueStatsResponseModel OK
@@ -2326,6 +2304,28 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_venue_stats_dashboard_url <GET>
+   * @param venueId
+   * @returns OffererStatsResponseModel OK
+   * @throws ApiError
+   */
+  public getVenueStatsDashboardUrl(
+    venueId: number,
+  ): CancelablePromise<OffererStatsResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/venues/{venue_id}/dashboard',
+      path: {
+        'venue_id': venueId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

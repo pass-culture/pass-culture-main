@@ -42,6 +42,7 @@ const renderOffererStatsScreen = (offererOptions: Option[]) => {
 describe('OffererStatsScreen', () => {
   let offererOptions: Option[]
   let offerers: GetOffererResponseModel[]
+  const venueId = 1
 
   beforeEach(() => {
     offererOptions = [
@@ -59,16 +60,21 @@ describe('OffererStatsScreen', () => {
         id: '1',
         hasDigitalVenueAtLeastOneOffer: true,
         managedVenues: [
-          { id: 'D1', name: 'Offre numérique', isVirtual: true },
-          { id: 'V1', name: 'Salle 1' },
-          { id: 'V2', name: 'Stand popcorn' },
+          {
+            id: 'D1',
+            name: 'Offre numérique',
+            isVirtual: true,
+            nonHumanizedId: venueId,
+          },
+          { id: 'V1', name: 'Salle 1', nonHumanizedId: 2 },
+          { id: 'V2', name: 'Stand popcorn', nonHumanizedId: 3 },
         ],
       },
       {
         id: '2',
         managedVenues: [
-          { id: 'L1', name: 'Terre de livres' },
-          { id: 'L2', name: 'La voie aux chapitres' },
+          { id: 'L1', name: 'Terre de livres', nonHumanizedId: 4 },
+          { id: 'L2', name: 'La voie aux chapitres', nonHumanizedId: 5 },
         ],
       },
     ] as GetOffererResponseModel[]
@@ -149,7 +155,7 @@ describe('OffererStatsScreen', () => {
     })
 
     const venueSelect = await screen.findByLabelText('Lieu')
-    await userEvent.selectOptions(venueSelect, 'V1')
+    await userEvent.selectOptions(venueSelect, venueId.toString())
     const iframe = screen.getByTitle('Tableau des statistiques')
     expect(iframe).toBeInTheDocument()
     expect(iframe).toHaveAttribute('src', 'venueIframeUrl')

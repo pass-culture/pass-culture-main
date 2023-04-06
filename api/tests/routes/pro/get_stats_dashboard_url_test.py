@@ -3,7 +3,6 @@ import pytest
 
 from pcapi import settings
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -42,7 +41,7 @@ class VenueStatsTest:
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.get(f"/venues/{humanize(venue.id)}/dashboard")
+        response = client.get(f"/venues/{venue.id}/dashboard")
 
         url = response.json["dashboardUrl"]
         token = url.split("/")[3].split("#")[0]
@@ -57,6 +56,6 @@ class VenueStatsTest:
         forbidden_venue = offerers_factories.VenueFactory()
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.get(f"/venues/{humanize(forbidden_venue.id)}/dashboard")
+        response = client.get(f"/venues/{forbidden_venue.id}/dashboard")
 
         assert response.status_code == 403
