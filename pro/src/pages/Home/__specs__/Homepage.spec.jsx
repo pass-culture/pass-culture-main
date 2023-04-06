@@ -12,11 +12,6 @@ import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import Homepage from '../Homepage'
 
-jest.mock('utils/config', () => ({
-  DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL:
-    'link/to/offerer/demarchesSimplifiees/procedure',
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     getProfile: jest.fn(),
