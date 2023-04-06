@@ -2341,7 +2341,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public linkVenueToPricingPoint(
-    venueId: string,
+    venueId: number,
     requestBody?: LinkVenueToPricingPointBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
