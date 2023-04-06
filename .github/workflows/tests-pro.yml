@@ -169,7 +169,6 @@ jobs:
       - name: Run API server
         working-directory: api
         run: ../pc start-backend &
-      - name: Install Cypress dependencies
       # Doc : https://github.com/cypress-io/github-action
       - name: Cypress run
         uses: cypress-io/github-action@v5
