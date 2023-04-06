@@ -47,13 +47,13 @@ const OffererStatsScreen = ({ offererOptions }: IOffererStatsScreenProps) => {
                 offerer.hasDigitalVenueAtLeastOneOffer || !venue.isVirtual
             )
             .map(venue => ({
-              id: venue.id,
+              id: venue.nonHumanizedId.toString(),
               displayName: venue.publicName || venue.name,
             }))
         )
         setVenueOptions([ALL_VENUES_OPTION, ...sortedVenueOptions])
 
-        setSelectedVenueId(sortedVenueOptions[0].id)
+        setSelectedVenueId(sortedVenueOptions[0].id.toString())
       } else {
         setVenueOptions([])
       }
@@ -72,7 +72,7 @@ const OffererStatsScreen = ({ offererOptions }: IOffererStatsScreenProps) => {
           Number(selectedOffererId)
         )
       } else {
-        response = await api.getVenueStatsDashboardUrl(selectedVenueId)
+        response = await api.getVenueStatsDashboardUrl(Number(selectedVenueId))
       }
       setIframeUrl(response.dashboardUrl)
     }
