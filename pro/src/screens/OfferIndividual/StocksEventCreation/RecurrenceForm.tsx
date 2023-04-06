@@ -23,6 +23,7 @@ import {
 } from 'icons'
 import {
   Button,
+  ButtonLink,
   DatePicker,
   RadioButton,
   Select,
@@ -190,13 +191,19 @@ export const RecurrenceForm = ({
                       ))}
                     </div>
 
-                    <Button
+                    <ButtonLink
                       variant={ButtonVariant.TERNARY}
                       Icon={PlusCircleIcon}
                       onClick={() => arrayHelpers.push('')}
+                      link={{
+                        to: `#beginningTimes[${
+                          values.beginningTimes.length - 1
+                        }]`,
+                        isExternal: true,
+                      }}
                     >
                       Ajouter un créneau
-                    </Button>
+                    </ButtonLink>
                   </>
                 )}
               />
@@ -254,15 +261,21 @@ export const RecurrenceForm = ({
                     )
                   )}
 
-                  <Button
+                  <ButtonLink
                     variant={ButtonVariant.TERNARY}
                     Icon={PlusCircleIcon}
                     onClick={() =>
                       arrayHelpers.push(INITIAL_QUANTITY_PER_PRICE_CATEGORY)
                     }
+                    link={{
+                      to: `#quantityPerPriceCategories[${
+                        values.quantityPerPriceCategories.length - 1
+                      }].quantity`,
+                      isExternal: true,
+                    }}
                   >
                     Ajouter d’autres places et tarifs
-                  </Button>
+                  </ButtonLink>
                 </>
               )}
             />
