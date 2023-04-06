@@ -113,7 +113,7 @@ class ReimbursementDetailsTest:
         assert row[next(row_number)] == ""  # no invoice, no date
         assert row[next(row_number)] == ""  # no invoice, no label
         assert row[next(row_number)] == ""  # unknown transfer label
-        # business unit (not known, hence supposed to be the venue)
+        # reimbursement point (not known, hence supposed to be the venue)
         assert row[next(row_number)] == booking.venue.name
         assert row[next(row_number)] == "1 boulevard Poissonnière 75000 Paris"
         assert row[next(row_number)] == booking.venue.siret

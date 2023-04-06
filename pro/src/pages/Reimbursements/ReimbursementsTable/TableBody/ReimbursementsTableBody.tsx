@@ -16,7 +16,7 @@ const ReimbursementsTableBody = ({ invoices }: ITableBody): JSX.Element => {
         return (
           <tr key={invoice.reference}>
             <td className={styles['date']}>{invoice.date}</td>
-            <td className={styles['business-unit']}>
+            <td className={styles['reimbursement-point']}>
               {invoice.reimbursementPointName}
             </td>
             <td className={styles['reference']}>{invoice.reference}</td>

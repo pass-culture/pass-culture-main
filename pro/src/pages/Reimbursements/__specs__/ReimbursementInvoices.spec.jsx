@@ -68,7 +68,7 @@ const BASE_INVOICES = [
     date: '13-02-2022',
     amount: 100,
     url: 'J123456789.invoice',
-    reimbursementPointName: 'First business Unit',
+    reimbursementPointName: 'First reimbursement point',
     cashflowLabels: ['VIR7', 'VIR5'],
   },
   {
@@ -76,7 +76,7 @@ const BASE_INVOICES = [
     date: '11-03-2022',
     amount: 50,
     url: 'J666666666.invoice',
-    reimbursementPointName: 'Second business Unit',
+    reimbursementPointName: 'Second reimbursement point',
     cashflowLabels: ['VIR4'],
   },
   {
@@ -84,7 +84,7 @@ const BASE_INVOICES = [
     date: '10-02-2022',
     amount: 75,
     url: 'J987654321.invoice',
-    reimbursementPointName: 'First business Unit',
+    reimbursementPointName: 'First reimbursement point',
     cashflowLabels: ['VIR9, VIR12'],
   },
 ]
@@ -118,21 +118,21 @@ describe('reimbursementsWithFilters', () => {
 
     const firstLine = [
       '10-02-2022',
-      'First business Unit',
+      'First reimbursement point',
       'J987654321',
       'VIR9, VIR12',
       '75&nbsp;€',
     ]
     const secondLine = [
       '11-03-2022',
-      'Second business Unit',
+      'Second reimbursement point',
       'J666666666',
       'VIR4',
       '50&nbsp;€',
     ]
     const thirdLine = [
       '13-02-2022',
-      'First business Unit',
+      'First reimbursement point',
       'J123456789',
       'VIR7',
       '100&nbsp;€',

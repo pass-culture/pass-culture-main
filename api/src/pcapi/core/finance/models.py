@@ -236,7 +236,7 @@ class Pricing(Base, Model):
         "CustomReimbursementRule", foreign_keys=[customRuleId]
     )
 
-    # Revenue is in euro cents. It's the revenue of the business unit
+    # Revenue is in euro cents. It's the revenue of the pricing point
     # as of `pricing.valueDate` (thus including the related booking).
     # It is zero or positive.
     revenue: int = sqla.Column(sqla.Integer, nullable=False)
@@ -516,7 +516,7 @@ class CashflowPricing(Base, Model):
     many-to-many relationship.
 
     A cashflow is "naturally" linked to multiple pricings of the same
-    business unit: we build a cashflow based on all pricings of a
+    pricing point: we build a cashflow based on all pricings of a
     given period (e.g. two weeks).
 
     A pricing may also be linked to multiple cashflows: for example,
