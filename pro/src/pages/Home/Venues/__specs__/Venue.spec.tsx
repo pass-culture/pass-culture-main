@@ -24,6 +24,7 @@ describe('venues', () => {
   beforeEach(() => {
     props = {
       id: 'VENUE01',
+      nonHumanizedId: 1,
       isVirtual: false,
       name: 'My venue',
       offererId: 'OFFERER01',
@@ -46,7 +47,7 @@ describe('venues', () => {
     )
 
     // Then
-    expect(api.getVenueStats).toHaveBeenCalledWith(props.id)
+    expect(api.getVenueStats).toHaveBeenCalledWith(props.nonHumanizedId)
 
     const [
       activeOffersStat,

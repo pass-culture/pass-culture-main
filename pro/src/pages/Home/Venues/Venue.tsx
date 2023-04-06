@@ -31,6 +31,7 @@ import VenueStat from './VenueStat'
 export interface IVenueProps {
   hasMissingReimbursementPoint?: boolean
   id: string
+  nonHumanizedId: number
   isVirtual?: boolean
   initialOpenState?: boolean
   name: string
@@ -43,6 +44,7 @@ export interface IVenueProps {
 const Venue = ({
   hasMissingReimbursementPoint = false,
   id,
+  nonHumanizedId,
   isVirtual = false,
   name,
   offererId,
@@ -155,7 +157,7 @@ const Venue = ({
 
   useEffect(() => {
     async function updateStats() {
-      const stats = await api.getVenueStats(id)
+      const stats = await api.getVenueStats(nonHumanizedId)
       setStats({
         activeBookingsQuantity: stats.activeBookingsQuantity.toString(),
         activeOffersCount: stats.activeOffersCount.toString(),

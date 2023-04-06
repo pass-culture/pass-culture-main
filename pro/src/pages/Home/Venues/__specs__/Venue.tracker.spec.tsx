@@ -40,6 +40,7 @@ describe('venue create offer link', () => {
   beforeEach(() => {
     props = {
       id: 'VENUE01',
+      nonHumanizedId: 1,
       isVirtual: false,
       name: 'My venue',
       offererId: 'OFFERER01',

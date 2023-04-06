@@ -23,6 +23,7 @@ const VenueList = ({
       {virtualVenue && (
         <Venue
           id={virtualVenue.id}
+          nonHumanizedId={virtualVenue.nonHumanizedId}
           isVirtual
           name="Offres numériques"
           offererId={selectedOffererId}
@@ -42,6 +43,7 @@ const VenueList = ({
       {physicalVenues?.map(venue => (
         <Venue
           id={venue.id}
+          nonHumanizedId={venue.nonHumanizedId}
           key={selectedOffererId + '-' + venue.id}
           name={venue.name}
           offererId={selectedOffererId}
