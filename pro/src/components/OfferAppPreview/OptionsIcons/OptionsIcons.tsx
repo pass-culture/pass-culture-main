@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
+import { PasscultureIcon } from 'icons'
 import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
 import { ReactComponent as PassCultureSvg } from 'icons/ico-passculture.svg'
 import { ReactComponent as TagSvg } from 'icons/ico-tag.svg'
@@ -21,7 +22,10 @@ const OptionsIcons = ({
   return (
     <div className={cn(className, style['options-container'])}>
       <div className={style['option']}>
-        <PassCultureSvg aria-hidden className={style['icon']} />
+        <PasscultureIcon
+          aria-hidden
+          className={cn(style['icon'], style['passculture'])}
+        />
         <span className={style['text']}>Type</span>
       </div>
       <div
