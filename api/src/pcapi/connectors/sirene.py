@@ -149,7 +149,7 @@ class TestingBackend(BaseBackend):
             },
         )
 
-        return SirenInfo(  # type: ignore [call-arg]
+        return SirenInfo(
             siren=siren,
             name="MINISTERE DE LA CULTURE",
             head_office_siret=siren + "00001",
@@ -160,7 +160,7 @@ class TestingBackend(BaseBackend):
 
     def get_siret(self, siret: str) -> SiretInfo:
         assert len(siret) == 14
-        return SiretInfo(  # type: ignore [call-arg]
+        return SiretInfo(
             siret=siret,
             active=True,
             name="MINISTERE DE LA CULTURE",
@@ -266,7 +266,7 @@ class InseeBackend(BaseBackend):
         head_office = self._get_head_office(data)
         head_office_siret = siren + head_office["nicSiegeUniteLegale"]
         address = self.get_siret(head_office_siret).address if with_address else None
-        info = SirenInfo(  # type: ignore [call-arg]
+        info = SirenInfo(
             siren=siren,
             name=self._get_name_from_siren_data(data),
             head_office_siret=head_office_siret,
@@ -285,7 +285,7 @@ class InseeBackend(BaseBackend):
             active = block["etatAdministratifEtablissement"] == "A"
         except IndexError:
             active = False
-        info = SiretInfo(  # type: ignore [call-arg]
+        info = SiretInfo(
             siret=siret,
             active=active,
             name=self._get_name_from_siret_data(data),
