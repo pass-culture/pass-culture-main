@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
@@ -5,9 +6,11 @@ import { api } from 'apiClient/api'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
-import { ReactComponent as SpinnerIcon } from 'icons/loader.svg'
-import { Banner } from 'ui-kit'
+import { Banner, Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { ENV_WORDING } from 'utils/config'
+
+import styles from './ApiKey.module.scss'
 
 /* @debt duplicated "Gaël: regroup buttons within one component"*/
 
@@ -67,9 +70,9 @@ const ApiKey = ({
   const isMaxAllowedReached = generatedKeysCount >= maxAllowedApiKeys
 
   return (
-    <div className="section op-content-section api-key">
-      <div className="main-list-title">
-        <h2 className="main-list-title-text">Gestion des clés API</h2>
+    <div className={cn(styles['section'], styles['api-key'])}>
+      <div className={styles['main-list-title']}>
+        <h2 className={styles['main-list-title-text']}>Gestion des clés API</h2>
       </div>
       <Banner
         links={[
@@ -80,54 +83,58 @@ const ApiKey = ({
         ]}
         type="notification-info"
       />
-      <div className="title">
-        <div className="text">
+      <div className={styles['title']}>
+        <div className={styles['text']}>
           {'API '}
           {ENV_WORDING}
         </div>
         <div
-          className={`counter${isMaxAllowedReached ? ' counter--error' : ''}`}
+          className={cn(styles['counter'], {
+            [styles['counter--error']]: isMaxAllowedReached,
+          })}
         >
           {generatedKeysCount}/{maxAllowedApiKeys}
         </div>
       </div>
-      <div className="info">
+      <div className={styles['info']}>
         {"Vous pouvez avoir jusqu'à "}
         {maxAllowedApiKeys}
         {' clé'}
         {maxAllowedApiKeys > 1 ? 's' : ''}
         {' API.'}
       </div>
-      <div className="list">
+      <div className={styles['list']}>
         {savedApiKeys.map(savedApiKey => {
           return (
-            <div className="item" key={savedApiKey}>
-              <span className="text">
+            <div className={styles['item']} key={savedApiKey}>
+              <span className={styles['text']}>
                 {savedApiKey}
                 ********
               </span>
-              <button
-                className="action  tertiary-button with-icon"
+              <Button
+                className={styles['action']}
                 onClick={changeApiKeyToDelete(savedApiKey)}
-                type="button"
+                variant={ButtonVariant.TERNARY}
+                Icon={TrashIcon}
               >
-                <TrashIcon />
-                <span>supprimer</span>
-              </button>
+                supprimer
+              </Button>
             </div>
           )
         })}
         {newlyGeneratedKeys.map(newKey => {
           return (
-            <div className="item" key={newKey}>
-              <span className="text text--new-key">{newKey}</span>
-              <button
-                className="primary-button action"
+            <div className={styles['item']} key={newKey}>
+              <span className={cn(styles['text'], styles['text--new-key'])}>
+                {newKey}
+              </span>
+              <Button
+                className={styles['action']}
                 onClick={copyKey(newKey)}
-                type="button"
+                variant={ButtonVariant.PRIMARY}
               >
                 Copier
-              </button>
+              </Button>
             </div>
           )
         })}
@@ -138,21 +145,18 @@ const ApiKey = ({
           ne pourrez plus la visualiser entièrement ici.
         </Banner>
       )}
-      <button
-        className={`generate ${
-          isGeneratingKey
-            ? 'primary-button submit-button loading-spinner'
-            : 'secondary-button'
-        }`}
+      <Button
+        className={styles['generate']}
+        isLoading={isGeneratingKey}
+        variant={ButtonVariant.SECONDARY}
         disabled={isMaxAllowedReached || isGeneratingKey}
         onClick={generateApiKey}
-        type="button"
       >
-        {isGeneratingKey ? <SpinnerIcon /> : 'Générer une clé API'}
-      </button>
+        Générer une clé API
+      </Button>
       {!!apiKeyToDelete && (
         <ConfirmDialog
-          extraClassNames="api-key-dialog"
+          extraClassNames={styles['api-key-dialog']}
           labelledBy="api-key-deletion-dialog"
           onCancel={changeApiKeyToDelete(null)}
           onConfirm={confirmApiKeyDeletion}
@@ -161,7 +165,7 @@ const ApiKey = ({
           cancelText="Annuler"
           icon={TrashIcon}
         >
-          <div className="explanation">
+          <div className={styles['explanation']}>
             <p>
               Attention, si vous supprimez cette clé, et qu’aucune autre n’a été
               générée, cela entraînera une rupture du service.
