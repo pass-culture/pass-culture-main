@@ -23,7 +23,6 @@ jobs:
     name: "Type check"
     runs-on: [self-hosted, linux, x64]
     container:
-      image: node:18
     needs: read-node-version
     steps:
       - uses: actions/checkout@v3
