@@ -1,5 +1,7 @@
 import datetime
 from functools import partial
+from operator import attrgetter
+import re
 import typing
 
 from flask import flash
@@ -171,27 +173,7 @@ def render_public_account_details(
         ]
 
         if eligibility_history[user_current_eligibility.value].idCheckHistory and len(subscription_items) > 0:
-            last_check_history = sorted(
-                eligibility_history[user_current_eligibility.value].idCheckHistory,
-                key=lambda item: item.dateCreated,
-                reverse=True,
-            )[0]
-            if (
-                last_check_history.reasonCodes
-                and fraud_models.FraudReasonCode.DUPLICATE_USER.value in last_check_history.reasonCodes
-            ):
-                duplicate_user = fraud_api.find_duplicate_beneficiary(
-                    user.firstName, user.lastName, user.married_name, user.birth_date, user.id
-                )
-                if duplicate_user:
-                    duplicate_user_id = duplicate_user.id
-            elif (
-                last_check_history.reasonCodes
-                and fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER.value in last_check_history.reasonCodes
-            ):
-                duplicate_user = fraud_api.find_duplicate_id_piece_number_user(user.idPieceNumber, user.id)
-                if duplicate_user:
-                    duplicate_user_id = duplicate_user.id
+            duplicate_user_id = _get_duplicate_fraud_history(eligibility_history)
 
     latest_fraud_check = _get_latest_fraud_check(
         eligibility_history, [fraud_models.FraudCheckType.UBBLE, fraud_models.FraudCheckType.DMS]
@@ -484,6 +466,25 @@ def _get_latest_fraud_check(
         check_list = sorted(check_list, key=lambda idCheckItem: idCheckItem.dateCreated, reverse=True)
         latest_fraud_check = check_list[0]
     return latest_fraud_check
+
+
+def _get_duplicate_fraud_history(
+    eligibility_history: dict[str, accounts.EligibilitySubscriptionHistoryModel],
+) -> str | None:
+    for history_item in eligibility_history.values():
+        check_history_items = sorted(history_item.idCheckHistory, key=attrgetter("dateCreated"), reverse=True)
+        for check_history in check_history_items:
+            reason_codes = check_history.reasonCodes if check_history.reasonCodes else None
+
+            if reason_codes and (
+                fraud_models.FraudReasonCode.DUPLICATE_USER.value in reason_codes
+                or fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER.value in reason_codes
+            ):
+                if check_history.reason:
+                    id_searched = re.search(r"\s(\d+)\D*$", check_history.reason)
+                    if id_searched:
+                        return id_searched.group(1)
+    return None
 
 
 def get_public_account_history(user: users_models.User) -> list[accounts.AccountAction]:

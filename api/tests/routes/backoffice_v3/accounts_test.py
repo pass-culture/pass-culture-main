@@ -379,6 +379,76 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
             assert expected_badge in content
         assert "Suspendu" not in content
 
+    @pytest.mark.parametrize(
+        "reasonCodes",
+        ([fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER], [fraud_models.FraudReasonCode.DUPLICATE_USER]),
+    )
+    def test_get_public_account_with_resolved_duplicate(self, authenticated_client, reasonCodes):
+        # Given
+        first_name = "Jack"
+        last_name = "Sparrow"
+        email = "jsparrow@pirate.mail"
+        birth_date = datetime.datetime.utcnow() - relativedelta(years=18, days=15)
+        id_piece_number = "1234243344533"
+
+        original_user = users_factories.BeneficiaryGrant18Factory(
+            firstName=first_name, lastName=last_name, dateOfBirth=birth_date, email=email, idPieceNumber=id_piece_number
+        )
+
+        reason = None
+        if reasonCodes == [fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER]:
+            reason = f"La pièce d'identité n°{id_piece_number} est déjà prise par l'utilisateur {original_user.id}"
+        elif reasonCodes == [fraud_models.FraudReasonCode.DUPLICATE_USER]:
+            reason = f"Duplicat de l'utilisateur {original_user.id}"
+
+        duplicate_user = users_factories.UserFactory(
+            dateOfBirth=birth_date,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            firstName=first_name,
+            lastName=last_name,
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=duplicate_user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=duplicate_user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=reasonCodes,
+            reason=reason,
+            resultContent=fraud_factories.UbbleContentFactory(
+                first_name=first_name,
+                last_name=last_name,
+                birth_date=birth_date.date().isoformat(),
+                id_document_number=id_piece_number,
+            ),
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=duplicate_user,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=duplicate_user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        # When checking duplicate user profile
+        response = authenticated_client.get(url_for(self.endpoint, user_id=duplicate_user.id))
+        # then
+
+        assert response.status_code == 200
+        content = html_parser.content_as_text(response.data)
+        assert f"User ID doublon : {original_user.id}" in content
+
     def test_get_public_account_birth_dates(self, authenticated_client):
         # given
         user = users_factories.UserFactory(
