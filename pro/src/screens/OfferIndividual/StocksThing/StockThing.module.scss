@@ -9,6 +9,10 @@
 .input-booking-limit-datetime {
   flex: 1 1 rem.torem(316px);
   max-width: 316px;
+
+  svg {
+    width: rem.torem(20px);
+  }
 }
 
 .input-activation-code {

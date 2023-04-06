@@ -14,6 +14,8 @@ import {
   TOTAL_PRICE_LABEL,
 } from '../constants/labels'
 
+import styles from './FormStock.module.scss'
+
 export interface IFormStockProps {
   mode: Mode
   disablePriceAndParticipantInputs: boolean
@@ -40,6 +42,7 @@ const FormStock = ({
             setFieldValue('bookingLimitDatetime', date)
           }
         }}
+        className={styles['input-date']}
       />
       <TimePicker
         disabled={mode === Mode.READ_ONLY}
@@ -70,6 +73,7 @@ const FormStock = ({
         maxDateTime={values.eventDate ? values.eventDate : undefined}
         name="bookingLimitDatetime"
         smallLabel
+        className={styles['input-date']}
       />
     </FormLayout.Row>
   )
