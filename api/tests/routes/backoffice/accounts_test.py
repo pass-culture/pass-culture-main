@@ -887,7 +887,6 @@ class GetUserHistoryTest:
                 "subscriptionItems": [
                     {"status": "ok", "type": "email-validation"},
                     {"status": "not-applicable", "type": "phone-validation"},
-                    {"status": "not-applicable", "type": "user-profiling"},
                     {"status": "todo", "type": "profile-completion"},
                     {"status": "todo", "type": "identity-check"},
                     {"status": "todo", "type": "honor-statement"},
@@ -910,7 +909,6 @@ class GetUserHistoryTest:
                 "subscriptionItems": [
                     {"status": "ok", "type": "email-validation"},
                     {"status": "todo", "type": "phone-validation"},
-                    {"status": "not-enabled", "type": "user-profiling"},
                     {"status": "todo", "type": "profile-completion"},
                     {"status": "todo", "type": "identity-check"},
                     {"status": "todo", "type": "honor-statement"},
@@ -948,7 +946,6 @@ class GetUserHistoryTest:
         assert data["AGE18"]["subscriptionItems"] == [
             {"status": "ok", "type": "email-validation"},
             {"status": "ok", "type": "phone-validation"},
-            {"status": "not-enabled", "type": "user-profiling"},
             {"status": "ok", "type": "profile-completion"},
             {"status": "todo", "type": "identity-check"},
             {"status": "ok", "type": "honor-statement"},
@@ -1030,7 +1027,6 @@ class GetUserHistoryTest:
         assert data["UNDERAGE"]["subscriptionItems"] == [
             {"status": "ok", "type": "email-validation"},
             {"status": "not-applicable", "type": "phone-validation"},
-            {"status": "not-applicable", "type": "user-profiling"},
             {"status": "ok", "type": "profile-completion"},
             {"status": "ok", "type": "identity-check"},
             {"status": "ok", "type": "honor-statement"},
@@ -1582,7 +1578,7 @@ class GetPublicAccountHistoryTest:
         user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
+            type=fraud_models.FraudCheckType.UBBLE,
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=50),
         )
         review = fraud_factories.BeneficiaryFraudReviewFactory(

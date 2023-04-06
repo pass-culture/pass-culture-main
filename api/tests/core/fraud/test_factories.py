@@ -13,7 +13,6 @@ class FactoriesTest:
         "check_type,model_class",
         [
             (fraud_models.FraudCheckType.DMS, fraud_models.DMSContent),
-            (fraud_models.FraudCheckType.USER_PROFILING, fraud_models.UserProfilingFraudData),
             (fraud_models.FraudCheckType.UBBLE, ubble_fraud_models.UbbleContent),
             (fraud_models.FraudCheckType.EDUCONNECT, fraud_models.EduconnectContent),
         ],
@@ -26,7 +25,6 @@ class FactoriesTest:
         "check_type,factory_class",
         [
             (fraud_models.FraudCheckType.DMS, fraud_factories.DMSContentFactory),
-            (fraud_models.FraudCheckType.USER_PROFILING, fraud_factories.UserProfilingFraudDataFactory),
             (fraud_models.FraudCheckType.UBBLE, fraud_factories.UbbleContentFactory),
             (fraud_models.FraudCheckType.EDUCONNECT, fraud_factories.EduconnectContentFactory),
         ],

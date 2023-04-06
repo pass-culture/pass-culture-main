@@ -46,17 +46,7 @@ class NextStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
             - relativedelta(years=18, months=5),
-        )
-
-        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(
-                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-            ),
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=fraud_models.FraudCheckStatus.OK,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
 
         client.with_token(user.email)
@@ -197,17 +187,8 @@ class NextStepTest:
         assert response.json["stepperIncludesPhoneValidation"] == True
         assert response.json["subscriptionMessage"] == None
 
-        # Perform phone validation and user profiling
+        # Perform phone validation
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(
-                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-            ),
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=fraud_models.FraudCheckStatus.OK,
-        )
 
         response = client.get("/native/v1/subscription/next_step")
 
@@ -266,7 +247,7 @@ class NextStepTest:
                 - relativedelta(years=16, days=5),
                 activity="Employé",
             )
-            # 15-17: no phone validation, no user profiling
+            # 15-17: no phone validation
 
             # Perform profile completion
             fraud_factories.ProfileCompletionFraudCheckFactory(
@@ -315,17 +296,6 @@ class NextStepTest:
         assert response.json["hasIdentityCheckPending"] == False
         assert response.json["stepperIncludesPhoneValidation"] == True
         assert response.json["subscriptionMessage"] == None
-
-        # Perform user profiling
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(
-                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-            ),
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=fraud_models.FraudCheckStatus.OK,
-        )
 
         response = client.get("/native/v1/subscription/next_step")
 
@@ -422,7 +392,7 @@ class NextStepTest:
                 - relativedelta(years=16, days=5),
                 activity="Employé",
             )
-            # 15-17: no phone validation, no user profiling
+            # 15-17: no phone validation
 
             # Perform profile completion
             fraud_factories.ProfileCompletionFraudCheckFactory(
@@ -446,15 +416,6 @@ class NextStepTest:
             )
 
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(
-                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-            ),
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=fraud_models.FraudCheckStatus.OK,
-        )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         client.with_token(user.email)
@@ -487,7 +448,6 @@ class NextStepTest:
         # 1. Email Validated
         # 2. Phone Validated
         # 3. Profile Completed
-        # 4. UserProfiling Valid
         user_approching_birthday = users_factories.UserFactory(
             dateOfBirth=birth_date,
             isEmailValidated=True,
@@ -502,15 +462,6 @@ class NextStepTest:
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(
             user=user_approching_birthday, eligibilityType=user_approching_birthday.eligibility
-        )
-        user_profiling = fraud_factories.UserProfilingFraudDataFactory(
-            risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user_approching_birthday,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            status=fraud_models.FraudCheckStatus.OK,
-            resultContent=user_profiling,
         )
 
         client.with_token(user_approching_birthday.email)
@@ -535,12 +486,6 @@ class NextStepTest:
             postalCode="75001",
             activity="Lycéen",
             phoneNumber="+33609080706",
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user_not_eligible_for_ubble,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            status=fraud_models.FraudCheckStatus.OK,
-            resultContent=user_profiling,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(
             user=user_not_eligible_for_ubble, eligibilityType=user_not_eligible_for_ubble.eligibility
@@ -578,16 +523,6 @@ class NextStepTest:
             phoneNumber="+33609080706",
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-
-        user_profiling = fraud_factories.UserProfilingFraudDataFactory(
-            risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            status=fraud_models.FraudCheckStatus.OK,
-            resultContent=user_profiling,
-        )
 
         ubble_content = fraud_factories.UbbleContentFactory(
             status=ubble_fraud_models.UbbleIdentificationStatus.INITIATED
@@ -777,13 +712,6 @@ class StepperTest:
 
     def should_contain_identity_check_methods(self, client):
         user = users_factories.EligibleUnderageFactory()
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            status=fraud_models.FraudCheckStatus.PENDING,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-        )
 
         client.with_token(user.email)
         response = client.get("/native/v1/subscription/stepper")
@@ -1061,12 +989,6 @@ class UpdateProfileTest:
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )

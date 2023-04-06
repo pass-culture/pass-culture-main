@@ -1285,16 +1285,6 @@ class PublicAccountHistoryTest:
         user = users_factories.UserFactory()
         author_user = users_factories.UserFactory()
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=55),
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=50),
-        )
         users_factories.BeneficiaryImportFactory(
             beneficiary=user,
             source=BeneficiaryImportSources.ubble.value,
@@ -1341,7 +1331,7 @@ class PublicAccountHistoryTest:
         history = users_api.public_account_history(user)
 
         # then
-        assert len(history) == 9
+        assert len(history) == 7
         datetimes = [item["datetime"] for item in history]
         assert datetimes == sorted(datetimes, reverse=True)
 
