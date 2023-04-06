@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { addDays } from 'date-fns'
 import React from 'react'
 
 import {
@@ -207,6 +208,26 @@ describe('collective timeline', () => {
         'href',
         '/structures/O1/lieux/V1?modification#reimbursement-section'
       )
+    })
+    it('should render message to modify offer is event date is not past for more than 48 hours', () => {
+      const bookingRecap = collectiveBookingRecapFactory({
+        bookingStatus: BOOKING_STATUS.VALIDATED,
+        stock: {
+          bookingLimitDatetime: new Date().toISOString(),
+          eventBeginningDatetime: addDays(new Date(), -1).toISOString(),
+          numberOfTickets: 1,
+          offerIdentifier: '1',
+          offerIsEducational: true,
+          offerIsbn: null,
+          offerName: 'ma super offre collective',
+        },
+      })
+      renderCollectiveTimeLine(bookingRecap, bookingDetails)
+      expect(
+        screen.getByText(
+          /Nous espérons que votre évènement s’est bien déroulé. De votre côté, vous avez 48h après la date de l'événement pour annuler ou modifier le prix et le nombre de participants./
+        )
+      ).toBeInTheDocument()
     })
   })
 })
