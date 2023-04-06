@@ -19,11 +19,6 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }))
 
-jest.mock('utils/config', () => ({
-  DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL:
-    'link/to/businesUnit/demarchesSimplifiees/procedure',
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
     getOfferer: jest.fn(),
