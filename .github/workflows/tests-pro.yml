@@ -166,7 +166,7 @@ jobs:
       - if: ${{ env.use_cache == false }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
+          node-version: 18
       - run: npm install yarn
       - name: Run API server
         working-directory: api
