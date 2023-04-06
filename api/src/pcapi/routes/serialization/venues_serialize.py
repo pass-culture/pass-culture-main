@@ -472,7 +472,7 @@ class VenueBannerContentModel(BaseModel):
 
         file = request.files["banner"]
         return VenueBannerContentModel(
-            content=file.read(VENUE_BANNER_MAX_SIZE),  # type: ignore [call-arg]
+            content=file.read(VENUE_BANNER_MAX_SIZE),
             image_credit=request.args.get("image_credit"),
             x_crop_percent=request.args.get("x_crop_percent"),
             y_crop_percent=request.args.get("y_crop_percent"),
