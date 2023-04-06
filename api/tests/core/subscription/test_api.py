@@ -236,7 +236,7 @@ class NextSubscriptionStepTest:
 
         assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.IDENTITY_CHECK
 
-    def test_underage_ubble_alread_performed(self):
+    def test_underage_ubble_already_performed(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,

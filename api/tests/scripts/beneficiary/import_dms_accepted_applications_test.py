@@ -185,7 +185,7 @@ class RunIntegrationTest:
         assert profile_completion_fraud_check.reason == "Completed in DMS application 123"
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    def test_import_exunderage_beneficiary(self, get_applications_with_details):
+    def test_import_ex_underage_beneficiary(self, get_applications_with_details):
         with freezegun.freeze_time(datetime.utcnow() - relativedelta(years=2, month=1)):
             user = users_factories.UnderageBeneficiaryFactory(
                 email="john.doe@example.com",
