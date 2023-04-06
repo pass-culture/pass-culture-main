@@ -160,12 +160,16 @@ describe('screens | OfferEducational : creation offerer step', () => {
   })
 
   describe('when there is multiple offerers associated with an account', () => {
+    const nonHumanizedFirstOffererId = 1
+    const firstOffererId = 'AE'
+    const nonHumanizedSecondOffererId = 2
+    const secondOffererId = 'A9'
     beforeEach(() => {
       props = {
         ...defaultCreationProps,
         userOfferers: userOfferersFactory([
-          { id: 'OFFERER_1' },
-          { id: 'OFFERER_2' },
+          { id: firstOffererId },
+          { id: secondOffererId },
         ]),
       }
 
@@ -199,7 +203,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
       expect(getIsOffererEligible).toHaveBeenCalledTimes(0)
 
-      await userEvent.selectOptions(offererSelect, 'OFFERER_1')
+      await userEvent.selectOptions(offererSelect, firstOffererId)
 
       await userEvent.click(offererSelect)
       await userEvent.tab()
@@ -209,7 +213,9 @@ describe('screens | OfferEducational : creation offerer step', () => {
       ).not.toBeInTheDocument()
 
       expect(getIsOffererEligible).toHaveBeenCalledTimes(1)
-      expect(getIsOffererEligible).toHaveBeenCalledWith('OFFERER_1')
+      expect(getIsOffererEligible).toHaveBeenCalledWith(
+        nonHumanizedFirstOffererId
+      )
     })
 
     it('should check eligibility every time a diferent offerer is selected', async () => {
@@ -222,14 +228,18 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
       const offererSelect = await screen.findByLabelText('Structure')
 
-      await userEvent.selectOptions(offererSelect, 'OFFERER_1')
+      await userEvent.selectOptions(offererSelect, firstOffererId)
 
-      await userEvent.selectOptions(offererSelect, 'OFFERER_2')
+      await userEvent.selectOptions(offererSelect, secondOffererId)
 
       await waitFor(() => expect(getIsOffererEligible).toHaveBeenCalledTimes(2))
 
-      expect(getIsOffererEligible).toHaveBeenCalledWith('OFFERER_1')
-      expect(getIsOffererEligible).toHaveBeenCalledWith('OFFERER_2')
+      expect(getIsOffererEligible).toHaveBeenCalledWith(
+        nonHumanizedFirstOffererId
+      )
+      expect(getIsOffererEligible).toHaveBeenCalledWith(
+        nonHumanizedSecondOffererId
+      )
     })
   })
 

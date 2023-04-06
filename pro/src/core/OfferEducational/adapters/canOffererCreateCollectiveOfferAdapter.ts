@@ -16,7 +16,7 @@ const FAILING_RESPONSE: AdapterFailure<{
 }
 
 const canOffererCreateCollectiveOfferAdapter: CanOffererCreateCollectiveOffer =
-  async (structure: string) => {
+  async (structure: number) => {
     try {
       await api.canOffererCreateEducationalOffer(structure)
 

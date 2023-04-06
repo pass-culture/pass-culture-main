@@ -14,8 +14,6 @@ from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.human_ids import dehumanize_or_raise
 from pcapi.utils.rest import check_user_has_access_to_offerer
 
 from . import blueprint
@@ -116,17 +114,17 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
     return offerers_serialize.GetOffererResponseModel.from_orm(user_offerer.offerer)
 
 
-@private_api.route("/offerers/<humanized_offerer_id>/eac-eligibility", methods=["GET"])
+@private_api.route("/offerers/<int:offerer_id>/eac-eligibility", methods=["GET"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def can_offerer_create_educational_offer(humanized_offerer_id: str) -> None:
+def can_offerer_create_educational_offer(offerer_id: int) -> None:
     try:
-        api.can_offerer_create_educational_offer(dehumanize_or_raise(humanized_offerer_id))
+        api.can_offerer_create_educational_offer(offerer_id)
     except educational_exceptions.CulturalPartnerNotFoundException:
-        logger.info("This offerer has not been found in Adage", extra={"offerer_id": humanized_offerer_id})
+        logger.info("This offerer has not been found in Adage", extra={"offerer_id": offerer_id})
         raise ApiErrors({"offerer": "not found in adage"}, 404)
     except educational_exceptions.AdageException:
-        logger.info("Api call failed", extra={"offerer_id": humanized_offerer_id})
+        logger.info("Api call failed", extra={"offerer_id": offerer_id})
         raise ApiErrors({"adage_api": "error"}, 500)
 
 

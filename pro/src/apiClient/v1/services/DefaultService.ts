@@ -1075,28 +1075,6 @@ export class DefaultService {
   }
 
   /**
-   * can_offerer_create_educational_offer <GET>
-   * @param humanizedOffererId
-   * @returns void
-   * @throws ApiError
-   */
-  public canOffererCreateEducationalOffer(
-    humanizedOffererId: string,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/offerers/{humanized_offerer_id}/eac-eligibility',
-      path: {
-        'humanized_offerer_id': humanizedOffererId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
    * get_offerer <GET>
    * @param offererId
    * @returns GetOffererResponseModel OK
@@ -1152,6 +1130,28 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{offerer_id}/dashboard',
+      path: {
+        'offerer_id': offererId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * can_offerer_create_educational_offer <GET>
+   * @param offererId
+   * @returns void
+   * @throws ApiError
+   */
+  public canOffererCreateEducationalOffer(
+    offererId: number,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offerers/{offerer_id}/eac-eligibility',
       path: {
         'offerer_id': offererId,
       },

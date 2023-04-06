@@ -17,6 +17,7 @@ import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import { Banner, ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { dehumanizeId } from 'utils/dehumanize'
 import { sortByLabel } from 'utils/strings'
 
 import { IOfferEducationalProps } from '../OfferEducational'
@@ -92,7 +93,7 @@ const OfferEducationalForm = ({
           setIsLoading(true)
 
           const { isOk, message, payload } = await getIsOffererEligible(
-            selectedOfferer.id
+            dehumanizeId(selectedOfferer.id) || 0
           )
 
           if (isOk) {
