@@ -38,7 +38,7 @@ def handle_inactive_dms_applications(procedure_number: int, with_never_eligible_
             marked_applications_count += 1
         except (dms_exceptions.DmsGraphQLApiException, Exception):  # pylint: disable=broad-except
             logger.exception(
-                "[DMS] Could not mark application %s without continuation",
+                "[DMS] Could not mark application %s without continuation",
                 draft_application.number,
                 extra={"procedure_number": procedure_number},
             )
@@ -86,7 +86,7 @@ def _mark_without_continuation_a_draft_application(dms_application: dms_models.D
         motivation=f"Aucune activité n'a eu lieu sur votre dossier depuis plus de {settings.DMS_INACTIVITY_TOLERANCE_DELAY} jours. Si vous souhaitez le soumettre à nouveau, vous pouvez contacter le support à l'adresse {settings.SUPPORT_EMAIL_ADDRESS}",
     )
 
-    logger.info("[DMS] Marked application %s without continuation", dms_application.number)
+    logger.info("[DMS] Marked application %s without continuation", dms_application.number)
 
 
 def _mark_cancel_dms_fraud_check(application_number: int, email: str) -> None:
@@ -98,7 +98,7 @@ def _mark_cancel_dms_fraud_check(application_number: int, email: str) -> None:
             fraud_models.BeneficiaryFraudCheck.resultContent.contains({"email": email}),
         ).one_or_none()
     except sqla_exc.MultipleResultsFound:
-        logger.exception("[DMS] Multiple fraud checks found for application %s", application_number)
+        logger.exception("[DMS] Multiple fraud checks found for application %s", application_number)
         return
 
     if fraud_check:

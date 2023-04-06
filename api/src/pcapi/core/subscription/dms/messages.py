@@ -8,6 +8,7 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models
 from pcapi.core.users import models as users_models
+from pcapi.utils.string import u_nbsp
 
 
 logger = logging.getLogger(__name__)
@@ -157,14 +158,16 @@ def get_error_processed_message(
         pop_over_icon = None
 
     elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in reason_codes or birth_date_error:
-        user_message += " : la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans."
+        user_message += (
+            f"{u_nbsp}: la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans."
+        )
         call_to_action = None
 
     elif (
         fraud_models.FraudReasonCode.EMPTY_ID_PIECE_NUMBER in reason_codes
         or fraud_models.FraudReasonCode.INVALID_ID_PIECE_NUMBER in reason_codes
     ):
-        user_message += " : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour plus d'informations."
+        user_message += f"{u_nbsp}: le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour plus d'informations."
         pop_over_icon = None
 
     elif fraud_models.FraudReasonCode.ERROR_IN_DATA in reason_codes or (
@@ -173,14 +176,15 @@ def get_error_processed_message(
         errors = (application_content.field_errors or []) if application_content else []
         errors.extend([birth_date_error] if birth_date_error else [])
         if errors:
+            user_message += f"{u_nbsp}:"
             user_message += _generate_form_field_error(
-                " : le format du {formatted_error_fields} renseigné est invalide.",
-                " : le format de la {formatted_error_fields} renseignée est invalide.",
-                " : le format des {formatted_error_fields} renseignés est invalide.",
+                " le format du {formatted_error_fields} renseigné est invalide.",
+                " le format de la {formatted_error_fields} renseignée est invalide.",
+                " le format des {formatted_error_fields} renseignés est invalide.",
                 errors,
             )
         else:
-            user_message += " : il y a une erreur dans les données de ton dossier."
+            user_message += f"{u_nbsp}: il y a une erreur dans les données de ton dossier."
         user_message += " Tu peux contacter le support pour mettre à jour ton dossier."
         pop_over_icon = None
     elif fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR in reason_codes:

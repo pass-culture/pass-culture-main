@@ -30,6 +30,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 import pcapi.notifications.push.testing as push_testing
 from pcapi.utils import requests as requests_utils
+from pcapi.utils.string import u_nbsp
 
 import tests
 from tests.core.subscription.test_factories import IdentificationState
@@ -182,7 +183,7 @@ class UbbleWorkflowTest:
             message = ubble_subscription_api.get_ubble_subscription_message(fraud_check)
             assert (
                 message.user_message
-                == "Ton dossier a été refusé : le prénom et le nom que tu as renseignés ne correspondent pas à ta pièce d'identité. Tu peux contacter le support si tu penses qu’il s’agit d’une erreur."
+                == f"Ton dossier a été refusé{u_nbsp}: le prénom et le nom que tu as renseignés ne correspondent pas à ta pièce d'identité. Tu peux contacter le support si tu penses qu’il s’agit d’une erreur."
             )
             assert (
                 message.call_to_action.link
@@ -917,7 +918,7 @@ class SubscriptionMessageTest:
         assert ubble_subscription_api.get_ubble_subscription_message(
             fraud_check
         ) == subscription_models.SubscriptionMessage(
-            user_message="Ton dossier a été refusé : tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
+            user_message=f"Ton dossier a été refusé{u_nbsp}: tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
             call_to_action=None,
             pop_over_icon=subscription_models.PopOverIcon.ERROR,
             updated_at=datetime.datetime(2022, 10, 3),
