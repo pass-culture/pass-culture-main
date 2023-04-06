@@ -1125,7 +1125,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public generateApiKeyRoute(
-    offererId: string,
+    offererId: number,
   ): CancelablePromise<GenerateOffererApiKeyResponse> {
     return this.httpRequest.request({
       method: 'POST',

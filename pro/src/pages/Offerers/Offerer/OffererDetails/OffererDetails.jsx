@@ -102,7 +102,7 @@ const OffererDetails = () => {
       </div>
       <ApiKey
         maxAllowedApiKeys={offerer.apiKey.maxAllowed}
-        offererId={offerer.id}
+        offererId={offerer.nonHumanizedId}
         reloadOfferer={loadOfferer}
         savedApiKeys={offerer.apiKey.savedApiKeys}
       />
