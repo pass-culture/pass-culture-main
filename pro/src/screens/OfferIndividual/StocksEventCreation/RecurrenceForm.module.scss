@@ -66,6 +66,10 @@
 .date-input {
   width: rem.torem(200px);
   margin-bottom: 0;
+    
+  svg {
+    width: rem.torem(20px);
+  }
 }
 
 .quantity-input {

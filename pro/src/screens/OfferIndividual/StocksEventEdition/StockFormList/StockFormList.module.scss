@@ -47,6 +47,10 @@
 .input-date {
   min-width: rem.torem(154px);
   padding-right: rem.torem(12px);
+
+  svg {
+    width: rem.torem(20px);
+  }
 }
 
 .input-beginning-time,
