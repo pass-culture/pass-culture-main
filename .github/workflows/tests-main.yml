@@ -78,6 +78,22 @@ jobs:
       console: true
     secrets: inherit
 
+  dependabot-auto-merge:
+    needs:
+      - check-adage-folder-changes
+      - check-api-folder-changes
+      - check-backoffice-folder-changes
+      - check-pro-folder-changes
+      - test-adage
+      - build-api
+      - test-backoffice
+      - test-pro
+    if: |
+      github.event_name == 'pull_request' &&
+      github.actor == 'dependabot[bot]'
+    uses: ./.github/workflows/dependabot-auto-merge.yml
+    secrets: inherit
+
   deploy-to-testing:
     name: Deploy to testing
     needs:
