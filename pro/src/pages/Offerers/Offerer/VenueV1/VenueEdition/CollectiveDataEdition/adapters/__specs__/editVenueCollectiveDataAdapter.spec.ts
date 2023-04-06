@@ -16,7 +16,7 @@ describe('editVenueCollectiveDataAdapter', () => {
 
     expect(
       await editVenueCollectiveDataAdapter({
-        venueId: 'A1',
+        venueId: 1,
         values: {
           ...COLLECTIVE_DATA_FORM_INITIAL_VALUES,
           collectiveDescription: 'blabla',
@@ -33,9 +33,9 @@ describe('editVenueCollectiveDataAdapter', () => {
     jest
       .spyOn(api, 'editVenueCollectiveData')
       .mockResolvedValueOnce({ id: 'A1' } as GetVenueResponseModel)
-
+    const venueId = 1
     const response = await editVenueCollectiveDataAdapter({
-      venueId: 'A1',
+      venueId: venueId,
       values: {
         ...COLLECTIVE_DATA_FORM_INITIAL_VALUES,
         collectiveDescription: 'blabla',
@@ -49,7 +49,7 @@ describe('editVenueCollectiveDataAdapter', () => {
       payload: { id: 'A1' },
       message: 'Vos informations ont bien été enregistrées',
     })
-    expect(api.editVenueCollectiveData).toHaveBeenCalledWith('A1', {
+    expect(api.editVenueCollectiveData).toHaveBeenCalledWith(venueId, {
       ...COLLECTIVE_DATA_FORM_INITIAL_VALUES,
       collectiveDescription: 'blabla',
       collectiveDomains: [1],

@@ -63,7 +63,7 @@ const formValues: IVenueFormValues = {
   email: 'em@ail.com',
   webSite: 'https://www.site.web',
   isPermanent: false,
-  id: '',
+  id: undefined,
   bannerUrl: '',
   withdrawalDetails: 'Oui',
   venueSiret: null,
