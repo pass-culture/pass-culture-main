@@ -21,9 +21,11 @@ jest.mock('react-router-dom', () => ({
 
 describe('src | components | pages | Offerer | OffererDetails', () => {
   let props
+  const offererId = 1
 
   api.getOfferer.mockResolvedValue({
     id: 'AA',
+    nonHumanizedId: offererId,
     name: 'fake offerer name',
     address: 'fake address',
     bic: 'ABC',

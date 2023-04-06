@@ -17,6 +17,7 @@ const defaultProps = {
   savedApiKeys: ['key-prefix1'],
   reloadOfferer: jest.fn(),
 }
+const offererId = 1
 
 Object.assign(navigator, {
   clipboard: {
@@ -28,7 +29,7 @@ const renderApiKey = (props = defaultProps) =>
   renderWithProviders(
     <ApiKey
       maxAllowedApiKeys={props.maxAllowedApiKeys}
-      offererId="AE"
+      offererId={offererId}
       reloadOfferer={props.reloadOfferer}
       savedApiKeys={props.savedApiKeys}
     />
@@ -144,6 +145,6 @@ describe('src | Offerer | ApiKey', () => {
 
     // then
     expect(deleteSpy).toHaveBeenCalledWith('key-prefix1')
-    expect(defaultProps.reloadOfferer).toHaveBeenCalledWith('AE')
+    expect(defaultProps.reloadOfferer).toHaveBeenCalledWith(offererId)
   })
 })

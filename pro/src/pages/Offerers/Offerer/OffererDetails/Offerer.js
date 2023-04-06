@@ -9,6 +9,7 @@ export class Offerer {
     this.name = offerer.name || ''
     this.postalCode = offerer.postalCode || ''
     this.siren = offerer.siren || ''
+    this.nonHumanizedId = offerer.nonHumanizedId || 0
     this.demarchesSimplifieesApplicationId =
       offerer.demarchesSimplifieesApplicationId || ''
   }
