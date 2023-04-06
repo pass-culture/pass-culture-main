@@ -19,13 +19,13 @@ const CollectiveVenueInformations = ({
   isCreatingVenue,
   canCreateCollectiveOffer,
 }: ICollectiveVenueInformationsProps) => {
+  const hasAdageIdForMoreThan30Days = Boolean(
+    venue?.hasAdageId &&
+      venue?.adageInscriptionDate &&
+      isBefore(new Date(venue?.adageInscriptionDate), addDays(new Date(), -30))
+  )
   const shouldEACInformationSection =
-    (venue?.hasAdageId &&
-      venue.adageInscriptionDate &&
-      isBefore(
-        new Date(venue.adageInscriptionDate),
-        addDays(new Date(), -30)
-      )) ||
+    hasAdageIdForMoreThan30Days ||
     (!venue?.adageInscriptionDate && canCreateCollectiveOffer) ||
     isCreatingVenue
 
@@ -43,6 +43,7 @@ const CollectiveVenueInformations = ({
         <CollectiveDmsTimeline
           collectiveDmsApplication={venue.collectiveDmsApplication}
           hasAdageId={venue.hasAdageId}
+          hasAdageIdForMoreThan30Days={hasAdageIdForMoreThan30Days}
         />
       )}
       {shouldEACInformationSection && (
