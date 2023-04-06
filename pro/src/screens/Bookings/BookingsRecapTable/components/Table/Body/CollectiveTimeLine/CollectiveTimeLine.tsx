@@ -1,3 +1,4 @@
+import { addDays, isBefore } from 'date-fns'
 import React from 'react'
 
 import {
@@ -179,7 +180,12 @@ const CollectiveTimeLine = ({
           {eventDate}
           <br />
           <br />
-          Nous espérons que votre évènement s’est bien déroulé.
+          Nous espérons que votre évènement s’est bien déroulé.{' '}
+          {isBefore(
+            new Date(bookingRecap.stock.eventBeginningDatetime),
+            addDays(new Date(), 2)
+          ) &&
+            "De votre côté, vous avez 48h après la date de l'événement pour annuler ou modifier le prix et le nombre de participants."}
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{

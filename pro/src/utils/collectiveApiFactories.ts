@@ -186,6 +186,15 @@ export const collectiveBookingRecapFactory = (
     ...customBookingRecap,
   }
 }
+export const defaultCollectiveBookingStock = {
+  bookingLimitDatetime: new Date().toISOString(),
+  eventBeginningDatetime: new Date().toISOString(),
+  numberOfTickets: 1,
+  offerIdentifier: '1',
+  offerIsEducational: true,
+  offerIsbn: null,
+  offerName: 'ma super offre collective',
+}
 
 export const collectiveBookingDetailsFactory = (
   customBookingDetails?: Partial<CollectiveBookingByIdResponseModel>
