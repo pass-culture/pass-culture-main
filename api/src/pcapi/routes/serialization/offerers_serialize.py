@@ -80,7 +80,6 @@ class GetOffererResponseModel(BaseModel):
     fieldsUpdated: list[str]
     hasAvailablePricingPoints: bool
     hasDigitalVenueAtLeastOneOffer: bool
-    hasMissingBankInformation: bool
     id: str
     idAtProviders: str | None
     isValidated: bool
@@ -113,10 +112,6 @@ class GetOffererResponseModel(BaseModel):
 
         offerer.hasDigitalVenueAtLeastOneOffer = offerers_repository.has_digital_venue_with_at_least_one_offer(
             offerer.id
-        )
-        offerer.hasMissingBankInformation = not offerer.demarchesSimplifieesApplicationId and (
-            offerers_repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer.id)
-            or offerer.hasDigitalVenueAtLeastOneOffer
         )
         offerer.hasAvailablePricingPoints = any(venue.siret for venue in offerer.managedVenues)
 

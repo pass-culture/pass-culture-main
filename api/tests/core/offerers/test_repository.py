@@ -5,8 +5,6 @@ import pytest
 
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
-import pcapi.core.finance.factories as finance_factories
-import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models
 from pcapi.core.offerers import repository
@@ -167,49 +165,6 @@ def test_filter_query_where_user_is_user_offerer_and_is_validated():
     assert offer1 in offers
     assert offer2 in offers
     assert offer3 not in offers
-
-
-class HasVenueWithoutDraftOrAcceptedBankInformationTest:
-    def test_venue_with_accepted_bank_information(self):
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        finance_factories.BankInformationFactory(venue=venue, status=finance_models.BankInformationStatus.ACCEPTED)
-
-        assert not repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
-
-    def test_venue_with_draft_bank_information(self):
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        finance_factories.BankInformationFactory(venue=venue, status=finance_models.BankInformationStatus.DRAFT)
-
-        assert not repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
-
-    def test_venues_with_rejected_and_accepted_bank_information(self):
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        venue_with_rejected_bank_information = offerers_factories.VenueFactory(managingOfferer=offerer)
-        finance_factories.BankInformationFactory(
-            venue=venue_with_rejected_bank_information, status=finance_models.BankInformationStatus.REJECTED
-        )
-        venue_with_rejected_bank_information = offerers_factories.VenueFactory(managingOfferer=offerer)
-        finance_factories.BankInformationFactory(
-            venue=venue_with_rejected_bank_information, status=finance_models.BankInformationStatus.ACCEPTED
-        )
-
-        assert repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
-
-    def test_venues_with_missing_and_accepted_bank_information(self):
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        offerers_factories.VenueFactory(managingOfferer=offerer)
-        venue_with_rejected_bank_information = offerers_factories.VenueFactory(managingOfferer=offerer)
-        finance_factories.BankInformationFactory(
-            venue=venue_with_rejected_bank_information, status=finance_models.BankInformationStatus.ACCEPTED
-        )
-
-        assert repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
 
 
 class HasDigitalVenueWithAtLeastOneOfferTest:

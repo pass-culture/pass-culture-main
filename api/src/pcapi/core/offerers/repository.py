@@ -240,21 +240,6 @@ def find_virtual_venue_by_offerer_id(offerer_id: int) -> models.Venue | None:
     return models.Venue.query.filter_by(managingOffererId=offerer_id, isVirtual=True).first()
 
 
-def has_physical_venue_without_draft_or_accepted_bank_information(offerer_id: int) -> bool:
-    return db.session.query(
-        models.Venue.query.outerjoin(BankInformation)
-        .filter(models.Venue.managingOffererId == offerer_id)
-        .filter(models.Venue.isVirtual.is_(False))
-        .filter(
-            sqla.or_(
-                BankInformation.status.notin_((BankInformationStatus.DRAFT, BankInformationStatus.ACCEPTED)),
-                models.Venue.bankInformation == None,
-            )
-        )
-        .exists()
-    ).scalar()
-
-
 def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago(
     days: int,
 ) -> BaseQuery:
