@@ -10,7 +10,7 @@ import {
 export const createStockDataPayload = (
   values: OfferEducationalStockFormValues,
   departmentCode: string,
-  offerId: string
+  offerId: number
 ): CollectiveStockCreationBodyModel => {
   if (
     !values.eventDate ||
@@ -36,7 +36,6 @@ export const createStockDataPayload = (
     totalPrice: values.totalPrice,
     numberOfTickets: values.numberOfPlaces,
     educationalPriceDetail: values.priceDetail,
-    // @ts-expect-error string is not assignable to number
     offerId,
   }
 }

@@ -44,7 +44,7 @@ const postCollectiveStockAdapter: PostCollectiveStockAdapter = async ({
   const stockPayload = createStockDataPayload(
     values,
     offer.venue.departementCode ?? '',
-    offer.id
+    offer.nonHumanizedId
   )
   try {
     const stock = await api.createCollectiveStock(stockPayload)

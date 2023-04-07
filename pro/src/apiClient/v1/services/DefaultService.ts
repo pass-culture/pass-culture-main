@@ -812,7 +812,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public editCollectiveStock(
-    collectiveStockId: string,
+    collectiveStockId: number,
     requestBody?: CollectiveStockEditionBodyModel,
   ): CancelablePromise<CollectiveStockResponseModel> {
     return this.httpRequest.request({

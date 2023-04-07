@@ -68,7 +68,7 @@ def create_collective_stock(
     return collective_stock_serialize.CollectiveStockResponseModel.from_orm(collective_stock)
 
 
-@private_api.route("/collective/stocks/<collective_stock_id>", methods=["PATCH"])
+@private_api.route("/collective/stocks/<int:collective_stock_id>", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -77,9 +77,9 @@ def create_collective_stock(
     response_model=collective_stock_serialize.CollectiveStockResponseModel,
 )
 def edit_collective_stock(
-    collective_stock_id: str, body: collective_stock_serialize.CollectiveStockEditionBodyModel
+    collective_stock_id: int, body: collective_stock_serialize.CollectiveStockEditionBodyModel
 ) -> collective_stock_serialize.CollectiveStockResponseModel:
-    collective_stock = educational_api_stock.get_collective_stock(dehumanize_or_raise(collective_stock_id))
+    collective_stock = educational_api_stock.get_collective_stock(collective_stock_id)
     if collective_stock is None:
         raise ApiErrors({"code": "COLLECTIVE_STOCK_NOT_FOUND"}, status_code=404)
 
