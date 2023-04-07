@@ -4,6 +4,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { Target } from 'apiClient/v1'
+import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address'
 import {
   ISignupJourneyContext,
   SignupJourneyContext,
@@ -91,6 +92,7 @@ describe('test SignupBreadcrumb', () => {
     contextValue.offerer = {
       name: 'test name',
       siret: '1234567893333',
+      ...DEFAULT_ADDRESS_FORM_VALUES,
     }
     const { tabAuthentication, tabValidation } = renderSignupBreadcrumb(
       contextValue,
@@ -110,6 +112,7 @@ describe('test SignupBreadcrumb', () => {
     contextValue.offerer = {
       name: 'test name',
       siret: '1234567893333',
+      ...DEFAULT_ADDRESS_FORM_VALUES,
     }
     contextValue.activity = {
       venueType: 'Cinéma',

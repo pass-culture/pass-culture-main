@@ -1,8 +1,10 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
+import fetch from 'jest-fetch-mock'
 import React from 'react'
 
+import { apiAdresse } from 'apiClient/adresse'
 import {
   IOfferer,
   ISignupJourneyContext,
@@ -16,6 +18,58 @@ import OffererAuthenticationForm, {
   IOffererAuthenticationFormValues,
 } from '../OffererAuthenticationForm'
 import { validationSchema } from '../validationSchema'
+
+jest.mock('apiClient/adresse', () => {
+  return {
+    ...jest.requireActual('apiClient/adresse'),
+    default: {
+      getDataFromAddress: jest.fn(),
+    },
+  }
+})
+
+jest.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
+  {
+    address: '12 rue des lilas',
+    city: 'Lyon',
+    id: '1',
+    latitude: 11.1,
+    longitude: -11.1,
+    label: '12 rue des lilas 69002 Lyon',
+    postalCode: '69002',
+  },
+  {
+    address: '12 rue des tournesols',
+    city: 'Paris',
+    id: '2',
+    latitude: 22.2,
+    longitude: -2.22,
+    label: '12 rue des tournesols 75003 Paris',
+    postalCode: '75003',
+  },
+])
+
+// Mock l'appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
+// Appel fait dans apiAdresse.getDataFromAddress
+fetch.mockResponse(
+  JSON.stringify({
+    features: [
+      {
+        properties: {
+          name: 'name',
+          city: 'city',
+          id: 'id',
+          label: 'label',
+          postcode: 'postcode',
+        },
+        geometry: {
+          coordinates: [0, 0],
+        },
+      },
+    ],
+  }),
+  { status: 200 }
+)
 
 const renderOffererAuthenticationForm = ({
   initialValues,

@@ -8,6 +8,7 @@ import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address'
 import Notification from 'components/Notification/Notification'
 import {
   ISignupJourneyContext,
@@ -128,6 +129,7 @@ describe('screens:SignupJourney::Offerer', () => {
     contextValue.offerer = {
       siret: '12345678933333',
       name: 'Test',
+      ...DEFAULT_ADDRESS_FORM_VALUES,
     }
 
     renderOffererScreen(contextValue)

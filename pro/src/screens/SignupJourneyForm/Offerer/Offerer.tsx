@@ -43,13 +43,20 @@ const Offerer = (): JSX.Element => {
       formattedSiret
     )
 
-    if (!siretExistResponse.isOk) {
+    if (!siretExistResponse.isOk || !response.payload.values) {
       notify.error('Une erreur est survenue')
       return
     }
 
-    /* istanbul ignore next: should not happen, values.name is required */
-    setOfferer({ ...formValues, name: response.payload.values?.name ?? '' })
+    setOfferer({
+      ...formValues,
+      name: response.payload.values.name,
+      address: response.payload.values.address,
+      city: response.payload.values.city,
+      latitude: response.payload.values.latitude,
+      longitude: response.payload.values.longitude,
+      postalCode: response.payload.values.postalCode,
+    })
     if (siretExistResponse.payload.venues.length === 0) {
       navigate('/parcours-inscription/authentification')
     } else {

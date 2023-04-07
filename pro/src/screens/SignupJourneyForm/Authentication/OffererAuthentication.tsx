@@ -22,6 +22,8 @@ const OffererAuthentication = (): JSX.Element => {
   const initialValues: IOffererAuthenticationFormValues = {
     ...DEFAULT_OFFERER_FORM_VALUES,
     ...offerer,
+    addressAutocomplete: `${offerer?.address} ${offerer?.postalCode} ${offerer?.city}`,
+    'search-addressAutocomplete': `${offerer?.address} ${offerer?.postalCode} ${offerer?.city}`,
   }
 
   const handlePreviousStep = () => {

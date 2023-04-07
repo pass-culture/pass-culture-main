@@ -85,7 +85,16 @@ describe('screens:SignupJourney::Validation', () => {
     it('Should see activity screen if no activity data is set but an offerer is set', async () => {
       renderValidationScreen({
         ...contextValue,
-        offerer: { name: 'toto', publicName: 'tata', siret: '123123123' },
+        offerer: {
+          name: 'toto',
+          publicName: 'tata',
+          siret: '123123123',
+          address: '3 Rue de Valois',
+          city: 'Paris',
+          latitude: 0,
+          longitude: 0,
+          postalCode: '75001',
+        },
       })
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       expect(await screen.findByText('Activite')).toBeInTheDocument()
@@ -100,7 +109,16 @@ describe('screens:SignupJourney::Validation', () => {
         socialUrls: ['url1', 'url2'],
         targetCustomer: Target.EDUCATIONAL,
       },
-      offerer: { name: 'nom', publicName: 'nom public', siret: '123123123' },
+      offerer: {
+        name: 'nom',
+        publicName: 'nom public',
+        siret: '123123123',
+        address: '3 Rue de Valois',
+        city: 'Paris',
+        latitude: 0,
+        longitude: 0,
+        postalCode: '75001',
+      },
     })
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(await screen.findByText('first venue label')).toBeInTheDocument()
@@ -121,7 +139,16 @@ describe('screens:SignupJourney::Validation', () => {
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
         },
-        offerer: { name: 'nom', publicName: 'nom public', siret: '123123123' },
+        offerer: {
+          name: 'nom',
+          publicName: 'nom public',
+          siret: '123123123',
+          address: '3 Rue de Valois',
+          city: 'Paris',
+          latitude: 0,
+          longitude: 0,
+          postalCode: '75001',
+        },
         setActivity: () => {},
         setOfferer: () => {},
       }
@@ -175,7 +202,15 @@ describe('screens:SignupJourney::Validation', () => {
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
         },
-        offerer: { name: 'nom', siret: '123123123' },
+        offerer: {
+          name: 'nom',
+          siret: '123123123',
+          address: '3 Rue de Valois',
+          city: 'Paris',
+          latitude: 0,
+          longitude: 0,
+          postalCode: '75001',
+        },
         setActivity: () => {},
         setOfferer: () => {},
       }
@@ -213,7 +248,16 @@ describe('screens:SignupJourney::Validation', () => {
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
         },
-        offerer: { name: 'nom', publicName: 'nom public', siret: '123123123' },
+        offerer: {
+          name: 'nom',
+          publicName: 'nom public',
+          siret: '123123123',
+          address: '3 Rue de Valois',
+          city: 'Paris',
+          latitude: 0,
+          longitude: 0,
+          postalCode: '75001',
+        },
         setActivity: () => {},
         setOfferer: () => {},
       }
