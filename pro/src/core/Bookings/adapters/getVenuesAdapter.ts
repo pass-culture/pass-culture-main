@@ -1,7 +1,7 @@
 import { api } from 'apiClient/api'
 import { GetVenuesAdapter, VenuesPayload } from 'core/Bookings'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { formatAndOrderVenues } from 'repository/venuesService'
+import { legacylegacyformatAndOrderVenues } from 'repository/venuesService'
 
 const FAILING_RESPONSE: AdapterFailure<VenuesPayload> = {
   isOk: false,
@@ -21,7 +21,9 @@ export const getVenuesAdapter: GetVenuesAdapter = async () => {
     return {
       isOk: true,
       message: null,
-      payload: { venues: formatAndOrderVenues(venuesForOfferer.venues) },
+      payload: {
+        venues: legacylegacyformatAndOrderVenues(venuesForOfferer.venues),
+      },
     }
   } catch (e) {
     return FAILING_RESPONSE
