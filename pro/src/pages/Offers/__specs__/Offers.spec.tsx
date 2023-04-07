@@ -59,13 +59,15 @@ const categoriesAndSubcategories = {
 
 const proVenues = [
   {
-    id: 'JI',
+    id: 'AE',
+    nonHumanizedId: 1,
     name: 'Ma venue',
     offererName: 'Mon offerer',
     isVirtual: false,
   },
   {
-    id: 'JQ',
+    id: 'A9',
+    nonHumanizedId: 2,
     name: 'Ma venue virtuelle',
     offererName: 'Mon offerer',
     isVirtual: true,
@@ -239,9 +241,9 @@ describe('route Offers', () => {
         describe('status filter can only be used with an offerer or a venue filter for performance reasons', () => {
           it('should reset and disable status filter when venue filter is deselected', async () => {
             // Given
-            const { id: venueId, name: venueName } = proVenues[0]
+            const { nonHumanizedId: venueId, name: venueName } = proVenues[0]
             const filters = {
-              venueId: venueId,
+              venueId: venueId.toString(),
               status: OfferStatus.INACTIVE,
             }
             await renderOffers(store, filters)
@@ -270,9 +272,9 @@ describe('route Offers', () => {
 
           it('should not reset or disable status filter when venue filter is deselected while offerer filter is applied', async () => {
             // Given
-            const { id: venueId, name: venueName } = proVenues[0]
+            const { nonHumanizedId: venueId, name: venueName } = proVenues[0]
             const filters = {
-              venueId: venueId,
+              venueId: venueId.toString(),
               status: OfferStatus.INACTIVE,
               offererId: 'EF',
             }
@@ -430,7 +432,7 @@ describe('route Offers', () => {
             undefined,
             undefined,
             undefined,
-            proVenues[0].id,
+            proVenues[0].nonHumanizedId.toString(),
             undefined,
             undefined,
             undefined,
@@ -609,7 +611,7 @@ describe('route Offers', () => {
         undefined,
         undefined,
         undefined,
-        proVenues[0].id,
+        proVenues[0].nonHumanizedId.toString(),
         undefined,
         undefined,
         undefined,
@@ -928,7 +930,7 @@ describe('route Offers', () => {
         undefined,
         undefined,
         undefined,
-        proVenues[0].id,
+        proVenues[0].nonHumanizedId.toString(),
         undefined,
         undefined,
         undefined,
@@ -979,7 +981,7 @@ describe('route Offers', () => {
         undefined,
         undefined,
         undefined,
-        proVenues[0].id,
+        proVenues[0].nonHumanizedId.toString(),
         undefined,
         undefined,
         undefined,

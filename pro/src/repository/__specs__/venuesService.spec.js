@@ -7,12 +7,14 @@ describe('venuesService', () => {
       const venues = [
         {
           id: 'AF',
+          nonHumanizedId: 1,
           name: 'Librairie Fnac',
           offererName: 'gilbert Joseph',
           isVirtual: false,
         },
         {
           id: 'AE',
+          nonHumanizedId: 2,
           name: 'Offre numérique',
           offererName: 'gilbert Joseph',
           isVirtual: true,
@@ -26,11 +28,11 @@ describe('venuesService', () => {
       expect(sortingValues).toStrictEqual([
         {
           displayName: 'gilbert Joseph - Offre numérique',
-          id: 'AE',
+          id: venues[1].nonHumanizedId.toString(),
         },
         {
           displayName: 'Librairie Fnac',
-          id: 'AF',
+          id: venues[0].nonHumanizedId.toString(),
         },
       ])
     })
@@ -40,6 +42,7 @@ describe('venuesService', () => {
       const venues = [
         {
           id: 'AE',
+          nonHumanizedId: 1,
           name: 'Offre numérique',
           offererName: 'gilbert Joseph',
           isVirtual: true,
@@ -53,7 +56,7 @@ describe('venuesService', () => {
       expect(formattedValues).toStrictEqual([
         {
           displayName: 'gilbert Joseph - Offre numérique',
-          id: 'AE',
+          id: venues[0].nonHumanizedId.toString(),
         },
       ])
     })
