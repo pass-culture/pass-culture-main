@@ -58,7 +58,7 @@
     "date-fns": "^2.29.0",
     "date-fns-tz": "^2.0.0",
     "env-cmd": "^10.1.0",
-    "final-form": "^4.20.6",
+    "final-form": "^4.20.9",
     "final-form-calculate": "^1.2.1",
     "formik": "^2.2.9",
     "hi-base32": "^0.5.1",
