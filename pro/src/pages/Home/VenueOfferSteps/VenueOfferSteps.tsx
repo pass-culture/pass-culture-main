@@ -27,6 +27,7 @@ interface IVenueOfferStepsProps {
   hasCreatedOffer?: boolean
   dmsStatus?: DMSApplicationstatus
   dmsInProgress?: boolean
+  hasAdageId?: boolean
 }
 
 const VenueOfferSteps = ({
@@ -37,6 +38,7 @@ const VenueOfferSteps = ({
   hasCreatedOffer = false,
   dmsStatus,
   dmsInProgress = false,
+  hasAdageId = false,
 }: IVenueOfferStepsProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const venueCreationUrl = isVenueCreationAvailable
@@ -139,6 +141,20 @@ const VenueOfferSteps = ({
                 }}
               >
                 Renseigner des coordonnées bancaires
+              </ButtonLink>
+            )}
+            {dmsStatus !== DMSApplicationstatus.REFUSE && (
+              <ButtonLink
+                className={styles['step-button-width']}
+                isDisabled={!hasAdageId}
+                variant={ButtonVariant.BOX}
+                Icon={CircleArrowIcon}
+                link={{
+                  to: `/structures/${offererId}/lieux/${venueId}/eac`,
+                  isExternal: false,
+                }}
+              >
+                Renseigner mes informations à destination des enseignants
               </ButtonLink>
             )}
           </div>
