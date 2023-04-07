@@ -49,6 +49,7 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
             "OFFERER_NAME": booking.offerer.name,
             "EVENT_DATE": "14 novembre 2021",
             "EVENT_HOUR": "13h48",
+            "OFFER_PRICE_CATEGORY": booking.priceCategoryLabel,
             "OFFER_PRICE": f"{booking.total_amount} €" if booking.stock.price > 0 else "Gratuit",
             "OFFER_TAGS": "",
             "OFFER_TOKEN": booking.token,
