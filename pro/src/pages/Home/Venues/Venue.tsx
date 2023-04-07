@@ -39,6 +39,7 @@ export interface IVenueProps {
   publicName?: string | null
   hasCreatedOffer?: boolean
   dmsInformations?: DMSApplicationForEAC | null
+  hasAdageId?: boolean
 }
 
 const Venue = ({
@@ -52,6 +53,7 @@ const Venue = ({
   publicName,
   hasCreatedOffer,
   dmsInformations,
+  hasAdageId,
 }: IVenueProps) => {
   const [prevInitialOpenState, setPrevInitialOpenState] =
     useState(initialOpenState)
@@ -300,6 +302,7 @@ const Venue = ({
                       }
                       dmsStatus={dmsInformations?.state}
                       dmsInProgress={dmsInformations !== null}
+                      hasAdageId={hasAdageId}
                     />
                   )}
                   <div className="venue-stats">

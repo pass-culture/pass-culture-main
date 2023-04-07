@@ -37,6 +37,7 @@ const VenueList = ({
           dmsInformations={getLastCollectiveDmsApplication(
             virtualVenue.collectiveDmsApplications
           )}
+          hasAdageId={virtualVenue.hasAdageId}
         />
       )}
 
@@ -56,6 +57,7 @@ const VenueList = ({
           dmsInformations={getLastCollectiveDmsApplication(
             venue.collectiveDmsApplications
           )}
+          hasAdageId={venue.hasAdageId}
         />
       ))}
     </div>
