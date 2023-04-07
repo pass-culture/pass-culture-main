@@ -8,7 +8,7 @@ from pcapi.flask_app import app
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SECURE"] = not settings.IS_DEV
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SAMESITE"] = settings.SESSION_COOKIE_SAMESITE
 app.config["REMEMBER_COOKIE_HTTPONLY"] = True
 app.config["REMEMBER_COOKIE_SECURE"] = not settings.IS_DEV
 app.config["REMEMBER_COOKIE_DURATION"] = 90 * 24 * 3600
