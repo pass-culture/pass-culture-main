@@ -742,5 +742,7 @@ def duplicate_collective_offer(
         raise ApiErrors({"validation": ["l'offre ne passe pas la validation"]}, status_code=403)
     except educational_exceptions.OffererNotAllowedToDuplicate:
         raise ApiErrors({"offerer": ["la structure n'est pas autorisée à dupliquer l'offre"]}, status_code=403)
+    except educational_exceptions.CantGetImageFromUrl:
+        raise ApiErrors({"image": ["l'image ne peut etre trouvé"]}, status_code=404)
 
     return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)

@@ -175,3 +175,7 @@ class ValidationFailedOnCollectiveOffer(Exception):
 
 class OffererNotAllowedToDuplicate(Exception):
     pass
+
+
+class CantGetImageFromUrl(Exception):
+    pass
