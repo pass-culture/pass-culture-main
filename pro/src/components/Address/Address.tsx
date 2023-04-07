@@ -1,15 +1,18 @@
 import { useField, useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
-import FormLayout from 'components/FormLayout'
 import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete2/SelectAutocomplete'
 import { IAutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
 
-import { IVenueFormValues } from '../types'
-
 import { getAdressDataAdapter } from './adapter'
-const Address = () => {
-  const { setFieldValue } = useFormikContext<IVenueFormValues>()
+
+interface IAddressProps {
+  description?: string
+  suggestionLimit?: number
+}
+
+const Address = ({ description, suggestionLimit }: IAddressProps) => {
+  const { setFieldValue } = useFormikContext()
   const [options, setOptions] = useState<SelectOption[]>([])
   const [addressesMap, setAddressesMap] = useState<
     Record<string, IAutocompleteItemProps>
@@ -60,7 +63,7 @@ const Address = () => {
   /* istanbul ignore next: DEBT, TO FIX */
   const getSuggestions = async (search: string) => {
     if (search) {
-      const response = await getAdressDataAdapter(search)
+      const response = await getAdressDataAdapter({ search, suggestionLimit })
       if (response.isOk) {
         return response.payload
       }
@@ -69,25 +72,18 @@ const Address = () => {
   }
 
   return (
-    <>
-      <FormLayout.Section
-        title="Adresse du lieu"
-        description="Cette adresse sera utilisée pour permettre aux jeunes de géolocaliser votre lieu."
-      >
-        <FormLayout.Row>
-          <SelectAutocomplete
-            name="addressAutocomplete"
-            label="Adresse postale"
-            placeholder="Entrez votre adresse et sélectionnez une suggestion"
-            options={options}
-            hideArrow={true}
-            resetOnOpen={false}
-          />
-        </FormLayout.Row>
-      </FormLayout.Section>
-    </>
+    <SelectAutocomplete
+      name="addressAutocomplete"
+      label="Adresse postale"
+      placeholder="Entrez votre adresse et sélectionnez une suggestion"
+      options={options}
+      hideArrow={true}
+      resetOnOpen={false}
+      description={description}
+    />
   )
 }
+
 export const handleAddressSelect = (
   setFieldValue: any,
   selectedItem?: IAutocompleteItemProps,

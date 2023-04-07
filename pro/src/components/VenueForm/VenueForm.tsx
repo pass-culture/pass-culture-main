@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { VenueProviderResponse } from 'apiClient/v1'
+import { Address } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { IOfferer } from 'core/Offerers/types'
@@ -20,7 +21,6 @@ import RouteLeavingGuard, { BlockerFunction } from '../RouteLeavingGuard'
 
 import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
-import { Address } from './Address'
 import CollectiveVenueInformations from './CollectiveVenueInformations/CollectiveVenueInformations'
 import { Contact } from './Contact'
 import { EACInformation } from './EACInformation'
@@ -133,7 +133,16 @@ const VenueForm = ({
           /* istanbul ignore next: DEBT, TO FIX */
           !!shouldDisplayImageVenueUploaderSection && <ImageUploaderVenue />
         }
-        {!initialIsVirtual && <Address />}
+        {!initialIsVirtual && (
+          <FormLayout.Section
+            title="Adresse du lieu"
+            description="Cette adresse sera utilisée pour permettre aux jeunes de géolocaliser votre lieu."
+          >
+            <FormLayout.Row>
+              <Address />
+            </FormLayout.Row>
+          </FormLayout.Section>
+        )}
         <Activity
           venueTypes={venueTypes}
           venueLabels={venueLabels}
