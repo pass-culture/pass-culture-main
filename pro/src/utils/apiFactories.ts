@@ -130,13 +130,13 @@ export const getVenueListItemFactory = (
   const currentVenueId = venueId++
   return {
     id: `VENUE${currentVenueId}`,
+    nonHumanizedId: currentVenueId,
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
     managingOffererId: customOfferer.id,
     publicName: 'Mon Lieu',
     hasCreatedOffer: true,
     hasMissingReimbursementPoint: true,
-    nonHumanizedId: 1,
     offererName: 'offerer',
     ...customVenue,
   }
