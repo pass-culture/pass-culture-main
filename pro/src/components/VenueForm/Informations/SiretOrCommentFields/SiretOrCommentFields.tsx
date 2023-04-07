@@ -1,15 +1,14 @@
 import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
+import { getAdressDataAdapter } from 'components/Address/adapter'
+import { handleAddressSelect } from 'components/Address/Address'
 import FormLayout from 'components/FormLayout'
 import { IVenueFormValues } from 'components/VenueForm/types'
 import { humanizeSiret, unhumanizeSiret } from 'core/Venue'
 import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
 import { InfoBox, TextArea, TextInput } from 'ui-kit'
 import Toggle from 'ui-kit/Toggle'
-
-import { getAdressDataAdapter } from '../../Address/adapter'
-import { handleAddressSelect } from '../../Address/Address'
 
 import { isSiretStartingWithSiren, valideSiretLength } from './validationSchema'
 
@@ -83,7 +82,9 @@ const SiretOrCommentFields = ({
     )
     setFieldValue('name', response.payload.values?.name)
     // getSuggestions pour récupérer les adresses
-    const responseAdressDataAdapter = await getAdressDataAdapter(address)
+    const responseAdressDataAdapter = await getAdressDataAdapter({
+      search: address,
+    })
     /* istanbul ignore next: DEBT, TO FIX */
     if (!responseAdressDataAdapter.isOk) {
       return

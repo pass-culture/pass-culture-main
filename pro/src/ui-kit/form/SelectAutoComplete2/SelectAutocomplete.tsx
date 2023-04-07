@@ -41,6 +41,7 @@ const SelectAutocomplete = ({
   pluralLabel,
   smallLabel = false,
   resetOnOpen = true,
+  description,
 }: SelectAutocompleteProps): JSX.Element => {
   const { setFieldTouched, setFieldValue } = useFormikContext<any>()
 
@@ -207,6 +208,7 @@ const SelectAutocomplete = ({
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}
       inline={inline}
+      description={description}
     >
       <div
         className={cx(styles['multi-select-autocomplete-container'], className)}

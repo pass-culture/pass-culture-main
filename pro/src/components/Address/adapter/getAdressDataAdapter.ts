@@ -3,8 +3,13 @@ import { IAutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type
 
 import { serializeAdressData } from './serializer'
 
+export interface IAddressParams {
+  search: string
+  suggestionLimit?: number
+}
+
 export type GetAdressDataAdapter = Adapter<
-  string,
+  IAddressParams,
   IAutocompleteItemProps[],
   IAutocompleteItemProps[]
 >
@@ -16,9 +21,15 @@ const FAILING_RESPONSE: AdapterFailure<IAutocompleteItemProps[]> = {
   payload: [],
 }
 
-const getVenueAdapter: GetAdressDataAdapter = async search => {
+const getVenueAdapter: GetAdressDataAdapter = async ({
+  search,
+  suggestionLimit = 10,
+}: IAddressParams) => {
   try {
-    const adressSuggestions = await apiAdresse.getDataFromAddress(search, 10)
+    const adressSuggestions = await apiAdresse.getDataFromAddress(
+      search,
+      suggestionLimit
+    )
 
     return {
       isOk: true,
