@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React from 'react'
 import { Row } from 'react-table'
 
@@ -13,6 +14,7 @@ import {
   getCollectiveBookingStatusDisplayInformations,
 } from '../../utils/bookingStatusConverter'
 
+import styles from './BookingStatusCell.module.scss'
 import BookingStatusCellHistory from './BookingStatusCellHistory'
 
 const BookingStatusCell = ({
@@ -34,7 +36,11 @@ const BookingStatusCell = ({
     return (
       <Tooltip content={bookingDisplayInfo?.label} id={tooltipId}>
         <div
-          className={`booking-status-label booking-status-wrapper ${bookingDisplayInfo?.statusClassName}`}
+          className={cn(
+            styles['booking-status-label'],
+            styles['booking-status-wrapper'],
+            bookingDisplayInfo?.statusClassName
+          )}
           aria-describedby={tooltipId}
         >
           <Icon svg={bookingDisplayInfo?.svgIconFilename} />
@@ -49,7 +55,6 @@ const BookingStatusCell = ({
   )
   const offerName = bookingRecapInfo.original.stock.offerName
 
-  const statusClassName = bookingDisplayInfo?.statusClassName
   const statusName = bookingDisplayInfo?.status
   const amount = computeBookingAmount(bookingRecapInfo.original.bookingAmount)
   const icon = bookingDisplayInfo?.svgIconFilename
@@ -62,16 +67,20 @@ const BookingStatusCell = ({
 
   return (
     <div
-      className={`booking-status-label booking-status-wrapper ${statusClassName}`}
+      className={cn(
+        styles['booking-status-label'],
+        styles['booking-status-wrapper'],
+        bookingDisplayInfo?.statusClassName
+      )}
     >
       <Icon svg={icon} />
       <span>{statusName}</span>
-      <div className="bs-tooltip">
-        <div className="bs-offer-title">{offerName}</div>
-        <div className="bs-offer-amount">
+      <div className={styles['bs-tooltip']}>
+        <div className={styles['bs-offer-title']}>{offerName}</div>
+        <div className={styles['bs-offer-amount']}>
           {`Prix : ${amount.replace('.', ',')}`}
         </div>
-        <div className="bs-history-title">Historique</div>
+        <div className={styles['bs-history-title']}>Historique</div>
         <BookingStatusCellHistory
           bookingStatusHistory={bookingRecapInfo.original.bookingStatusHistory}
         />

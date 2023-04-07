@@ -7,6 +7,8 @@ import {
 } from 'apiClient/v1'
 import Icon from 'ui-kit/Icon/Icon'
 
+import styles from './TableHead.module.scss'
+
 const IS_MULTI_SORT_ACTIVATED = false
 
 const handleOnKeyDown =
@@ -33,7 +35,7 @@ const TableHead = <
   headerGroups,
 }: ITableHeadProps<T>) => {
   return (
-    <thead className="bookings-head">
+    <thead className={styles['bookings-head']}>
       {headerGroups.map(headerGroup => (
         <tr key="header-group">
           {headerGroup.headers.map(
@@ -49,7 +51,7 @@ const TableHead = <
               >
                 {column.render('Header')}
                 {column.canSort ? (
-                  <span className="sorting-icons">
+                  <span className={styles['sorting-icons']}>
                     {column.isSorted ? (
                       column.isSortedDesc ? (
                         <Icon
