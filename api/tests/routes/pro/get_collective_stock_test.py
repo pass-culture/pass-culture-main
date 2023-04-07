@@ -34,6 +34,7 @@ class Return200Test:
         assert response.status_code == 200
         assert response.json == {
             "id": humanize(stock.id),
+            "nonHumanizedId": stock.id,
             "beginningDatetime": "2021-12-18T00:00:00Z",
             "bookingLimitDatetime": "2021-12-01T00:00:00Z",
             "price": 1200.0,

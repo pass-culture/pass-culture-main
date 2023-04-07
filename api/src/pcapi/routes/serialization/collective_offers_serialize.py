@@ -165,6 +165,7 @@ def _serialize_stock(offer_id: int, stock: CollectiveStock | None = None) -> dic
     if stock:
         return {
             "id": humanize(stock.id),
+            "nonHumanizedId": stock.id,
             "offerId": humanize(offer_id),
             "hasBookingLimitDatetimePassed": stock.hasBookingLimitDatetimePassed,
             "remainingQuantity": 0 if stock.isSoldOut else 1,
@@ -285,6 +286,7 @@ class CollectiveOfferOfferVenueResponseModel(BaseModel):
 
 class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     id: str
+    nonHumanizedId: int
     isSoldOut: bool = Field(alias="isBooked")
     is_cancellable_from_offerer: bool = Field(alias="isCancellable")
     beginningDatetime: datetime | None

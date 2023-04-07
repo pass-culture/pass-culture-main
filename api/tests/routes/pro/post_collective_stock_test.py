@@ -8,7 +8,6 @@ from pcapi.core.educational.models import StudentLevels
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -26,7 +25,7 @@ class Return200Test:
 
         # When
         stock_payload = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
@@ -60,7 +59,7 @@ class Return200Test:
 
         # When
         stock_payload = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
@@ -90,7 +89,7 @@ class Return400Test:
 
         # When
         stock_payload = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
@@ -116,7 +115,7 @@ class Return400Test:
 
         # When
         stock_payload = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
@@ -140,7 +139,7 @@ class Return400Test:
 
         # When
         stock_payload = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": -1500,
@@ -164,7 +163,7 @@ class Return400Test:
 
         # When
         stock_payload = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2022-01-18T20:00:00Z",
             "totalPrice": 1500,
@@ -192,7 +191,7 @@ class Return400Test:
 
         # When
         stock_payload = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
@@ -217,7 +216,7 @@ class Return400Test:
 
         # When
         stock_payload = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
@@ -242,7 +241,7 @@ class Return400Test:
 
         # When
         stock_payload = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "beginningDatetime": "1970-12-01T00:00:00Z",
             "bookingLimitDatetime": "1970-01-31T20:00:00Z",
             "totalPrice": 1500,
@@ -273,7 +272,7 @@ class Return403Test:
 
         # When
         stock_payload = {
-            "offerId": humanize(offer.id),
+            "offerId": offer.id,
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,

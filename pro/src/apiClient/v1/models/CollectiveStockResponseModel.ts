@@ -8,6 +8,7 @@ export type CollectiveStockResponseModel = {
   educationalPriceDetail?: string | null;
   id: string;
   isEducationalStockEditable: boolean;
+  nonHumanizedId: number;
   numberOfTickets?: number | null;
   price: number;
   stockId?: string | null;
