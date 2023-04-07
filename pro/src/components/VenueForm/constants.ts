@@ -1,8 +1,9 @@
+import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address'
+
 import { DEFAULT_PRICING_POINT_FORM_VALUES } from '../../pages/Offerers/Offerer/VenueV1/fields/PricingPoint/constant'
 
 import { DEFAULT_ACCESSIBILITY_FORM_VALUES } from './Accessibility'
 import { DEFAULT_ACTIVITY_FORM_VALUES } from './Activity'
-import { DEFAULT_ADDRESS_FORM_VALUES } from './Address'
 import { DEFAULT_CONTACT_FORM_VALUES } from './Contact'
 import { DEFAULT_IMAGE_UPLOADER_FORM_VALUES } from './ImageUploaderVenue/'
 import { DEFAULT_INFORMATIONS_FORM_VALUES } from './Informations'
