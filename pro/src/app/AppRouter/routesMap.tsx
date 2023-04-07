@@ -139,11 +139,13 @@ const routes: IRoute[] = [
     element: <Bookings />,
     path: '/reservations',
     title: 'Réservations',
+    meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveBookings />,
     path: '/reservations/collectives',
     title: 'Réservations',
+    meta: { shouldRedirect: true },
   },
   {
     element: <SignIn />,
@@ -210,6 +212,7 @@ const routes: IRoute[] = [
     element: <CollectiveOffers />,
     path: '/offres/collectives',
     title: 'Vos offres collectives',
+    meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveOfferSelectionDuplication />,
