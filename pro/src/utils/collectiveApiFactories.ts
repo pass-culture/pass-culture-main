@@ -84,8 +84,10 @@ export const collectiveOfferFactory = (
 export const collectiveStockFactory = (
   customStock: Partial<GetCollectiveOfferCollectiveStockResponseModel> = {}
 ): GetCollectiveOfferCollectiveStockResponseModel => {
+  const currentStockId = stockId++
   return {
-    id: `STOCK${stockId++}`,
+    id: `STOCK${currentStockId}`,
+    nonHumanizedId: currentStockId,
     price: 100,
     beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
     bookingLimitDatetime: new Date('2021-09-15T12:00:00Z').toISOString(),

@@ -9,7 +9,7 @@ import {
 
 type Params = {
   offer: CollectiveOffer
-  stockId: string
+  stockId: number
   values: OfferEducationalStockFormValues
   initialValues: OfferEducationalStockFormValues
 }

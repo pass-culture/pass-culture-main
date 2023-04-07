@@ -9,7 +9,6 @@ from pydantic import validator
 from pydantic.fields import ModelField
 
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -94,7 +93,6 @@ class CollectiveStockCreationBodyModel(BaseModel):
     number_of_tickets: int
     educational_price_detail: str | None
 
-    _dehumanize_offer_id = dehumanize_field("offer_id")
     _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets")
     _validate_total_price = price_validator("total_price")
     _validate_beginning_datetime = beginning_datetime_validator("beginning_datetime")
@@ -147,6 +145,7 @@ class CollectiveStockEditionBodyModel(BaseModel):
 
 class CollectiveStockResponseModel(BaseModel):
     id: str
+    nonHumanizedId: int
     beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
     price: float
