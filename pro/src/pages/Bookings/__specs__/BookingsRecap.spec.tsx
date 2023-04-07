@@ -169,14 +169,17 @@ describe('components | BookingsRecap | Pro user', () => {
     const { submitFilters } = await renderBookingsRecap(store)
 
     // When
-    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(
+      screen.getByLabelText('Lieu'),
+      venue.nonHumanizedId.toString()
+    )
     await submitFilters()
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
       spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
-    ).toBe(venue.id)
+    ).toBe(venue.nonHumanizedId.toString())
   })
 
   it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
@@ -208,7 +211,10 @@ describe('components | BookingsRecap | Pro user', () => {
       bookingsRecap: [],
     })
     const { submitFilters } = await renderBookingsRecap(store)
-    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(
+      screen.getByLabelText('Lieu'),
+      venue.nonHumanizedId.toString()
+    )
     await submitFilters()
 
     // When
@@ -251,7 +257,10 @@ describe('components | BookingsRecap | Pro user', () => {
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
-    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(
+      screen.getByLabelText('Lieu'),
+      venue.nonHumanizedId.toString()
+    )
     const defaultBookingPeriodBeginningDateInput = '16/05/2020'
     const defaultBookingPeriodEndingDateInput = '15/06/2020'
     const bookingPeriodBeginningDateInput = screen.getByDisplayValue(
@@ -292,7 +301,10 @@ describe('components | BookingsRecap | Pro user', () => {
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
-    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(
+      screen.getByLabelText('Lieu'),
+      venue.nonHumanizedId.toString()
+    )
     await submitFilters()
 
     // When
@@ -397,7 +409,10 @@ describe('components | BookingsRecap | Pro user', () => {
     const { submitFilters } = await renderBookingsRecap(store)
 
     // When
-    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(
+      screen.getByLabelText('Lieu'),
+      venue.nonHumanizedId.toString()
+    )
     await submitFilters()
 
     // Then
@@ -414,13 +429,13 @@ describe('components | BookingsRecap | Pro user', () => {
     ).toBe(1)
     expect(
       spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
-    ).toBe(venue.id)
+    ).toBe(venue.nonHumanizedId.toString())
     expect(
       spyGetBookingsPro.mock.calls[1][NTH_ARGUMENT_GET_BOOKINGS.page - 1]
     ).toBe(2)
     expect(
       spyGetBookingsPro.mock.calls[1][NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
-    ).toBe(venue.id)
+    ).toBe(venue.nonHumanizedId.toString())
   })
 
   it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
@@ -666,12 +681,18 @@ describe('components | BookingsRecap | Pro user', () => {
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
     const { submitFilters } = await renderBookingsRecap(store)
 
-    await userEvent.selectOptions(screen.getByLabelText('Lieu'), otherVenue.id)
+    await userEvent.selectOptions(
+      screen.getByLabelText('Lieu'),
+      otherVenue.nonHumanizedId.toString()
+    )
     await submitFilters()
     await screen.findAllByText(otherVenueBooking.stock.offerName)
 
     // When
-    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(
+      screen.getByLabelText('Lieu'),
+      venue.nonHumanizedId.toString()
+    )
     await submitFilters()
 
     // Then
@@ -704,7 +725,10 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(store)
 
     // when
-    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(
+      screen.getByLabelText('Lieu'),
+      venue.nonHumanizedId.toString()
+    )
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 
     // Then
@@ -733,7 +757,10 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(store)
 
     // when
-    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(
+      screen.getByLabelText('Lieu'),
+      venue.nonHumanizedId.toString()
+    )
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 
     // Then

@@ -15,7 +15,6 @@ from pcapi.domain.booking_recap.booking_recap_history import BookingRecapReimbur
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapValidatedHistory
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import isoformat
 from pcapi.utils.human_ids import humanize
@@ -164,8 +163,6 @@ class ListBookingsQueryModel(BaseModel):
     booking_period_ending_date: str | None
     offer_type: OfferType | None
     export_type: BookingExportType | None
-
-    _dehumanize_venue_id = dehumanize_field("venue_id")
 
     class Config:
         alias_generator = to_camel

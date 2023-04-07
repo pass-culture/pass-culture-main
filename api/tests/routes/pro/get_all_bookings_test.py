@@ -72,7 +72,7 @@ class GetAllBookingsTest:
 
         # When
         TestClient(app.test_client()).with_session_auth(pro.email).get(
-            f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&venueId={humanize(venue.id)}"
+            f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&venueId={venue.id}"
         )
 
         # Then
