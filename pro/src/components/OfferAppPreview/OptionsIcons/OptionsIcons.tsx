@@ -3,7 +3,6 @@ import React from 'react'
 
 import { PasscultureIcon } from 'icons'
 import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
-import { ReactComponent as PassCultureSvg } from 'icons/ico-passculture.svg'
 import { ReactComponent as TagSvg } from 'icons/ico-tag.svg'
 
 import style from './OptionsIcons.module.scss'
