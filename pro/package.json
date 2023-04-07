@@ -97,7 +97,7 @@
     "yup": "^0.32.9"
   },
   "devDependencies": {
-    "@emotion/react": "^11.8.1",
+    "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.8.1",
     "@mui/material": "^5.4.2",
     "@storybook/addon-a11y": "^6.5.16",
