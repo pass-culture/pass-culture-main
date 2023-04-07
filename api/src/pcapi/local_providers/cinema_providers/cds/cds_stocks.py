@@ -25,13 +25,21 @@ class CDSStocks(LocalProvider):
     def __init__(self, venue_provider: VenueProvider):
         super().__init__(venue_provider)
         self.apiUrl = settings.CDS_API_URL
+        if not self.apiUrl:
+            raise ValueError("CDS API URL not configured in this env")
         self.venue = venue_provider.venue
         self.cinema_id = venue_provider.venueIdAtOfferProvider
         cinema_details = get_cds_cinema_details(venue_provider.venueIdAtOfferProvider)
         self.apiToken = cinema_details.cinemaApiToken
         self.accountId = cinema_details.accountId
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
-        self.movies: Iterator[Movie] = iter(self._get_cds_movies())
+        self.client_cds = CineDigitalServiceAPI(
+            cinema_id=self.venue_provider.venueIdAtOfferProvider,
+            account_id=self.accountId,
+            api_url=self.apiUrl,
+            cinema_api_token=self.apiToken,
+        )
+        self.movies: Iterator[Movie] = iter(self.client_cds.get_venue_movies())
         self.shows = self._get_cds_shows()
         self.filtered_movie_showtimes = None
         self.price_category_labels: list[
@@ -132,7 +140,7 @@ class CDSStocks(LocalProvider):
         datetime_in_utc = utils_date.local_datetime_to_default_timezone(show.showtime, local_tz)
         cds_stock.beginningDatetime = datetime_in_utc
         cds_stock.bookingLimitDatetime = datetime_in_utc
-        is_internet_sale_gauge_active = self._get_cds_internet_sale_gauge()
+        is_internet_sale_gauge_active = self.client_cds.get_internet_sale_gauge_active()
 
         is_new_stock_to_insert = cds_stock.id is None
         if is_new_stock_to_insert:
@@ -197,7 +205,7 @@ class CDSStocks(LocalProvider):
     def get_object_thumb(self) -> bytes:
         if self.movie_information.posterpath:
             image_url = self.movie_information.posterpath
-            return self._get_cds_movie_poster(image_url)
+            return self.client_cds.get_movie_poster(image_url)
         return bytes()
 
     def shall_synchronize_thumbs(self) -> bool:
@@ -206,54 +214,12 @@ class CDSStocks(LocalProvider):
     def get_keep_poster_ratio(self) -> bool:
         return True
 
-    def _get_cds_internet_sale_gauge(self) -> bool:
-        if not self.apiUrl:
-            raise ValueError("CDS API URL not configured in this env")
-        client_cds = CineDigitalServiceAPI(
-            cinema_id=self.venue_provider.venueIdAtOfferProvider,
-            account_id=self.accountId,
-            api_url=self.apiUrl,
-            cinema_api_token=self.apiToken,
-        )
-        return client_cds.get_internet_sale_gauge_active()
-
-    def _get_cds_movies(self) -> list[Movie]:
-        if not self.apiUrl:
-            raise ValueError("CDS API URL not configured in this env")
-        client_cds = CineDigitalServiceAPI(
-            cinema_id=self.venue_provider.venueIdAtOfferProvider,
-            account_id=self.accountId,
-            api_url=self.apiUrl,
-            cinema_api_token=self.apiToken,
-        )
-        return client_cds.get_venue_movies()
-
-    def _get_cds_movie_poster(self, image_url: str) -> bytes:
-        if not self.apiUrl:
-            raise ValueError("CDS API URL not configured in this env")
-        client_cds = CineDigitalServiceAPI(
-            cinema_id=self.venue_provider.venueIdAtOfferProvider,
-            account_id=self.accountId,
-            api_url=self.apiUrl,
-            cinema_api_token=self.apiToken,
-        )
-        return client_cds.get_movie_poster(image_url)
-
     def _get_cds_shows(self) -> list[dict]:
-        if not self.apiUrl:
-            raise ValueError("CDS API URL not configured in this env")
-        client_cds = CineDigitalServiceAPI(
-            cinema_id=self.venue_provider.venueIdAtOfferProvider,
-            account_id=self.accountId,
-            api_url=self.apiUrl,
-            cinema_api_token=self.apiToken,
-        )
-
-        shows = client_cds.get_shows()
+        shows = self.client_cds.get_shows()
 
         shows_with_pass_culture_tariff = []
         for show in shows:
-            min_price_voucher = client_cds.get_voucher_type_for_show(show)
+            min_price_voucher = self.client_cds.get_voucher_type_for_show(show)
             if min_price_voucher and min_price_voucher.tariff:
                 shows_with_pass_culture_tariff.append(
                     {
