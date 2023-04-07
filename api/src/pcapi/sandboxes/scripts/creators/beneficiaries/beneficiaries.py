@@ -83,9 +83,15 @@ def create_underage_beneficiary() -> None:
     logger.info("created 1 underage beneficiary")
 
 
+def create_eligible_underage_completed_all_steps() -> None:
+    users_factories.EligibleUnderageCompletedAllStepsFactory(email="pctest.underage-eligible-not-credited@example.com")
+    logger.info("created 1 underage eligible with all steps completed")
+
+
 def save_beneficiaries_sandbox() -> None:
     create_future_beneficiaries()
     create_expiring_beneficiary()
     create_beneficiary_with_empty_deposit()
     create_beneficiary_with_specific_address()
     create_underage_beneficiary()
+    create_eligible_underage_completed_all_steps()
