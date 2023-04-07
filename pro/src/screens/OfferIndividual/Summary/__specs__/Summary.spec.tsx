@@ -396,11 +396,9 @@ describe('Summary', () => {
           name: /Publier l’offre/,
         })
       )
-      const notificationError = screen.getByTestId('global-notification-error')
-      expect(notificationError).toBeInTheDocument()
-      expect(notificationError.textContent).toBe(
-        "Une erreur s'est produite, veuillez réessayer"
-      )
+      expect(
+        await screen.findByText("Une erreur s'est produite, veuillez réessayer")
+      ).toBeInTheDocument()
     })
 
     it('should display redirect modal if first offer', async () => {
