@@ -1,4 +1,4 @@
-# Below is a list of French stopwords, taken from the NKTK project:
+# Below is a list of French stopwords, taken from the NLTK project:
 # https://github.com/nltk/nltk_data/blob/gh-pages/packages/corpora/stopwords.zip
 au
 aux

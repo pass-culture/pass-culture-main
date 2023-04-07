@@ -42,7 +42,6 @@ from werkzeug.utils import cached_property
 from pcapi.connectors import sirene
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.models as finance_models
-from pcapi.domain.ts_vector import create_ts_vector_and_table_args
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
@@ -528,20 +527,6 @@ def _fill_departement_code_from_postal_code(venue: Venue) -> None:
         venue.store_departement_code()
 
 
-ts_indexes = [
-    ("idx_venue_fts_name", Venue.name),
-    (
-        "idx_venue_fts_publicName",
-        Venue.publicName,
-    ),
-    ("idx_venue_fts_address", Venue.address),
-    ("idx_venue_fts_siret", Venue.siret),
-    ("idx_venue_fts_city", Venue.city),
-]
-
-(Venue.__ts_vectors__, Venue.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
-
-
 class VenuePricingPointLink(Base, Model):
     """At any given time, the bookings of a venue are priced against a
     particular venue that we call the "pricing point" of the venue.
@@ -703,15 +688,6 @@ class Offerer(
         if not self.UserOfferers:
             return None
         return self.UserOfferers[0].user
-
-
-offerer_ts_indexes = [
-    ("idx_offerer_fts_name", Offerer.name),
-    ("idx_offerer_fts_address", Offerer.address),
-    ("idx_offerer_fts_siret", Offerer.siren),
-]
-
-(Offerer.__ts_vectors__, Offerer.__table_args__) = create_ts_vector_and_table_args(offerer_ts_indexes)
 
 
 class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):

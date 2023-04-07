@@ -15,8 +15,6 @@ from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.users.models as users_models
-from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model
-from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_model
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -32,7 +30,6 @@ def get_all_venue_labels() -> list[models.VenueLabel]:
 def get_all_offerers_for_user(
     user: users_models.User,
     validated: bool = None,
-    keywords: str = None,
     include_non_validated_user_offerers: bool = False,
 ) -> sqla_orm.Query:
     """Return a query of matching, accessible offerers.
@@ -63,9 +60,6 @@ def get_all_offerers_for_user(
             query = query.filter(models.Offerer.isWaitingForValidation)
     else:
         query = query.filter(sqla.not_(models.Offerer.isRejected))
-
-    if keywords:
-        query = filter_offerers_with_keywords_string(query, keywords)
 
     return query
 
@@ -300,11 +294,6 @@ def has_digital_venue_with_at_least_one_offer(offerer_id: int) -> bool:
     ).scalar()
 
 
-get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_in_any_model(
-    models.Offerer, models.Venue
-)
-
-
 def get_by_offer_id(offer_id: int) -> models.Offerer:
     offerer = models.Offerer.query.join(models.Venue).join(Offer).filter_by(id=offer_id).one_or_none()
     if not offerer:
@@ -359,20 +348,6 @@ def find_new_offerer_user_email(offerer_id: int) -> str:
     if result_tuple:
         return result_tuple[0]
     raise exceptions.CannotFindOffererUserEmail()
-
-
-def filter_offerers_with_keywords_string(query: BaseQuery, keywords_string: str) -> BaseQuery:
-    keywords_filter = create_filter_matching_all_keywords_in_any_model(
-        get_filter_matching_ts_query_for_offerer, keywords_string
-    )
-    subquery = (
-        models.Offerer.query.outerjoin(models.Offerer.managedVenues)
-        .filter(keywords_filter)
-        .with_entities(models.Offerer.id)
-        .subquery()
-    )
-    query = query.filter(models.Offerer.id.in_(subquery))
-    return query
 
 
 def check_if_siren_already_exists(siren: str) -> bool:
