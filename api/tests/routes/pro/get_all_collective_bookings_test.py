@@ -406,9 +406,10 @@ class Returns200Test:
         )
 
         # When
-        venue_id = humanize(collective_stock.collectiveOffer.venueId)
         client = client.with_session_auth(pro_user.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={venue_id}")
+        response = client.get(
+            f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={collective_stock.collectiveOffer.venueId}"
+        )
 
         # Then
         expected_bookings_recap = [

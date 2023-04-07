@@ -17,7 +17,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.collective_offers_serialize import CollectiveOfferOfferVenueResponseModel
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
-from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.date import isoformat
@@ -47,8 +46,6 @@ class ListCollectiveBookingsQueryModel(BaseModel):
     booking_status_filter: models.CollectiveBookingStatusFilter | None
     booking_period_beginning_date: str | None
     booking_period_ending_date: str | None
-
-    _dehumanize_venue_id = dehumanize_field("venue_id")
 
     class Config:
         alias_generator = to_camel

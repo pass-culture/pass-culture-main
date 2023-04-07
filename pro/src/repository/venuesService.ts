@@ -35,27 +35,3 @@ export const formatAndOrderVenues = (venues: VenueListItemResponseModel[]) => {
     })
     .sort(sortAlphabeticallyByDisplayName)
 }
-
-// This should be deleted by the end of this PR
-
-export const legacylegacyformatAndOrderVenues = (
-  venues: VenueListItemResponseModel[]
-) => {
-  const sortAlphabeticallyByDisplayName = (a: VenueItem, b: VenueItem) => {
-    const aDisplayName = a.displayName.toLowerCase()
-    const bDisplayName = b.displayName.toLowerCase()
-
-    return aDisplayName < bDisplayName
-      ? -1
-      : aDisplayName > bDisplayName
-      ? 1
-      : 0
-  }
-
-  return venues
-    .map(venue => {
-      const displayName = computeVenueDisplayName(venue)
-      return { id: venue.id, displayName }
-    })
-    .sort(sortAlphabeticallyByDisplayName)
-}
