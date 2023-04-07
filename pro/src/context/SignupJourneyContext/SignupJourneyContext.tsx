@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState } from 'react'
 
+import { IAddress } from 'components/Address'
 import { IActivityFormValues } from 'screens/SignupJourneyForm/Activity/ActivityForm'
 import { DEFAULT_ACTIVITY_FORM_VALUES } from 'screens/SignupJourneyForm/Activity/constants'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { IOffererFormValues } from 'screens/SignupJourneyForm/Offerer/OffererForm'
 
-export interface IOfferer extends IOffererFormValues {
+export interface IOfferer extends IOffererFormValues, IAddress {
   name: string
   publicName?: string
 }
