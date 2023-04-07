@@ -347,8 +347,11 @@ class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
 
 
 class EligibleGrant18Factory(UserFactory):
+    class Params:
+        age = 18
+
     dateOfBirth = LazyAttribute(
-        lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=18, months=5)
+        lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=o.age, months=5)
     )
 
 
@@ -359,6 +362,73 @@ class EligibleUnderageFactory(UserFactory):
     dateOfBirth = LazyAttribute(
         lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=o.age, months=5)
     )
+
+
+class EligibleActivableFactory(EligibleGrant18Factory):
+    @factory.post_generation
+    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        **kwargs: typing.Any,
+    ) -> fraud_models.BeneficiaryFraudCheck | None:
+        import pcapi.core.fraud.factories as fraud_factories
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=obj,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=models.EligibilityType.AGE18,
+            resultContent=fraud_factories.UbbleContentFactory(
+                first_name=obj.firstName,
+                last_name=obj.lastName,
+            ),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=obj,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=models.EligibilityType.AGE18,
+        )
+        obj.phoneValidationStatus = models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=obj,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=models.EligibilityType.AGE18,
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=obj, eligibilityType=models.EligibilityType.AGE18)
+        return None
+
+
+class EligibleActivableUnderageFactory(EligibleUnderageFactory):
+    @factory.post_generation
+    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        **kwargs: typing.Any,
+    ) -> fraud_models.BeneficiaryFraudCheck | None:
+        import pcapi.core.fraud.factories as fraud_factories
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=obj,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.EduconnectContentFactory(
+                first_name=obj.firstName,
+                last_name=obj.lastName,
+            ),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=obj,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=models.EligibilityType.UNDERAGE,
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=obj, eligibilityType=models.EligibilityType.UNDERAGE)
+        return None
 
 
 class ProFactory(BaseFactory):
