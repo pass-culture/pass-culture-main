@@ -42,23 +42,25 @@ def get_active_providers_query() -> BaseQuery:
     return models.Provider.query.filter_by(isActive=True).order_by(models.Provider.name)
 
 
-def get_enabled_providers_for_pro() -> list[models.Provider]:
-    return get_enabled_providers_for_pro_query().all()
+def get_available_providers(venue: Venue) -> BaseQuery:
+    from pcapi.local_providers import AllocineStocks
 
+    query = models.Provider.query.filter_by(isActive=True, enabledForPro=True)
 
-def get_enabled_providers_for_pro_query() -> BaseQuery:
-    return models.Provider.query.filter_by(isActive=True).filter_by(enabledForPro=True).order_by(models.Provider.name)
+    local_classes_to_exclude = set(constants.CINEMA_PROVIDER_NAMES)
+    if pivot := get_cinema_provider_pivot_for_venue(venue):
+        local_classes_to_exclude.remove(pivot.provider.localClass)
 
+    try:
+        AllocineVenue(venue)
+    except exceptions.UnknownVenueToAlloCine:
+        local_classes_to_exclude.add(AllocineStocks.__name__)
 
-def get_providers_enabled_for_pro_excluding_specific_providers(
-    providers_to_exclude: list[str],
-) -> list[models.Provider]:
-    return (
-        models.Provider.query.filter_by(isActive=True, enabledForPro=True)
-        .filter(models.Provider.localClass.notin_(providers_to_exclude) | models.Provider.localClass.is_(None))
-        .order_by(models.Provider.name)
-        .all()
-    )
+    if local_classes_to_exclude:
+        query = query.filter(
+            models.Provider.localClass.notin_(local_classes_to_exclude) | models.Provider.localClass.is_(None)
+        )
+    return query.order_by(models.Provider.name)
 
 
 def get_allocine_theater(venue: Venue) -> models.AllocineTheater | None:
@@ -71,23 +73,6 @@ def get_allocine_pivot(venue: Venue) -> models.AllocinePivot | None:
 
 def get_cinema_provider_pivot_for_venue(venue: Venue) -> models.CinemaProviderPivot | None:
     return models.CinemaProviderPivot.query.filter_by(venue=venue).one_or_none()
-
-
-def get_providers_to_exclude(venue: Venue) -> list[str]:
-    from pcapi.local_providers import AllocineStocks
-
-    cinema_provider_pivot = get_cinema_provider_pivot_for_venue(venue)
-    cinema_provider_class = cinema_provider_pivot.provider.localClass if cinema_provider_pivot else ""
-    providers_to_exclude = [
-        provider_class for provider_class in constants.CINEMA_PROVIDER_NAMES if provider_class != cinema_provider_class
-    ]
-
-    try:
-        AllocineVenue(venue)
-    except exceptions.UnknownVenueToAlloCine:
-        providers_to_exclude.append(AllocineStocks.__name__)
-
-    return providers_to_exclude
 
 
 def get_cds_cinema_details(cinema_id: str) -> models.CDSCinemaDetails:
