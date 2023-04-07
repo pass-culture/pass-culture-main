@@ -52,7 +52,9 @@ class Permissions(enum.Enum):
     MANAGE_OFFERER_TAG = "gérer les tags structure"
     DELETE_OFFERER_TAG = "supprimer un tag (structure, offre, lieu)"
 
-    MANAGE_OFFERS_AND_VENUES_TAGS = "Gérer les tags offres et lieux"
+    MANAGE_OFFERS_AND_VENUES_TAGS = "gérer les tags offres et lieux"
+
+    READ_REIMBURSEMENT_RULES = "visualiser les tarifs dérogatoires"
 
     @classmethod
     def exists(cls, name: str) -> bool:
