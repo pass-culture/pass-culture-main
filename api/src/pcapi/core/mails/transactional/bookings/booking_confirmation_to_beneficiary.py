@@ -76,6 +76,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
             "EVENT_DATE": formatted_event_beginning_date,
             "EVENT_HOUR": formatted_event_beginning_time,
             "OFFER_PRICE": stock_price,
+            "OFFER_PRICE_CATEGORY": booking.priceCategoryLabel,
             "OFFER_TAGS": ",".join([criterion.name for criterion in offer.criteria]),
             "OFFER_TOKEN": bookings_common.get_booking_token(booking),
             "OFFER_CATEGORY": offer.category.id,
