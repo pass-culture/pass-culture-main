@@ -16,6 +16,7 @@ const renderVenueOfferSteps = ({
   hasMissingReimbursementPoint = true,
   dmsStatus = DMSApplicationstatus.EN_CONSTRUCTION,
   dmsInProgress = false,
+  hasAdageId = false,
 }) => {
   const currentUser = {
     id: 'EY',
@@ -34,6 +35,7 @@ const renderVenueOfferSteps = ({
       hasMissingReimbursementPoint={hasMissingReimbursementPoint}
       dmsStatus={dmsStatus}
       dmsInProgress={dmsInProgress}
+      hasAdageId={hasAdageId}
     />,
     { storeOverrides, initialRouterEntries: ['/accueil'] }
   )
@@ -76,5 +78,18 @@ describe('VenueOfferSteps', () => {
     expect(
       screen.getByText('Suivre ma demande de référencement ADAGE')
     ).toBeInTheDocument()
+  })
+
+  it('Should not display informations for teacher link if status procedure is refused ', async () => {
+    renderVenueOfferSteps({
+      hasVenue: false,
+      hasAdageId: false,
+      dmsStatus: DMSApplicationstatus.REFUSE,
+    })
+    expect(
+      screen.queryByText(
+        'Renseigner mes informations à destination des enseignants'
+      )
+    ).not.toBeInTheDocument()
   })
 })
