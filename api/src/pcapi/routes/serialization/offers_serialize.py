@@ -237,8 +237,6 @@ class ListOffersQueryModel(BaseModel):
     period_ending_date: str | None
     collective_offer_type: CollectiveOfferType | None
 
-    _dehumanize_venue_id = dehumanize_field("venue_id")
-
     class Config:
         alias_generator = to_camel
         extra = "forbid"

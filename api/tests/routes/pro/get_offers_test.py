@@ -31,7 +31,7 @@ class Returns200Test:
         offers_factories.ThingOfferFactory(venue=other_venue)
         stock = offers_factories.StockFactory(offer=offer_on_requested_venue)
         client = TestClient(app.test_client()).with_session_auth(email=admin.email)
-        path = f"/offers?venueId={humanize(requested_venue.id)}"
+        path = f"/offers?venueId={requested_venue.id}"
 
         # when
         with assert_no_duplicated_queries():
@@ -96,7 +96,7 @@ class Returns200Test:
         response = (
             TestClient(app.test_client())
             .with_session_auth(email=pro.email)
-            .get(f"/offers?venueId={humanize(requested_venue.id)}")
+            .get(f"/offers?venueId={requested_venue.id}")
         )
 
         # then
@@ -113,11 +113,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_session_auth(email=pro.email)
-            .get("/offers?venueId=" + humanize(venue.id))
-        )
+        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get(f"/offers?venueId={venue.id}")
 
         # then
         assert response.status_code == 200
@@ -297,17 +293,6 @@ class Returns200Test:
 
 
 class Returns404Test:
-    def when_requested_venue_does_not_exist(self, app, db_session):
-        # Given
-        pro = users_factories.ProFactory()
-
-        # when
-        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get("/offers?venueId=ABC")
-
-        # then
-        assert response.status_code == 404
-        assert response.json == {"global": ["La page que vous recherchez n'existe pas"]}
-
     def should_return_no_offers_when_user_has_no_rights_on_requested_venue(self, app, db_session):
         # Given
         pro = users_factories.ProFactory()
@@ -315,11 +300,7 @@ class Returns404Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_session_auth(email=pro.email)
-            .get(f"/offers?venueId={humanize(venue.id)}")
-        )
+        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get(f"/offers?venueId={venue.id}")
 
         # then
         assert response.status_code == 200
@@ -334,11 +315,7 @@ class Returns404Test:
         offers_factories.ThingOfferFactory(venue=venue)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_session_auth(email=pro.email)
-            .get(f"/offers?venueId={humanize(venue.id)}")
-        )
+        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get(f"/offers?venueId={venue.id}")
 
         # then
         assert response.status_code == 200

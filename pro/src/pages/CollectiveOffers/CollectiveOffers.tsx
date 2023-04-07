@@ -13,7 +13,7 @@ import { Audience } from 'core/shared/types'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import { formatAndOrderVenues } from 'repository/venuesService'
+import { legacylegacyformatAndOrderVenues } from 'repository/venuesService'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -78,7 +78,7 @@ const CollectiveOffers = (): JSX.Element => {
     const loadAllVenuesByProUser = () =>
       getVenuesForOffererAdapter({ offererId: offerer?.id }).then(
         venuesResponse =>
-          setVenues(formatAndOrderVenues(venuesResponse.payload))
+          setVenues(legacylegacyformatAndOrderVenues(venuesResponse.payload))
       )
 
     loadAllVenuesByProUser()
