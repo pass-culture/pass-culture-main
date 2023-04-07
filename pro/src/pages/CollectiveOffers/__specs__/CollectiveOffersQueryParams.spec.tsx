@@ -84,12 +84,14 @@ const categoriesAndSubcategories = {
 const proVenues = [
   {
     id: 'JI',
+    nonHumanizedId: 1,
     name: 'Ma venue',
     offererName: 'Mon offerer',
     isVirtual: false,
   },
   {
     id: 'JQ',
+    nonHumanizedId: 2,
     name: 'Ma venue virtuelle',
     offererName: 'Mon offerer',
     isVirtual: true,
@@ -211,7 +213,9 @@ describe('route CollectiveOffers', () => {
       await userEvent.selectOptions(venueSelect, firstVenueOption)
       await userEvent.click(screen.getByText('Lancer la recherche'))
       // Then
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives?lieu=JI')
+      expect(mockNavigate).toHaveBeenCalledWith(
+        `/offres/collectives?lieu=${proVenues[0].nonHumanizedId}`
+      )
     })
 
     it('should have venue value be removed when user asks for all venues', async () => {

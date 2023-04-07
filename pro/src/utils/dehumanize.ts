@@ -9,7 +9,7 @@ import type { Location } from 'react-router-dom'
 import { parse } from 'utils/query-string'
 
 const paramsToRedirect = ['offererId', 'offerId', 'venueId']
-const queryParamsToRedirect = ['structure', 'lieu']
+const queryParamsToRedirect = ['structure', 'lieu', 'offerVenueId']
 
 export const dehumanizeId = (humanId: string) => {
   try {
