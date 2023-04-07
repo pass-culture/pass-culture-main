@@ -85,32 +85,6 @@ class GetAllOfferersForUserTest:
         # Then
         assert len(offerers) == 0
 
-    def test_search_keywords_in_offerer_name(self):
-        offerer1 = offerers_factories.OffererFactory(name="cinéma")
-        offerer2 = offerers_factories.OffererFactory(name="théâtre")
-        pro = users_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer1)
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer2)
-
-        offerers = repository.get_all_offerers_for_user(user=pro, keywords="cinema").all()
-
-        assert len(offerers) == 1
-        assert offerers == [offerer1]
-
-    def test_search_keywords_in_venue_name(self):
-        offerer1 = offerers_factories.OffererFactory(name="dummy")
-        offerers_factories.VenueFactory(managingOfferer=offerer1, name="cinéma")
-        offerer2 = offerers_factories.OffererFactory(name="dummy")
-        offerers_factories.VenueFactory(managingOfferer=offerer2, name="théâtre")
-        pro = users_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer1)
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer2)
-
-        offerers = repository.get_all_offerers_for_user(user=pro, keywords="cinema").all()
-
-        assert len(offerers) == 1
-        assert offerers == [offerer1]
-
     class WithValidatedFilterTest:
         def should_return_all_pro_offerers_when_filter_is_none(self) -> None:
             # Given
@@ -171,81 +145,6 @@ class FindNewOffererUserEmailTest:
     def test_find_unknown_email(self):
         with pytest.raises(exceptions.CannotFindOffererUserEmail):
             repository.find_new_offerer_user_email(offerer_id=1)
-
-
-class FilterOfferersWithKeywordsStringTest:
-    def test_find_filtered_offerers_with_keywords(self):
-        offerer_with_only_virtual_venue_with_offer = offerers_factories.OffererFactory(siren="123456785")
-        offerer_with_both_venues_offer_on_both = offerers_factories.OffererFactory(siren="123456782")
-        offerer_with_both_venues_offer_on_virtual = offerers_factories.OffererFactory(siren="123456783")
-        offerer_with_both_venues_offer_on_not_virtual = offerers_factories.OffererFactory(siren="123456784")
-
-        virtual_venue_with_offer_1 = offerers_factories.VenueFactory(
-            managingOfferer=offerer_with_only_virtual_venue_with_offer, isVirtual=True, siret=None
-        )
-        virtual_venue_with_offer_3 = offerers_factories.VenueFactory(
-            managingOfferer=offerer_with_both_venues_offer_on_both,
-            isVirtual=True,
-            siret=None,
-            publicName="Librairie des mots perdus",
-        )
-        venue_with_offer_3 = offerers_factories.VenueFactory(
-            managingOfferer=offerer_with_both_venues_offer_on_both,
-            siret="12345678212345",
-            publicName="Librairie des mots perdus",
-        )
-        virtual_venue_with_offer_4 = offerers_factories.VenueFactory(
-            managingOfferer=offerer_with_both_venues_offer_on_virtual,
-            isVirtual=True,
-            siret=None,
-            publicName="Librairie des mots perdus",
-        )
-        venue_with_offer_5 = offerers_factories.VenueFactory(
-            managingOfferer=offerer_with_both_venues_offer_on_not_virtual,
-            siret="12345678412345",
-            publicName="Librairie des mots perdus",
-        )
-        offerers_factories.VenueFactory(publicName="something else")
-
-        offers_factories.ThingOfferFactory(venue=virtual_venue_with_offer_1, url="http://url.com")
-        offers_factories.ThingOfferFactory(venue=virtual_venue_with_offer_3, url="http://url.com")
-        offers_factories.ThingOfferFactory(venue=virtual_venue_with_offer_4, url="http://url.com")
-        offers_factories.EventOfferFactory(venue=venue_with_offer_3)
-        offers_factories.EventOfferFactory(venue=venue_with_offer_5)
-
-        one_keyword_search = repository.filter_offerers_with_keywords_string(
-            models.Offerer.query.join(models.Venue), "perdus"
-        )
-        partial_keyword_search = repository.filter_offerers_with_keywords_string(
-            models.Offerer.query.join(models.Venue), "Libr"
-        )
-        two_keywords_search = repository.filter_offerers_with_keywords_string(
-            models.Offerer.query.join(models.Venue), "Librairie perd"
-        )
-        two_partial_keywords_search = repository.filter_offerers_with_keywords_string(
-            models.Offerer.query.join(models.Venue), "Lib perd"
-        )
-
-        assert {
-            offerer_with_both_venues_offer_on_both,
-            offerer_with_both_venues_offer_on_virtual,
-            offerer_with_both_venues_offer_on_not_virtual,
-        } == set(one_keyword_search)
-        assert {
-            offerer_with_both_venues_offer_on_both,
-            offerer_with_both_venues_offer_on_virtual,
-            offerer_with_both_venues_offer_on_not_virtual,
-        } == set(partial_keyword_search)
-        assert {
-            offerer_with_both_venues_offer_on_both,
-            offerer_with_both_venues_offer_on_virtual,
-            offerer_with_both_venues_offer_on_not_virtual,
-        } == set(two_keywords_search)
-        assert {
-            offerer_with_both_venues_offer_on_both,
-            offerer_with_both_venues_offer_on_virtual,
-            offerer_with_both_venues_offer_on_not_virtual,
-        } == set(two_partial_keywords_search)
 
 
 @pytest.mark.usefixtures("db_session")
