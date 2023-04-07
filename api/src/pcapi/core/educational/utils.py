@@ -5,8 +5,10 @@ import logging
 
 import jwt
 
+from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.core.users.utils import ALGORITHM_RS_256
+from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
@@ -70,3 +72,10 @@ def create_adage_jwt_fake_valid_token() -> str:
             key=reader.read().decode(),
             algorithm=ALGORITHM_RS_256,
         )
+
+
+def get_image_from_url(url: str) -> bytes:
+    response = requests.get(url)
+    if response.status_code != 200:
+        raise educational_exceptions.CantGetImageFromUrl
+    return response.content

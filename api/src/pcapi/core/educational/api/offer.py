@@ -17,6 +17,8 @@ from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.exceptions import StudentsNotOpenedYet
 from pcapi.core.educational.models import HasImageMixin
+from pcapi.core.educational.utils import get_image_from_url
+from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -674,6 +676,7 @@ def duplicate_offer_and_stock(original_offer: educational_models.CollectiveOffer
     offerer = original_offer.venue.managingOfferer
     if offerer.validationStatus != validation_status_mixin.ValidationStatus.VALIDATED:
         raise exceptions.OffererNotAllowedToDuplicate()
+
     offer = educational_models.CollectiveOffer(
         isActive=original_offer.isActive,
         venue=original_offer.venue,
@@ -696,8 +699,9 @@ def duplicate_offer_and_stock(original_offer: educational_models.CollectiveOffer
         mentalDisabilityCompliant=original_offer.mentalDisabilityCompliant,
         motorDisabilityCompliant=original_offer.motorDisabilityCompliant,
         visualDisabilityCompliant=original_offer.visualDisabilityCompliant,
+        imageCredit=original_offer.imageCredit,
+        imageHasOriginal=original_offer.imageHasOriginal,
     )
-
     educational_models.CollectiveStock(
         beginningDatetime=original_offer.collectiveStock.beginningDatetime,
         collectiveOffer=offer,
@@ -709,4 +713,19 @@ def duplicate_offer_and_stock(original_offer: educational_models.CollectiveOffer
 
     db.session.add(offer)
     db.session.commit()
+
+    if original_offer.imageUrl:
+        image_file = get_image_from_url(original_offer.imageUrl)
+
+        offer.imageId = offer._generate_new_image_id(old_id=None)
+
+        store_public_object(
+            folder=offer.FOLDER,
+            object_id=offer._get_image_storage_id(),
+            blob=image_file,
+            content_type="image/jpeg",
+        )
+
+        db.session.commit()
+
     return offer
