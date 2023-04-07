@@ -56,7 +56,7 @@ def _create_offers(provider_name: str, provider: Provider, provider_type: str = 
         VirtualVenueFactory(name=f"Livre - {provider_name} Lieu Virtuel", managingOfferer=book_user_offerer.offerer)
 
     user_bene = BeneficiaryGrant18Factory(email=f"jeune-has-{provider_name}-external-bookings@example.com")
-    for i in range(0, 10):
+    for i in range(9):
         if provider_type != "book":
             offer_solo = EventOfferFactory(
                 name=f"Ciné solo ({provider_name}) {i}",
