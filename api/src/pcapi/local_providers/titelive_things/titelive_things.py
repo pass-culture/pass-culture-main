@@ -16,7 +16,6 @@ from pcapi.domain.titelive import get_date_from_filename
 from pcapi.domain.titelive import read_things_date
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.utils.string_processing import trim_with_elipsis
 
 
 logger = logging.getLogger(__name__)
@@ -76,6 +75,11 @@ SCHOOL_RELATED_CSR_CODE = [
     "9812",
     "9814",
 ]
+
+
+def trim_with_ellipsis(string: str, length: int) -> str:
+    length_wo_ellipsis = length - 1
+    return string[:length_wo_ellipsis] + (string[length_wo_ellipsis:] and "…")
 
 
 class TiteLiveThings(LocalProvider):
@@ -166,7 +170,7 @@ class TiteLiveThings(LocalProvider):
         return None
 
     def fill_object_attributes(self, product: offers_models.Product) -> None:
-        product.name = trim_with_elipsis(self.product_infos["titre"], 140)
+        product.name = trim_with_ellipsis(self.product_infos["titre"], 140)
         product.datePublished = read_things_date(self.product_infos["date_parution"])
         if not self.product_subcategory_id:
             raise ValueError("product subcategory id is missing")
@@ -334,7 +338,7 @@ def get_extra_data_from_infos(infos: dict) -> offers_models.OfferExtraData:
     if infos["libelle_serie_bd"] != "":
         extra_data["comic_series"] = infos["libelle_serie_bd"]
     if infos["commentaire"] != "":
-        extra_data["comment"] = trim_with_elipsis(infos["commentaire"], 92)
+        extra_data["comment"] = trim_with_ellipsis(infos["commentaire"], 92)
     if infos["editeur"] != "":
         extra_data["editeur"] = infos["editeur"]
     if infos["date_parution"] != "":
