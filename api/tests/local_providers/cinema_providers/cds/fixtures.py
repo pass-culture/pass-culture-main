@@ -93,3 +93,27 @@ MOVIE_OTHER_SHOW_2 = ShowCDS(
     screen=IdObjectCDS(id=1),
     media=IdObjectCDS(id=88888),
 )
+
+CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE = {
+    "id": "cinema_id_test",
+    "internetsalegaugeactive": True,
+    "cinemaParameters": [
+        {
+            "id": 1,
+            "key": "scheduleTemplate",
+            "value": None,
+        }
+    ],
+}
+
+CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_FALSE = {
+    "id": "cinema_id_test",
+    "internetsalegaugeactive": False,
+    "cinemaParameters": [
+        {
+            "id": 1,
+            "key": "scheduleTemplate",
+            "value": None,
+        }
+    ],
+}
