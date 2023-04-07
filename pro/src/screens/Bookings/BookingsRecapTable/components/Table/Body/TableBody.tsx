@@ -7,6 +7,7 @@ import {
 } from 'apiClient/v1'
 import { Audience } from 'core/shared'
 
+import styles from './TableBody.module.scss'
 import CollectiveTableRow from './TableRow/CollectiveTableRow'
 import IndividualTableRow from './TableRow/IndividualTableRow'
 
@@ -38,7 +39,7 @@ const TableBody = <
   bookingId,
 }: ITableBodyProps<T>) => {
   return (
-    <tbody className="bookings-body" {...tableBodyProps}>
+    <tbody className={styles['bookings-body']} {...tableBodyProps}>
       {page.map((row, index) => {
         prepareRow(row)
         return isCollectiveRow(row, audience) ? (

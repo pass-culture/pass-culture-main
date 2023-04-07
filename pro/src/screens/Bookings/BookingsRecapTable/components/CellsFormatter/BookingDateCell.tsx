@@ -7,6 +7,8 @@ import {
   toDateStrippedOfTimezone,
 } from 'utils/date'
 
+import styles from './BookingDateCell.module.scss'
+
 const BookingDateCell = ({
   bookingDateTimeIsoString,
 }: {
@@ -20,7 +22,7 @@ const BookingDateCell = ({
     <div>
       <span>{bookingDateDay}</span>
       <br />
-      <span className="booking-date-subtitle">{bookingDateHour}</span>
+      <span className={styles['booking-date-subtitle']}>{bookingDateHour}</span>
     </div>
   )
 }
