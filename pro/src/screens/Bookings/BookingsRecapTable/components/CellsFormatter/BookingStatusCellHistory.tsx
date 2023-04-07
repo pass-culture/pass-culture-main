@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { format } from 'date-fns-tz'
 import React from 'react'
 
@@ -8,6 +9,8 @@ import {
 import { toDateStrippedOfTimezone } from 'utils/date'
 
 import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'
+
+import styles from './BookingStatusCellHistory.module.scss'
 
 const BookingStatusCellHistory = ({
   bookingStatusHistory,
@@ -28,7 +31,10 @@ const BookingStatusCellHistory = ({
     return (
       <li key={displayInfoFromStatus.status}>
         <span
-          className={`colored-disc ${displayInfoFromStatus.historyClassName}`}
+          className={cn(
+            styles['colored-disc'],
+            styles[displayInfoFromStatus.historyClassName]
+          )}
         />
         {`${displayInfoFromStatus.label} : ${computeDateForStatus(
           item,
@@ -50,7 +56,9 @@ const BookingStatusCellHistory = ({
   }
 
   return (
-    <div className="booking-status-history">{bookingsStatusHistoryItems}</div>
+    <div className={styles['booking-status-history']}>
+      {bookingsStatusHistoryItems}
+    </div>
   )
 }
 

@@ -1,0 +1,26 @@
+@use "styles/variables/_colors.scss" as colors;
+
+.booking-status-booked {
+  background-color: colors.$secondary;
+}
+
+.booking-status-pending {
+  background-color: colors.$booking-pending-status;
+  color: colors.$black;
+}
+
+.booking-status-validated {
+  background-color: colors.$accent;
+}
+
+.booking-status-cancelled {
+  background-color: colors.$grey-dark;
+}
+
+.booking-status-reimbursed {
+  background-color: colors.$green-valid;
+}
+
+.booking-status-confirmed {
+  background-color: colors.$black;
+}

@@ -18,37 +18,36 @@
 }
 
 .booking-offer-additional-info {
-    @include fonts.caption;
+  @include fonts.caption;
 
-    color: colors.$grey-dark;
-    display: flex;
-    font-size: rem.torem(14px);
-    align-items: center;
+  color: colors.$grey-dark;
+  display: flex;
+  font-size: rem.torem(14px);
+  align-items: center;
 }
 
 .stocks {
-    display: flex;
+  display: flex;
 
-    .sold-out-container {
-      height: rem.torem(24px);
+  .sold-out-container {
+    height: rem.torem(24px);
+  }
+
+  .sold-out-dates {
+    background-color: colors.$white;
+    border-radius: rem.torem(4px);
+    box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 rgb(0 0 0 / 30%);
+    display: none;
+    padding: rem.torem(8px);
+    position: absolute;
+  }
+
+  .sold-out-icon {
+    &:hover,
+    &:focus {
+      & ~ .sold-out-dates {
+        display: flex;
+      }
     }
-  
-    .sold-out-dates {
-        background-color: colors.$white;
-        border-radius: rem.torem(4px);
-        box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 rgb(0 0 0 / 30%);
-        display: none;
-        padding: rem.torem(8px);
-        position: absolute;
-    }
-    
-    .sold-out-icon {
-        &:hover,
-        &:focus {
-            & ~ .sold-out-dates {
-            display: flex;
-            }
-        }
-    }
+  }
 }
-  
