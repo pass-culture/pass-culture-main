@@ -17,7 +17,6 @@ export const serializeOffererApi = (
     hasAvailablePricingPoints: offerer.hasAvailablePricingPoints || undefined,
     hasDigitalVenueAtLeastOneOffer:
       offerer.hasDigitalVenueAtLeastOneOffer || undefined,
-    hasMissingBankInformation: offerer.hasMissingBankInformation || undefined,
     id: offerer.id || '',
     idAtProviders: offerer.idAtProviders || '',
     isValidated: offerer.isValidated || undefined,

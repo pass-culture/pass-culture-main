@@ -68,7 +68,6 @@ const Homepage = (): JSX.Element => {
             fieldsUpdated: [],
             hasAvailablePricingPoints: false,
             hasDigitalVenueAtLeastOneOffer: false,
-            hasMissingBankInformation: true,
             id: offererId,
             isActive: false,
             isValidated: false,
