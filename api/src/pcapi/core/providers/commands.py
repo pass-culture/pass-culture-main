@@ -38,7 +38,10 @@ def _synchronize_venue_providers_apis() -> None:
                     extra={"provider": provider.name, "venue_provider": venue_provider_id},
                 )
                 tasks.synchronize_venue_providers_task.delay(
-                    tasks.SynchronizeVenueProvidersRequest(venue_provider_ids=[venue_provider_id])
+                    tasks.SynchronizeVenueProvidersRequest(
+                        provider_id=provider.id,
+                        venue_provider_ids=[venue_provider_id],
+                    )
                 )
         else:
             logger.info(
@@ -46,7 +49,10 @@ def _synchronize_venue_providers_apis() -> None:
                 extra={"provider": provider.name, "venue_count": len(venue_provider_ids)},
             )
             tasks.synchronize_venue_providers_task.delay(
-                tasks.SynchronizeVenueProvidersRequest(venue_provider_ids=venue_provider_ids)
+                tasks.SynchronizeVenueProvidersRequest(
+                    provider_id=provider.id,
+                    venue_provider_ids=venue_provider_ids,
+                )
             )
 
 
