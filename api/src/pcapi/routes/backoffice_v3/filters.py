@@ -6,6 +6,7 @@ from urllib.parse import urlunparse
 
 from flask import Flask
 from markupsafe import Markup
+import psycopg2.extras
 import pytz
 
 from pcapi.core.bookings import models as bookings_models
@@ -13,6 +14,7 @@ from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import utils as finance_utils
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import constants as users_constants
@@ -78,6 +80,17 @@ def format_date_time(data: datetime.date | datetime.datetime) -> str:
     return format_date(data, strformat="%d/%m/%Y à %Hh%M")
 
 
+def format_timespan(timespan: psycopg2.extras.DateTimeRange) -> str:
+    if not timespan:
+        return ""
+    start = pytz.utc.localize(timespan.lower).astimezone(finance_utils.ACCOUNTING_TIMEZONE).strftime("%d/%m/%Y")
+    if timespan.upper:
+        end = pytz.utc.localize(timespan.upper).astimezone(finance_utils.ACCOUNTING_TIMEZONE).strftime("%d/%m/%Y")
+    else:
+        end = "∞"
+    return f"{start} → {end}"
+
+
 def format_amount(amount: float | None) -> str:
     if amount is None:
         amount = 0.0
@@ -97,6 +110,13 @@ def format_rate(rate: float | None) -> str:
         return "N/A"
 
     return f"{rate}\u202f%".replace(".", ",")
+
+
+def format_rate_multiply_by_100(rate: float | None) -> str:
+    if rate is None:
+        return ""
+
+    return f"{rate * 100:.2f} %".replace(".", ",")
 
 
 def format_bool(data: bool | None) -> str:
@@ -191,6 +211,16 @@ def format_offer_category(subcategory_id: str) -> str:
     return ""
 
 
+def format_subcategories(subcategories: list[str]) -> str:
+    if subcategories == []:
+        return ""
+    labels = sorted(
+        subcategories_v2.ALL_SUBCATEGORIES_DICT[subcategory_id].pro_label for subcategory_id in subcategories
+    )
+    displayed_labels = ", ".join(labels)
+    return displayed_labels
+
+
 def format_dms_status(status: str) -> str:
     match status:
         case "accepte":
@@ -279,12 +309,15 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_bool"] = format_bool
     app.jinja_env.filters["format_cents"] = format_cents
     app.jinja_env.filters["format_rate"] = format_rate
+    app.jinja_env.filters["format_rate_multiply_by_100"] = format_rate_multiply_by_100
     app.jinja_env.filters["format_string_list"] = format_string_list
     app.jinja_env.filters["format_date"] = format_date
     app.jinja_env.filters["format_date_time"] = format_date_time
+    app.jinja_env.filters["format_timespan"] = format_timespan
     app.jinja_env.filters["format_deposit_type"] = format_deposit_type
     app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status
     app.jinja_env.filters["format_offer_category"] = format_offer_category
+    app.jinja_env.filters["format_subcategories"] = format_subcategories
     app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
     app.jinja_env.filters["format_dms_status"] = format_dms_status

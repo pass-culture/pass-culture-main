@@ -18,6 +18,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices impo
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_config import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_tags import create_industrial_offerer_tags
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_custom_reimbursement_rule import (
+    create_industrial_offerer_with_custom_reimbursement_rule,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offers_with_activation_codes import (
     create_industrial_offers_with_activation_codes,
@@ -124,3 +127,5 @@ def save_industrial_sandbox() -> None:
     create_offerer_with_several_venues()
 
     create_offers_with_price_categories()
+
+    create_industrial_offerer_with_custom_reimbursement_rule()

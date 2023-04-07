@@ -28,6 +28,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.SEARCH_BOOKINGS,
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.READ_OFFERS,
+        perm_models.Permissions.READ_REIMBURSEMENT_RULES,
     ],
     "support-PRO-N2": [
         perm_models.Permissions.MOVE_SIRET,
@@ -49,7 +50,9 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_OFFERS,
         perm_models.Permissions.READ_OFFERS,
     ],
-    "daf": [],
+    "daf": [
+        perm_models.Permissions.READ_REIMBURSEMENT_RULES,
+    ],
     "bizdev": [],
     "programmation": [
         perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT,

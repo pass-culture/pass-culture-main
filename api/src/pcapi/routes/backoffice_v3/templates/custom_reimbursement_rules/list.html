@@ -1,0 +1,82 @@
+{% import "components/forms.html" as forms with context %}
+{% import "components/links.html" as links %}
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="pt-3 px-5"
+       data-toggle="filters"
+       data-toggle-id="custom-reimbursement-rules">
+    <h2 class="fw-light">Tarifs dérogatoires</h2>
+    <div class="col-2">
+      <div class="py-2">
+        <button type="submit"
+                class="btn btn-primary filters-toggle-button"
+                disabled>
+          <span class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"></span>
+          <span class="visually-hidden">Chargement...</span>
+        </button>
+      </div>
+    </div>
+    <div class="filters-container">{{ forms.build_filters_form(form, dst) }}</div>
+    <div>
+      {% if rows %}
+        <div class="d-flex justify-content-between">
+          <p class="lead num-results">{{ rows|length }} résultat{{ "s" if rows|length > 1 else "" }}</p>
+        </div>
+        <table class="table mb-4">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">ID règle</th>
+              <th scope="col">Structure</th>
+              <th scope="col">SIREN</th>
+              <th scope="col">Lieu</th>
+              <th scope="col">Offre</th>
+              <th scope="col">Taux de remboursement</th>
+              <th scope="col">Montant remboursé</th>
+              <th scope="col">Sous-catégories</th>
+              <th scope="col">Date d'application</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for reimbursement_rule in rows %}
+              <tr>
+                <td>
+                  <div class="dropdown">
+                    <button type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            class="btn p-0">
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                  </div>
+                </td>
+                <td>{{ reimbursement_rule.id }}</td>
+                {% if reimbursement_rule.offerer %}
+                  <td>{{ links.build_offerer_name_to_pc_pro_link(reimbursement_rule.offerer) }}</td>
+                  <td>{{ reimbursement_rule.offerer.siren }}</td>
+                  <td></td>
+                  <td></td>
+                {% else %}
+                  <td>{{ links.build_offerer_name_to_pc_pro_link(reimbursement_rule.offer.venue.managingOfferer) }}</td>
+                  <td>{{ reimbursement_rule.offer.venue.managingOfferer.siren }}</td>
+                  <td>{{ links.build_venue_name_to_pc_pro_link(reimbursement_rule.offer.venue) }}</td>
+                  <td>{{ links.build_offer_name_to_pc_pro_link(reimbursement_rule.offer) }}</td>
+                {% endif %}
+                <td>{{ reimbursement_rule.rate | format_rate_multiply_by_100 }}</td>
+                <td>{{ reimbursement_rule.amount | format_amount if reimbursement_rule.amount else "" }}</td>
+                <td>
+                  {{ reimbursement_rule.subcategories | format_subcategories }}
+                </td>
+                <td>
+                  {{ reimbursement_rule.timespan | format_timespan }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
+  </div>
+{% endblock page %}
