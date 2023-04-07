@@ -46,7 +46,7 @@ class Return200Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 200
@@ -61,6 +61,7 @@ class Return200Test:
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "id": humanize(stock.id),
+            "nonHumanizedId": stock.id,
             "price": 1500.0,
             "numberOfTickets": 38,
             "isEducationalStockEditable": True,
@@ -88,7 +89,7 @@ class Return200Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 200
@@ -100,6 +101,7 @@ class Return200Test:
             "beginningDatetime": "2021-12-18T00:00:00Z",
             "bookingLimitDatetime": "2021-12-18T00:00:00Z",
             "id": humanize(stock.id),
+            "nonHumanizedId": stock.id,
             "price": 1200.0,
             "numberOfTickets": 32,
             "isEducationalStockEditable": True,
@@ -125,7 +127,7 @@ class Return200Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 200
@@ -155,7 +157,7 @@ class Return200Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 200
@@ -192,7 +194,7 @@ class Return200Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 200
@@ -233,7 +235,7 @@ class Return200Test:
         stock_edition_payload = {}
 
         client.with_session_auth("user@example.com")
-        client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert len(adage_api_testing.adage_requests) == 0
@@ -269,7 +271,7 @@ class Return200Test:
         }
 
         client.with_session_auth("user@example.com")
-        client.patch(f"/collective/stocks/{humanize(collective_stock.id)}", json=stock_edition_payload)
+        client.patch(f"/collective/stocks/{collective_stock.id}", json=stock_edition_payload)
 
         # Then
         edited_collective_booking = CollectiveBooking.query.get(collective_booking.id)
@@ -294,7 +296,7 @@ class Return403Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 403
@@ -316,7 +318,7 @@ class Return403Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 403
@@ -340,7 +342,7 @@ class Return403Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 403
@@ -368,7 +370,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 400
@@ -395,7 +397,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 400
@@ -422,7 +424,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 400
@@ -445,7 +447,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 200
@@ -472,7 +474,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 403
@@ -494,7 +496,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 400
@@ -514,7 +516,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 400
@@ -534,7 +536,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 400
@@ -560,7 +562,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 400
@@ -587,7 +589,7 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         # Then
         assert response.status_code == 400

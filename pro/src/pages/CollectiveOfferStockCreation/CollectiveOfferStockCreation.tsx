@@ -83,7 +83,7 @@ export const CollectiveOfferStockCreation = ({
       const response = offer.collectiveStock
         ? await patchCollectiveStockAdapter({
             offer,
-            stockId: offer.collectiveStock.id,
+            stockId: offer.collectiveStock.nonHumanizedId,
             values,
             initialValues,
           })

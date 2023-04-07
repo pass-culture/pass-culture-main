@@ -153,6 +153,7 @@ class Returns200Test:
             "isBookable": True,
             "collectiveStock": {
                 "id": humanize(duplicate.collectiveStock.id),
+                "nonHumanizedId": duplicate.collectiveStock.id,
                 "isBooked": False,
                 "isCancellable": False,
                 "beginningDatetime": format_into_utc_date(offer.collectiveStock.beginningDatetime),
