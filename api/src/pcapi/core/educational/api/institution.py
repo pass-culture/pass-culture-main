@@ -42,6 +42,7 @@ def search_educational_institution(
     city: str | None,
     postal_code: str | None,
     limit: int,
+    uai: str | None,
 ) -> educational_models.EducationalInstitution:
     return educational_repository.search_educational_institution(
         educational_institution_id=educational_institution_id,
@@ -50,6 +51,7 @@ def search_educational_institution(
         postal_code=postal_code,
         institution_type=institution_type,
         limit=limit,
+        uai=uai,
     )
 
 

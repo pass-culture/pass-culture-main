@@ -27,7 +27,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
         assert response.json == [
             {
                 "id": educational_institution1.id,
-                "institutionId": educational_institution1.institutionId,
+                "uai": educational_institution1.institutionId,
                 "name": educational_institution1.name,
                 "postalCode": educational_institution1.postalCode,
                 "city": educational_institution1.city,
@@ -35,7 +35,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
             },
             {
                 "id": educational_institution2.id,
-                "institutionId": educational_institution2.institutionId,
+                "uai": educational_institution2.institutionId,
                 "name": educational_institution2.name,
                 "postalCode": educational_institution2.postalCode,
                 "city": educational_institution2.city,
@@ -43,7 +43,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
             },
             {
                 "id": educational_institution3.id,
-                "institutionId": educational_institution3.institutionId,
+                "uai": educational_institution3.institutionId,
                 "name": educational_institution3.name,
                 "postalCode": educational_institution3.postalCode,
                 "city": educational_institution3.city,
@@ -51,7 +51,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
             },
             {
                 "id": educational_institution4.id,
-                "institutionId": educational_institution4.institutionId,
+                "uai": educational_institution4.institutionId,
                 "name": educational_institution4.name,
                 "postalCode": educational_institution4.postalCode,
                 "city": educational_institution4.city,
@@ -59,7 +59,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
             },
             {
                 "id": educational_institution5.id,
-                "institutionId": educational_institution5.institutionId,
+                "uai": educational_institution5.institutionId,
                 "name": educational_institution5.name,
                 "postalCode": educational_institution5.postalCode,
                 "city": educational_institution5.city,
@@ -67,7 +67,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
             },
             {
                 "id": educational_institution6.id,
-                "institutionId": educational_institution6.institutionId,
+                "uai": educational_institution6.institutionId,
                 "name": educational_institution6.name,
                 "postalCode": educational_institution6.postalCode,
                 "city": educational_institution6.city,
@@ -91,7 +91,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
         assert response.json == [
             {
                 "id": educational_institution1.id,
-                "institutionId": educational_institution1.institutionId,
+                "uai": educational_institution1.institutionId,
                 "name": educational_institution1.name,
                 "postalCode": educational_institution1.postalCode,
                 "city": educational_institution1.city,
@@ -108,7 +108,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
         assert response.json == [
             {
                 "id": educational_institution1.id,
-                "institutionId": educational_institution1.institutionId,
+                "uai": educational_institution1.institutionId,
                 "name": educational_institution1.name,
                 "postalCode": educational_institution1.postalCode,
                 "city": educational_institution1.city,
@@ -133,7 +133,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
         assert response.json == [
             {
                 "id": educational_institution1.id,
-                "institutionId": educational_institution1.institutionId,
+                "uai": educational_institution1.institutionId,
                 "name": educational_institution1.name,
                 "postalCode": educational_institution1.postalCode,
                 "city": educational_institution1.city,
@@ -157,7 +157,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
         assert response.json == [
             {
                 "id": educational_institution1.id,
-                "institutionId": educational_institution1.institutionId,
+                "uai": educational_institution1.institutionId,
                 "name": educational_institution1.name,
                 "postalCode": educational_institution1.postalCode,
                 "city": educational_institution1.city,
@@ -174,7 +174,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
         assert response.json == [
             {
                 "id": educational_institution1.id,
-                "institutionId": educational_institution1.institutionId,
+                "uai": educational_institution1.institutionId,
                 "name": educational_institution1.name,
                 "postalCode": educational_institution1.postalCode,
                 "city": educational_institution1.city,
@@ -198,7 +198,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
         assert response.json == [
             {
                 "id": educational_institution1.id,
-                "institutionId": educational_institution1.institutionId,
+                "uai": educational_institution1.institutionId,
                 "name": educational_institution1.name,
                 "postalCode": educational_institution1.postalCode,
                 "city": educational_institution1.city,
@@ -215,7 +215,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
         assert response.json == [
             {
                 "id": educational_institution1.id,
-                "institutionId": educational_institution1.institutionId,
+                "uai": educational_institution1.institutionId,
                 "name": educational_institution1.name,
                 "postalCode": educational_institution1.postalCode,
                 "city": educational_institution1.city,
@@ -239,7 +239,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
         assert response.json == [
             {
                 "id": educational_institution1.id,
-                "institutionId": educational_institution1.institutionId,
+                "uai": educational_institution1.institutionId,
                 "name": educational_institution1.name,
                 "postalCode": educational_institution1.postalCode,
                 "city": educational_institution1.city,
@@ -256,7 +256,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
         assert response.json == [
             {
                 "id": educational_institution1.id,
-                "institutionId": educational_institution1.institutionId,
+                "uai": educational_institution1.institutionId,
                 "name": educational_institution1.name,
                 "postalCode": educational_institution1.postalCode,
                 "city": educational_institution1.city,
@@ -289,7 +289,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
         assert response.json == [
             {
                 "id": educational_institution1.id,
-                "institutionId": educational_institution1.institutionId,
+                "uai": educational_institution1.institutionId,
                 "name": educational_institution1.name,
                 "postalCode": educational_institution1.postalCode,
                 "city": educational_institution1.city,
@@ -314,7 +314,7 @@ class CollectiveOffersGetEducationalInstitutionTest:
         assert response.json == [
             {
                 "id": educational_institution1.id,
-                "institutionId": educational_institution1.institutionId,
+                "uai": educational_institution1.institutionId,
                 "name": educational_institution1.name,
                 "postalCode": educational_institution1.postalCode,
                 "city": educational_institution1.city,

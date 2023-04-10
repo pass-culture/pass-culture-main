@@ -895,6 +895,7 @@ def search_educational_institution(
     institution_type: str | None,
     city: str | None,
     postal_code: str | None,
+    uai: str | None,
     limit: int,
 ) -> educational_models.EducationalInstitution:
     filters = []
@@ -930,6 +931,10 @@ def search_educational_institution(
         filters.append(
             sa.func.unaccent(educational_models.EducationalInstitution.postalCode).ilike(f"%{postal_code}%"),
         )
+
+    if uai is not None:
+        filters.append(educational_models.EducationalInstitution.institutionId == uai)
+
     return (
         educational_models.EducationalInstitution.query.filter(
             *filters,
