@@ -9,6 +9,7 @@ MAX_LIMIT_EDUCATIONAL_INSTITUTION = 20
 
 class CollectiveOffersEducationalInstitutionResponseModel(BaseModel):
     id: int
+    institutionId: str
     name: str
     institutionType: str
     city: str
