@@ -1,5 +1,6 @@
 from pydantic import validator
 
+from pcapi.core.educational.models import EducationalInstitution
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
@@ -9,7 +10,7 @@ MAX_LIMIT_EDUCATIONAL_INSTITUTION = 20
 
 class CollectiveOffersEducationalInstitutionResponseModel(BaseModel):
     id: int
-    institutionId: str
+    uai: str
     name: str
     institutionType: str
     city: str
@@ -17,6 +18,11 @@ class CollectiveOffersEducationalInstitutionResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+    @classmethod
+    def from_orm(cls, institution: EducationalInstitution) -> "CollectiveOffersEducationalInstitutionResponseModel":
+        institution.uai = institution.institutionId
+        return super().from_orm(institution)
 
 
 class CollectiveOffersListEducationalInstitutionResponseModel(BaseModel):
@@ -29,6 +35,7 @@ class GetListEducationalInstitutionsQueryModel(BaseModel):
     institution_type: str | None
     city: str | None
     postal_code: str | None
+    uai: str | None
     limit: int = MAX_LIMIT_EDUCATIONAL_INSTITUTION
 
     @validator("limit")
