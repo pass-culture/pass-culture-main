@@ -46,6 +46,7 @@ def list_educational_institutions(
         postal_code=query.postal_code,
         educational_institution_id=query.id,
         institution_type=query.institution_type,
+        uai=query.uai,
         limit=query.limit,
     )
     return institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel(
