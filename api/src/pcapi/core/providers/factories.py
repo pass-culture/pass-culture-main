@@ -126,6 +126,7 @@ class CGRCinemaDetailsFactory(BaseFactory):
     cinemaProviderPivot = factory.SubFactory(CGRCinemaProviderPivotFactory)
     cinemaUrl = factory.Sequence("https://cgr-cinema-{}.example.com/".format)
     numCinema = factory.Sequence(int)
+    password = "a great password"
 
 
 class AllocineProviderFactory(BaseFactory):

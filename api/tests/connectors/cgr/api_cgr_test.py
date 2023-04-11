@@ -83,3 +83,31 @@ class CGRGetSeancesPassCultureTest:
 
         assert isinstance(exc.value, cgr_exceptions.CGRAPIException)
         assert str(exc.value) == "Error on CGR API on GetSeancesPassCulture : Expectation failed"
+
+    @override_settings(CGR_API_USER="pass_user", CGR_API_PASSWORD="password")
+    def test_should_call_with_the_right_password(self, requests_mock):
+        requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        get_seances_adapter = requests_mock.post(
+            "http://example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
+        )
+        cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(
+            cinemaUrl="http://example.com/web_service", password="theRealPassword"
+        )
+
+        get_seances_pass_culture(cinema_details=cgr_cinema_details)
+
+        assert "<mdp>theRealPassword</mdp>" in get_seances_adapter.last_request.text
+
+    @override_settings(CGR_API_USER="pass_user", CGR_API_PASSWORD="password")
+    def test_should_call_with_the_env_password_when_db_password_is_none(self, requests_mock):
+        requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        get_seances_adapter = requests_mock.post(
+            "http://example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
+        )
+        cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(
+            cinemaUrl="http://example.com/web_service", password=None
+        )
+
+        get_seances_pass_culture(cinema_details=cgr_cinema_details)
+
+        assert "<mdp>password</mdp>" in get_seances_adapter.last_request.text
