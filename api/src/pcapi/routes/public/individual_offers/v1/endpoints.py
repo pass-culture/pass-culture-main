@@ -500,8 +500,11 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
 @api_key_required
 def get_product_by_ean(ean: str) -> serialization.ProductOfferResponse:
     """
-    Get a product offer using its European Article Number.
+    Get a product offer using its European Article Number (EAN-13).
     """
+    if len(ean) != 13:
+        raise api_errors.ApiErrors({"ean": ["Only 13 characters EAN are accepted"]})
+
     offer: offers_models.Offer | None = (
         _retrieve_offer_relations_query(_retrieve_offer_by_ean_query(ean))
         .filter(offers_models.Offer.isEvent == False)
@@ -761,10 +764,13 @@ def edit_product_by_ean(
     individual_offers_provider: providers_models.Provider, ean: str, body: serialization.ProductOfferByEanEdition
 ) -> serialization.ProductOfferResponse:
     """
-    Edit a product by accessing it through its European Article Number.
+    Edit a product by accessing it through its European Article Number (EAN-13).
 
     Leave fields undefined to keep their current value.
     """
+    if len(ean) != 13:
+        raise api_errors.ApiErrors({"ean": ["Only 13 characters EAN are accepted"]})
+
     offer: offers_models.Offer | None = (
         _retrieve_offer_relations_query(_retrieve_offer_by_ean_query(ean))
         .filter(offers_models.Offer.isEvent == False)
