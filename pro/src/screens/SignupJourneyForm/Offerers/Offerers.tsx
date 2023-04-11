@@ -93,7 +93,7 @@ const Offerers = (): JSX.Element => {
                   displayToggleVenueList && !isVenueListOpen && index >= 4
                 }
               >
-                {venue?.publicName ?? venue.name}
+                {venue.publicName ?? venue.name}
               </li>
             ))}
           </ul>
