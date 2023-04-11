@@ -186,7 +186,6 @@ describe('screens:SignupJourney::Validation', () => {
         venueType: 'venue1',
         webPresence: 'url1, url2',
         target: Target.EDUCATIONAL,
-        ...addressInformations,
       })
 
       expect(screen.getByText('accueil')).toBeInTheDocument()
@@ -224,7 +223,6 @@ describe('screens:SignupJourney::Validation', () => {
         venueType: 'venue1',
         webPresence: 'url1, url2',
         target: Target.EDUCATIONAL,
-        ...addressInformations,
       })
     })
 

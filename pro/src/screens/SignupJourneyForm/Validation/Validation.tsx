@@ -56,11 +56,6 @@ const Validation = (): JSX.Element => {
       target:
         /* istanbul ignore next: the form validation already handles this */
         activity.targetCustomer ?? Target.EDUCATIONAL,
-      address: offerer.address,
-      city: offerer.city,
-      latitude: offerer.latitude,
-      longitude: offerer.longitude,
-      postalCode: offerer.postalCode,
     }
 
     try {
