@@ -5,7 +5,7 @@ import typing
 import sentry_sdk
 import sqlalchemy as sa
 
-from pcapi.analytics.amplitude.events import booking_events
+from pcapi.analytics.amplitude import events as amplitude_events
 from pcapi.core import search
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -142,7 +142,7 @@ def book_offer(
             "used": booking.is_used_or_reimbursed,
         },
     )
-    booking_events.track_book_offer_event(booking)
+    amplitude_events.track_book_offer_event(booking)
 
     if not transactional_mails.send_user_new_booking_to_pro_email(booking, first_venue_booking):
         logger.warning(
@@ -230,7 +230,7 @@ def _cancel_booking(
         extra={"booking_id": booking.id, "reason": str(reason)},
         technical_message_id="booking.cancelled",
     )
-    booking_events.track_cancel_booking_event(booking, reason)
+    amplitude_events.track_cancel_booking_event(booking, reason)
 
     update_external_user(booking.user)
     update_external_pro(booking.venue.bookingEmail)
@@ -338,7 +338,7 @@ def mark_as_used(booking: Booking) -> None:
     repository.save(booking)
 
     logger.info("Booking was marked as used", extra={"booking_id": booking.id}, technical_message_id="booking.used")
-    booking_events.track_mark_as_used_event(booking)
+    amplitude_events.track_mark_as_used_event(booking)
 
     update_external_user(booking.user)
 
