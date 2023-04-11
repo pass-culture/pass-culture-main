@@ -14,5 +14,9 @@ export type SaveNewOnboardingDataQueryModel = {
   venueType?: string | null;
   venueTypeCode?: VenueTypeCode | null;
   webPresence: string;
+  address: string
+  city: string
+  latitude: number | null
+  longitude: number | null
+  postalCode: string
 };
-
