@@ -1,14 +1,10 @@
-import fr from 'date-fns/locale/fr'
 import { useField } from 'formik'
-import React, { createRef } from 'react'
-import ReactDatePicker, { registerLocale } from 'react-datepicker'
+import React from 'react'
 
-import { FORMAT_HH_mm } from 'utils/date'
-
-import { BaseInput, FieldLayout } from '../shared'
+import { FieldLayout } from '../shared'
 import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
-registerLocale('fr', fr)
+import { BaseTimePicker } from './BaseTimePicker'
 
 export type TimePickerProps = FieldLayoutBaseProps & {
   disabled?: boolean
@@ -28,9 +24,9 @@ const TimePicker = ({
   hideFooter = false,
   hideHiddenFooter = false,
   clearButtonProps,
+  filterVariant,
 }: TimePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'text' })
-  const ref = createRef<HTMLInputElement>()
   const showError = meta.touched && !!meta.error
 
   /* istanbul ignore next: DEBT, TO FIX */
@@ -48,30 +44,17 @@ const TimePicker = ({
       hideFooter={hideFooter || (hideHiddenFooter && !showError)}
       clearButtonProps={clearButtonProps}
     >
-      <ReactDatePicker
+      <BaseTimePicker
         {...field}
-        customInput={
-          <BaseInput hasError={meta.touched && !!meta.error} ref={ref} />
-        }
-        dateFormat={FORMAT_HH_mm}
+        hasError={meta.touched && !!meta.error}
+        filterVariant={filterVariant}
+        selected={field.value}
         disabled={disabled}
-        dropdownMode="scroll"
-        locale="fr"
-        onChange={time => {
+        onChange={(time: Date | null) => {
           /* istanbul ignore next: DEBT, TO FIX */
           helpers.setTouched(true)
           /* istanbul ignore next: DEBT, TO FIX */
           helpers.setValue(time)
-        }}
-        placeholderText="HH:MM"
-        selected={field.value}
-        showTimeSelect
-        showTimeSelectOnly
-        timeCaption="Horaire"
-        timeFormat={FORMAT_HH_mm}
-        timeIntervals={15}
-        onKeyDown={event => {
-          !/[0-9:]|Backspace|Tab/.test(event.key) && event.preventDefault()
         }}
       />
     </FieldLayout>

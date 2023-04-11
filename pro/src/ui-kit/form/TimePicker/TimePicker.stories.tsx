@@ -31,3 +31,8 @@ WithClearButton.args = {
     onClick: () => alert('Clear !'),
   },
 }
+
+export const FilterVariant = Template.bind({})
+FilterVariant.args = {
+  filterVariant: true,
+}
