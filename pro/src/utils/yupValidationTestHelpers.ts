@@ -1,9 +1,8 @@
 import * as yup from 'yup'
-import { ObjectShape } from 'yup/lib/object'
 
 import { hasProperty } from './types'
 
-export const getYupValidationSchemaErrors = async <T extends ObjectShape>(
+export const getYupValidationSchemaErrors = async <T extends yup.AnyObject>(
   validationSchema: yup.ObjectSchema<T>,
   testInput: any
 ): Promise<string[]> => {

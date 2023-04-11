@@ -6,20 +6,20 @@ const isOneTrue = (values: Record<string, boolean>): boolean =>
 export const validationSchema = {
   accessibility: yup.object().when('isVenueVirtual', {
     is: false,
-    then: yup
-      .object()
-      .test({
-        name: 'is-one-true',
-        message: 'Veuillez sélectionner au moins un critère d’accessibilité',
-        test: isOneTrue,
-      })
-      .shape({
-        mental: yup.boolean(),
-        audio: yup.boolean(),
-        visual: yup.boolean(),
-        motor: yup.boolean(),
-        none: yup.boolean(),
-      }),
+    then: schema =>
+      schema
+        .test({
+          name: 'is-one-true',
+          message: 'Veuillez sélectionner au moins un critère d’accessibilité',
+          test: isOneTrue,
+        })
+        .shape({
+          mental: yup.boolean(),
+          audio: yup.boolean(),
+          visual: yup.boolean(),
+          motor: yup.boolean(),
+          none: yup.boolean(),
+        }),
   }),
 }
 

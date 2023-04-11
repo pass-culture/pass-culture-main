@@ -6,11 +6,10 @@ const validationSchema = {
   withdrawalType: yup.string().when('subCategoryFields', {
     is: (subCategoryFields: string[]) =>
       subCategoryFields.includes('withdrawalType'),
-    then: yup
-      .string()
-      .oneOf(Object.values(WithdrawalTypeEnum))
-      .required('Veuillez sélectionner l’une de ces options'),
-    otherwise: yup.string(),
+    then: schema =>
+      schema
+        .oneOf(Object.values(WithdrawalTypeEnum))
+        .required('Veuillez sélectionner l’une de ces options'),
   }),
   withdrawalDelay: yup.string().when(['subCategoryFields', 'withdrawalType'], {
     is: (subCategoryFields: string[], withdrawalType: WithdrawalTypeEnum) =>
@@ -18,10 +17,8 @@ const validationSchema = {
       [WithdrawalTypeEnum.BY_EMAIL, WithdrawalTypeEnum.ON_SITE].includes(
         withdrawalType
       ),
-    then: yup
-      .string()
-      .required('Vous devez choisir l’une des options ci-dessus'),
-    otherwise: yup.string(),
+    then: schema =>
+      schema.required('Vous devez choisir l’une des options ci-dessus'),
   }),
 }
 
