@@ -6,24 +6,26 @@ import { SelectOption } from 'custom_types/form'
 import { ReactComponent as Down } from './assets/down.svg'
 import styles from './Select.module.scss'
 
-interface ISelectInputProps extends ComponentProps<'select'> {
+export interface SelectInputProps extends ComponentProps<'select'> {
   name: string
   defaultOption?: SelectOption | null
   options: SelectOption[]
   hasError?: boolean
+  filterVariant?: boolean
   hasDescription?: boolean
   value: string
 }
 
 const SelectInput = ({
   hasError = false,
+  filterVariant,
   hasDescription = false,
   defaultOption = null,
   name,
   disabled,
   options,
   ...field
-}: ISelectInputProps): JSX.Element => (
+}: SelectInputProps): JSX.Element => (
   <div
     className={cn(styles['select-input-wrapper'], {
       [styles['has-description']]: hasDescription,
@@ -37,6 +39,7 @@ const SelectInput = ({
         [styles['has-description']]: hasDescription,
         [styles['select-input-placeholder']]:
           field.value === '' || field.value === null,
+        [styles['filter-variant']]: filterVariant,
       })}
       disabled={disabled}
       id={name}
@@ -51,7 +54,11 @@ const SelectInput = ({
         </option>
       ))}
     </select>
-    <div className={styles['select-input-icon']}>
+    <div
+      className={cn(styles['select-input-icon'], {
+        [styles['filter-variant']]: filterVariant,
+      })}
+    >
       <Down />
     </div>
   </div>
