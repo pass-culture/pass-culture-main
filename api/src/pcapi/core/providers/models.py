@@ -320,3 +320,6 @@ class CGRCinemaDetails(PcObject, Base, Model):
     cinemaProviderPivot = relationship(CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId])  # type: ignore [misc]
     cinemaUrl: str = Column(Text, nullable=False)
     numCinema: int = Column(Integer, nullable=True)
+    password: str = Column(
+        Text, nullable=True
+    )  # FIXME (yacine-pc) since we already have a row in production, make this column not nullable later
