@@ -39,7 +39,11 @@
   }
 
   &-right-icon {
-    @include forms.input-icon-wrapper(auto);
+    @include forms.input-icon-wrapper(rem.torem(16px));
+
+    &.filter-variant {
+      @include forms.input-icon-wrapper(rem.torem(16px), rem.torem(8px));
+    }
   }
 
   &-wrapper {

@@ -1,17 +1,16 @@
 import fr from 'date-fns/locale/fr'
 import { useField } from 'formik'
-import React, { createRef } from 'react'
-import { default as ReactDatePicker, registerLocale } from 'react-datepicker'
+import React from 'react'
+import { registerLocale } from 'react-datepicker'
 
-import { CalendarIcon } from 'icons'
-import { FORMAT_DD_MM_YYYY } from 'utils/date'
-
-import { BaseInput, FieldLayout } from '../shared'
+import { FieldLayout } from '../shared'
 import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
+
+import { BaseDatePicker } from './BaseDatePicker'
 
 registerLocale('fr', fr)
 
-interface IDatePickerProps extends FieldLayoutBaseProps {
+export interface DatePickerProps extends FieldLayoutBaseProps {
   disabled?: boolean
   maxDateTime?: Date
   minDateTime?: Date
@@ -36,9 +35,9 @@ const DatePicker = ({
   onChange,
   hideFooter = false,
   hideHiddenFooter = false,
-}: IDatePickerProps): JSX.Element => {
+  filterVariant,
+}: DatePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'date' })
-  const ref = createRef<HTMLInputElement>()
   const showError = meta.touched && !!meta.error
 
   return (
@@ -55,22 +54,16 @@ const DatePicker = ({
       isOptional={isOptional}
       hideFooter={hideFooter || (hideHiddenFooter && !showError)}
     >
-      <ReactDatePicker
+      <BaseDatePicker
         {...field}
-        customInput={
-          <BaseInput
-            rightIcon={() => <CalendarIcon />}
-            hasError={meta.touched && !!meta.error}
-            ref={ref}
-          />
-        }
-        dateFormat={FORMAT_DD_MM_YYYY}
-        disabled={disabled}
-        dropdownMode="scroll"
         id={name}
-        locale="fr"
+        hasError={meta.touched && !!meta.error}
+        filterVariant={filterVariant}
+        disabled={disabled}
         maxDate={maxDateTime}
         minDate={minDateTime}
+        openToDate={field.value ? field.value : openingDateTime}
+        selected={field.value}
         onChange={date => {
           let newDate = date
           /* istanbul ignore next: DEBT, TO FIX */
@@ -86,9 +79,6 @@ const DatePicker = ({
           helpers.setTouched(true)
           helpers.setValue(newDate, true)
         }}
-        openToDate={field.value ? field.value : openingDateTime}
-        placeholderText="JJ/MM/AAAA"
-        selected={field.value}
       />
     </FieldLayout>
   )
