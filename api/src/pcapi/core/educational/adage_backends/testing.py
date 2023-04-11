@@ -134,7 +134,7 @@ class AdageSpyClient(AdageClient):
             ),
             AdageEducationalInstitution(
                 uai="0470010E",
-                sigle="UNIVERSITE",
+                sigle="CLG",
                 libelle="Balamb Garden",
                 communeLibelle="Balamb",
                 courriel="contact+squall@example.com",
