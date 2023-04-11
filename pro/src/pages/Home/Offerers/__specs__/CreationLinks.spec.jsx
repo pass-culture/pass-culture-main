@@ -33,6 +33,7 @@ const renderHomePage = async () => {
         lastName: 'Do',
         email: 'john.do@dummy.xyz',
         phoneNumber: '01 00 00 00 00',
+        hasSeenProTutorials: true,
       },
       initialized: true,
     },
