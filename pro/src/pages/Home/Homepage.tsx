@@ -7,6 +7,7 @@ import {
 } from 'apiClient/v1'
 import { Newsletter } from 'components/Newsletter'
 import PageTitle from 'components/PageTitle/PageTitle'
+import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -94,49 +95,52 @@ const Homepage = (): JSX.Element => {
   }, [])
 
   return (
-    <div className="homepage">
-      <PageTitle title="Espace acteurs culturels" />
-      <h1>Bienvenue dans l’espace acteurs culturels</h1>
-      <HomepageBreadcrumb
-        activeStep={STEP_ID_OFFERERS}
-        isOffererStatsActive={isOffererStatsActive}
-        profileRef={profileRef}
-        statsRef={statsRef}
-      />
-      <section className="h-section">
-        <Offerers
-          selectedOfferer={selectedOfferer}
-          isLoading={isLoading}
-          isUserOffererValidated={isUserOffererValidated}
-          receivedOffererNames={receivedOffererNames}
-          onSelectedOffererChange={setSelectedOffererId}
-          cancelLoading={() => setIsLoading(false)}
-          venues={venues}
+    <>
+      <div className="homepage">
+        <PageTitle title="Espace acteurs culturels" />
+        <h1>Bienvenue dans l’espace acteurs culturels</h1>
+        <HomepageBreadcrumb
+          activeStep={STEP_ID_OFFERERS}
+          isOffererStatsActive={isOffererStatsActive}
+          profileRef={profileRef}
+          statsRef={statsRef}
         />
-      </section>
-      {isUserOffererValidated &&
-        withNewOfferCreationJourney &&
-        !currentUser.isAdmin &&
-        hasNoVenueVisible && (
-          <section className="step-section">
-            <VenueOfferSteps
-              hasVenue={!hasNoVenueVisible}
-              offererId={selectedOffererId}
-            />
+        <section className="h-section">
+          <Offerers
+            selectedOfferer={selectedOfferer}
+            isLoading={isLoading}
+            isUserOffererValidated={isUserOffererValidated}
+            receivedOffererNames={receivedOffererNames}
+            onSelectedOffererChange={setSelectedOffererId}
+            cancelLoading={() => setIsLoading(false)}
+            venues={venues}
+          />
+        </section>
+        {isUserOffererValidated &&
+          withNewOfferCreationJourney &&
+          !currentUser.isAdmin &&
+          hasNoVenueVisible && (
+            <section className="step-section">
+              <VenueOfferSteps
+                hasVenue={!hasNoVenueVisible}
+                offererId={selectedOffererId}
+              />
+            </section>
+          )}
+        {isOffererStatsActive && (
+          <section className="h-section" ref={statsRef}>
+            <OffererStats />
           </section>
         )}
-      {isOffererStatsActive && (
-        <section className="h-section" ref={statsRef}>
-          <OffererStats />
+        <section className="h-section" ref={profileRef}>
+          <ProfileAndSupport />
+          <div className="newsletter">
+            <Newsletter />
+          </div>
         </section>
-      )}
-      <section className="h-section" ref={profileRef}>
-        <ProfileAndSupport />
-        <div className="newsletter">
-          <Newsletter />
-        </div>
-      </section>
-    </div>
+      </div>
+      <TutorialDialog />
+    </>
   )
 }
 

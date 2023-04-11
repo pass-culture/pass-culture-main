@@ -3,7 +3,6 @@ import React from 'react'
 
 import DomainNameBanner from 'components/DomainNameBanner'
 import Header from 'components/Header/Header'
-import TutorialDialog from 'components/TutorialDialog'
 
 import { ILayoutConfig } from './AppRouter/routesMap'
 
@@ -48,7 +47,6 @@ const AppLayout = ({ children, layoutConfig, className }: AppLayoutProps) => {
             </div>
           </div>
         )}
-        <TutorialDialog />
       </main>
     </>
   )
