@@ -8,7 +8,7 @@ import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import SelectInput from './SelectInput'
 
-type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> &
+export type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> &
   FieldLayoutBaseProps & {
     defaultOption?: SelectOption | null
     options: SelectOption[]
