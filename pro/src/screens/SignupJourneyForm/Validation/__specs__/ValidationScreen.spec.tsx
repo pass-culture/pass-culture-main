@@ -126,6 +126,7 @@ describe('screens:SignupJourney::Validation', () => {
     expect(screen.getByText('url2')).toBeInTheDocument()
     expect(screen.getByText('nom public')).toBeInTheDocument()
     expect(screen.getByText('123123123')).toBeInTheDocument()
+    expect(screen.getByText('3 Rue de Valois')).toBeInTheDocument()
     expect(
       screen.getByText("À destination d'un groupe scolaire")
     ).toBeInTheDocument()
@@ -188,6 +189,11 @@ describe('screens:SignupJourney::Validation', () => {
         venueType: 'venue1',
         webPresence: 'url1, url2',
         target: Target.EDUCATIONAL,
+        address: '3 Rue de Valois',
+        city: 'Paris',
+        latitude: 0,
+        longitude: 0,
+        postalCode: '75001',
       })
 
       expect(screen.getByText('accueil')).toBeInTheDocument()
@@ -229,6 +235,11 @@ describe('screens:SignupJourney::Validation', () => {
         venueType: 'venue1',
         webPresence: 'url1, url2',
         target: Target.EDUCATIONAL,
+        address: '3 Rue de Valois',
+        city: 'Paris',
+        latitude: 0,
+        longitude: 0,
+        postalCode: '75001',
       })
     })
 

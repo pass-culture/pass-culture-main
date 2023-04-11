@@ -56,7 +56,13 @@ const Validation = (): JSX.Element => {
       target:
         /* istanbul ignore next: the form validation already handles this */
         activity.targetCustomer ?? Target.EDUCATIONAL,
+      address: offerer.address,
+      city: offerer.city,
+      latitude: offerer.latitude,
+      longitude: offerer.longitude,
+      postalCode: offerer.postalCode,
     }
+
     try {
       await api.saveNewOnboardingData(data)
       notify.success('Votre structure a bien été créée')
@@ -97,6 +103,7 @@ const Validation = (): JSX.Element => {
             {offerer?.publicName || offerer?.name}
           </div>
           <div className={styles['data-line']}>{offerer?.siret}</div>
+          <div className={styles['data-line']}>{offerer?.address}</div>
         </Banner>
       </section>
       <section className={styles['validation-screen']}>
