@@ -49,7 +49,6 @@ jest.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
   },
 ])
 
-// Mock l'appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
 // Appel fait dans apiAdresse.getDataFromAddress
 fetch.mockResponse(
   JSON.stringify({

@@ -5,6 +5,7 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel, Target } from 'apiClient/v1'
+import { IAddress } from 'components/Address'
 import Notification from 'components/Notification/Notification'
 import {
   ISignupJourneyContext,
@@ -20,6 +21,14 @@ jest.mock('apiClient/api', () => ({
     saveNewOnboardingData: jest.fn(),
   },
 }))
+
+const addressInformations: IAddress = {
+  address: '3 Rue de Valois',
+  city: 'Paris',
+  latitude: 0,
+  longitude: 0,
+  postalCode: '75001',
+}
 
 const renderValidationScreen = (contextValue: ISignupJourneyContext) => {
   const storeOverrides = {
@@ -89,11 +98,7 @@ describe('screens:SignupJourney::Validation', () => {
           name: 'toto',
           publicName: 'tata',
           siret: '123123123',
-          address: '3 Rue de Valois',
-          city: 'Paris',
-          latitude: 0,
-          longitude: 0,
-          postalCode: '75001',
+          ...addressInformations,
         },
       })
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -113,11 +118,7 @@ describe('screens:SignupJourney::Validation', () => {
         name: 'nom',
         publicName: 'nom public',
         siret: '123123123',
-        address: '3 Rue de Valois',
-        city: 'Paris',
-        latitude: 0,
-        longitude: 0,
-        postalCode: '75001',
+        ...addressInformations,
       },
     })
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -144,11 +145,7 @@ describe('screens:SignupJourney::Validation', () => {
           name: 'nom',
           publicName: 'nom public',
           siret: '123123123',
-          address: '3 Rue de Valois',
-          city: 'Paris',
-          latitude: 0,
-          longitude: 0,
-          postalCode: '75001',
+          ...addressInformations,
         },
         setActivity: () => {},
         setOfferer: () => {},
@@ -189,11 +186,7 @@ describe('screens:SignupJourney::Validation', () => {
         venueType: 'venue1',
         webPresence: 'url1, url2',
         target: Target.EDUCATIONAL,
-        address: '3 Rue de Valois',
-        city: 'Paris',
-        latitude: 0,
-        longitude: 0,
-        postalCode: '75001',
+        ...addressInformations,
       })
 
       expect(screen.getByText('accueil')).toBeInTheDocument()
@@ -211,11 +204,7 @@ describe('screens:SignupJourney::Validation', () => {
         offerer: {
           name: 'nom',
           siret: '123123123',
-          address: '3 Rue de Valois',
-          city: 'Paris',
-          latitude: 0,
-          longitude: 0,
-          postalCode: '75001',
+          ...addressInformations,
         },
         setActivity: () => {},
         setOfferer: () => {},
@@ -235,11 +224,7 @@ describe('screens:SignupJourney::Validation', () => {
         venueType: 'venue1',
         webPresence: 'url1, url2',
         target: Target.EDUCATIONAL,
-        address: '3 Rue de Valois',
-        city: 'Paris',
-        latitude: 0,
-        longitude: 0,
-        postalCode: '75001',
+        ...addressInformations,
       })
     })
 
@@ -263,11 +248,7 @@ describe('screens:SignupJourney::Validation', () => {
           name: 'nom',
           publicName: 'nom public',
           siret: '123123123',
-          address: '3 Rue de Valois',
-          city: 'Paris',
-          latitude: 0,
-          longitude: 0,
-          postalCode: '75001',
+          ...addressInformations,
         },
         setActivity: () => {},
         setOfferer: () => {},
