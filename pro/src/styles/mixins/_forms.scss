@@ -60,11 +60,14 @@
   outline-color: forms.$input-border-color-error;
 }
 
-@mixin input-icon-wrapper($icon-width: 16px) {
+@mixin input-icon-wrapper(
+  $icon-width: rem.torem(16px),
+  $input-icon-margin: rem.torem(16px)
+) {
   position: absolute;
   right: 0;
   top: 0;
-  width: rem.torem(48px);
+  width: calc(#{$icon-width} + 2 * #{$input-icon-margin});
   height: 100%;
   display: flex;
   pointer-events: none;

@@ -52,6 +52,7 @@ const BaseInput = forwardRef(
             className={cn({
               [styles['base-input-right-icon']]: hasIcon,
               [styles['base-input-right-button']]: hasButton,
+              [styles['filter-variant']]: filterVariant,
             })}
           >
             {hasIcon ? rightIcon() : hasButton && rightButton()}
