@@ -1,0 +1,7 @@
+@use "styles/variables/_colors.scss" as colors;
+
+.reset-filters-reservation-link-icon svg {
+  width: rem(16px);
+  height: rem(16px);
+  fill: colors.$primary;
+}

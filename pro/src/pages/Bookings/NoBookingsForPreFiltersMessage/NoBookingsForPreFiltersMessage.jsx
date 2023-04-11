@@ -1,22 +1,27 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
+import './NoBookingsForPreFiltersMessage.scss'
+
+import { ReactComponent as ResetIcon } from 'icons/reset.svg'
+import { Button } from 'ui-kit'
 import Icon from 'ui-kit/Icon/Icon'
 
 const NoBookingsForPreFiltersMessage = ({ resetPreFilters }) => (
   <div className="br-warning no-bookings-for-pre-filters">
     <Icon svg="ico-search-gray" />
-    <p>Aucune réservation trouvée pour votre recherche.</p>
+    <strong>Aucune réservation trouvée pour votre recherche</strong>
     <p>
-      {'Veuillez modifier vos filtres et lancer une nouvelle recherche ou '}
-      <button
-        className="tertiary-button reset-filters-link"
-        onClick={resetPreFilters}
-        type="button"
-      >
-        réinitialiser tous les filtres.
-      </button>
+      {'Vous pouvez modifier vos filtres et lancer une nouvelle recherche ou '}
     </p>
+    <Button
+      Icon={ResetIcon}
+      className="reset-filters-reservation-link-icon"
+      onClick={resetPreFilters}
+      variant="quaternary"
+    >
+      Réinitialiser les filtres
+    </Button>
   </div>
 )
 
