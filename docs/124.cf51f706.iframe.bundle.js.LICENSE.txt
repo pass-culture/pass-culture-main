@@ -228,6 +228,14 @@ PERFORMANCE OF THIS SOFTWARE.
  */
 
 /**
+ * @mui/styled-engine v5.11.16
+ *
+ * @license MIT
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/**
  * @remix-run/router v1.4.0
  *
  * Copyright (c) Remix Software Inc.
@@ -258,12 +266,6 @@ PERFORMANCE OF THIS SOFTWARE.
  * LICENSE.md file in the root directory of this source tree.
  *
  * @license MIT
- */
-
-/** @license MUI v5.8.0
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
  */
 
 /** @license React v16.13.1
