@@ -20,6 +20,7 @@ export type FieldLayoutBaseProps = {
   className?: string
   classNameLabel?: string
   classNameFooter?: string
+  filterVariant?: boolean
   smallLabel?: boolean
   hideFooter?: boolean
   inline?: boolean

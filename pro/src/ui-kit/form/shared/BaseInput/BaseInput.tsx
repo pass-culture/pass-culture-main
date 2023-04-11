@@ -7,6 +7,7 @@ interface IBaseInputProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   className?: string
   hasError?: boolean
+  filterVariant?: boolean
   rightIcon?: () => JSX.Element | null
   rightButton?: () => JSX.Element
 }
@@ -16,6 +17,7 @@ const BaseInput = forwardRef(
     {
       className,
       hasError,
+      filterVariant,
       name,
       rightIcon,
       rightButton,
@@ -38,6 +40,7 @@ const BaseInput = forwardRef(
               styles['base-input-with-right-icon'],
               {
                 [styles['has-error']]: hasError,
+                [styles['filter-variant']]: filterVariant,
               },
               className
             )}
@@ -65,6 +68,7 @@ const BaseInput = forwardRef(
             styles['base-input'],
             {
               [styles['has-error']]: hasError,
+              [styles['filter-variant']]: filterVariant,
             },
             className
           )}
