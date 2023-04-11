@@ -42,7 +42,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    # We need to commit the transaction, because `DROP INDEX
+    # We need to commit the transaction, because `CREATE INDEX
     # CONCURRENTLY` cannot run inside a transaction.
     op.execute("COMMIT")
     for statement in CREATE_STATEMENTS:
