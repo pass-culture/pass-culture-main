@@ -5,6 +5,7 @@ import { ExternalLinkIcon, PenIcon, ValidCircleIcon } from 'icons'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Timeline, { TimelineStepType } from 'ui-kit/Timeline/Timeline'
+import { getDateToFrenchText } from 'utils/date'
 
 import styles from './CollectiveDmsTimeline.module.scss'
 
@@ -12,13 +13,29 @@ const CollectiveDmsTimeline = ({
   collectiveDmsApplication,
   hasAdageId,
   hasAdageIdForMoreThan30Days,
+  adageInscriptionDate,
 }: {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId: boolean
   hasAdageIdForMoreThan30Days: boolean
+  adageInscriptionDate: string | null
 }) => {
-  // const collectiveDmsApplicationLink = link to venue.collectiveDmsApplicationId // FIX ME : collectiveDmsApplicationId is not yet a property of IVenue
-  const collectiveDmsApplicationLink = 'fake link'
+  const collectiveDmsApplicationLink = `https://www.demarches-simplifiees.fr/dossiers/${collectiveDmsApplication.application}/messagerie`
+
+  const buildDate =
+    collectiveDmsApplication.buildDate &&
+    getDateToFrenchText(collectiveDmsApplication.buildDate)
+
+  const instructionDate =
+    collectiveDmsApplication.instructionDate &&
+    getDateToFrenchText(collectiveDmsApplication.instructionDate)
+
+  const processingDate =
+    collectiveDmsApplication.processingDate &&
+    getDateToFrenchText(collectiveDmsApplication.processingDate)
+
+  const adageDate =
+    adageInscriptionDate && getDateToFrenchText(adageInscriptionDate)
 
   const successSubmittedStep = {
     type: TimelineStepType.SUCCESS,
@@ -27,7 +44,7 @@ const CollectiveDmsTimeline = ({
         <div className={styles['timeline-step-title-disabled']}>
           Votre dossier a été déposé
         </div>
-        <div>28 mars 2023</div>
+        <div>{buildDate}</div>
       </>
     ),
   }
@@ -40,7 +57,7 @@ const CollectiveDmsTimeline = ({
           Votre dossier a été déposé
         </div>
         <div>
-          28 mars 2023
+          {buildDate}
           <br />
           Votre demande de référencement a bien été déposée. Elle sera étudiée
           par les services du Ministère de l’Education Nationale et de la
@@ -69,7 +86,7 @@ const CollectiveDmsTimeline = ({
           Votre dossier est en cours d'instruction
         </div>
         <div>
-          28 février 2023
+          {instructionDate}
           <br />
           Votre dossier est en cours d’instruction par la commission régionale
           DAAC et DRAC où est déclaré votre siège social. Si votre dossier
@@ -97,7 +114,7 @@ const CollectiveDmsTimeline = ({
         <div className={styles['timeline-step-title-disabled']}>
           Votre dossier est passé en instruction
         </div>
-        <div>28 février 2023</div>
+        <div>{instructionDate}</div>
       </>
     ),
   }
@@ -110,7 +127,7 @@ const CollectiveDmsTimeline = ({
           Votre demande de référencement a été acceptée
         </div>
         <div>
-          28 février 2023
+          {processingDate}
           <br />
           Votre lieu sera bientôt ajouté dans ADAGE par le Ministère de
           l’Éducation Nationale. Cela peut prendre quelques jours.
@@ -170,7 +187,7 @@ const CollectiveDmsTimeline = ({
           Votre lieu a été ajouté dans ADAGE par le Ministère de l’Education
           Nationale
         </div>
-        <div>5 mars 2023</div>
+        <div>{adageDate}</div>
         <div className={styles['timeline-infobox']}>
           <div className={styles['timeline-infobox-text']}>
             Vous pouvez désormais créer des offres collectives ! Nous vous
@@ -211,10 +228,10 @@ const CollectiveDmsTimeline = ({
         </div>
         <div>
           <br />
-          Votre dossier a été refusé le 2 mars 2023 par la commission régionale
-          DAAC et DRAC de la région où est déclaré votre siège social. Nous vous
-          invitons à consulter votre messagerie sur Démarches Simplifiées afin
-          d’en savoir plus sur les raisons de ce refus.
+          Votre dossier a été refusé le {processingDate} par la commission
+          régionale DAAC et DRAC de la région où est déclaré votre siège social.
+          Nous vous invitons à consulter votre messagerie sur Démarches
+          Simplifiées afin d’en savoir plus sur les raisons de ce refus.
           <div className={styles['timeline-step-button']}>
             <ButtonLink
               variant={ButtonVariant.TERNARY}

@@ -44,6 +44,7 @@ const CollectiveVenueInformations = ({
           collectiveDmsApplication={venue.collectiveDmsApplication}
           hasAdageId={venue.hasAdageId}
           hasAdageIdForMoreThan30Days={hasAdageIdForMoreThan30Days}
+          adageInscriptionDate={venue.adageInscriptionDate}
         />
       )}
       {shouldEACInformationSection && (
