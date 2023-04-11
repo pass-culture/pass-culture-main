@@ -12,7 +12,7 @@
       justify-content: center;
       position: relative;
 
-      > button {
+      >button {
         margin: 0 rem.torem(12px);
         width: rem.torem(148px);
       }
@@ -37,13 +37,11 @@
 
     p {
       margin-top: rem.torem(12px);
-      width: rem.torem(400px);
+      width: rem.torem(600px);
+
     }
 
-    svg {
-      height: rem.torem(124px);
-      width: rem.torem(124px);
-    }
+
   }
 
   .br-title {
