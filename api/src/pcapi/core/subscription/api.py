@@ -3,7 +3,7 @@ import logging
 import typing
 
 from pcapi import settings
-from pcapi.analytics.amplitude.events.subscriptions import deposit_activation
+from pcapi.analytics.amplitude import events as amplitude_events
 from pcapi.core.external import batch
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.finance.api as finance_api
@@ -92,7 +92,7 @@ def activate_beneficiary_for_eligibility(
 
     external_attributes_api.update_external_user(user)
     batch.track_deposit_activated_event(user.id, deposit)
-    deposit_activation.track_deposit_granted_event(user.id, deposit, fraud_check)
+    amplitude_events.track_deposit_activation_event(user.id, deposit, fraud_check)
 
     return user
 

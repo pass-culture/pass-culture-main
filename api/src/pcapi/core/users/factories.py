@@ -347,11 +347,8 @@ class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
 
 
 class EligibleGrant18Factory(UserFactory):
-    class Params:
-        age = 18
-
     dateOfBirth = LazyAttribute(
-        lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=o.age, months=5)
+        lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=18, months=5)
     )
 
 
@@ -408,7 +405,7 @@ class EligibleActivableUnderageFactory(EligibleUnderageFactory):
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
-    ) -> fraud_models.BeneficiaryFraudCheck | None:
+    ) -> None:
         import pcapi.core.fraud.factories as fraud_factories
 
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -428,7 +425,6 @@ class EligibleActivableUnderageFactory(EligibleUnderageFactory):
             eligibilityType=models.EligibilityType.UNDERAGE,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=obj, eligibilityType=models.EligibilityType.UNDERAGE)
-        return None
 
 
 class ProFactory(BaseFactory):
