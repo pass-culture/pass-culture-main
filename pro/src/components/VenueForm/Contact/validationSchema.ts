@@ -33,7 +33,7 @@ const validationSchema = {
     .email('Veuillez renseigner un e-mail valide')
     .when('isVenueVirtual', {
       is: false,
-      then: yup.string().required('Veuillez renseigner une adresse e-mail'),
+      then: schema => schema.required('Veuillez renseigner une adresse e-mail'),
     }),
 }
 

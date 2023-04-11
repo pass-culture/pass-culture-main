@@ -10,15 +10,18 @@ const validationSchema = {
   ...ticketWithdrawalValidationSchema,
   url: yup.string().when('isVenueVirtual', {
     is: (isVenueVirtual: boolean) => isVenueVirtual,
-    then: yup
-      .string()
-      .required('Veuillez renseigner une URL valide. Ex : https://exemple.com')
-      .test({
-        name: 'url',
-        message: 'Veuillez renseigner une URL valide. Ex : https://exemple.com',
-        test: (url?: string) =>
-          url ? url.match(offerFormUrlRegex) !== null : true,
-      }),
+    then: schema =>
+      schema
+        .required(
+          'Veuillez renseigner une URL valide. Ex : https://exemple.com'
+        )
+        .test({
+          name: 'url',
+          message:
+            'Veuillez renseigner une URL valide. Ex : https://exemple.com',
+          test: (url?: string) =>
+            url ? url.match(offerFormUrlRegex) !== null : true,
+        }),
   }),
 }
 

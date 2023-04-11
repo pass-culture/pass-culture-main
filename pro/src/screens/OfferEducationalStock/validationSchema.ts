@@ -9,7 +9,7 @@ const todayAtMidnight = () => {
 }
 
 const isBeforeEventDate = (
-  bookingLimitDatetime: Date | undefined,
+  bookingLimitDatetime: Date | null | undefined,
   context: yup.TestContext
 ) => {
   if (!context.parent.eventDate || !bookingLimitDatetime) {
@@ -49,13 +49,11 @@ export const generateValidationSchema = (
       .required('Champ requis')
       .when([], {
         is: () => preventPriceIncrease === false,
-        then: yup
-          .date()
-          .min(
+        then: schema =>
+          schema.min(
             todayAtMidnight(),
             "La date de l’évènement doit être supérieure à aujourd'hui"
           ),
-        otherwise: yup.date(),
       }),
     eventTime: yup.string().nullable().required('Champ requis'),
     numberOfPlaces: yup
@@ -71,7 +69,7 @@ export const generateValidationSchema = (
         name: 'is-one-true',
         message:
           'La date limite de réservation doit être fixée au plus tard le jour de l’évènement',
-        test: isBeforeEventDate,
+        test: (value, context) => isBeforeEventDate(value, context),
       })
       .nullable(),
     priceDetail: yup.string().nullable().max(MAX_DETAILS_LENGTH),
