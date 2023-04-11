@@ -63,6 +63,11 @@ def _log_decoding_json_error(error: BadRequest, extra: dict) -> None:
     )
 
 
+# When using this decorator, you should pass the following arguments when necessary:
+# - query: the query parameters
+# - body : the body of the request
+# - form : the form data
+# You should type these arguments as pydantic models.
 def spectree_serialize(
     headers: Type[BaseModel] = None,
     cookies: Type[BaseModel] = None,
