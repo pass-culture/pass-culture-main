@@ -19,12 +19,10 @@ export const validationSchema = {
   durationMinutes: yup.string().when('subCategoryFields', {
     is: (subCategoryFields: string[]) =>
       subCategoryFields.includes('durationMinutes'),
-    then: yup
-      .string()
-      .matches(
+    then: schema =>
+      schema.matches(
         /^\d{1,3}:\d{2}$/,
         'Veuillez entrer une durée sous la forme HH:MM (ex: 1:30 pour 1h30)'
       ),
-    otherwise: yup.string(),
   }),
 }

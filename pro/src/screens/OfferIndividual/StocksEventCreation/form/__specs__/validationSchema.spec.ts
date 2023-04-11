@@ -54,7 +54,6 @@ describe('validationSchema', () => {
         bookingLimitDateInterval: '',
       },
       expectedErrors: [
-        'recurrenceType is a required field',
         'recurrenceType must be one of the following values: UNIQUE, DAILY, WEEKLY, MONTHLY',
         'Veuillez renseigner une date de début',
         'Veuillez renseigner un horaire',

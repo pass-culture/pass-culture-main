@@ -22,7 +22,7 @@ const validationSchema = yup.object().shape({
       schema.test({
         name: 'search-departement-invalid',
         message: 'error',
-        test: departement !== '' ? () => false : () => true,
+        test: departement ? () => false : () => true,
       })
     ),
 })

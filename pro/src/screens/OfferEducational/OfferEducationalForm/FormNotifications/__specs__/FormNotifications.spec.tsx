@@ -17,10 +17,10 @@ const renderFormNotifications = (
     notifications: yup.boolean(),
     notificationEmail: yup.string().when('notifications', {
       is: true,
-      then: yup
-        .string()
-        .required('Veuillez renseigner une adresse e-mail')
-        .email('Veuillez renseigner un e-mail valide'),
+      then: schema =>
+        schema
+          .required('Veuillez renseigner une adresse e-mail')
+          .email('Veuillez renseigner un e-mail valide'),
     }),
   })
 
