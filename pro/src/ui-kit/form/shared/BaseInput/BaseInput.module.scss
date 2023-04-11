@@ -4,6 +4,12 @@
 .base-input {
   @include forms.input-theme;
 
+  &.filter-variant {
+    border-radius: rem.torem(4px);
+    padding: 0 rem.torem(4px);
+    min-height: rem.torem(24px);
+  }
+
   &::-webkit-inner-spin-button,
   &::-webkit-calendar-picker-indicator {
     display: none;
