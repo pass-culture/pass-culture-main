@@ -1,4 +1,21 @@
-# pass-culture-main
+<div align=center>
+  <img src="https://pass.culture.fr/wp-content/uploads/2020/11/RVB_PASS_CULTURE_HD.png" style="width: 360px">
+  <br />
+  <a href="https://apps.apple.com/fr/app/pass-culture/id1557887412">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/Download_on_the_App_Store_Badge_FRCA_RGB_blk.svg" style="height: 50px">
+  </a>
+
+  <a href="https://play.google.com/store/apps/details?id=app.passculture.webapp&hl=fr">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/Google_Play_Store_badge_FR.svg" style="height: 50px; padding-left: 12px">
+  </a>
+</div>
+
+---
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pass-culture_pass-culture-main&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=pass-culture_pass-culture-main) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pass-culture_pass-culture-main&metric=coverage)](https://sonarcloud.io/summary/new_code?id=pass-culture_pass-culture-main)
+
+[![Testing Environement](https://img.shields.io/github/deployments/pass-culture/pass-culture-main/testing?label=Testing%20Environment)](https://github.com/pass-culture/pass-culture-main/deployments/activity_log?environment=testing)
+
+[![Tag](https://img.shields.io/github/v/tag/pass-culture/pass-culture-main)](https://github.com/pass-culture/pass-culture-main/tags)
 
 Le repo `main` contient les 5 projets suivants :
 
