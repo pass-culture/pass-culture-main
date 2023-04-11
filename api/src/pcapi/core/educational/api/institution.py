@@ -1,3 +1,4 @@
+from decimal import Decimal
 import typing
 
 from pcapi.core.educational import adage_backends as adage_client
@@ -90,4 +91,77 @@ def synchronise_adage_and_institution(
         else:
             institution.isActive = False
         repository.save(institution)
+    db.session.commit()
+
+
+def import_deposit_institution_data(
+    data: dict[str, Decimal],
+    educational_year: educational_models.EducationalYear,
+    ministry: educational_models.Ministry,
+    final: bool,
+    conflict: str,
+) -> None:
+    adage_institutions = {
+        i.uai: i for i in adage_client.get_adage_educational_institutions(ansco=educational_year.adageId)
+    }
+    db_institutions = {
+        institution.institutionId: institution for institution in educational_models.EducationalInstitution.query.all()
+    }
+    for uai, amount in data.items():
+        created = False
+        adage_institution = adage_institutions.get(uai)
+        if not adage_institution:
+            print(f"\033[91mERROR: UAI:{uai} not found in adage.\033[0m")
+            return
+
+        db_institution = db_institutions.get(uai, None)
+        institution_type = INSTITUTION_TYPES.get(adage_institution.sigle, adage_institution.sigle)
+        if db_institution:
+            db_institution.institutionType = institution_type
+            db_institution.name = adage_institution.libelle
+            db_institution.city = adage_institution.communeLibelle
+            db_institution.postalCode = adage_institution.codePostal
+            db_institution.email = adage_institution.courriel or ""
+            db_institution.phoneNumber = adage_institution.telephone or ""
+            db_institution.isActive = True
+        else:
+            created = True
+            print(f"\033[33mWARNING: UAI:{uai} not found in db, creating institution.\033[0m")
+            db_institution = educational_models.EducationalInstitution(
+                institutionId=uai,
+                institutionType=institution_type,
+                name=adage_institution.libelle,
+                city=adage_institution.communeLibelle,
+                postalCode=adage_institution.codePostal,
+                email=adage_institution.courriel or "",
+                phoneNumber=adage_institution.telephone or "",
+                isActive=True,
+            )
+            db.session.add(db_institution)
+
+        deposit = None
+        if not created:
+            deposit = educational_models.EducationalDeposit.query.filter(
+                educational_models.EducationalDeposit.educationalYear == educational_year,
+                educational_models.EducationalDeposit.educationalInstitution == db_institution,
+            ).one_or_none()
+
+        if deposit:
+            if deposit.ministry != ministry and conflict == "replace":
+                print(
+                    f"\033[33mWARNING: Ministry changed from '{deposit.ministry.name}' to '{ministry.name}' for deposit {deposit.id}.\033[0m"
+                )
+                deposit.ministry = ministry
+            deposit.amount = amount
+            deposit.isFinal = final
+        else:
+            deposit = educational_models.EducationalDeposit(
+                educationalYear=educational_year,
+                educationalInstitution=db_institution,
+                amount=amount,
+                ministry=ministry,
+                isFinal=final,
+            )
+            db.session.add(deposit)
+
     db.session.commit()
