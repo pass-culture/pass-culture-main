@@ -1526,7 +1526,7 @@ class GetProductByEanTest:
             venue__managingOfferer=api_key.offerer,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
-            extraData={"ean": "12345678"},
+            extraData={"ean": "1234567890123"},
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -1559,10 +1559,10 @@ class GetProductByEanTest:
     def test_get_newest_ean_product(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         offers_factories.ThingOfferFactory(
-            venue__managingOfferer=api_key.offerer, extraData={"ean": "12345678"}, isActive=False
+            venue__managingOfferer=api_key.offerer, extraData={"ean": "1234567890123"}, isActive=False
         )
         newest_product_offer = offers_factories.ThingOfferFactory(
-            venue__managingOfferer=api_key.offerer, extraData={"ean": "12345678"}, isActive=False
+            venue__managingOfferer=api_key.offerer, extraData={"ean": "1234567890123"}, isActive=False
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -1571,6 +1571,19 @@ class GetProductByEanTest:
 
         assert response.status_code == 200
         assert response.json["id"] == newest_product_offer.id
+
+    def test_400_when_wrong_ean_format(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer, extraData={"ean": "12345678"}
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products/ean/{product_offer.extraData['ean']}"
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"ean": ["Only 13 characters EAN are accepted"]}
 
     def test_404_when_ean_not_found(self, client):
         api_key = offerers_factories.ApiKeyFactory()
@@ -1581,7 +1594,7 @@ class GetProductByEanTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/products/ean/12345678"
+            "/public/offers/v1/products/ean/1234567890123"
         )
 
         assert response.status_code == 404
@@ -2307,12 +2320,12 @@ class PatchProductByEanTest:
         old_product_offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=api_key.offerer,
             lastProvider=individual_offers_api_provider,
-            extraData={"ean": "12345678"},
+            extraData={"ean": "1234567890123"},
         )
         newest_product_offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=api_key.offerer,
             lastProvider=individual_offers_api_provider,
-            extraData={"ean": "12345678"},
+            extraData={"ean": "1234567890123"},
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -2335,7 +2348,7 @@ class PatchProductByEanTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=api_key.offerer,
             lastProvider=individual_offers_api_provider,
-            extraData={"ean": "12345678"},
+            extraData={"ean": "1234567890123"},
         )
         stock = offers_factories.StockFactory(offer=product_offer)
 
@@ -2359,7 +2372,7 @@ class PatchProductByEanTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=api_key.offerer,
             lastProvider=individual_offers_api_provider,
-            extraData={"ean": "12345678"},
+            extraData={"ean": "1234567890123"},
         )
         offers_factories.StockFactory(offer=product_offer)
 
@@ -2371,12 +2384,27 @@ class PatchProductByEanTest:
         assert response.status_code == 200
         assert not product_offer.activeStocks
 
+    def test_400_when_wrong_ean_format(self, individual_offers_api_provider, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer,
+            lastProvider=individual_offers_api_provider,
+            extraData={"ean": "12345678"},
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products/ean/{product_offer.extraData['ean']}"
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"ean": ["Only 13 characters EAN are accepted"]}
+
     def test_404_when_ean_not_found(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/products/ean/12345678"
+            "/public/offers/v1/products/ean/1234567890123"
         )
 
         assert response.status_code == 404
