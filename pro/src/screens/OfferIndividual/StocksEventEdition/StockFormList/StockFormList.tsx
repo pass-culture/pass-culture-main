@@ -211,12 +211,12 @@ const StockFormList = ({
                           label="Date"
                           isLabelHidden
                           classNameLabel={styles['field-layout-label']}
-                          classNameFooter={styles['field-layout-footer']}
+                          className={styles['field-layout-footer']}
                           minDateTime={today}
                           openingDateTime={today}
                           disabled={readOnlyFields.includes('beginningDate')}
                           onChange={onChangeBeginningDate}
-                          hideHiddenFooter={true}
+                          hideFooter
                         />
                       </td>
                       <td className={styles['input-beginning-time']}>
@@ -225,10 +225,10 @@ const StockFormList = ({
                           label="Horaire"
                           isLabelHidden
                           classNameLabel={styles['field-layout-label']}
-                          classNameFooter={styles['field-layout-footer']}
+                          className={styles['field-layout-footer']}
                           name={`stocks[${index}]beginningTime`}
                           disabled={readOnlyFields.includes('beginningTime')}
-                          hideHiddenFooter={true}
+                          hideFooter
                         />
                       </td>
 
@@ -241,7 +241,7 @@ const StockFormList = ({
                             label="Tarif"
                             isLabelHidden
                             classNameLabel={styles['field-layout-label']}
-                            classNameFooter={styles['field-layout-footer']}
+                            className={styles['field-layout-footer']}
                             defaultOption={{
                               label: 'Sélectionner un tarif',
                               value: '',
@@ -250,6 +250,7 @@ const StockFormList = ({
                               priceCategoriesOptions.length === 1 ||
                               readOnlyFields.includes('priceCategoryId')
                             }
+                            hideFooter
                           />
                         </td>
                       ) : (
@@ -260,12 +261,12 @@ const StockFormList = ({
                             label="Tarif"
                             isLabelHidden
                             classNameLabel={styles['field-layout-label']}
-                            classNameFooter={styles['field-layout-footer']}
+                            className={styles['field-layout-footer']}
                             disabled={readOnlyFields.includes('price')}
                             rightIcon={() => <EuroIcon />}
                             type="number"
                             step="0.01"
-                            hideHiddenFooter={true}
+                            hideFooter
                             data-testid="input-price"
                           />
                         </td>
@@ -277,7 +278,7 @@ const StockFormList = ({
                           label="Date limite de réservation"
                           isLabelHidden
                           classNameLabel={styles['field-layout-label']}
-                          classNameFooter={styles['field-layout-footer']}
+                          className={styles['field-layout-footer']}
                           minDateTime={today}
                           maxDateTime={
                             beginningDate ? beginningDate : undefined
@@ -286,7 +287,7 @@ const StockFormList = ({
                           disabled={readOnlyFields.includes(
                             'bookingLimitDatetime'
                           )}
-                          hideHiddenFooter={true}
+                          hideFooter
                         />
                       </td>
 
@@ -302,13 +303,13 @@ const StockFormList = ({
                           isLabelHidden
                           placeholder="Illimité"
                           classNameLabel={styles['field-layout-label']}
-                          classNameFooter={styles['field-layout-footer']}
+                          className={styles['field-layout-footer']}
                           disabled={readOnlyFields.includes(
                             'remainingQuantity'
                           )}
                           type="number"
                           hasDecimal={false}
-                          hideHiddenFooter={true}
+                          hideFooter
                         />
                       </td>
                       {mode === OFFER_WIZARD_MODE.EDITION && (
@@ -321,8 +322,8 @@ const StockFormList = ({
                             isLabelHidden
                             smallLabel
                             classNameLabel={styles['field-layout-label']}
-                            classNameFooter={styles['field-layout-footer']}
-                            hideHiddenFooter
+                            className={styles['field-layout-footer']}
+                            hideFooter
                           />
                         </td>
                       )}

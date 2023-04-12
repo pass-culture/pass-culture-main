@@ -187,6 +187,7 @@ export const RecurrenceForm = ({
                             disabled: values.beginningTimes.length <= 1,
                             onClick: () => arrayHelpers.remove(index),
                           }}
+                          hideFooter
                         />
                       ))}
                     </div>
@@ -222,7 +223,7 @@ export const RecurrenceForm = ({
                 <>
                   {values.quantityPerPriceCategories.map(
                     (quantityPerPriceCategory, index) => (
-                      <FormLayout.Row key={index} inline smSpaceAfter>
+                      <FormLayout.Row key={index} inline mdSpaceAfter>
                         <TextInput
                           label="Nombre de places"
                           name={`quantityPerPriceCategories[${index}].quantity`}
@@ -230,6 +231,7 @@ export const RecurrenceForm = ({
                           step="1"
                           placeholder="Illimité"
                           className={styles['quantity-input']}
+                          hideFooter
                         />
 
                         <Select
@@ -241,6 +243,7 @@ export const RecurrenceForm = ({
                             value: '',
                           }}
                           className={styles['price-category-input']}
+                          hideFooter
                         />
 
                         <div className={styles['align-icon']}>

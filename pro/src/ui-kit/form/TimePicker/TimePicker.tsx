@@ -9,7 +9,6 @@ import { BaseTimePicker } from './BaseTimePicker'
 export type TimePickerProps = FieldLayoutBaseProps & {
   disabled?: boolean
   dateTime?: Date
-  hideHiddenFooter?: boolean
 }
 
 const TimePicker = ({
@@ -22,7 +21,6 @@ const TimePicker = ({
   isLabelHidden = false,
   smallLabel,
   hideFooter = false,
-  hideHiddenFooter = false,
   clearButtonProps,
   filterVariant,
 }: TimePickerProps): JSX.Element => {
@@ -41,7 +39,7 @@ const TimePicker = ({
       smallLabel={smallLabel}
       classNameLabel={classNameLabel}
       classNameFooter={classNameFooter}
-      hideFooter={hideFooter || (hideHiddenFooter && !showError)}
+      hideFooter={hideFooter}
       clearButtonProps={clearButtonProps}
     >
       <BaseTimePicker
