@@ -16,7 +16,6 @@ export type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
     step?: number | string
     hasDecimal?: boolean
     refForInput?: ForwardedRef<HTMLInputElement>
-    hideHiddenFooter?: boolean
   }
 
 const TextInput = ({
@@ -41,7 +40,6 @@ const TextInput = ({
   step,
   hasDecimal = true,
   inline = false,
-  hideHiddenFooter = false,
   description,
   clearButtonProps,
   ...props
@@ -71,7 +69,7 @@ const TextInput = ({
       showError={showError}
       smallLabel={smallLabel}
       inline={inline}
-      hideFooter={hideFooter || (hideHiddenFooter && !showError)}
+      hideFooter={hideFooter}
       description={description}
       clearButtonProps={clearButtonProps}
     >
