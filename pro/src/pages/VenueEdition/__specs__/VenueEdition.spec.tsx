@@ -142,6 +142,46 @@ describe('route VenueEdition', () => {
     expect(venuePublicName).toBeInTheDocument()
   })
 
+  it('should check none accessibility', async () => {
+    jest.spyOn(api, 'getVenue').mockResolvedValueOnce({
+      ...venue,
+      visualDisabilityCompliant: false,
+      mentalDisabilityCompliant: false,
+      audioDisabilityCompliant: false,
+      motorDisabilityCompliant: false,
+    })
+
+    renderVenueEdition(venue.nonHumanizedId, offerer.nonHumanizedId)
+
+    await screen.findByRole('heading', {
+      name: 'Cinéma des iles',
+    })
+
+    expect(
+      screen.getByLabelText('Non accessible', { exact: false })
+    ).toBeChecked()
+  })
+
+  it('should not check none accessibility if every accessibility parameters are null', async () => {
+    jest.spyOn(api, 'getVenue').mockResolvedValueOnce({
+      ...venue,
+      visualDisabilityCompliant: null,
+      mentalDisabilityCompliant: null,
+      audioDisabilityCompliant: null,
+      motorDisabilityCompliant: null,
+    })
+
+    renderVenueEdition(venue.nonHumanizedId, offerer.nonHumanizedId)
+
+    await screen.findByRole('heading', {
+      name: 'Cinéma des iles',
+    })
+
+    expect(
+      screen.getByLabelText('Non accessible', { exact: false })
+    ).not.toBeChecked()
+  })
+
   it('should return to home when not able to get venue informations', async () => {
     jest.spyOn(api, 'getVenue').mockRejectedValue(
       new ApiError(

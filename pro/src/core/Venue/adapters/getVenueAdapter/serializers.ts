@@ -13,7 +13,14 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
     [AccessiblityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
     [AccessiblityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
     [AccessiblityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
+    [AccessiblityEnum.NONE]: [
+      venue.visualDisabilityCompliant,
+      venue.mentalDisabilityCompliant,
+      venue.audioDisabilityCompliant,
+      venue.motorDisabilityCompliant,
+    ].every(accessibility => accessibility === false),
   }
+
   /* istanbul ignore next: DEBT, TO FIX */
   return {
     demarchesSimplifieesApplicationId:
@@ -26,11 +33,7 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
     reimbursementPointId: venue.reimbursementPointId || null,
     nonHumanizedId: venue.nonHumanizedId || 0,
     pricingPoint: venue.pricingPoint || null,
-    accessibility: {
-      ...venueAccessibility,
-      [AccessiblityEnum.NONE]:
-        !Object.values(venueAccessibility).includes(true),
-    },
+    accessibility: venueAccessibility,
     address: venue.address || '',
     bannerMeta: venue.bannerMeta
       ? serializeBannerMetaApi(venue.bannerMeta)

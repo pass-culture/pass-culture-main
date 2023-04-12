@@ -67,6 +67,10 @@ describe('useGetVenue', () => {
       collectiveWebsite: '',
       hasAdageId: false,
       collectiveDmsApplications: [],
+      visualDisabilityCompliant: false,
+      mentalDisabilityCompliant: false,
+      audioDisabilityCompliant: false,
+      motorDisabilityCompliant: false,
     }
 
     jest.spyOn(api, 'getVenue').mockResolvedValue(apiVenue)
