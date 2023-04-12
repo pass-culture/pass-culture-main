@@ -73,7 +73,6 @@ class OffererApiKey(BaseModel):
 class GetOffererResponseModel(BaseModel):
     address: str | None
     apiKey: OffererApiKey
-    bic: str | None
     city: str
     dateCreated: datetime
     dateModifiedAtLastProvider: datetime | None
@@ -82,7 +81,6 @@ class GetOffererResponseModel(BaseModel):
     hasAvailablePricingPoints: bool
     hasDigitalVenueAtLeastOneOffer: bool
     hasMissingBankInformation: bool
-    iban: str | None
     id: str
     idAtProviders: str | None
     isValidated: bool

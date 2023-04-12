@@ -28,8 +28,6 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
     nonHumanizedId: offererId,
     name: 'fake offerer name',
     address: 'fake address',
-    bic: 'ABC',
-    iban: 'DEF',
     managedVenues: [
       {
         address: '1 fake address',

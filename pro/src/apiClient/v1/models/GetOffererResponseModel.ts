@@ -8,7 +8,6 @@ import type { OffererApiKey } from './OffererApiKey';
 export type GetOffererResponseModel = {
   address?: string | null;
   apiKey: OffererApiKey;
-  bic?: string | null;
   city: string;
   dateCreated: string;
   dateModifiedAtLastProvider?: string | null;
@@ -17,7 +16,6 @@ export type GetOffererResponseModel = {
   hasAvailablePricingPoints: boolean;
   hasDigitalVenueAtLeastOneOffer: boolean;
   hasMissingBankInformation: boolean;
-  iban?: string | null;
   id: string;
   idAtProviders?: string | null;
   isActive: boolean;

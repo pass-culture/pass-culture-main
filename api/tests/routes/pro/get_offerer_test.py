@@ -60,8 +60,6 @@ def test_basics(client):
     expected_serialized_offerer = {
         "address": offerer.address,
         "apiKey": {"maxAllowed": 5, "prefixes": ["testenv_prefix", "testenv_prefix2"]},
-        "bic": None,
-        "iban": None,
         "city": offerer.city,
         "dateCreated": format_into_utc_date(offerer.dateCreated),
         "dateModifiedAtLastProvider": format_into_utc_date(offerer.dateModifiedAtLastProvider),

@@ -8,7 +8,6 @@ export const serializeOffererApi = (
   return <IOfferer>{
     address: offerer.address || '',
     apiKey: offerer.apiKey || null,
-    bic: offerer.bic || '',
     city: offerer.city || '',
     dateCreated: offerer.dateCreated || '',
     dateModifiedAtLastProvider: offerer.dateModifiedAtLastProvider || '',
@@ -19,7 +18,6 @@ export const serializeOffererApi = (
     hasDigitalVenueAtLeastOneOffer:
       offerer.hasDigitalVenueAtLeastOneOffer || undefined,
     hasMissingBankInformation: offerer.hasMissingBankInformation || undefined,
-    iban: offerer.iban || '',
     id: offerer.id || '',
     idAtProviders: offerer.idAtProviders || '',
     isValidated: offerer.isValidated || undefined,

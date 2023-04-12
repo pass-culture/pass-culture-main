@@ -14,8 +14,6 @@ describe('src | components | pages | OffererCreation | Offerer', () => {
         address: '',
         postalCode: '',
         city: '',
-        bic: '',
-        iban: '',
       })
     })
 

@@ -4,7 +4,6 @@ import pytest
 
 from pcapi.core import testing
 from pcapi.core.educational import factories as educational_factories
-import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
@@ -56,11 +55,9 @@ class Returns200Test:
         dmsapplication = educational_factories.CollectiveDmsApplicationFactory(
             venue=venue,
         )
-        bank_information = finance_factories.BankInformationFactory(venue=venue)
         expected_serialized_venue = {
             "address": venue.address,
             "audioDisabilityCompliant": venue.audioDisabilityCompliant,
-            "bic": bank_information.bic,
             "bookingEmail": venue.bookingEmail,
             "city": venue.city,
             "contact": {
@@ -83,7 +80,6 @@ class Returns200Test:
             "description": venue.description,
             "dmsToken": "PRO-" + venue.dmsToken,
             "fieldsUpdated": venue.fieldsUpdated,
-            "iban": bank_information.iban,
             "id": humanize(venue.id),
             "idAtProviders": venue.idAtProviders,
             "isPermanent": venue.isPermanent,
@@ -93,13 +89,11 @@ class Returns200Test:
             "longitude": float(venue.longitude),
             "managingOfferer": {
                 "address": venue.managingOfferer.address,
-                "bic": venue.managingOfferer.bic,
                 "city": venue.managingOfferer.city,
                 "dateCreated": format_into_utc_date(venue.managingOfferer.dateCreated),
                 "dateModifiedAtLastProvider": format_into_utc_date(venue.managingOfferer.dateModifiedAtLastProvider),
                 "demarchesSimplifieesApplicationId": venue.managingOfferer.demarchesSimplifieesApplicationId,
                 "fieldsUpdated": venue.managingOfferer.fieldsUpdated,
-                "iban": venue.managingOfferer.iban,
                 "id": humanize(venue.managingOfferer.id),
                 "idAtProviders": venue.managingOfferer.idAtProviders,
                 "isValidated": venue.managingOfferer.isValidated,
