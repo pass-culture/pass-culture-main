@@ -2,6 +2,7 @@ import typing
 from typing import Iterable
 
 from pcapi import settings
+from pcapi.tasks.serialization import sendinblue_tasks
 from pcapi.utils.module_loading import import_string
 
 from . import models
@@ -23,6 +24,11 @@ def send(
     backend = _get_backend(data)
     result = backend().send_mail(recipients=recipients, bcc_recipients=bcc_recipients, data=data)
     return result.successful
+
+
+def create_contact(payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
+    backend = import_string(settings.EMAIL_BACKEND)
+    backend().create_contact(payload)
 
 
 def _get_backend(data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData) -> type:
