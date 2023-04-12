@@ -31,7 +31,7 @@ const getOfferIndividualVenuesAdapter = (
     async () => {
       try {
         const dehumanizedId = offererId ? dehumanizeId(offererId) : undefined
-        const response = await api.getVenues(null, null, true, dehumanizedId)
+        const response = await api.getVenues(null, true, dehumanizedId)
 
         const serializeVenue = (
           venue: VenueListItemResponseModel

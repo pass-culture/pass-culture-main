@@ -89,7 +89,7 @@ describe('useGetOfferIndividualVenues', () => {
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false)
       })
-      expect(api.getVenues).toHaveBeenCalledWith(null, null, true, undefined)
+      expect(api.getVenues).toHaveBeenCalledWith(null, true, undefined)
       expect(result.current.data).toEqual(offerIndividualVenues)
       expect(result.current.error).toBeUndefined()
     })
@@ -107,12 +107,7 @@ describe('useGetOfferIndividualVenues', () => {
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false)
       })
-      expect(api.getVenues).toHaveBeenCalledWith(
-        null,
-        null,
-        true,
-        dehumanizeId('AK')
-      )
+      expect(api.getVenues).toHaveBeenCalledWith(null, true, dehumanizeId('AK'))
       expect(result.current.data).toEqual(offerIndividualVenues)
       expect(result.current.error).toBeUndefined()
     })

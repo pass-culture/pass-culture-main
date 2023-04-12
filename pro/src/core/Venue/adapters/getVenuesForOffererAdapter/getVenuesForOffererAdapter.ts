@@ -15,7 +15,6 @@ const getVenuesForOffererAdapter: GetVenuesForOffererAdapter = async ({
   activeOfferersOnly = false,
 }) => {
   try {
-    const validatedForUser = !offererId
     const requestOffererId =
       offererId && offererId !== ALL_OFFERERS ? offererId : undefined
 
@@ -23,7 +22,6 @@ const getVenuesForOffererAdapter: GetVenuesForOffererAdapter = async ({
       ? dehumanizeId(requestOffererId)
       : undefined
     const response = await api.getVenues(
-      validatedForUser,
       undefined,
       activeOfferersOnly,
       requestNonhumanizedOffererId

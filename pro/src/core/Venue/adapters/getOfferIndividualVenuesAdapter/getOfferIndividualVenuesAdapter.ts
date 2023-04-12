@@ -16,7 +16,7 @@ const FAILING_RESPONSE = {
 const getOfferIndividualVenuesAdapter: TGetOfferIndividualVenuesAdapter =
   async ({ offererId }) => {
     try {
-      const response = await api.getVenues(null, null, true, offererId)
+      const response = await api.getVenues(null, true, offererId)
 
       const serializeVenue = (
         venue: VenueListItemResponseModel

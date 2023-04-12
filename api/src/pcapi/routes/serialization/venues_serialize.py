@@ -408,19 +408,20 @@ class GetVenueListResponseModel(BaseModel):
 
 
 class VenueListQueryModel(BaseModel):
-    # FIXME (dbaty, 2022-05-04): this is a no-op, remove this argument.
-    validated_for_user: bool | None
     validated: bool | None
     active_offerers_only: bool | None
     offerer_id: int | None
 
-    _string_to_boolean_validated_for_user = string_to_boolean_field("validated_for_user")
     _string_to_boolean_validated = string_to_boolean_field("validated")
     _string_to_boolean_active_offerers_only = string_to_boolean_field("active_offerers_only")
 
     class Config:
         alias_generator = to_camel
-        extra = "forbid"
+        # FIXME (dbaty, 2023-04-13): old versions of the frontend send
+        # a `validated_for_user` parameter. Restore the following line
+        # once v237 is deployed (when we can suppose that these old
+        # versions don't exist anymore).
+        # extra = "forbid"
 
 
 class VenueBannerContentModel(BaseModel):

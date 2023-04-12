@@ -24,21 +24,15 @@ describe('getVenuesForOffererAdapter', () => {
       offererId: ALL_OFFERERS,
       activeOfferersOnly: false,
     })
-    expect(api.getVenues).toHaveBeenCalledWith(
-      false,
-      undefined,
-      false,
-      undefined
-    )
+    expect(api.getVenues).toHaveBeenCalledWith(undefined, false, undefined)
 
     await getVenuesForOffererAdapter({
       activeOfferersOnly: true,
     })
-    expect(api.getVenues).toHaveBeenCalledWith(true, undefined, true, undefined)
+    expect(api.getVenues).toHaveBeenCalledWith(undefined, true, undefined)
 
     await getVenuesForOffererAdapter({ offererId: 'AK' })
     expect(api.getVenues).toHaveBeenCalledWith(
-      false,
       undefined,
       false,
       dehumanizeId('AK')

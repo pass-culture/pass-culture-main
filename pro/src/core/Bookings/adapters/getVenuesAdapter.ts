@@ -11,12 +11,7 @@ const FAILING_RESPONSE: AdapterFailure<VenuesPayload> = {
 
 export const getVenuesAdapter: GetVenuesAdapter = async () => {
   try {
-    const venuesForOfferer = await api.getVenues(
-      true,
-      undefined,
-      false,
-      undefined
-    )
+    const venuesForOfferer = await api.getVenues(undefined, false, undefined)
 
     return {
       isOk: true,

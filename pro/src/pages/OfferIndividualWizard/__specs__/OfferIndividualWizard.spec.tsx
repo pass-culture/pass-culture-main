@@ -185,7 +185,6 @@ describe('test OfferIndividualWisard', () => {
       undefined // offererId
     )
     expect(api.getVenues).toHaveBeenCalledWith(
-      null, // validatedForUser
       null, // validated
       true, // activeOfferersOnly,
       undefined // offererId
@@ -216,7 +215,6 @@ describe('test OfferIndividualWisard', () => {
       undefined // offererId
     )
     expect(api.getVenues).toHaveBeenCalledWith(
-      null, // validatedForUser
       null, // validated
       true, // activeOfferersOnly,
       offerer.nonHumanizedId // offererId
@@ -274,7 +272,6 @@ describe('test OfferIndividualWisard', () => {
       undefined // offererId
     )
     expect(api.getVenues).toHaveBeenCalledWith(
-      null, // validatedForUser
       null, // validated
       true, // activeOfferersOnly,
       dehumanizeId(apiOffer.venue.managingOfferer.id) // offererId

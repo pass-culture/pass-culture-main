@@ -111,7 +111,6 @@ describe('OfferIndividualWizard', () => {
     ).toBeInTheDocument()
     expect(await screen.findByLabelText('Catégorie')).toBeInTheDocument()
     expect(api.getVenues).toHaveBeenCalledWith(
-      null, // validatedForUser,
       null, // validated,
       true, // activeOfferersOnly,
       offerer.nonHumanizedId // offererId
@@ -198,7 +197,6 @@ describe('OfferIndividualWizard', () => {
       await screen.findByRole('heading', { name: 'Modifier l’offre' })
     ).toBeInTheDocument()
     expect(api.getVenues).toHaveBeenCalledWith(
-      null, // validatedForUser
       null, // validated
       true, // activeOfferersOnly,
       offerer.nonHumanizedId // offererId
