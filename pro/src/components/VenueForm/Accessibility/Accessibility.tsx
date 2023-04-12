@@ -3,9 +3,7 @@ import isEqual from 'lodash.isequal'
 import React, { useMemo } from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { IAccessibiltyFormValues } from 'core/shared'
-import { accessibilityOptions } from 'core/shared/accessibilityOptions'
-import { useAccessibilityUpdates } from 'hooks'
+import { useAccessibilityOptions } from 'hooks'
 import { Checkbox, CheckboxGroup, InfoBox } from 'ui-kit'
 
 import { IVenueFormValues } from '..'
@@ -17,16 +15,11 @@ const Accessibility = ({ isCreatingVenue }: IAccessiblityProps) => {
   const { values, setFieldValue, initialValues } =
     useFormikContext<IVenueFormValues>()
 
-  const handleAccessibilityChange = (
-    newAccessibilityValues: IAccessibiltyFormValues
-  ) => setFieldValue('accessibility', newAccessibilityValues)
-
   const hasChangedSinceLastSubmit = useMemo(
     () => !isEqual(values.accessibility, initialValues.accessibility),
     [values.accessibility, initialValues.accessibility]
   )
 
-  useAccessibilityUpdates(values.accessibility, handleAccessibilityChange)
   return (
     <FormLayout.Section title="Accessibilité du lieu">
       <FormLayout.Row
@@ -46,7 +39,7 @@ const Accessibility = ({ isCreatingVenue }: IAccessiblityProps) => {
         }
       >
         <CheckboxGroup
-          group={accessibilityOptions}
+          group={useAccessibilityOptions(setFieldValue)}
           groupName="accessibility"
           legend="Ce lieu est accessible au public en situation de handicap :"
         />
