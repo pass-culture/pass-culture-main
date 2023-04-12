@@ -59,6 +59,7 @@ export class ApiOffresCollectivesBetaService {
    * @param institutionType
    * @param city
    * @param postalCode
+   * @param uai
    * @param limit
    * @returns CollectiveOffersListEducationalInstitutionResponseModel La liste des établissement scolaires éligibles.
    * @throws ApiError
@@ -69,6 +70,7 @@ export class ApiOffresCollectivesBetaService {
     institutionType?: string | null,
     city?: string | null,
     postalCode?: string | null,
+    uai?: string | null,
     limit: number = 20,
   ): CancelablePromise<CollectiveOffersListEducationalInstitutionResponseModel> {
     return this.httpRequest.request({
@@ -80,6 +82,7 @@ export class ApiOffresCollectivesBetaService {
         'institutionType': institutionType,
         'city': city,
         'postalCode': postalCode,
+        'uai': uai,
         'limit': limit,
       },
       errors: {
