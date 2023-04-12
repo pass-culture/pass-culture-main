@@ -75,7 +75,9 @@ const OfferType = (): JSX.Element => {
       const apiFilters = {
         ...DEFAULT_SEARCH_FILTERS,
         collectiveOfferType: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE.toLowerCase(),
-        offererId: queryOffererId ?? 'all',
+        offererId: queryOffererId
+          ? dehumanizeId(queryOffererId)?.toString() || 'all'
+          : 'all',
         venueId: queryVenueId ?? 'all',
       }
       const { isOk, message, payload } =
