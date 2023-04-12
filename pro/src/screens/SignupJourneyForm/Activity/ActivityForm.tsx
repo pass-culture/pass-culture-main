@@ -25,7 +25,10 @@ const ActivityForm = ({ venueTypes }: IActivityFormProps): JSX.Element => {
   const { values } = useFormikContext<IActivityFormValues>()
 
   return (
-    <FormLayout.Section title="Activité">
+    <FormLayout.Section
+      title="Activité"
+      className={styles['activity-form-wrapper']}
+    >
       <FormLayout.Row>
         <Select
           options={[

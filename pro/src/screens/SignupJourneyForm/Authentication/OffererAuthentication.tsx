@@ -8,6 +8,7 @@ import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { ActionBar } from '../ActionBar'
 import { DEFAULT_OFFERER_FORM_VALUES } from '../Offerer/constants'
 
+import styles from './OffererAuthentication.module.scss'
 import OffererAuthenticationForm, {
   IOffererAuthenticationFormValues,
 } from './OffererAuthenticationForm'
@@ -51,6 +52,7 @@ const OffererAuthentication = (): JSX.Element => {
     <FormLayout>
       <FormikProvider value={formik}>
         <form
+          className={styles['signup-offerer-authentication-form']}
           onSubmit={formik.handleSubmit}
           data-testid="signup-offerer-authentication-form"
         >

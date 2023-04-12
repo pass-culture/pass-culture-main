@@ -72,7 +72,7 @@ const Offerers = (): JSX.Element => {
   }
 
   return (
-    <>
+    <div className={styles['existing-offerers-layout-wrapper']}>
       <div className={styles['existing-offerers-layout']}>
         <div className={styles['title-1']}>
           Nous avons trouvé un espace déjà inscrit sur le pass Culture et
@@ -158,7 +158,7 @@ const Offerers = (): JSX.Element => {
           </div>
         </ConfirmDialog>
       )}
-    </>
+    </div>
   )
 }
 
