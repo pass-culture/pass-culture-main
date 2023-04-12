@@ -24,19 +24,3 @@ class TestingBackend(BaseBackend):
         result = models.MailResult(sent_data=sent_data, successful=True)
         testing.outbox.append(result)
         return result
-
-
-class FailingBackend(BaseBackend):
-    """A backend that... fails to send an e-mail."""
-
-    def send_mail(
-        self,
-        recipients: Iterable[str],
-        data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
-        bcc_recipients: Iterable[str] = None,
-    ) -> models.MailResult:
-        sent_data = asdict(data)
-        sent_data["To"] = ", ".join(recipients)
-        if bcc_recipients:
-            sent_data["Bcc"] = ", ".join(bcc_recipients)
-        return models.MailResult(sent_data=sent_data, successful=False)
