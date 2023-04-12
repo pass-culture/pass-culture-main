@@ -7,7 +7,7 @@ import { Audience, NBSP } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as EyeIcon } from 'icons/ico-eye-hidden.svg'
 
-interface IDeactivationConfirmDialogProps {
+export interface IDeactivationConfirmDialogProps {
   areAllOffersSelected: boolean
   nbSelectedOffers: number
   onCancel: (status: boolean) => void
