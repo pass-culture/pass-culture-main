@@ -2083,7 +2083,6 @@ export class DefaultService {
 
   /**
    * get_venues <GET>
-   * @param validatedForUser
    * @param validated
    * @param activeOfferersOnly
    * @param offererId
@@ -2091,7 +2090,6 @@ export class DefaultService {
    * @throws ApiError
    */
   public getVenues(
-    validatedForUser?: boolean | null,
     validated?: boolean | null,
     activeOfferersOnly?: boolean | null,
     offererId?: number | null,
@@ -2100,7 +2098,6 @@ export class DefaultService {
       method: 'GET',
       url: '/venues',
       query: {
-        'validatedForUser': validatedForUser,
         'validated': validated,
         'activeOfferersOnly': activeOfferersOnly,
         'offererId': offererId,

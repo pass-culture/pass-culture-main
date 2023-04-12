@@ -229,21 +229,6 @@ def test_invalid_validated(app):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_invalid_validated_for_user(app):
-    pro_user = users_factories.ProFactory(email="user.pro@test.com")
-
-    query_params = [
-        "validatedForUser=43",
-    ]
-
-    # when
-    response = TestClient(app.test_client()).with_session_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
-
-    # then
-    assert response.status_code == 400
-
-
-@pytest.mark.usefixtures("db_session")
 def test_invalid_active_offerer_only(app):
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
 
