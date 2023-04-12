@@ -78,7 +78,9 @@ const OfferType = (): JSX.Element => {
         offererId: queryOffererId
           ? dehumanizeId(queryOffererId)?.toString() || 'all'
           : 'all',
-        venueId: queryVenueId ?? 'all',
+        venueId: queryVenueId
+          ? dehumanizeId(queryVenueId)?.toString() || 'all'
+          : 'all',
       }
       const { isOk, message, payload } =
         await getFilteredCollectiveOffersAdapter(apiFilters)
