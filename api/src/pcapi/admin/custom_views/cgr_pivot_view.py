@@ -25,6 +25,7 @@ class CGRPivotForm(SecureForm):
     venue_id = IntegerField("Identifiant numérique du lieu (pass Culture)", [DataRequired()])
     cinema_id = StringField("Identifiant Cinéma (CGR)", [DataRequired()])
     cinema_url = StringField("URL (CGR)", [DataRequired(), URL()])
+    cinema_password = StringField("Mot de passe (CGR)", [DataRequired()])
 
 
 class CGRPivotView(BaseAdminView):
@@ -36,6 +37,7 @@ class CGRPivotView(BaseAdminView):
         "cinemaProviderPivot.venue.name",
         "cinemaProviderPivot.idAtProvider",
         "cinemaUrl",
+        "password",
     ]
     column_searchable_list = ["cinemaProviderPivot.venue.id", "cinemaProviderPivot.idAtProvider"]
     column_sortable_list: list[str] = []
@@ -44,6 +46,7 @@ class CGRPivotView(BaseAdminView):
         "cinemaProviderPivot.venue.name": "Lieu",
         "cinemaProviderPivot.idAtProvider": "Identifiant cinéma (CGR)",
         "cinemaUrl": "URL du cinéma (CGR)",
+        "password": "Mot de passe (CGR)",
     }
     column_filters: list[str] = []
 
@@ -56,6 +59,7 @@ class CGRPivotView(BaseAdminView):
         form.venue_id.render_kw = {"readonly": True}
         form.cinema_id.data = CGR_cinema_details.cinemaProviderPivot.idAtProvider
         form.cinema_url.data = CGR_cinema_details.cinemaUrl
+        form.cinema_password.data = CGR_cinema_details.password
         return form
 
     def get_edit_form(self) -> Form:
@@ -97,7 +101,7 @@ class CGRPivotView(BaseAdminView):
 
         CGR_cinema_details.cinemaProviderPivot.idAtProvider = str(form.cinema_id.data)
         CGR_cinema_details.cinemaUrl = form.cinema_url.data.rstrip("/")
-
+        CGR_cinema_details.password = form.cinema_password.data
         num_cinema = self.check_if_api_call_is_ok(CGR_cinema_details)
         if num_cinema:
             CGR_cinema_details.numCinema = num_cinema
@@ -117,6 +121,7 @@ class CGRPivotView(BaseAdminView):
         venue_id = form.venue_id.data
         cinema_id = form.cinema_id.data
         cinema_url = form.cinema_url.data.rstrip("/")
+        cinema_password = form.cinema_password.data
 
         venue = offerers_models.Venue.query.get(venue_id)
         if not venue:
@@ -131,7 +136,7 @@ class CGRPivotView(BaseAdminView):
             venue=venue, provider=CGR_provider, idAtProvider=cinema_id
         )
         cgr_cinema_details = providers_models.CGRCinemaDetails(
-            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl=cinema_url
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl=cinema_url, password=cinema_password
         )
 
         num_cinema = self.check_if_api_call_is_ok(cgr_cinema_details)

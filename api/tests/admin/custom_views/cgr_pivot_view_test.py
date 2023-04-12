@@ -30,6 +30,7 @@ class CreateCGRPivotTest:
             "venue_id": venue.id,
             "cinema_id": "12",
             "cinema_url": "https://example.com/web_service/",  # with trailing slash
+            "cinema_password": "strongPassword",
         }
         client = TestClient(app.test_client()).with_session_auth("admin@example.fr")
         response = client.post("/pc/back-office/cgr/new", form=data)
@@ -44,6 +45,7 @@ class CreateCGRPivotTest:
         ).one()
         assert cgr_cinema_details.cinemaUrl == "https://example.com/web_service"
         assert cgr_cinema_details.numCinema == 999
+        assert cgr_cinema_details.password == "strongPassword"
         flash_mock.assert_called_once_with("Connexion à l'API CGR OK.")
 
     @clean_database
@@ -57,6 +59,7 @@ class CreateCGRPivotTest:
             "venue_id": venue.id,
             "cinema_id": "12",
             "cinema_url": "https://example.com/wrong/ws",
+            "cinema_password": "strongPassword",
         }
         client = TestClient(app.test_client()).with_session_auth("admin@example.fr")
         response = client.post("/pc/back-office/cgr/new", form=data)
@@ -70,6 +73,7 @@ class CreateCGRPivotTest:
             providers_models.CGRCinemaDetails.cinemaProviderPivotId == cinema_provider_pivot.id
         ).one()
         assert cgr_cinema_details.cinemaUrl == "https://example.com/wrong/ws"
+        assert cgr_cinema_details.password == "strongPassword"
         flash_mock.assert_called_once_with("Connexion à l'API CGR KO.", "error")
 
     @clean_database
@@ -87,7 +91,7 @@ class CreateCGRPivotTest:
             "venue_id": venue_2.id,
             "account_id": "account_test",
             "cinema_id": "cinema_test",
-            "api_token": "token_test",
+            "cinema_password": "password_test",
         }
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post("/pc/back-office/cgr/new", form=data)
@@ -110,6 +114,7 @@ class CreateCGRPivotTest:
             "venue_id": venue.id,
             "cinema_id": "cinema2_test",
             "cinema_url": "https://example.com",
+            "cinema_password": "strongPassword",
         }
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -132,8 +137,7 @@ class EditCGRPivotTest:
             venue=venue, provider=cgr_provider, idAtProvider="12"
         )
         cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot,
-            cinemaUrl="https://example.com",
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://example.com", password="weakPassword"
         )
         requests_mock.get("https://new-url.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
         requests_mock.post(
@@ -144,6 +148,7 @@ class EditCGRPivotTest:
             "venue_id": venue.id,
             "cinema_id": "13",
             "cinema_url": "https://new-url.com/web_service",
+            "cinema_password": "strongPassword",
         }
 
         client = TestClient(app.test_client()).with_session_auth("admin@example.fr")
@@ -153,6 +158,7 @@ class EditCGRPivotTest:
         assert cinema_provider_pivot.idAtProvider == "13"
         assert cgr_cinema_details.cinemaUrl == "https://new-url.com/web_service"
         assert cgr_cinema_details.numCinema == 999
+        assert cgr_cinema_details.password == "strongPassword"
         flash_mock.assert_called_once_with("Connexion à l'API CGR OK.")
 
     @clean_database
