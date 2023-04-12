@@ -6,8 +6,6 @@ from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
-from tests.conftest import TestClient
-
 
 class Returns200ForProUserTest:
     def _setup_offerers_for_pro_user(self, user):
@@ -41,14 +39,15 @@ class Returns200ForProUserTest:
         }
 
     @pytest.mark.usefixtures("db_session")
-    def test_response_serializer(self, app):
+    def test_response_serializer(self, client):
         # given
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         # when
-        response = TestClient(app.test_client()).with_session_auth(pro_user.email).get("/offerers/names")
+        client = client.with_session_auth(pro_user.email)
+        response = client.get("/offerers/names")
 
         # then
         assert response.status_code == 200
@@ -57,17 +56,14 @@ class Returns200ForProUserTest:
         }
 
     @pytest.mark.usefixtures("db_session")
-    def test_get_offerers_names_for_id(self, app):
+    def test_get_offerers_names_for_id(self, client):
         # given
         pro_user = users_factories.ProFactory()
         offerers = self._setup_offerers_for_pro_user(pro_user)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_session_auth(pro_user.email)
-            .get(f'/offerers/names?offerer_id={offerers["owned_offerer_validated"].id}')
-        )
+        client = client.with_session_auth(pro_user.email)
+        response = client.get(f'/offerers/names?offerer_id={offerers["owned_offerer_validated"].id}')
 
         # then
         assert response.status_code == 200
@@ -77,13 +73,14 @@ class Returns200ForProUserTest:
         assert response.json["offerersNames"][0]["name"] == offerers["owned_offerer_validated"].name
 
     @pytest.mark.usefixtures("db_session")
-    def test_get_all_offerers_names(self, app):
+    def test_get_all_offerers_names(self, client):
         # given
         pro_user = users_factories.ProFactory()
         offerers = self._setup_offerers_for_pro_user(pro_user)
 
         # when
-        response = TestClient(app.test_client()).with_session_auth(pro_user.email).get("/offerers/names")
+        client = client.with_session_auth(pro_user.email)
+        response = client.get("/offerers/names")
 
         # then
         assert response.status_code == 200
@@ -97,13 +94,14 @@ class Returns200ForProUserTest:
         assert humanize(offerers["owned_offerer_not_validated_for_user"].id) in offerer_ids
 
     @pytest.mark.usefixtures("db_session")
-    def test_get_all_validated_offerers_names(self, app):
+    def test_get_all_validated_offerers_names(self, client):
         # given
         pro_user = users_factories.ProFactory()
         offerers = self._setup_offerers_for_pro_user(pro_user)
 
         # when
-        response = TestClient(app.test_client()).with_session_auth(pro_user.email).get("/offerers/names?validated=true")
+        client = client.with_session_auth(pro_user.email)
+        response = client.get("/offerers/names?validated=true")
 
         # then
         assert response.status_code == 200
@@ -116,17 +114,14 @@ class Returns200ForProUserTest:
         assert humanize(offerers["owned_offerer_not_validated_for_user"].id) in offerer_ids
 
     @pytest.mark.usefixtures("db_session")
-    def test_get_all_validated_for_user_offerers_names(self, app):
+    def test_get_all_validated_for_user_offerers_names(self, client):
         # given
         pro_user = users_factories.ProFactory()
         offerers = self._setup_offerers_for_pro_user(pro_user)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_session_auth(pro_user.email)
-            .get("/offerers/names?validated_for_user=true")
-        )
+        client = client.with_session_auth(pro_user.email)
+        response = client.get("/offerers/names?validated_for_user=true")
 
         # then
         assert response.status_code == 200
@@ -160,13 +155,14 @@ class Returns200ForAdminTest:
         }
 
     @pytest.mark.usefixtures("db_session")
-    def test_get_all_offerers_names(self, app):
+    def test_get_all_offerers_names(self, client):
         # given
         admin = users_factories.AdminFactory()
         offerers = self._setup_offerers_for_users()
 
         # when
-        response = TestClient(app.test_client()).with_session_auth(admin.email).get("/offerers/names")
+        client = client.with_session_auth(admin.email)
+        response = client.get("/offerers/names")
 
         # then
         assert response.status_code == 200
@@ -180,13 +176,14 @@ class Returns200ForAdminTest:
         assert humanize(offerers["other_offerer_not_validated"].id) in offerer_ids
 
     @pytest.mark.usefixtures("db_session")
-    def test_get_all_validated_offerers(self, app):
+    def test_get_all_validated_offerers(self, client):
         # given
         admin = users_factories.AdminFactory()
         offerers = self._setup_offerers_for_users()
 
         # when
-        response = TestClient(app.test_client()).with_session_auth(admin.email).get("/offerers/names?validated=true")
+        client = client.with_session_auth(admin.email)
+        response = client.get("/offerers/names?validated=true")
 
         # then
         assert response.status_code == 200
@@ -198,13 +195,14 @@ class Returns200ForAdminTest:
         assert humanize(offerers["other_offerer"].id) in offerer_ids
 
     @pytest.mark.usefixtures("db_session")
-    def test_get_all_not_validated_offerers(self, app):
+    def test_get_all_not_validated_offerers(self, client):
         # given
         admin = users_factories.AdminFactory()
         offerers = self._setup_offerers_for_users()
 
         # when
-        response = TestClient(app.test_client()).with_session_auth(admin.email).get("/offerers/names?validated=false")
+        client = client.with_session_auth(admin.email)
+        response = client.get("/offerers/names?validated=false")
 
         # then
         assert response.status_code == 200
