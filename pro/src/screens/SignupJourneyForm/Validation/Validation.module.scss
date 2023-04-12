@@ -29,6 +29,10 @@
 
 }
 
-.validation-screen section:nth-child(even) {
-  margin-bottom: rem.torem(52px);
+.validation-screen {
+  margin-bottom: rem.torem(24px);
+
+  section:nth-child(even) {
+    margin-bottom: rem.torem(52px);
+  }
 }
