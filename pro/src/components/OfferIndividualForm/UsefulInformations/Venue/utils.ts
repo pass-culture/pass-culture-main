@@ -50,7 +50,7 @@ export const buildVenueOptions = (
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
   if (venueOptions.length !== 1) {
     venueOptions = [
-      { value: '', label: 'Selectionner un lieu' },
+      { value: '', label: 'Sélectionner un lieu' },
       ...venueOptions,
     ]
   }
