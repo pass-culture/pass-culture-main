@@ -139,7 +139,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,  # type: ignore [arg-type]
         id=humanize(offer.id),  # type: ignore [arg-type]
         nonHumanizedId=offer.id,
-        isActive=offer.isActive,
+        isActive=False if offer.status == OfferStatus.INACTIVE else offer.isActive,
         isEditable=offer.isEditable,
         isEducational=True,
         name=offer.name,
@@ -358,6 +358,15 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     teacher: EducationalRedactorResponseModel | None
     _humanize_templateId = humanize_field("templateId")
     isPublicApi: bool
+
+    @classmethod
+    def from_orm(cls, offer: CollectiveOffer) -> "GetCollectiveOfferResponseModel":
+        result = super().from_orm(offer)
+
+        if result.status == OfferStatus.INACTIVE.name:
+            result.isActive = False
+
+        return result
 
 
 class CollectiveOfferResponseIdModel(BaseModel):
