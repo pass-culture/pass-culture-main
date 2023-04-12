@@ -10,13 +10,13 @@
   text-align: left;
 
   svg {
-    height: rem.torem(18px);
+    height: rem.torem(16px);
     margin-right: rem.torem(4px);
-    width: rem.torem(18px);
+    width: rem.torem(16px);
   }
 
   &-text {
     white-space: pre-wrap;
-    line-height: rem.torem(18px);
+    line-height: rem.torem(16px);
   }
 }
