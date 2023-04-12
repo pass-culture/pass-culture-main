@@ -69,7 +69,7 @@
     "lodash.isequal": "^4.5.0",
     "papaparse": "^5.3.2",
     "prop-types": "^15.8.1",
-    "re-reselect": "^4.0.0",
+    "re-reselect": "^4.0.1",
     "react": "^18.0.0",
     "react-autocomplete": "^1.8.1",
     "react-autosize-textarea": "^7.1.0",
