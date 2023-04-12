@@ -1,6 +1,9 @@
 from dataclasses import asdict
 from typing import Iterable
 
+from pcapi.core.users import testing as users_testing
+from pcapi.tasks.serialization import sendinblue_tasks
+
 from .. import models
 from .. import testing
 from .base import BaseBackend
@@ -24,3 +27,8 @@ class TestingBackend(BaseBackend):
         result = models.MailResult(sent_data=sent_data, successful=True)
         testing.outbox.append(result)
         return result
+
+    def create_contact(self, payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
+        users_testing.sendinblue_requests.append(
+            {"email": payload.email, "attributes": payload.attributes, "emailBlacklisted": payload.emailBlacklisted}
+        )

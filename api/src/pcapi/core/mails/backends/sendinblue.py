@@ -2,11 +2,15 @@ from dataclasses import asdict
 import logging
 from typing import Iterable
 
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
+
 from pcapi import settings
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task
-from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
+import pcapi.tasks.serialization.sendinblue_tasks as serializers
+from pcapi.utils.requests import ExternalAPIException
 
 from .. import models
 from .base import BaseBackend
@@ -16,6 +20,12 @@ logger = logging.getLogger(__name__)
 
 
 class SendinblueBackend(BaseBackend):
+    def __init__(self) -> None:
+        super().__init__()
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
+        self.contacts_api = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
+
     def send_mail(
         self,
         recipients: Iterable,
@@ -23,7 +33,7 @@ class SendinblueBackend(BaseBackend):
         bcc_recipients: Iterable[str] = None,
     ) -> models.MailResult:
         if isinstance(data, models.TransactionalEmailData):
-            payload = SendTransactionalEmailRequest(
+            payload = serializers.SendTransactionalEmailRequest(
                 recipients=list(recipients),
                 bcc_recipients=list(bcc_recipients) if bcc_recipients else None,
                 template_id=data.template.id,
@@ -41,7 +51,7 @@ class SendinblueBackend(BaseBackend):
                 send_transactional_email_secondary_task.delay(payload)
 
         elif isinstance(data, models.TransactionalWithoutTemplateEmailData):
-            payload = SendTransactionalEmailRequest(
+            payload = serializers.SendTransactionalEmailRequest(
                 recipients=list(recipients),
                 bcc_recipients=list(bcc_recipients) if bcc_recipients else None,
                 sender=asdict(data.sender.value),
@@ -59,6 +69,34 @@ class SendinblueBackend(BaseBackend):
             raise ValueError(f"Tried sending an email via sendinblue, but received incorrectly formatted data: {data}")
 
         return models.MailResult(sent_data=asdict(data), successful=True)
+
+    def create_contact(self, payload: serializers.UpdateSendinblueContactRequest) -> None:
+        contact = sib_api_v3_sdk.CreateContact(
+            email=payload.email,
+            attributes=payload.attributes,
+            list_ids=payload.contact_list_ids,
+            update_enabled=True,
+            email_blacklisted=payload.emailBlacklisted,
+        )
+
+        try:
+            self.contacts_api.create_contact(contact)
+
+        except SendinblueApiException as exception:
+            if exception.status >= 500:
+                raise ExternalAPIException(is_retryable=True) from exception
+
+            logger.exception(
+                "Exception when calling Sendinblue create_contact API",
+                extra={
+                    "email": payload.email,
+                    "attributes": payload.attributes,
+                },
+            )
+            raise ExternalAPIException(is_retryable=False) from exception
+
+        except Exception as exception:
+            raise ExternalAPIException(is_retryable=True) from exception
 
 
 class ToDevSendinblueBackend(SendinblueBackend):
