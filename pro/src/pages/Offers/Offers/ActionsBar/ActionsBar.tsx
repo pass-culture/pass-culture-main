@@ -211,6 +211,7 @@ const ActionsBar = ({
           nbSelectedOffers={nbSelectedOffers}
           onConfirm={handleDeactivate}
           onCancel={hideConfirmDialog}
+          audience={audience}
         />
       )}
       {isDeleteDialogOpen && (
