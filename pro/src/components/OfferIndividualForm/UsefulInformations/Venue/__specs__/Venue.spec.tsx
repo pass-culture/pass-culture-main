@@ -294,7 +294,7 @@ describe('OfferIndividual section: venue', () => {
     )
     await userEvent.selectOptions(selectVenue, 'Venue CCBB')
 
-    await userEvent.selectOptions(selectVenue, 'Selectionner un lieu')
+    await userEvent.selectOptions(selectVenue, 'Sélectionner un lieu')
     await userEvent.tab()
     await waitFor(() =>
       expect(
