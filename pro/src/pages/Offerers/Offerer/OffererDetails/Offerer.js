@@ -14,10 +14,6 @@ export class Offerer {
       offerer.demarchesSimplifieesApplicationId || ''
   }
 
-  get areBankInformationProvided() {
-    return !!(this.bic && this.iban)
-  }
-
   get formattedSiren() {
     return formatSiren(this.siren)
   }
