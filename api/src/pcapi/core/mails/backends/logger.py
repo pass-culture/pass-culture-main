@@ -2,6 +2,8 @@ from dataclasses import asdict
 import logging
 import typing
 
+from pcapi.tasks.serialization import sendinblue_tasks
+
 from .. import models
 from .base import BaseBackend
 
@@ -29,3 +31,11 @@ class LoggerBackend(BaseBackend):
         result = models.MailResult(sent_data=sent_data, successful=True)
 
         return result
+
+    def create_contact(self, payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
+        logger.info(
+            "A request to Sendinblue Contact API would be sent for user %s with attributes %s emailBlacklisted: %s",
+            payload.email,
+            payload.attributes,
+            payload.emailBlacklisted,
+        )
