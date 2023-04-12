@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
-import { NBSP } from 'core/shared'
+import { Audience, NBSP } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as EyeIcon } from 'icons/ico-eye-hidden.svg'
 
@@ -12,6 +12,7 @@ interface IDeactivationConfirmDialogProps {
   nbSelectedOffers: number
   onCancel: (status: boolean) => void
   onConfirm: () => void
+  audience: Audience
 }
 
 const DeactivationConfirmDialog = ({
@@ -19,9 +20,15 @@ const DeactivationConfirmDialog = ({
   onCancel,
   nbSelectedOffers,
   onConfirm,
+  audience,
 }: IDeactivationConfirmDialogProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
+
+  const wordingVisibilityOffer =
+    audience === Audience.COLLECTIVE
+      ? 'par les enseignants sur adage'
+      : 'sur l’application pass Culture'
 
   return (
     <ConfirmDialog
@@ -54,8 +61,8 @@ const DeactivationConfirmDialog = ({
       }
     >
       {nbSelectedOffers === 1
-        ? 'Dans ce cas, elle ne sera plus visible sur l’application pass Culture.'
-        : 'Dans ce cas, elles ne seront plus visibles sur l’application pass Culture.'}
+        ? `Dans ce cas, elle ne sera plus visible ${wordingVisibilityOffer}.`
+        : `Dans ce cas, elles ne seront plus visibles ${wordingVisibilityOffer}.`}
     </ConfirmDialog>
   )
 }
