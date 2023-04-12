@@ -19,8 +19,7 @@ const ChangePasswordForm = ({ onSubmit }: IChangePasswordForm): JSX.Element => {
   return (
     <section className={styles['change-password-form']}>
       <div className={styles['hero-body']}>
-        <h1>Créer un nouveau mot de passe</h1>
-        <p>Saisissez le nouveau mot de passe</p>
+        <h1>Définir un nouveau mot de passe</h1>
         <FormikProvider value={formik}>
           <Form onSubmit={formik.handleSubmit}>
             <FormLayout>
@@ -28,11 +27,11 @@ const ChangePasswordForm = ({ onSubmit }: IChangePasswordForm): JSX.Element => {
                 <PasswordInput
                   label="Nouveau mot de passe"
                   name="newPasswordValue"
-                  placeholder="Mon nouveau mot de passe"
+                  placeholder="Votre mot de passe"
                 />
               </FormLayout.Row>
               <SubmitButton isLoading={formik.isSubmitting}>
-                Envoyer
+                Valider
               </SubmitButton>
             </FormLayout>
           </Form>
