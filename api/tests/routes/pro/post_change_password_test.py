@@ -65,7 +65,7 @@ class Returns400Test:
         response = client.post("/users/password", json=data)
         # then
         assert response.status_code == 400
-        assert response.json["oldPassword"] == ["Ton ancien mot de passe est incorrect."]
+        assert response.json["oldPassword"] == ["Votre mot de passe actuel est incorrect"]
         assert "Ton mot de passe doit contenir au moins :" in response.json["newPassword"][0]
 
     def when_data_password_don_t_match_in_the_request_body(self, client):
