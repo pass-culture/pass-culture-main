@@ -1,6 +1,8 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import AUTHENTICATION_QUERIES
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -212,3 +214,15 @@ class Returns200ForAdminTest:
         offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
         assert humanize(offerers["offerer_not_validated"].id) in offerer_ids
         assert humanize(offerers["other_offerer_not_validated"].id) in offerer_ids
+
+    @pytest.mark.usefixtures("db_session")
+    def test_queries(self, client):
+        admin = users_factories.AdminFactory()
+        self._setup_offerers_for_users()
+
+        client = client.with_session_auth(admin.email)
+        queries = AUTHENTICATION_QUERIES
+        queries += 1  # select offerers
+        with assert_num_queries(queries):
+            response = client.get("/offerers/names")
+        assert response.status_code == 200
