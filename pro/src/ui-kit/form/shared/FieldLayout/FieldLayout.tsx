@@ -115,7 +115,7 @@ const FieldLayout = ({
           )}
         </div>
 
-        {!hideFooter && (hasError || hasCounter) && (
+        {!(hideFooter && !hasError) && (
           <div className={cn(classNameFooter, styles['field-layout-footer'])}>
             {hasError && (
               <div className={styles['field-layout-error']}>
