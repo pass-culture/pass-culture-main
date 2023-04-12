@@ -11,6 +11,7 @@ import freezegun
 import pytest
 import pytz
 
+import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.categories import subcategories
@@ -233,6 +234,7 @@ class PriceBookingTest:
         booking = api._get_bookings_to_price(bookings_models.Booking, window).first()
 
         queries = 0
+        queries += 1  # select feature flag PRICE_EVENTS
         queries += 1  # select for update on Venue (lock)
         queries += 1  # fetch booking again with multiple joinedload
         queries += 1  # select existing Pricing (if any)
@@ -291,6 +293,295 @@ class PriceCollectiveBookingTest:
         booking = UsedCollectiveBookingFactory(collectiveStock=collective_stock_factory(price=10))
         pricing = api.price_booking(booking)
         assert pricing.revenue == 0
+
+
+class PriceEventTest:
+    def _make_individual_event(self, used_date=None, price=None, user=None, stock=None, venue=None):
+        booking_kwargs = {}
+        if user:
+            booking_kwargs["user"] = user
+        if stock:
+            booking_kwargs["stock"] = stock
+        else:
+            stock_kwargs = {}
+            if price is not None:
+                stock_kwargs["price"] = price
+            if venue:
+                stock_kwargs["offer__venue"] = venue
+            booking_kwargs["stock"] = individual_stock_factory(**stock_kwargs)
+        booking = bookings_factories.BookingFactory(**booking_kwargs)
+        with freezegun.freeze_time(used_date or datetime.datetime.utcnow()):
+            bookings_api.mark_as_used(booking)
+        return models.FinanceEvent.query.filter_by(booking=booking).one()
+
+    def _make_collective_event(self, price=None, user=None, stock=None, venue=None):
+        booking_kwargs = {}
+        if user:
+            booking_kwargs["user"] = user
+        if stock:
+            booking_kwargs["stock"] = stock
+        else:
+            stock_kwargs = {}
+            if price:
+                stock_kwargs["price"] = price
+            if venue:
+                stock_kwargs["collectiveOffer__venue"] = venue
+            booking_kwargs["collectiveStock"] = collective_stock_factory(**stock_kwargs)
+        booking = educational_factories.UsedCollectiveBookingFactory(**booking_kwargs)
+        api.add_event(booking, models.FinanceEventMotive.BOOKING_USED)
+        return models.FinanceEvent.query.filter_by(collectiveBooking=booking).one()
+
+    def test_pricing_individual(self):
+        user = users_factories.RichBeneficiaryFactory()
+        event1 = self._make_individual_event(price=19_999, user=user)
+        booking1 = event1.booking
+        api.price_event(event1)
+
+        pricing1 = models.Pricing.query.one()
+        assert pricing1.event == event1
+        assert pricing1.booking == booking1
+        assert pricing1.collectiveBooking is None
+        assert pricing1.venue == booking1.venue
+        assert pricing1.pricingPoint == booking1.venue
+        assert pricing1.valueDate == booking1.dateUsed
+        assert pricing1.amount == -(19_999 * 100)
+        assert pricing1.standardRule == "Remboursement total pour les offres physiques"
+        assert pricing1.customRule is None
+        assert pricing1.revenue == 19_999 * 100
+        assert pricing1.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
+        assert pricing1.lines[0].amount == -(19_999 * 100)
+        assert pricing1.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        assert pricing1.lines[1].amount == 0
+
+        event2 = self._make_individual_event(price=100, user=user, venue=booking1.venue)
+        booking2 = event2.booking
+        api.price_event(event2)
+        pricing2 = models.Pricing.query.filter_by(booking=event2.booking).one()
+        assert pricing2.booking == booking2
+        assert pricing2.amount == -(95 * 100)
+        assert pricing2.standardRule == "Remboursement à 95% entre 20 000 € et 40 000 € par lieu (>= 2021-09-01)"
+        assert pricing2.revenue == pricing1.revenue + (100 * 100)
+        assert pricing2.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
+        assert pricing2.lines[0].amount == -(100 * 100)
+        assert pricing2.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        assert pricing2.lines[1].amount == 5 * 100
+
+    def test_pricing_collective(self):
+        event1 = self._make_collective_event(price=19_999)
+        booking1 = event1.collectiveBooking
+        api.price_event(event1)
+        pricing1 = models.Pricing.query.one()
+        assert pricing1.event == event1
+        assert pricing1.collectiveBooking == booking1
+        assert pricing1.booking is None
+        assert pricing1.venue == booking1.venue
+        assert pricing1.pricingPoint == booking1.venue
+        assert pricing1.valueDate == booking1.dateUsed
+        assert pricing1.amount == -(19_999 * 100)
+        assert pricing1.standardRule == "Remboursement total pour les offres éducationnelles"
+        assert pricing1.customRule is None
+        assert pricing1.revenue == 0
+        assert pricing1.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
+        assert pricing1.lines[0].amount == -(19_999 * 100)
+        assert pricing1.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        assert pricing1.lines[1].amount == 0
+
+        event2 = self._make_collective_event(price=100)
+        booking2 = event2.collectiveBooking
+        api.price_event(event2)
+        pricing2 = models.Pricing.query.filter_by(collectiveBooking=booking2).one()
+        assert pricing2.collectiveBooking == booking2
+        assert pricing2.amount == -(100 * 100)
+        assert pricing1.revenue == 0
+        assert pricing2.standardRule == "Remboursement total pour les offres éducationnelles"
+        assert pricing2.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
+        assert pricing2.lines[0].amount == -(100 * 100)
+        assert pricing2.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        assert pricing2.lines[1].amount == 0
+
+    def test_price_free_booking(self):
+        event = self._make_individual_event(price=0)
+        pricing = api.price_event(event)
+        assert models.Pricing.query.count() == 1
+        assert pricing.amount == 0
+
+    def test_accrue_revenue(self):
+        event1 = self._make_individual_event(price=10)
+        venue = event1.booking.venue
+        event2 = self._make_individual_event(venue=venue, price=20)
+        event3 = self._make_collective_event(venue=venue, price=40)
+        pricing1 = api.price_event(event1)
+        pricing2 = api.price_event(event2)
+        pricing3 = api.price_event(event3)
+        assert pricing1.revenue == 1000
+        assert pricing2.revenue == 3000
+        assert pricing3.revenue == 3000  # collective bookings are not included in revenue
+
+    def test_price_with_dependent_event(self):
+        event1 = self._make_individual_event()
+        api.price_event(event1)
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        event2 = self._make_individual_event(used_date=past, venue=event1.venue)
+        api.price_event(event2)
+        # Pricing of `event1.booking1` has been deleted.
+        single_pricing = models.Pricing.query.one()
+        assert single_pricing.event == event2
+
+    def test_dont_price_twice_its_all_right(self):
+        event = self._make_individual_event()
+        api.price_event(event)
+        assert models.Pricing.query.count() == 1
+        api.price_event(event)
+        assert models.Pricing.query.count() == 1
+
+    def test_price_booking_that_has_been_unused_and_then_used_again(self):
+        event = self._make_individual_event()
+
+        api.price_event(event)
+        assert models.Pricing.query.count() == 1
+
+        bookings_api.mark_as_unused(event.booking)
+        assert models.Pricing.query.count() == 1
+        assert event.status == models.FinanceEventStatus.CANCELLED
+        assert models.FinanceEvent.query.filter_by(status=models.FinanceEventStatus.READY).count() == 0
+
+        bookings_api.mark_as_used(event.booking)
+        event = models.FinanceEvent.query.filter_by(status=models.FinanceEventStatus.READY).one()
+        api.price_event(event)
+        assert models.Pricing.query.count() == 2
+        assert event.pricings[0].status == models.PricingStatus.VALIDATED
+
+    def test_num_queries(self):
+        event = self._make_individual_event()
+
+        queries = 0
+        queries += 1  # acquire lock on pricing point
+        queries += 1  # fetch event again with multiple joinedload
+        queries += 1  # select existing Pricing (if any)
+        queries += 1  # select dependent pricings
+        queries += 1  # calculate revenue
+        queries += 1  # select all CustomReimbursementRule
+        queries += 1  # update status of FinanceEvent
+        queries += 1  # insert 1 Pricing
+        queries += 1  # insert 2 PricingLine
+        queries += 1  # commit
+        with assert_num_queries(queries):
+            api.price_event(event)
+
+
+class PriceEventsTest:
+    few_minutes_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+
+    def test_basics(self):
+        event1 = factories.UsedBookingFinanceEventFactory(
+            booking__dateUsed=self.few_minutes_ago,
+            booking__stock__offer__venue__pricing_point="self",
+        )
+        event2 = factories.UsedBookingFinanceEventFactory(
+            booking__dateUsed=self.few_minutes_ago,
+            booking__stock__offer__venue__pricing_point="self",
+        )
+
+        api.price_events(min_date=self.few_minutes_ago)
+
+        assert len(event1.pricings) == 1
+        assert len(event2.pricings) == 1
+        assert event1.status == models.FinanceEventStatus.PRICED
+        assert event2.status == models.FinanceEventStatus.PRICED
+
+    @mock.patch("pcapi.core.finance.api.price_event", lambda booking: None)
+    def test_num_queries(self):
+        factories.UsedBookingFinanceEventFactory(
+            booking__dateUsed=self.few_minutes_ago,
+            booking__stock__offer__venue__pricing_point="self",
+        )
+        factories.UsedBookingFinanceEventFactory(
+            booking__dateUsed=self.few_minutes_ago,
+            booking__stock__offer__venue__pricing_point="self",
+        )
+
+        n_queries = 0
+        n_queries += 1  # count of events to price
+        n_queries += 1  # select events
+        with assert_num_queries(n_queries):
+            api.price_events(min_date=self.few_minutes_ago)
+
+
+class AddEventTest:
+    def test_used(self):
+        motive = models.FinanceEventMotive.BOOKING_USED
+        pricing_point = offerers_factories.VenueFactory()
+        booking = bookings_factories.UsedBookingFactory(
+            stock__offer__venue__pricing_point=pricing_point,
+        )
+
+        event = api.add_event(booking, motive=motive)
+
+        assert event.booking == booking
+        assert event.status == models.FinanceEventStatus.READY
+        assert event.motive == motive
+        assert event.valueDate == booking.dateUsed
+        assert event.venue == booking.venue
+        assert event.pricingPoint == pricing_point
+        assert event.pricingOrderingDate == booking.dateUsed
+
+    def test_used_after_cancellation(self):
+        motive = models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION
+        pricing_point = offerers_factories.VenueFactory()
+        booking = bookings_factories.UsedBookingFactory(
+            stock__offer__venue__pricing_point=pricing_point,
+        )
+
+        event = api.add_event(booking, motive=motive)
+
+        assert event.booking == booking
+        assert event.status == models.FinanceEventStatus.READY
+        assert event.motive == motive
+        assert event.valueDate == booking.dateUsed
+
+    def test_unused(self):
+        motive = models.FinanceEventMotive.BOOKING_UNUSED
+
+        pricing_point = offerers_factories.VenueFactory()
+        booking = bookings_factories.BookingFactory(
+            stock__offer__venue__pricing_point=pricing_point,
+        )
+
+        event = api.add_event(booking, motive=motive)
+
+        assert event.booking == booking
+        assert event.status == models.FinanceEventStatus.NOT_TO_BE_PRICED
+        assert event.motive == motive
+
+    def test_cancelled_after_use(self):
+        motive = models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE
+        booking = bookings_factories.CancelledBookingFactory()
+
+        event = api.add_event(booking, motive=motive)
+
+        assert event.booking == booking
+        assert event.status == models.FinanceEventStatus.NOT_TO_BE_PRICED
+        assert event.motive == motive
+
+
+class CancelLatestEventTest:
+    def test_basics(self):
+        event = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point="self",
+        )
+        pricing = factories.PricingFactory(event=event, booking=event.booking)
+
+        api.cancel_latest_event(event.booking, motive=event.motive)
+
+        assert event.status == models.FinanceEventStatus.CANCELLED
+        assert pricing.status == models.PricingStatus.CANCELLED
+
+    def test_no_event_to_cancel(self):
+        booking = bookings_factories.UsedBookingFactory()
+
+        event = api.cancel_latest_event(booking, models.FinanceEventMotive.BOOKING_UNUSED)
+
+        assert event is None
 
 
 class GetPricingPointLinkTest:
@@ -876,6 +1167,7 @@ class PriceBookingsTest:
             collectiveStock=collective_stock_factory(),
         )
         n_queries = 0
+        n_queries += 1  # select feature flag PRICE_EVENTS
         n_queries += 1  # count of individual bookings to price
         n_queries += 1  # count of collective bookings to price
         n_queries += 1  # select individual bookings

@@ -69,6 +69,11 @@ def move_siret(
     db.session.rollback()  # discard any previous transaction to start a fresh new one.
     queries = [
         """
+        update finance_event
+        set "pricingPointId" = :target_id
+        where "pricingPointId" = :source_id
+        """,
+        """
         update pricing
         set "pricingPointId" = :target_id
         where "pricingPointId" = :source_id
@@ -211,9 +216,21 @@ def remove_siret(
         where "pricingPointId" = :venue_id
         """,
         # Delete all ongoing pricings (and related pricing lines),
-        # except pending ones.  The corresponding bookings will be
+        # except pending ones. The corresponding bookings will be
         # priced again once a new pricing point has been selected for
         # their venues.
+        """
+        update finance_event
+        set
+          "pricingPointId" = NULL,
+          status = :pending_finance_event_status
+        where
+          "pricingPointId" = :venue_id
+          and id in (
+            select "eventId" from pricing
+            where "pricingPointId" = :venue_id and status = :validated_pricing_status
+          )
+        """,
         """
         delete from pricing_line
         where "pricingId" in (
@@ -234,6 +251,7 @@ def remove_siret(
                 {
                     "venue_id": venue.id,
                     "comment": comment,
+                    "pending_finance_event_status": models.FinanceEventStatus.PENDING.value,
                     "validated_pricing_status": models.PricingStatus.VALIDATED.value,
                 },
             )

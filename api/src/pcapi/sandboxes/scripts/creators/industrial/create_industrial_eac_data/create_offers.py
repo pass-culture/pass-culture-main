@@ -6,6 +6,7 @@ from itertools import cycle
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+import pcapi.core.finance.factories as finance_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -336,7 +337,7 @@ def create_booking_base_list(
             )
     if used_booking:
         for _i in range(5):
-            educational_factories.CollectiveBookingFactory(
+            booking = educational_factories.CollectiveBookingFactory(
                 collectiveStock__collectiveOffer__name=f"USED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
@@ -351,6 +352,7 @@ def create_booking_base_list(
                 confirmationLimitDate=datetime.utcnow() - timedelta(days=3),
                 dateCreated=datetime.utcnow() - timedelta(days=30),
             )
+            finance_factories.UsedBookingFinanceEventFactory(collectiveBooking=booking)
     if reimbursed_booking:
         for _i in range(5):
             educational_factories.CollectiveBookingFactory(

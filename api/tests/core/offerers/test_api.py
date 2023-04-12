@@ -1733,6 +1733,17 @@ class LinkVenueToPricingPointTest:
         assert new_link.pricingPoint == pricing_point
         assert new_link.timespan.upper is None
 
+    def test_populate_finance_event_pricing_point_id(self):
+        venue = offerers_factories.VenueWithoutSiretFactory()
+        booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
+        pricing_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+        assert event.pricingPointId is None
+
+        offerers_api.link_venue_to_pricing_point(venue, pricing_point.id)
+        assert event.pricingPoint == pricing_point
+        assert event.status == finance_models.FinanceEventStatus.READY
+
     def test_behaviour_if_pre_existing_link(self):
         venue = offerers_factories.VenueWithoutSiretFactory()
         pricing_point_1 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)

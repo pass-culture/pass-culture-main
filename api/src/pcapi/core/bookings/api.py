@@ -136,6 +136,9 @@ def book_offer(
 
         repository.save(booking, stock)
 
+        if booking.status == BookingStatus.USED:
+            finance_api.add_event(booking, finance_models.FinanceEventMotive.BOOKING_USED)
+
     logger.info(
         "Beneficiary booked an offer",
         extra={
@@ -215,6 +218,16 @@ def _cancel_booking(
         try:
             finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
             booking.cancel_booking(reason, cancel_even_if_used)
+            cancelled_event = finance_api.cancel_latest_event(
+                booking,
+                finance_models.FinanceEventMotive.BOOKING_USED,
+            )
+            if cancelled_event:
+                finance_api.add_event(
+                    booking,
+                    finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
+                    commit=False,
+                )
             _cancel_external_booking(booking, stock)
         except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled, finance_exceptions.NonCancellablePricingError) as e:
             if raise_if_error:
@@ -346,6 +359,7 @@ def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> Non
 def mark_as_used(booking: Booking) -> None:
     validation.check_is_usable(booking)
     booking.mark_as_used()
+    finance_api.add_event(booking, finance_models.FinanceEventMotive.BOOKING_USED, commit=False)
     repository.save(booking)
 
     logger.info("Booking was marked as used", extra={"booking_id": booking.id}, technical_message_id="booking.used")
@@ -375,6 +389,11 @@ def mark_as_used_with_uncancelling(booking: Booking) -> None:
             stock.dnBookedQuantity += booking.quantity
             db.session.add(stock)
     db.session.add(booking)
+    finance_api.add_event(
+        booking,
+        finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
+        commit=False,
+    )
     db.session.commit()
     logger.info("Booking was uncancelled and marked as used", extra={"bookingId": booking.id})
 
@@ -401,7 +420,9 @@ def mark_as_cancelled(booking: Booking) -> None:
 
 def mark_as_unused(booking: Booking) -> None:
     validation.check_can_be_mark_as_unused(booking)
+    finance_api.cancel_latest_event(booking, finance_models.FinanceEventMotive.BOOKING_USED)
     finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
+    finance_api.add_event(booking, finance_models.FinanceEventMotive.BOOKING_UNUSED, commit=False)
     booking.mark_as_unused_set_confirmed()
     repository.save(booking)
 
@@ -475,19 +496,6 @@ def recompute_dnBookedQuantity(stock_ids: list[int]) -> None:
     db.session.execute(query, {"stock_ids": tuple(stock_ids)})
 
 
-def _logs_for_data_purpose(collective_bookings_subquery: sa.orm.Query) -> None:
-    bookings_information_tuple = collective_bookings_subquery.with_entities(
-        CollectiveBooking.id, CollectiveBooking.collectiveStockId
-    )
-    for booking_id, stock_id in bookings_information_tuple:
-        educational_utils.log_information_for_data_purpose(
-            event_name="BookingUsed",
-            extra_data={"bookingId": booking_id, "stockId": stock_id},
-            uai=None,
-            user_role=None,
-        )
-
-
 def auto_mark_as_used_after_event() -> None:
     """Automatically mark as used bookings that correspond to events that
     have happened (with a delay).
@@ -497,41 +505,116 @@ def auto_mark_as_used_after_event() -> None:
 
     now = datetime.datetime.utcnow()
     threshold = now - constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
-    bookings_subquery = (
-        Booking.query.join(offers_models.Stock)
-        .filter(Booking.status == BookingStatus.CONFIRMED)
-        .filter(offers_models.Stock.beginningDatetime < threshold)
-        .with_entities(Booking.id)
-        .subquery()
-    )
 
-    individual_bookings = Booking.query.filter(Booking.id.in_(bookings_subquery))
+    # FIXME (dbaty, 2023-07-07): Revisit with SQLAlchemy 2.
+    #
+    # I tried to update and select bookings in a single query, like this:
+    #     WITH updated AS (
+    #       UPDATE booking
+    #       SET "dateUsed" = :now, status = 'USED'
+    #       FROM stock WHERE ...
+    #       RETURNING booking.id
+    #     )
+    #     SELECT ... FROM booking JOIN ...
+    #     WHERE booking.id IN (select id from updated)
+    #
+    # In SQLAlchemy:
+    #     individual_updated = (
+    #         sa.update(Booking)
+    #         .returning(Booking.id)
+    #         .where(
+    #             Booking.status == BookingStatus.CONFIRMED,
+    #             Booking.stockId == offers_models.Stock.id,
+    #             offers_models.Stock.beginningDatetime < threshold,
+    #         )
+    #         .values(dateUsed=now, status=BookingStatus.USED)
+    #     )
+    #     individual_select = sa.select(Booking).options(
+    #         sa.orm.joinedload(Booking.stock, innerjoin=True),
+    #         sa.orm.joinedload(Booking.venue, innerjoin=True),
+    #     )
+    #     individual_bookings = db.session.execute(
+    #         individual_select.where(Booking.id.in_(sa.select([individual_updated.cte(name="updated").c.id]))),
+    #         execution_options={"synchronize_session": True},
+    #     )
+    #
+    # But it does not work: the SELECT part does not see updated
+    # columns (and here we need to see the newly set value of
+    # `dateUsed`, otherwise `finance.api.add_event()` raises an
+    # error).
+    #
+    # I think that it might be possible to make it work by using
+    # `returning(Booking)` instead of `returning(Booking.id)`, and
+    # joining related tables. SQLAlchemy would know that what it gets
+    # from the CTE must be used to populate `Booking` objects.
+    # However, this is only possible in SQLAlchemy 2.
 
-    collective_bookings_subquery = (
-        CollectiveBooking.query.join(CollectiveStock)
-        .filter(CollectiveBooking.status == CollectiveBookingStatus.CONFIRMED)
-        .filter(CollectiveStock.beginningDatetime < threshold)
+    # Individual bookings: update and add a finance event for each one.
+    db.session.execute(
+        sa.update(Booking)
+        .where(
+            Booking.status == BookingStatus.CONFIRMED,
+            Booking.stockId == offers_models.Stock.id,
+            offers_models.Stock.beginningDatetime < threshold,
+        )
+        .values(dateUsed=now, status=BookingStatus.USED),
+        execution_options={"synchronize_session": False},
     )
-    collective_bookings = CollectiveBooking.query.filter(
-        CollectiveBooking.id.in_(collective_bookings_subquery.with_entities(CollectiveBooking.id))
+    # `dateUsed` is precise enough that it's very unlikely to get a
+    # booking that was marked as used from another channel (and that
+    # would already have an event).
+    individual_bookings = Booking.query.filter_by(dateUsed=now).options(
+        sa.orm.joinedload(Booking.stock, innerjoin=True),
+        sa.orm.joinedload(Booking.venue, innerjoin=True),
     )
+    n_individual_bookings_updated = 0
+    for booking in individual_bookings:
+        finance_api.add_event(
+            booking,
+            finance_models.FinanceEventMotive.BOOKING_USED,
+            commit=False,
+        )
+        n_individual_bookings_updated += 1
 
-    _logs_for_data_purpose(collective_bookings_subquery)
-
-    n_individual_updated = individual_bookings.update(
-        {"status": BookingStatus.USED, "dateUsed": now}, synchronize_session=False
+    # Collective bookings: update and add a finance event for each
+    # one. We do the same as above, except that we add a log for data
+    # analysis.
+    db.session.execute(
+        sa.update(CollectiveBooking)
+        .where(
+            CollectiveBooking.status == CollectiveBookingStatus.CONFIRMED,
+            CollectiveBooking.collectiveStockId == CollectiveStock.id,
+            CollectiveStock.beginningDatetime < threshold,
+        )
+        .values(dateUsed=now, status=CollectiveBookingStatus.USED),
+        execution_options={"synchronize_session": False},
     )
-    db.session.commit()
-
-    n_collective_bookings_updated = collective_bookings.update(
-        {"status": CollectiveBookingStatus.USED, "dateUsed": now}, synchronize_session=False
+    collective_bookings = CollectiveBooking.query.filter_by(dateUsed=now).options(
+        sa.orm.joinedload(CollectiveBooking.collectiveStock, innerjoin=True),
+        sa.orm.joinedload(CollectiveBooking.venue, innerjoin=True),
     )
+    n_collective_bookings_updated = 0
+    for booking in collective_bookings:
+        finance_api.add_event(
+            booking,
+            finance_models.FinanceEventMotive.BOOKING_USED,
+            commit=False,
+        )
+        n_collective_bookings_updated += 1
+        educational_utils.log_information_for_data_purpose(
+            event_name="BookingUsed",
+            extra_data={"bookingId": booking.id, "stockId": booking.collectiveStockId},
+            uai=None,
+            user_role=None,
+        )
+
     db.session.commit()
 
     logger.info(
         "Automatically marked bookings as used after event",
         extra={
-            "individualBookingsUpdatedCount": n_individual_updated,
+            "dateUsed": now,
+            "individualBookingsUpdatedCount": n_individual_bookings_updated,
             "collectiveBookingsUpdatedCount": n_collective_bookings_updated,
         },
     )

@@ -4,10 +4,10 @@ import logging
 from random import choice
 from random import randint
 
-from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.bookings.models as bookings_models
 from pcapi.core.finance import api as finance_api
+import pcapi.core.finance.factories as finance_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def create_data_bookings(offers_by_name: dict[str, Offer], users_by_name: dict[str, User]) -> None:
     logger.info("create_data_bookings_data")
-    bookings_by_name: dict[str, Booking] = {}
+    bookings_by_name: dict[str, bookings_models.Booking] = {}
     token = 200000
     for user_name, user in users_by_name.items():
         if user.firstName not in ("DATA Test Jeune", "DATA Test Mineur"):
@@ -38,17 +38,15 @@ def create_data_bookings(offers_by_name: dict[str, Offer], users_by_name: dict[s
             if all_credit.remaining < stock.price:
                 continue
             booking_name = f"{offer_name} / {user_name} / DATA"
-            bookings_by_name[booking_name] = BookingFactory(
+            booking = bookings_factories.UsedBookingFactory(
                 user=user,
-                status=BookingStatus.USED,
                 stock=stock,
                 dateUsed=datetime.utcnow() - timedelta(days=2),
-                amount=stock.price,
                 token=str(token),
-                offerer=offer.venue.managingOfferer,
-                venue=offer.venue,
             )
+            finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+            bookings_by_name[booking_name] = booking
             token = token + 1
     repository.save(*bookings_by_name.values())
     logger.info("created %d bookings", len(bookings_by_name))
-    finance_api.price_bookings()
+    finance_api.price_events()

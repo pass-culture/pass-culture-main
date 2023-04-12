@@ -8,6 +8,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import api as finance_api
+import pcapi.core.finance.factories as finance_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
@@ -56,7 +57,7 @@ def create_industrial_bookings(offers_by_name: dict[str, Offer], users_by_name: 
     repository.save(*bookings_by_name.values())
     logger.info("created %d bookings", len(bookings_by_name))
 
-    finance_api.price_bookings()
+    finance_api.price_events()
 
 
 def _create_bookings_for_other_beneficiaries(
@@ -114,7 +115,7 @@ def _create_bookings_for_other_beneficiaries(
             else:
                 booking_amount = None
 
-            bookings_by_name[booking_name] = BookingFactory(
+            booking = BookingFactory(
                 user=user,
                 status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
                 stock=stock,
@@ -124,6 +125,9 @@ def _create_bookings_for_other_beneficiaries(
                 offerer=offer.venue.managingOfferer,
                 venue=offer.venue,
             )
+            if is_used:
+                finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+            bookings_by_name[booking_name] = booking
 
             token = token + 1
 
@@ -173,5 +177,7 @@ def _create_has_booked_some_bookings(
             stock=stock,
             dateUsed=datetime.utcnow() - timedelta(days=2) if is_used else None,
         )
+        if is_used:
+            finance_factories.UsedBookingFinanceEventFactory(booking=booking)
         booking_name = "{} / {} / {}".format(offer_name, user_name, booking.token)
         bookings_by_name[booking_name] = booking
