@@ -2,9 +2,7 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
-import { accessibilityOptions } from 'core/shared/accessibilityOptions'
-import { useAccessibilityUpdates } from 'hooks'
+import { useAccessibilityOptions } from 'hooks'
 import { CheckboxGroup } from 'ui-kit'
 
 import styles from '../OfferIndividualForm.module.scss'
@@ -17,28 +15,14 @@ interface IAccessiblityProps {
 const Accessibility = ({
   readOnlyFields = [],
 }: IAccessiblityProps): JSX.Element => {
-  const { values, setFieldValue } =
-    useFormikContext<IOfferIndividualFormValues>()
-
-  const accessibilityValues = {
-    [AccessiblityEnum.VISUAL]: values.accessibility[AccessiblityEnum.VISUAL],
-    [AccessiblityEnum.MENTAL]: values.accessibility[AccessiblityEnum.MENTAL],
-    [AccessiblityEnum.AUDIO]: values.accessibility[AccessiblityEnum.AUDIO],
-    [AccessiblityEnum.MOTOR]: values.accessibility[AccessiblityEnum.MOTOR],
-    [AccessiblityEnum.NONE]: values.accessibility[AccessiblityEnum.NONE],
-  }
-  const handleAccessibilityChange = (
-    newAccessibilityValues: IAccessibiltyFormValues
-  ) => setFieldValue('accessibility', newAccessibilityValues)
-
-  useAccessibilityUpdates(accessibilityValues, handleAccessibilityChange)
+  const { setFieldValue } = useFormikContext<IOfferIndividualFormValues>()
 
   return (
     <FormLayout.Section title="Accessibilité">
       <FormLayout.Row>
         <CheckboxGroup
           className={styles['accessibility-checkbox-group']}
-          group={accessibilityOptions}
+          group={useAccessibilityOptions(setFieldValue)}
           groupName="accessibility"
           disabled={readOnlyFields.includes('accessibility')}
           legend="Cette offre est accessible au public en situation de handicap :"

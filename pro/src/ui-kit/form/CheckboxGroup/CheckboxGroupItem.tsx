@@ -11,6 +11,7 @@ interface ICheckboxProps {
   Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
   hasError?: boolean
   disabled?: boolean
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const CheckboxGroupItem = ({
@@ -21,12 +22,16 @@ const CheckboxGroupItem = ({
   hasError,
   Icon,
   disabled,
+  onChange,
 }: ICheckboxProps): JSX.Element => {
   const [field] = useField({ name, type: 'checkbox' })
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  const onCustomChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setGroupTouched()
     field.onChange(event)
+    if (onChange) {
+      onChange(event)
+    }
   }
 
   return (
@@ -36,7 +41,7 @@ const CheckboxGroupItem = ({
       hasError={hasError}
       label={label}
       description={description}
-      onChange={onChange}
+      onChange={onCustomChange}
       disabled={disabled}
     />
   )

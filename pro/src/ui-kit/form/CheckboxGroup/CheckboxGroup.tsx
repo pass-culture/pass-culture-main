@@ -15,6 +15,7 @@ export interface ICheckboxGroupProps {
     label: string
     description?: string
     icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   }[]
   className?: string
   disabled?: boolean
@@ -48,6 +49,7 @@ const CheckboxGroup = ({
               !meta.touched ? helpers.setTouched(true) : null
             }
             disabled={disabled}
+            onChange={item.onChange}
           />
         </div>
       ))}
