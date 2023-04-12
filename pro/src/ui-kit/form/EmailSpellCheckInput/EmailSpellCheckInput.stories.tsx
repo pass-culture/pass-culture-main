@@ -9,7 +9,10 @@ export default {
   title: 'ui-kit/forms/EmailSpellCheckInput',
   component: EmailSpellCheckInput,
 }
-type Args = IEmailSpellCheckInputProps<any>
+interface FormType {
+  email: string
+}
+type Args = IEmailSpellCheckInputProps<FormType>
 
 const Template: Story<Args> = args => (
   <Formik initialValues={{}} onSubmit={() => {}}>
