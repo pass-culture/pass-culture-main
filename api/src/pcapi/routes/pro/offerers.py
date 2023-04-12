@@ -43,6 +43,8 @@ def list_offerers_names(
             offerers = offerers.limit(settings.PRO_MAX_OFFERERS_FOR_ADMIN_ON_HOME_PAGE)
         offerers = offerers.distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
 
+    offerers = offerers.options(sqla_orm.load_only(offerers_models.Offerer.id, offerers_models.Offerer.name))
+
     return offerers_serialize.GetOfferersNamesResponseModel(
         offerersNames=[offerers_serialize.GetOffererNameResponseModel.from_orm(offerer) for offerer in offerers]
     )
