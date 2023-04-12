@@ -14,12 +14,11 @@ from sib_api_v3_sdk.models.created_process_id import CreatedProcessId
 from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
 
 from pcapi import settings
+from pcapi.core import mails as mails_api
 from pcapi.core.external.attributes import models as attributes_models
-from pcapi.core.users import testing
 from pcapi.core.users.models import UserRole
 from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
-from pcapi.utils.requests import ExternalAPIException
 
 
 logger = logging.getLogger(__name__)
@@ -215,50 +214,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
 
 
 def make_update_request(payload: UpdateSendinblueContactRequest) -> None:
-    if settings.IS_RUNNING_TESTS:
-        testing.sendinblue_requests.append(
-            {"email": payload.email, "attributes": payload.attributes, "emailBlacklisted": payload.emailBlacklisted}
-        )
-        return
-
-    if settings.IS_DEV:
-        logger.info(
-            "A request to Sendinblue Contact API would be sent for user %s with attributes %s emailBlacklisted: %s",
-            payload.email,
-            payload.attributes,
-            payload.emailBlacklisted,
-        )
-        return
-
-    configuration = sib_api_v3_sdk.Configuration()
-    configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
-    api_instance = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
-    create_contact = sib_api_v3_sdk.CreateContact(
-        email=payload.email,
-        attributes=payload.attributes,
-        list_ids=payload.contact_list_ids,
-        update_enabled=True,
-        email_blacklisted=payload.emailBlacklisted,
-    )
-
-    try:
-        api_instance.create_contact(create_contact)
-
-    except SendinblueApiException as exception:
-        if exception.status >= 500:
-            raise ExternalAPIException(is_retryable=True) from exception
-
-        logger.exception(
-            "Exception when calling Sendinblue create_contact API",
-            extra={
-                "email": payload.email,
-                "attributes": payload.attributes,
-            },
-        )
-        raise ExternalAPIException(is_retryable=False) from exception
-
-    except Exception as exception:
-        raise ExternalAPIException(is_retryable=True) from exception
+    mails_api.create_contact(payload)
 
 
 def send_import_contacts_request(

@@ -15,7 +15,8 @@ from pcapi.core.external.sendinblue import format_user_attributes
 from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.external.sendinblue import make_update_request
 from pcapi.core.testing import override_settings
-from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
+import pcapi.core.users.testing as sendinblue_testing
+from pcapi.tasks.serialization import sendinblue_tasks
 
 from . import common_pro_attributes
 from . import common_user_attributes
@@ -299,10 +300,29 @@ class BulkImportUsersDataTest:
         # This test helps to check data received in Sendinblue dashboard manually.
         # Note that SENDINBLUE_API_KEY must be filled in settings.
         make_update_request(
-            UpdateSendinblueContactRequest(
+            sendinblue_tasks.UpdateSendinblueContactRequest(
                 email=f"test.pro.{datetime.utcnow().strftime('%y%m%d.%H%M')}@example.net",
                 attributes=format_user_attributes(common_pro_attributes),
                 contact_list_ids=[SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID],
                 emailBlacklisted=False,
             )
         )
+
+    def test_make_update_request(self):
+        email = f"test.pro.{datetime.utcnow().strftime('%y%m%d.%H%M')}@example.net"
+        attributes = format_user_attributes(common_pro_attributes)
+
+        make_update_request(
+            sendinblue_tasks.UpdateSendinblueContactRequest(
+                email=email,
+                attributes=attributes,
+                contact_list_ids=[SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID],
+                emailBlacklisted=False,
+            )
+        )
+
+        assert sendinblue_testing.sendinblue_requests[0] == {
+            "email": email,
+            "attributes": attributes,
+            "emailBlacklisted": False,
+        }
