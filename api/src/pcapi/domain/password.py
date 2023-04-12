@@ -47,7 +47,7 @@ def _ensure_new_password_is_different_from_old(user: User, new_password: str, er
 
 def _ensure_given_old_password_is_correct(user: User, old_password: str, errors: ApiErrors) -> None:
     if not user.checkPassword(old_password):
-        errors.add_error("oldPassword", "Ton ancien mot de passe est incorrect.")
+        errors.add_error("oldPassword", "Votre mot de passe actuel est incorrect")
 
 
 def _ensure_new_password_is_strong_enough(field_name: str, field_value: str, errors: ApiErrors) -> None:

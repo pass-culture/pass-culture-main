@@ -163,7 +163,7 @@ class EnsureGivenOldPasswordIsCorrectTest:
         _ensure_given_old_password_is_correct(user, old_password, api_errors)
 
         # then
-        assert api_errors.errors["oldPassword"] == ["Ton ancien mot de passe est incorrect."]
+        assert api_errors.errors["oldPassword"] == ["Votre mot de passe actuel est incorrect"]
 
 
 class EnsureNewPasswordIsDifertFromOldTest:
