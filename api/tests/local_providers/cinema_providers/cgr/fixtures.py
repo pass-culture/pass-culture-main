@@ -222,7 +222,17 @@ ONE_TICKET_RESPONSE = {
     "Placement": "D8",
 }
 
+ONE_TICKET_RESPONSE_WITHOUT_PLACEMENT = {
+    "QrCode": "CINE999508637111",
+    "Placement": "",
+}
+
 TWO_TICKETS_RESPONSE = {
     "QrCode": "CINE999508637111",
     "Placement": "F7,F8",
+}
+
+TWO_TICKETS_RESPONSE_WITHOUT_PLACEMENT = {
+    "QrCode": "CINE999508637111",
+    "Placement": "",
 }
