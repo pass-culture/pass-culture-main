@@ -1,6 +1,6 @@
 {
   "name": "pass-culture-adage-front",
-  "version": "234.0.1",
+  "version": "234.0.3",
   "private": true,
   "scripts": {
     "start": "node scripts/start.js",
