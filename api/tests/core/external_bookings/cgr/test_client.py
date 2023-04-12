@@ -40,6 +40,34 @@ class BookTicketTest:
         assert "<pPUTTC>5.50</pPUTTC>" in post_adapter.last_request.text
         assert "<pIDSeances>177182</pIDSeances>" in post_adapter.last_request.text
 
+    def test_should_book_one_ticket_when_placement_is_disabled(self, requests_mock):
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1, amount=5.5)
+        cinema_details = providers_factories.CGRCinemaDetailsFactory(
+            cinemaUrl="http://cgr-cinema-0.example.com/web_service"
+        )
+        cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
+
+        requests_mock.get(
+            "http://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
+        )
+        post_adapter = requests_mock.post(
+            "http://cgr-cinema-0.example.com/web_service",
+            text=fixtures.cgr_reservation_response_template(fixtures.ONE_TICKET_RESPONSE_WITHOUT_PLACEMENT),
+        )
+
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id)
+        tickets = cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
+
+        assert len(tickets) == 1
+        assert tickets[0].barcode == "CINE999508637111"
+        assert not tickets[0].seat_number
+        assert post_adapter.call_count == 1
+        assert "<pNBPlaces>1</pNBPlaces>" in post_adapter.last_request.text
+        assert "<pEmail>beneficiary@example.com</pEmail>" in post_adapter.last_request.text
+        assert "<pPUTTC>5.50</pPUTTC>" in post_adapter.last_request.text
+        assert "<pIDSeances>177182</pIDSeances>" in post_adapter.last_request.text
+
     def test_should_book_two_tickets(self, requests_mock):
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
         booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2, amount=5.5)
@@ -64,6 +92,37 @@ class BookTicketTest:
         assert tickets[0].seat_number == "F7"
         assert tickets[1].barcode == "CINE999508637111"
         assert tickets[1].seat_number == "F8"
+        assert post_adapter.call_count == 1
+        assert "<pNBPlaces>2</pNBPlaces>" in post_adapter.last_request.text
+        assert "<pEmail>beneficiary@example.com</pEmail>" in post_adapter.last_request.text
+        assert "<pPUTTC>5.50</pPUTTC>" in post_adapter.last_request.text
+        assert "<pIDSeances>177182</pIDSeances>" in post_adapter.last_request.text
+
+    def test_should_book_two_tickets_when_placement_is_disabled(self, requests_mock):
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2, amount=5.5)
+        cinema_details = providers_factories.CGRCinemaDetailsFactory(
+            cinemaUrl="http://cgr-cinema-0.example.com/web_service"
+        )
+        cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
+
+        requests_mock.get(
+            "http://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
+        )
+
+        post_adapter = requests_mock.post(
+            "http://cgr-cinema-0.example.com/web_service",
+            text=fixtures.cgr_reservation_response_template(fixtures.TWO_TICKETS_RESPONSE_WITHOUT_PLACEMENT),
+        )
+
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id)
+        tickets = cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
+
+        assert len(tickets) == 2
+        assert tickets[0].barcode == "CINE999508637111"
+        assert not tickets[0].seat_number
+        assert tickets[1].barcode == "CINE999508637111"
+        assert not tickets[1].seat_number
         assert post_adapter.call_count == 1
         assert "<pNBPlaces>2</pNBPlaces>" in post_adapter.last_request.text
         assert "<pEmail>beneficiary@example.com</pEmail>" in post_adapter.last_request.text

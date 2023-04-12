@@ -43,11 +43,21 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         logger.info("Booked CGR Ticket", extra={"barcode": response.QrCode, "seat_number": response.Placement})
         if booking.quantity == 2:
             tickets = [
-                external_bookings_models.Ticket(barcode=response.QrCode, seat_number=response.Placement.split(",")[0]),
-                external_bookings_models.Ticket(barcode=response.QrCode, seat_number=response.Placement.split(",")[1]),
+                external_bookings_models.Ticket(
+                    barcode=response.QrCode,
+                    seat_number=response.Placement.split(",")[0] if "," in response.Placement else None,
+                ),
+                external_bookings_models.Ticket(
+                    barcode=response.QrCode,
+                    seat_number=response.Placement.split(",")[1] if "," in response.Placement else None,
+                ),
             ]
         else:
-            tickets = [external_bookings_models.Ticket(barcode=response.QrCode, seat_number=response.Placement)]
+            tickets = [
+                external_bookings_models.Ticket(
+                    barcode=response.QrCode, seat_number=response.Placement if response.Placement else None
+                )
+            ]
         return tickets
 
     def cancel_booking(self, barcodes: list[str]) -> None:
