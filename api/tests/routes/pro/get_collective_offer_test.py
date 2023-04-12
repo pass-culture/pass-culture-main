@@ -1,3 +1,6 @@
+from datetime import datetime
+from datetime import timedelta
+
 import pytest
 
 from pcapi.core import testing
@@ -138,6 +141,27 @@ class Returns200Test:
         assert response.status_code == 200
         assert response_json["lastBookingId"] == booking.id
         assert response_json["lastBookingStatus"] == booking.status.value
+
+    def test_inactive_offer(self, client):
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=datetime.utcnow() + timedelta(days=125),
+            bookingLimitDatetime=datetime.utcnow() - timedelta(days=125),
+        )
+        offer = educational_factories.CollectiveOfferFactory(
+            collectiveStock=stock,
+            teacher=educational_factories.EducationalRedactorFactory(),
+            isActive=True,
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        # When
+        client = client.with_session_auth(email="user@example.com")
+        response = client.get(f"/collective/offers/{humanize(offer.id)}")
+
+        # Then
+        assert response.status_code == 200
+        assert response.json["status"] == "INACTIVE"
+        assert response.json["isActive"] == False
 
 
 @pytest.mark.usefixtures("db_session")

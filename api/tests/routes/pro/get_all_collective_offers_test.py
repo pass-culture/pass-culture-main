@@ -46,6 +46,33 @@ class Returns200Test:
         assert response_json[0]["imageUrl"] == None
         assert response_json[0]["isPublicApi"] == False
 
+    def test_one_inactive_offer(self, client):
+        # Given
+        user = users_factories.UserFactory()
+
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=125),
+            bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=125),
+        )
+        offer = educational_factories.CollectiveOfferFactory(
+            collectiveStock=stock,
+            teacher=educational_factories.EducationalRedactorFactory(),
+            isActive=True,
+        )
+        offerer_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
+
+        # When
+
+        response = client.with_session_auth(email=user.email).get("/collective/offers")
+
+        # Then
+        response_json = response.json
+        assert response.status_code == 200
+        assert isinstance(response_json, list)
+        assert len(response_json) == 1
+        assert response_json[0]["isActive"] == False
+        assert response_json[0]["status"] == "INACTIVE"
+
     def test_get_passed_booking_limit_datetime_not_beginning_datetime(self, app):
         # Given
         user = users_factories.UserFactory()
