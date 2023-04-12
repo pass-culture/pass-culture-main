@@ -21,13 +21,13 @@ const useAccessibilityOptions = (
         motor: false,
         audio: false,
       })
+      return
     }
+    setFieldValue('accessibility.none', false)
   }
   const onNormalOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      setFieldValue('accessibility.none', false)
-      setFieldValue(event.target.name, true)
-    }
+    setFieldValue('accessibility.none', false)
+    setFieldValue(event.target.name, event.target.checked)
   }
   return [
     {
