@@ -51,6 +51,7 @@ describe('TimePicker', () => {
       mode: Mode.CREATION,
       disablePriceAndParticipantInputs: false,
       preventPriceIncrease: false,
+      offerDateCreated: '2023-04-06T13:48:36.304896Z',
     }
     initialValues = {
       eventDate: '',
@@ -81,6 +82,7 @@ describe('TimePicker', () => {
         mode: Mode.EDITION,
         disablePriceAndParticipantInputs: false,
         preventPriceIncrease: false,
+        offerDateCreated: '2023-04-06T13:48:36.304896Z',
       },
     })
 
@@ -102,6 +104,7 @@ describe('TimePicker', () => {
         mode: Mode.READ_ONLY,
         disablePriceAndParticipantInputs: true,
         preventPriceIncrease: true,
+        offerDateCreated: '2023-04-06T13:48:36.304896Z',
       },
     })
 
@@ -120,6 +123,7 @@ describe('TimePicker', () => {
         mode: Mode.READ_ONLY,
         disablePriceAndParticipantInputs: false,
         preventPriceIncrease: true,
+        offerDateCreated: '2023-04-06T13:48:36.304896Z',
       },
     })
 

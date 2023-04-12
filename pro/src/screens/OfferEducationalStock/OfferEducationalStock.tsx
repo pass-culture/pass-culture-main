@@ -182,6 +182,7 @@ const OfferEducationalStock = <
                       disablePriceAndParticipantInputs
                     }
                     preventPriceIncrease={preventPriceIncrease}
+                    offerDateCreated={offer.dateCreated}
                   />
                 </>
               )}

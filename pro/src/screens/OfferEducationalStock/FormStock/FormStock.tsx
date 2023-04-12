@@ -20,11 +20,13 @@ export interface IFormStockProps {
   mode: Mode
   disablePriceAndParticipantInputs: boolean
   preventPriceIncrease: boolean
+  offerDateCreated: string
 }
 
 const FormStock = ({
   mode,
   disablePriceAndParticipantInputs,
+  offerDateCreated,
 }: IFormStockProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<OfferEducationalStockFormValues>()
@@ -70,6 +72,7 @@ const FormStock = ({
       <DatePicker
         disabled={mode === Mode.READ_ONLY}
         label={BOOKING_LIMIT_DATETIME_LABEL}
+        minDateTime={new Date(offerDateCreated)}
         maxDateTime={values.eventDate ? values.eventDate : undefined}
         name="bookingLimitDatetime"
         smallLabel
