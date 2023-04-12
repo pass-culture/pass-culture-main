@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 )
 def cookies_consent(body: serializers.CookieConsentRequest) -> None:
     logger.info(
-        "Cookies consent",
+        "Cookies c'est bon",
         extra={"analyticsSource": "app-native", **body.dict()},
         technical_message_id="cookies_consent",
     )
