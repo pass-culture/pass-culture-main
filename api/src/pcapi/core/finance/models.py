@@ -128,10 +128,25 @@ class Recredit(PcObject, Base, Model):
     comment = sqla.Column(sqla.Text, nullable=True)
 
 
+class FinanceEventStatus(enum.Enum):
+    PENDING = "pending"  # related booking does not have any pricing point
+    READY = "ready"  # has a pricing point, is ready to be priced
+    PRICED = "priced"
+    CANCELLED = "cancelled"  # related booking has been used and then cancelled
+    NOT_TO_BE_PRICED = "not to be priced"  # will not be priced
+
+
+class FinanceEventMotive(enum.Enum):
+    BOOKING_USED = "booking-used"
+    BOOKING_USED_AFTER_CANCELLATION = "booking-used-after-cancellation"
+    BOOKING_UNUSED = "booking-unused"
+    BOOKING_CANCELLED_AFTER_USE = "booking-cancelled-after-use"
+
+
 class PricingStatus(enum.Enum):
-    PENDING = "pending"
+    PENDING = "pending"  # blocked, will not be taken in account in next cashflow
     CANCELLED = "cancelled"
-    VALIDATED = "validated"
+    VALIDATED = "validated"  # will be taken in account in next cashflow
     REJECTED = "rejected"
     PROCESSED = "processed"  # has an associated cashflow
     INVOICED = "invoiced"  # has an associated invoice (whose cashflows are "accepted")
@@ -191,6 +206,48 @@ class BankInformation(PcObject, Base, Model):
     dateModified = sqla.Column(sqla.DateTime, nullable=True)
 
 
+class FinanceEvent(Base, Model):
+    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+
+    creationDate: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
+    # In most cases, `valueDate` is `Booking.dateUsed` but it's useful
+    # to denormalize it here: many queries use this column and we thus
+    # avoid a JOIN.
+    valueDate: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False)
+    # The date that is used to price events in a determined, stable order.
+    pricingOrderingDate: datetime.datetime | None = sqla.Column(sqla.DateTime, nullable=True)
+
+    status: FinanceEventStatus = sqla.Column(db_utils.MagicEnum(FinanceEventStatus), index=True, nullable=False)
+    motive: FinanceEventMotive = sqla.Column(db_utils.MagicEnum(FinanceEventMotive), nullable=False)
+
+    bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
+    booking: sqla_orm.Mapped["bookings_models.Booking | None"] = sqla_orm.relationship(
+        "Booking", foreign_keys=[bookingId]
+    )
+    collectiveBookingId = sqla.Column(
+        sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
+    )
+    collectiveBooking: sqla_orm.Mapped["educational_models.CollectiveBooking | None"] = sqla_orm.relationship(
+        "CollectiveBooking", foreign_keys=[collectiveBookingId]
+    )
+
+    # `venueId` is denormalized and comes from `booking.venueId`
+    venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
+    venue: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship("Venue", foreign_keys=[venueId])
+    # `pricingPointId` may be None if the related venue did not have
+    # any pricing point when the finance event occurred. If so, it
+    # will be populated later from `link_venue_to_pricing_point()`.
+    pricingPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
+    pricingPoint: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
+        "Venue", foreign_keys=[pricingPointId]
+    )
+
+    __table_args__ = (
+        # An event relates to an individual or a collective booking, never both.
+        sqla.CheckConstraint('num_nonnulls("bookingId", "collectiveBookingId") = 1'),
+    )
+
+
 class Pricing(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
@@ -206,6 +263,13 @@ class Pricing(Base, Model):
     collectiveBooking: sqla_orm.Mapped["educational_models.CollectiveBooking | None"] = sqla_orm.relationship(
         "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="pricings"
     )
+    # FIXME (dbaty, 2023-06-14): make NOT NULLable once
+    # "finance_event" table has been populated.
+    eventId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("finance_event.id"), index=True, nullable=True)
+    event: sqla_orm.Mapped[FinanceEvent] = sqla_orm.relationship(
+        "FinanceEvent", foreign_keys=[eventId], backref="pricings"
+    )
+
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
     venue: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship("Venue", foreign_keys=[venueId])
 
@@ -249,7 +313,6 @@ class Pricing(Base, Model):
 
     __table_args__ = (
         sqla.Index("idx_uniq_booking_id", bookingId, postgresql_where=status != PricingStatus.CANCELLED, unique=True),
-        sqla.CheckConstraint('num_nonnulls("bookingId", "collectiveBookingId") = 1'),
         sqla.CheckConstraint(
             """
             (

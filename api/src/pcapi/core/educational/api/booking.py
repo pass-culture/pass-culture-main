@@ -340,6 +340,9 @@ def _cancel_collective_booking(
         db.session.refresh(collective_booking)
 
         try:
+            # The booking cannot be used nor reimbursed yet, otherwise
+            # `cancel_booking` will fail. Thus, there is no finance
+            # event to cancel here.
             collective_booking.cancel_booking(reason)
         except exceptions.CollectiveBookingAlreadyCancelled:
             return
@@ -393,6 +396,16 @@ def cancel_collective_booking_by_id_from_support(
         if finance_repository.has_reimbursement(collective_booking):
             raise exceptions.BookingIsAlreadyRefunded()
 
+        cancelled_event = finance_api.cancel_latest_event(
+            collective_booking,
+            finance_models.FinanceEventMotive.BOOKING_USED,
+        )
+        if cancelled_event:
+            finance_api.add_event(
+                collective_booking,
+                finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
+                commit=False,
+            )
         finance_api.cancel_pricing(collective_booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
         collective_booking.cancel_booking(
             reason=educational_models.CollectiveBookingCancellationReasons.OFFERER,
@@ -417,6 +430,11 @@ def uncancel_collective_booking_by_id_from_support(
         educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
         db.session.refresh(collective_booking)
         collective_booking.uncancel_booking()
+        if collective_booking.status == educational_models.CollectiveBookingStatus.USED:
+            finance_api.add_event(
+                collective_booking,
+                finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
+            )
         db.session.commit()
 
     search.async_index_collective_offer_ids([collective_booking.collectiveStock.collectiveOfferId])
@@ -424,6 +442,7 @@ def uncancel_collective_booking_by_id_from_support(
         "CollectiveBooking has been uncancelled by support",
         extra={
             "collective_booking": collective_booking.id,
+            "new_status": collective_booking.status,
         },
     )
 

@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 def create_industrial_invoices() -> None:
     logger.info("create_industrial_invoices")
 
-    finance_api.price_bookings()
+    finance_api.price_events()
 
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
     cashflows_created = finance_models.Cashflow.query.count()
@@ -93,11 +93,15 @@ def create_specific_invoice() -> None:
             user__deposit__source="create_specific_invoice() in industrial sandbox",
         )
         bookings.append(booking)
+    for booking in bookings:
+        finance_factories.UsedBookingFinanceEventFactory(booking=booking)
     for booking in bookings[:3]:
-        finance_api.price_booking(booking)
+        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+        finance_api.price_event(event)
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
     for booking in bookings[3:]:
-        finance_api.price_booking(booking)
+        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+        finance_api.price_event(event)
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
     cashflows = finance_models.Cashflow.query.filter_by(reimbursementPoint=venue).all()
     cashflow_ids = [c.id for c in cashflows]

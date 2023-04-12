@@ -87,6 +87,7 @@ class FeatureToggle(enum.Enum):
         "Inclure les anciens modèles de données pour le téléchargement des remboursements "
     )
     PRICE_BOOKINGS = "Active la valorisation des réservations"
+    PRICE_FINANCE_EVENTS = "Active la valorisation des événements de finance"
     PRO_DISABLE_EVENTS_QRCODE = "Active la possibilité de différencier le type d’envoi des billets sur une offre et le retrait du QR code sur la réservation"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
@@ -176,6 +177,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.ENABLE_EMS_INTEGRATION,
     FeatureToggle.ENABLE_CGR_INTEGRATION,
+    FeatureToggle.PRICE_FINANCE_EVENTS,
     FeatureToggle.WIP_ADD_CLG_6_5_COLLECTIVE_OFFER,
     FeatureToggle.WIP_ENABLE_LIKE_IN_ADAGE,
     FeatureToggle.WIP_ENABLE_NEW_ONBOARDING,

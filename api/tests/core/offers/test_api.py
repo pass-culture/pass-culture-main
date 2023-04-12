@@ -540,12 +540,17 @@ class DeleteStockTest:
 
     def test_delete_stock_cancel_bookings_and_send_emails(self):
         offerer_email = "offerer@example.com"
-        stock = factories.EventStockFactory(offer__bookingEmail=offerer_email)
+        stock = factories.EventStockFactory(
+            offer__bookingEmail=offerer_email,
+            offer__venue__pricing_point="self",
+        )
         booking1 = bookings_factories.BookingFactory(stock=stock)
         booking2 = bookings_factories.CancelledBookingFactory(stock=stock)
         booking3 = bookings_factories.UsedBookingFactory(stock=stock)
-        booking4 = bookings_factories.UsedBookingFactory(stock=stock)
+        event4 = finance_factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        booking4 = event4.booking
         finance_factories.PricingFactory(
+            event=event4,
             booking=booking4,
             status=finance_models.PricingStatus.PROCESSED,
         )

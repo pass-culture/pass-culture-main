@@ -418,16 +418,57 @@ def link_venue_to_pricing_point(
         pricingPointId=pricing_point_id, venueId=venue.id, timespan=(timestamp, None)
     )
     db.session.add(new_link)
-    db.session.commit()
-    if current_link and force_link:
-        logger.info(
-            "Venue was previously linked to another Venue for pricing, and has been linked to a new pricing point",
-            extra={
+    for from_tables, where_clauses in (
+        (
+            "booking, stock",
+            'finance_event."bookingId" is not null '
+            'and booking.id = finance_event."bookingId" '
+            'and stock.id = booking."stockId"',
+        ),
+        (
+            # use aliases to have the same `set` clause
+            "collective_booking as booking, collective_stock as stock",
+            'finance_event."collectiveBookingId" is not null '
+            'and booking.id = finance_event."collectiveBookingId" '
+            'and stock.id = booking."collectiveStockId"',
+        ),
+    ):
+        ppoint_update_result = db.session.execute(
+            f"""
+              update finance_event
+              set
+                "pricingPointId" = :pricing_point_id,
+                status = :finance_event_status_ready,
+                "pricingOrderingDate" = greatest(
+                  booking."dateUsed",
+                  stock."beginningDatetime",
+                  :new_link_start
+                )
+              from {from_tables}
+              where
+                {where_clauses}
+                and finance_event.status = :finance_event_status_pending
+                and finance_event."pricingPointId" IS NULL
+                and finance_event."venueId" = :venue_id
+            """,
+            {
                 "venue_id": venue.id,
-                "previous_pricing_point_id": current_link.pricingPointId,
-                "new_pricing_point_id": pricing_point_id,
+                "pricing_point_id": pricing_point_id,
+                "finance_event_status_pending": finance_models.FinanceEventStatus.PENDING.value,
+                "finance_event_status_ready": finance_models.FinanceEventStatus.READY.value,
+                "new_link_start": timestamp,
             },
         )
+    db.session.commit()
+    logger.info(
+        "Linked venue to pricing point",
+        extra={
+            "venue": venue.id,
+            "new_pricing_point": pricing_point_id,
+            "previous_pricing_point": current_link.pricingPointId if current_link else None,
+            "updated_finance_events": ppoint_update_result.rowcount,
+        },
+    )
 
 
 def link_venue_to_reimbursement_point(

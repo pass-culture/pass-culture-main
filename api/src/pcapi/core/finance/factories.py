@@ -14,6 +14,7 @@ from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.domain import reimbursement
 
+from . import api
 from . import conf
 from . import models
 
@@ -38,7 +39,49 @@ class BankInformationFactory(BaseFactory):
     status = models.BankInformationStatus.ACCEPTED
 
 
+class _BaseFinanceEventFactory(BaseFactory):
+    class Meta:
+        model = models.FinanceEvent
+
+    pricingPointId = None  # see `_create()` below
+
+    @classmethod
+    def _create(
+        cls,
+        model_class: typing.Type[models.FinanceEvent],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.FinanceEvent:
+        if kwargs.get("collectiveBooking"):
+            kwargs["booking"] = None  # override default Booking
+        booking = kwargs.get("booking") or kwargs.get("collectiveBooking")
+        assert booking  # make mypy happy
+        if not kwargs["pricingPointId"]:
+            venue = booking.venue
+            kwargs["pricingPointId"] = venue.current_pricing_point_id
+        if "status" not in kwargs:
+            kwargs["status"] = (
+                models.FinanceEventStatus.READY if kwargs["pricingPointId"] else models.FinanceEventStatus.PENDING
+            )
+        if kwargs["pricingPointId"]:
+            kwargs.setdefault(
+                "pricingOrderingDate",
+                api._get_pricing_ordering_date(booking),
+            )
+        return super()._create(model_class, *args, **kwargs)
+
+
+class UsedBookingFinanceEventFactory(_BaseFinanceEventFactory):
+    booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
+    motive = models.FinanceEventMotive.BOOKING_USED
+    venue = factory.LazyAttribute(lambda event: (event.booking or event.collectiveBooking).venue)
+    valueDate = factory.LazyAttribute(lambda event: (event.booking or event.collectiveBooking).dateUsed)
+
+
 class _BasePricingFactory(BaseFactory):
+    class Meta:
+        model = models.Pricing
+
     pricingPointId = None  # see `_create()` below
 
     @classmethod
@@ -64,9 +107,6 @@ class _BasePricingFactory(BaseFactory):
 
 
 class PricingFactory(_BasePricingFactory):
-    class Meta:
-        model = models.Pricing
-
     status = models.PricingStatus.VALIDATED
     booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
     venue = factory.SelfAttribute("booking.venue")
@@ -77,9 +117,6 @@ class PricingFactory(_BasePricingFactory):
 
 
 class CollectivePricingFactory(_BasePricingFactory):
-    class Meta:
-        model = models.Pricing
-
     status = models.PricingStatus.VALIDATED
     collectiveBooking = factory.SubFactory(UsedCollectiveBookingFactory)
     venue = factory.SelfAttribute("collectiveBooking.venue")

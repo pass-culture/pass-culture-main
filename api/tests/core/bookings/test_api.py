@@ -30,6 +30,7 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.external_bookings.models import Ticket
+import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
@@ -39,6 +40,7 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
@@ -237,6 +239,8 @@ class BookOfferTest:
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
         assert booking.status is BookingStatus.USED
+        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+        assert event.motive == finance_models.FinanceEventMotive.BOOKING_USED
 
     def test_booking_on_digital_offer_without_activation_stock(self):
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
@@ -246,6 +250,8 @@ class BookOfferTest:
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
         assert booking.status is not BookingStatus.USED
+        event = finance_models.FinanceEvent.query.filter_by(booking=booking).first()
+        assert event is None
 
     def test_create_event_booking(self):
         ten_days_from_now = datetime.utcnow() + timedelta(days=10)
@@ -845,32 +851,48 @@ class CancelForFraudTest:
 
 @pytest.mark.usefixtures("db_session")
 def test_mark_as_cancelled():
-    pricing = finance_factories.PricingFactory(booking__stock__offer__venue__pricing_point="self")
-    booking = pricing.booking
+    booking = bookings_factories.BookingFactory(
+        stock__offer__venue__pricing_point="self",
+    )
+    api.mark_as_used(booking)
+
+    event = finance_models.FinanceEvent.query.one()
+    finance_api.price_event(event)
+    pricing = finance_models.Pricing.query.one()
+    assert booking.status == BookingStatus.USED
+    assert pricing.status == finance_models.PricingStatus.VALIDATED
 
     api.mark_as_cancelled(booking)
-
-    assert booking.dateUsed is None
-    assert booking.cancellationDate is not None
-    assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
     assert booking.status == BookingStatus.CANCELLED
+    assert event.status == finance_models.FinanceEventStatus.CANCELLED
     assert pricing.status == finance_models.PricingStatus.CANCELLED
+    unuse_event = finance_models.FinanceEvent.query.filter(finance_models.FinanceEvent.id != event.id).one()
+    assert unuse_event.motive == finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE
+    assert unuse_event.status == finance_models.FinanceEventStatus.NOT_TO_BE_PRICED
 
 
 @pytest.mark.usefixtures("db_session")
 class MarkAsUsedTest:
     def test_mark_as_used(self):
         booking = bookings_factories.BookingFactory()
+
         api.mark_as_used(booking)
+
         assert booking.status is BookingStatus.USED
         assert len(push_testing.requests) == 2
+        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+        assert event.motive == finance_models.FinanceEventMotive.BOOKING_USED
 
     def test_mark_as_used_with_uncancel(self):
         booking = bookings_factories.CancelledBookingFactory()
+
         api.mark_as_used_with_uncancelling(booking)
+
         assert booking.status is BookingStatus.USED
         assert booking.dateUsed is not None
         assert not booking.cancellationReason
+        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
+        assert event.motive == finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION
 
     def test_mark_as_used_when_stock_starts_soon(self):
         booking = bookings_factories.BookingFactory(stock__beginningDatetime=datetime.utcnow() + timedelta(days=1))
@@ -959,6 +981,26 @@ class MarkAsUnusedTest:
         with pytest.raises(api_errors.ForbiddenError):
             api.mark_as_unused(booking)
         assert booking.status is BookingStatus.USED
+
+    def test_check_finance_events_and_pricings(self):
+        booking = bookings_factories.BookingFactory(
+            stock__offer__venue__pricing_point="self",
+        )
+
+        api.mark_as_used(booking)
+        event = finance_models.FinanceEvent.query.one()
+        finance_api.price_event(event)
+        pricing = finance_models.Pricing.query.one()
+        assert booking.status == BookingStatus.USED
+        assert pricing.status == finance_models.PricingStatus.VALIDATED
+
+        api.mark_as_unused(booking)
+        assert booking.status == BookingStatus.CONFIRMED
+        assert event.status == finance_models.FinanceEventStatus.CANCELLED
+        assert pricing.status == finance_models.PricingStatus.CANCELLED
+        unuse_event = finance_models.FinanceEvent.query.filter(finance_models.FinanceEvent.id != event.id).one()
+        assert unuse_event.motive == finance_models.FinanceEventMotive.BOOKING_UNUSED
+        assert unuse_event.status == finance_models.FinanceEventStatus.NOT_TO_BE_PRICED
 
 
 @pytest.mark.parametrize(
@@ -1075,6 +1117,45 @@ class AutoMarkAsUsedAfterEventTest:
         assert booking.status is BookingStatus.USED
         assert booking.dateUsed is not None
 
+    def test_create_finance_event_for_individual_booking(self):
+        event_date = datetime.utcnow() - timedelta(days=3)
+        booking = bookings_factories.BookingFactory(stock__beginningDatetime=event_date)
+
+        api.auto_mark_as_used_after_event()
+
+        event = finance_models.FinanceEvent.query.one()
+        assert event.booking == booking
+        assert event.valueDate == booking.dateUsed != None
+
+    def test_num_queries(self):
+        event_date = datetime.utcnow() - timedelta(days=3)
+        bookings_factories.BookingFactory(stock__beginningDatetime=event_date)
+        bookings_factories.BookingFactory(stock__beginningDatetime=event_date)
+        educational_factories.CollectiveBookingFactory(collectiveStock__beginningDatetime=event_date)
+        educational_factories.CollectiveBookingFactory(collectiveStock__beginningDatetime=event_date)
+
+        queries = 1  # select feature flag
+        queries += 1  # select individual bookings
+        # fmt: off
+        queries += 2 * (
+            1  # fetch pricing point
+            + 1  # insert finance event
+        )
+        # fmt: on
+        queries += 1  # update all individual bookings
+        queries += 1  # select collective bookings
+        # fmt: off
+        queries += 2 * (
+            1  # fetch pricing point
+            + 1  # insert finance event
+        )
+        # fmt: on
+        queries += 1  # update all collective bookings
+        queries += 1  # commit
+
+        with assert_num_queries(queries):
+            api.auto_mark_as_used_after_event()
+
     def test_does_not_update_when_event_date_is_only_1_day_before(self):
         event_date = datetime.utcnow() - timedelta(days=1)
         bookings_factories.BookingFactory(stock__beginningDatetime=event_date)
@@ -1131,6 +1212,15 @@ class AutoMarkAsUsedAfterEventTest:
             "bookingId": collectiveBooking.id,
             "stockId": collectiveBooking.collectiveStockId,
         }
+
+    def test_create_finance_event_for_collective_booking(self):
+        event_date = datetime.utcnow() - timedelta(days=3)
+        booking = educational_factories.CollectiveBookingFactory(collectiveStock__beginningDatetime=event_date)
+
+        api.auto_mark_as_used_after_event()
+
+        event = finance_models.FinanceEvent.query.one()
+        assert event.collectiveBooking == booking
 
     def test_does_not_update_collective_booking_when_event_date_is_only_1_day_before(self):
         event_date = datetime.utcnow() - timedelta(days=1)
