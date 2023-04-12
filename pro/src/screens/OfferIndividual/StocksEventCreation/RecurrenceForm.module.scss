@@ -45,7 +45,7 @@
   display: flex;
   flex-wrap: wrap;
   margin-bottom: rem.torem(8px);
-  gap: rem.torem(8px);
+  gap: rem.torem(16px);
 }
 
 .beginning-time-input {
@@ -66,7 +66,7 @@
 .date-input {
   width: rem.torem(200px);
   margin-bottom: 0;
-    
+
   svg {
     width: rem.torem(20px);
   }
