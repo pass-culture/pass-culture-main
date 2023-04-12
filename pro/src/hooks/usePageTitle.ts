@@ -16,11 +16,12 @@ const usePageTitle = (): LocationListener | void => {
       ...routesOfferIndividualWizardDefinitions,
       ...routesSignupDefinitions,
       ...routesSignupJourneyDefinitions,
-      // @ts-expect-error Property findLast does not exist on RouteDefinition[]
-    ].findLast(
-      ({ path, parentPath }: IRoute) =>
-        matchPath(`${parentPath || ''}${path}`, location.pathname) !== null
-    )
+    ]
+      .reverse()
+      .find(
+        ({ path, parentPath }: IRoute) =>
+          matchPath(`${parentPath || ''}${path}`, location.pathname) !== null
+      )
 
     document.title = currentRoute
       ? `${currentRoute.title} - pass Culture Pro`
