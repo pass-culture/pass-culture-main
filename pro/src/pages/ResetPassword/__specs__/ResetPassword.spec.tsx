@@ -40,7 +40,7 @@ describe('ResetPassword', () => {
         screen.getByLabelText(/Nouveau mot de passe/),
         'MyN3wP4$$w0rd'
       )
-      await userEvent.click(screen.getByText(/Envoyer/))
+      await userEvent.click(screen.getByText(/Valider/))
 
       // he has been redirected to final step
       expect(
@@ -63,7 +63,7 @@ describe('ResetPassword', () => {
         screen.getByLabelText(/Nouveau mot de passe/),
         'MyN3wP4$$w0rd'
       )
-      await userEvent.click(screen.getByText(/Envoyer/))
+      await userEvent.click(screen.getByText(/Valider/))
 
       // he has been redirected to final step
       expect(screen.getByText('Ce lien a expiré !')).toBeInTheDocument()
