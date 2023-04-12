@@ -359,13 +359,11 @@ export const defaultIVenue: IVenue = {
   mail: '',
   managingOfferer: {
     address: undefined,
-    bic: undefined,
     city: '',
     dateCreated: '',
     dateModifiedAtLastProvider: undefined,
     demarchesSimplifieesApplicationId: undefined,
     fieldsUpdated: [],
-    iban: undefined,
     id: '',
     idAtProviders: undefined,
     isValidated: false,

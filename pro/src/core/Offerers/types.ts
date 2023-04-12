@@ -9,7 +9,6 @@ export type TOffererName = GetOffererNameResponseModel
 export interface IOfferer {
   address?: string | null
   apiKey: OffererApiKey
-  bic?: string | null
   city: string
   dateCreated: string
   dateModifiedAtLastProvider?: string | null
@@ -18,7 +17,6 @@ export interface IOfferer {
   hasAvailablePricingPoints: boolean
   hasDigitalVenueAtLeastOneOffer: boolean
   hasMissingBankInformation: boolean
-  iban?: string | null
   id: string
   idAtProviders?: string | null
   isActive: boolean

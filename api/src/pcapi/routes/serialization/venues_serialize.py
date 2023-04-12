@@ -129,13 +129,11 @@ class VenueStatsResponseModel(BaseModel):
 
 class GetVenueManagingOffererResponseModel(BaseModel):
     address: str | None
-    bic: str | None
     city: str
     dateCreated: datetime
     dateModifiedAtLastProvider: datetime | None
     demarchesSimplifieesApplicationId: str | None
     fieldsUpdated: list[str]
-    iban: str | None
     id: str
     idAtProviders: str | None
     isValidated: bool
@@ -205,7 +203,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     nonHumanizedId: int
 
     bannerMeta: BannerMetaModel | None
-    bic: str | None
     bookingEmail: str | None
     comment: str | None
     dateModifiedAtLastProvider: datetime | None
@@ -214,7 +211,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     dmsToken: str
     fieldsUpdated: list[str]
     hasPendingBankInformationApplication: bool | None
-    iban: str | None
     idAtProviders: str | None
     lastProviderId: str | None
     managingOfferer: GetVenueManagingOffererResponseModel

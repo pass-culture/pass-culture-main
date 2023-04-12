@@ -18,7 +18,6 @@ export type GetVenueResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   bannerMeta?: BannerMetaModel | null;
   bannerUrl?: string | null;
-  bic?: string | null;
   bookingEmail?: string | null;
   city?: string | null;
   collectiveAccessInformation?: string | null;
@@ -44,7 +43,6 @@ export type GetVenueResponseModel = {
   fieldsUpdated: Array<string>;
   hasAdageId: boolean;
   hasPendingBankInformationApplication?: boolean | null;
-  iban?: string | null;
   id: string;
   idAtProviders?: string | null;
   isPermanent?: boolean | null;
