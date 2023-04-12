@@ -9,5 +9,6 @@ export type GetListEducationalInstitutionsQueryModel = {
   limit?: number;
   name?: string | null;
   postalCode?: string | null;
+  uai?: string | null;
 };
 
