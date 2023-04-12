@@ -284,4 +284,24 @@ describe('components | SiretOrCommentFields', () => {
       expect(errorMessage).toBeInTheDocument()
     })
   })
+  describe('should validate comment on submit', () => {
+    it('should display error message if comment empty', async () => {
+      const { buttonSubmit } = await renderSiretOrComment({
+        initialValues,
+        onSubmit,
+        props,
+        validationSchema: generateSiretValidationSchema('', false),
+      })
+
+      const toggle = screen.getByRole('button', {
+        name: 'Ce lieu possède un SIRET',
+      })
+      await userEvent.click(toggle)
+      await userEvent.click(buttonSubmit)
+
+      expect(
+        screen.getByText('Veuillez renseigner un commentaire')
+      ).toBeInTheDocument()
+    })
+  })
 })
