@@ -47,12 +47,11 @@ const Offerers = (): JSX.Element => {
     }
   }, [isLoadingVenues])
 
-  if (isLoadingVenues) {
+  if (isLoadingVenues || !offerer) {
     return <Spinner />
   }
 
   const redirectToOnboarding = () => {
-    // @ts-expect-error offerer cannot be null at this step
     const newOfferer: IOfferer = {
       ...offerer,
       createVenueWithoutSiret: true,
