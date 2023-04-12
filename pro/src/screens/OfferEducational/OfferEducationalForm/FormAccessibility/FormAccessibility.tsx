@@ -3,9 +3,7 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
-import { IAccessibiltyFormValues } from 'core/shared'
-import { accessibilityOptions } from 'core/shared/accessibilityOptions'
-import { useAccessibilityUpdates } from 'hooks'
+import useAccessibilityOptions from 'hooks/useAccessibilityOptions'
 import { CheckboxGroup } from 'ui-kit'
 
 interface IFormAccessibilityProps {
@@ -17,20 +15,13 @@ const FormAccessibility = ({
   legend = 'Cette offre est accessible au public en situation de handicap :',
   disableForm,
 }: IFormAccessibilityProps): JSX.Element => {
-  const { values, setFieldValue } =
-    useFormikContext<IOfferEducationalFormValues>()
-
-  const handleAccessibilityChange = (
-    newAccessibilityValues: IAccessibiltyFormValues
-  ) => setFieldValue('accessibility', newAccessibilityValues)
-
-  useAccessibilityUpdates(values.accessibility, handleAccessibilityChange)
+  const { setFieldValue } = useFormikContext<IOfferEducationalFormValues>()
 
   return (
     <FormLayout.Section title="Accessibilité">
       <FormLayout.Row>
         <CheckboxGroup
-          group={accessibilityOptions}
+          group={useAccessibilityOptions(setFieldValue)}
           groupName="accessibility"
           legend={legend}
           disabled={disableForm}

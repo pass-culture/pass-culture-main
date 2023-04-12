@@ -1,7 +1,7 @@
 export { default as useEffectUnmount } from './useEffectUnmount'
 export { default as useScrollToFirstErrorAfterSubmit } from './useScrollToFirstErrorAfterSubmit'
 export { default as useAdapter } from './useAdapter'
-export { default as useAccessibilityUpdates } from './useAccessibilityUpdates'
+export { default as useAccessibilityOptions } from './useAccessibilityOptions'
 export { default as useOfferWizardMode } from './useOfferWizardMode'
 export { default as useNewOfferCreationJourney } from './useNewOfferCreationJourney'
 export type { TUseAdapterFailure } from './useAdapter'
