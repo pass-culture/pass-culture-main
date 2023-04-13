@@ -220,14 +220,17 @@ class SendUbbleKoReminderEmailTest:
         send_reminder_emails()
 
         assert len(mails_testing.outbox) == 2
-        assert mails_testing.outbox[0].sent_data["To"] == user1.email
+
+        user1_index = 0 if mails_testing.outbox[0].sent_data["To"] == user1.email else 1
+        user2_index = 0 if mails_testing.outbox[0].sent_data["To"] == user2.email else 1
+
         assert (
-            mails_testing.outbox[0].sent_data["template"]
+            mails_testing.outbox[user1_index].sent_data["template"]
             == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_NOT_SUPPORTED.value.__dict__
         )
-        assert mails_testing.outbox[1].sent_data["To"] == user2.email
+
         assert (
-            mails_testing.outbox[1].sent_data["template"]
+            mails_testing.outbox[user2_index].sent_data["template"]
             == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_EXPIRED.value.__dict__
         )
 
