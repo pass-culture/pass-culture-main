@@ -39,11 +39,11 @@ const Offerer = (): JSX.Element => {
     const formattedSiret = formValues.siret.replaceAll(' ', '')
     const response = await getSiretData(formattedSiret)
 
-    const siretExistResponse = await getVenuesOfOffererFromSiretAdapter(
+    const siretResponse = await getVenuesOfOffererFromSiretAdapter(
       formattedSiret
     )
 
-    if (!siretExistResponse.isOk || !response.payload.values) {
+    if (!siretResponse.isOk || !response.payload.values) {
       notify.error('Une erreur est survenue')
       return
     }
@@ -57,7 +57,7 @@ const Offerer = (): JSX.Element => {
       longitude: response.payload.values.longitude,
       postalCode: response.payload.values.postalCode,
     })
-    if (siretExistResponse.payload.venues.length === 0) {
+    if (siretResponse.payload.venues.length === 0) {
       navigate('/parcours-inscription/authentification')
     } else {
       navigate('/parcours-inscription/structure/rattachement')
