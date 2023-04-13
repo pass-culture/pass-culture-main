@@ -111,7 +111,9 @@ describe('screens:SignupJourney::Offerer', () => {
     renderOffererScreen(contextValue)
 
     expect(
-      await screen.findByText('Renseignez le SIRET de votre structure')
+      await screen.findByText(
+        'Renseignez le SIRET de la structure à laquelle vous êtes rattaché.'
+      )
     ).toBeInTheDocument()
     expect(
       await screen.findByRole('button', { name: 'Continuer' })
@@ -121,7 +123,13 @@ describe('screens:SignupJourney::Offerer', () => {
     ).not.toBeInTheDocument()
 
     expect(
-      await screen.getByText('Votre structure dépend d’un autre SIRET ?')
+      await screen.getByText(
+        "Vous êtes un équipement d’une collectivité ou d'un établissement public ?"
+      )
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', { name: 'En savoir plus' })
     ).toBeInTheDocument()
   })
 
