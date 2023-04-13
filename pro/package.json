@@ -81,7 +81,7 @@
     "react-final-form": "^6.5.9",
     "react-instantsearch-dom": "^6.39.1",
     "react-modal": "^3.16.1",
-    "react-redux": "^8.0.2",
+    "react-redux": "^8.0.5",
     "react-router-dom": "^6.9.0",
     "react-scripts": "^5.0.1",
     "react-select": "^5.7.2",
