@@ -548,6 +548,56 @@ describe('screen | VenueForm', () => {
     })
   })
 
+  it('should display error on submit for non virtual venues when adress is not selected from suggestions', async () => {
+    formValues.addressAutocomplete = ''
+    formValues.address = ''
+    formValues.postalCode = ''
+    formValues.departmentCode = ''
+
+    renderForm(
+      {
+        id: 'EY',
+        isAdmin: true,
+      } as SharedCurrentUserResponseModel,
+      formValues,
+      false,
+      venue
+    )
+    const adressInput = screen.getByLabelText('Adresse postale')
+
+    await userEvent.type(adressInput, '12 rue des fleurs')
+    await userEvent.click(screen.getByText(/Enregistrer/))
+
+    expect(
+      await screen.findByText(
+        'Veuillez sélectionner une adresse parmi les suggestions'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should not display error on submit when venue is virtual', async () => {
+    formValues.isVenueVirtual = true
+    renderForm(
+      {
+        id: 'EY',
+        isAdmin: true,
+      } as SharedCurrentUserResponseModel,
+      formValues,
+      false,
+      venue
+    )
+    const adressInput = screen.getByLabelText('Adresse postale')
+
+    await userEvent.type(adressInput, '12 rue des fleurs')
+    await userEvent.click(screen.getByText(/Enregistrer/))
+
+    expect(
+      await screen.queryByText(
+        'Veuillez sélectionner une adresse parmi les suggestions'
+      )
+    ).not.toBeInTheDocument()
+  })
+
   describe('Displaying', () => {
     it('should diplay only some fields when the venue is virtual', async () => {
       venue.isVirtual = true
