@@ -2,7 +2,7 @@ import React from 'react'
 
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import {
-  ExternalLinkIcon,
+  ExternalSiteIcon,
   PenIcon,
   ValidCircleIcon,
   InfoWrongIcon,
@@ -75,7 +75,7 @@ const CollectiveDmsTimeline = ({
             to: collectiveDmsApplicationLink,
             isExternal: true,
           }}
-          Icon={ExternalLinkIcon}
+          Icon={ExternalSiteIcon}
         >
           Modifier mon dossier sur Démarches Simplifiées
         </ButtonLink>
@@ -104,7 +104,7 @@ const CollectiveDmsTimeline = ({
             to: collectiveDmsApplicationLink,
             isExternal: true,
           }}
-          Icon={ExternalLinkIcon}
+          Icon={ExternalSiteIcon}
         >
           Consulter ma messagerie sur Démarches Simplifiées
         </ButtonLink>
@@ -143,7 +143,7 @@ const CollectiveDmsTimeline = ({
             to: collectiveDmsApplicationLink,
             isExternal: true,
           }}
-          Icon={ExternalLinkIcon}
+          Icon={ExternalSiteIcon}
         >
           Consulter ma messagerie sur Démarches Simplifiées
         </ButtonLink>
@@ -224,35 +224,32 @@ const CollectiveDmsTimeline = ({
     ),
   }
 
-  const refusedByDms = {
-    type: TimelineStepType.REFUSED,
-    content: (
-      <>
-        <div className={styles['timeline-step-title']}>
-          Votre demande de référencement a été refusée
+  const refusedByDms = (
+    <>
+      <div className={styles['refused-state']}>
+        <InfoWrongIcon className={styles['refused-state-icon']} />
+        <span>Votre demande de référencement a été refusée</span>
+      </div>
+      <div>
+        Votre dossier a été refusé le {processingDate} par la commission
+        régionale DAAC et DRAC de la région où est déclaré votre siège social.
+        Nous vous invitons à consulter votre messagerie sur Démarches
+        Simplifiées afin d’en savoir plus sur les raisons de ce refus.
+        <div className={styles['timeline-step-button']}>
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            link={{
+              to: collectiveDmsApplicationLink,
+              isExternal: true,
+            }}
+            Icon={ExternalSiteIcon}
+          >
+            Consulter ma messagerie sur Démarches Simplifiées
+          </ButtonLink>
         </div>
-        <div>
-          <br />
-          Votre dossier a été refusé le {processingDate} par la commission
-          régionale DAAC et DRAC de la région où est déclaré votre siège social.
-          Nous vous invitons à consulter votre messagerie sur Démarches
-          Simplifiées afin d’en savoir plus sur les raisons de ce refus.
-          <div className={styles['timeline-step-button']}>
-            <ButtonLink
-              variant={ButtonVariant.TERNARY}
-              link={{
-                to: collectiveDmsApplicationLink,
-                isExternal: true,
-              }}
-              Icon={ExternalLinkIcon}
-            >
-              Consulter ma messagerie sur Démarches Simplifiées
-            </ButtonLink>
-          </div>
-        </div>
-      </>
-    ),
-  }
+      </div>
+    </>
+  )
   const droppedByDms = (
     <>
       <div className={styles['refused-state']}>
@@ -269,7 +266,7 @@ const CollectiveDmsTimeline = ({
               to: collectiveDmsApplicationLink,
               isExternal: true,
             }}
-            Icon={ExternalLinkIcon}
+            Icon={ExternalSiteIcon}
           >
             Consulter ma messagerie sur Démarches Simplifiées
           </ButtonLink>
@@ -345,9 +342,10 @@ const CollectiveDmsTimeline = ({
         </div>
       )
     case DMSApplicationstatus.REFUSE:
-      return <Timeline steps={[refusedByDms]} />
+      return refusedByDms
     case DMSApplicationstatus.SANS_SUITE:
       return droppedByDms
+    /* istanbul ignore next: we dont want to test this case in unit test */
     default:
       throw new Error('Invalid dms status')
   }
