@@ -3,6 +3,8 @@ name: "[PRO] Deploy PR version for validation"
 
 on:  
   pull_request:
+    paths:
+      - 'pro/**'
     branches:
       - master
 
