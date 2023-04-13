@@ -49,3 +49,16 @@
     gap: rem.torem(10px);
   }
 }
+
+.refused-state {
+  display: flex;
+  align-items: center;
+  margin-bottom: rem.torem(16px);
+  gap: rem.torem(10px);
+
+  &-icon {
+    fill: colors.$red-warning;
+    width: rem.torem(16px);
+    height: rem.torem(16px);
+  }
+}
