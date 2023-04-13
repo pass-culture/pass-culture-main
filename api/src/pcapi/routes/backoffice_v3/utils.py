@@ -17,6 +17,7 @@ from werkzeug.wrappers import Response as WerkzeugResponse
 from pcapi import settings
 from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 
 from . import blueprint
@@ -147,3 +148,7 @@ def get_query_params() -> ImmutableMultiDict[str, str]:
     request.args is an ImmutableMultiDict
     """
     return ImmutableMultiDict(item for item in request.args.items(multi=True) if item[1])
+
+
+def is_feature_active(feature_name: str) -> bool:
+    return feature.FeatureToggle[feature_name].is_active()

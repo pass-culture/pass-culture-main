@@ -21,6 +21,7 @@ from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -762,6 +763,7 @@ class GetOffererDetailsTest:
         options = select.find_all("option")
         assert [option["value"] for option in options] == ["", str(user3.id), str(user2.id)]
 
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_get_managed_venues(self, authenticated_client, offerer):
         other_offerer = offerers_factories.OffererFactory()
         venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -784,14 +786,27 @@ class GetOffererDetailsTest:
         assert rows[0]["ID"] == str(venue_1.id)
         assert rows[0]["SIRET"] == venue_1.siret
         assert rows[0]["Nom"] == venue_1.name
-        assert rows[0]["Type de lieu"] == venue_1.venueTypeCode.value
+        assert rows[0]["Activité principale"] == venue_1.venueTypeCode.value
+        assert not rows[0].get("Type de lieu")
         assert rows[0]["Statut du dossier DMS Adage"] == ""
 
         assert rows[1]["ID"] == str(venue_2.id)
         assert rows[1]["SIRET"] == venue_2.siret
         assert rows[1]["Nom"] == venue_2.name
-        assert rows[1]["Type de lieu"] == venue_2.venueTypeCode.value
+        assert rows[1]["Activité principale"] == venue_2.venueTypeCode.value
+        assert not rows[1].get("Type de lieu")
         assert rows[1]["Statut du dossier DMS Adage"] == "En construction"
+
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
+    def test_get_managed_venues_ff_off(self, authenticated_client, offerer):
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
+
+        response = authenticated_client.get(url)
+
+        rows = html_parser.extract_table_rows(response.data, "managed-venues-tab-pane")
+        assert rows[0]["Type de lieu"] == venue.venueTypeCode.value
+        assert not rows[0].get("Activité principale")
 
 
 class GetOffererHistoryDataTest:

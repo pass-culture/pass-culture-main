@@ -19,6 +19,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.models import db
 from pcapi.routes.backoffice_v3 import venues
 
@@ -49,6 +50,7 @@ class GetVenueTest:
         endpoint_kwargs = {"venue_id": 1}
         needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_get_venue(self, authenticated_client, venue):
         venue.publicName = "Le grand Rantanplan 1"
 
@@ -63,7 +65,8 @@ class GetVenueTest:
         # get session (1 query)
         # get user with profile and permissions (1 query)
         # get venue (1 query)
-        with assert_num_queries(3):
+        # check WIP_ENABLE_NEW_ONBOARDING FF (1 query)
+        with assert_num_queries(4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -82,10 +85,22 @@ class GetVenueTest:
         assert "ID Adage" not in response_text
         assert f"Site web : {venue.contact.website}" in response_text
         assert "Pas de dossier DMS CB" in response_text
+        assert f"Activité principale {venue.venueTypeCode.value}" in response_text
+        assert "Type de lieu" not in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Lieu" in badges
         assert "Suspendu" not in badges
+
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
+    def test_get_venue_ff_off(self, authenticated_client, venue):
+        url = url_for("backoffice_v3_web.venue.get", venue_id=venue.id)
+
+        response = authenticated_client.get(url)
+
+        response_text = html_parser.content_as_text(response.data)
+        assert f"Type de lieu {venue.venueTypeCode.value}" in response_text
+        assert "Activité principale" not in response_text
 
     def test_get_venue_with_adage_id(self, authenticated_client):
         venue = offerers_factories.VenueFactory(adageId="7122022", contact=None)
