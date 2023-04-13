@@ -40,7 +40,7 @@
     "copy-assets": "cp ./src/icons/*.svg ./public/icons/"
   },
   "dependencies": {
-    "@firebase/analytics": "^0.9.1",
+    "@firebase/analytics": "^0.9.5",
     "@firebase/app": "^0.9.7",
     "@firebase/remote-config": "0.4.4",
     "@fontsource/barlow": "^4.5.9",
