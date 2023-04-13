@@ -260,22 +260,24 @@ export const RecurrenceForm = ({
                       </FormLayout.Row>
                     )
                   )}
-
-                  <ButtonLink
-                    variant={ButtonVariant.TERNARY}
-                    Icon={PlusCircleIcon}
-                    onClick={() =>
-                      arrayHelpers.push(INITIAL_QUANTITY_PER_PRICE_CATEGORY)
-                    }
-                    link={{
-                      to: `#quantityPerPriceCategories[${
-                        values.quantityPerPriceCategories.length - 1
-                      }].quantity`,
-                      isExternal: true,
-                    }}
-                  >
-                    Ajouter d’autres places et tarifs
-                  </ButtonLink>
+                  {values.quantityPerPriceCategories.length <
+                    priceCategoryOptions.length && (
+                    <ButtonLink
+                      variant={ButtonVariant.TERNARY}
+                      Icon={PlusCircleIcon}
+                      onClick={() =>
+                        arrayHelpers.push(INITIAL_QUANTITY_PER_PRICE_CATEGORY)
+                      }
+                      link={{
+                        to: `#quantityPerPriceCategories[${
+                          values.quantityPerPriceCategories.length - 1
+                        }].quantity`,
+                        isExternal: true,
+                      }}
+                    >
+                      Ajouter d’autres places et tarifs
+                    </ButtonLink>
+                  )}
                 </>
               )}
             />
