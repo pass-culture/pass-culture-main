@@ -1,4 +1,4 @@
-@import 'sass-rem';
+@use "styles/mixins/_rem.scss" as rem;
 
 html {
   height: 100%;
@@ -13,6 +13,6 @@ body {
 #root {
   display: grid;
   grid-template-columns: [col-start] 1fr [col-main] 9fr 1fr;
-  grid-template-rows: [row-header] rem(16px) [row-main] minmax(0, 1fr);
+  grid-template-rows: [row-header] rem.torem(16px) [row-main] minmax(0, 1fr);
   min-height: 100%;
 }

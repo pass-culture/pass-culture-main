@@ -1,7 +1,7 @@
-@import 'sass-rem';
+@use "styles/mixins/_rem.scss" as rem;
 
 .dropdown-indicator {
-  width: rem(16px);
+  width: rem.torem(16px);
 
   &-is-closed {
     transform: rotate(180deg);

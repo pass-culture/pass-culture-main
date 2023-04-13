@@ -1,8 +1,8 @@
-@import "sass-rem";
+@use "styles/mixins/_rem.scss" as rem;
 
 .contact-modal {
   &-dialog {
-    max-width: rem(548px);
+    max-width: rem.torem(548px);
     align-self: center;
     display: flex;
     flex-direction: column;
@@ -10,21 +10,21 @@
   }
 
   &-text {
-    margin-top: rem(32px);
+    margin-top: rem.torem(32px);
   }
 
   &-text,
   &-list {
     text-align: center;
-    margin-bottom: rem(32px);
+    margin-bottom: rem.torem(32px);
   }
 
   &-list {
     list-style: none;
     font-weight: 700;
-    line-height: rem(24px);
+    line-height: rem.torem(24px);
     padding: 0;
-    font-size: rem(20px);
+    font-size: rem.torem(20px);
 
     &-item-link {
       color: inherit;
@@ -33,6 +33,6 @@
   }
 
   &-button {
-    margin-top: rem(16px);
+    margin-top: rem.torem(16px);
   }
 }

@@ -1,17 +1,17 @@
-@import 'sass-rem';
+@use "styles/mixins/_rem.scss" as rem;
 
 .search-results {
   .offers-stats {
-    margin-top: rem(24px);
-    font-size: rem(12px);
+    margin-top: rem.torem(24px);
+    font-size: rem.torem(12px);
     font-weight: 600;
   }
 
   ul.offers {
     display: grid;
-    grid-gap: rem(20px);
+    grid-gap: rem.torem(20px);
     padding: 0;
-    margin: rem(8px) 0 rem(24px) 0;
+    margin: rem.torem(8px) 0 rem.torem(24px) 0;
   }
 
   .offers-loader {
@@ -25,8 +25,8 @@
       justify-content: center;
 
       svg {
-        height: rem(56px);
-        width: rem(56px);
+        height: rem.torem(56px);
+        width: rem.torem(56px);
 
         .logo {
           fill: #870087;
@@ -38,14 +38,14 @@
   .offers-load-more {
     text-align: center;
     width: fit-content;
-    margin: 0 auto rem(24px);
-    font-size: rem(12px);
-    height: rem(50px);
+    margin: 0 auto rem.torem(24px);
+    font-size: rem.torem(12px);
+    height: rem.torem(50px);
 
     &-text {
       font-weight: 600;
-      font-size: rem(12px);
-      margin-bottom: rem(10px);
+      font-size: rem.torem(12px);
+      margin-bottom: rem.torem(10px);
     }
   }
 }

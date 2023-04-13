@@ -1,23 +1,23 @@
 @use "styles/variables/_colorsAdageIframe.scss" as colors;
-@import "sass-rem";
+@use "styles/mixins/_rem.scss" as rem;
 @import "styles";
 
-$offer-image-height: rem(264px);
-$offer-image-width: rem(176px);
+$offer-image-height: rem.torem(264px);
+$offer-image-width: rem.torem(176px);
 
 .offer {
   display: flex;
   flex: 1;
   border: 1px solid #c7c8cb;
   border-radius: 8px;
-  font-size: rem(15px);
+  font-size: rem.torem(15px);
 
   &-logo-placeholder {
-    width: rem(64px);
+    width: rem.torem(64px);
     background-color: #7b1e82;
-    border-radius: rem(8px) 0 0 rem(8px);
+    border-radius: rem.torem(8px) 0 0 rem.torem(8px);
     fill: colors.$white;
-    padding: rem(8px);
+    padding: rem.torem(8px);
     box-sizing: border-box;
 
     &-showcase {
@@ -31,13 +31,13 @@ $offer-image-width: rem(176px);
   }
 
   &-image-container {
-    border-radius: rem(3px);
+    border-radius: rem.torem(3px);
     object-fit: cover;
-    margin: rem(16px);
+    margin: rem.torem(16px);
   }
 
   &-image {
-    border-radius: rem(3px);
+    border-radius: rem.torem(3px);
     object-fit: cover;
     height: $offer-image-height;
     width: $offer-image-width;
@@ -48,7 +48,7 @@ $offer-image-width: rem(176px);
     align-items: center;
     background-color: #f1f2f4;
     border: 1px solid #cbcdd2;
-    border-radius: rem(4px);
+    border-radius: rem.torem(4px);
     display: flex;
     height: $offer-image-height;
     width: $offer-image-width;
@@ -62,25 +62,25 @@ $offer-image-width: rem(176px);
   }
 
   &-container {
-    padding: rem(18px) rem(18px) rem(18px) rem(0);
+    padding: rem.torem(18px) rem.torem(18px) rem.torem(18px) rem.torem(0);
     position: relative;
     width: 100%;
   }
 
   &-prebooking-button {
     position: absolute;
-    right: rem(18px);
-    top: rem(18px);
+    right: rem.torem(18px);
+    top: rem.torem(18px);
   }
 
   &-header {
-    margin-bottom: rem(40px);
+    margin-bottom: rem.torem(40px);
 
     &-title {
       margin: 0;
-      font-size: rem(20px);
+      font-size: rem.torem(20px);
       font-weight: 700;
-      padding-right: rem(150px);
+      padding-right: rem.torem(150px);
     }
 
     .offer-header-label {
@@ -89,16 +89,16 @@ $offer-image-width: rem(176px);
 
     .offer-header-subtitles {
       margin: 0;
-      padding-right: rem(150px);
+      padding-right: rem.torem(150px);
       font-weight: 500;
-      font-size: rem(15px);
+      font-size: rem.torem(15px);
     }
 
     .offer-domains-list {
       padding-left: unset;
       display: flex;
       flex-wrap: wrap;
-      gap: rem(8px);
+      gap: rem.torem(8px);
 
       &-item {
         list-style: none;
@@ -109,16 +109,16 @@ $offer-image-width: rem(176px);
       background-color: colors.$grey-light;
       color: colors.$black;
       border: none;
-      padding: rem(4px) rem(8px);
+      padding: rem.torem(4px) rem.torem(8px);
     }
 
     & > *:not(:last-child) {
-      margin-bottom: rem(8px);
+      margin-bottom: rem.torem(8px);
     }
   }
 
   &-description {
-    margin: 0 0 rem(24px);
+    margin: 0 0 rem.torem(24px);
     white-space: pre-line;
   }
 
@@ -142,7 +142,7 @@ $offer-image-width: rem(176px);
     cursor: pointer;
 
     &-icon {
-      margin-right: rem(10px);
+      margin-right: rem.torem(10px);
       fill: #eb0055;
 
       &-closed {
@@ -152,18 +152,18 @@ $offer-image-width: rem(176px);
   }
 
   &-like-modal {
-    width: rem(450px);
+    width: rem.torem(450px);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: rem(16px);
+    gap: rem.torem(16px);
 
     &-text {
       text-align: center;
     }
 
     &-button {
-      margin-top: rem(16px);
+      margin-top: rem.torem(16px);
     }
   }
 }
