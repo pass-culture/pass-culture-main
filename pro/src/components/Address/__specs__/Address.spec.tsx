@@ -84,7 +84,6 @@ describe('components | Address', () => {
       postalCode: '',
       latitude: 0,
       longitude: 0,
-      isVenueVirtual: false,
     }
     jest
       .spyOn(apiAdresse, 'getDataFromAddress')
@@ -110,7 +109,6 @@ describe('components | Address', () => {
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
         {
-          isVenueVirtual: false,
           address: '12 rue des tournesols',
           addressAutocomplete: '12 rue des tournesols 75003 Paris',
           city: 'Paris',
@@ -122,41 +120,6 @@ describe('components | Address', () => {
         expect.anything()
       )
     })
-  })
-
-  it('should display error on submit for non virtual venues when adress is not selected from suggestions', async () => {
-    const { buttonSubmit } = await renderAddress({
-      initialValues,
-      onSubmit,
-    })
-    const adressInput = screen.getByLabelText('Adresse postale')
-
-    await userEvent.type(adressInput, '12 rue des fleurs')
-    await userEvent.click(buttonSubmit)
-
-    expect(
-      await screen.findByText(
-        'Veuillez sélectionner une adresse parmi les suggestions'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should not display error on submit when venue is virtual', async () => {
-    initialValues.isVenueVirtual = true
-    const { buttonSubmit } = await renderAddress({
-      initialValues,
-      onSubmit,
-    })
-    const adressInput = screen.getByLabelText('Adresse postale')
-
-    await userEvent.type(adressInput, '12 rue des fleurs')
-    await userEvent.click(buttonSubmit)
-
-    expect(
-      await screen.queryByText(
-        'Veuillez sélectionner une adresse parmi les suggestions'
-      )
-    ).not.toBeInTheDocument()
   })
 
   it('should not display suggestions when api return an error', async () => {
