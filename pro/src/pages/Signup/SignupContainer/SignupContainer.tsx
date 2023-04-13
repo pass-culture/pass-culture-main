@@ -134,7 +134,7 @@ const SignupContainer = (): JSX.Element => {
     <section className={styles['sign-up-form-page']}>
       {visible && <MaybeAppUserDialog onCancel={hideModal} />}
       <div className={styles['content']}>
-        <h1>Créer votre compte professionnel</h1>
+        <h1>Créer votre compte</h1>
         <OperatingProcedures />
 
         <div className={styles['sign-up-tips']}>
