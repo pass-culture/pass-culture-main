@@ -49,7 +49,6 @@ jest.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
   },
 ])
 
-// Appel fait dans apiAdresse.getDataFromAddress
 fetch.mockResponse(
   JSON.stringify({
     features: [
