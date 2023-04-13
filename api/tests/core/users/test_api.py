@@ -1171,3 +1171,38 @@ class SaveFlagsTest:
 
         with pytest.raises(ValueError):
             users_api.save_flags(user, {"uknown": {"toto": 10}})
+
+
+class SearchPublicAccountTest:
+    def test_current_email(self):
+        user = users_factories.BeneficiaryGrant18Factory(email="current@email.com")
+        users_factories.EmailValidationEntryFactory(user=user)
+
+        query = users_api.search_public_account("current@email.com")
+        users = query.all()
+
+        assert len(users) == 1
+        assert users[0].id == user.id
+
+    def test_old_email(self):
+        event = users_factories.EmailValidationEntryFactory()
+        event.user.email = event.newEmail
+
+        query = users_api.search_public_account(event.oldEmail)
+        users = query.all()
+
+        assert len(users) == 1
+        assert users[0].id == event.user.id
+
+    def test_old_email_but_not_validated(self):
+        event = users_factories.EmailUpdateEntryFactory()
+        # ensure that the current email is different from the event's
+        # old one
+        event.user.email = event.newEmail
+
+        query = users_api.search_public_account(event.oldEmail)
+        assert not query.all()
+
+    def test_unknown_email(self):
+        query = users_api.search_public_account("no@user.com")
+        assert not query.all()
