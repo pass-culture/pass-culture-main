@@ -13,7 +13,7 @@ import { collectiveStockFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import FormParticipants from '../FormParticipants'
-import { ALL_STUDENTS_LABEL } from '../participantsOptions'
+import { ALL_STUDENTS_LABEL } from '../useParticipantsOptions'
 
 const filteredParticipants = Object.values(StudentLevels).filter(
   studentLevel =>

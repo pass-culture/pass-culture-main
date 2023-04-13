@@ -11,8 +11,7 @@ import { IOfferEducationalFormValues } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { Banner, CheckboxGroup, InfoBox } from 'ui-kit'
 
-import { participantsOptions } from './participantsOptions'
-import useParicipantUpdates from './useParticipantUpdates'
+import useParticipantsOptions from './useParticipantsOptions'
 
 const FormParticipants = ({
   disableForm,
@@ -24,12 +23,6 @@ const FormParticipants = ({
   const { values, setFieldValue } =
     useFormikContext<IOfferEducationalFormValues>()
 
-  const handleParticipantsChange = (
-    newParticipants: IOfferEducationalFormValues['participants']
-  ) => setFieldValue('participants', newParticipants)
-
-  useParicipantUpdates(values.participants, handleParticipantsChange)
-
   const isCLG6Active = useActiveFeature('WIP_ADD_CLG_6_5_COLLECTIVE_OFFER')
   const isBeforeSeptembre1st =
     offerStock?.beginningDatetime &&
@@ -37,11 +30,14 @@ const FormParticipants = ({
       new Date(offerStock.beginningDatetime),
       new Date('2023-09-01T00:00:00Z')
     )
-
+  const defaultPartipantsOptions = useParticipantsOptions(
+    values.participants,
+    setFieldValue
+  )
   const filteredParticipantsOptions =
     isCLG6Active && !isBeforeSeptembre1st
-      ? participantsOptions
-      : participantsOptions.filter(
+      ? defaultPartipantsOptions
+      : defaultPartipantsOptions.filter(
           x =>
             x.name !== `participants.${StudentLevels.COLL_GE_6E}` &&
             x.name !== `participants.${StudentLevels.COLL_GE_5E}`
