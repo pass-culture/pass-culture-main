@@ -1,6 +1,7 @@
 import { addDays, isBefore } from 'date-fns'
 import React from 'react'
 
+import { DMSApplicationstatus } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { IVenue } from 'core/Venue'
 
@@ -29,12 +30,18 @@ const CollectiveVenueInformations = ({
     (!venue?.adageInscriptionDate && canCreateCollectiveOffer) ||
     isCreatingVenue
 
+  const hasRefusedDmsApplication =
+    venue?.collectiveDmsApplication?.state === DMSApplicationstatus.REFUSE ||
+    venue?.collectiveDmsApplication?.state === DMSApplicationstatus.SANS_SUITE
+
   return (
     <FormLayout.Section
       title="A destination des scolaires"
       id="for-schools"
       description={
-        venue?.hasAdageId || canCreateCollectiveOffer
+        venue?.hasAdageId ||
+        canCreateCollectiveOffer ||
+        hasRefusedDmsApplication
           ? ''
           : 'Pour publier des offres à destination des scolaires, votre lieu doit être référencé sur ADAGE, la plateforme dédiée aux enseignants et aux chefs d’établissements.'
       }
