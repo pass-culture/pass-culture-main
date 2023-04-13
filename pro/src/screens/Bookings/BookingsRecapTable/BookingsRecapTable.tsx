@@ -97,12 +97,10 @@ const BookingsRecapTable = <
       if (defaultBookingId) {
         setShouldScroll(true)
       }
-
-      hasAlreadyExpandedDetails.current = true
     } else {
       setRowToExpandId('')
     }
-  }, [defaultBookingId, filters])
+  }, [defaultBookingId, filters, hasAlreadyExpandedDetails])
 
   const updateCurrentPage = (currentPage: number) => {
     setCurrentPage(currentPage)
