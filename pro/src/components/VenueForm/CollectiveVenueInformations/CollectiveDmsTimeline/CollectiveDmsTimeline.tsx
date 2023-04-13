@@ -1,7 +1,12 @@
 import React from 'react'
 
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
-import { ExternalLinkIcon, PenIcon, ValidCircleIcon } from 'icons'
+import {
+  ExternalLinkIcon,
+  PenIcon,
+  ValidCircleIcon,
+  InfoWrongIcon,
+} from 'icons'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Timeline, { TimelineStepType } from 'ui-kit/Timeline/Timeline'
@@ -248,6 +253,41 @@ const CollectiveDmsTimeline = ({
       </>
     ),
   }
+  const droppedByDms = (
+    <>
+      <div className={styles['refused-state']}>
+        <InfoWrongIcon className={styles['refused-state-icon']} />
+        <span>Votre demande de référencement a été classée sans suite</span>
+      </div>
+      <div>
+        Nous vous invitons à consulter votre messagerie sur Démarches
+        Simplifiées afin d’en savoir plus.
+        <div className={styles['timeline-step-button']}>
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            link={{
+              to: collectiveDmsApplicationLink,
+              isExternal: true,
+            }}
+            Icon={ExternalLinkIcon}
+          >
+            Consulter ma messagerie sur Démarches Simplifiées
+          </ButtonLink>
+        </div>
+      </div>
+    </>
+  )
+  if (
+    hasAdageId &&
+    collectiveDmsApplication.state !== DMSApplicationstatus.ACCEPTE
+  ) {
+    return (
+      <div className={styles['timeline-added-in-adage']}>
+        <ValidCircleIcon />
+        <span>Ce lieu est référencé sur ADAGE</span>
+      </div>
+    )
+  }
 
   switch (collectiveDmsApplication.state) {
     case DMSApplicationstatus.EN_CONSTRUCTION:
@@ -297,6 +337,7 @@ const CollectiveDmsTimeline = ({
           />
         )
       }
+
       return (
         <div className={styles['timeline-added-in-adage']}>
           <ValidCircleIcon />
@@ -305,6 +346,8 @@ const CollectiveDmsTimeline = ({
       )
     case DMSApplicationstatus.REFUSE:
       return <Timeline steps={[refusedByDms]} />
+    case DMSApplicationstatus.SANS_SUITE:
+      return droppedByDms
     default:
       throw new Error('Invalid dms status')
   }
