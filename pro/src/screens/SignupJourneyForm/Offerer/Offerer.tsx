@@ -76,11 +76,22 @@ const Offerer = (): JSX.Element => {
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} data-testid="signup-offerer-form">
           <OffererForm />
-          <Banner type="notification-info" className={styles['siret-banner']}>
-            <strong>Votre structure dépend d’un autre SIRET ?</strong>
+          <Banner
+            type="notification-info"
+            className={styles['siret-banner']}
+            links={[
+              {
+                href: 'https://aide.passculture.app/hc/fr/articles/4633420022300--Acteurs-Culturels-Collectivit%C3%A9-Lieu-rattach%C3%A9-%C3%A0-une-collectivit%C3%A9-S-inscrire-et-param%C3%A9trer-son-compte-pass-Culture-',
+                linkTitle: 'En savoir plus',
+              },
+            ]}
+          >
+            <strong>
+              Vous êtes un équipement d’une collectivité ou d'un établissement
+              public ?
+            </strong>
             <p className={styles['banner-content-info']}>
-              Renseignez le SIRET de la collectivité, de la régie ou de
-              l’établissement public auquel vous êtes rattaché.
+              Renseignez le SIRET de la structure à laquelle vous êtes rattaché.
             </p>
           </Banner>
           <ActionBar
