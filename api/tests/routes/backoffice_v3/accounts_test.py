@@ -368,6 +368,20 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper):
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], underage)
 
+    def test_can_search_old_email(self, authenticated_client):
+        # given
+        event = users_factories.EmailValidationEntryFactory()
+        event.user.email = event.newEmail
+
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, terms=event.oldEmail))
+
+        # then
+        assert response.status_code == 200
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        assert_user_equals(cards_text[0], event.user)
+
 
 class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
     endpoint = "backoffice_v3_web.public_accounts.get_public_account"

@@ -953,7 +953,9 @@ def is_user_age_compatible_with_eligibility(user_age: int | None, eligibility: m
     return False
 
 
-def _filter_user_accounts(accounts: BaseQuery, search_term: str, order_by: list[str] | None = None) -> BaseQuery:
+def _filter_user_accounts(
+    accounts: BaseQuery, search_term: str, order_by: list[str] | None = None, include_email_history: bool = False
+) -> BaseQuery:
     filters = []
     name_term = None
 
@@ -978,10 +980,50 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str, order_by: list[
     # email
     sanitized_term = email_utils.sanitize_email(search_term)
     if email_utils.is_valid_email(sanitized_term):
-        term_filters.append(models.User.email == sanitized_term)
+        if include_email_history:
+            accounts = accounts.outerjoin(models.UserEmailHistory)
+
+            # including old emails: look for validated email updates
+            # inside user_email_history
+            term_filters.append(
+                sa.or_(
+                    models.User.email == sanitized_term,
+                    sa.and_(  # type: ignore
+                        models.UserEmailHistory.oldEmail == sanitized_term,
+                        models.UserEmailHistory.eventType.in_(
+                            {
+                                models.EmailHistoryEventTypeEnum.VALIDATION,
+                                models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION,
+                            }
+                        ),
+                    ),
+                )
+            )
+        else:
+            term_filters.append(models.User.email == sanitized_term)
     elif email_utils.is_valid_email_domain(sanitized_term):
         # search for all emails @domain.ext
-        term_filters.append(models.User.email.like(f"%{sanitized_term}"))
+        if include_email_history:
+            accounts = accounts.outerjoin(models.UserEmailHistory)
+
+            # including old emails: look for validated email updates
+            # inside user_email_history
+            term_filters.append(
+                sa.or_(
+                    models.User.email.like(f"%{sanitized_term}"),
+                    sa.and_(
+                        models.UserEmailHistory.oldDomainEmail == sanitized_term[1:],
+                        models.UserEmailHistory.eventType.in_(
+                            {
+                                models.EmailHistoryEventTypeEnum.VALIDATION,
+                                models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION,
+                            }
+                        ),
+                    ),
+                )
+            )
+        else:
+            term_filters.append(models.User.email.like(f"%{sanitized_term}"))
 
     if not term_filters:
         name_term = search_term
@@ -1032,11 +1074,12 @@ def search_public_account(search_query: str, order_by: list[str] | None = None) 
             sa.or_(
                 offerers_models.UserOfferer.userId.is_(None),
                 models.User.is_beneficiary.is_(True),  # type: ignore [attr-defined]
-            )
+            ),
         )
         .distinct(models.User.id)
     )
-    return _filter_user_accounts(public_accounts, search_query, order_by=order_by)
+
+    return _filter_user_accounts(public_accounts, search_query, order_by=order_by, include_email_history=True)
 
 
 def search_pro_account(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
