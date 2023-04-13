@@ -17024,11 +17024,6 @@ sass-loader@^12.3.0:
     klona "^2.0.4"
     neo-async "^2.6.2"
 
-sass-rem@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/sass-rem/-/sass-rem-3.0.0.tgz#82a700b69ca4ea725befdf8ed9844f5dfb71b55b"
-  integrity sha512-tgK/2ojS/z4OjlJT6J/Gc3TgN97W/4tTWuEdVXO1/P46L/Ud4iG3t+s007KTHP+BX9tqLgFPl3fgstUsva5rtg==
-
 sass@^1.61.0:
   version "1.61.0"
   resolved "https://registry.yarnpkg.com/sass/-/sass-1.61.0.tgz#d1f6761bb833887b8fdab32a24e052c40531d02b"

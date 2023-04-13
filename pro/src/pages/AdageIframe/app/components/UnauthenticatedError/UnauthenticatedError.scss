@@ -1,4 +1,4 @@
-@import "sass-rem";
+@use "styles/mixins/_rem.scss" as rem;
 
 main.error {
   align-content: center;
@@ -15,10 +15,10 @@ main.error {
   }
 
   h1 {
-    font-size: rem(40px);
+    font-size: rem.torem(40px);
   }
 
   div {
-    font-size: rem(24px);
+    font-size: rem.torem(24px);
   }
 }

@@ -1,34 +1,34 @@
-@import "sass-rem";
+@use "styles/mixins/_rem.scss" as rem;
 @import "styles";
 
 .prebooking-button-booking-limit {
-  margin-top: rem(8px);
+  margin-top: rem.torem(8px);
 }
 
 .prebooking-button-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: rem(12px);
+  font-size: rem.torem(12px);
   font-weight: 600;
 }
 
 .prebooking-tag {
-  padding: rem(4px) rem(8px);
+  padding: rem.torem(4px) rem.torem(8px);
   background: #f9c030;
-  border-radius: rem(4px);
+  border-radius: rem.torem(4px);
   display: flex;
   align-items: center;
 
   &-icon {
-    margin-right: rem(4px);
+    margin-right: rem.torem(4px);
   }
 }
 
 .prebooking-modal {
   &-title {
-    margin: 0 0 rem(24px);
-    font-size: rem(20px);
+    margin: 0 0 rem.torem(24px);
+    font-size: rem.torem(20px);
   }
 
   &-text {
