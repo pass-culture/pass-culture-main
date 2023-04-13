@@ -5,7 +5,10 @@ import React from 'react'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { individualOfferFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferFactory,
+  priceCategoryFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { RecurrenceForm } from '../RecurrenceForm'
@@ -96,20 +99,25 @@ describe('RecurrenceForm', () => {
     ).toBeDisabled()
   })
 
-  it('should add and remove a price category', async () => {
+  it('should show an add button until we have less or an equal number of fields than different price_categories', async () => {
+    defaultProps.offer.priceCategories = [
+      priceCategoryFactory(),
+      priceCategoryFactory(),
+      priceCategoryFactory(),
+    ]
     renderWithProviders(<RecurrenceForm {...defaultProps} />)
 
-    expect(
-      screen.getByRole('button', { name: 'Supprimer les places' })
-    ).toBeDisabled()
-
     await userEvent.click(screen.getByText('Ajouter d’autres places et tarifs'))
-
     const deleteButton = screen.getAllByRole('button', {
       name: 'Supprimer les places',
     })[0]
     expect(deleteButton).toBeEnabled()
+    await userEvent.click(screen.getByText('Ajouter d’autres places et tarifs'))
+    expect(
+      screen.queryByText('Ajouter d’autres places et tarifs')
+    ).not.toBeInTheDocument()
 
+    await userEvent.click(deleteButton)
     await userEvent.click(deleteButton)
 
     expect(
