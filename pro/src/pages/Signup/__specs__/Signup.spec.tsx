@@ -41,7 +41,7 @@ describe('src | components | pages | Signup', () => {
 
     // then
     expect(
-      screen.getByRole('heading', { name: /Créer votre compte professionnel/ })
+      screen.getByRole('heading', { name: /Créer votre compte/ })
     ).toBeInTheDocument()
   })
 
