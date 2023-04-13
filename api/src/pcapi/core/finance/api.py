@@ -1875,7 +1875,7 @@ def get_granted_deposit(
             version=1,
         )
 
-    if eligibility == users_models.EligibilityType.AGE18 or settings.IS_INTEGRATION:
+    if eligibility == users_models.EligibilityType.AGE18:
         pass_culture_tz = pytz.timezone("Europe/Paris")
         today_paris = pytz.utc.localize(datetime.datetime.utcnow()).astimezone(pass_culture_tz).date()
         last_day_paris = today_paris + relativedelta(years=conf.GRANT_18_VALIDITY_IN_YEARS)

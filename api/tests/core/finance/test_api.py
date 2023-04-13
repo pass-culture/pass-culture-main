@@ -2291,21 +2291,6 @@ class CreateDepositTest:
         # We use freeze time to ensure this test is not flaky. Otherwise, the expiration date would be dependant on the daylight saving time.
         assert deposit.expirationDate == datetime.datetime(2024, 9, 5, 21, 59, 59, 999999)
 
-    @freezegun.freeze_time("2022-09-05 09:00:00")
-    @override_settings(IS_INTEGRATION=True)
-    def test_deposit_on_integration(self):
-        beneficiary = users_factories.UserFactory()
-
-        # When
-        deposit = api.create_deposit(beneficiary, "integration_signup", users_models.EligibilityType.AGE18)
-
-        # Then
-        assert deposit.type == models.DepositType.GRANT_18
-        assert deposit.version == 2
-        assert deposit.amount == Decimal(300)
-        assert deposit.user.id == beneficiary.id
-        assert deposit.expirationDate == datetime.datetime(2024, 9, 5, 21, 59, 59, 999999)
-
     def test_deposit_created_when_another_type_already_exist_for_user(self):
         with freezegun.freeze_time(datetime.datetime.utcnow() - relativedelta(years=3)):
             beneficiary = users_factories.UnderageBeneficiaryFactory()
