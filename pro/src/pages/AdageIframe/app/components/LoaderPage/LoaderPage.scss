@@ -1,4 +1,4 @@
-@import "sass-rem";
+@use "styles/mixins/_rem.scss" as rem;
 
 main.loader-page {
   align-items: center;
@@ -13,8 +13,8 @@ main.loader-page {
     flex-direction: column;
 
     svg {
-      height: rem(56px);
-      width: rem(56px);
+      height: rem.torem(56px);
+      width: rem.torem(56px);
 
       .logo {
         fill: #870087;

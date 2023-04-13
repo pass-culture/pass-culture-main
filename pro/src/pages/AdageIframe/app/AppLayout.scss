@@ -1,4 +1,4 @@
-@import "sass-rem";
+@use "styles/mixins/_rem.scss" as rem;
 
 main.app-layout {
   display: flex;
@@ -11,10 +11,10 @@ main.app-layout {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: rem(24px) 0 rem(32px);
+  margin: rem.torem(24px) 0 rem.torem(32px);
 
   .app-logo {
-    width: rem(120px);
+    width: rem.torem(120px);
   }
 
   &-right {
@@ -23,7 +23,7 @@ main.app-layout {
 
     .app-layout-header-title {
       margin: 0;
-      font-size: rem(20px);
+      font-size: rem.torem(20px);
       font-weight: 700;
     }
   }
@@ -34,11 +34,11 @@ main.app-layout {
   align-items: center;
   color: inherit;
   text-decoration: none;
-  margin-left: rem(24px);
+  margin-left: rem.torem(24px);
   font-weight: 600;
-  font-size: rem(12px);
+  font-size: rem.torem(12px);
 
   &-icon {
-    margin-right: rem(4px);
+    margin-right: rem.torem(4px);
   }
 }
