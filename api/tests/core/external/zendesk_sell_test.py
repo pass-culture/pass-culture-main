@@ -1,3 +1,4 @@
+from unittest.mock import patch
 import urllib.parse
 
 import pytest
@@ -5,6 +6,8 @@ import requests_mock
 
 from pcapi import settings
 from pcapi.core.external import zendesk_sell
+from pcapi.core.external.backends.logger import LoggerBackend
+from pcapi.core.external.backends.zendesk_sell import ZendeskSellBackend
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_features
@@ -14,7 +17,7 @@ from pcapi.core.testing import override_settings
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@override_settings(IS_PROD=True)
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
 def test_create_offerer():
     offerer = offerers_factories.OffererFactory(postalCode="95300")
 
@@ -41,7 +44,7 @@ def test_create_offerer():
     assert response["id"] == "test"
 
 
-@override_settings(IS_PROD=True)
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
 def test_update_offerer():
     zendesk_id = 12
     offerer = offerers_factories.OffererFactory(postalCode="20000")
@@ -72,7 +75,7 @@ def test_update_offerer():
     assert response["id"] == zendesk_id
 
 
-@override_settings(IS_PROD=True)
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
 def test_create_venue():
     zendesk_parent_id = 123
     venue = offerers_factories.VenueFactory(postalCode="97600")
@@ -115,7 +118,7 @@ def test_create_venue():
     assert response["id"] == "test"
 
 
-@override_settings(IS_PROD=True)
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
 def test_update_venue():
     zendesk_parent_id = 100
     zendesk_id = 200
@@ -161,7 +164,7 @@ def test_update_venue():
     assert response["id"] == zendesk_id
 
 
-@override_settings(IS_PROD=True)
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
 @override_features(ENABLE_ZENDESK_SELL_CREATION=False)
 def test_create_venue_without_parent_offerer():
     # Offerer is not found in Zendesk, but feature flag prevents from creating it
@@ -207,7 +210,7 @@ def test_create_venue_without_parent_offerer():
     assert response["id"] == ret_id
 
 
-@override_settings(IS_PROD=True)
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
 @override_features(ENABLE_ZENDESK_SELL_CREATION=True)
 def test_create_venue_and_parent_offerer():
     # Offerer is not found in Zendesk, create it before the venue
@@ -267,7 +270,8 @@ def test_create_venue_and_parent_offerer():
     assert response["id"] == ret_id
 
 
-@override_settings(IS_RUNNING_TESTS=False, IS_PROD=True, ZENDESK_SELL_API_KEY="test")
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
+@override_settings(ZENDESK_SELL_API_KEY="test")
 def test_update_offerer_multiple_results_none_has_id():
     offerer = offerers_factories.OffererFactory()
 
@@ -308,7 +312,8 @@ def test_update_offerer_multiple_results_none_has_id():
     assert put.call_count == 0  # nothing updated in Zendesk
 
 
-@override_settings(IS_RUNNING_TESTS=False, IS_PROD=True, ZENDESK_SELL_API_KEY="test")
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
+@override_settings(ZENDESK_SELL_API_KEY="test")
 def test_update_offerer_multiple_results_one_has_id():
     offerer = offerers_factories.OffererFactory()
 
@@ -355,7 +360,8 @@ def test_update_offerer_multiple_results_one_has_id():
     assert put.call_count == 1
 
 
-@override_settings(IS_RUNNING_TESTS=False, IS_PROD=True, ZENDESK_SELL_API_KEY="test")
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
+@override_settings(ZENDESK_SELL_API_KEY="test")
 def test_update_venue_multiple_results_none_has_id():
     venue = offerers_factories.VenueFactory()
 
@@ -396,7 +402,8 @@ def test_update_venue_multiple_results_none_has_id():
     assert put.call_count == 0  # nothing updated in Zendesk
 
 
-@override_settings(IS_RUNNING_TESTS=False, IS_PROD=True, ZENDESK_SELL_API_KEY="test")
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
+@override_settings(ZENDESK_SELL_API_KEY="test")
 def test_update_venue_multiple_results_one_has_id():
     venue = offerers_factories.VenueFactory()
 
@@ -445,7 +452,8 @@ def test_update_venue_multiple_results_one_has_id():
     assert put.call_count == 1
 
 
-@override_settings(IS_RUNNING_TESTS=False, IS_STAGING=True, ZENDESK_SELL_API_KEY="test")
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", LoggerBackend())
+@override_settings(ZENDESK_SELL_API_KEY="test")
 def test_update_offerer_from_staging():
     offerer = offerers_factories.OffererFactory()
 
@@ -483,7 +491,8 @@ def test_update_offerer_from_staging():
     assert put.call_count == 0  # Read-only on staging
 
 
-@override_settings(IS_RUNNING_TESTS=False, IS_STAGING=True, ZENDESK_SELL_API_KEY="test")
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", LoggerBackend())
+@override_settings(ZENDESK_SELL_API_KEY="test")
 def test_do_update_venue_from_staging():
     venue = offerers_factories.VenueFactory()
 
