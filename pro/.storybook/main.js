@@ -1,10 +1,8 @@
 const path = require('path')
 const webpack = require('webpack')
-
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
-
 const aliases = {
   core: resolve('../src/core'),
   components: resolve('../src/components'),
@@ -19,14 +17,11 @@ const aliases = {
   repository: resolve('../src/repository'),
   hooks: resolve('../src/hooks'),
 }
-
 module.exports = {
-  core: {
-    builder: 'webpack5',
-  },
   stories: ['../src/**/*.stories.@(js|jsx|ts|tsx|mdx)'],
   addons: [
     'storybook-svgr-react-component',
+    '@storybook/preset-create-react-app',
     '@storybook/addon-docs',
     '@storybook/addon-actions',
     '@storybook/addon-links',
@@ -39,6 +34,7 @@ module.exports = {
       },
     },
     '@storybook/addon-a11y',
+    '@storybook/addon-mdx-gfm',
   ],
   staticDirs: ['../src/stories/assets', '../public'],
   plugins: [
@@ -95,5 +91,12 @@ module.exports = {
         },
       },
     }
+  },
+  framework: {
+    name: '@storybook/react-webpack5',
+    options: {},
+  },
+  docs: {
+    autodocs: true,
   },
 }
