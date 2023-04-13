@@ -5,13 +5,13 @@ import RouteLeavingGuard, {
 } from 'components/RouteLeavingGuard'
 
 export interface RouteLeavingGuardCollectiveOfferCreationProps {
-  isFormDirty: boolean
+  shouldBlock: boolean
 }
 
 const RouteLeavingGuardVenueCollectiveDataEdition = ({
-  isFormDirty,
+  shouldBlock,
 }: RouteLeavingGuardCollectiveOfferCreationProps): JSX.Element => {
-  const shouldBlockNavigation: BlockerFunction = () => isFormDirty
+  const shouldBlockNavigation: BlockerFunction = () => shouldBlock
 
   return (
     <RouteLeavingGuard

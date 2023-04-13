@@ -103,6 +103,8 @@ const CollectiveDataForm = ({
     string[] | null
   >(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isClickingFromActionBar, setIsClickingFromActionBar] =
+    useState<boolean>(false)
 
   const initialValues = venueCollectiveData
     ? extractInitialValuesFromVenue(venueCollectiveData, categories)
@@ -120,6 +122,7 @@ const CollectiveDataForm = ({
 
   const onSubmit = async (values: CollectiveDataFormValues) => {
     setIsLoading(true)
+    setIsClickingFromActionBar(true)
     const response = await editVenueCollectiveDataAdapter({
       venueId: Number(venueId),
       values,
@@ -127,6 +130,7 @@ const CollectiveDataForm = ({
 
     if (!response.isOk) {
       notify.error(response.message)
+      setIsClickingFromActionBar(false)
       return setIsLoading(false)
     }
 
@@ -327,7 +331,9 @@ const CollectiveDataForm = ({
           </FormLayout.Actions>
         </form>
       </FormikProvider>
-      <RouteLeavingGuardVenueCollectiveDataEdition isFormDirty={formik.dirty} />
+      <RouteLeavingGuardVenueCollectiveDataEdition
+        shouldBlock={formik.dirty && !isClickingFromActionBar}
+      />
     </>
   )
 }
