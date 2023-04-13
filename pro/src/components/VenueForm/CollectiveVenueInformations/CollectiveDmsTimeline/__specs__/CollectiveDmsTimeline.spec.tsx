@@ -84,6 +84,21 @@ describe('CollectiveDmsTimeline', () => {
       hasAdageIdForMoreThan30Days: true,
       expectedLabel: 'Ce lieu est référencé sur ADAGE',
     },
+    {
+      collectiveDmsApplication: {
+        ...defaultCollectiveDmsApplication,
+        state: DMSApplicationstatus.EN_CONSTRUCTION,
+      },
+      hasAdageId: true,
+      expectedLabel: 'Ce lieu est référencé sur ADAGE',
+    },
+    {
+      collectiveDmsApplication: {
+        ...defaultCollectiveDmsApplication,
+        state: DMSApplicationstatus.SANS_SUITE,
+      },
+      expectedLabel: 'Votre demande de référencement a été classée sans suite',
+    },
   ]
   it.each(testCases)(
     'should render %s status',
