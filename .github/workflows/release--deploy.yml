@@ -108,7 +108,7 @@ jobs:
                             "author_icon": "https://github.com/${{github.actor}}.png",
                             "title": "PCAPI Deployment",
                             "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                            "text": "Le déploiement de la version `v${{ needs.version.outputs.APP_VERSION }}` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION == 'failure'] }} sur `${{ github.event.inputs.target_environment }}` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
+                            "text": "Le déploiement de la version `${{ github.ref_name }}` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION == 'failure'] }} sur `${{ github.event.inputs.target_environment }}` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
                         }
                     ],
                     "unfurl_links": false,
