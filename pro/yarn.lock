@@ -2212,15 +2212,15 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@firebase/analytics@^0.9.1":
-  version "0.9.1"
-  resolved "https://registry.yarnpkg.com/@firebase/analytics/-/analytics-0.9.1.tgz#7ed7dac7a12659e20231b701c4fa1e1ca1285883"
-  integrity sha512-ARXtNHDrjDhVrs5MqmFDpr5yyCw89r1eHLd+Dw9fotAufxL1WTmo6O9bJqKb7QulIJaA84vsFokA3NaO2DNCnQ==
+"@firebase/analytics@^0.9.5":
+  version "0.9.5"
+  resolved "https://registry.yarnpkg.com/@firebase/analytics/-/analytics-0.9.5.tgz#fbd8f4c57136ad2f12450ed0b86b537f5f33f669"
+  integrity sha512-hJTVs2jLxPXE7hs7D/jaEsgGivrm7tSEl65kb5NkDBWV7QQBUnRfVML/xra9nTFLLJhAdbExZPHg6HfIuMSYEQ==
   dependencies:
-    "@firebase/component" "0.6.1"
-    "@firebase/installations" "0.6.1"
+    "@firebase/component" "0.6.4"
+    "@firebase/installations" "0.6.4"
     "@firebase/logger" "0.4.0"
-    "@firebase/util" "1.9.0"
+    "@firebase/util" "1.9.3"
     tslib "^2.1.0"
 
 "@firebase/app@^0.9.7":
@@ -2234,30 +2234,12 @@
     idb "7.0.1"
     tslib "^2.1.0"
 
-"@firebase/component@0.6.1":
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/@firebase/component/-/component-0.6.1.tgz#1099d18700fd35b114a2ddc4b5e91ce23971e45f"
-  integrity sha512-yvKthG0InjFx9aOPnh6gk0lVNfNVEtyq3LwXgZr+hOwD0x/CtXq33XCpqv0sQj5CA4FdMy8OO+y9edI+ZUw8LA==
-  dependencies:
-    "@firebase/util" "1.9.0"
-    tslib "^2.1.0"
-
 "@firebase/component@0.6.4":
   version "0.6.4"
   resolved "https://registry.yarnpkg.com/@firebase/component/-/component-0.6.4.tgz#8981a6818bd730a7554aa5e0516ffc9b1ae3f33d"
   integrity sha512-rLMyrXuO9jcAUCaQXCMjCMUsWrba5fzHlNK24xz5j2W6A/SRmK8mZJ/hn7V0fViLbxC0lPMtrK1eYzk6Fg03jA==
   dependencies:
     "@firebase/util" "1.9.3"
-    tslib "^2.1.0"
-
-"@firebase/installations@0.6.1":
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/@firebase/installations/-/installations-0.6.1.tgz#727749e9959e898fa8af93f054b30f50dcc1ad18"
-  integrity sha512-gpobP09LLLakBfNCL04fyblfyb3oX1pn+iNmELygrcAkXTO13IAMuOzThI+Xk4NHQZMX1p5GFSAiGbG4yfsSUQ==
-  dependencies:
-    "@firebase/component" "0.6.1"
-    "@firebase/util" "1.9.0"
-    idb "7.0.1"
     tslib "^2.1.0"
 
 "@firebase/installations@0.6.4":
@@ -2286,13 +2268,6 @@
     "@firebase/installations" "0.6.4"
     "@firebase/logger" "0.4.0"
     "@firebase/util" "1.9.3"
-    tslib "^2.1.0"
-
-"@firebase/util@1.9.0":
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/@firebase/util/-/util-1.9.0.tgz#4aad6d777d140296839874a48339c6544d3ff11c"
-  integrity sha512-oeoq/6Sr9btbwUQs5HPfeww97bf7qgBbkknbDTXpRaph2LZ23O9XLCE5tJy856SBmGQfO4xBZP8dyryLLM2nSQ==
-  dependencies:
     tslib "^2.1.0"
 
 "@firebase/util@1.9.3":
