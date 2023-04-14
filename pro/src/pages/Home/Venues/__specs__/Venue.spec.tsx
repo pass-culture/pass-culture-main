@@ -1,9 +1,16 @@
-import { screen, within } from '@testing-library/react'
+import {
+  screen,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { addDays } from 'date-fns'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { DMSApplicationstatus } from 'apiClient/v1'
 import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
+import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -15,8 +22,17 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderVenue = (props: IVenueProps) =>
-  renderWithProviders(<Venue {...props} />)
+const renderVenue = (
+  props: IVenueProps,
+  features?: { list: { isActive: true; nameKey: string }[] }
+) => {
+  const storeOverrides = {
+    features: features,
+  }
+  renderWithProviders(<Venue {...props} />, {
+    storeOverrides: { ...storeOverrides },
+  })
+}
 
 describe('venues', () => {
   let props: IVenueProps
@@ -215,6 +231,43 @@ describe('venues', () => {
       ).toHaveAttribute(
         'href',
         '/structures/OFFERER01/lieux/VENUE01?modification#remboursement'
+      )
+    })
+    it('should display dms timeline link when venue has dms applicaiton and adage id less than 30 days', async () => {
+      // When
+      await jest
+        .spyOn(useNewOfferCreationJourney, 'default')
+        .mockReturnValue(false)
+      renderVenue(
+        {
+          ...props,
+          initialOpenState: true,
+          hasAdageId: true,
+          adageInscriptionDate: addDays(new Date(), -15).toISOString(),
+          dmsInformations: {
+            ...defaultCollectiveDmsApplication,
+            state: DMSApplicationstatus.ACCEPTE,
+          },
+        },
+        {
+          list: [
+            {
+              isActive: true,
+              nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
+            },
+          ],
+        }
+      )
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+      // Then
+      expect(
+        screen.getByRole('link', {
+          name: 'Suivre ma demande de référencement ADAGE',
+        })
+      ).toHaveAttribute(
+        'href',
+        '/structures/OFFERER01/lieux/VENUE01#reimbursement'
       )
     })
   })

@@ -1,9 +1,10 @@
 import cn from 'classnames'
+import { addDays, isBefore } from 'date-fns'
 import React, { Fragment, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { DMSApplicationForEAC } from 'apiClient/v1'
+import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings'
 import {
   Events,
@@ -14,8 +15,9 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { venueCreateOfferLink } from 'core/Venue/utils'
 import { useNewOfferCreationJourney } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { NotificationErrorIcon } from 'icons'
+import { NotificationErrorIcon, CircleArrowIcon } from 'icons'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { ReactComponent as IcoPlusCircle } from 'icons/ico-plus-circle.svg'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
@@ -25,6 +27,7 @@ import Icon from 'ui-kit/Icon/Icon'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { VenueOfferSteps } from '../VenueOfferSteps'
+import styles from '../VenueOfferSteps/VenueOfferSteps.module.scss'
 
 import VenueStat from './VenueStat'
 
@@ -144,6 +147,20 @@ const Venue = ({
   ]
 
   const hasNewOfferCreationJourney = useNewOfferCreationJourney()
+  const isCollectiveDmsTrackingActive = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
+  )
+  const hasAdageIdForMoreThan30Days =
+    hasAdageId &&
+    !!adageInscriptionDate &&
+    isBefore(new Date(adageInscriptionDate), addDays(new Date(), -30))
+
+  const shouldDisplayEACInformationSection =
+    !hasNewOfferCreationJourney &&
+    isCollectiveDmsTrackingActive &&
+    !(dmsInformations?.state === DMSApplicationstatus.REFUSE) &&
+    Boolean(dmsInformations) &&
+    !hasAdageIdForMoreThan30Days
 
   if (prevInitialOpenState != initialOpenState) {
     setIsStatOpen(initialOpenState)
@@ -307,6 +324,37 @@ const Venue = ({
                       hasAdageId={hasAdageId}
                       adageInscriptionDate={adageInscriptionDate}
                     />
+                  )}
+                  {shouldDisplayEACInformationSection && (
+                    <div
+                      className={cn(
+                        styles['card-wrapper'],
+                        styles['no-shadow'],
+                        styles['dms-container'],
+                        'h-card'
+                      )}
+                      data-testid={'venue-offer-steps'}
+                    >
+                      <div className="h-card-inner">
+                        <h4>Démarche en cours : </h4>
+
+                        <div className={styles['venue-offer-steps']}>
+                          <div className={styles['step-venue-creation']}>
+                            <ButtonLink
+                              className={styles['step-button-width']}
+                              variant={ButtonVariant.BOX}
+                              Icon={CircleArrowIcon}
+                              link={{
+                                to: `/structures/${offererId}/lieux/${id}#reimbursement`,
+                                isExternal: false,
+                              }}
+                            >
+                              Suivre ma demande de référencement ADAGE
+                            </ButtonLink>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   )}
                   <div className="venue-stats">
                     {venueStatData.map(stat => (
