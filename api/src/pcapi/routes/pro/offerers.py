@@ -4,7 +4,6 @@ from flask_login import current_user
 from flask_login import login_required
 import sqlalchemy.orm as sqla_orm
 
-from pcapi import settings
 import pcapi.core.educational.exceptions as educational_exceptions
 from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
@@ -38,9 +37,6 @@ def list_offerers_names(
             include_non_validated_user_offerers=not query.validated_for_user,
         )
         offerers = offerers.order_by(offerers_models.Offerer.name, offerers_models.Offerer.id)
-        if current_user.has_admin_role:
-            # Do not return and try to display a huge list to admin users.
-            offerers = offerers.limit(settings.PRO_MAX_OFFERERS_FOR_ADMIN_ON_HOME_PAGE)
         offerers = offerers.distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
 
     offerers = offerers.options(sqla_orm.load_only(offerers_models.Offerer.id, offerers_models.Offerer.name))
