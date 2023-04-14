@@ -1,21 +1,10 @@
 import enum
-import json
 import logging
-import urllib.parse
 
-import requests
-
-from pcapi import settings
 from pcapi.core.offerers import models as offerers_models
 
 
 logger = logging.getLogger(__name__)
-
-ZENDESK_SELL_API_KEY = settings.ZENDESK_SELL_API_KEY
-ZENDESK_SELL_API_URL = settings.ZENDESK_SELL_API_URL
-BACKOFFICE_URL = settings.BACKOFFICE_URL
-
-SEARCH_PARENT = -1
 
 
 class ZendeskError(Exception):
@@ -71,9 +60,6 @@ class ZendeskCustomFieldsNames(enum.Enum):
 
 
 class BaseBackend:
-    def __init__(self) -> None:
-        self.session = self._configure_session()
-
     def create_offerer(self, offerer: offerers_models.Offerer, created: bool = False) -> dict:
         raise NotImplementedError()
 
@@ -96,53 +82,3 @@ class BaseBackend:
 
     def get_venue_by_id(self, venue: offerers_models.Venue) -> dict:
         raise NotImplementedError()
-
-    def query_api(self, method: str, path: str, body: str | dict | None) -> dict:
-        if not self.session:
-            self._configure_session()
-
-        match method.upper():
-            case "PUT":
-                response = self.session.put(self._build_url(path), json=body)
-            case "POST":
-                response = self.session.post(self._build_url(path), json=body)
-            case "GET":
-                response = self.session.get(self._build_url(path))
-            case _:
-                raise ValueError("Unsupported method")
-        if not response.ok:
-            logger.error(
-                "Error %s while calling Zendesk Sell API",
-                response.status_code,
-                extra={
-                    "method": method,
-                    "path": path,
-                    "status_code": response.status_code,
-                    "response": response.content,
-                    "body": json.dumps(body, indent=4),
-                },
-            )
-        response.raise_for_status()
-        # All APIs called here return json content
-        return response.json()
-
-    def _configure_session(self) -> requests.Session:
-        session = requests.Session()
-        session.headers.update(
-            {
-                "Authorization": "Bearer " + ZENDESK_SELL_API_KEY,
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            }
-        )
-
-        return session
-
-    def _build_url(self, path: str) -> str:
-        return urllib.parse.urljoin(ZENDESK_SELL_API_URL, path)
-
-    def _build_backoffice_offerer_link(self, offerer: offerers_models.Offerer) -> str:
-        return urllib.parse.urljoin(BACKOFFICE_URL, f"pro/offerer/{offerer.id}")
-
-    def _build_backoffice_venue_link(self, venue: offerers_models.Venue) -> str:
-        return urllib.parse.urljoin(BACKOFFICE_URL, f"pro/venue/{venue.id}")
