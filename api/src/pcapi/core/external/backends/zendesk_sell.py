@@ -1,5 +1,7 @@
 import datetime
+import json
 import logging
+import urllib.parse
 
 import requests
 
@@ -18,9 +20,13 @@ logger = logging.getLogger(__name__)
 
 ZENDESK_SELL_API_KEY = settings.ZENDESK_SELL_API_KEY
 ZENDESK_SELL_API_URL = settings.ZENDESK_SELL_API_URL
+BACKOFFICE_URL = settings.BACKOFFICE_URL
 
 
 class ZendeskSellReadOnlyBackend(BaseBackend):
+    def __init__(self) -> None:
+        self.session = self._configure_session()
+
     def create_offerer(self, offerer: offerers_models.Offerer, created: bool = True) -> dict:
         return {"id": None}
 
@@ -211,6 +217,50 @@ class ZendeskSellReadOnlyBackend(BaseBackend):
                 return contacts_with_venue_id[0]
             raise
 
+    def query_api(self, method: str, path: str, body: str | dict | None) -> dict:
+        if not self.session:
+            self._configure_session()
+
+        match method.upper():
+            case "PUT":
+                response = self.session.put(self._build_url(path), json=body)
+            case "POST":
+                response = self.session.post(self._build_url(path), json=body)
+            case "GET":
+                response = self.session.get(self._build_url(path))
+            case _:
+                raise ValueError("Unsupported method")
+        if not response.ok:
+            logger.error(
+                "Error %s while calling Zendesk Sell API",
+                response.status_code,
+                extra={
+                    "method": method,
+                    "path": path,
+                    "status_code": response.status_code,
+                    "response": response.content,
+                    "body": json.dumps(body, indent=4),
+                },
+            )
+        response.raise_for_status()
+        # All APIs called here return json content
+        return response.json()
+
+    def _configure_session(self) -> requests.Session:
+        session = requests.Session()
+        session.headers.update(
+            {
+                "Authorization": "Bearer " + ZENDESK_SELL_API_KEY,
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            }
+        )
+
+        return session
+
+    def _build_url(self, path: str) -> str:
+        return urllib.parse.urljoin(ZENDESK_SELL_API_URL, path)
+
 
 class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
     def create_offerer(self, offerer: offerers_models.Offerer, created: bool = True) -> dict:
@@ -219,7 +269,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
         try:
             response = self.query_api("POST", "/v2/contacts", data)
         except requests.exceptions.HTTPError as err:
-            logger.error("Error while creating offerer on Zendesk Sell", extra={"venue_id": offerer.id, "error": err})
+            logger.error("Error while creating offerer on Zendesk Sell", extra={"offerer_id": offerer.id, "error": err})
         return response
 
     def update_offerer(self, zendesk_id: int, offerer: offerers_models.Offerer) -> dict:
@@ -228,7 +278,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
         try:
             response = self.query_api("PUT", f"/v2/contacts/{zendesk_id}", data)
         except requests.exceptions.HTTPError as err:
-            logger.error("Error while updating offerer on Zendesk Sell", extra={"venue_id": offerer.id, "error": err})
+            logger.error("Error while updating offerer on Zendesk Sell", extra={"offerer_id": offerer.id, "error": err})
         return response
 
     def create_venue(
@@ -338,3 +388,9 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
             params["data"]["custom_fields"][ZendeskCustomFieldsNames.CREATED_FROM_PRODUCT.value] = True
 
         return params
+
+    def _build_backoffice_offerer_link(self, offerer: offerers_models.Offerer) -> str:
+        return urllib.parse.urljoin(BACKOFFICE_URL, f"pro/offerer/{offerer.id}")
+
+    def _build_backoffice_venue_link(self, venue: offerers_models.Venue) -> str:
+        return urllib.parse.urljoin(BACKOFFICE_URL, f"pro/venue/{venue.id}")
