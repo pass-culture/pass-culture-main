@@ -43,7 +43,6 @@
     "@firebase/analytics": "^0.9.5",
     "@firebase/app": "^0.9.7",
     "@firebase/remote-config": "0.4.4",
-    "@fontsource/barlow": "^4.5.9",
     "@reach/dialog": "^0.18.0",
     "@reach/menu-button": "^0.18.0",
     "@reduxjs/toolkit": "^1.9.3",

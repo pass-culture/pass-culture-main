@@ -19,7 +19,6 @@
     padding-left: rem.torem(46px);
     transition: none;
     font-size: rem.torem(15px);
-    font-family: Barlow;
 
     &::placeholder {
       font-style: italic;
@@ -46,7 +45,6 @@
   padding-left: rem.torem(46px);
   transition: all 0.25s ease-in-out;
   font-size: rem.torem(15px);
-  font-family: Barlow;
 
   &::placeholder {
     font-style: italic;
