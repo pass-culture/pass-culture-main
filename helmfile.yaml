@@ -9,7 +9,7 @@ repositories:
 releases:
   - name: {{ .Environment.Name }}
     namespace: {{ .Environment.Name }}
-    chart: passCulture/pass-culture-artifact-registry/pcapi-chart
+    chart: passCulture/pass-culture-helm-registry/pcapi
     version: {{ .Values.chartVersion }}
     values:
       - {{ requiredEnv "PCAPI_VALUES_FILE" }}
