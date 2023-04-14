@@ -8,7 +8,6 @@ $header-height: rem.torem(30px) + rem.torem(42px);
   flex-direction: column;
   min-height: calc(100vh - #{size.$action-bar-sticky-height + $header-height});
   gap: rem.torem(60px);
-  align-items: center;
   margin: 0 auto rem.torem(80px);
   padding-top: rem.torem(50px);
   padding-bottom: size.$action-bar-sticky-height;
