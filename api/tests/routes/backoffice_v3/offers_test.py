@@ -1,4 +1,5 @@
 import datetime
+from unittest.mock import patch
 
 from flask import g
 from flask import url_for
@@ -371,7 +372,8 @@ class EditOffersTest:
         endpoint_kwargs = {"offer_id": 1}
         needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    def test_update_offer_tags(self, legit_user, authenticated_client, criteria):
+    @patch("pcapi.core.search.reindex_offer_ids")
+    def test_update_offer_tags(self, mock_reindex_offer_ids, legit_user, authenticated_client, criteria):
         offer_to_edit = offers_factories.OfferFactory(
             name="A Very Specific Name That Is Longer",
             criteria=[criteria[0]],
@@ -399,6 +401,10 @@ class EditOffersTest:
         assert criteria[1].name in row[0]["Tag"]
         assert criteria[2].name not in row[0]["Tag"]
 
+        # offer should be reindexed
+        mock_reindex_offer_ids.assert_called_once_with([offer_to_edit.id])
+        mock_reindex_offer_ids.reset_mock()
+
         # New Update without rankingWeight
         base_form = {"criteria": [criteria[2].id, criteria[1].id], "rankingWeight": ""}
         response = self._update_offer(authenticated_client, offer_to_edit, base_form)
@@ -415,6 +421,9 @@ class EditOffersTest:
         assert criteria[1].name in row[0]["Tag"]
         assert criteria[0].name not in row[0]["Tag"]
         assert criteria[3].name not in row[0]["Tag"]
+
+        # offer should be reindexed
+        mock_reindex_offer_ids.assert_called_once_with([offer_to_edit.id])
 
     def _update_offer(self, authenticated_client, offer, form):
         edit_url = url_for("backoffice_v3_web.offer.list_offers")
@@ -527,7 +536,8 @@ class BatchEditOfferTest:
         endpoint_kwargs = {"offer_id": 1}
         needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    def test_batch_edit_offer(self, legit_user, authenticated_client, criteria):
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_batch_edit_offer(self, mock_async_index, legit_user, authenticated_client, criteria):
         offers = offers_factories.OfferFactory.create_batch(10)
         parameter_ids = ",".join(str(offer.id) for offer in offers)
         chosen_ranking_weight = 2
@@ -545,6 +555,8 @@ class BatchEditOfferTest:
             assert len(offer.criteria) == 2
             assert criteria[0] in offer.criteria
             assert criteria[2] not in offer.criteria
+
+        mock_async_index.assert_called_once_with([offer.id for offer in offers])
 
     def _update_offers(self, authenticated_client, form):
         edit_url = url_for("backoffice_v3_web.offer.list_offers")
