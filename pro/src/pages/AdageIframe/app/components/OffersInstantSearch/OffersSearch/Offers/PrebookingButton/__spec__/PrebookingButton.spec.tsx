@@ -3,13 +3,14 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { OfferStockResponse } from 'apiClient/adage'
+import { apiAdage } from 'apiClient/api'
 
 import PrebookingButton from '../PrebookingButton'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   preBookStock: jest.fn(),
 }))
-
+jest.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
 jest.mock('apiClient/api', () => ({
   apiAdage: { bookCollectiveOffer: jest.fn() },
 }))
@@ -73,6 +74,38 @@ describe('offer', () => {
       // Then
       expect(
         screen.getByText('Êtes-vous sûr de vouloir préréserver ?')
+      ).toBeInTheDocument()
+    })
+
+    it('should display error message if uai does not match', async () => {
+      // Given
+      render(
+        <PrebookingButton
+          canPrebookOffers
+          offerId={1}
+          queryId="aez"
+          stock={stock}
+        />
+      )
+      // When
+      const preBookButton = screen.getByRole('button', { name: 'Préréserver' })
+      await userEvent.click(preBookButton)
+
+      // Then
+      expect(
+        screen.getByText('Êtes-vous sûr de vouloir préréserver ?')
+      ).toBeInTheDocument()
+
+      jest.spyOn(apiAdage, 'bookCollectiveOffer').mockRejectedValueOnce({
+        statusCode: 400,
+        body: { code: 'WRONG_UAI_CODE' },
+      })
+      await userEvent.click(screen.getByRole('button', { name: 'Préréserver' }))
+
+      expect(
+        screen.getByText(
+          'Cette offre n’est pas préréservable par votre établissement'
+        )
       ).toBeInTheDocument()
     })
   })
