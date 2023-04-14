@@ -42,9 +42,6 @@ export const OffersStatusFiltersModal = ({
         modalRef.current &&
         !modalRef.current.contains(event.target as Node)
       ) {
-        event.preventDefault()
-        event.stopPropagation()
-
         setIsVisible(!isVisible)
       }
     },
@@ -52,10 +49,12 @@ export const OffersStatusFiltersModal = ({
   )
 
   useEffect(() => {
-    document.body.addEventListener('click', onClickOutside)
-
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', onClickOutside, false)
+    }, 0)
     return () => {
-      document.body.removeEventListener('click', onClickOutside)
+      clearTimeout(timeoutId)
+      document.removeEventListener('click', onClickOutside, false)
     }
   }, [onClickOutside])
 
