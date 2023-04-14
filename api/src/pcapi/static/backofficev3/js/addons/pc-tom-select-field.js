@@ -18,7 +18,7 @@
  * // select field with xhr autocomplete.
  * // In this example, our backend automatically sets data attributes, this allows the initial render to have the initialValues
  * <select
- *   class="pc-tom-select-field pc-tom-select-field"
+ *   class="pc-tom-select-field pc-tom-select-autocomplete-field"
  *   data-tomselect-autocomplete-url="/backofficev3/autocomplete/offerers"
  *   data-tomselect-options="[{\"id\": \"84\", \"text\": \"Cin\u00e9ma - CGR (00000003800058)\"}]"
  *   data-tomselect-items="[\"84\"]"
@@ -26,7 +26,7 @@
  */
 class PcTomSelectField extends PcAddOn {
   static SELECT_SELECTOR = 'select.pc-tom-select-field'
-  static SELECT_AUTOCOMPLETE_CLASS = 'pc-tom-select-field'
+  static SELECT_AUTOCOMPLETE_CLASS = 'pc-tom-select-autocomplete-field'
   static SELECT_SETTINGS = {
     plugins: ['dropdown_input', 'clear_button', 'checkbox_options'],
     persist: false,
