@@ -21,10 +21,10 @@ import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
 } from 'pages/AdageIframe/app/types/offers'
-import { ResultType } from 'pages/AdageIframe/utils/types'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { LOGS_DATA } from 'utils/config'
+import { ResultType } from 'utils/types'
 
 import { Spinner } from '../../../Layout/Spinner/Spinner'
 
