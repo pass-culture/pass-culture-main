@@ -44,8 +44,6 @@ class Permissions(enum.Enum):
     SEARCH_BOOKINGS = "rechercher les réservations"
     READ_BOOKINGS = "visualiser les réservations"
 
-    # TODO : deprecated, remove SEARCH_OFFERS
-    SEARCH_OFFERS = "rechercher les offres"
     READ_OFFERS = "visualiser les offres"
     MANAGE_OFFERS = "gérer les offres"
 
