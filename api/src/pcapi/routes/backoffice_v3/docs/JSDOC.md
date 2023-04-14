@@ -672,12 +672,12 @@ class PcExample extends PcAddOn {
 
 Configure TomSelect on a `<select />`.
 
-In the front-end business, we note two types of tom select instances:
+We have two types of tom select instances:
 
-1.  select field.
-2.  select field with xhr autocomplete.
+1.  select field with static options,
+2.  select field with dynamic options (xhr autocomplete).
 
-> Use `multiple` HTML attribut on select if needed.
+> Use `multiple` HTML attribut on `<select />` if needed.
 
 ### Examples
 
@@ -693,7 +693,7 @@ In the front-end business, we note two types of tom select instances:
 // select field with xhr autocomplete.
 // In this example, our backend automatically sets data attributes, this allows the initial render to have the initialValues
 <select
-  class="pc-tom-select-field pc-tom-select-field"
+  class="pc-tom-select-field pc-tom-select-autocomplete-field"
   data-tomselect-autocomplete-url="/backofficev3/autocomplete/offerers"
   data-tomselect-options="[{\"id\": \"84\", \"text\": \"Cin\u00e9ma - CGR (00000003800058)\"}]"
   data-tomselect-items="[\"84\"]"

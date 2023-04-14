@@ -1,10 +1,17 @@
-select {
-  &.pc-tom-select-field {
-    height: 1em;
-    overflow: hidden;
-    border-radius: 1rem;
+@mixin select-field {
+  height: 1em;
+  overflow: hidden;
+  border-radius: 1rem;
+}
 
-    &:not(.tomselected):not(.pc-tom-select-field) > option {
+select {
+  &.pc-select-field {
+    @include select-field;
+  }
+  &.pc-tom-select-field {
+    @include select-field;
+
+    &:not(.tomselected):not(.pc-tom-select-autocomplete-field) > option {
       display: none;
     }
   }
