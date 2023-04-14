@@ -6,8 +6,8 @@ import requests_mock
 
 from pcapi import settings
 from pcapi.core.external import zendesk_sell
-from pcapi.core.external.backends.logger import LoggerBackend
 from pcapi.core.external.backends.zendesk_sell import ZendeskSellBackend
+from pcapi.core.external.backends.zendesk_sell import ZendeskSellReadOnlyBackend
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_features
@@ -452,7 +452,7 @@ def test_update_venue_multiple_results_one_has_id():
     assert put.call_count == 1
 
 
-@patch("pcapi.core.external.zendesk_sell.zendesk_backend", LoggerBackend())
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellReadOnlyBackend())
 @override_settings(ZENDESK_SELL_API_KEY="test")
 def test_update_offerer_from_staging():
     offerer = offerers_factories.OffererFactory()
@@ -491,7 +491,7 @@ def test_update_offerer_from_staging():
     assert put.call_count == 0  # Read-only on staging
 
 
-@patch("pcapi.core.external.zendesk_sell.zendesk_backend", LoggerBackend())
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellReadOnlyBackend())
 @override_settings(ZENDESK_SELL_API_KEY="test")
 def test_do_update_venue_from_staging():
     venue = offerers_factories.VenueFactory()
