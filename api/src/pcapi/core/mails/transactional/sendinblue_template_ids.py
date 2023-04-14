@@ -6,13 +6,9 @@ from pcapi.core.mails import models
 class TransactionalEmail(Enum):
     # Empty tags when it is set directly in Sendinblue template
     ACCEPTED_AS_BENEFICIARY = models.Template(id_prod=96, id_not_prod=25, use_priority_queue=True)
-    ACCEPTED_AS_EAC_BENEFICIARY = models.Template(
-        id_prod=257, id_not_prod=27, tags=["jeunes_pass_credite_eac"], use_priority_queue=True
-    )
+    ACCEPTED_AS_EAC_BENEFICIARY = models.Template(id_prod=257, id_not_prod=27, use_priority_queue=True)
     ACCOUNT_UNSUSPENDED = models.Template(id_prod=644, id_not_prod=87, tags=["reactivation_compte_utilisateur"])
-    BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER = models.Template(
-        id_prod=78, id_not_prod=32, tags=["anniversaire_18_ans"], send_to_ehp=False
-    )
+    BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER = models.Template(id_prod=78, id_not_prod=32, send_to_ehp=False)
     BOOKING_CANCELLATION_BY_BENEFICIARY = models.Template(
         id_prod=223, id_not_prod=33, tags=["jeunes_offre_annulee_jeune"]
     )
