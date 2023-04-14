@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { Target, VenueTypeCode } from 'apiClient/v1'
+import { VenueTypeCode } from 'apiClient/v1'
 
 export const validationSchema = yup.object().shape({
   venueTypeCode: yup
@@ -19,10 +19,16 @@ export const validationSchema = yup.object().shape({
     )
     .nullable(),
   targetCustomer: yup
-    .string()
-    .oneOf(
-      Object.values(Target),
-      'Veuillez sélectionner une des réponses ci-dessus'
-    )
+    .object()
+    .test({
+      name: 'is-one-true',
+      message: 'Veuillez sélectionner une des réponses ci-dessus',
+      test: (values: Record<string, boolean>): boolean =>
+        Object.values(values).includes(true),
+    })
+    .shape({
+      individual: yup.boolean(),
+      educational: yup.boolean(),
+    })
     .required('Veuillez sélectionner une des réponses ci-dessus'),
 })

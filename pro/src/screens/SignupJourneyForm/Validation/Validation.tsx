@@ -3,14 +3,13 @@ import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
-import { useSignupJourneyContext } from 'context/SignupJourneyContext'
+import {
+  DEFAULT_ACTIVITY_VALUES,
+  useSignupJourneyContext,
+} from 'context/SignupJourneyContext'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useNotification from 'hooks/useNotification'
 import { PenIcon } from 'icons'
-import {
-  activityTargetCustomerTypeRadios,
-  DEFAULT_ACTIVITY_FORM_VALUES,
-} from 'screens/SignupJourneyForm/Activity/constants'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -30,6 +29,13 @@ const Validation = (): JSX.Element => {
     data: venueTypes,
   } = useGetVenueTypes()
 
+  const targetCustomerLabel = {
+    [Target.INDIVIDUAL]: 'Au grand public',
+    [Target.EDUCATIONAL]: 'À des groupes scolaires',
+    [Target.INDIVIDUAL_AND_EDUCATIONAL]:
+      'Au grand public et à des groupes scolaires',
+  }[activity?.targetCustomer ?? Target.INDIVIDUAL]
+
   if (isLoadingVenueTypes) {
     return <Spinner />
   }
@@ -42,7 +48,7 @@ const Validation = (): JSX.Element => {
     navigate('/parcours-inscription/authentification')
     return <></>
   }
-  if (activity === null || activity == DEFAULT_ACTIVITY_FORM_VALUES) {
+  if (activity === null || activity == DEFAULT_ACTIVITY_VALUES) {
     navigate('/parcours-inscription/activite')
     return <></>
   }
@@ -137,13 +143,7 @@ const Validation = (): JSX.Element => {
               {url}
             </div>
           ))}
-          <div className={styles['data-line']}>
-            {
-              activityTargetCustomerTypeRadios.find(
-                target => target.value === activity.targetCustomer
-              )?.label
-            }
-          </div>
+          <div className={styles['data-line']}>{targetCustomerLabel}</div>
         </Banner>
       </section>
       <Banner type="notification-info">
