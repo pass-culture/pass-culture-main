@@ -35,8 +35,8 @@ class ZendeskSellReadOnlyBackend(BaseBackend):
     def update_venue(self, zendesk_id: int, venue: offerers_models.Venue, parent_organization_id: int | None) -> dict:
         return {"id": None}
 
-    def search_contact(self, params: dict, session: requests.Session | None = None) -> dict:
-        body = self.query_api("POST", "/v3/contacts/search", body=params, session=session)
+    def search_contact(self, params: dict) -> dict:
+        body = self.query_api("POST", "/v3/contacts/search", body=params)
 
         # Response format:
         # https://developer.zendesk.com/api-reference/sales-crm/search/response/
@@ -217,7 +217,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
         response = {}
         data = self._get_offerer_data(offerer, created)
         try:
-            response = self.query_api("POST", "/v2/contacts", data, None)
+            response = self.query_api("POST", "/v2/contacts", data)
         except requests.exceptions.HTTPError as err:
             logger.error("Error while creating offerer on Zendesk Sell", extra={"venue_id": offerer.id, "error": err})
         return response
@@ -226,7 +226,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
         response = {}
         data = self._get_offerer_data(offerer)
         try:
-            response = self.query_api("PUT", f"/v2/contacts/{zendesk_id}", data, None)
+            response = self.query_api("PUT", f"/v2/contacts/{zendesk_id}", data)
         except requests.exceptions.HTTPError as err:
             logger.error("Error while updating offerer on Zendesk Sell", extra={"venue_id": offerer.id, "error": err})
         return response
@@ -237,7 +237,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
         response = {}
         data = self._get_venue_data(venue, parent_organization_id, created)
         try:
-            response = self.query_api("POST", "/v2/contacts", data, None)
+            response = self.query_api("POST", "/v2/contacts", data)
         except requests.exceptions.HTTPError as err:
             logger.error("Error while creating venue on Zendesk Sell", extra={"venue_id": venue.id, "error": err})
         return response
@@ -246,7 +246,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
         response = {}
         data = self._get_venue_data(venue, parent_organization_id)
         try:
-            response = self.query_api("PUT", f"/v2/contacts/{zendesk_id}", data, None)
+            response = self.query_api("PUT", f"/v2/contacts/{zendesk_id}", data)
         except requests.exceptions.HTTPError as err:
             logger.error("Error while udpating venue on Zendesk Sell", extra={"venue_id": venue.id, "error": err})
         return response

@@ -18,170 +18,9 @@ def is_offerer_only_virtual(offerer: offerers_models.Offerer) -> bool:
     return offerer.managedVenues and all(venue.isVirtual for venue in offerer.managedVenues)
 
 
-def get_offerer_by_id(offerer: offerers_models.Offerer) -> dict:
-    # (offerer id OR siren) AND NO venue id AND NO siret
-    offerer_filter: dict = {
-        "filter": {
-            "attribute": {"name": "custom_fields." + ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value},
-            "parameter": {"eq": offerer.id},
-        }
-    }
-
-    if offerer.siren:
-        offerer_filter = {
-            "or": [
-                offerer_filter,
-                {
-                    "filter": {
-                        "attribute": {"name": "custom_fields." + ZendeskCustomFieldsShort.SIREN.value},
-                        "parameter": {"eq": offerer.siren},
-                    }
-                },
-            ]
-        }
-
-    params = {
-        "items": [
-            {
-                "data": {
-                    "query": {
-                        "filter": {
-                            "and": [
-                                {
-                                    "filter": {
-                                        "attribute": {"name": "is_organisation"},
-                                        "parameter": {"eq": True},
-                                    }
-                                },
-                                offerer_filter,
-                                {
-                                    "or": [
-                                        {
-                                            "filter": {
-                                                "attribute": {
-                                                    "name": "custom_fields."
-                                                    + ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value
-                                                },
-                                                "parameter": {"is_null": True},
-                                            }
-                                        },
-                                        {
-                                            "filter": {
-                                                "attribute": {
-                                                    "name": "custom_fields."
-                                                    + ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value
-                                                },
-                                                "parameter": {"eq": "0"},
-                                            }
-                                        },
-                                    ]
-                                },
-                                {
-                                    "filter": {
-                                        "attribute": {"name": "custom_fields." + ZendeskCustomFieldsShort.SIRET.value},
-                                        "parameter": {"is_null": True},
-                                    }
-                                },
-                            ]
-                        },
-                        "projection": [
-                            {"name": "id"},
-                            {"name": f"custom_fields.{ZendeskCustomFieldsShort.SIREN.value}"},
-                            {"name": f"custom_fields.{ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value}"},
-                        ],
-                    }
-                }
-            },
-        ]
-    }
-
-    try:
-        return zendesk_backend.search_contact(params)
-    except ContactFoundMoreThanOneError as e:
-        contacts = e.items
-
-        # looking for the item that has a product offerer id amongst the found items
-        contacts_with_offerer_id = [
-            contact
-            for contact in contacts
-            if contact["custom_fields"][ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value] == str(offerer.id)
-        ]
-
-        # we found just one result, we assume it's the offerer, the others seems to be the venues
-        if len(contacts_with_offerer_id) == 1:
-            return contacts_with_offerer_id[0]
-        raise
-
-
-def get_venue_by_id(venue: offerers_models.Venue) -> dict:
-    venue_filter: dict = {
-        "filter": {
-            "attribute": {"name": f"custom_fields.{ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value}"},
-            "parameter": {"eq": venue.id},
-        }
-    }
-
-    if venue.siret:
-        venue_filter = {
-            "or": [
-                venue_filter,
-                {
-                    "filter": {
-                        "attribute": {"name": "custom_fields." + ZendeskCustomFieldsShort.SIRET.value},
-                        "parameter": {"eq": venue.siret},
-                    }
-                },
-            ]
-        }
-
-    params = {
-        "items": [
-            {
-                "data": {
-                    "query": {
-                        "filter": {
-                            "and": [
-                                {
-                                    "filter": {
-                                        "attribute": {"name": "is_organisation"},
-                                        "parameter": {"eq": True},
-                                    }
-                                },
-                                venue_filter,
-                            ]
-                        },
-                        "projection": [
-                            {"name": "id"},
-                            {"name": f"custom_fields.{ZendeskCustomFieldsShort.SIRET.value}"},
-                            {"name": f"custom_fields.{ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value}"},
-                        ],
-                    }
-                }
-            }
-        ]
-    }
-
-    try:
-        return zendesk_backend.search_contact(params)
-    except ContactFoundMoreThanOneError as e:
-        contacts = e.items
-
-        # looking for the item that has a product venue id amongst the found items
-        contacts_with_venue_id = [
-            contact
-            for contact in contacts
-            if contact["custom_fields"][ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value] == str(venue.id)
-        ]
-
-        # we found just one result, we assume it's the venue
-        if len(contacts_with_venue_id) == 1:
-            return contacts_with_venue_id[0]
-        raise
-
-
 def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
     try:
-        zendesk_offerer = get_offerer_by_id(venue.managingOfferer)
+        zendesk_offerer = zendesk_backend.get_offerer_by_id(venue.managingOfferer)
     except ContactFoundMoreThanOneError as e:
         for item in e.items:
             logger.warning(
@@ -261,7 +100,7 @@ def do_update_venue(venue_id: int) -> None:
         return
 
     try:
-        zendesk_venue_data = get_venue_by_id(venue)
+        zendesk_venue_data = zendesk_backend.get_venue_by_id(venue)
     except ContactFoundMoreThanOneError as err:
         logger.warning("Error while updating venue in Zendesk Sell: %s", err, extra={"venue_id": venue.id})
     except ContactNotFoundError:
@@ -309,7 +148,7 @@ def do_update_offerer(offerer_id: int) -> None:
         return
 
     try:
-        zendesk_offerer_data = get_offerer_by_id(offerer)
+        zendesk_offerer_data = zendesk_backend.get_offerer_by_id(offerer)
     except ContactFoundMoreThanOneError as err:
         logger.warning("Error while updating offerer in Zendesk Sell: %s", err, extra={"offerer_id": offerer.id})
     except ContactNotFoundError:

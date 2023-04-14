@@ -1,5 +1,7 @@
 import logging
 
+import requests
+
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import testing
 
@@ -28,4 +30,13 @@ class TestingBackend(BaseBackend):
         self, zendesk_id: int, venue: offerers_models.Venue, parent_organization_id: int | None, created: bool = True
     ) -> dict:
         testing.zendesk_sell_requests.append({"action": "update", "type": type(venue).__name__, "id": venue.id})
+        return {"id": None}
+
+    def search_contact(self, params: dict, session: requests.Session | None = None) -> dict:
+        raise NotImplementedError()
+
+    def get_offerer_by_id(self, offerer: offerers_models.Offerer) -> dict:
+        return {"id": None}
+
+    def get_venue_by_id(self, venue: offerers_models.Venue) -> dict:
         return {"id": None}

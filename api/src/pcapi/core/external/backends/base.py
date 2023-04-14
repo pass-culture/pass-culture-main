@@ -1,4 +1,3 @@
-import datetime
 import enum
 import json
 import logging
@@ -8,7 +7,6 @@ import requests
 
 from pcapi import settings
 from pcapi.core.offerers import models as offerers_models
-from pcapi.utils.regions import get_region_name_from_department
 
 
 logger = logging.getLogger(__name__)
@@ -73,46 +71,43 @@ class ZendeskCustomFieldsNames(enum.Enum):
 
 
 class BaseBackend:
-    def create_offerer(self, offerer: offerers_models.Offerer, created: bool = True) -> dict:
+    def __init__(self) -> None:
+        self.session = self._configure_session()
+
+    def create_offerer(self, offerer: offerers_models.Offerer, created: bool = False) -> dict:
         raise NotImplementedError()
 
     def update_offerer(self, zendesk_id: int, offerer: offerers_models.Offerer) -> dict:
         raise NotImplementedError()
 
     def create_venue(
-        self, venue: offerers_models.Venue, parent_organization_id: int | None, created: bool = True
+        self, venue: offerers_models.Venue, parent_organization_id: int | None, created: bool = False
     ) -> dict:
         raise NotImplementedError()
 
     def update_venue(self, zendesk_id: int, venue: offerers_models.Venue, parent_organization_id: int | None) -> dict:
         raise NotImplementedError()
 
-    def search_contact(self, params: dict, session: requests.Session | None = None) -> dict:
-        body = self._query_api("POST", "/v3/contacts/search", body=params, session=session)
+    def search_contact(self, params: dict) -> dict:
+        raise NotImplementedError()
 
-        # Response format:
-        # https://developer.zendesk.com/api-reference/sales-crm/search/response/
+    def get_offerer_by_id(self, offerer: offerers_models.Offerer) -> dict:
+        raise NotImplementedError()
 
-        item_dict = list(body.values())[0][0]
-        total_count: int = item_dict["meta"]["total_count"]  # how many results for the query string
+    def get_venue_by_id(self, venue: offerers_models.Venue) -> dict:
+        raise NotImplementedError()
 
-        if total_count == 1:
-            return item_dict["items"][0]["data"]
-        if total_count > 1:
-            raise ContactFoundMoreThanOneError([item["data"] for item in item_dict["items"]])
-        raise ContactNotFoundError
-
-    def _query_api(self, method: str, path: str, body: str | dict | None, session: requests.Session | None) -> dict:
-        if not session:
-            session = self._configure_session()
+    def query_api(self, method: str, path: str, body: str | dict | None) -> dict:
+        if not self.session:
+            self._configure_session()
 
         match method.upper():
             case "PUT":
-                response = session.put(self._build_url(path), json=body)
+                response = self.session.put(self._build_url(path), json=body)
             case "POST":
-                response = session.post(self._build_url(path), json=body)
+                response = self.session.post(self._build_url(path), json=body)
             case "GET":
-                response = session.get(self._build_url(path))
+                response = self.session.get(self._build_url(path))
             case _:
                 raise ValueError("Unsupported method")
         if not response.ok:
@@ -151,91 +146,3 @@ class BaseBackend:
 
     def _build_backoffice_venue_link(self, venue: offerers_models.Venue) -> str:
         return urllib.parse.urljoin(BACKOFFICE_URL, f"pro/venue/{venue.id}")
-
-    def _get_venue_data(
-        self, venue: offerers_models.Venue, parent_organization_id: int | None, created: bool = False
-    ) -> dict:
-        # Call once to avoid two db calls
-        has_collective_offers = venue.has_collective_offers
-
-        if venue.has_individual_offers or has_collective_offers:
-            if venue.has_approved_offers:
-                pc_pro_status = "Acteur Inscrit Actif"
-            else:
-                pc_pro_status = "Acteur Inscrit non Actif"
-        else:
-            pc_pro_status = "Acteur en cours d'inscription"
-
-        social_medias = getattr(venue.contact, "social_medias", {})
-        params: dict = {
-            "data": {
-                "is_organization": True,
-                # "name" is not updated because sometimes the name in the product is not the same in Zendesk Sell,
-                "parent_organization_id": parent_organization_id,  # if None, then it will send null on the request
-                "last_name": "",  # leave that empty for the Zendesk api
-                "description": venue.description,
-                "industry": venue.venueTypeCode.value,
-                "website": venue.contact.website if venue.contact else None,
-                "email": venue.bookingEmail,
-                "phone": venue.contact.phone_number if venue.contact else None,
-                "twitter": social_medias.get("twitter", ""),
-                "facebook": social_medias.get("facebook", ""),
-                "address": {
-                    "line1": venue.address,
-                    "city": venue.city,
-                    "postal_code": venue.postalCode,
-                },
-                "custom_fields": {
-                    ZendeskCustomFieldsNames.DEPARTEMENT.value: venue.departementCode,
-                    ZendeskCustomFieldsNames.INTERNAL_COMMENT.value: "Mis à jour par le produit le %s"
-                    % (datetime.date.today().strftime("%d/%m/%Y")),
-                    ZendeskCustomFieldsNames.HAS_PUBLISHED_COLLECTIVE_OFFERS.value: has_collective_offers,
-                    ZendeskCustomFieldsNames.JURIDIC_NAME.value: venue.name,
-                    ZendeskCustomFieldsNames.PC_PRO_STATUS.value: pc_pro_status,
-                    ZendeskCustomFieldsNames.PRODUCT_VENUE_ID.value: venue.id,
-                    ZendeskCustomFieldsNames.SIRET.value: venue.siret,
-                    ZendeskCustomFieldsNames.REGION.value: get_region_name_from_department(
-                        venue.departementCode
-                    ).upper(),
-                    ZendeskCustomFieldsNames.TYPAGE.value: ["Lieu"],
-                    ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: self._build_backoffice_venue_link(venue),
-                    ZendeskCustomFieldsNames.UPDATED_IN_PRODUCT.value: datetime.datetime.utcnow().isoformat(),
-                },
-            }
-        }
-
-        if created:
-            params["data"]["custom_fields"][ZendeskCustomFieldsNames.CREATED_FROM_PRODUCT.value] = True
-
-        return params
-
-    def _get_offerer_data(self, offerer: offerers_models.Offerer, created: bool = False) -> dict:
-        params: dict = {
-            "data": {
-                "is_organization": True,
-                # "name" is not updated because sometimes the name in the product is not the same in Zendesk Sell,
-                "last_name": "",
-                "address": {
-                    "line1": offerer.address,
-                    "city": offerer.city,
-                    "postal_code": offerer.postalCode,
-                },
-                "custom_fields": {
-                    ZendeskCustomFieldsNames.DEPARTEMENT.value: offerer.departementCode,
-                    ZendeskCustomFieldsNames.INTERNAL_COMMENT.value: "Mis à jour par le produit le %s"
-                    % (datetime.date.today().strftime("%d/%m/%Y"),),
-                    ZendeskCustomFieldsNames.JURIDIC_NAME.value: offerer.name,
-                    ZendeskCustomFieldsNames.PRODUCT_OFFERER_ID.value: offerer.id,
-                    ZendeskCustomFieldsNames.REGION.value: get_region_name_from_department(offerer.departementCode).upper(),  # type: ignore [arg-type]
-                    ZendeskCustomFieldsNames.SIREN.value: offerer.siren,
-                    ZendeskCustomFieldsNames.TYPAGE.value: ["Structure"],
-                    ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: self._build_backoffice_offerer_link(offerer),
-                    ZendeskCustomFieldsNames.UPDATED_IN_PRODUCT.value: datetime.datetime.utcnow().isoformat(),
-                },
-            }
-        }
-
-        if created:
-            params["data"]["custom_fields"][ZendeskCustomFieldsNames.CREATED_FROM_PRODUCT.value] = True
-
-        return params
