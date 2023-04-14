@@ -38,6 +38,7 @@ const VenueList = ({
             virtualVenue.collectiveDmsApplications
           )}
           hasAdageId={virtualVenue.hasAdageId}
+          adageInscriptionDate={virtualVenue.adageInscriptionDate}
         />
       )}
 
@@ -58,6 +59,7 @@ const VenueList = ({
             venue.collectiveDmsApplications
           )}
           hasAdageId={venue.hasAdageId}
+          adageInscriptionDate={venue.adageInscriptionDate}
         />
       ))}
     </div>
