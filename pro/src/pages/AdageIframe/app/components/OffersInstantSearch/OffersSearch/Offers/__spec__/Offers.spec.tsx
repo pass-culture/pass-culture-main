@@ -19,8 +19,8 @@ import {
   AlgoliaQueryContextProvider,
   FacetFiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
-import { ResultType } from 'pages/AdageIframe/utils/types'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { ResultType } from 'utils/types'
 
 import { OffersComponent, OffersComponentProps } from '../Offers'
 
