@@ -19,13 +19,16 @@ const CollectiveDmsTimeline = ({
   hasAdageId,
   hasAdageIdForMoreThan30Days,
   adageInscriptionDate,
+  offererId,
 }: {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId: boolean
   hasAdageIdForMoreThan30Days: boolean
   adageInscriptionDate: string | null
+  offererId: string
 }) => {
   const collectiveDmsApplicationLink = `https://www.demarches-simplifiees.fr/dossiers/${collectiveDmsApplication.application}/messagerie`
+  const collectiveVenueInformationsLink = `/structures/${offererId}/lieux/${collectiveDmsApplication.venueId}/eac`
 
   const buildDate =
     collectiveDmsApplication.buildDate &&
@@ -203,7 +206,7 @@ const CollectiveDmsTimeline = ({
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
-              to: collectiveDmsApplicationLink,
+              to: collectiveVenueInformationsLink,
               isExternal: true,
             }}
             Icon={PenIcon}
