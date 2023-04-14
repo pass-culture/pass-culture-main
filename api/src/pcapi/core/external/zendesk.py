@@ -234,7 +234,7 @@ def _put_to_zendesk(zendesk_user_id: int, route: str, data: dict) -> bool:
         testing.zendesk_requests.append({"zendesk_user_id": zendesk_user_id, "data": data})
         return True
 
-    if settings.IS_DEV or not settings.ZENDESK_API_URL:
+    if not settings.ZENDESK_API_URL:
         logger.info("A request to Zendesk API would be sent for user %s with data %s", zendesk_user_id, data)
         return True
 
