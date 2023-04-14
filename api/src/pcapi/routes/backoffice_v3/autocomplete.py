@@ -38,7 +38,7 @@ def _get_offerers_base_query() -> sa.orm.Query:
     )
 
 
-def prefill_offerers_choices(autocomplete_field: fields.PCAutocompleteSelectMultipleField) -> None:
+def prefill_offerers_choices(autocomplete_field: fields.PCTomSelectField) -> None:
     if autocomplete_field.data:
         offerers = (
             _get_offerers_base_query()
@@ -82,7 +82,7 @@ def _get_venues_base_query() -> sa.orm.Query:
     )
 
 
-def prefill_venues_choices(autocomplete_field: fields.PCAutocompleteSelectMultipleField) -> None:
+def prefill_venues_choices(autocomplete_field: fields.PCTomSelectField) -> None:
     if autocomplete_field.data:
         venues = (
             _get_venues_base_query()
@@ -133,7 +133,7 @@ def _get_criteria_base_query() -> sa.orm.Query:
     )
 
 
-def prefill_criteria_choices(autocomplete_field: fields.PCAutocompleteSelectMultipleField) -> None:
+def prefill_criteria_choices(autocomplete_field: fields.PCTomSelectField) -> None:
     if autocomplete_field.data:
         criteria = (
             _get_criteria_base_query()
@@ -173,7 +173,7 @@ def _get_cashflow_batches_base_query() -> sa.orm.Query:
     )
 
 
-def prefill_cashflow_batch_choices(autocomplete_field: fields.PCAutocompleteSelectMultipleField) -> None:
+def prefill_cashflow_batch_choices(autocomplete_field: fields.PCTomSelectField) -> None:
     if autocomplete_field.data:
         cashflow_batches = (
             _get_cashflow_batches_base_query()

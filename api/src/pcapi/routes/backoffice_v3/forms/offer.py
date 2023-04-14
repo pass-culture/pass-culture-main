@@ -33,18 +33,22 @@ class GetOffersListForm(FlaskForm):
         default=OfferSearchColumn.ALL.name,
         validators=(wtforms.validators.Optional(),),
     )
-    criteria = fields.PCAutocompleteSelectMultipleField(
-        "Tags", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_criteria"
+    criteria = fields.PCTomSelectField(
+        "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_criteria"
     )
     category = fields.PCSelectMultipleField(
         "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
     )
     department = fields.PCSelectMultipleField("Départements", choices=constants.area_choices)
-    offerer = fields.PCAutocompleteSelectMultipleField(
-        "Structures", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_offerers"
+    offerer = fields.PCTomSelectField(
+        "Structures",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_v3_web.autocomplete_offerers",
     )
-    venue = fields.PCAutocompleteSelectMultipleField(
-        "Lieux", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_venues"
+    venue = fields.PCTomSelectField(
+        "Lieux", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_venues"
     )
     status = fields.PCSelectMultipleField(
         "États",
@@ -92,8 +96,8 @@ class GetOffersListForm(FlaskForm):
 
 
 class EditOfferForm(FlaskForm):
-    criteria = fields.PCAutocompleteSelectMultipleField(
-        "Tags", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_criteria"
+    criteria = fields.PCTomSelectField(
+        "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_criteria"
     )
     rankingWeight = fields.PCOptIntegerField("Pondération")
 

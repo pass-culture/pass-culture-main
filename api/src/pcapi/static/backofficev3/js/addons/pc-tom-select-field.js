@@ -1,32 +1,33 @@
 /**
- * Configure TomSelect on a `<select multiple />`.
+ * Configure TomSelect on a `<select />`.
  *
- * In the front-end business, we note two types of tom select instances:
- * 1. select multiple field.
- * 2. select multiple field with xhr autocomplete.
+ * We have two types of tom select instances:
+ * 1. select field with static options,
+ * 2. select field with dynamic options (xhr autocomplete).
+ *
+ * > Use `multiple` HTML attribut on `<select />` if needed.
  *
  * @example
- * // select multiple field
- * <select multiple class="pc-select-multiple-field">
+ * // select field
+ * <select class="pc-tom-select-field">
  *   <option value="1">item #1</option>
  *   <option value="2">item #2</option>
  * </select>
  *
  * @example
- * // select multiple field with xhr autocomplete.
+ * // select field with xhr autocomplete.
  * // In this example, our backend automatically sets data attributes, this allows the initial render to have the initialValues
  * <select
- *   multiple
- *   class="pc-select-multiple-field pc-select-multiple-autocomplete-field"
+ *   class="pc-tom-select-field pc-tom-select-field"
  *   data-tomselect-autocomplete-url="/backofficev3/autocomplete/offerers"
  *   data-tomselect-options="[{\"id\": \"84\", \"text\": \"Cin\u00e9ma - CGR (00000003800058)\"}]"
  *   data-tomselect-items="[\"84\"]"
  * ></select>
  */
-class PcSelectMultipleField extends PcAddOn {
-  static SELECT_MULTIPLE_SELECTOR = 'select.pc-select-multiple-field[multiple]'
-  static SELECT_MULTIPLE_AUTOCOMPLETE_CLASS = 'pc-select-multiple-autocomplete-field'
-  static SELECT_MULTIPLE_SETTINGS = {
+class PcTomSelectField extends PcAddOn {
+  static SELECT_SELECTOR = 'select.pc-tom-select-field'
+  static SELECT_AUTOCOMPLETE_CLASS = 'pc-tom-select-field'
+  static SELECT_SETTINGS = {
     plugins: ['dropdown_input', 'clear_button', 'checkbox_options'],
     persist: false,
     create: false,
@@ -37,25 +38,25 @@ class PcSelectMultipleField extends PcAddOn {
   }
 
   get $selects() {
-    return document.querySelectorAll(PcSelectMultipleField.SELECT_MULTIPLE_SELECTOR)
+    return document.querySelectorAll(PcTomSelectField.SELECT_SELECTOR)
   }
 
   bindEvents = () => {
     this.$selects.forEach(($select) => {
-      const settingsXhrAutocomplete = $select.classList.contains(PcSelectMultipleField.SELECT_MULTIPLE_AUTOCOMPLETE_CLASS) ?
+      const settingsXhrAutocomplete = $select.classList.contains(PcTomSelectField.SELECT_AUTOCOMPLETE_CLASS) ?
         this.#getSettingsXhrAutocomplete($select) :
         {}
       if (!$select.tomselect) {
         this.state.selects.push(new TomSelect($select, {
-          ...PcSelectMultipleField.SELECT_MULTIPLE_SETTINGS,
+          ...PcTomSelectField.SELECT_SETTINGS,
           ...settingsXhrAutocomplete,
         }))
       }
     })
-    EventHandler.on(document.body, 'mousemove', PcSelectMultipleField.SELECT_MULTIPLE_SELECTOR, this._preventDefault)
-    EventHandler.on(document.body, 'mousedown', PcSelectMultipleField.SELECT_MULTIPLE_SELECTOR, this.#onMouseDown)
-    EventHandler.on(document.body, 'change', PcSelectMultipleField.SELECT_MULTIPLE_SELECTOR, this.#onScrollOrChange)
-    EventHandler.on(document.body, 'scroll', PcSelectMultipleField.SELECT_MULTIPLE_SELECTOR, this.#onScrollOrChange)
+    EventHandler.on(document.body, 'mousemove', PcTomSelectField.SELECT_SELECTOR, this._preventDefault)
+    EventHandler.on(document.body, 'mousedown', PcTomSelectField.SELECT_SELECTOR, this.#onMouseDown)
+    EventHandler.on(document.body, 'change', PcTomSelectField.SELECT_SELECTOR, this.#onScrollOrChange)
+    EventHandler.on(document.body, 'scroll', PcTomSelectField.SELECT_SELECTOR, this.#onScrollOrChange)
   }
 
   unbindEvents = () => {
@@ -65,10 +66,10 @@ class PcSelectMultipleField extends PcAddOn {
     // See https://github.com/orchidjs/tom-select/discussions/569 for resolution
     // this.state.selects.forEach((select) => select.destroy())
 
-    EventHandler.off(document.body, 'mousemove', PcSelectMultipleField.SELECT_MULTIPLE_SELECTOR, this._preventDefault)
-    EventHandler.off(document.body, 'mousedown', PcSelectMultipleField.SELECT_MULTIPLE_SELECTOR, this.#onMouseDown)
-    EventHandler.off(document.body, 'change', PcSelectMultipleField.SELECT_MULTIPLE_SELECTOR, this.#onScrollOrChange)
-    EventHandler.off(document.body, 'scroll', PcSelectMultipleField.SELECT_MULTIPLE_SELECTOR, this.#onScrollOrChange)
+    EventHandler.off(document.body, 'mousemove', PcTomSelectField.SELECT_SELECTOR, this._preventDefault)
+    EventHandler.off(document.body, 'mousedown', PcTomSelectField.SELECT_SELECTOR, this.#onMouseDown)
+    EventHandler.off(document.body, 'change', PcTomSelectField.SELECT_SELECTOR, this.#onScrollOrChange)
+    EventHandler.off(document.body, 'scroll', PcTomSelectField.SELECT_SELECTOR, this.#onScrollOrChange)
   }
 
   #onMouseDown(event) {
