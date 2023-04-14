@@ -11,8 +11,8 @@ from . import utils
 
 
 class EditVirtualVenueForm(utils.PCForm):
-    tags = fields.PCAutocompleteSelectMultipleField(
-        "Tags", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_criteria"
+    tags = fields.PCTomSelectField(
+        "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_criteria"
     )
     booking_email = fields.PCEmailField("Email (notifications de réservation)")
     phone_number = fields.PCPhoneNumberField("Numéro de téléphone")  # match Venue.contact.postal_code case

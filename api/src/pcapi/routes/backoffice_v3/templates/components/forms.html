@@ -11,7 +11,7 @@
         {% for form_field in form %}
           {% if "Hidden" in form_field.type %}
             {{ form_field }}
-          {% elif form_field.type in ('PCSelectMultipleField', "PCQuerySelectMultipleField", "PCAutocompleteSelectMultipleField") %}
+          {% elif form_field.type in ('PCSelectMultipleField', "PCQuerySelectMultipleField", "PCTomSelectField") %}
             {% set _ = select_multiple.append(form_field) %}
           {% elif form_field.type == "PCSwitchBooleanField" %}
             {% set _ = switches.append(form_field) %}

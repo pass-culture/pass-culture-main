@@ -168,12 +168,13 @@ class PCSelectMultipleField(wtforms.SelectMultipleField):
     validators = [validators.Optional()]
 
 
-class PCAutocompleteSelectMultipleField(PCSelectMultipleField):
-    widget = partial(widget, template="components/forms/select_multiple_field_autocomplete.html")
+class PCTomSelectField(PCSelectMultipleField):
+    widget = partial(widget, template="components/forms/tom_select_field.html")
 
-    def __init__(self, label: str, endpoint: str, **kwargs: typing.Any):
+    def __init__(self, label: str, endpoint: str, multiple: bool = False, **kwargs: typing.Any):
         super().__init__(label, **kwargs)
         self.tomselect_autocomplete_url = url_for(endpoint)
+        self.multiple = multiple
 
     @property
     def tomselect_options(self) -> str:
