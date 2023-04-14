@@ -3,7 +3,6 @@ import logging
 from pcapi.core.external.backends import zendesk_backend
 from pcapi.core.external.backends.base import ContactFoundMoreThanOneError
 from pcapi.core.external.backends.base import ContactNotFoundError
-from pcapi.core.external.backends.base import SEARCH_PARENT
 from pcapi.core.external.backends.base import ZendeskCustomFieldsShort
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
@@ -12,6 +11,8 @@ from pcapi.tasks import zendesk_sell_tasks
 
 
 logger = logging.getLogger(__name__)
+
+SEARCH_PARENT = -1
 
 
 def is_offerer_only_virtual(offerer: offerers_models.Offerer) -> bool:
