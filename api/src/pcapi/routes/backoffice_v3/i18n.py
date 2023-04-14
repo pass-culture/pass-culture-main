@@ -57,6 +57,8 @@ def i18n_column_name(term: str) -> str:
             return "Prénom"
         case "lastname":
             return "Nom"
+        case "validatedbirthdate":
+            return "Date de naissance"
         case "postalcode":
             return "Code postal"
         case "phonenumber":

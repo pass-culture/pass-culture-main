@@ -674,6 +674,20 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
             user=user,
             authorUser=admin,
         )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.INFO_MODIFIED,
+            actionDate=datetime.datetime.utcnow() - relativedelta(days=30),
+            user=user,
+            authorUser=admin,
+            comment=None,
+            extraData={
+                "modified_info": {
+                    "firstName": {"new_info": "None", "old_info": "François"},
+                    "lastName": {"new_info": "Leblanc", "old_info": "Pignon"},
+                    "validatedBirthDate": {"new_info": "2000-09-19", "old_info": "2001-04-14"},
+                }
+            },
+        )
 
         # Here we want to check that it does not crash with None date in the history (legacy action migrated)
         # Force actionDate because it was replaced with default (now) when inserted in database
@@ -688,7 +702,7 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         # then
         assert response.status_code == 200
         history_rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
-        assert len(history_rows) == 5
+        assert len(history_rows) == 6
 
         assert history_rows[0]["Type"] == "Étape de vérification"
         assert history_rows[0]["Date/Heure"].startswith(datetime.date.today().strftime("Le %d/%m/%Y à"))
@@ -700,24 +714,34 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         assert history_rows[1]["Commentaire"].startswith("CREATED")
         assert not history_rows[1]["Auteur"]
 
-        assert history_rows[2]["Type"] == history_models.ActionType.USER_UNSUSPENDED.value
+        assert history_rows[2]["Type"] == history_models.ActionType.INFO_MODIFIED.value
         assert history_rows[2]["Date/Heure"].startswith(
-            (datetime.date.today() - relativedelta(days=35)).strftime("Le %d/%m/%Y à ")
+            (datetime.date.today() - relativedelta(days=30)).strftime("Le %d/%m/%Y à ")
         )
-        assert history_rows[2]["Commentaire"] == unsuspended.comment
+        assert history_rows[2]["Commentaire"].startswith("Informations modifiées :")
+        assert "Nom : Pignon => Leblanc" in history_rows[2]["Commentaire"]
+        assert "Prénom : François => None" in history_rows[2]["Commentaire"]
+        assert "Date de naissance : 2001-04-14 => 2000-09-19" in history_rows[2]["Commentaire"]
         assert history_rows[2]["Auteur"] == admin.full_name
 
-        assert history_rows[3]["Type"] == history_models.ActionType.USER_CREATED.value
+        assert history_rows[3]["Type"] == history_models.ActionType.USER_UNSUSPENDED.value
         assert history_rows[3]["Date/Heure"].startswith(
+            (datetime.date.today() - relativedelta(days=35)).strftime("Le %d/%m/%Y à ")
+        )
+        assert history_rows[3]["Commentaire"] == unsuspended.comment
+        assert history_rows[3]["Auteur"] == admin.full_name
+
+        assert history_rows[4]["Type"] == history_models.ActionType.USER_CREATED.value
+        assert history_rows[4]["Date/Heure"].startswith(
             (datetime.date.today() - relativedelta(days=40)).strftime("Le %d/%m/%Y à ")
         )
-        assert not history_rows[3]["Commentaire"]
-        assert history_rows[3]["Auteur"] == user.full_name
+        assert not history_rows[4]["Commentaire"]
+        assert history_rows[4]["Auteur"] == user.full_name
 
-        assert history_rows[4]["Type"] == history_models.ActionType.USER_SUSPENDED.value
-        assert not history_rows[4]["Date/Heure"]  # Empty date, at the end of the list
-        assert history_rows[4]["Commentaire"].startswith("Fraude suspicion")
-        assert history_rows[4]["Auteur"] == legit_user.full_name
+        assert history_rows[5]["Type"] == history_models.ActionType.USER_SUSPENDED.value
+        assert not history_rows[5]["Date/Heure"]  # Empty date, at the end of the list
+        assert history_rows[5]["Commentaire"].startswith("Fraude suspicion")
+        assert history_rows[5]["Auteur"] == legit_user.full_name
 
 
 class UpdatePublicAccountTest:
