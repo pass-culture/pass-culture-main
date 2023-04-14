@@ -100,7 +100,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
       await screen.getAllByText('Site internet, réseau social')
     ).toHaveLength(1)
     expect(
-      await screen.findByRole('button', { name: 'Ajouter une url' })
+      await screen.findByRole('button', { name: 'Ajouter un lien' })
     ).toBeInTheDocument()
     expect(
       screen.getByLabelText('À destination du grand public', {
@@ -192,7 +192,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
     expect(
       await screen.getAllByText('Site internet, réseau social')
     ).toHaveLength(1)
-    await userEvent.click(screen.getByText('Ajouter une url'))
+    await userEvent.click(screen.getByText('Ajouter un lien'))
     expect(
       await screen.getAllByText('Site internet, réseau social')
     ).toHaveLength(2)

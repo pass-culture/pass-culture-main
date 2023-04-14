@@ -82,7 +82,7 @@ describe('screens:SignupJourney::Activity', () => {
       await screen.getAllByText('Site internet, réseau social')
     ).toHaveLength(1)
     expect(
-      await screen.findByRole('button', { name: 'Ajouter une url' })
+      await screen.findByRole('button', { name: 'Ajouter un lien' })
     ).toBeInTheDocument()
     expect(
       screen.getByLabelText('À destination du grand public', {
