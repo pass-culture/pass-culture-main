@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { addDays, isBefore } from 'date-fns'
 import React from 'react'
 
 import { DMSApplicationstatus } from 'apiClient/v1'
@@ -28,6 +29,7 @@ interface IVenueOfferStepsProps {
   dmsStatus?: DMSApplicationstatus
   dmsInProgress?: boolean
   hasAdageId?: boolean
+  adageInscriptionDate?: string | null
 }
 
 const VenueOfferSteps = ({
@@ -39,6 +41,7 @@ const VenueOfferSteps = ({
   dmsStatus,
   dmsInProgress = false,
   hasAdageId = false,
+  adageInscriptionDate,
 }: IVenueOfferStepsProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const venueCreationUrl = isVenueCreationAvailable
@@ -48,9 +51,15 @@ const VenueOfferSteps = ({
   const isCollectiveDmsTrackingActive = useActiveFeature(
     'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
   )
-
+  const hasAdageIdForMoreThan30Days = Boolean(
+    hasAdageId &&
+      adageInscriptionDate &&
+      isBefore(new Date(adageInscriptionDate), addDays(new Date(), -30))
+  )
   const shouldEACInformationSection =
-    !(dmsStatus === DMSApplicationstatus.REFUSE) && dmsInProgress
+    !(dmsStatus === DMSApplicationstatus.REFUSE) &&
+    dmsInProgress &&
+    !hasAdageIdForMoreThan30Days
 
   return (
     <div
@@ -143,20 +152,21 @@ const VenueOfferSteps = ({
                 Renseigner des coordonnées bancaires
               </ButtonLink>
             )}
-            {dmsStatus !== DMSApplicationstatus.REFUSE && (
-              <ButtonLink
-                className={styles['step-button-width']}
-                isDisabled={!hasAdageId}
-                variant={ButtonVariant.BOX}
-                Icon={CircleArrowIcon}
-                link={{
-                  to: `/structures/${offererId}/lieux/${venueId}/eac`,
-                  isExternal: false,
-                }}
-              >
-                Renseigner mes informations à destination des enseignants
-              </ButtonLink>
-            )}
+            {dmsStatus !== DMSApplicationstatus.REFUSE &&
+              !hasAdageIdForMoreThan30Days && (
+                <ButtonLink
+                  className={styles['step-button-width']}
+                  isDisabled={!hasAdageId}
+                  variant={ButtonVariant.BOX}
+                  Icon={CircleArrowIcon}
+                  link={{
+                    to: `/structures/${offererId}/lieux/${venueId}/eac`,
+                    isExternal: false,
+                  }}
+                >
+                  Renseigner mes informations à destination des enseignants
+                </ButtonLink>
+              )}
           </div>
         </div>
       )}
