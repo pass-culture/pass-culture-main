@@ -116,6 +116,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NEW_ONBOARDING = "Active le nouvel onboarding sans SIREN"
     WIP_ENABLE_COLLECTIVE_DMS_TRACKING = "Active le suivi du référencement DMS pour les acteurs EAC"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
+    WIP_ENABLE_EAC_CANCEL_30_DAYS = "EAC délai annulation 30 Jours par defaut au lieu de 15"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -178,6 +179,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_ONBOARDING,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_DMS_TRACKING,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
+    FeatureToggle.WIP_ENABLE_EAC_CANCEL_30_DAYS,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
