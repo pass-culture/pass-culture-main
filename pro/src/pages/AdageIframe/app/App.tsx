@@ -1,10 +1,6 @@
 import * as React from 'react'
 import { useCallback, useEffect, useState } from 'react'
 
-import '@fontsource/barlow'
-import '@fontsource/barlow/600.css'
-import '@fontsource/barlow/700.css'
-import '@fontsource/barlow/300.css'
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
