@@ -112,9 +112,9 @@ class CGRStocksTest:
         assert created_stocks[0].quantity == 99
         assert created_stocks[0].price == Decimal("6.9")
         assert created_stocks[0].dateCreated is not None
-        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2023, 1, 29, 14)
+        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2023, 1, 29, 13)
         assert created_stocks[0].offer == created_offers[0]
-        assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 1, 29, 14)
+        assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 1, 29, 13)
         assert created_stocks[0].priceCategory.price == Decimal("6.9")
         assert created_stocks[0].priceCategory.priceCategoryLabel.label == "Tarif Standard ICE"
 
@@ -136,9 +136,9 @@ class CGRStocksTest:
         assert created_stocks[1].quantity == 168
         assert created_stocks[1].price == Decimal(11.00)
         assert created_stocks[1].dateCreated is not None
-        assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2023, 3, 4, 16)
+        assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2023, 3, 4, 15)
         assert created_stocks[1].offer == created_offers[1]
-        assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 3, 4, 16)
+        assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 3, 4, 15)
         assert created_stocks[1].priceCategory.price == Decimal(11.00)
         assert created_stocks[1].priceCategory.priceCategoryLabel.label == "Tarif standard 3D"
 
@@ -192,8 +192,8 @@ class CGRStocksTest:
         assert created_stocks[0].priceCategory == created_price_categories[0]
         assert created_stocks[0].dateCreated is not None
         assert created_stocks[0].offer == created_offer
-        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2023, 3, 4, 16)
-        assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 3, 4, 16)
+        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2023, 3, 4, 15)
+        assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 3, 4, 15)
         assert created_price_categories[0].price == 11.0
         assert created_price_categories[0].priceCategoryLabel == created_price_category_labels[0]
         assert created_price_category_labels[0].label == "Tarif standard 3D"
@@ -203,8 +203,8 @@ class CGRStocksTest:
         assert created_stocks[1].priceCategory == created_price_categories[1]
         assert created_stocks[1].dateCreated is not None
         assert created_stocks[1].offer == created_offer
-        assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2023, 3, 5, 16)
-        assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 3, 5, 16)
+        assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2023, 3, 5, 15)
+        assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 3, 5, 15)
         assert created_price_categories[1].price == Decimal("7.2")
         assert created_price_categories[1].priceCategoryLabel == created_price_category_labels[1]
         assert created_price_category_labels[1].label == "Tarif Standard ICE"
@@ -214,8 +214,8 @@ class CGRStocksTest:
         assert created_stocks[2].priceCategory == created_price_categories[2]
         assert created_stocks[2].dateCreated is not None
         assert created_stocks[2].offer == created_offer
-        assert created_stocks[2].bookingLimitDatetime == datetime.datetime(2023, 3, 6, 16)
-        assert created_stocks[2].beginningDatetime == datetime.datetime(2023, 3, 6, 16)
+        assert created_stocks[2].bookingLimitDatetime == datetime.datetime(2023, 3, 6, 15)
+        assert created_stocks[2].beginningDatetime == datetime.datetime(2023, 3, 6, 15)
         assert created_price_categories[2].price == 11.00
         assert created_price_categories[2].priceCategoryLabel == created_price_category_labels[2]
         assert created_price_category_labels[2].label == "Tarif Standard"
