@@ -4,11 +4,13 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { Target, VenueTypeCode } from 'apiClient/v1'
+import { VenueTypeCode } from 'apiClient/v1'
 import {
+  DEFAULT_ACTIVITY_VALUES,
   ISignupJourneyContext,
   SignupJourneyContext,
 } from 'context/SignupJourneyContext'
+import { IActivity } from 'context/SignupJourneyContext/SignupJourneyContext'
 import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -69,13 +71,13 @@ const renderActivityForm = ({
 }
 
 describe('screens:SignupJourney::ActivityForm', () => {
-  let activity: IActivityFormValues
+  let activity: IActivity
   let contextValue: ISignupJourneyContext
   let props: IActivityFormProps
   let initialValues: Partial<IActivityFormValues>
   beforeEach(() => {
-    activity = DEFAULT_ACTIVITY_FORM_VALUES
-    initialValues = { ...activity }
+    activity = DEFAULT_ACTIVITY_VALUES
+    initialValues = DEFAULT_ACTIVITY_FORM_VALUES
     props = {
       venueTypes: venueTypes,
     }
@@ -103,17 +105,12 @@ describe('screens:SignupJourney::ActivityForm', () => {
       await screen.findByRole('button', { name: 'Ajouter un lien' })
     ).toBeInTheDocument()
     expect(
-      screen.getByLabelText('À destination du grand public', {
+      screen.getByLabelText('Au grand public', {
         exact: false,
       })
     ).not.toBeChecked()
     expect(
-      screen.getByLabelText("À destination d'un groupe scolaire", {
-        exact: false,
-      })
-    ).not.toBeChecked()
-    expect(
-      screen.getByLabelText('Les deux', {
+      screen.getByLabelText('À des groupes scolaires', {
         exact: false,
       })
     ).not.toBeChecked()
@@ -123,7 +120,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
     initialValues = {
       venueTypeCode: VenueTypeCode.MUS_E,
       socialUrls: ['https://example.com', 'https://exampleTwo.fr'],
-      targetCustomer: Target.INDIVIDUAL_AND_EDUCATIONAL,
+      targetCustomer: { individual: false, educational: false },
     }
     renderActivityForm({
       initialValues: initialValues,
@@ -137,20 +134,15 @@ describe('screens:SignupJourney::ActivityForm', () => {
       await screen.getAllByText('Site internet, réseau social')
     ).toHaveLength(2)
     expect(
-      screen.getByLabelText('À destination du grand public', {
+      screen.getByLabelText('Au grand public', {
         exact: false,
       })
     ).not.toBeChecked()
     expect(
-      screen.getByLabelText("À destination d'un groupe scolaire", {
+      screen.getByLabelText('À des groupes scolaires', {
         exact: false,
       })
     ).not.toBeChecked()
-    expect(
-      screen.getByLabelText('Les deux', {
-        exact: false,
-      })
-    ).toBeChecked()
   })
 
   it('should render errors', async () => {
@@ -231,14 +223,10 @@ describe('screens:SignupJourney::ActivityForm', () => {
       contextValue,
     })
 
-    const publicTarget = screen.getByLabelText('À destination du grand public')
-    const schoolTarget = screen.getByLabelText(
-      "À destination d'un groupe scolaire"
-    )
-    const allTarget = screen.getByLabelText('Les deux')
+    const publicTarget = screen.getByLabelText('Au grand public')
+    const schoolTarget = screen.getByLabelText('À des groupes scolaires')
 
     expect(publicTarget).not.toBeChecked()
-    expect(allTarget).not.toBeChecked()
     expect(schoolTarget).not.toBeChecked()
 
     await userEvent.click(publicTarget)
@@ -246,12 +234,11 @@ describe('screens:SignupJourney::ActivityForm', () => {
 
     await userEvent.click(schoolTarget)
     expect(schoolTarget).toBeChecked()
-    expect(publicTarget).not.toBeChecked()
+    expect(publicTarget).toBeChecked()
 
-    await userEvent.click(allTarget)
-    expect(allTarget).toBeChecked()
+    await userEvent.click(publicTarget)
+    expect(schoolTarget).toBeChecked()
     expect(publicTarget).not.toBeChecked()
-    expect(schoolTarget).not.toBeChecked()
   })
 
   it('should change venueType', async () => {

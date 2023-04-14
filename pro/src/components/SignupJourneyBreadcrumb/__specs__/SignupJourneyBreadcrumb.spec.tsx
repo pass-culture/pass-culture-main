@@ -6,10 +6,10 @@ import { Route, Routes } from 'react-router-dom'
 import { Target, VenueTypeCode } from 'apiClient/v1'
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address'
 import {
+  DEFAULT_ACTIVITY_VALUES,
   ISignupJourneyContext,
   SignupJourneyContext,
 } from 'context/SignupJourneyContext'
-import { DEFAULT_ACTIVITY_FORM_VALUES } from 'screens/SignupJourneyForm/Activity/constants'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -65,7 +65,7 @@ describe('test SignupBreadcrumb', () => {
   let contextValue: ISignupJourneyContext
   beforeEach(() => {
     contextValue = {
-      activity: DEFAULT_ACTIVITY_FORM_VALUES,
+      activity: DEFAULT_ACTIVITY_VALUES,
       offerer: DEFAULT_OFFERER_FORM_VALUES,
       setActivity: () => {},
       setOfferer: () => {},

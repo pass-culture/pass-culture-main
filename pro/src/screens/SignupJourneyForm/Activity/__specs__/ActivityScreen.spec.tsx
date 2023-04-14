@@ -7,13 +7,13 @@ import { api } from 'apiClient/api'
 import { Target, VenueTypeCode } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import {
+  DEFAULT_ACTIVITY_VALUES,
   ISignupJourneyContext,
   SignupJourneyContext,
 } from 'context/SignupJourneyContext'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Activity from '../Activity'
-import { DEFAULT_ACTIVITY_FORM_VALUES } from '../constants'
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -57,7 +57,7 @@ describe('screens:SignupJourney::Activity', () => {
   let contextValue: ISignupJourneyContext
   beforeEach(() => {
     contextValue = {
-      activity: DEFAULT_ACTIVITY_FORM_VALUES,
+      activity: DEFAULT_ACTIVITY_VALUES,
       offerer: null,
       setActivity: () => {},
       setOfferer: () => {},
@@ -85,17 +85,12 @@ describe('screens:SignupJourney::Activity', () => {
       await screen.findByRole('button', { name: 'Ajouter un lien' })
     ).toBeInTheDocument()
     expect(
-      screen.getByLabelText('À destination du grand public', {
+      screen.getByLabelText('Au grand public', {
         exact: false,
       })
     ).not.toBeChecked()
     expect(
-      screen.getByLabelText("À destination d'un groupe scolaire", {
-        exact: false,
-      })
-    ).not.toBeChecked()
-    expect(
-      screen.getByLabelText('Les deux', {
+      screen.getByLabelText('À des groupes scolaires', {
         exact: false,
       })
     ).not.toBeChecked()
@@ -130,6 +125,42 @@ describe('screens:SignupJourney::Activity', () => {
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
   })
 
+  it('should go next step with individual target customer', async () => {
+    contextValue.activity = {
+      venueType: 'venue1',
+      socialUrls: [],
+      targetCustomer: Target.INDIVIDUAL,
+    }
+    renderActivityScreen(contextValue)
+    expect(await screen.findByText('Activité')).toBeInTheDocument()
+
+    expect(screen.getByLabelText('Au grand public')).toBeChecked()
+    expect(screen.getByLabelText('À des groupes scolaires')).not.toBeChecked()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+    expect(screen.getByText('Validation screen')).toBeInTheDocument()
+  })
+
+  it('should go next step with educational target customer', async () => {
+    contextValue.activity = {
+      venueType: 'venue1',
+      socialUrls: [],
+      targetCustomer: Target.EDUCATIONAL,
+    }
+    renderActivityScreen(contextValue)
+    expect(await screen.findByText('Activité')).toBeInTheDocument()
+
+    expect(screen.getByLabelText('Au grand public')).not.toBeChecked()
+    expect(screen.getByLabelText('À des groupes scolaires')).toBeChecked()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
+    expect(screen.getByText('Validation screen')).toBeInTheDocument()
+  })
+
   it('should display authentification screen on click previous step button', async () => {
     renderActivityScreen(contextValue)
     expect(await screen.findByText('Activité')).toBeInTheDocument()
@@ -142,7 +173,7 @@ describe('screens:SignupJourney::Activity', () => {
   it('should display error notification', async () => {
     renderActivityScreen(contextValue)
     expect(await screen.findByText('Activité')).toBeInTheDocument()
-    await userEvent.click(screen.getByText('À destination du grand public'))
+    await userEvent.click(screen.getByText('Au grand public'))
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )

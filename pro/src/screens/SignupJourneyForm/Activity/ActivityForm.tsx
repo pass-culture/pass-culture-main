@@ -3,19 +3,21 @@ import { FieldArray, useFormikContext } from 'formik'
 import React from 'react'
 
 import { VenueTypeCode } from 'apiClient/v1'
-import { Target } from 'apiClient/v1/models/Target'
 import FormLayout from 'components/FormLayout'
 import { PlusCircleIcon, TrashFilledIcon } from 'icons'
-import { Button, RadioGroup, Select, TextInput } from 'ui-kit'
+import { Button, CheckboxGroup, Select, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 import styles from './ActivityForm.module.scss'
-import { activityTargetCustomerTypeRadios } from './constants'
+import { activityTargetCustomerCheckboxGroup } from './constants'
 
 export interface IActivityFormValues {
   venueTypeCode: VenueTypeCode | ''
   socialUrls: string[]
-  targetCustomer: Target | undefined | null
+  targetCustomer: {
+    individual: boolean
+    educational: boolean
+  }
 }
 
 export interface IActivityFormProps {
@@ -93,10 +95,10 @@ const ActivityForm = ({ venueTypes }: IActivityFormProps): JSX.Element => {
         )}
       />
       <FormLayout.Row>
-        <RadioGroup
-          group={activityTargetCustomerTypeRadios}
+        <CheckboxGroup
+          group={activityTargetCustomerCheckboxGroup}
+          groupName="targetCustomer"
           legend="À qui souhaitez-vous destiner vos offres sur le pass Culture ? Cette information est collectée à titre informatif."
-          name="targetCustomer"
         />
       </FormLayout.Row>
     </FormLayout.Section>
