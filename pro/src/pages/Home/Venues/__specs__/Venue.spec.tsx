@@ -267,7 +267,7 @@ describe('venues', () => {
         })
       ).toHaveAttribute(
         'href',
-        '/structures/OFFERER01/lieux/VENUE01#reimbursement'
+        '/structures/OFFERER01/lieux/VENUE01#venue-collective-data'
       )
     })
   })

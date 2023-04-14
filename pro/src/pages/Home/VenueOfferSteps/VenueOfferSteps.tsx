@@ -182,7 +182,7 @@ const VenueOfferSteps = ({
                 variant={ButtonVariant.BOX}
                 Icon={CircleArrowIcon}
                 link={{
-                  to: `/structures/${offererId}/lieux/${venueId}#reimbursement`,
+                  to: `/structures/${offererId}/lieux/${venueId}#venue-collective-data`,
                   isExternal: false,
                 }}
               >

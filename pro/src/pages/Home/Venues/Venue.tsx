@@ -345,7 +345,7 @@ const Venue = ({
                               variant={ButtonVariant.BOX}
                               Icon={CircleArrowIcon}
                               link={{
-                                to: `/structures/${offererId}/lieux/${id}#reimbursement`,
+                                to: `/structures/${offererId}/lieux/${id}#venue-collective-data`,
                                 isExternal: false,
                               }}
                             >
