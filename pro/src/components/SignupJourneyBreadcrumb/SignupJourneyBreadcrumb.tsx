@@ -1,8 +1,10 @@
 import React from 'react'
 
 import Breadcrumb, { BreadcrumbStyle, Step } from 'components/Breadcrumb'
-import { useSignupJourneyContext } from 'context/SignupJourneyContext'
-import { DEFAULT_ACTIVITY_FORM_VALUES } from 'screens/SignupJourneyForm/Activity/constants'
+import {
+  DEFAULT_ACTIVITY_VALUES,
+  useSignupJourneyContext,
+} from 'context/SignupJourneyContext'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 
 import { SIGNUP_JOURNEY_STEP_IDS } from './constants'
@@ -13,7 +15,7 @@ const SignupJourneyBreadcrumb = () => {
   const { activity, offerer } = useSignupJourneyContext()
 
   const isActivityStepDisabled =
-    activity === null || activity === DEFAULT_ACTIVITY_FORM_VALUES
+    activity === null || activity === DEFAULT_ACTIVITY_VALUES
 
   const isOffererStepDisabled =
     offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES

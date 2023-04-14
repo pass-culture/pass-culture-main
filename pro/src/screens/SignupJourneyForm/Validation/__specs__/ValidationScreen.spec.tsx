@@ -8,10 +8,10 @@ import { GetOffererResponseModel, Target, VenueTypeCode } from 'apiClient/v1'
 import { IAddress } from 'components/Address'
 import Notification from 'components/Notification/Notification'
 import {
+  DEFAULT_ACTIVITY_VALUES,
   ISignupJourneyContext,
   SignupJourneyContext,
 } from 'context/SignupJourneyContext'
-import { DEFAULT_ACTIVITY_FORM_VALUES } from 'screens/SignupJourneyForm/Activity/constants'
 import { Validation } from 'screens/SignupJourneyForm/Validation/index'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -73,7 +73,7 @@ describe('screens:SignupJourney::Validation', () => {
   let contextValue: ISignupJourneyContext
   beforeEach(() => {
     contextValue = {
-      activity: DEFAULT_ACTIVITY_FORM_VALUES,
+      activity: DEFAULT_ACTIVITY_VALUES,
       offerer: null,
       setActivity: () => {},
       setOfferer: () => {},
@@ -128,9 +128,7 @@ describe('screens:SignupJourney::Validation', () => {
     expect(screen.getByText('nom public')).toBeInTheDocument()
     expect(screen.getByText('123123123')).toBeInTheDocument()
     expect(screen.getByText('3 Rue de Valois')).toBeInTheDocument()
-    expect(
-      screen.getByText("À destination d'un groupe scolaire")
-    ).toBeInTheDocument()
+    expect(screen.getByText('À des groupes scolaires')).toBeInTheDocument()
   })
 
   describe('user actions', () => {

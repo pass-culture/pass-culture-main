@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState } from 'react'
 
+import { Target } from 'apiClient/v1'
 import { IAddress } from 'components/Address'
 import { IActivityFormValues } from 'screens/SignupJourneyForm/Activity/ActivityForm'
-import { DEFAULT_ACTIVITY_FORM_VALUES } from 'screens/SignupJourneyForm/Activity/constants'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { IOffererFormValues } from 'screens/SignupJourneyForm/Offerer/OffererForm'
+
+import { DEFAULT_ACTIVITY_VALUES } from '.'
 
 export interface IOfferer extends IOffererFormValues, IAddress {
   name: string
@@ -12,10 +14,14 @@ export interface IOfferer extends IOffererFormValues, IAddress {
   createVenueWithoutSiret?: boolean
 }
 
+export interface IActivity extends Omit<IActivityFormValues, 'targetCustomer'> {
+  targetCustomer: Target | undefined | null
+}
+
 export interface ISignupJourneyContext {
-  activity: IActivityFormValues | null
+  activity: IActivity | null
   offerer: IOfferer | null
-  setActivity: (activityFormValues: IActivityFormValues | null) => void
+  setActivity: (activityFormValues: IActivity | null) => void
   setOfferer: (offererFormValues: IOfferer | null) => void
 }
 
@@ -37,8 +43,8 @@ interface ISignupJourneyContextProviderProps {
 export function SignupJourneyContextProvider({
   children,
 }: ISignupJourneyContextProviderProps) {
-  const [activity, setActivity] = useState<IActivityFormValues | null>(
-    DEFAULT_ACTIVITY_FORM_VALUES
+  const [activity, setActivity] = useState<IActivity | null>(
+    DEFAULT_ACTIVITY_VALUES
   )
 
   const [offerer, setOfferer] = useState<IOfferer | null>(
