@@ -27,7 +27,8 @@ const CollectiveVenueInformations = ({
   )
   const shouldEACInformationSection =
     hasAdageIdForMoreThan30Days ||
-    (!venue?.adageInscriptionDate && canCreateCollectiveOffer) ||
+    ((!venue?.adageInscriptionDate || !venue?.collectiveDmsApplication) &&
+      canCreateCollectiveOffer) ||
     isCreatingVenue
 
   const hasRefusedDmsApplication =
