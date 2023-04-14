@@ -1,5 +1,5 @@
 import { apiAdage } from 'apiClient/api'
-import { hasErrorCode } from 'pages/AdageIframe/utils/error'
+import { hasErrorCode } from 'utils/error'
 
 type PostBookingAdapter = Adapter<number, null, null>
 
