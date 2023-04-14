@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useMemo, useState } from 'react'
 
-import { getDefaultFacetFilterUAICodeValue } from 'pages/AdageIframe/utils/facetFilters'
+import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
 
 import { Facets } from '../types'
 
