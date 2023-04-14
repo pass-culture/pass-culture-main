@@ -12,11 +12,13 @@ const renderCollectiveDmsTimeline = ({
   hasAdageId = false,
   hasAdageIdForMoreThan30Days = false,
   adageInscriptionDate = null,
+  offererId = 'A1',
 }: {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId?: boolean
   hasAdageIdForMoreThan30Days?: boolean
   adageInscriptionDate?: string | null
+  offererId?: string
 }) => {
   renderWithProviders(
     <CollectiveDmsTimeline
@@ -24,6 +26,7 @@ const renderCollectiveDmsTimeline = ({
       hasAdageId={hasAdageId}
       hasAdageIdForMoreThan30Days={hasAdageIdForMoreThan30Days}
       adageInscriptionDate={adageInscriptionDate}
+      offererId={offererId}
     />
   )
 }
