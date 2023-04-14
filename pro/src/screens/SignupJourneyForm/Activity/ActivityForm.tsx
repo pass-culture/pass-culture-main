@@ -87,7 +87,7 @@ const ActivityForm = ({ venueTypes }: IActivityFormProps): JSX.Element => {
                 arrayHelpers.push('')
               }}
             >
-              Ajouter une url
+              Ajouter un lien
             </Button>
           </FormLayout.Row>
         )}
@@ -95,7 +95,7 @@ const ActivityForm = ({ venueTypes }: IActivityFormProps): JSX.Element => {
       <FormLayout.Row>
         <RadioGroup
           group={activityTargetCustomerTypeRadios}
-          legend="À qui souhaitez-vous proposer vos offres ? (à titre informatif)"
+          legend="À qui souhaitez-vous destiner vos offres sur le pass Culture ? Cette information est collectée à titre informatif."
           name="targetCustomer"
         />
       </FormLayout.Row>
