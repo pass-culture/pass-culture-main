@@ -8,6 +8,7 @@ import jwt
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.core.users.utils import ALGORITHM_RS_256
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import requests
 
 
@@ -17,8 +18,11 @@ logger = logging.getLogger(__name__)
 def compute_educational_booking_cancellation_limit_date(
     event_beginning: datetime, booking_creation_date: datetime
 ) -> datetime:
-    fifteen_days_before_event = event_beginning - timedelta(days=15)
-    return max(fifteen_days_before_event, booking_creation_date)
+    if FeatureToggle.WIP_ENABLE_EAC_CANCEL_30_DAYS.is_active():
+        days_before_event = 30
+    else:
+        days_before_event = 15
+    return max(event_beginning - timedelta(days=days_before_event), booking_creation_date)
 
 
 def get_institution_type_and_name(institution_title: str) -> tuple[str, str]:
