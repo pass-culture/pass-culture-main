@@ -14,6 +14,7 @@ import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapt
 import { RadioButton, SubmitButton, TextInput, Thumb, Title } from 'ui-kit'
 import Icon from 'ui-kit/Icon/Icon'
 import Titles from 'ui-kit/Titles/Titles'
+import { dehumanizeId } from 'utils/dehumanize'
 import { pluralize } from 'utils/pluralize'
 
 import styles from './CollectiveOfferSelectionDuplication.module.scss'
@@ -43,8 +44,12 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         ...DEFAULT_SEARCH_FILTERS,
         nameOrIsbn: offerName,
         collectiveOfferType: 'template',
-        offererId: queryOffererId ?? 'all',
-        venueId: queryVenueId ?? 'all',
+        offererId: queryOffererId
+          ? dehumanizeId(queryOffererId)?.toString() || 'all'
+          : 'all',
+        venueId: queryVenueId
+          ? dehumanizeId(queryVenueId)?.toString() || 'all'
+          : 'all',
       }
       const { isOk, message, payload } =
         await getFilteredCollectiveOffersAdapter(apiFilters)
