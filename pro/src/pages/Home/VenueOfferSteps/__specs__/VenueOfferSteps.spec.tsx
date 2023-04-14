@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { addDays } from 'date-fns'
 import React from 'react'
 
 import { DMSApplicationstatus } from 'apiClient/v1'
@@ -17,6 +18,7 @@ const renderVenueOfferSteps = ({
   dmsStatus = DMSApplicationstatus.EN_CONSTRUCTION,
   dmsInProgress = false,
   hasAdageId = false,
+  adageInscriptionDate = '',
 }) => {
   const currentUser = {
     id: 'EY',
@@ -36,6 +38,7 @@ const renderVenueOfferSteps = ({
       dmsStatus={dmsStatus}
       dmsInProgress={dmsInProgress}
       hasAdageId={hasAdageId}
+      adageInscriptionDate={adageInscriptionDate}
     />,
     { storeOverrides, initialRouterEntries: ['/accueil'] }
   )
@@ -90,6 +93,30 @@ describe('VenueOfferSteps', () => {
       screen.queryByText(
         'Renseigner mes informations à destination des enseignants'
       )
+    ).not.toBeInTheDocument()
+  })
+  it('should not display eac informations section if has adage id for more than 30 days', async () => {
+    renderVenueOfferSteps({
+      hasVenue: false,
+      hasAdageId: true,
+      adageInscriptionDate: addDays(new Date(), -31).toISOString(),
+      dmsStatus: DMSApplicationstatus.ACCEPTE,
+    })
+    expect(
+      screen.queryByText(
+        'Renseigner mes informations à destination des enseignants'
+      )
+    ).not.toBeInTheDocument()
+  })
+  it('should not display dms timeline button has adage id for more than 30 days', async () => {
+    renderVenueOfferSteps({
+      hasVenue: false,
+      hasAdageId: true,
+      adageInscriptionDate: addDays(new Date(), -31).toISOString(),
+      dmsStatus: DMSApplicationstatus.ACCEPTE,
+    })
+    expect(
+      screen.queryByText('Suivre ma demande de référencement ADAGE')
     ).not.toBeInTheDocument()
   })
 })
