@@ -304,6 +304,8 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 
         repository.save(offer)
 
+    search.async_index_offer_ids(offer_ids)
+
     flash("Les offres ont été modifiées avec succès", "success")
     return redirect(request.referrer or url_for("backoffice_v3_web.offer.list_offers"), 303)
 
@@ -323,6 +325,11 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     offer.criteria = criteria
     offer.rankingWeight = form.rankingWeight.data
     repository.save(offer)
+
+    #  Immediately index offer if tags are updated: tags are used by
+    #  other tools (eg. building playlists for the home page) and
+    #  waiting N minutes for the next indexing cron tasks is painful.
+    search.reindex_offer_ids([offer.id])
 
     flash("L'offre a été modifiée avec succès", "success")
     return redirect(request.referrer or url_for("backoffice_v3_web.offer.list_offers"), 303)
