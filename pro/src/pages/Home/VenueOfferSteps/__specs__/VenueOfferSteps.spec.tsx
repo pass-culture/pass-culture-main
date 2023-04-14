@@ -108,12 +108,22 @@ describe('VenueOfferSteps', () => {
       )
     ).not.toBeInTheDocument()
   })
-  it('should not display dms timeline button has adage id for more than 30 days', async () => {
+  it('should not display dms timeline if button has adage id for more than 30 days', async () => {
     renderVenueOfferSteps({
       hasVenue: false,
       hasAdageId: true,
       adageInscriptionDate: addDays(new Date(), -31).toISOString(),
       dmsStatus: DMSApplicationstatus.ACCEPTE,
+    })
+    expect(
+      screen.queryByText('Suivre ma demande de référencement ADAGE')
+    ).not.toBeInTheDocument()
+  })
+  it('should not display dms timeline if dms application is refused', async () => {
+    renderVenueOfferSteps({
+      hasVenue: false,
+      hasAdageId: false,
+      dmsStatus: DMSApplicationstatus.REFUSE,
     })
     expect(
       screen.queryByText('Suivre ma demande de référencement ADAGE')

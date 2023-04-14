@@ -51,12 +51,13 @@ const VenueOfferSteps = ({
   const isCollectiveDmsTrackingActive = useActiveFeature(
     'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
   )
-  const hasAdageIdForMoreThan30Days = Boolean(
+  const hasAdageIdForMoreThan30Days =
     hasAdageId &&
-      adageInscriptionDate &&
-      isBefore(new Date(adageInscriptionDate), addDays(new Date(), -30))
-  )
-  const shouldEACInformationSection =
+    !!adageInscriptionDate &&
+    isBefore(new Date(adageInscriptionDate), addDays(new Date(), -30))
+
+  const shouldDisplayEACInformationSection =
+    isCollectiveDmsTrackingActive &&
     !(dmsStatus === DMSApplicationstatus.REFUSE) &&
     dmsInProgress &&
     !hasAdageIdForMoreThan30Days
@@ -170,7 +171,7 @@ const VenueOfferSteps = ({
           </div>
         </div>
       )}
-      {isCollectiveDmsTrackingActive && shouldEACInformationSection && (
+      {shouldDisplayEACInformationSection && (
         <div className="h-card-inner">
           <h4>Démarche en cours : </h4>
 
