@@ -1,10 +1,10 @@
 select {
-  &.pc-select-multiple-field {
+  &.pc-tom-select-field {
     height: 1em;
     overflow: hidden;
     border-radius: 1rem;
 
-    &:not(.tomselected):not(.pc-select-multiple-autocomplete-field) > option {
+    &:not(.tomselected):not(.pc-tom-select-field) > option {
       display: none;
     }
   }

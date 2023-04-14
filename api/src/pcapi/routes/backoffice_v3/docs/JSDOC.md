@@ -66,9 +66,9 @@
     *   [Examples][62]
 *   [PcPostalAddressAutocomplete][63]
     *   [Examples][64]
-*   [PcSelectMultipleField][65]
+*   [PcTableMultiSelect][65]
     *   [Examples][66]
-*   [PcTableMultiSelect][67]
+*   [PcTomSelectField][67]
     *   [Examples][68]
 *   [PcValidationFilters][69]
     *   [Examples][70]
@@ -497,7 +497,7 @@ Read documentation: [https://getbootstrap.com/docs/5.0/components/tooltips/#exam
 
 **Extends PcAddOn**
 
-Add batch submit form to selection done using one `selectedRowsIds` within [PcTableMultiSelect][67].
+Add batch submit form to selection done using one `selectedRowsIds` within [PcTableMultiSelect][65].
 
 Form is renderer through a turbo frame which must be loaded with `loading="true"`.
 
@@ -619,39 +619,6 @@ latitude = fields.PCOptHiddenField("Latitude") // if selected in the autocomplet
 longitude = fields.PCOptHiddenField("Longitude") // if selected in the autocomplete, it will be filled in the form
 ```
 
-## PcSelectMultipleField
-
-**Extends PcAddOn**
-
-Configure TomSelect on a `<select multiple />`.
-
-In the front-end business, we note two types of tom select instances:
-
-1.  select multiple field.
-2.  select multiple field with xhr autocomplete.
-
-### Examples
-
-```javascript
-// select multiple field
-<select multiple class="pc-select-multiple-field">
-  <option value="1">item #1</option>
-  <option value="2">item #2</option>
-</select>
-```
-
-```javascript
-// select multiple field with xhr autocomplete.
-// In this example, our backend automatically sets data attributes, this allows the initial render to have the initialValues
-<select
-  multiple
-  class="pc-select-multiple-field pc-select-multiple-autocomplete-field"
-  data-tomselect-autocomplete-url="/backofficev3/autocomplete/offerers"
-  data-tomselect-options="[{\"id\": \"84\", \"text\": \"Cin\u00e9ma - CGR (00000003800058)\"}]"
-  data-tomselect-items="[\"84\"]"
-></select>
-```
-
 ## PcTableMultiSelect
 
 **Extends PcAddOn**
@@ -697,6 +664,40 @@ class PcExample extends PcAddOn {
     console.log(event.detail)
   }
 }
+```
+
+## PcTomSelectField
+
+**Extends PcAddOn**
+
+Configure TomSelect on a `<select />`.
+
+In the front-end business, we note two types of tom select instances:
+
+1.  select field.
+2.  select field with xhr autocomplete.
+
+> Use `multiple` HTML attribut on select if needed.
+
+### Examples
+
+```javascript
+// select field
+<select class="pc-tom-select-field">
+  <option value="1">item #1</option>
+  <option value="2">item #2</option>
+</select>
+```
+
+```javascript
+// select field with xhr autocomplete.
+// In this example, our backend automatically sets data attributes, this allows the initial render to have the initialValues
+<select
+  class="pc-tom-select-field pc-tom-select-field"
+  data-tomselect-autocomplete-url="/backofficev3/autocomplete/offerers"
+  data-tomselect-options="[{\"id\": \"84\", \"text\": \"Cin\u00e9ma - CGR (00000003800058)\"}]"
+  data-tomselect-items="[\"84\"]"
+></select>
 ```
 
 ## PcValidationFilters
@@ -844,11 +845,11 @@ Addon to add filters toggling using a button and make their state persistent.
 
 [64]: #examples-18
 
-[65]: #pcselectmultiplefield
+[65]: #pctablemultiselect
 
 [66]: #examples-19
 
-[67]: #pctablemultiselect
+[67]: #pctomselectfield
 
 [68]: #examples-20
 

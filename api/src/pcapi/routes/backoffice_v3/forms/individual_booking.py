@@ -14,11 +14,15 @@ class GetIndividualBookingListForm(FlaskForm):
         csrf = False
 
     q = fields.PCOptSearchField("Code contremarque, ID offre, Nom, email ou ID du bénéficiaire")
-    offerer = fields.PCAutocompleteSelectMultipleField(
-        "Structures", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_offerers"
+    offerer = fields.PCTomSelectField(
+        "Structures",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_v3_web.autocomplete_offerers",
     )
-    venue = fields.PCAutocompleteSelectMultipleField(
-        "Lieux", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_venues"
+    venue = fields.PCTomSelectField(
+        "Lieux", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_venues"
     )
     category = fields.PCSelectMultipleField(
         "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
@@ -26,8 +30,12 @@ class GetIndividualBookingListForm(FlaskForm):
     status = fields.PCSelectMultipleField(
         "États", choices=utils.choices_from_enum(BookingStatus, formatter=filters.format_booking_status)
     )
-    cashflow_batches = fields.PCAutocompleteSelectMultipleField(
-        "Virements", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_cashflow_batches"
+    cashflow_batches = fields.PCTomSelectField(
+        "Virements",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_v3_web.autocomplete_cashflow_batches",
     )
     from_date = fields.PCDateField("Créées à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Créées jusqu'au", validators=(wtforms.validators.Optional(),))
