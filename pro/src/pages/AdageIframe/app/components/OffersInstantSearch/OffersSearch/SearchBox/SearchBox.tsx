@@ -2,8 +2,8 @@ import './SearchBox.scss'
 import React, { useCallback, useContext } from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 
+import { ReactComponent as SearchIco } from 'icons/search-ico.svg'
 import { AlgoliaQueryContext } from 'pages/AdageIframe/app/providers'
-import { ReactComponent as MagnifyingGlassIcon } from 'pages/AdageIframe/assets/magnifying-glass.svg'
 
 export const SearchBoxComponent = ({
   refine,
@@ -23,7 +23,7 @@ export const SearchBoxComponent = ({
 
   return (
     <form className="search-wrapper" onSubmit={onSubmit}>
-      <MagnifyingGlassIcon className="search-icon" />
+      <SearchIco className="search-icon" />
       <input
         className="search-box"
         onChange={e => setQuery(e.target.value)}

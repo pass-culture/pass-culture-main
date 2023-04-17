@@ -23,6 +23,11 @@ $offer-image-width: rem.torem(176px);
     &-showcase {
       background-color: colors.$purple;
     }
+
+    .ico-logo-passculture {
+      width: rem.torem(44px);
+      height: rem.torem(44px);
+    }
   }
 
   &-main-container {

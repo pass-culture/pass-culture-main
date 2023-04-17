@@ -1,7 +1,7 @@
 import './Spinner.scss'
 import React, { useEffect, useState } from 'react'
 
-import { ReactComponent as LogoImage } from 'pages/AdageIframe/assets/logo-without-text.svg'
+import { ReactComponent as LogoImage } from 'icons/ico-passculture.svg'
 
 export const Spinner = ({
   message = 'Chargement en cours',
@@ -24,7 +24,7 @@ export const Spinner = ({
 
   return (
     <span className="loading-spinner" data-testid="spinner">
-      <LogoImage />
+      <LogoImage className="ico-logo-passculture" />
       {message && (
         <span
           className="content"
