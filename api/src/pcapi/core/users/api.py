@@ -1042,8 +1042,10 @@ def search_public_account(search_query: str, order_by: list[str] | None = None) 
 
 
 def search_pro_account(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
-    # Any account which is associated with at least one offerer
-    pro_accounts = models.User.query.join(offerers_models.UserOfferer).distinct(models.User.id)
+    # Any account which is associated with at least one offerer or has NON_ATTACHED_PRO role
+    pro_accounts = models.User.query.filter(
+        models.User.has_non_attached_pro_role.is_(True) | models.User.has_pro_role.is_(True)  # type: ignore [attr-defined]
+    )
     return _filter_user_accounts(pro_accounts, search_query, order_by=order_by)
 
 

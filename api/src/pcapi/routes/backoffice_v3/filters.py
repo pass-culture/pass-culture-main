@@ -40,7 +40,7 @@ def format_role(role: str | None) -> str:
     match role:
         case users_models.UserRole.ADMIN:
             return "Admin"
-        case users_models.UserRole.PRO:
+        case users_models.UserRole.PRO | users_models.UserRole.NON_ATTACHED_PRO:
             return "Pro"
         case users_models.UserRole.TEST:
             return "Test"
