@@ -10,7 +10,7 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
 import pcapi.core.history.factories as history_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
+from pcapi.core.testing import override_settings
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
@@ -88,7 +88,7 @@ class CommonTest:
         item = fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number)
         assert item.status == fraud_models.FraudStatus.OK
 
-    @override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=False)
+    @override_settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
     @pytest.mark.parametrize(
         "name,is_valid",
         [
@@ -109,7 +109,7 @@ class CommonTest:
     )
     def test_is_subscription_name_valid(self, name, is_valid):
         assert fraud_api.is_subscription_name_valid(name) is is_valid
-        with override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=True):
+        with override_settings(ENABLE_PERMISSIVE_NAME_VALIDATION=True):
             assert fraud_api.is_subscription_name_valid(name) is True
 
     def test_create_profile_completion_fraud_check(self, caplog):
