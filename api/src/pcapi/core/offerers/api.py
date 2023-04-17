@@ -15,6 +15,7 @@ import sqlalchemy.orm as sa_orm
 from pcapi import settings
 from pcapi.connectors import api_adresse
 from pcapi.connectors import sirene
+from pcapi.connectors.dms.models import GraphQLApplicationStates
 import pcapi.connectors.thumb_storage as storage
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
@@ -1431,6 +1432,7 @@ def _apply_query_filters(
     regions: list[str] | None,
     tags: list[offerers_models.OffererTag] | None,
     status: list[ValidationStatus] | None,
+    dms_adage_status: list[GraphQLApplicationStates] | None,
     from_datetime: datetime | None,
     to_datetime: datetime | None,
     cls: typing.Type[offerers_models.Offerer | offerers_models.UserOfferer],
@@ -1468,6 +1470,17 @@ def _apply_query_filters(
 
     if status:
         query = query.filter(cls.validationStatus.in_(status))  # type: ignore [attr-defined]
+
+    if dms_adage_status:
+        query = (
+            query.join(offerers_models.Venue)
+            .join(educational_models.CollectiveDmsApplication)
+            .filter(
+                educational_models.CollectiveDmsApplication.state.in_(
+                    [GraphQLApplicationStates[str(state)].value for state in dms_adage_status]
+                )
+            )
+        )
 
     if tags:
         tagged_offerers = (
@@ -1510,6 +1523,7 @@ def list_offerers_to_be_validated(
     regions: list[str] | None = None,
     tags: list[offerers_models.OffererTag] | None = None,
     status: list[ValidationStatus] | None = None,
+    dms_adage_status: list[GraphQLApplicationStates] | None = None,
     from_datetime: datetime | None = None,
     to_datetime: datetime | None = None,
 ) -> sa.orm.Query:
@@ -1537,7 +1551,16 @@ def list_offerers_to_be_validated(
             query = query.outerjoin(offerers_models.UserOfferer).outerjoin(users_models.User)
 
     query = _apply_query_filters(
-        query, q, regions, tags, status, from_datetime, to_datetime, offerers_models.Offerer, offerers_models.Offerer.id
+        query,
+        q,
+        regions,
+        tags,
+        status,
+        dms_adage_status,
+        from_datetime,
+        to_datetime,
+        offerers_models.Offerer,
+        offerers_models.Offerer.id,
     )
 
     return query.distinct()
@@ -1601,6 +1624,7 @@ def list_users_offerers_to_be_validated(
         regions,
         tags,
         status,
+        None,  # no dms_adage_status for UserOfferer
         from_datetime,
         to_datetime,
         offerers_models.UserOfferer,

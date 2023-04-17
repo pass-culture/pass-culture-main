@@ -1,6 +1,6 @@
 {% macro build_offerer_validation_toggle_extra_row_button(offerer) %}
-  {% if get_all_dms_adage_status(offerer) | length > 0 %}
-    <button class="btn btn-sm {{ 'btn-outline-success' if 'accepte' in get_all_dms_adage_status(offerer) else 'btn-outline-danger' }} pc-btn-chevron-toggle"
+  {% if offerer.dms_adage_statuses | length > 0 %}
+    <button class="btn btn-sm {{ 'btn-outline-success' if 'accepte' in offerer.dms_adage_statuses else 'btn-outline-danger' }} pc-btn-chevron-toggle"
             data-bs-toggle="collapse"
             data-bs-target=".pc-offerer-validation-{{ offerer.id }}">
       <i class="bi bi-chevron-right"></i>
@@ -8,7 +8,7 @@
   {% endif %}
 {% endmacro %}
 {% macro build_offerer_validation_extra_row(offerer) %}
-  {% if get_all_dms_adage_status(offerer) | length > 0 %}
+  {% if offerer.dms_adage_statuses | length > 0 %}
     <tr class="collapse accordion-collapse pc-offerer-validation-{{ offerer.id }}">
       <td colspan="100%">
         <div class="row">
