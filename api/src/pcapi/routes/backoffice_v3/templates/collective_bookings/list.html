@@ -65,17 +65,13 @@
                             <li class="dropdown-item p-0">
                               <a class="btn btn-sm d-block w-100 text-start px-3"
                                  data-bs-toggle="modal"
-                                 data-bs-target=".pc-validate-booking-modal-{{ collective_booking.id }}">
-                                Valider la réservation
-                              </a>
+                                 data-bs-target=".pc-validate-booking-modal-{{ collective_booking.id }}">Valider la réservation</a>
                             </li>
                           {% elif not collective_booking.isReimbursed %}
                             <li class="dropdown-item p-0">
                               <a class="btn btn-sm d-block w-100 text-start px-3"
                                  data-bs-toggle="modal"
-                                 data-bs-target=".pc-cancel-booking-modal-{{ collective_booking.id }}">
-                                Annuler la réservation
-                              </a>
+                                 data-bs-target=".pc-cancel-booking-modal-{{ collective_booking.id }}">Annuler la réservation</a>
                             </li>
                           {% endif %}
                         </ul>

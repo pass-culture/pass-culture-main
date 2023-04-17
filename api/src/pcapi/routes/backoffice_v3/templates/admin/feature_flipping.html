@@ -33,9 +33,7 @@
                         {{ csrf_token }}
                         <div class="modal-header"
                              id="{{ toggle_feature_flag_modal_label_id }}">
-                          <h5 class="modal-title">
-                            {{ "Désactiver" if feature_flag.isActive else "Activer" }} le feature flag {{ feature_flag.name }}
-                          </h5>
+                          <h5 class="modal-title">{{ "Désactiver" if feature_flag.isActive else "Activer" }} le feature flag {{ feature_flag.name }}</h5>
                         </div>
                         <div class="modal-body row">
                           <p>

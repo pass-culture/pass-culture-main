@@ -15,9 +15,7 @@
                 <button class="btn btn-outline-primary lead fw-bold mt-2 mx-3"
                         data-bs-toggle="modal"
                         data-bs-target="#edit-venue-modal"
-                        type="button">
-                  Modifier les informations
-                </button>
+                        type="button">Modifier les informations</button>
                 <div class="modal modal-lg fade"
                      id="edit-venue-modal"
                      tabindex="-1"
@@ -90,9 +88,7 @@
               {% endif %}
             </div>
           </div>
-          {% if venue.publicName != venue.name %}
-            <p class="card-subtitle text-muted mb-3 h5">Nom d'usage : {{ venue.publicName }}</p>
-          {% endif %}
+          {% if venue.publicName != venue.name %}<p class="card-subtitle text-muted mb-3 h5">Nom d'usage : {{ venue.publicName }}</p>{% endif %}
           <p class="card-subtitle text-muted mb-3 h5">Venue ID : {{ venue.id }}</p>
           <p class="card-subtitle text-muted mb-3 h5">SIRET : {{ links.build_siret_to_external_link(venue) }}</p>
           <div class="row pt-3">

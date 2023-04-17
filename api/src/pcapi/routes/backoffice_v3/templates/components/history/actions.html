@@ -27,7 +27,7 @@
             {% if action.comment %}
               <p>
                 {{ action.comment | empty_string_if_null | replace("\n", "
-                <br/>
+                <br />
                 "|safe) }}
               </p>
             {% endif %}

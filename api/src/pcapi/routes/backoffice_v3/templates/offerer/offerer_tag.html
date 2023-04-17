@@ -9,9 +9,7 @@
     <button class="btn btn-outline-primary lead fw-bold mt-2"
             data-bs-toggle="modal"
             data-bs-target=".pc-create-offerer-tag-modal"
-            type="button">
-      Créer un tag structure
-    </button>
+            type="button">Créer un tag structure</button>
     <div class="modal modal-lg fade pc-create-offerer-tag-modal"
          tabindex="-1"
          aria-describedby="{{ create_offerer_tag_modal_label_id }}"
@@ -65,17 +63,13 @@
                     <li class="dropdown-item p-0">
                       <a class="btn btn-sm d-block w-100 text-start px-3"
                          data-bs-toggle="modal"
-                         data-bs-target=".pc-edit-offerer-tag-modal-{{ offerer_tag.id }}">
-                        Modifier le tag structure
-                      </a>
+                         data-bs-target=".pc-edit-offerer-tag-modal-{{ offerer_tag.id }}">Modifier le tag structure</a>
                     </li>
                     {% if has_permission("DELETE_OFFERER_TAG") %}
                       <li class="dropdown-item p-0">
                         <a class="btn btn-sm d-block w-100 text-start px-3"
                            data-bs-toggle="modal"
-                           data-bs-target=".pc-delete-offerer-tag-modal-{{ offerer_tag.id }}">
-                          Supprimer le tag structure
-                        </a>
+                           data-bs-target=".pc-delete-offerer-tag-modal-{{ offerer_tag.id }}">Supprimer le tag structure</a>
                       </li>
                     {% endif %}
                   </ul>

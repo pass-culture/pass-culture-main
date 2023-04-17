@@ -46,7 +46,7 @@
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false"
                                 class="btn p-0"
-                                {% if booking.isReimbursed %} disabled{% endif %}>
+                                {% if booking.isReimbursed %}disabled{% endif %}>
                           <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <ul class="dropdown-menu">
@@ -54,17 +54,13 @@
                             <li class="dropdown-item p-0">
                               <a class="btn btn-sm d-block w-100 text-start px-3"
                                  data-bs-toggle="modal"
-                                 data-bs-target=".pc-validate-booking-modal-{{ booking.id }}">
-                                Valider la réservation
-                              </a>
+                                 data-bs-target=".pc-validate-booking-modal-{{ booking.id }}">Valider la réservation</a>
                             </li>
                           {% elif not booking.isReimbursed %}
                             <li class="dropdown-item p-0">
                               <a class="btn btn-sm d-block w-100 text-start px-3"
                                  data-bs-toggle="modal"
-                                 data-bs-target=".pc-cancel-booking-modal-{{ booking.id }}">
-                                Annuler la réservation
-                              </a>
+                                 data-bs-target=".pc-cancel-booking-modal-{{ booking.id }}">Annuler la réservation</a>
                             </li>
                           {% endif %}
                         </ul>

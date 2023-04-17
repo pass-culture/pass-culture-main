@@ -12,9 +12,7 @@
             <div class="col d-flex align-items-center justify-content-start">
               <h2 class="card-title mb-3 text-primary">{{ user.firstName }} {{ user.lastName | upper }}</h2>
               <div class="fs-5 ps-4 mb-3 align-middle">
-                {% for role in user.roles %}
-                  <span class="badge rounded-pill text-bg-secondary align-middle">{{ role | format_role }}</span>
-                {% endfor %}
+                {% for role in user.roles %}<span class="badge rounded-pill text-bg-secondary align-middle">{{ role | format_role }}</span>{% endfor %}
                 {% if not user.isActive %}
                   <span class="badge rounded-pill text-bg-danger align-middle">{{ user.isActive | format_state }}</span>
                 {% endif %}
@@ -27,9 +25,7 @@
                 <button class="btn btn-outline-primary lead fw-bold mt-2"
                         data-bs-toggle="modal"
                         data-bs-target=".pc-edit-pro-user-modal"
-                        type="button">
-                  Modifier les informations
-                </button>
+                        type="button">Modifier les informations</button>
                 <div class="modal modal-lg fade pc-edit-pro-user-modal"
                      tabindex="-1"
                      aria-describedby="{{ edit_pro_user_information_label_id }}"

@@ -7,9 +7,7 @@
         <div class="card-header"
              data-bs-toggle="collapse"
              href=".pc-collapse-{{ form.name }}"
-             role="button">
-          {{ form.name }}
-        </div>
+             role="button">{{ form.name }}</div>
         <div class="collapse card-collapse p-3 shadow pc-collapse-{{ form.name }}">
           <form class=".{{ form.name }}"
                 action="{{ url_for(".update_role", role_id=form.id) }}"

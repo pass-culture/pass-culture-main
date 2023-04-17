@@ -7,9 +7,7 @@
     <button class="btn btn-outline-primary lead fw-bold mt-2"
             data-bs-toggle="modal"
             data-bs-target="#create-offer-venue-tag"
-            type="button">
-      Créer un tag offres et lieux
-    </button>
+            type="button">Créer un tag offres et lieux</button>
     {{ build_lazy_modal(url_for("backoffice_v3_web.tags.get_create_tag_form"), "create-offer-venue-tag") }}
     <div>
       <table class="table mb-4">
@@ -38,17 +36,13 @@
                     <li class="dropdown-item p-0">
                       <a class="btn btn-sm d-block w-100 text-start px-3"
                          data-bs-toggle="modal"
-                         data-bs-target="#update-offer-venue-tag-{{ tag.id }}">
-                        Modifier le tag
-                      </a>
+                         data-bs-target="#update-offer-venue-tag-{{ tag.id }}">Modifier le tag</a>
                     </li>
                     {% if has_permission("DELETE_OFFERER_TAG") %}
                       <li class="dropdown-item p-0">
                         <a class="btn btn-sm d-block w-100 text-start px-3"
                            data-bs-toggle="modal"
-                           data-bs-target="#delete-offer-venue-tag-{{ tag.id }}">
-                          Supprimer le tag
-                        </a>
+                           data-bs-target="#delete-offer-venue-tag-{{ tag.id }}">Supprimer le tag</a>
                       </li>
                     {% endif %}
                   </ul>

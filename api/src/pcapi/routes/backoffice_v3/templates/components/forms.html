@@ -28,9 +28,7 @@
           {% endfor %}
         </div>
         <div class="input-group mb-1">
-          {% for form_field in switches %}
-            <div class="col-{{ (12/(switches|length))|round|int }} p-1">{{ form_field }}</div>
-          {% endfor %}
+          {% for form_field in switches %}<div class="col-{{ (12/(switches|length))|round|int }} p-1">{{ form_field }}</div>{% endfor %}
         </div>
       </div>
       <div class="col-1">
