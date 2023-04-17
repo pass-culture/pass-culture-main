@@ -2,12 +2,14 @@ from flask_wtf import FlaskForm
 import sqlalchemy as sa
 import wtforms
 
+from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils.regions import get_all_regions
 
 from . import fields
 from . import utils
+from ..filters import format_graphql_application_status
 
 
 TAG_NAME_REGEX = r"^[^\s]+$"
@@ -82,6 +84,10 @@ class OffererValidationListForm(utils.PCForm):
         get_label=lambda tag: tag.label or tag.name,
     )
     status = fields.PCSelectMultipleField("États", choices=utils.choices_from_enum(ValidationStatus))
+    dms_adage_status = fields.PCSelectMultipleField(
+        "États du dossier DMS Adage",
+        choices=utils.choices_from_enum(GraphQLApplicationStates, format_graphql_application_status),
+    )
     from_date = fields.PCDateField("Demande à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Demande jusqu'au", validators=(wtforms.validators.Optional(),))
 

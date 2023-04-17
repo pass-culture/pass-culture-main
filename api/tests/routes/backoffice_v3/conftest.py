@@ -456,6 +456,14 @@ def offerers_to_be_validated_fixture(offerer_tags):
     offerers_factories.OffererFactory(name="G")
     offerers_factories.NotValidatedOffererFactory(name="H", validationStatus=ValidationStatus.REJECTED)
 
+    # DMS adage statuses
+    educational_factories.CollectiveDmsApplicationFactory(venue__managingOfferer=no_tag, state="accepte")
+    educational_factories.CollectiveDmsApplicationFactory(venue__managingOfferer=no_tag, state="refuse")
+    educational_factories.CollectiveDmsApplicationFactory(venue__managingOfferer=top, state="en_instruction")
+    educational_factories.CollectiveDmsApplicationFactory(venue__managingOfferer=collec, state="en_construction")
+    educational_factories.CollectiveDmsApplicationFactory(venue__managingOfferer=public, state="sans_suite")
+    educational_factories.CollectiveDmsApplicationFactory(venue__managingOfferer=top_collec, state="accepte")
+
     return (no_tag, top, collec, public, top_collec, top_public)
 
 
