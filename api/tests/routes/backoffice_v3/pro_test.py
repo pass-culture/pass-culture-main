@@ -84,12 +84,24 @@ class SearchProUserTest:
         for i in range(number):
             first_name = first_names[i % len(first_names)]
             last_name = last_names[i % len(last_names)]
-            user = users_factories.ProFactory(
-                firstName=first_name, lastName=last_name, email=f"{first_name.lower()}.{last_name.lower()}@example.com"
-            )
-            # Associate with two offerers, this helps to check that account is returned only once
-            offerers_factories.UserOffererFactory(user=user)
-            offerers_factories.UserOffererFactory(user=user)
+
+            if i % 2 == 0:
+                user = users_factories.ProFactory(
+                    firstName=first_name,
+                    lastName=last_name,
+                    email=f"{first_name.lower()}.{last_name.lower()}@example.com",
+                )
+                # Associate with two offerers, this helps to check that account is returned only once
+                offerers_factories.UserOffererFactory(user=user)
+                offerers_factories.UserOffererFactory(user=user)
+            else:
+                user = users_factories.NonAttachedProFactory(
+                    firstName=first_name,
+                    lastName=last_name,
+                    email=f"{first_name.lower()}.{last_name.lower()}@example.com",
+                )
+                offerers_factories.NotValidatedUserOffererFactory(user=user)
+
             self.pro_accounts.append(user)
 
     def test_can_search_pro_by_id(self, authenticated_client):
