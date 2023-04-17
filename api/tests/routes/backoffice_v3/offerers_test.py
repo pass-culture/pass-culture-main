@@ -1363,6 +1363,44 @@ class ListOfferersToValidateTest:
             else:
                 assert html_parser.count_table_rows(response.data) == 0
 
+        @pytest.mark.parametrize(
+            "dms_status_filter, expected_status, expected_offerer_names",
+            (
+                ("accepted", 200, {"A", "E"}),
+                ("on_going", 200, {"B"}),
+                (["accepted", "on_going"], 200, {"A", "B", "E"}),
+                ("draft", 200, {"C"}),
+                ("without_continuation", 200, {"D"}),
+                ("refused", 200, {"A"}),
+                (None, 200, {"A", "B", "C", "D", "E", "F"}),  # same as default
+                ("OTHER", 400, set()),  # unknown value
+                (["accepted", "OTHER"], 400, set()),
+            ),
+        )
+        def test_list_filtering_by_dms_adage_status(
+            self,
+            authenticated_client,
+            dms_status_filter,
+            expected_status,
+            expected_offerer_names,
+            offerers_to_be_validated,
+        ):
+            # when
+            with assert_no_duplicated_queries():
+                response = authenticated_client.get(
+                    url_for(
+                        "backoffice_v3_web.validation.list_offerers_to_validate", dms_adage_status=dms_status_filter
+                    )
+                )
+
+            # then
+            assert response.status_code == expected_status
+            if expected_status == 200:
+                rows = html_parser.extract_table_rows(response.data)
+                assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
+            else:
+                assert html_parser.count_table_rows(response.data) == 0
+
         def test_offerers_stats_are_displayed(self, authenticated_client, offerers_to_be_validated):
             # given
             offerers_factories.UserOffererFactory(offerer__validationStatus=ValidationStatus.PENDING)

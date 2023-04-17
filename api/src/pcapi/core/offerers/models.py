@@ -647,6 +647,10 @@ class Offerer(
 
         return self.bankInformation.applicationId
 
+    @property
+    def dms_adage_statuses(self) -> set[str]:
+        return {venue.dms_adage_status for venue in self.managedVenues if venue.dms_adage_status is not None}
+
     @hybrid_property
     def departementCode(self) -> str:
         return postal_code_utils.PostalCode(self.postalCode).get_departement_code()

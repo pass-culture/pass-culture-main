@@ -9,6 +9,7 @@ from markupsafe import Markup
 import psycopg2.extras
 import pytz
 
+from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import models as criteria_models
@@ -237,6 +238,22 @@ def format_dms_status(status: str) -> str:
             return status
 
 
+def format_graphql_application_status(status: GraphQLApplicationStates) -> str:
+    match status:
+        case GraphQLApplicationStates.accepted:
+            return "Accepté"
+        case GraphQLApplicationStates.on_going:
+            return "En instruction"
+        case GraphQLApplicationStates.draft:
+            return "En construction"
+        case GraphQLApplicationStates.refused:
+            return "Refusé"
+        case GraphQLApplicationStates.without_continuation:
+            return "Classé sans suite"
+        case _:
+            return status.value
+
+
 def format_tag_object_list(
     objects_with_label_attribute: list[offerers_models.OffererTag] | list[offerers_models.OffererTagCategory],
 ) -> str:
@@ -321,6 +338,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
     app.jinja_env.filters["format_dms_status"] = format_dms_status
+    app.jinja_env.filters["format_graphql_application_status"] = format_graphql_application_status
     app.jinja_env.filters["filter_homologation_tags"] = filter_homologation_tags
     app.jinja_env.filters["format_fraud_check_url"] = format_fraud_check_url
     app.jinja_env.filters["format_role"] = format_role

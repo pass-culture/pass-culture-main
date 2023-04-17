@@ -267,6 +267,46 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         processingDate=datetime.utcnow(),
         state="accepte",
     )
+    # eac_with_two_adage_venues
+    offerer = next(offerer_iterator)
+    venue_with_accepted_dms_status = create_venue(
+        managingOfferer=offerer,
+        name=f"accepted_dms {offerer.name}",
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="42883745400057",
+    )
+    educational_factories.CollectiveDmsApplicationFactory(
+        venue=venue_with_accepted_dms_status,
+        application=next(application_id_generator),
+        procedure=57189,
+        lastChangeDate=datetime.fromisoformat("2023-03-26T16:08:35+01:00"),
+        depositDate=datetime.fromisoformat("2024-03-23T16:08:33+01:00"),
+        expirationDate=datetime.fromisoformat("2025-03-23T16:08:33+01:00"),
+        buildDate=datetime.fromisoformat("2023-03-23T16:08:35+01:00"),
+        instructionDate=datetime.fromisoformat("2025-03-24T16:08:33+01:00"),
+        processingDate=datetime.fromisoformat("2025-03-25T16:08:33+01:00"),
+        state="accepte",
+    )
+    venue_with_rejected_dms_status = create_venue(
+        managingOfferer=offerer,
+        name=f"rejected_dms {offerer.name}",
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="42883745400058",
+    )
+    educational_factories.CollectiveDmsApplicationFactory(
+        venue=venue_with_rejected_dms_status,
+        application=next(application_id_generator),
+        procedure=57189,
+        lastChangeDate=datetime.fromisoformat("2023-03-26T16:08:35+01:00"),
+        depositDate=datetime.fromisoformat("2024-03-23T16:08:33+01:00"),
+        expirationDate=datetime.fromisoformat("2025-03-23T16:08:33+01:00"),
+        buildDate=datetime.fromisoformat("2023-03-23T16:08:35+01:00"),
+        instructionDate=datetime.fromisoformat("2025-03-24T16:08:33+01:00"),
+        processingDate=datetime.fromisoformat("2025-03-25T16:08:33+01:00"),
+        state="refuse",
+    )
 
 
 def create_venue(*, reimbursement: bool = False, **kwargs) -> offerers_models.Venue:  # type: ignore [no-untyped-def]
