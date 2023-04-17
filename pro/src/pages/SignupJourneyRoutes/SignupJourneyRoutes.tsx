@@ -8,7 +8,7 @@ import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
 import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ExitIcon } from 'icons'
+import { DisconnectFullIcon } from 'icons'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { ROOT_PATH } from 'utils/config'
@@ -41,7 +41,7 @@ const SignupJourneyRoutes = () => {
           <Button
             onClick={onSignoutClick}
             variant={ButtonVariant.TERNARY}
-            Icon={ExitIcon}
+            Icon={DisconnectFullIcon}
           >
             Se déconnecter
           </Button>
