@@ -241,6 +241,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         total_initial="Crédit initial",
     )
 
+    column_searchable_list = ["id", "email", "firstName", "lastName"]
     column_filters = [
         "postalCode",
         "has_beneficiary_role",
