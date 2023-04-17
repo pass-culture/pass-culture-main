@@ -30,3 +30,13 @@ class EditTagForm(FlaskForm):
             raise wtforms.ValidationError("ne peut pas être postérieure à celle de fin")
 
         return start_date
+
+
+class SearchTagForm(FlaskForm):
+    class Meta:
+        csrf = False
+
+    q = fields.PCSearchField("Tags offres et lieux")
+
+    def is_empty(self) -> bool:
+        return not any((self.q.data,))
