@@ -8,9 +8,7 @@
             type="button"
             role="tab"
             aria-controls="{{ name ~ 'tab-pane' }}"
-            aria-selected="true">
-      {{ title }}
-    </button>
+            aria-selected="true">{{ title }}</button>
   </li>
 {% endmacro %}
 {% macro build_details_tabs_wrapper(name="details-tab") %}
@@ -23,9 +21,7 @@
   <div class="tab-pane fade p-4 {{ name ~ '-tab-pane' }} {{ 'show active' if is_active }}"
        role="tabpanel"
        aria-labelledby="{{ name ~ '-tab' }}"
-       tabindex="0">
-    {{ caller() }}
-  </div>
+       tabindex="0">{{ caller() }}</div>
 {% endmacro %}
 {% macro build_details_tabs_content_wrapper() %}
   <div class="tab-content bg-body border border-top-0 shadow-sm">{{ caller() }}</div>

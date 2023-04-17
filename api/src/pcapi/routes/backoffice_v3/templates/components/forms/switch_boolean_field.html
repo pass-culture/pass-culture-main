@@ -3,7 +3,5 @@
   <input class="form-check-input" type="checkbox" role="switch" name="{{ field.name }}" id="{{ switch_boolean_field_id }}" {{ " checked" if field.data }} />
   <label role="button"
          class="form-check-label pc-switch-boolean-field-label"
-         for="{{ switch_boolean_field_id }}">
-    {{ field.label.text }}
-  </label>
+         for="{{ switch_boolean_field_id }}">{{ field.label.text }}</label>
 </div>

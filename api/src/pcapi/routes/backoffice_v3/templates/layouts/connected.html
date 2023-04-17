@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 {% macro sub_menu_header(name) %}
-  <hr class="mdc-deprecated-list-divider"/>
+  <hr class="mdc-deprecated-list-divider" />
   <h6 class="mdc-deprecated-list-group__subheader">{{ name }}</h6>
 {% endmacro %}
 {% macro menu_item(label, url) %}
@@ -59,10 +59,10 @@
     <div class="row flex-nowrap">
       <div class="col-auto px-0">
         <div class="collapse collapse-horizontal offcanvas-start{% if request.path == "/backofficev3/" %} show{% endif %} pc-collapse-menu no-transition"
-             data-bs-scroll="true"
-             tabindex="-1"
-             id="{{ pc_collapse_menu_id }}"
-             aria-labelledby="collapse-menu-label">
+          data-bs-scroll="true"
+          tabindex="-1"
+          id="{{ pc_collapse_menu_id }}"
+          aria-labelledby="collapse-menu-label">
           <div class="no-gutters">
             <nav class="me-3 shadow bg-white rounded-1 rounded-start-0 rounded-top-0">
               <div class="nav nav-pills flex-column">
@@ -115,7 +115,7 @@
                     {{ menu_section_item("Réservations collectives", "backoffice_v3_web.collective_bookings.list_collective_bookings") }}
                   {% endcall %}
                 </div>
-                <hr/>
+                <hr />
               {% endif %}
               <div class="nav nav-pills flex-column">
                 {% call menu_section("Admin") %}

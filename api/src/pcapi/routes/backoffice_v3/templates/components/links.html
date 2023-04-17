@@ -3,40 +3,30 @@
   {% if user %}
     <a href="{{ url_for('backoffice_v3_web.public_accounts.get_public_account', user_id=user.id) }}"
        class="link-primary"
-       target="_top">
-      {{ user.full_name }} ({{ user.id }})
-    </a>
+       target="_top">{{ user.full_name }} ({{ user.id }})</a>
   {% endif %}
 {% endmacro %}
 {% macro build_pro_user_name_to_details_link(user, text_attr="full_name") %}
   {% if user %}
     <a href="{{ url_for('backoffice_v3_web.pro_user.get', user_id=user.id) }}"
        class="link-primary"
-       target="_top">
-      {{ user[text_attr] or user.id }}
-    </a>
+       target="_top">{{ user[text_attr] or user.id }}</a>
   {% endif %}
 {% endmacro %}
 {% macro build_offerer_name_to_details_link(offerer, text_attr="name") %}
   <a href="{{ url_for('backoffice_v3_web.offerer.get', offerer_id=offerer.id) }}"
      class="link-primary"
-     target="_top">
-    {{ offerer[text_attr] }}
-  </a>
+     target="_top">{{ offerer[text_attr] }}</a>
 {% endmacro %}
 {% macro build_venue_name_to_details_link(venue, text_attr="name") %}
   <a href="{{ url_for('backoffice_v3_web.venue.get', venue_id=venue.id) }}"
      class="link-primary"
-     target="_top">
-    {{ venue[text_attr] }}
-  </a>
+     target="_top">{{ venue[text_attr] }}</a>
 {% endmacro %}
 {% macro a_offer_name_to_details(offer, text_attr="name") %}
   <a href="{{ url_for('backoffice_v3_web.offer.list_offers', q=offer.id) }}"
      class="link-primary"
-     target="_top">
-    {{ offer[text_attr] }}
-  </a>
+     target="_top">{{ offer[text_attr] }}</a>
 {% endmacro %}
 {# ----- PC Pro links ----- #}
 {% macro build_offerer_name_to_pc_pro_link(offerer) %}
@@ -47,9 +37,7 @@
 {% macro build_venue_name_to_pc_pro_link(venue, public_name=false) %}
   <a href="{{ venue | pc_pro_venue_link }}"
      class="link-primary"
-     target="_blank">
-    {{ (public_name and venue.publicName) or venue.name }}
-  </a>
+     target="_blank">{{ (public_name and venue.publicName) or venue.name }}</a>
 {% endmacro %}
 {% macro build_offer_name_to_pc_pro_link(offer) %}
   <a href="{{ offer | pc_pro_offer_link }}"
@@ -62,9 +50,7 @@
     <a href="https://www.societe.com/cgi-bin/fiche?rncs={{ offerer.siren }}"
        target="_blank"
        title="Visualiser sur societe.com"
-       class="link-primary">
-      {{ offerer.siren }}
-    </a>
+       class="link-primary">{{ offerer.siren }}</a>
   {% endif %}
 {% endmacro %}
 {% macro build_siret_to_external_link(venue) %}
@@ -72,8 +58,6 @@
     <a href="https://www.societe.com/etablissement/{{ venue.name | lower | replace(" ", "-") }}-{{ venue.siret }}.html"
        target="_blank"
        title="Visualiser sur societe.com"
-       class="link-primary">
-      {{ venue.siret }}
-    </a>
+       class="link-primary">{{ venue.siret }}</a>
   {% endif %}
 {% endmacro %}
