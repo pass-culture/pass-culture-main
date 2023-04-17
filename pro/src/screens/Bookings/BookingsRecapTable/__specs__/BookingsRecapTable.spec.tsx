@@ -5,7 +5,10 @@ import React, { ComponentProps } from 'react'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { EMPTY_FILTER_VALUE } from 'screens/Bookings/BookingsRecapTable/components/Filters/_constants'
+import {
+  DEFAULT_OMNISEARCH_CRITERIA,
+  EMPTY_FILTER_VALUE,
+} from 'screens/Bookings/BookingsRecapTable/components/Filters/_constants'
 import * as bookingDetailsAdapter from 'screens/Bookings/BookingsRecapTable/components/Table/Body/TableRow/adapters/getCollectiveBookingAdapter'
 import * as constants from 'screens/Bookings/BookingsRecapTable/constants/NB_BOOKINGS_PER_PAGE'
 import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
@@ -49,9 +52,13 @@ describe('components | BookingsRecapTable', () => {
     bookingsRecap: [],
   }
 
-  const renderBookingRecap = (props: Props) =>
+  const renderBookingRecap = (props: Props, bookingId?: string) =>
     renderWithProviders(<BookingsRecapTable {...props} />, {
-      initialRouterEntries: ['/reservations/collectives'],
+      initialRouterEntries: [
+        `/reservations/collectives${
+          bookingId ? `?bookingId=${bookingId}` : ''
+        }`,
+      ],
     })
 
   it('should filter when filters change', async () => {
@@ -114,6 +121,41 @@ describe('components | BookingsRecapTable', () => {
         bookingToken: EMPTY_FILTER_VALUE,
         offerISBN: EMPTY_FILTER_VALUE,
         offerName: EMPTY_FILTER_VALUE,
+        selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
+      })
+    )
+  })
+
+  it('should filter bookings collective on render', async () => {
+    jest.spyOn(bookingDetailsAdapter, 'default').mockResolvedValue({
+      isOk: true,
+      message: '',
+      payload: collectiveBookingDetailsFactory(),
+    })
+    // Given
+    const props: Props = {
+      ...defaultProps,
+      audience: Audience.COLLECTIVE,
+      bookingsRecap: [collectiveBookingRecapFactory({ bookingId: '123' })],
+      locationState: {
+        statuses: ['booked', 'cancelled'],
+      },
+    }
+    jest.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
+
+    // When
+    renderBookingRecap(props, '123')
+
+    // Then
+    expect(filterBookingsRecap.default).toHaveBeenCalledWith(
+      props.bookingsRecap,
+      expect.objectContaining({
+        bookingStatus: props.locationState?.statuses,
+        bookingBeneficiary: EMPTY_FILTER_VALUE,
+        bookingToken: EMPTY_FILTER_VALUE,
+        offerISBN: EMPTY_FILTER_VALUE,
+        offerName: EMPTY_FILTER_VALUE,
+        selectedOmniSearchCriteria: 'booking_id',
       })
     )
   })
@@ -227,28 +269,6 @@ describe('components | BookingsRecapTable', () => {
     expect(screen.queryByText('Page 1/1')).not.toBeInTheDocument()
   })
 
-  it('should update currentPage when clicking on next page button', async () => {
-    // Given
-    const spyOnFilterBookingsRecap = jest.spyOn(filterBookingsRecap, 'default')
-    const bookingsRecap = [bookingRecapFactory(), bookingRecapFactory()]
-    spyOnFilterBookingsRecap.mockReturnValue(bookingsRecap)
-
-    const props: Props = {
-      ...defaultProps,
-      bookingsRecap: bookingsRecap,
-    }
-
-    // When
-    renderBookingRecap(props)
-    await userEvent.click(screen.getAllByRole('button')[1])
-
-    // Then
-    const bookingRow = screen.getAllByRole('cell')
-
-    expect(spyOnFilterBookingsRecap).toHaveBeenCalled()
-    expect(bookingRow[0]).toHaveTextContent('Le nom de l’offre')
-  })
-
   it('should log event when cliking collective row', async () => {
     // Given
     const bookingsRecap = [
@@ -287,5 +307,58 @@ describe('components | BookingsRecapTable', () => {
       1,
       CollectiveBookingsEvents.CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS
     )
+  })
+
+  it('should not re-open reservation when there is bookingId in the url but bookingId filter changed', async () => {
+    const bookingsRecap = [collectiveBookingRecapFactory({ bookingId: '123' })]
+
+    jest.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
+
+    const props: Props = {
+      ...defaultProps,
+      audience: Audience.COLLECTIVE,
+      bookingsRecap: bookingsRecap,
+    }
+
+    // When
+    renderBookingRecap(props, '123')
+
+    const omniSearchOption = screen.getByRole('combobox')
+
+    await userEvent.selectOptions(omniSearchOption, 'booking_id')
+
+    const bookingIdOmnisearchFilter = await screen.getByPlaceholderText(
+      'Rechercher par numéro de réservation'
+    )
+
+    await userEvent.clear(bookingIdOmnisearchFilter)
+
+    expect(
+      screen.queryByText('Contact de l’établissement scolaire')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should update currentPage when clicking on next page button', async () => {
+    const bookingsRecap = []
+    for (let i = 0; i < 11; i++) {
+      bookingsRecap.push(collectiveBookingRecapFactory())
+    }
+
+    const props: Props = {
+      ...defaultProps,
+      audience: Audience.COLLECTIVE,
+      bookingsRecap: bookingsRecap,
+    }
+
+    // When
+    renderBookingRecap(props)
+
+    const nextPageButton = await screen.findByAltText('Page suivante')
+
+    expect(screen.getByText('Page 1/11'))
+
+    await userEvent.click(nextPageButton)
+
+    expect(screen.getByText('Page 2/11'))
   })
 })

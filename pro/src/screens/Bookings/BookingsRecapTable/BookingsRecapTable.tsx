@@ -1,12 +1,5 @@
-import React, {
-  Fragment,
-  createContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import { useParams } from 'react-router-dom'
+import React, { Fragment, useEffect, useMemo, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import type { Column } from 'react-table'
 
 import {
@@ -43,16 +36,7 @@ interface IBookingsRecapTableProps<
   reloadBookings: () => void
   resetBookings: () => void
 }
-interface IRowExpandedContext {
-  rowToExpandId: string
-  shouldScroll: boolean
-  setShouldScroll: (shouldScroll: boolean) => void
-}
-export const RowExpandedContext = createContext<IRowExpandedContext>({
-  rowToExpandId: '',
-  shouldScroll: false,
-  setShouldScroll: () => {},
-})
+
 const BookingsRecapTable = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 >({
@@ -65,8 +49,12 @@ const BookingsRecapTable = <
 }: IBookingsRecapTableProps<T>) => {
   const [filteredBookings, setFilteredBookings] = useState(bookingsRecap)
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_INDEX)
-  const { bookingId } = useParams()
-  const defaultBookingId = bookingId || EMPTY_FILTER_VALUE
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const [defaultBookingId, setDefaultBookingId] = useState(
+    queryParams.get('bookingId') || EMPTY_FILTER_VALUE
+  )
+
   const [filters, setFilters] = useState<BookingsFilters>({
     bookingBeneficiary: EMPTY_FILTER_VALUE,
     bookingToken: EMPTY_FILTER_VALUE,
@@ -75,31 +63,17 @@ const BookingsRecapTable = <
     bookingStatus: locationState?.statuses.length
       ? locationState.statuses
       : [...ALL_BOOKING_STATUS],
-    selectedOmniSearchCriteria: bookingId
+    selectedOmniSearchCriteria: defaultBookingId
       ? bookingIdOmnisearchFilter.id
       : DEFAULT_OMNISEARCH_CRITERIA,
     keywords: defaultBookingId,
     bookingInstitution: EMPTY_FILTER_VALUE,
     bookingId: defaultBookingId,
   })
-  const hasAlreadyExpandedDetails = useRef(false)
-  const [rowToExpandId, setRowToExpandId] = useState<string>('')
-  const [shouldScroll, setShouldScroll] = useState(false)
 
   useEffect(() => {
     applyFilters()
   }, [bookingsRecap])
-
-  useEffect(() => {
-    if (!hasAlreadyExpandedDetails.current) {
-      setRowToExpandId(defaultBookingId)
-      if (defaultBookingId) {
-        setShouldScroll(true)
-      }
-    } else {
-      setRowToExpandId('')
-    }
-  }, [defaultBookingId, filters, hasAlreadyExpandedDetails])
 
   const updateCurrentPage = (currentPage: number) => {
     setCurrentPage(currentPage)
@@ -147,6 +121,9 @@ const BookingsRecapTable = <
     }
   ) => {
     const { keywords, selectedOmniSearchCriteria } = updatedSelectedContent
+    if (selectedOmniSearchCriteria === bookingIdOmnisearchFilter.id) {
+      setDefaultBookingId('')
+    }
     setFilters(filters => ({
       ...filters,
       ...updatedFilter,
@@ -193,24 +170,17 @@ const BookingsRecapTable = <
             queryBookingId={defaultBookingId}
             resetBookings={resetBookings}
           />
-          <RowExpandedContext.Provider
-            value={{
-              rowToExpandId: rowToExpandId,
-              shouldScroll: shouldScroll,
-              setShouldScroll: setShouldScroll,
-            }}
-          >
-            <TableWrapper
-              columns={columns}
-              currentPage={currentPage}
-              data={filteredBookings}
-              nbBookings={nbBookings}
-              nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
-              updateCurrentPage={updateCurrentPage}
-              audience={audience}
-              reloadBookings={reloadBookings}
-            />
-          </RowExpandedContext.Provider>
+          <TableWrapper
+            columns={columns}
+            currentPage={currentPage}
+            data={filteredBookings}
+            nbBookings={nbBookings}
+            nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
+            updateCurrentPage={updateCurrentPage}
+            audience={audience}
+            reloadBookings={reloadBookings}
+            bookingId={defaultBookingId}
+          />
         </Fragment>
       ) : (
         <NoFilteredBookings resetFilters={resetAllFilters} />

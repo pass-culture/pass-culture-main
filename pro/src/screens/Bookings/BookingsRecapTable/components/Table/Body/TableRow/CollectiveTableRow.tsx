@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import type { Row } from 'react-table'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { RowExpandedContext } from 'screens/Bookings/BookingsRecapTable/BookingsRecapTable'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
@@ -18,16 +17,20 @@ import styles from './TableRow.module.scss'
 export interface ITableBodyProps {
   row: Row<CollectiveBookingResponseModel>
   reloadBookings: () => void
+  bookingId: string
 }
 
-const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
+const CollectiveTableRow = ({
+  row,
+  reloadBookings,
+  bookingId,
+}: ITableBodyProps) => {
   const [bookingDetails, setBookingDetails] =
     useState<CollectiveBookingByIdResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
 
   const detailsRef = useRef<HTMLTableRowElement | null>(null)
-  const rowToExpandContext = useContext(RowExpandedContext)
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
@@ -46,6 +49,7 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
     }
   }, [row.isExpanded])
 
+  /* istanbul ignore next: DEBT, TO FIX need to mock useTable entirely */
   const onRowClick = () => {
     logEvent?.(
       CollectiveBookingsEvents.CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS
@@ -55,19 +59,13 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
 
   useEffect(() => {
     // We expand row if bookingId match the one in the context
-    if (rowToExpandContext.rowToExpandId == row.original.bookingId) {
+    if (bookingId == row.original.bookingId) {
       row.toggleRowExpanded(true)
-    }
-  }, [row, rowToExpandContext])
-
-  useEffect(() => {
-    if (detailsRef.current && !isLoading && rowToExpandContext.shouldScroll) {
       detailsRef.current?.scrollIntoView({
         behavior: doesUserPreferReducedMotion() ? 'auto' : 'smooth',
       })
-      rowToExpandContext.setShouldScroll(false)
     }
-  }, [rowToExpandContext.shouldScroll, detailsRef.current, isLoading])
+  }, [row, bookingId])
 
   return (
     <>
@@ -87,7 +85,7 @@ const CollectiveTableRow = ({ row, reloadBookings }: ITableBodyProps) => {
               </td>
             ) : (
               bookingDetails && (
-                <td className={styles['details-content']}>
+                <td className={styles['details-content']} id={bookingId}>
                   <CollectiveBookingDetails
                     bookingDetails={bookingDetails}
                     bookingRecap={row.original}
