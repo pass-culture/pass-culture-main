@@ -1,3 +1,8 @@
+"""
+Note: Providers edition has been implemented in backoffice v3.
+Do not add any new behavior here, please update directly code backoffice v3.
+"""
+
 import logging
 import typing
 
