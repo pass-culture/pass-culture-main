@@ -1,3 +1,4 @@
+import collections
 import datetime
 import logging
 
@@ -37,7 +38,7 @@ def send_reminder_emails() -> None:
         ],
     )
 
-    users_to_notify = []
+    users_to_notify_per_code = collections.defaultdict(list)
 
     for user, fraud_check_reason_codes in users_with_quick_actions + users_with_long_actions:
         relevant_reason_code = ubble_subscription.get_most_relevant_ubble_error(fraud_check_reason_codes)
@@ -53,10 +54,10 @@ def send_reminder_emails() -> None:
             logger.error("Could not find reminder email template for reason code %s", relevant_reason_code)
             continue
 
-        users_to_notify.append(user.id)
+        users_to_notify_per_code[relevant_reason_code].append(user.id)
         mails.send(recipients=[user.email], data=email_data)
 
-    bulk_track_ubble_ko_events(users_to_notify)
+    bulk_track_ubble_ko_events(users_to_notify_per_code)
 
 
 def _get_reminder_email_data(code: fraud_models.FraudReasonCode) -> mails_models.TransactionalEmailData | None:

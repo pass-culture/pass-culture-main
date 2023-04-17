@@ -85,7 +85,10 @@ def track_identity_check_started_event(user_id: int, fraud_check_type: fraud_mod
     batch_tasks.track_event_task.delay(payload)
 
 
-def bulk_track_ubble_ko_events(user_ids: list[int]) -> None:
-    event_name = push_notifications.BatchEvent.HAS_UBBLE_KO_STATUS.value
-    payload = batch_tasks.TrackBatchBulkEventRequest(event_name=event_name, event_payload={}, user_ids=user_ids)  # type: ignore [arg-type]
-    batch_tasks.bulk_track_events_task.delay(payload)
+def bulk_track_ubble_ko_events(users_per_code: dict[fraud_models.FraudReasonCode, list[int]]) -> None:
+    event_name = push_notifications.BatchEvent.HAS_UBBLE_KO_STATUS
+    for reason_code, user_ids in users_per_code.items():
+        payload = batch_tasks.TrackBatchBulkEventRequest(
+            event_name=event_name, event_payload={"error_code": reason_code.value}, user_ids=user_ids
+        )
+        batch_tasks.bulk_track_events_task.delay(payload)
