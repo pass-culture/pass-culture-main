@@ -9,6 +9,7 @@ from pcapi.core.cultural_survey.models import CulturalSurveyAnswerEnum
 from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.core.users import testing
 from pcapi.utils.string import u_nbsp
 
 
@@ -286,6 +287,7 @@ class CulturalSurveyQuestionsTest:
                 "questionId": CulturalSurveyQuestionEnum.PROJECTIONS.value,
                 "answerIds": [
                     CulturalSurveyAnswerEnum.PROJECTION_SPECTACLE.value,
+                    CulturalSurveyAnswerEnum.PROJECTION_CINEMA.value,
                 ],
             },
         ]
@@ -300,7 +302,7 @@ class CulturalSurveyQuestionsTest:
             '{"user_id": %s, "submitted_at": "2020-01-01T00:00:00", "answers": '
             '[{"question_id": "SORTIES", "answer_ids": ["FESTIVAL"]}, '
             '{"question_id": "FESTIVALS", "answer_ids": ["FESTIVAL_MUSIQUE"]}, '
-            '{"question_id": "PROJECTIONS", "answer_ids": ["PROJECTION_SPECTACLE"]}]}'
+            '{"question_id": "PROJECTIONS", "answer_ids": ["PROJECTION_SPECTACLE", "PROJECTION_CINEMA"]}]}'
         ) % user.id
 
         # Note: if the path does not exist, GCP creates the necessary folders
@@ -313,3 +315,10 @@ class CulturalSurveyQuestionsTest:
 
         assert not user.needsToFillCulturalSurvey
         assert user.culturalSurveyFilledDate == datetime.datetime.utcnow()
+
+        assert len(testing.sendinblue_requests) == 1
+        assert testing.sendinblue_requests[0]["email"] == user.email
+        assert (
+            testing.sendinblue_requests[0]["attributes"]["INTENDED_CATEGORIES"]
+            == "PROJECTION_SPECTACLE,PROJECTION_CINEMA"
+        )

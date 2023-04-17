@@ -31,7 +31,12 @@ from pcapi.models.offer_mixin import OfferStatus
 TRACKED_PRODUCT_IDS = {3084625: "brut_x"}
 
 
-def update_external_user(user: users_models.User, skip_batch: bool = False, skip_sendinblue: bool = False) -> None:
+def update_external_user(
+    user: users_models.User,
+    cultural_survey_answers: dict[str, list[str]] | None = None,
+    skip_batch: bool = False,
+    skip_sendinblue: bool = False,
+) -> None:
     if user.has_pro_role:
         update_external_pro(user.email)
     else:
@@ -39,10 +44,10 @@ def update_external_user(user: users_models.User, skip_batch: bool = False, skip
 
         update_batch = user.has_enabled_push_notifications()
         if not skip_batch and update_batch:
-            update_batch_user(user.id, user_attributes)
+            update_batch_user(user.id, user_attributes, cultural_survey_answers=cultural_survey_answers)
 
         if not skip_sendinblue:
-            update_sendinblue_user(user.email, user_attributes)
+            update_sendinblue_user(user.email, user_attributes, cultural_survey_answers=cultural_survey_answers)
 
 
 def update_external_pro(email: str | None) -> None:

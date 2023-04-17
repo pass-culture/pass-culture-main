@@ -15,6 +15,7 @@ from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
 
 from pcapi import settings
 from pcapi.core import mails as mails_api
+from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
 from pcapi.core.users.models import UserRole
 from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task
@@ -94,12 +95,22 @@ class SendinblueAttributes(Enum):
         return list(map(lambda c: c.value, cls))
 
 
+class SendinblueOptionalAttributes(Enum):
+    # Not in SendinblueAttributes because of build_file_body which uses full list()
+    # We don't want one-shot attributes in bulk import
+    INTENDED_CATEGORIES = "INTENDED_CATEGORIES"
+
+
 def update_contact_attributes(
     user_email: str,
     attributes: attributes_models.UserAttributes | attributes_models.ProAttributes,
+    cultural_survey_answers: dict[str, list[str]] | None = None,
     asynchronous: bool = True,
 ) -> None:
     formatted_attributes = format_user_attributes(attributes)
+
+    if cultural_survey_answers:
+        formatted_attributes.update(format_cultural_survey_answers(cultural_survey_answers))
 
     contact_list_ids = (
         [settings.SENDINBLUE_PRO_CONTACT_LIST_ID] if attributes.is_pro else [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
@@ -118,7 +129,9 @@ def update_contact_attributes(
         make_update_request(contact_request)
 
 
-def format_list(raw_list: Iterable[str]) -> str:
+def format_list(raw_list: Iterable[str] | None) -> str:
+    if not raw_list:
+        return ""
     return ",".join(raw_list)
 
 
@@ -210,6 +223,14 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.FIRST_BOOKED_OFFER_2022.value: _get_attr(attributes, "first_booked_offer_2022"),
         SendinblueAttributes.LAST_BOOKED_OFFER_2022.value: _get_attr(attributes, "last_booked_offer_2022"),
         SendinblueAttributes.HAS_COLLECTIVE_OFFERS.value: _get_attr(attributes, "has_collective_offers"),
+    }
+
+
+def format_cultural_survey_answers(cultural_survey_answers: dict[str, list[str]]) -> dict:
+    return {
+        SendinblueOptionalAttributes.INTENDED_CATEGORIES.value: format_list(
+            cultural_survey_answers.get(cultural_survey_models.CulturalSurveyQuestionEnum.PROJECTIONS.value)
+        )
     }
 
 
