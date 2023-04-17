@@ -218,8 +218,8 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // When
-    //const resetButton = screen.queryByRole('link')
-    //await userEvent.click(resetButton)
+    const resetButton = screen.getByText('réinitialiser les filtres')
+    await userEvent.click(resetButton)
 
     // Then
     /*expect(screen.getByLabelText('Lieu')).toHaveValue(
