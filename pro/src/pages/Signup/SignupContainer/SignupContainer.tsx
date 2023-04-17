@@ -7,13 +7,11 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useLogEventOnUnload from 'hooks/useLogEventOnUnload'
-import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import { removeWhitespaces } from 'utils/string'
 
 import { SIGNUP_FORM_DEFAULT_VALUES } from './constants'
-import MaybeAppUserDialog from './MaybeAppUserDialog'
 import OperatingProcedures from './OperationProcedures'
 import styles from './SignupContainer.module.scss'
 import SignupForm from './SignupForm'
@@ -23,7 +21,6 @@ import { validationSchema } from './validationSchema'
 const SignupContainer = (): JSX.Element => {
   const navigate = useNavigate()
   const notification = useNotification()
-  const { visible, hideModal } = useModal()
   const { logEvent } = useAnalytics()
   useRedirectLoggedUser()
 
@@ -132,7 +129,6 @@ const SignupContainer = (): JSX.Element => {
 
   return (
     <section className={styles['sign-up-form-page']}>
-      {visible && <MaybeAppUserDialog onCancel={hideModal} />}
       <div className={styles['content']}>
         <h1>Créer votre compte</h1>
         <OperatingProcedures />
