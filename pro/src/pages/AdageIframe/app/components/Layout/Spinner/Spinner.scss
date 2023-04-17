@@ -1,3 +1,5 @@
+@use "styles/variables/_colors.scss" as colors;
+
 .loading-spinner {
   text-align: center;
 
@@ -27,6 +29,10 @@
     content: attr(data-dots);
     position: absolute;
   }
+}
+
+.ico-logo-passculture {
+  fill: colors.$primary;
 }
 
 @keyframes rotation {

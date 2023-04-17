@@ -4,16 +4,16 @@ import React, { useState } from 'react'
 import { apiAdage } from 'apiClient/api'
 import DialogBox from 'components/DialogBox/DialogBox'
 import useActiveFeature from 'hooks/useActiveFeature'
+import { ReactComponent as ChevronIconAdage } from 'icons/ico-chevron-adage.svg'
+import { ReactComponent as LikeIcon } from 'icons/ico-like.svg'
+import { ReactComponent as LikedIcon } from 'icons/ico-liked.svg'
+import { ReactComponent as Logo } from 'icons/ico-passculture.svg'
+import { ReactComponent as ImagePlaceholder } from 'icons/ico-placeholder-offer-image.svg'
 import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
   isCollectiveOffer,
 } from 'pages/AdageIframe/app/types/offers'
-import { ReactComponent as ChevronIcon } from 'pages/AdageIframe/assets/chevron.svg'
-import { ReactComponent as LikeIcon } from 'pages/AdageIframe/assets/like.svg'
-import { ReactComponent as LikedIcon } from 'pages/AdageIframe/assets/liked.svg'
-import { ReactComponent as Logo } from 'pages/AdageIframe/assets/logo-without-text.svg'
-import { ReactComponent as ImagePlaceholder } from 'pages/AdageIframe/assets/offer-image-placeholder.svg'
 import { Button, Tag } from 'ui-kit'
 import { LOGS_DATA } from 'utils/config'
 
@@ -66,7 +66,7 @@ const Offer = ({
         })}
         data-testid="thumb-placeholder"
       >
-        <Logo />
+        <Logo className={style['ico-logo-passculture']} />
       </div>
       <div className={style['offer-main-container']}>
         <div className={style['offer-image-container']}>
@@ -140,7 +140,7 @@ const Offer = ({
               onClick={() => openOfferDetails(offer)}
               type="button"
             >
-              <ChevronIcon
+              <ChevronIconAdage
                 className={cn(style['offer-see-more-icon'], {
                   [style['offer-see-more-icon-closed']]: !displayDetails,
                 })}

@@ -2,12 +2,12 @@ import './NoResultsPage.scss'
 
 import React, { useContext } from 'react'
 
+import { ReactComponent as SearchGrayIcon } from 'icons/ico-search-gray.svg'
+import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import {
   AlgoliaQueryContext,
   FacetFiltersContext,
 } from 'pages/AdageIframe/app/providers'
-import { ReactComponent as MagnifyingGlassIcon } from 'pages/AdageIframe/assets/magnifying-glass-no-result.svg'
-import { ReactComponent as ResetIcon } from 'pages/AdageIframe/assets/reset.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -21,7 +21,7 @@ export const NoResultsPage = ({
 
   return (
     <div className="no-results">
-      <MagnifyingGlassIcon className="no-results-icon" />
+      <SearchGrayIcon className="no-results-icon" />
       <p className="no-results-text">
         Aucun résultat trouvé pour cette recherche.
       </p>

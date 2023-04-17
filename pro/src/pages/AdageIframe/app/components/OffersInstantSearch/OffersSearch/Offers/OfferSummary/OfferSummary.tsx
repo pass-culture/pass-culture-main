@@ -3,16 +3,16 @@ import './OfferSummary.scss'
 import React from 'react'
 
 import { OfferAddressType } from 'apiClient/adage'
+import { ReactComponent as BuildingIcon } from 'icons/building.svg'
+import { ReactComponent as DateIcon } from 'icons/ico-date.svg'
+import { ReactComponent as EuroIcon } from 'icons/ico-euro.svg'
+import { ReactComponent as SubcategoryIcon } from 'icons/ico-subcategory.svg'
+import { ReactComponent as LocationIcon } from 'icons/location.svg'
+import { ReactComponent as UserIcon } from 'icons/user.svg'
 import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
 } from 'pages/AdageIframe/app/types/offers'
-import { ReactComponent as BuildingIcon } from 'pages/AdageIframe/assets/building.svg'
-import { ReactComponent as DateIcon } from 'pages/AdageIframe/assets/date.svg'
-import { ReactComponent as EuroIcon } from 'pages/AdageIframe/assets/euro.svg'
-import { ReactComponent as LocationIcon } from 'pages/AdageIframe/assets/location.svg'
-import { ReactComponent as SubcategoryIcon } from 'pages/AdageIframe/assets/subcategory.svg'
-import { ReactComponent as UserIcon } from 'pages/AdageIframe/assets/user.svg'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
