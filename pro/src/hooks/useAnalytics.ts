@@ -25,7 +25,7 @@ export const useConfigureFirebase = (currentUserId: string | undefined) => {
   const [isFirebaseSupported, setIsFirebaseSupported] = useState<boolean>(false)
 
   const { setLogEvent } = useAnalytics()
-  const { setRemoteConfig } = useRemoteConfig()
+  const { setRemoteConfig, setRemoteConfigData } = useRemoteConfig()
   const utmParameters = useUtmQueryParams()
 
   useEffect(() => {
@@ -62,6 +62,7 @@ export const useConfigureFirebase = (currentUserId: string | undefined) => {
                 Object.keys(remoteConfigValues).forEach(k => {
                   remoteConfigParams[k] = remoteConfigValues[k].asString()
                 })
+                setRemoteConfigData && setRemoteConfigData(remoteConfigParams)
                 analyticsLogEvent(getAnalytics(app), event, {
                   ...params,
                   ...utmParameters,
