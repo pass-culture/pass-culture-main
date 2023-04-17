@@ -1307,7 +1307,6 @@ def test_get_offerer_stats_dashboard_url():
 
 
 class CountOfferersByValidationStatusTest:
-    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_offerer_stats(self, client):
         # given
         offerers_factories.UserOffererFactory(offerer__validationStatus=ValidationStatus.NEW)
@@ -1322,7 +1321,6 @@ class CountOfferersByValidationStatusTest:
         # then
         assert stats == {"NEW": 1, "PENDING": 2, "VALIDATED": 3, "REJECTED": 4}
 
-    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_offerer_stats_zero(self, client):
         # when
         with assert_num_queries(1):
