@@ -77,7 +77,7 @@ describe('src | routes | Desk', () => {
       offerType: BookingOfferType.EVENEMENT,
       phoneNumber: '0100000000',
       publicOfferId: 'test_public_offer_id',
-      theater: 'theater_any',
+      theater: { theater_any: 'theater_any' },
       venueAddress: null,
       venueName: 'mon lieu',
       datetime: '2001-02-01T20:00:00Z',
