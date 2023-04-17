@@ -1,4 +1,9 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
@@ -33,7 +38,12 @@ jest.mock('react-instantsearch-dom', () => {
   }
 })
 
-jest.mock('repository/pcapi/pcapi', () => ({
+jest.mock('utils/config', () => ({
+  ALGOLIA_API_KEY: 'adage-api-key',
+  ALGOLIA_APP_ID: '1',
+  ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',
+}))
+jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
   getEducationalDomains: jest.fn().mockResolvedValue([
     { id: 1, name: 'Danse' },
     { id: 2, name: 'Architecture' },
@@ -76,6 +86,8 @@ jest.mock('apiClient/api', () => ({
     getVenueBySiret: jest.fn(),
     logCatalogView: jest.fn(),
     logSearchButtonClick: jest.fn(),
+    getCollectiveOffer: jest.fn(),
+    getCollectiveOfferTemplate: jest.fn(),
   },
 }))
 
@@ -116,7 +128,7 @@ describe('app', () => {
       relative: [],
     }
 
-    mockedApi.authenticate.mockResolvedValue({
+    jest.spyOn(apiAdage, 'authenticate').mockResolvedValue({
       role: AdageFrontRoles.REDACTOR,
       uai: 'uai',
     })
@@ -124,12 +136,11 @@ describe('app', () => {
     mockedApi.getVenueById.mockResolvedValue(venue)
   })
 
-  // FIX ME: skip test breaking CI
-  it.skip('should display filter tags and send selected filters to Algolia', async () => {
+  it('should display filter tags and send selected filters to Algolia', async () => {
     window.location.search = ''
     // Given
     renderApp()
-
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     const departmentFilter = screen.getByLabelText('Département')
     const studentsFilter = screen.getByLabelText('Niveau scolaire')
     const categoriesFilter = screen.getByLabelText('Catégorie')
@@ -138,15 +149,23 @@ describe('app', () => {
       name: 'Lancer la recherche',
     })
 
-    // When
-    await userEvent.selectOptions(departmentFilter, '01 - Ain')
-    userEvent.click(launchSearchButton)
-    await userEvent.selectOptions(departmentFilter, '59 - Nord')
-    await userEvent.selectOptions(studentsFilter, 'Collège - 4e')
-    await userEvent.selectOptions(categoriesFilter, 'Cinéma')
-    await userEvent.selectOptions(domainsFilter, 'Danse')
-    await userEvent.selectOptions(categoriesFilter, 'Musée')
-    userEvent.click(launchSearchButton)
+    // when
+    await userEvent.click(departmentFilter)
+    await userEvent.click(screen.getByText('01 - Ain'))
+    await userEvent.click(launchSearchButton)
+
+    await userEvent.click(departmentFilter)
+    await userEvent.click(screen.getByText('59 - Nord'))
+
+    await userEvent.click(studentsFilter)
+    await userEvent.click(screen.getByText('Collège - 4e'))
+    await userEvent.click(categoriesFilter)
+    await userEvent.click(screen.getByText('Cinéma'))
+    await userEvent.click(domainsFilter)
+    await userEvent.click(screen.getByText('Danse'))
+    await userEvent.click(categoriesFilter)
+    await userEvent.click(screen.getByText('Musée'))
+    await userEvent.click(launchSearchButton)
 
     // Then
     await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
@@ -194,28 +213,31 @@ describe('app', () => {
     expect(screen.getByRole('button', { name: 'Musée' })).toBeInTheDocument()
   })
 
-  // FIX ME: skip test breaking CI
-  it.skip('should remove deselected departments and students from filters sent to Algolia', async () => {
+  it('should remove deselected departments and students from filters sent to Algolia', async () => {
     // Given
     renderApp()
-
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     const departmentFilter = screen.getByLabelText('Département')
     const studentsFilter = screen.getByLabelText('Niveau scolaire')
     const launchSearchButton = screen.getByRole('button', {
       name: 'Lancer la recherche',
     })
 
-    await userEvent.selectOptions(departmentFilter, '01 - Ain')
-    await userEvent.selectOptions(departmentFilter, '59 - Nord')
-    await userEvent.selectOptions(studentsFilter, 'Collège - 4e')
+    await userEvent.click(departmentFilter)
+    await userEvent.click(screen.getByText('01 - Ain'))
+    await userEvent.click(departmentFilter)
+    await userEvent.click(screen.getByText('59 - Nord'))
+    await userEvent.click(studentsFilter)
+    await userEvent.click(screen.getByText('Collège - 4e'))
 
     // When
-    userEvent.click(launchSearchButton)
-    await userEvent.selectOptions(departmentFilter, '01 - Ain')
-    userEvent.click(launchSearchButton)
-    await userEvent.selectOptions(departmentFilter, '59 - Nord')
-    await userEvent.selectOptions(studentsFilter, 'Collège - 4e')
-    userEvent.click(launchSearchButton)
+    await userEvent.click(launchSearchButton)
+    await userEvent.click(departmentFilter)
+    await userEvent.click(screen.getAllByText('01 - Ain')[0])
+    await userEvent.click(launchSearchButton)
+    await userEvent.click(screen.getByRole('button', { name: '59 - Nord' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Collège - 4e' }))
+    await userEvent.click(launchSearchButton)
 
     // Then
     await waitFor(() => expect(Configure).toHaveBeenCalledTimes(4))
@@ -254,31 +276,29 @@ describe('app', () => {
     ])
 
     expect(
-      screen.getByRole('button', { name: '01 - Ain' })
+      screen.queryByRole('button', { name: '01 - Ain' })
     ).not.toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: '59 - Nord' })
+      screen.queryByRole('button', { name: '59 - Nord' })
     ).not.toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'Collège - 4e' })
+      screen.queryByRole('button', { name: 'Collège - 4e' })
     ).not.toBeInTheDocument()
   })
 
-  // FIX ME: skip test breaking CI
-  it.skip('should remove filter when clicking on delete button', async () => {
+  it('should remove filter when clicking on delete button', async () => {
     // Given
     renderApp()
-
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     // When
     const departmentFilter = screen.getByLabelText('Département')
-    await userEvent.selectOptions(departmentFilter, '01 - Ain')
+    await userEvent.click(departmentFilter)
+    await userEvent.click(screen.getByText('01 - Ain'))
 
-    const filterTag = screen.getByText('01 - Ain', { selector: 'div' })
+    const filterTag = screen.getByRole('button', { name: '01 - Ain' })
     expect(filterTag).toBeInTheDocument()
 
-    const closeIcon = filterTag.lastChild
-
-    await waitFor(() => fireEvent.click(closeIcon as ChildNode))
+    await userEvent.click(filterTag)
 
     // Then
     expect(
@@ -286,9 +306,9 @@ describe('app', () => {
     ).not.toBeInTheDocument()
   })
 
-  // FIX ME: skip test breaking CI
-  it.skip('should display tag with query after clicking on search button', async () => {
+  it('should display tag with query after clicking on search button', async () => {
     renderApp()
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     const textInput = screen.getByPlaceholderText(
       'Nom de l’offre ou du partenaire culturel'
     )
@@ -296,15 +316,15 @@ describe('app', () => {
       name: 'Lancer la recherche',
     })
 
-    userEvent.type(textInput, 'blabla')
+    await userEvent.type(textInput, 'blabla')
 
     expect(
-      screen.getByRole('button', { name: 'blablabla' })
+      screen.queryByRole('button', { name: 'blablabla' })
     ).not.toBeInTheDocument()
 
-    userEvent.click(launchSearchButton)
+    await userEvent.click(launchSearchButton)
 
-    const resetFiltersButton = screen.queryByRole('button', {
+    const resetFiltersButton = screen.getByRole('button', {
       name: 'Réinitialiser les filtres',
     })
 
