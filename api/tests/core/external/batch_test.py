@@ -2,6 +2,7 @@ from copy import deepcopy
 
 import pytest
 
+from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.batch import format_user_attributes
 
 from . import common_user_attributes
@@ -55,6 +56,8 @@ class FormatUserAttributesTest:
             parameter_name = attribute.split(".")[1]
             assert len(parameter_name) <= MAX_BATCH_PARAMETER_SIZE
 
+        assert "ut.intended_categories" not in formatted_attributes
+
     def test_format_attributes_without_bookings(self):
         attributes = deepcopy(common_user_attributes)
         attributes.booking_categories = []
@@ -64,3 +67,20 @@ class FormatUserAttributesTest:
 
         assert formatted_attributes["date(u.last_booking_date)"] == None
         assert "ut.booking_categories" not in formatted_attributes
+
+    def test_format_attributes_with_cultural_survey_answers(self):
+        cultural_survey_answers = {
+            cultural_survey_models.CulturalSurveyQuestionEnum.SORTIES.value: [
+                cultural_survey_models.CulturalSurveyAnswerEnum.FESTIVAL.value,
+            ],
+            cultural_survey_models.CulturalSurveyQuestionEnum.PROJECTIONS.value: [
+                cultural_survey_models.CulturalSurveyAnswerEnum.PROJECTION_CONCERT.value,
+                cultural_survey_models.CulturalSurveyAnswerEnum.PROJECTION_FESTIVAL.value,
+            ],
+        }
+
+        formatted_attributes = format_user_attributes(
+            common_user_attributes, cultural_survey_answers=cultural_survey_answers
+        )
+
+        assert formatted_attributes["ut.intended_categories"] == ["PROJECTION_CONCERT", "PROJECTION_FESTIVAL"]
