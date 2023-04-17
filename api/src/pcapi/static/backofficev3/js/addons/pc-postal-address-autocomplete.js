@@ -86,7 +86,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
       document,
       'keypress',
       PcPostalAddressAutocomplete.POSTAL_ADDRESS_AUTOCOMPLETE_SELECTOR,
-      this.#preventSubmitOnEnter
+      this._preventSubmitOnEnter
     )
     EventHandler.on(
       document,
@@ -119,7 +119,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
       document,
       'keypress',
       PcPostalAddressAutocomplete.POSTAL_ADDRESS_AUTOCOMPLETE_SELECTOR,
-      this.#preventSubmitOnEnter
+      this._preventSubmitOnEnter
     )
     EventHandler.off(
       document,
@@ -209,13 +209,6 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     dropdown.classList.add('dropdown-menu', 'shadow', 'dropdown-postal-address-autocomplete')
     dropdown.style.top = '3.55em'
     this.#getAutocompleteContainer($autoComplete).append(dropdown)
-  }
-
-  #preventSubmitOnEnter = (event) => {
-    const code = event.keyCode || event.which
-    if (code === KeyboardKeyCode.ENTER) {
-      event.preventDefault()
-    }
   }
 
   #onAddressChange = (event) => {

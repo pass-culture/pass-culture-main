@@ -1,8 +1,32 @@
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% extends "layouts/connected.html" %}
 {% block page %}
-  <div class="pt-3 px-5">
+  <div class="pt-3 px-5 pc-feature-flip">
     <h2 class="fw-light">Feature flipping</h2>
+    <div class="row">
+      <div class="col-12">
+        <form class="input-group my-3 px-1">
+          <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+          <input type="text"
+                 class="form-control col-8 border-start-0"
+                 name="q"
+                 value=""
+                 data-filter-dataset
+                 data-normalize="true"
+                 data-ignore-case="true"
+                 data-fields="description,name"
+                 data-on="input[type='checkbox']"
+                 data-filter-context=".pc-feature-flip"
+                 aria-describedby="search-icon"
+                 placeholder="Nom du feature flip ou description..." />
+          <button class="btn btn-outline-dark"
+                  type="reset"
+                  title="supprimer le filtre">
+            <i class="bi bi-x"></i>
+          </button>
+        </form>
+      </div>
+    </div>
     <div>
       <table class="table mb-4">
         <thead>
@@ -14,11 +38,11 @@
         </thead>
         <tbody>
           {% for feature_flag in rows %}
-            <tr>
+            <tr class="pc-filter-dataset">
               <td>
                 {% set feature_flag_checked = feature_flag.isActive %}
                 <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" role="switch" data-bs-toggle="modal" data-bs-target=".pc-toggle-feature-flag-modal-{{ feature_flag.id }}" name="is_feature_flag_active" id="feature-flag-switch-{{ feature_flag.id }}" aria-label="{{ feature_flag_checked | format_bool }}" {{ "checked" if feature_flag_checked else "" }} />
+                  <input class="form-check-input" type="checkbox" role="switch" data-bs-toggle="modal" data-bs-target=".pc-toggle-feature-flag-modal-{{ feature_flag.id }}" name="is_feature_flag_active" id="feature-flag-switch-{{ feature_flag.id }}" aria-label="{{ feature_flag_checked | format_bool }}" {{ "checked" if feature_flag_checked else "" }} data-description="{{ feature_flag.description }}" data-name="{{ feature_flag.name }}" />
                 </div>
                 <div class="modal modal-lg fade pc-toggle-feature-flag-modal-{{ feature_flag.id }}"
                      tabindex="-1"
