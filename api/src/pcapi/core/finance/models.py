@@ -24,6 +24,8 @@ from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 import pcapi.utils.db as db_utils
 
+from .enum import DepositType
+
 
 if typing.TYPE_CHECKING:
     import pcapi.core.bookings.models as bookings_models
@@ -33,11 +35,6 @@ if typing.TYPE_CHECKING:
     import pcapi.core.users.models as users_models
 
     from . import conf
-
-
-class DepositType(enum.Enum):
-    GRANT_15_17 = "GRANT_15_17"
-    GRANT_18 = "GRANT_18"
 
 
 class Deposit(PcObject, Base, Model):
