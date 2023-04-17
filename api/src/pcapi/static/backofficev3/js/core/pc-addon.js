@@ -81,4 +81,16 @@ class PcAddOn {
   _preventDefault(event) {
     event.preventDefault()
   }
+
+  /**
+   * This method is just a repetitive utility that prevents default event when keypress is Enter.
+   * Can be useful to prevent code duplication between addons when you only need to prevent default event.
+   * @param {event} event - the event
+   */
+  _preventSubmitOnEnter = (event) => {
+    const code = event.keyCode || event.which
+    if (code === KeyboardKeyCode.ENTER) {
+      event.preventDefault()
+    }
+  }
 }
