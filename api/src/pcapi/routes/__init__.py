@@ -12,7 +12,6 @@ def install_all_routes(app: Flask) -> None:
     from pcapi.routes.adage_iframe.blueprint import adage_iframe as adage_iframe_blueprint
     from pcapi.routes.apis import private_api
     from pcapi.routes.apis import public_api
-    from pcapi.routes.backoffice.blueprint import backoffice_blueprint
     from pcapi.routes.native.v1.blueprint import native_v1 as native_v1_blueprint
     from pcapi.routes.pro.blueprint import pro_private_api as pro_private_api_blueprint
     from pcapi.routes.public import blueprints as public_blueprint
@@ -23,7 +22,6 @@ def install_all_routes(app: Flask) -> None:
 
     from . import adage
     from . import adage_iframe
-    from . import backoffice
     from . import error_handlers  # pylint: disable=unused-import
     from . import external
     from . import internal
@@ -46,7 +44,6 @@ def install_all_routes(app: Flask) -> None:
     adage_iframe.install_routes(app)
     pcapi.tasks.install_handlers(app)
     install_admin_template_filters(app)
-    backoffice.install_routes(app)
 
     app.register_blueprint(adage_v1_blueprint, url_prefix="/adage/v1")
     app.register_blueprint(native_v1_blueprint, url_prefix="/native/v1")
@@ -59,4 +56,3 @@ def install_all_routes(app: Flask) -> None:
     app.register_blueprint(cloud_task_api)
     app.register_blueprint(private_api)
     app.register_blueprint(public_api)
-    app.register_blueprint(backoffice_blueprint, url_prefix="/backoffice")

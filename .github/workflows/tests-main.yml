@@ -27,12 +27,6 @@ jobs:
     with:
       folder: api
 
-  check-backoffice-folder-changes:
-    name: Check backoffice folder changes
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: backoffice
-
   check-pro-folder-changes:
     name: Check pro folder changes
     uses: ./.github/workflows/check-folder-changes.yml
@@ -54,8 +48,6 @@ jobs:
 
   test-backoffice:
     name: Test backoffice
-    needs: check-backoffice-folder-changes
-    if: needs.check-backoffice-folder-changes.outputs.folder_changed == 'true'
     uses: ./.github/workflows/tests-backoffice-v3.yml
     secrets: inherit
 
@@ -92,7 +84,6 @@ jobs:
     needs:
       - check-adage-folder-changes
       - check-api-folder-changes
-      - check-backoffice-folder-changes
       - check-pro-folder-changes
       - test-adage
       - build-api
