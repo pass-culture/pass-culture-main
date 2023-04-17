@@ -1,4 +1,5 @@
 import email_validator
+import email_validator.syntax
 
 
 def sanitize_email(email: str) -> str:
@@ -18,7 +19,7 @@ def is_valid_email_domain(content: str) -> bool:
         return False
 
     try:
-        email_validator.validate_email_domain_part(content[1:])
+        email_validator.syntax.validate_email_domain_name(content[1:])
         return True
     except email_validator.EmailNotValidError:
         return False
