@@ -243,12 +243,25 @@ class SendUbbleKoReminderEmailTest:
         user2 = build_user_with_ko_retryable_ubble_fraud_check(
             reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_EXPIRED], ubble_date_created=twenty_one_days_ago
         )
+        user3 = build_user_with_ko_retryable_ubble_fraud_check(
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED], ubble_date_created=twenty_one_days_ago
+        )
+
+        request1 = {
+            "can_be_asynchronously_retried": True,
+            "event_name": "has_ubble_ko_status",
+            "event_payload": {"error_code": "id_check_not_supported"},
+            "user_ids": [user1.id, user3.id],
+        }
+        request2 = {
+            "can_be_asynchronously_retried": True,
+            "event_name": "has_ubble_ko_status",
+            "event_payload": {"error_code": "id_check_expired"},
+            "user_ids": [user2.id],
+        }
 
         send_reminder_emails()
 
-        assert len(push_testing.requests) == 1
-
-        assert push_testing.requests[0]["can_be_asynchronously_retried"] is True
-        assert push_testing.requests[0]["event_name"] == "has_ubble_ko_status"
-        assert push_testing.requests[0]["event_payload"] == {}
-        assert set(push_testing.requests[0]["user_ids"]) == {user1.id, user2.id}
+        assert len(push_testing.requests) == 2
+        assert request1 in push_testing.requests
+        assert request2 in push_testing.requests
