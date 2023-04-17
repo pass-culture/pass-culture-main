@@ -1,4 +1,8 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -18,6 +22,7 @@ jest.mock('apiClient/api', () => ({
     listOfferersNames: jest.fn(),
     getOfferer: jest.fn(),
     getVenueStats: jest.fn(),
+    postProFlags: jest.fn(),
   },
 }))
 
@@ -31,7 +36,7 @@ jest.mock('@firebase/remote-config', () => ({
 
 jest.mock('hooks/useRemoteConfig', () => ({
   __esModule: true,
-  default: () => ({ remoteConfig: {} }),
+  default: () => ({ remoteConfig: {}, remoteConfigData: { toto: 'tata' } }),
 }))
 
 jest.mock('hooks/useNewOfferCreationJourney', () => ({
@@ -157,6 +162,7 @@ describe('homepage', () => {
       soldOutOffersCount: 3,
       validatedBookingsQuantity: 3,
     })
+    api.postProFlags.mockResolvedValue(null)
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
@@ -164,6 +170,16 @@ describe('homepage', () => {
   })
 
   describe('it should render', () => {
+    it('Pro flags should be sent on page load', async () => {
+      renderHomePage(store)
+
+      await waitFor(() => {
+        expect(api.postProFlags).toHaveBeenCalledWith({
+          firebase: { toto: 'tata' },
+        })
+      })
+    })
+
     describe('new venue offer journey', () => {
       beforeEach(() => {
         jest.spyOn(useNewOfferCreationJourney, 'default').mockReturnValue(true)
