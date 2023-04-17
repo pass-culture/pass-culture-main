@@ -177,6 +177,7 @@ class UserOffererFactory(BaseFactory):
 
 
 class NotValidatedUserOffererFactory(UserOffererFactory):
+    user = factory.SubFactory(users_factories.NonAttachedProFactory)
     validationStatus = ValidationStatus.NEW
 
 
