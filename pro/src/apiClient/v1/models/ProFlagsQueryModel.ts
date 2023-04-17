@@ -3,6 +3,6 @@
 /* eslint-disable */
 
 export type ProFlagsQueryModel = {
-  firebase: any;
+  firebase: Record<string, any>;
 };
 

@@ -15,7 +15,7 @@ export type SharedCurrentUserResponseModel = {
   dateOfBirth?: string | null;
   departementCode?: string | null;
   email: string;
-  externalIds?: any;
+  externalIds?: Record<string, any> | null;
   firstName?: string | null;
   hasPhysicalVenues?: boolean | null;
   hasSeenProRgs?: boolean | null;
@@ -28,7 +28,7 @@ export type SharedCurrentUserResponseModel = {
   lastName?: string | null;
   needsToFillCulturalSurvey?: boolean | null;
   nonHumanizedId: string;
-  notificationSubscriptions?: any;
+  notificationSubscriptions?: Record<string, any> | null;
   phoneNumber?: string | null;
   phoneValidationStatus?: PhoneValidationStatusType | null;
   postalCode?: string | null;
