@@ -9,6 +9,7 @@ import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { useModal } from 'hooks/useModal'
+import MaybeAppUserDialog from 'pages/Signup/SignupContainer/MaybeAppUserDialog'
 import {
   Button,
   Checkbox,
@@ -27,7 +28,7 @@ import { ISignupFormValues } from './types'
 const SignupForm = (): JSX.Element => {
   const navigate = useNavigate()
   const [showAnonymousBanner, setShowAnonymousBanner] = useState(false)
-  const { showModal } = useModal()
+  const { visible, showModal, hideModal } = useModal()
   const { values, setFieldValue, setFieldError, isSubmitting } =
     useFormikContext<ISignupFormValues>()
 
@@ -61,82 +62,85 @@ const SignupForm = (): JSX.Element => {
   }
 
   return (
-    <FormLayout>
-      <div className={styles['sign-up-form']}>
-        <FormLayout.Row>
-          <TextInput label="Nom" name="lastName" placeholder="Votre nom" />
-        </FormLayout.Row>
-        <FormLayout.Row>
-          <TextInput
-            label="Prénom"
-            name="firstName"
-            placeholder="Votre prénom"
-          />
-        </FormLayout.Row>
-        <FormLayout.Row>
-          <EmailSpellCheckInput
-            name="email"
-            placeholder="email@exemple.com"
-            label="Adresse e-mail"
-          />
-        </FormLayout.Row>
-        <FormLayout.Row>
-          <PasswordInput
-            name="password"
-            label="Mot de passe"
-            placeholder="Votre mot de passe"
-            withErrorPreview={true}
-          />
-        </FormLayout.Row>
-        <FormLayout.Row>
-          <PhoneNumberInput
-            name="phoneNumber"
-            label={
-              'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
-            }
-          />
-        </FormLayout.Row>
-        {!newOnboardingActive && (
-          <div className={styles['siren-field']}>
-            <FormLayout.Row>
-              <SirenInput
-                label="SIREN de la structure que vous représentez"
-                onValidSiren={getSirenAPIData}
-              />
-            </FormLayout.Row>
-            <span className={styles['field-siren-value']}>
-              {values.legalUnitValues.name}
-            </span>
-            {showAnonymousBanner && <BannerInvisibleSiren />}
-          </div>
-        )}
-        <FormLayout.Row>
-          <Checkbox
-            hideFooter
-            label="J’accepte d’être contacté par e-mail pour recevoir les
+    <>
+      {visible && <MaybeAppUserDialog onCancel={hideModal} />}
+      <FormLayout>
+        <div className={styles['sign-up-form']}>
+          <FormLayout.Row>
+            <TextInput label="Nom" name="lastName" placeholder="Votre nom" />
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <TextInput
+              label="Prénom"
+              name="firstName"
+              placeholder="Votre prénom"
+            />
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <EmailSpellCheckInput
+              name="email"
+              placeholder="email@exemple.com"
+              label="Adresse e-mail"
+            />
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <PasswordInput
+              name="password"
+              label="Mot de passe"
+              placeholder="Votre mot de passe"
+              withErrorPreview={true}
+            />
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <PhoneNumberInput
+              name="phoneNumber"
+              label={
+                'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
+              }
+            />
+          </FormLayout.Row>
+          {!newOnboardingActive && (
+            <div className={styles['siren-field']}>
+              <FormLayout.Row>
+                <SirenInput
+                  label="SIREN de la structure que vous représentez"
+                  onValidSiren={getSirenAPIData}
+                />
+              </FormLayout.Row>
+              <span className={styles['field-siren-value']}>
+                {values.legalUnitValues.name}
+              </span>
+              {showAnonymousBanner && <BannerInvisibleSiren />}
+            </div>
+          )}
+          <FormLayout.Row>
+            <Checkbox
+              hideFooter
+              label="J’accepte d’être contacté par e-mail pour recevoir les
                       nouveautés du pass Culture et contribuer à son
                       amélioration (facultatif)"
-            name="contactOk"
+              name="contactOk"
+            />
+          </FormLayout.Row>
+          <LegalInfos
+            className={styles['sign-up-infos-before-signup']}
+            title="Créer mon compte"
           />
-        </FormLayout.Row>
-        <LegalInfos
-          className={styles['sign-up-infos-before-signup']}
-          title="Créer mon compte"
-        />
-      </div>
-      <div className={styles['buttons-field']}>
-        <Button
-          onClick={() => navigate('/connexion')}
-          variant={ButtonVariant.SECONDARY}
-        >
-          J’ai déjà un compte
-        </Button>
-        <SubmitButton isLoading={isSubmitting} disabled={isSubmitting}>
-          Créer mon compte
-        </SubmitButton>
-      </div>
-      <BannerRGS />
-    </FormLayout>
+        </div>
+        <div className={styles['buttons-field']}>
+          <Button
+            onClick={() => navigate('/connexion')}
+            variant={ButtonVariant.SECONDARY}
+          >
+            J’ai déjà un compte
+          </Button>
+          <SubmitButton isLoading={isSubmitting} disabled={isSubmitting}>
+            Créer mon compte
+          </SubmitButton>
+        </div>
+        <BannerRGS />
+      </FormLayout>
+    </>
   )
 }
 
