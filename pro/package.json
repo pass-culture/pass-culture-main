@@ -134,7 +134,7 @@
     "jest-canvas-mock": "^2.5.0",
     "jest-fetch-mock": "^3.0.3",
     "node-env-file": "^0.1.8",
-    "openapi-typescript-codegen": "^0.23.0",
+    "openapi-typescript-codegen": "^0.24.0",
     "pnp-webpack-plugin": "^1.7.0",
     "prepend-file": "^2.0.0",
     "prettier": "^2.8.4",
