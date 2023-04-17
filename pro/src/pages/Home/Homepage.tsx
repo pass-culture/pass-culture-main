@@ -11,6 +11,7 @@ import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
+import useRemoteConfig from 'hooks/useRemoteConfig'
 import { INITIAL_OFFERER_VENUES } from 'pages/Home/OffererVenues'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
@@ -37,6 +38,8 @@ const Homepage = (): JSX.Element => {
   const [venues, setVenues] = useState(INITIAL_OFFERER_VENUES)
 
   const { currentUser } = useCurrentUser()
+
+  const { remoteConfigData } = useRemoteConfig()
 
   useEffect(() => {
     async function loadOfferer(offererId: string) {
@@ -92,6 +95,14 @@ const Homepage = (): JSX.Element => {
       setReceivedOffererNames(offererNames)
     })
   }, [])
+
+  useEffect(() => {
+    if (remoteConfigData != null) {
+      api.postProFlags({
+        firebase: remoteConfigData,
+      })
+    }
+  }, [remoteConfigData])
 
   return (
     <>
