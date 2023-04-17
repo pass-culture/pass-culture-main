@@ -52,6 +52,7 @@
     <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-batch-action-form.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-postal-address-autocomplete.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-registration-steps.js') }}"></script>
+    <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-filter-dataset.js') }}"></script>
     <!-- Our app -->
     <script src="{{ url_for('static', filename='backofficev3/js/pc-backoffice-app.js') }}"></script>
     <script>
@@ -59,6 +60,7 @@
         csrfTokenInput: '{{ csrf_token }}',
         addOns: [
           BsTooltips,
+          PcFilterDataset,
           PcFormsCheckValidity,
           PcValidationFilters,
           PcTomSelectField,
