@@ -27,7 +27,7 @@ export type GetBookingResponse = {
   /**
    * Identifiant du film et de la salle dans le cas d’une offre synchronisée par Allociné.
    */
-  theater: any;
+  theater: Record<string, any>;
   userName: string;
   venueAddress?: string | null;
   venueDepartmentCode?: string | null;
