@@ -6,7 +6,7 @@ import { IVenue } from 'core/Venue'
 import { ReactComponent as EditIcon } from 'icons/ico-pen-black.svg'
 import { venueHasCollectiveInformation } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/EACInformation/utils/venueHasCollectiveInformation'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { ButtonLink, Title } from 'ui-kit/index'
+import { Banner, ButtonLink, Title } from 'ui-kit/index'
 
 import styles from './eacInformation.module.scss'
 
@@ -24,15 +24,24 @@ const NewEACInformation = ({ venue, isCreatingVenue }: IEACInformation) => {
 
   return (
     <>
-      <Title as="h4" level={4} className={styles['eac-title-info']}>
-        Mes informations pour les enseignants
-      </Title>
+      {!isCreatingVenue && (
+        <Title as="h4" level={4} className={styles['eac-title-info']}>
+          Mes informations pour les enseignants
+        </Title>
+      )}
       <p className={styles['eac-description-info']}>
         Il s'agit d'un formulaire vous permettant de renseigner vos informations
         EAC. Les informations renseignées seront visibles par les enseignants et
         chefs d'établissement sur Adage (Application dédiée à la
         généralisation....)
       </p>
+      {isCreatingVenue && (
+        <Banner type="notification-info">
+          Une fois votre lieu créé, vous pourrez renseigner des informations
+          pour les enseignants en revenant sur cette page.
+        </Banner>
+      )}
+
       <FormLayout.Row>
         <ButtonLink
           link={{
