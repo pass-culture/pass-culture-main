@@ -6,6 +6,8 @@ import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
 import { AuthenticatedResponse, VenueResponse } from 'apiClient/adage'
+import { ReactComponent as InstitutionIcon } from 'icons/ico-institution.svg'
+import { ReactComponent as OffersIcon } from 'icons/ico-offers.svg'
 import { INITIAL_QUERY } from 'pages/AdageIframe/app/constants'
 import {
   AlgoliaQueryContext,
@@ -14,8 +16,6 @@ import {
 } from 'pages/AdageIframe/app/providers'
 import { AnalyticsContext } from 'pages/AdageIframe/app/providers/AnalyticsContextProvider'
 import { Filters } from 'pages/AdageIframe/app/types'
-import { ReactComponent as InstitutionIcon } from 'pages/AdageIframe/assets/institution.svg'
-import { ReactComponent as OffersIcon } from 'pages/AdageIframe/assets/offers.svg'
 import Tabs from 'ui-kit/Tabs'
 import { LOGS_DATA } from 'utils/config'
 import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
