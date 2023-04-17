@@ -468,6 +468,13 @@ class ProFactory(BaseFactory):
         return instance
 
 
+class NonAttachedProFactory(ProFactory):
+    class Meta:
+        model = models.User
+
+    roles = [models.UserRole.NON_ATTACHED_PRO]
+
+
 class TokenFactory(BaseFactory):
     class Meta:
         model = models.Token
