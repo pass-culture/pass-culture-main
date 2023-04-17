@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import type { Column } from 'react-table'
 
 import {
@@ -65,9 +65,8 @@ const BookingsRecapTable = <
 }: IBookingsRecapTableProps<T>) => {
   const [filteredBookings, setFilteredBookings] = useState(bookingsRecap)
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_INDEX)
-  const location = useLocation()
-  const queryParams = new URLSearchParams(location.search)
-  const defaultBookingId = queryParams.get('bookingId') || EMPTY_FILTER_VALUE
+  const { bookingId } = useParams()
+  const defaultBookingId = bookingId || EMPTY_FILTER_VALUE
   const [filters, setFilters] = useState<BookingsFilters>({
     bookingBeneficiary: EMPTY_FILTER_VALUE,
     bookingToken: EMPTY_FILTER_VALUE,
@@ -76,7 +75,7 @@ const BookingsRecapTable = <
     bookingStatus: locationState?.statuses.length
       ? locationState.statuses
       : [...ALL_BOOKING_STATUS],
-    selectedOmniSearchCriteria: queryParams.get('bookingId')
+    selectedOmniSearchCriteria: bookingId
       ? bookingIdOmnisearchFilter.id
       : DEFAULT_OMNISEARCH_CRITERIA,
     keywords: defaultBookingId,
