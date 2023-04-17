@@ -1,5 +1,4 @@
 import dataclasses
-from datetime import date
 from datetime import datetime
 import enum
 import logging
@@ -1082,15 +1081,7 @@ def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:
         .group_by(sa.text("status"))
         .subquery()
     )
-    # TODO (24/02/2023) used only in backoffice v2; remove when backoffice v2 is removed
-    is_collective_eligible_query = (
-        sa.select(offerers_models.Venue)
-        .filter(
-            offerers_models.Venue.managingOffererId == offerer_id,
-            sa.not_(offerers_models.Venue.venueEducationalStatusId.is_(None)),
-        )
-        .exists()
-    )
+
     offerer_query = sa.select(
         offerers_models.Offerer.id,
         offerers_models.Offerer.name,
@@ -1099,7 +1090,6 @@ def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:
         offerers_models.Offerer.siren,
         offerers_models.Offerer.postalCode,
         bank_informations_query.scalar_subquery().label("bank_informations"),
-        is_collective_eligible_query.label("is_collective_eligible"),
     ).filter(offerers_models.Offerer.id == offerer_id)
 
     offerer = db.session.execute(offerer_query).one_or_none()
@@ -1341,90 +1331,6 @@ def count_offerers_by_validation_status() -> dict[str, int]:
     return {status.name: stats.get(status, 0) for status in ValidationStatus}
 
 
-def _filter_on_validation_status_legacy(
-    query: sa.orm.Query, filter_dict: dict, cls: typing.Type[offerers_models.ValidationStatusMixin]
-) -> sa.orm.Query:
-    # This function becomes deprecated when backoffice v2 is stopped
-    status_list = filter_dict.get("status")
-    if status_list:
-        statuses = []
-        for status in status_list:
-            try:
-                statuses.append(ValidationStatus(status))
-            except ValueError:
-                pass  # ignore wrong value
-        query = query.filter(cls.validationStatus.in_(statuses))
-    else:
-        query = query.filter(cls.isWaitingForValidation)
-
-    return query
-
-
-def list_offerers_to_be_validated_legacy(
-    search_query: str | None, filter_: list[dict[str, typing.Any]]
-) -> sa.orm.Query:
-    # This function becomes deprecated when backoffice v2 is stopped
-    query = offerers_models.Offerer.query.options(
-        sa.orm.joinedload(offerers_models.Offerer.UserOfferers).joinedload(offerers_models.UserOfferer.user),
-        sa.orm.joinedload(offerers_models.Offerer.tags),
-        sa.orm.joinedload(offerers_models.Offerer.action_history).joinedload(history_models.ActionHistory.authorUser),
-    )
-
-    if search_query:
-        if search_query.isnumeric():
-            if len(search_query) != 9:
-                raise exceptions.InvalidSiren("Le SIREN doit faire 9 caractères")
-            query = query.filter(offerers_models.Offerer.siren == search_query)
-        else:
-            name = search_query.replace(" ", "%").replace("-", "%")
-            name = clean_accents(name)
-            query = query.filter(sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{name}%"))
-
-    filter_dict = {f["field"]: f["value"] for f in filter_}
-
-    query = _filter_on_validation_status_legacy(query, filter_dict, offerers_models.Offerer)
-
-    tags = filter_dict.get("tags")
-    if tags:
-        tagged_offerers = (
-            sa.select(offerers_models.Offerer.id, sa.func.array_agg(offerers_models.OffererTag.label).label("tags"))
-            .join(
-                offerers_models.OffererTagMapping,
-                offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
-            )
-            .join(
-                offerers_models.OffererTag,
-                offerers_models.OffererTag.id == offerers_models.OffererTagMapping.tagId,
-            )
-            .group_by(
-                offerers_models.Offerer.id,
-            )
-            .cte()
-        )
-
-        query = query.join(tagged_offerers, tagged_offerers.c.id == offerers_models.Offerer.id).filter(
-            sa.and_(*(tagged_offerers.c.tags.any(tag) for tag in tags))
-        )
-
-    from_date = filter_dict.get("fromDate")
-    if from_date:
-        try:
-            min_datetime = datetime.combine(date.fromisoformat(from_date), datetime.min.time())
-        except ValueError:
-            raise ApiErrors({"filter": "Le format de date est invalide"})
-        query = query.filter(offerers_models.Offerer.dateCreated >= min_datetime)
-
-    to_date = filter_dict.get("toDate")
-    if to_date:
-        try:
-            max_datetime = datetime.combine(date.fromisoformat(to_date), datetime.max.time())
-        except ValueError:
-            raise ApiErrors({"filter": "Le format de date est invalide"})
-        query = query.filter(offerers_models.Offerer.dateCreated <= max_datetime)
-
-    return query
-
-
 def _apply_query_filters(
     query: sa.orm.Query,
     q: str | None,  # search query
@@ -1548,24 +1454,6 @@ def is_top_actor(offerer: offerers_models.Offerer) -> bool:
         if tag.name == "top-acteur":
             return True
     return False
-
-
-def list_users_offerers_to_be_validated_legacy(filter_: list[dict[str, typing.Any]]) -> sa.orm.Query:
-    # This function becomes deprecated when backoffice v2 is stopped
-    query = offerers_models.UserOfferer.query.options(
-        sa.orm.joinedload(offerers_models.UserOfferer.user),
-        sa.orm.joinedload(offerers_models.UserOfferer.offerer)
-        .joinedload(offerers_models.Offerer.action_history)
-        .joinedload(history_models.ActionHistory.authorUser),
-        sa.orm.joinedload(offerers_models.UserOfferer.offerer)
-        .joinedload(offerers_models.Offerer.UserOfferers)
-        .joinedload(offerers_models.UserOfferer.user),
-    )
-
-    filter_dict = {f["field"]: f["value"] for f in filter_}
-    query = _filter_on_validation_status_legacy(query, filter_dict, offerers_models.UserOfferer)
-
-    return query
 
 
 def list_users_offerers_to_be_validated(

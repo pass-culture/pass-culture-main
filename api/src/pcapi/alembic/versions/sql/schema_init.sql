@@ -5391,7 +5391,6 @@ INSERT INTO public.feature VALUES (23, 'SYNCHRONIZE_ALLOCINE', 'Permettre la syn
 INSERT INTO public.feature VALUES (24, 'USE_PRICING_POINT_FOR_PRICING', 'Utilise le modèle VenuePricingPointLink pour la valorisation', false);
 INSERT INTO public.feature VALUES (25, 'ENABLE_BOOST_API_INTEGRATION', 'Active la réservation de places de cinéma via l''API Boost', false);
 INSERT INTO public.feature VALUES (26, 'ENABLE_PRO_ACCOUNT_CREATION', 'Permettre l''inscription des comptes professionels', true);
-INSERT INTO public.feature VALUES (27, 'ENABLE_BACKOFFICE_API', 'Autorise l''accès à l''API backoffice', false);
 INSERT INTO public.feature VALUES (28, 'ENABLE_PRO_BOOKINGS_V2', 'Activer l''affichage de la page booking avec la nouvelle architecture.', false);
 INSERT INTO public.feature VALUES (29, 'UPDATE_BOOKING_USED', 'Permettre la validation automatique des contremarques 48h après la fin de lévènement', true);
 INSERT INTO public.feature VALUES (30, 'ENABLE_UBBLE_SUBSCRIPTION_LIMITATION', 'Active la limitation en fonction de l''âge lors de pic d''inscription', false);

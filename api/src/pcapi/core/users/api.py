@@ -1,4 +1,3 @@
-from collections import defaultdict
 from dataclasses import asdict
 import datetime
 from decimal import Decimal
@@ -20,7 +19,6 @@ from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.finance.api as finance_api
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.common.models as common_fraud_models
-import pcapi.core.fraud.models as fraud_models
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
@@ -35,8 +33,6 @@ import pcapi.core.users.utils as users_utils
 from pcapi.domain.password import random_hashed_password
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.beneficiary_import import BeneficiaryImport
-from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
@@ -1057,113 +1053,6 @@ def skip_phone_validation_step(user: models.User) -> None:
 
     user.phoneValidationStatus = models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT.name  # type: ignore [call-overload]
     repository.save(user)
-
-
-# TODO (prouzet): remove with backoffice v2 - deprecated
-EMAIL_CHANGE_ACTIONS = defaultdict(
-    lambda: "action de changement d'email inconnue",
-    {
-        models.EmailHistoryEventTypeEnum.UPDATE_REQUEST: "demande de changement d'email",
-        models.EmailHistoryEventTypeEnum.VALIDATION: "validation de changement d'email",
-        models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION: "validation (admin) de changement d'email",
-    },
-)
-SUSPENSION_ACTIONS = defaultdict(
-    lambda: "action de suspension inconnue",
-    {
-        constants.SuspensionEventType.SUSPENDED: "désactivation de compte",
-        constants.SuspensionEventType.UNSUSPENDED: "réactivation de compte",
-    },
-)
-
-
-# TODO (prouzet): remove with backoffice v2 - deprecated
-def get_suspension_message(suspension_action: history_models.ActionHistory) -> str:
-    message = f"par {suspension_action.authorUser.full_name}" if suspension_action.authorUser else "Auteur inconnu"
-    if suspension_action.extraData and suspension_action.extraData.get("reason"):
-        suspension_reason = users_constants.SuspensionReason(suspension_action.extraData["reason"])
-        message += f" : {users_constants.SUSPENSION_REASON_CHOICES[suspension_reason]}"
-    if suspension_action.comment:
-        message += f" - Commentaire : {suspension_action.comment}"
-    return message
-
-
-# TODO (prouzet): remove with backoffice v2 - deprecated
-def public_account_history(user: models.User) -> list[dict]:
-    # TODO (ASK, 2022-06-10): à ajouter un jour:
-    #  - les commentaires sur l'utlisateur, horodatés et attribués à leur auteur
-    #    (pas possible avec simplement un champs texte `comment` sur le modèle `User`)
-    #  - l'horodatage et l'attribution de chaque modification de donnée utilisateur
-    #    (pas possible en l'état car on ne garde pas de trace de ces changements à part pour l'email)
-    email_changes = models.UserEmailHistory.query.filter_by(userId=user.id).all()
-    user_suspension = history_models.ActionHistory.query.filter(
-        history_models.ActionHistory.userId == user.id,
-        sa.or_(
-            history_models.ActionHistory.actionType == history_models.ActionType.USER_SUSPENDED,
-            history_models.ActionHistory.actionType == history_models.ActionType.USER_UNSUSPENDED,
-        ),
-    )
-    fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).all()
-    reviews = fraud_models.BeneficiaryFraudReview.query.filter_by(userId=user.id).all()
-    imports = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).join(BeneficiaryImportStatus).all()
-
-    email_changes_history = [
-        {
-            "action": EMAIL_CHANGE_ACTIONS[change.eventType],
-            "datetime": change.creationDate,
-            "message": f"de {change.oldUserEmail}@{change.oldDomainEmail} à {change.newUserEmail}@{change.newDomainEmail}",
-        }
-        for change in email_changes
-    ]
-
-    user_suspension_history = [
-        {
-            "action": f"{suspension_action.actionType.value}",
-            "datetime": suspension_action.actionDate,
-            "message": get_suspension_message(suspension_action),
-        }
-        for suspension_action in user_suspension
-    ]
-
-    fraud_checks_history = [
-        {
-            "action": "fraud check",
-            "datetime": check.dateCreated,
-            "message": (
-                f"{check.type.value}, {getattr(check.eligibilityType, 'value', '[éligibilité inconnue]')}, "
-                f"{check.status.value if check.status else 'Statut inconnu'}, {getattr(check.reasonCodes, 'value', '[raison inconnue]')}, {check.reason}"
-            ),
-        }
-        for check in fraud_checks
-    ]
-
-    reviews_history = [
-        {
-            "action": "revue manuelle",
-            "datetime": review.dateReviewed,
-            "message": f"revue {review.review.value} par {review.author.full_name}: {review.reason}",
-        }
-        for review in reviews
-    ]
-
-    default_public_name = lambda author: author.full_name if author else ""
-    imports_history = [
-        {
-            "action": f"import {import_.source}",
-            "datetime": status.date,
-            "message": f"par {default_public_name(status.author)}: {status.status.value} ({status.detail})",
-        }
-        for import_ in imports
-        for status in import_.statuses
-    ]
-
-    history = sorted(
-        email_changes_history + user_suspension_history + fraud_checks_history + reviews_history + imports_history,
-        key=lambda item: item["datetime"] or datetime.datetime.min,
-        reverse=True,
-    )
-
-    return history
 
 
 def validate_pro_user_email(user: users_models.User, author_user: users_models.User | None = None) -> None:
