@@ -117,6 +117,46 @@ class ListTagsTest:
         assert rows[0]["Date de début"] == tag_1.startDateTime.strftime("%d/%m/%Y")
         assert rows[0]["Date de fin"] == ""
 
+    @pytest.mark.parametrize(
+        "q,expected_nb_results,expected_results_key",
+        [
+            ("", 2, ["tag1", "tag2"]),
+            ("tag1", 1, ["tag1"]),
+            ("tag2", 1, ["tag2"]),
+            ("DésCrIpTion", 2, ["tag1", "tag2"]),
+            ("Not found", 0, []),
+        ],
+    )
+    def search_list_tags(self, authenticated_client, q, expected_nb_results, expected_results_key):
+        offer = offers_factories.OfferFactory()
+
+        tags = {
+            "tag1": criteria_factories.CriterionFactory(
+                description="tag1 description", startDateTime=datetime.utcnow()
+            ),
+            "tag2": criteria_factories.CriterionFactory(
+                description="tag2 description", startDateTime=datetime.utcnow()
+            ),
+        }
+
+        offer.criteria = [tags["tag1"], tags["tag2"]]
+
+        response = authenticated_client.get(url_for("backoffice_v3_web.tags.list_tags", q=q))
+
+        assert response.status_code == 200
+
+        nb_results = html_parser.count_table_rows(response.data)
+        assert nb_results == expected_nb_results
+
+        rows = html_parser.extract_table_rows(response.data)
+        count = 0
+        for index, key in enumerate(expected_results_key):
+            for row in rows:
+                if count < expected_nb_results and row[index]["Nom"] == tags.get(key).name:
+                    assert rows[index]["Description"] == tags.get(key).description
+                    count += 1
+                    break
+
 
 def send_request(authenticated_client, form, route_suffix, **route_extra):
     authenticated_client.get(url_for("backoffice_v3_web.tags.list_tags"))

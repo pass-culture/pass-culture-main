@@ -2,16 +2,19 @@ from flask import escape
 from flask import flash
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 import sqlalchemy as sa
 
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.models import db
+from pcapi.utils.clean_accents import clean_accents
 
 from . import utils
 from .forms import empty as empty_forms
 from .forms import tags as tags_forms
+from .forms.tags import SearchTagForm
 
 
 tags_blueprint = utils.child_backoffice_blueprint(
@@ -24,8 +27,27 @@ tags_blueprint = utils.child_backoffice_blueprint(
 
 @tags_blueprint.route("", methods=["GET"])
 def list_tags() -> utils.BackofficeResponse:
-    tags = criteria_models.Criterion.query.all()
-    return render_template("tags/list_tags.html", rows=tags)
+    form = SearchTagForm(request.args)
+
+    base_query = criteria_models.Criterion.query
+
+    if not form.validate():
+        error_msg = utils.build_form_error_msg(form)
+        flash(error_msg, "warning")
+        return render_template("tags/list_tags.html", rows=base_query.all(), form=form, dst=url_for(".list_tags")), 400
+
+    if form.is_empty():
+        return render_template("tags/list_tags.html", rows=base_query.all(), form=form, dst=url_for(".list_tags"))
+
+    query = clean_accents(form.q.data.replace(" ", "%").replace("-", "%"))
+    tags = base_query.filter(
+        sa.or_(
+            sa.func.unaccent(criteria_models.Criterion.name).ilike(f"%{query}%"),
+            sa.func.unaccent(criteria_models.Criterion.description).ilike(f"%{query}%"),
+        )
+    ).distinct()
+
+    return render_template("tags/list_tags.html", rows=tags, form=form, dst=url_for(".list_tags"))
 
 
 @tags_blueprint.route("/create", methods=["POST"])
