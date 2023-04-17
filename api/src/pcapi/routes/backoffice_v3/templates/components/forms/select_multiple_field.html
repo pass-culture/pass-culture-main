@@ -1,8 +1,8 @@
 <div class="form-floating {{ field.name }}-container">
   {% set select_field_id = random_hash() %}
   <select multiple
-          class="form-select pc-select-field"
-          id="{{ select_multiple_field_id }}"
+          class="form-select pc-select-field pc-tom-select-field"
+          id="{{ select_field_id }}"
           name="{{ field.name }}"
           size="2">
     {% for value, label, selected in field.iter_choices() %}
@@ -12,5 +12,5 @@
     {% endfor %}
   </select>
   <label class="pc-select-label"
-         for="{{ select_multiple_field_id }}">{{ field.label.text }}</label>
+         for="{{ select_field_id }}">{{ field.label.text }}</label>
 </div>
