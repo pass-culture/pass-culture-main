@@ -7,7 +7,6 @@ import { CreateOffererQueryModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { IOfferer, useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
-import { humanizeSiren } from 'core/Offerers/utils'
 import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter'
 import { useAdapter } from 'hooks'
 import useNotification from 'hooks/useNotification'
@@ -37,7 +36,6 @@ const Offerers = (): JSX.Element => {
     getVenuesOfOffererFromSiretAdapter(offerer?.siret.replaceAll(' ', '') ?? '')
   )
 
-  const formatedSiret = humanizeSiren(venuesOfOfferer?.offererSiren)
   const displayToggleVenueList =
     venuesOfOfferer && venuesOfOfferer?.venues.length > 5
 
@@ -87,12 +85,9 @@ const Offerers = (): JSX.Element => {
           Nous avons trouvé un espace déjà inscrit sur le pass Culture et
           incluant ce SIRET.
         </div>
-        <div className={styles['title-4']}>
-          Rejoignez-le si votre structure se trouve dans la liste.
-        </div>
         <div className={styles['venues-layout']}>
           <div className={styles['offerer-name-accent']}>
-            {venuesOfOfferer?.offererName} - {formatedSiret}
+            {venuesOfOfferer?.offererName}
           </div>
           <ul className={styles['venue-list']}>
             {venuesOfOfferer?.venues.map((venue, index) => (
@@ -134,7 +129,7 @@ const Offerers = (): JSX.Element => {
         </Button>
       </div>
       <div className={cn(styles['wrong-offerer-title'], styles['title-4'])}>
-        Votre structure ne se trouve pas dans cette liste ?
+        Vous souhaitez ajouter une nouvelle structure à cette liste ?
       </div>
       <Button
         className={styles['button-add-new-offerer']}
@@ -159,9 +154,6 @@ const Offerers = (): JSX.Element => {
           cancelText="Annuler"
           extraClassNames={styles['dialog-content']}
         >
-          <div className={styles['dialog-subtitle']}>
-            {venuesOfOfferer?.offererName} - {venuesOfOfferer?.offererSiren}
-          </div>
           <div className={styles['dialog-info']}>
             Votre demande sera prise en compte et analysée par nos équipes.
           </div>
