@@ -125,15 +125,7 @@ describe('screens:SignupJourney::Offerers', () => {
       )
     ).toBeInTheDocument()
 
-    expect(
-      await screen.getByText(
-        'Rejoignez-le si votre structure se trouve dans la liste.'
-      )
-    ).toBeInTheDocument()
-
-    expect(
-      await screen.getByText('Offerer Name - 123 456 789')
-    ).toBeInTheDocument()
+    expect(await screen.getByText('Offerer Name')).toBeInTheDocument()
 
     expect(screen.getAllByRole('listitem')).toHaveLength(4)
     expect(screen.queryByText('venue 5')).not.toBeVisible()
@@ -163,7 +155,7 @@ describe('screens:SignupJourney::Offerers', () => {
 
     expect(
       await screen.getByText(
-        'Votre structure ne se trouve pas dans cette liste ?'
+        'Vous souhaitez ajouter une nouvelle structure à cette liste ?'
       )
     ).toBeInTheDocument()
 
