@@ -18,6 +18,7 @@ interface ITableBodyProps<
   tableBodyProps: TableBodyProps
   audience: Audience
   reloadBookings: () => void
+  bookingId: string
 }
 
 const isCollectiveRow = (
@@ -34,6 +35,7 @@ const TableBody = <
   tableBodyProps,
   audience,
   reloadBookings,
+  bookingId,
 }: ITableBodyProps<T>) => {
   return (
     <tbody className="bookings-body" {...tableBodyProps}>
@@ -44,6 +46,7 @@ const TableBody = <
             key={index}
             row={row}
             reloadBookings={reloadBookings}
+            bookingId={bookingId}
           />
         ) : (
           <IndividualTableRow key={index} row={row} />

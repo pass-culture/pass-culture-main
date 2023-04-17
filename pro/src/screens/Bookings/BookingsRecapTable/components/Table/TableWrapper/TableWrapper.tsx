@@ -30,6 +30,7 @@ interface TableWrapperProps<
   updateCurrentPage: (pageNumber: number) => void
   audience: Audience
   reloadBookings: () => void
+  bookingId: string
 }
 
 const TableWrapper = <
@@ -43,6 +44,7 @@ const TableWrapper = <
   updateCurrentPage,
   audience,
   reloadBookings,
+  bookingId,
 }: TableWrapperProps<T>): JSX.Element => {
   const {
     getTableProps,
@@ -96,6 +98,7 @@ const TableWrapper = <
           tableBodyProps={getTableBodyProps()}
           audience={audience}
           reloadBookings={reloadBookings}
+          bookingId={bookingId}
         />
       </table>
 
