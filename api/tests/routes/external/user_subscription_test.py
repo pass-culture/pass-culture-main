@@ -632,7 +632,7 @@ class DmsWebhookApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
-    @testing.override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=False)
+    @testing.override_settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
     def test_dms_first_name_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
@@ -676,7 +676,7 @@ class DmsWebhookApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
-    @testing.override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=False)
+    @testing.override_settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
     def test_dms_full_name_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
@@ -827,7 +827,7 @@ class DmsWebhookApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     @freezegun.freeze_time("2021-12-20 09:00:00")
-    @testing.override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=False)
+    @testing.override_settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
     def test_on_going_birth_date_and_first_name_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(

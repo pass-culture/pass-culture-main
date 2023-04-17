@@ -318,10 +318,7 @@ def _check_user_eligibility(
 
 
 def is_subscription_name_valid(name: str | None) -> bool:
-    if (
-        FeatureToggle.DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING.is_active()
-        and not settings.IS_PROD
-    ):
+    if settings.ENABLE_PERMISSIVE_NAME_VALIDATION:
         return True
     if not name:
         return False
