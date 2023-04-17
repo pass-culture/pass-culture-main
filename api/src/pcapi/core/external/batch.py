@@ -1,6 +1,7 @@
 from datetime import datetime
 import logging
 
+from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
 import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.models as fraud_models
@@ -14,18 +15,24 @@ logger = logging.getLogger(__name__)
 BATCH_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 
-def update_user_attributes(user_id: int, user_attributes: attributes_models.UserAttributes) -> None:
+def update_user_attributes(
+    user_id: int,
+    user_attributes: attributes_models.UserAttributes,
+    cultural_survey_answers: dict[str, list[str]] | None = None,
+) -> None:
     if user_attributes.is_pro:
         return
 
-    formatted_attributes = format_user_attributes(user_attributes)
+    formatted_attributes = format_user_attributes(user_attributes, cultural_survey_answers=cultural_survey_answers)
     payload = batch_tasks.UpdateBatchAttributesRequest(attributes=formatted_attributes, user_id=user_id)
 
     batch_tasks.update_user_attributes_android_task.delay(payload)
     batch_tasks.update_user_attributes_ios_task.delay(payload)
 
 
-def format_user_attributes(user_attributes: attributes_models.UserAttributes) -> dict:
+def format_user_attributes(
+    user_attributes: attributes_models.UserAttributes, cultural_survey_answers: dict[str, list[str]] | None = None
+) -> dict:
     attributes = {
         "date(u.date_created)": _format_date(user_attributes.date_created),
         "date(u.date_of_birth)": _format_date(user_attributes.date_of_birth),
@@ -62,6 +69,15 @@ def format_user_attributes(user_attributes: attributes_models.UserAttributes) ->
         attributes["ut.booking_categories"] = user_attributes.booking_categories
     if user_attributes.booking_subcategories:
         attributes["ut.booking_subcategories"] = user_attributes.booking_subcategories
+
+    if cultural_survey_answers:
+        attributes.update(
+            {
+                "ut.intended_categories": cultural_survey_answers.get(
+                    cultural_survey_models.CulturalSurveyQuestionEnum.PROJECTIONS.value, []
+                )
+            }
+        )
 
     return attributes
 

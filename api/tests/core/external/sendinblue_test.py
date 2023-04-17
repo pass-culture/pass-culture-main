@@ -8,9 +8,11 @@ import pytest
 from sib_api_v3_sdk.models.request_contact_import import RequestContactImport
 
 from pcapi import settings
+from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.sendinblue import SendinblueUserUpdateData
 from pcapi.core.external.sendinblue import add_contacts_to_list
 from pcapi.core.external.sendinblue import build_file_body
+from pcapi.core.external.sendinblue import format_cultural_survey_answers
 from pcapi.core.external.sendinblue import format_user_attributes
 from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.external.sendinblue import make_update_request
@@ -155,6 +157,39 @@ class FormatUserAttributesTest:
             "LAST_BOOKED_OFFER_2022": None,
             "HAS_COLLECTIVE_OFFERS": False,
         }
+
+
+class FormatCulturalSurveyAnswersTest:
+    def test_format_cultural_survey_answers(self):
+        cultural_survey_answers = {
+            cultural_survey_models.CulturalSurveyQuestionEnum.SORTIES.value: [
+                cultural_survey_models.CulturalSurveyAnswerEnum.FESTIVAL.value,
+            ],
+            cultural_survey_models.CulturalSurveyQuestionEnum.PROJECTIONS.value: [
+                cultural_survey_models.CulturalSurveyAnswerEnum.PROJECTION_CONCERT.value,
+                cultural_survey_models.CulturalSurveyAnswerEnum.PROJECTION_FESTIVAL.value,
+            ],
+        }
+
+        formatted_attributes = format_cultural_survey_answers(cultural_survey_answers)
+
+        assert formatted_attributes == {
+            "INTENDED_CATEGORIES": "PROJECTION_CONCERT,PROJECTION_FESTIVAL",
+        }
+
+    def test_format_cultural_survey_answers_no_projection(self):
+        answers = {
+            cultural_survey_models.CulturalSurveyQuestionEnum.SORTIES.value: [
+                cultural_survey_models.CulturalSurveyAnswerEnum.FESTIVAL.value,
+            ],
+            cultural_survey_models.CulturalSurveyQuestionEnum.FESTIVALS.value: [
+                cultural_survey_models.CulturalSurveyAnswerEnum.FESTIVAL_MUSIQUE.value,
+            ],
+        }
+
+        formatted_attributes = format_cultural_survey_answers(answers)
+
+        assert formatted_attributes == {"INTENDED_CATEGORIES": ""}
 
 
 class BulkImportUsersDataTest:
