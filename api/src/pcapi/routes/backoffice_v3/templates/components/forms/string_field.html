@@ -5,9 +5,9 @@
          name="{{ field.name }}"
          class="form-control"
          value="{{ field.data | empty_string_if_null }}"
-         {% if field.flags.required %} required{% endif %}
-         {% if field.flags.pattern %} pattern="{{ field.flags.pattern }}"{% endif %}
-         {% if field.flags.minlength %} minlength="{{ field.flags.minlength }}"{% endif %}
-         {% if field.flags.maxlength %} maxlength="{{ field.flags.maxlength }}"{% endif %}/>
+         {% if field.flags.required %}required{% endif %}
+         {% if field.flags.pattern %}pattern="{{ field.flags.pattern }}"{% endif %}
+         {% if field.flags.minlength %}minlength="{{ field.flags.minlength }}"{% endif %}
+         {% if field.flags.maxlength %}maxlength="{{ field.flags.maxlength }}"{% endif %} />
   <label for="{{ string_field_id }}">{{ field.label.text }}</label>
 </div>

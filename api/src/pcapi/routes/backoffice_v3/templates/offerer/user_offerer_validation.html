@@ -36,23 +36,17 @@
                     type="button"
                     class="btn btn-outline-primary"
                     data-url="{{ url_for("backoffice_v3_web.validation.batch_validate_user_offerer") }}"
-                    data-use-confirmation-modal="false">
-              Valider
-            </button>
+                    data-use-confirmation-modal="false">Valider</button>
             <button disabled
                     type="button"
                     class="btn btn-outline-primary"
                     data-use-confirmation-modal="true"
-                    data-modal-selector="#batch-pending-modal">
-              Mettre en attente
-            </button>
+                    data-modal-selector="#batch-pending-modal">Mettre en attente</button>
             <button disabled
                     type="button"
                     class="btn btn-outline-primary"
                     data-use-confirmation-modal="true"
-                    data-modal-selector="#batch-reject-modal">
-              Rejeter
-            </button>
+                    data-modal-selector="#batch-reject-modal">Rejeter</button>
           </div>
           <div>{% include "components/search/pagination.html" %}</div>
         </div>
@@ -63,7 +57,7 @@
               <th scope="col">
                 <input class="form-check-input"
                        type="checkbox"
-                       name="pc-table-multi-select-check-all"/>
+                       name="pc-table-multi-select-check-all" />
               </th>
               <th scope="col"></th>
               <th scope="col">ID Compte pro</th>
@@ -95,7 +89,7 @@
                   <input type="checkbox"
                          class="form-check-input"
                          name="pc-table-multi-select-check-{{ offerer.id }}-{{ user_offerer.user.id }}"
-                         data-id="{{ user_offerer.id }}"/>
+                         data-id="{{ user_offerer.id }}" />
                 </td>
                 <td>
                   <div class="dropdown">
@@ -118,16 +112,12 @@
                       <li class="dropdown-item p-0">
                         <a class="btn btn-sm d-block w-100 text-start px-3"
                            data-bs-toggle="modal"
-                           data-bs-target="#reject-modal-{{ user_offerer.id }}">
-                          Rejeter
-                        </a>
+                           data-bs-target="#reject-modal-{{ user_offerer.id }}">Rejeter</a>
                       </li>
                       <li class="dropdown-item p-0">
                         <a class="btn btn-sm d-block w-100 text-start px-3"
                            data-bs-toggle="modal"
-                           data-bs-target="#pending-modal-{{ user_offerer.id }}">
-                          Mettre en attente
-                        </a>
+                           data-bs-target="#pending-modal-{{ user_offerer.id }}">Mettre en attente</a>
                       </li>
                     </ul>
                   </div>
@@ -143,7 +133,7 @@
                 </td>
                 <td>
                   {{ get_last_comment_func(offerer, user_offerer.userId) | empty_string_if_null | replace("\n", "
-                  <br/>
+                  <br />
                   "|safe) }}
                 </td>
                 <td>

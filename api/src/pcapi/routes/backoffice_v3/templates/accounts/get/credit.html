@@ -16,8 +16,7 @@
                  aria-label="Crédit restant"
                  aria-valuenow="{{ progress_value }}"
                  aria-valuemin="0"
-                 aria-valuemax="100">
-            </div>
+                 aria-valuemax="100"></div>
           </div>
         </div>
       {% endif %}
@@ -40,8 +39,7 @@
                  aria-label="Crédit restant"
                  aria-valuenow="{{ progress_value }}"
                  aria-valuemin="0"
-                 aria-valuemax="100">
-            </div>
+                 aria-valuemax="100"></div>
           </div>
         </div>
       {% endif %}
@@ -56,9 +54,7 @@
           <h6 class="card-subtitle me-auto">Statut: {{ latest_fraud_check.status | upper }}</h6>
           <a href="{{ latest_fraud_check | format_fraud_check_url }}"
              target="_blank"
-             class="card-link btn lead px-0 py-0 fw-bold">
-            Accéder au dossier {{ latest_fraud_check.type | upper }}
-          </a>
+             class="card-link btn lead px-0 py-0 fw-bold">Accéder au dossier {{ latest_fraud_check.type | upper }}</a>
         {% else %}
           <h5 class="card-title mb-3">Pas de dossier DMS ou Ubble</h5>
         {% endif %}

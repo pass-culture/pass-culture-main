@@ -5,7 +5,7 @@
   "format": true,
   "indent": 2,
   "preserve_leading_space": false,
-  "max_line_length": 120,
+  "max_line_length": 140,
   "max_attribute_length": 30,
   "ignore": "H006",
   "use_gitignore": true,

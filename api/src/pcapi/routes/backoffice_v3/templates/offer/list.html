@@ -24,9 +24,7 @@
                     data-modal-selector="#batch-edit-offer-modal"
                     data-mode="fetch"
                     data-fetch-url="{{ url_for('backoffice_v3_web.offer.get_batch_edit_offer_form') }}"
-                    data-use-confirmation-modal="true">
-              Éditer les offres
-            </button>
+                    data-use-confirmation-modal="true">Éditer les offres</button>
           </div>
         </div>
         <table class="table mb-4"
@@ -36,7 +34,7 @@
               <th scope="col">
                 <input type="checkbox"
                        class="form-check-input"
-                       name="pc-table-multi-select-check-all"/>
+                       name="pc-table-multi-select-check-all" />
               </th>
               <th scope="col"></th>
               <th scope="col">ID</th>
@@ -62,7 +60,7 @@
                   <input type="checkbox"
                          class="form-check-input"
                          name="pc-table-multi-select-check-{{ offer.id }}"
-                         data-id="{{ offer.id }}"/>
+                         data-id="{{ offer.id }}" />
                 </td>
                 <td>
                   <div class="dropdown">
@@ -77,25 +75,19 @@
                         <li class="dropdown-item">
                           <a class="btn btn-sm d-block w-100 text-start px-3"
                              data-bs-toggle="modal"
-                             data-bs-target="#edit-offer-modal-{{ offer.id }}">
-                            Modifier
-                          </a>
+                             data-bs-target="#edit-offer-modal-{{ offer.id }}">Modifier</a>
                         </li>
                       {% endif %}
                       {% if has_permission("FRAUD_ACTIONS") %}
                         <li class="dropdown-item">
                           <a class="btn btn-sm d-block w-100 text-start px-3"
                              data-bs-toggle="modal"
-                             data-bs-target="#validate-offer-modal-{{ offer.id }}">
-                            Valider l'offre
-                          </a>
+                             data-bs-target="#validate-offer-modal-{{ offer.id }}">Valider l'offre</a>
                         </li>
                         <li class="dropdown-item">
                           <a class="btn btn-sm d-block w-100 text-start px-3"
                              data-bs-toggle="modal"
-                             data-bs-target="#reject-offer-modal-{{ offer.id }}">
-                            Rejeter l'offre
-                          </a>
+                             data-bs-target="#reject-offer-modal-{{ offer.id }}">Rejeter l'offre</a>
                         </li>
                       {% endif %}
                     </ul>

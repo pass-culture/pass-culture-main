@@ -86,4 +86,4 @@ Flask-WTF==1.0.1
 zeep==4.1.0
 libsass==0.22.0
 boussole==2.1.0
-djlint==1.19.16
+djlint==1.23.0

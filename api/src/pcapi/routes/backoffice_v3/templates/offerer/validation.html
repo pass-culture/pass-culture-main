@@ -97,16 +97,12 @@
                         <li class="dropdown-item p-0">
                           <a class="btn btn-sm d-block w-100 text-start px-3"
                              data-bs-toggle="modal"
-                             data-bs-target="#reject-modal-{{ offerer.id }}">
-                            Rejeter
-                          </a>
+                             data-bs-target="#reject-modal-{{ offerer.id }}">Rejeter</a>
                         </li>
                         <li class="dropdown-item p-0">
                           <a class="btn btn-sm d-block w-100 text-start px-3"
                              data-bs-toggle="modal"
-                             data-bs-target="#pending-modal-{{ offerer.id }}">
-                            Mettre en attente
-                          </a>
+                             data-bs-target="#pending-modal-{{ offerer.id }}">Mettre en attente</a>
                         </li>
                       </ul>
                     </div>
@@ -131,7 +127,7 @@
                 <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>
                   {{ get_last_comment_func(offerer) | empty_string_if_null | replace("\n", "
-                  <br/>
+                  <br />
                   "|safe) }}
                 </td>
                 <td>
