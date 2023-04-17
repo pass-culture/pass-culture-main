@@ -25,7 +25,7 @@ export const AppLayout = ({
           <a
             className="app-layout-header-help-link"
             download
-            href={`${document.referrer}adage/index/docGet/doc/PARCOURS_REDACTEUR`}
+            href={`${document.referrer}adage/index/docGet/format/pptx/doc/PRESENTATION_J_UTILISE_PASS_CULTURE`}
             rel="noreferrer"
             target="_blank"
           >
