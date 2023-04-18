@@ -53,7 +53,8 @@ def test_synchronize_adage_ids_on_venues(db_session):
     venue2_data = {**BASE_DATA, "id": 128029, "venueId": venue2.id}
     venue3_data = {**BASE_DATA, "id": 128030, "venueId": venue3.id, "synchroPass": 0}
     venue4_data = {**BASE_DATA, "id": 128031, "venueId": None}
-    venue5_data = {**BASE_DATA, "id": 128030, "venueId": venue5.id, "synchroPass": 0}
+    venue5_data = {**BASE_DATA, "id": 128030, "venueId": venue5.id, "synchroPass": 1, "actif": None}
+    venue6_data = {**BASE_DATA, "id": 128030, "venueId": venue6.id, "synchroPass": 0, "actif": None}
 
     email2 = get_emails_by_venue(venue2)
 
@@ -64,7 +65,7 @@ def test_synchronize_adage_ids_on_venues(db_session):
                 "X-omogen-api-key": "adage-api-key",
             },
             status_code=200,
-            json=[venue1_data, venue2_data, venue3_data, venue4_data, venue5_data],
+            json=[venue1_data, venue2_data, venue3_data, venue4_data, venue5_data, venue6_data],
         )
         with patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email") as mock_activation_mail:
             educational_api_adage.synchronize_adage_ids_on_venues()
