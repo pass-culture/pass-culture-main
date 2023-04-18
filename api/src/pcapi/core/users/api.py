@@ -1055,7 +1055,7 @@ def skip_phone_validation_step(user: models.User) -> None:
     if user.phoneValidationStatus == models.PhoneValidationStatusType.VALIDATED:
         raise phone_validation_exceptions.UserPhoneNumberAlreadyValidated()
 
-    user.phoneValidationStatus = models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT.name  # type: ignore [call-overload]
+    user.phoneValidationStatus = models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT.name
     repository.save(user)
 
 
