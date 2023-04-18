@@ -146,7 +146,7 @@ class AllocineStocks(LocalProvider):
         ):
             if field in movie_information:
                 # FIXME (2023-03-16): Currently not supported by mypy https://github.com/python/mypy/issues/7178
-                obj.extraData[field] = movie_information[field]  # type: ignore [literal-required]
+                obj.extraData[field] = movie_information[field]  # type: ignore [literal-required, index]
 
     def fill_product_attributes(self, allocine_product: offers_models.Product) -> None:
         allocine_product.name = self.movie_information["title"]  # type: ignore [index]
@@ -169,15 +169,15 @@ class AllocineStocks(LocalProvider):
 
         if allocine_offer.extraData is None:
             allocine_offer.extraData = {}
-        allocine_offer.extraData["theater"] = {
+        allocine_offer.extraData["theater"] = {  # type: ignore [index]
             "allocine_movie_id": self.movie_information["internal_id"],  # type: ignore [index]
             "allocine_room_id": self.room_internal_id,
         }
 
         if self.movie_information and "visa" in self.movie_information:
-            allocine_offer.extraData["visa"] = self.movie_information["visa"]
+            allocine_offer.extraData["visa"] = self.movie_information["visa"]  # type: ignore [index]
         if self.movie_information and "stageDirector" in self.movie_information:
-            allocine_offer.extraData["stageDirector"] = self.movie_information["stageDirector"]
+            allocine_offer.extraData["stageDirector"] = self.movie_information["stageDirector"]  # type: ignore [index]
 
         movie_version = (
             ORIGINAL_VERSION_SUFFIX
@@ -188,7 +188,7 @@ class AllocineStocks(LocalProvider):
         allocine_offer.name = f"{self.movie_information['title']} - {movie_version}"  # type: ignore [index]
         allocine_offer.subcategoryId = subcategories.SEANCE_CINE.id
         allocine_offer.product = self.last_product
-        allocine_offer.extraData["diffusionVersion"] = movie_version
+        allocine_offer.extraData["diffusionVersion"] = movie_version  # type: ignore [index]
 
         is_new_offer_to_insert = allocine_offer.id is None
         if is_new_offer_to_insert:
