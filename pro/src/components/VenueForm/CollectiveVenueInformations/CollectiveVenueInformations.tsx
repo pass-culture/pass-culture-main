@@ -42,7 +42,7 @@ const CollectiveVenueInformations = ({
           ? 'Mes informations pour les enseignants'
           : 'A destination des scolaires'
       }
-      id="for-schools"
+      id="venue-collective-data"
       description={
         venue?.hasAdageId ||
         canCreateCollectiveOffer ||

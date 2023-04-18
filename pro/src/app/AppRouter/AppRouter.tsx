@@ -46,7 +46,7 @@ const RouteWrapper = ({ route }: { route: IRoute }) => {
   /* istanbul ignore next */
   if (route.meta?.shouldRedirect) {
     const newLocation = dehumanizedRoute(location, matches)
-    if (location.pathname + location.search != newLocation) {
+    if (location.pathname + location.search + location.hash != newLocation) {
       jsx = <Navigate to={newLocation} replace />
     }
   }
