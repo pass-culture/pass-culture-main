@@ -16,10 +16,9 @@ class PcFormsCheckValidity extends PcAddOn {
   }
 
   #onFormSubmit = (event) => {
-    event.preventDefault()
     const $form = event.target
-    if ($form.checkValidity()) {
-      $form.submit()
+    if (!$form.checkValidity()) {
+      event.preventDefault()
     }
   }
 }

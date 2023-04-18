@@ -1,12 +1,45 @@
+{% from "components/presentation/details/tabs.html" import build_details_tab %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
 {% from "components/turbo/lazy_modal.html" import build_loading_spinner with context %}
 {% extends "layouts/connected.html" %}
 {% block page %}
   <div class="pt-3 px-5">
     <h2 class="fw-light">Synchronisation Pivot</h2>
     <div class="mt-4">
-      <turbo-frame id="providers_lists_frame" src="{{ url_for("backoffice_v3_web.providers.get_providers_details") }}">
-      {{ build_loading_spinner() }}
-      </turbo-frame>
+      {% call build_details_tabs_wrapper() %}
+        {{ build_details_tab("allocine", "Pivot Allociné", active_tab == 'allocine') }}
+        {{ build_details_tab("boost", "Pivot Boost", active_tab == 'boost') }}
+        {{ build_details_tab("cgr", "Pivot CGR", active_tab == 'cgr') }}
+        {{ build_details_tab("cineoffice", "Pivot CineOffice", active_tab == 'cineoffice') }}
+      {% endcall %}
+      {% call build_details_tabs_content_wrapper() %}
+        {% call build_details_tab_content("allocine", active_tab == 'allocine') %}
+          <turbo-frame data-turbo="true" id="allocine_frame" loading="lazy"
+          src="{{ url_for("backoffice_v3_web.providers.list_providers", name="allocine") }}">
+          {{ build_loading_spinner() }}
+          </turbo-frame>
+        {% endcall %}
+        {% call build_details_tab_content("boost", active_tab == 'boost') %}
+          <turbo-frame data-turbo="true" id="boost_frame" loading="lazy"
+          src="{{ url_for("backoffice_v3_web.providers.list_providers", name="boost") }}">
+          {{ build_loading_spinner() }}
+          </turbo-frame>
+        {% endcall %}
+        {% call build_details_tab_content("cgr", active_tab == 'cgr') %}
+          <turbo-frame data-turbo="true" id="cgr_frame" loading="lazy"
+          src="{{ url_for("backoffice_v3_web.providers.list_providers", name="cgr") }}">
+          {{ build_loading_spinner() }}
+          </turbo-frame>
+        {% endcall %}
+        {% call build_details_tab_content("cineoffice", active_tab == 'cineoffice') %}
+          <turbo-frame data-turbo="true" id="cineoffice_frame" loading="lazy"
+          src="{{ url_for("backoffice_v3_web.providers.list_providers", name="cineoffice") }}">
+          {{ build_loading_spinner() }}
+          </turbo-frame>
+        {% endcall %}
+      {% endcall %}
     </div>
   </div>
 {% endblock page %}
