@@ -100,11 +100,6 @@ describe('Activity', () => {
         'Ces informations seront affichées dans votre page lieu sur l’application pass Culture (sauf pour les lieux administratifs). Elles permettront aux jeunes d’en savoir plus sur votre lieu.'
       )
     ).not.toBeInTheDocument()
-    expect(
-      screen.queryByText(
-        "S’il s'agit ici de la création du lieu de votre siège social, sélectionnez “lieu administratif”."
-      )
-    ).not.toBeInTheDocument()
     expect(screen.getByLabelText('Type de lieu')).toBeDisabled()
   })
 })
