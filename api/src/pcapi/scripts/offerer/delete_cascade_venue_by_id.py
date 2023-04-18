@@ -116,6 +116,15 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
     deleted_collective_offers_count = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.venueId == venue_id
     ).delete(synchronize_session=False)
+
+    collective_offer_template_link_deleted = educational_models.CollectiveOffer.query.filter(
+        educational_models.CollectiveOffer.id.in_(
+            db.session.query(educational_models.CollectiveOffer.id)
+            .join(educational_models.CollectiveOfferTemplate, educational_models.CollectiveOffer.template)
+            .filter(educational_models.CollectiveOfferTemplate.venueId == venue_id)
+        )
+    ).update({"templateId": None}, synchronize_session=False)
+
     deleted_collective_offer_templates_count = educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.venueId == venue_id
     ).delete(synchronize_session=False)
@@ -157,6 +166,7 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
         "offer_ids_to_unindex": offer_ids_to_delete,
         "collective_offer_ids_to_unindex": collective_offer_ids_to_delete,
         "collective_offer_template_ids_to_unindex": collective_offer_template_ids_to_delete,
+        "collective_offer_template_link_deleted": collective_offer_template_link_deleted,
         "venue_id": venue_id,
         "deleted_bank_informations_count": deleted_bank_informations_count,
         "deleted_venues_count": deleted_venues_count,

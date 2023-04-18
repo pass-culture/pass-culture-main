@@ -280,3 +280,17 @@ def test_delete_cascade_venue_should_remove_synchronization_to_allocine_provider
     assert providers_models.AllocineVenueProviderPriceRule.query.count() == 1
     assert providers_models.AllocinePivot.query.count() == 1
     assert providers_models.Provider.query.count() > 0
+
+
+@pytest.mark.usefixtures("db_session")
+def test_delete_cascade_venue_when_template_has_offer_on_other_venue():
+    venue = offerers_factories.VenueFactory()
+    venue2 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+    template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
+    offer = educational_factories.CollectiveOfferFactory(venue=venue2, template=template)
+    delete_cascade_venue_by_id(venue.id)
+
+    assert offerers_models.Venue.query.count() == 1
+    assert educational_models.CollectiveOffer.query.count() == 1
+    assert educational_models.CollectiveOfferTemplate.query.count() == 0
+    assert offer.template == None
