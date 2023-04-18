@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
-import { Target, VenueTypeCode } from 'apiClient/v1'
+import { Target } from 'apiClient/v1'
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address'
 import {
   DEFAULT_ACTIVITY_VALUES,
@@ -115,7 +115,7 @@ describe('test SignupBreadcrumb', () => {
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
     contextValue.activity = {
-      venueTypeCode: VenueTypeCode.MUS_E,
+      venueTypeCode: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL,
     }

@@ -4,7 +4,6 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { VenueTypeCode } from 'apiClient/v1'
 import {
   DEFAULT_ACTIVITY_VALUES,
   ISignupJourneyContext,
@@ -118,7 +117,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
 
   it('should render activity form with initialValues', async () => {
     initialValues = {
-      venueTypeCode: VenueTypeCode.MUS_E,
+      venueTypeCode: 'MUSEUM',
       socialUrls: ['https://example.com', 'https://exampleTwo.fr'],
       targetCustomer: { individual: false, educational: false },
     }

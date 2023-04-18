@@ -4,7 +4,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel, Target, VenueTypeCode } from 'apiClient/v1'
+import { GetOffererResponseModel, Target } from 'apiClient/v1'
 import { IAddress } from 'components/Address'
 import Notification from 'components/Notification/Notification'
 import {
@@ -79,7 +79,7 @@ describe('screens:SignupJourney::Validation', () => {
       setOfferer: () => {},
     }
     jest.spyOn(api, 'getVenueTypes').mockResolvedValue([
-      { id: VenueTypeCode.MUS_E, label: 'first venue label' },
+      { id: 'MUSEUM', label: 'first venue label' },
       { id: 'venue2', label: 'second venue label' },
     ])
   })
@@ -110,7 +110,7 @@ describe('screens:SignupJourney::Validation', () => {
     renderValidationScreen({
       ...contextValue,
       activity: {
-        venueTypeCode: VenueTypeCode.MUS_E,
+        venueTypeCode: 'MUSEUM',
         socialUrls: ['url1', 'url2'],
         targetCustomer: Target.EDUCATIONAL,
       },
@@ -135,7 +135,7 @@ describe('screens:SignupJourney::Validation', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          venueTypeCode: VenueTypeCode.MUS_E,
+          venueTypeCode: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
         },
@@ -182,7 +182,7 @@ describe('screens:SignupJourney::Validation', () => {
         name: 'nom',
         publicName: 'nom public',
         siret: '123123123',
-        venueTypeCode: 'Musée',
+        venueTypeCode: 'MUSEUM',
         webPresence: 'url1, url2',
         target: Target.EDUCATIONAL,
         createVenueWithoutSiret: false,
@@ -196,7 +196,7 @@ describe('screens:SignupJourney::Validation', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          venueTypeCode: VenueTypeCode.MUS_E,
+          venueTypeCode: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
         },
@@ -221,7 +221,7 @@ describe('screens:SignupJourney::Validation', () => {
         name: 'nom',
         publicName: '',
         siret: '123123123',
-        venueTypeCode: VenueTypeCode.MUS_E,
+        venueTypeCode: 'MUSEUM',
         webPresence: 'url1, url2',
         target: Target.EDUCATIONAL,
         createVenueWithoutSiret: false,
@@ -240,7 +240,7 @@ describe('screens:SignupJourney::Validation', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          venueTypeCode: VenueTypeCode.MUS_E,
+          venueTypeCode: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
         },
