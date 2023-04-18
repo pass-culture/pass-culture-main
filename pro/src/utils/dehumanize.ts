@@ -75,6 +75,7 @@ export const dehumanizedRoute = (
     queryParamsToRedirect,
     location.search
   )
+  const newHash = location.hash ?? ''
 
-  return newLoc + newQueryString
+  return newLoc + newQueryString + newHash
 }
