@@ -6,7 +6,7 @@ export const validationSchema = yup.object().shape({
   venueTypeCode: yup
     .string()
     .oneOf(
-      Object.values(VenueTypeCode),
+      Object.keys(VenueTypeCode),
       'Veuillez sélectionner une activité principale'
     )
     .required('Veuillez sélectionner une activité principale'),

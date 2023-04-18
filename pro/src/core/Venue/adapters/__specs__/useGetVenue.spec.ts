@@ -54,7 +54,7 @@ describe('useGetVenue', () => {
       description: 'description du lieu',
       comment: 'commentaire lieu sans siret',
       bookingEmail: 'test@example.com',
-      venueTypeCode: VenueTypeCode.LIBRAIRIE,
+      venueTypeCode: VenueTypeCode.BOOKSTORE,
       withdrawalDetails: '',
       collectiveAccessInformation: '',
       collectiveDescription: 'Description',

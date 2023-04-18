@@ -217,7 +217,7 @@ const venueResponse: GetVenueResponseModel = {
   postalCode: '75008',
   publicName: 'name',
   siret: '88145723823022',
-  venueTypeCode: VenueTypeCode.COURS_ET_PRATIQUE_ARTISTIQUES,
+  venueTypeCode: VenueTypeCode.ARTISTIC_COURSE,
   venueLabelId: 'AE',
   reimbursementPointId: 0,
   withdrawalDetails: 'string',

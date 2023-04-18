@@ -12,7 +12,6 @@ export type SaveNewOnboardingDataQueryModel = {
   siret: string;
   target: Target;
   venueType?: string | null;
-  venueTypeCode?: VenueTypeCode | null;
+  venueTypeCode?: keyof typeof VenueTypeCode | null;
   webPresence: string;
 };
-
