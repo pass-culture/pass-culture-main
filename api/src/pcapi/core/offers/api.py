@@ -33,6 +33,7 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
@@ -1109,9 +1110,16 @@ def report_offer(
         logger.warning("Could not send email reported offer by user", extra={"user_id": user.id})
 
 
-def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(
-    offer: models.Offer, venue_provider: providers_models.VenueProvider
-) -> None:
+def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer: models.Offer) -> None:
+    try:
+        venue_provider = external_bookings_api.get_active_cinema_venue_provider(offer.venueId)
+        validation.check_offer_is_from_current_cinema_provider(offer)
+    except (exceptions.UnexpectedCinemaProvider, providers_exceptions.InactiveProvider):
+        offer.isActive = False
+        repository.save(offer)
+        search.async_index_offer_ids([offer.id])
+        return
+
     sentry_sdk.set_tag("cinema-venue-provider", venue_provider.provider.localClass)
     logger.info(
         "Getting up-to-date show stock from booking provider on offer view",

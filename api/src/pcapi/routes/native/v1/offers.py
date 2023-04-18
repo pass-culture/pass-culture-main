@@ -2,7 +2,6 @@ from sqlalchemy.orm import joinedload
 
 from pcapi.core.categories import subcategories
 from pcapi.core.categories import subcategories_v2
-import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -13,7 +12,6 @@ from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import Stock
-from pcapi.core.offers.validation import check_offer_is_from_current_cinema_provider
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
@@ -45,11 +43,8 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         .first_or_404()
     )
 
-    is_external_ticket_applicable = providers_repository.is_external_ticket_applicable(offer)
-    if is_external_ticket_applicable:
-        cinema_venue_provider = external_bookings_api.get_active_cinema_venue_provider(offer.venueId)
-        if check_offer_is_from_current_cinema_provider(offer):
-            api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer, cinema_venue_provider)
+    if offer.isActive and providers_repository.is_external_ticket_applicable(offer):
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
     return serializers.OfferResponse.from_orm(offer)
 
