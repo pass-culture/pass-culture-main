@@ -42,10 +42,6 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
 
     localClass = Column(
         String(60),
-        CheckConstraint(
-            '("localClass" IS NOT NULL AND "apiUrl" IS NULL) OR ("localClass" IS NULL AND "apiUrl" IS NOT NULL)',
-            name="check_provider_has_localclass_or_apiUrl",
-        ),
         nullable=True,
         unique=True,
     )
@@ -57,11 +53,12 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
 
     enabledForPro: bool = Column(Boolean, nullable=False, default=False, server_default=expression.false())
 
-    pricesInCents: bool = Column(Boolean, nullable=False, default=False, server_default=expression.false())
-
     enableParallelSynchronization: bool = Column(
         Boolean, nullable=False, default=False, server_default=expression.false()
     )
+
+    logoUrl: str = Column(Text(), nullable=True)
+    pricesInCents: bool = Column(Boolean, nullable=False, default=False, server_default=expression.false())
 
     @property
     def isAllocine(self) -> bool:

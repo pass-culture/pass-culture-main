@@ -780,3 +780,11 @@ class OffererTagMapping(PcObject, Base, Model):
     tagId: int = Column(BigInteger, ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False)
 
     __table_args__ = (UniqueConstraint("offererId", "tagId", name="unique_offerer_tag"),)
+
+
+class OffererProvider(PcObject, Base, Model):
+    __tablename__ = "offerer_provider"
+    offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
+    providerId: int = Column(BigInteger, ForeignKey("provider.id"), index=True, nullable=False)
+
+    __table_args__ = (UniqueConstraint("offererId", "providerId", name="unique_offerer_provider"),)
