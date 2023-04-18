@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from unittest.mock import patch
 
 import pytest
 
@@ -11,11 +12,16 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.core.providers.exceptions import InactiveProvider
+import pcapi.core.providers.factories as providers_factories
+import pcapi.core.providers.repository as providers_api
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -80,6 +86,58 @@ class PostBookingTest:
 
         assert response.status_code == 400
         assert response.json == {"code": "OFFER_CATEGORY_NOT_BOOKABLE_BY_USER"}
+
+    @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
+    def test_unexpected_offer_provider(self, mocked_book_ticket, client):
+        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        cds_provider = providers_api.get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+        providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        offer = offers_factories.EventOfferFactory(
+            name="Séance ciné solo",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cds_provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%4444#111/datetime")
+        mocked_book_ticket.side_effect = UnexpectedCinemaProvider("Unknown Provider: Toto")
+
+        client = client.with_token(self.identifier)
+        response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
+
+        assert response.status_code == 400
+        assert response.json["code"] == "UNEXPECTED_CINEMA_PROVIDER"
+
+    @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
+    def test_inactive_provider(self, mocked_book_ticket, client):
+        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        cds_provider = providers_api.get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+        providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        offer = offers_factories.EventOfferFactory(
+            name="Séance ciné solo",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cds_provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%4444#111/datetime")
+        mocked_book_ticket.side_effect = InactiveProvider(
+            f"No active cinema venue provider found for venue #{venue_provider.venue.id}"
+        )
+
+        client = client.with_token(self.identifier)
+        response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INACTIVE_CINEMA_PROVIDER"
 
 
 class GetBookingsTest:
@@ -341,6 +399,61 @@ class CancelBookingTest:
         # successful but it does nothing, so it does not send a new cancellation email
         assert response.status_code == 204
         assert len(mails_testing.outbox) == 0
+
+    @patch("pcapi.core.bookings.api._cancel_external_booking")
+    def test_unexpected_offer_provider(self, mocked_cancel_external_booking, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        cds_provider = providers_api.get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+        providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        offer = offers_factories.EventOfferFactory(
+            name="Séance ciné solo",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cds_provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%4444#111/datetime")
+        booking = booking_factories.BookingFactory(user=user, stock=stock)
+        mocked_cancel_external_booking.side_effect = UnexpectedCinemaProvider("Unknown Provider: Toto")
+
+        client = client.with_token(self.identifier)
+        response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
+
+        assert response.status_code == 400
+        assert response.json["code"] == "UNEXPECTED_CINEMA_PROVIDER"
+
+    @patch("pcapi.core.bookings.api._cancel_external_booking")
+    def test_inactive_provider(self, mocked_cancel_external_booking, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        cds_provider = providers_api.get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+        providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        offer = offers_factories.EventOfferFactory(
+            name="Séance ciné solo",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cds_provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%4444#111/datetime")
+        booking = booking_factories.BookingFactory(user=user, stock=stock)
+
+        mocked_cancel_external_booking.side_effect = InactiveProvider(
+            f"No active cinema venue provider found for venue #{venue_provider.venue.id}"
+        )
+
+        client = client.with_token(self.identifier)
+        response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INACTIVE_CINEMA_PROVIDER"
 
 
 class ToggleBookingVisibilityTest:

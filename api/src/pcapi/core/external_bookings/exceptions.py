@@ -1,0 +1,2 @@
+class ExternalBookingException(Exception):
+    pass

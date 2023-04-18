@@ -7,14 +7,17 @@ import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.external_bookings.exceptions import ExternalBookingException
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.exceptions import StockDoesNotExist
+from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.exceptions import InactiveProvider
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
@@ -74,6 +77,24 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
             extra={"stock_id": body.stock_id, "subcategory_id": stock.offer.subcategoryId, "user_roles": user.roles},
         )
         raise ApiErrors({"code": "OFFER_CATEGORY_NOT_BOOKABLE_BY_USER"})
+    except UnexpectedCinemaProvider:
+        logger.info(
+            "Could not book offer: The CinemaProvider for the Venue does not match the Offer Provider",
+            extra={"offer_id": stock.offer.id, "venue_id": stock.offer.venue.id},
+        )
+        raise ApiErrors({"external_booking": "Cette offre n'est plus réservable"})
+    except InactiveProvider:
+        logger.info(
+            "Could not book offer: The CinemaProvider for this offer is inactive",
+            extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
+        )
+        raise ApiErrors({"external_booking": "Cette offre n'est plus réservable"})
+    except ExternalBookingException:
+        logger.info(
+            "Could not book offer: Error when booking external ticket",
+            extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
+        )
+        raise ApiErrors({"external_booking": "La réservation a échoué. Essaye un peu plus tard."})
 
     return BookOfferResponse(bookingId=booking.id)
 
@@ -203,6 +224,10 @@ def cancel_booking(user: User, booking_id: int) -> None:
     except RuntimeError:
         logger.error("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s", user.id)
         raise ApiErrors()
+    except UnexpectedCinemaProvider:
+        raise ApiErrors({"code": "UNEXPECTED_CINEMA_PROVIDER"})
+    except InactiveProvider:
+        raise ApiErrors({"code": "INACTIVE_CINEMA_PROVIDER"})
 
 
 @blueprint.native_v1.route("/bookings/<int:booking_id>/toggle_display", methods=["POST"])
