@@ -4,6 +4,7 @@ from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 import pcapi.core.external_bookings.models as external_bookings_models
+import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.users.models as users_models
@@ -56,5 +57,5 @@ def get_active_cinema_venue_provider(venue_id: int) -> providers_models.VenuePro
         .one_or_none()
     )
     if not cinema_venue_provider:
-        raise ValueError(f"No active cinema venue provider found for venue #{venue_id}")
+        raise providers_exceptions.InactiveProvider(f"No active cinema venue provider found for venue #{venue_id}")
     return cinema_venue_provider
