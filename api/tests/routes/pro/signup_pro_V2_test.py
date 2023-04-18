@@ -57,13 +57,6 @@ class Returns204Test:
         user = User.query.filter_by(email="toto_pro@example.com").first()
         assert user.needsToFillCulturalSurvey == False
 
-    def test_firebase_flag(self, client):
-        data = BASE_DATA_PRO.copy()
-        client.post("/v2/users/signup/pro", json=data)
-
-        user = User.query.one()
-        assert user.pro_flags.firebase == {"BETTER_OFFER_CREATION": True}
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:

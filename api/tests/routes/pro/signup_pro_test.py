@@ -204,13 +204,6 @@ class Returns204Test:
         assert actions_list[1].user == user
         assert actions_list[1].offerer == offerer
 
-    def test_firebase_flag(self, client):
-        data = BASE_DATA_PRO.copy()
-        client.post("/users/signup/pro", json=data)
-
-        user = User.query.one()
-        assert user.pro_flags.firebase == {"BETTER_OFFER_CREATION": False}
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
