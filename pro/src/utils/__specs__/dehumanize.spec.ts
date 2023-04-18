@@ -7,6 +7,7 @@ describe('dehumanizedRoute', () => {
     const location = {
       pathname: '/my_route_with_parameters/AK/form/12/other/EJ',
       search: '?structure=EF&unknown=AE&intparam=34',
+      hash: '#anchor',
     } as Location
     const matches = [
       {
@@ -18,7 +19,7 @@ describe('dehumanizedRoute', () => {
       },
     ]
     expect(dehumanizedRoute(location, matches)).toBe(
-      '/my_route_with_parameters/2/form/12/other/EJ?structure=33&unknown=AE&intparam=34'
+      '/my_route_with_parameters/2/form/12/other/EJ?structure=33&unknown=AE&intparam=34#anchor'
     )
   })
 })
