@@ -376,7 +376,7 @@ def update_collective_offer_educational_institution(
         raise exceptions.CollectiveOfferNotEditable()
 
     offer.institutionId = educational_institution_id
-    offer.teacher = None  # type: ignore [call-overload]
+    offer.teacher = None
 
     if offer.institutionId is not None:
         if not offer.institution.isActive:
@@ -570,7 +570,7 @@ def edit_collective_offer_public(
                     raise exceptions.EducationalInstitutionUnknown()
                 if not institution.isActive:
                     raise exceptions.EducationalInstitutionIsNotActive()
-            offer.institution = institution  # type: ignore [assignment]
+            offer.institution = institution
         elif key == "offerVenue":
             offer.offerVenue["venueId"] = humanize(value["venueId"]) or ""
             offer.offerVenue["addressType"] = value["addressType"].value
