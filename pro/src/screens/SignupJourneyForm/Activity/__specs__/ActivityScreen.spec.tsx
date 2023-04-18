@@ -127,7 +127,7 @@ describe('screens:SignupJourney::Activity', () => {
 
   it('should go next step with individual target customer', async () => {
     contextValue.activity = {
-      venueType: 'venue1',
+      venueTypeCode: VenueTypeCode.MUS_E,
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL,
     }
@@ -145,7 +145,7 @@ describe('screens:SignupJourney::Activity', () => {
 
   it('should go next step with educational target customer', async () => {
     contextValue.activity = {
-      venueType: 'venue1',
+      venueTypeCode: VenueTypeCode.MUS_E,
       socialUrls: [],
       targetCustomer: Target.EDUCATIONAL,
     }
