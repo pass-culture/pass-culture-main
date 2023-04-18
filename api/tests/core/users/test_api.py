@@ -229,7 +229,6 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         ---[        cancellable       ][         not cancellable        ]-->
         ---|---------------------------|--------------------------------|-->
         booking date         date cancellation limit                event date
-
         -----------------|------------------------------------------------->
                         now
         """
@@ -254,7 +253,6 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         ---[        cancellable       ][         not cancellable        ]-->
         ---|---------------------------|--------------------------------|-->
         booking date         date cancellation limit                event date
-
         -------------------------------------------------|----------------->
                                                         now
         """
@@ -298,7 +296,7 @@ class SuspendAccountTest:
             history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason
         )
 
-    def test_suspend_beneficiary(self):
+    def test_suspend_beneficiary_for_fraud_suspicion(self):
         user = users_factories.BeneficiaryGrant18Factory()
         cancellable_booking = bookings_factories.BookingFactory(user=user)
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
@@ -330,6 +328,38 @@ class SuspendAccountTest:
             history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason, comment
         )
 
+    def test_suspend_beneficiary_upon_user_request(self):
+        user = users_factories.BeneficiaryGrant18Factory()
+        cancellable_booking = bookings_factories.BookingFactory(user=user)
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        confirmed_booking = bookings_factories.BookingFactory(
+            user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
+        )
+        used_booking = bookings_factories.UsedBookingFactory(user=user)
+        author = users_factories.AdminFactory()
+        reason = users_constants.SuspensionReason.UPON_USER_REQUEST
+        comment = "Dossier n°12345"
+        old_password_hash = user.password
+
+        users_api.suspend_account(user, reason, author, comment=comment)
+
+        db.session.refresh(user)
+
+        assert not user.isActive
+        assert user.password == old_password_hash
+        assert user.suspension_reason == reason
+        assert _datetime_within_last_5sec(user.suspension_date)
+
+        assert cancellable_booking.status is BookingStatus.CANCELLED
+        assert confirmed_booking.status is BookingStatus.CONFIRMED
+        assert used_booking.status is BookingStatus.USED
+
+        history = history_models.ActionHistory.query.filter_by(userId=user.id).all()
+        assert len(history) == 1
+        _assert_user_action_history_as_expected(
+            history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason, comment
+        )
+
     def test_suspend_pro(self):
         booking = bookings_factories.BookingFactory()
         pro = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
@@ -339,7 +369,7 @@ class SuspendAccountTest:
         users_api.suspend_account(pro, reason, author)
 
         assert not pro.isActive
-        assert booking.status is BookingStatus.CANCELLED
+        assert booking.status is BookingStatus.CONFIRMED
 
         history = history_models.ActionHistory.query.filter_by(userId=pro.id).all()
         assert len(history) == 1

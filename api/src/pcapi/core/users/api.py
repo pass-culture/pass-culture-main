@@ -354,8 +354,6 @@ def suspend_account(
         * a user who suspends his account should be able to connect to
         the application in order to access to some restricted actions.
     """
-    import pcapi.core.bookings.api as bookings_api  # avoid import loop
-
     user.isActive = False
     user.remove_admin_role()
     action = history_api.log_action(
@@ -372,21 +370,7 @@ def suspend_account(
     sessions = models.UserSession.query.filter_by(userId=user.id)
     repository.delete(*sessions)
 
-    n_bookings = 0
-
-    # Cancel all bookings of the related offerer if the suspended
-    # account was the last active offerer's account.
-    if reason in (constants.SuspensionReason.FRAUD_SUSPICION, constants.SuspensionReason.BLACKLISTED_DOMAIN_NAME):
-        for user_offerer in user.UserOfferers:
-            offerer = user_offerer.offerer
-            if any(user_of.user.isActive and user_of.user != user for user_of in offerer.UserOfferers):
-                continue
-            bookings = bookings_repository.find_cancellable_bookings_by_offerer(offerer.id)
-            for booking in bookings:
-                bookings_api.cancel_booking_for_fraud(booking)
-                n_bookings += 1
-
-    n_bookings += _cancel_bookings_of_user_on_requested_account_suspension(user, reason)
+    n_bookings = _cancel_bookings_of_user_on_requested_account_suspension(user, reason)
 
     logger.info(
         "Account has been suspended",
