@@ -12,7 +12,7 @@ import styles from './ActivityForm.module.scss'
 import { activityTargetCustomerCheckboxGroup } from './constants'
 
 export interface IActivityFormValues {
-  venueTypeCode: VenueTypeCode | ''
+  venueTypeCode: keyof typeof VenueTypeCode | ''
   socialUrls: string[]
   targetCustomer: {
     individual: boolean

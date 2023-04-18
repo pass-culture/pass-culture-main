@@ -4,7 +4,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { Target, VenueTypeCode } from 'apiClient/v1'
+import { Target } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import {
   DEFAULT_ACTIVITY_VALUES,
@@ -63,7 +63,7 @@ describe('screens:SignupJourney::Activity', () => {
       setOfferer: () => {},
     }
     jest.spyOn(api, 'getVenueTypes').mockResolvedValue([
-      { id: VenueTypeCode.MUS_E, label: 'first venue label' },
+      { id: 'MUSEUM', label: 'first venue label' },
       { id: 'venue2', label: 'second venue label' },
     ])
   })
@@ -112,7 +112,7 @@ describe('screens:SignupJourney::Activity', () => {
 
   it('should display validation screen on click next step button', async () => {
     contextValue.activity = {
-      venueTypeCode: VenueTypeCode.MUS_E,
+      venueTypeCode: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL_AND_EDUCATIONAL,
     }
@@ -127,7 +127,7 @@ describe('screens:SignupJourney::Activity', () => {
 
   it('should go next step with individual target customer', async () => {
     contextValue.activity = {
-      venueTypeCode: VenueTypeCode.MUS_E,
+      venueTypeCode: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL,
     }
@@ -145,7 +145,7 @@ describe('screens:SignupJourney::Activity', () => {
 
   it('should go next step with educational target customer', async () => {
     contextValue.activity = {
-      venueTypeCode: VenueTypeCode.MUS_E,
+      venueTypeCode: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.EDUCATIONAL,
     }
