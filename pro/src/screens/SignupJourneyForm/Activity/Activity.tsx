@@ -27,12 +27,11 @@ const Activity = (): JSX.Element => {
   const navigate = useNavigate()
   const { activity, setActivity } = useSignupJourneyContext()
 
-  const serializeActivityFormValues = (
+  const serializeActivityContext = (
     activity: IActivity
   ): IActivityFormValues => {
     return {
-      venueType: activity.venueType,
-      socialUrls: activity.socialUrls,
+      ...activity,
       targetCustomer: {
         individual: Boolean(
           activity.targetCustomer === Target.INDIVIDUAL_AND_EDUCATIONAL ||
@@ -46,7 +45,7 @@ const Activity = (): JSX.Element => {
     }
   }
 
-  const serializeActivityForm = (
+  const serializeActivityFormToSubmit = (
     activityForm: IActivityFormValues
   ): IActivity => {
     const { individual, educational } = activityForm.targetCustomer
@@ -67,7 +66,7 @@ const Activity = (): JSX.Element => {
   }
 
   const initialValues: IActivityFormValues = activity
-    ? serializeActivityFormValues(activity)
+    ? serializeActivityContext(activity)
     : DEFAULT_ACTIVITY_FORM_VALUES
 
   const handleNextStep = () => async () => {
@@ -80,7 +79,7 @@ const Activity = (): JSX.Element => {
   const onSubmitActivity = async (
     formValues: IActivityFormValues
   ): Promise<void> => {
-    setActivity(serializeActivityForm(formValues))
+    setActivity(serializeActivityFormToSubmit(formValues))
     navigate('/parcours-inscription/validation')
   }
 
