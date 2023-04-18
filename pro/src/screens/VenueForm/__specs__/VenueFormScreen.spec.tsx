@@ -672,7 +672,7 @@ describe('screen | VenueForm', () => {
       await waitFor(() => {
         expect(
           screen.getByText(
-            'À remplir si différent de la raison sociale. En le remplissant, c’est ce dernier qui sera utilisé comme nom principal.'
+            'À remplir si différent de la raison sociale. En le remplissant, c’est ce dernier qui sera visible du public.'
           )
         ).toBeInTheDocument()
       })

@@ -63,7 +63,7 @@ const Informations = ({
                   isNewOnboardingActive
                     ? 'de la raison sociale'
                     : 'du nom juridique'
-                }. En le remplissant, c’est ce dernier qui sera utilisé comme nom principal.`}
+                }. En le remplissant, c’est ce dernier qui sera visible du public.`}
               />
             }
           >
