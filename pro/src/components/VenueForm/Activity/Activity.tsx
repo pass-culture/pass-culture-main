@@ -1,7 +1,7 @@
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { InfoBox, Select, TextArea } from 'ui-kit'
+import { Select, TextArea } from 'ui-kit'
 
 export interface IActivity {
   venueTypes: SelectOption[]
@@ -30,28 +30,7 @@ const Activity = ({
             : 'Ces informations seront affichées dans votre page lieu sur l’application pass Culture (sauf pour les lieux administratifs). Elles permettront aux jeunes d’en savoir plus sur votre lieu.'
         }
       >
-        <FormLayout.Row
-          sideComponent={
-            isVenueVirtual ? null : (
-              <InfoBox
-                type="info"
-                text="S’il s'agit ici de la création du lieu de votre siège social, sélectionnez “lieu administratif”."
-                link={{
-                  text: 'En savoir plus',
-                  to: 'https://aide.passculture.app/hc/fr/articles/5411407159196--Acteurs-Culturels-Dans-quel-cas-et-comment-cr%C3%A9er-un-lieu-administratif-rattach%C3%A9-%C3%A0-ma-structure-',
-                  isExternal: true,
-                  'aria-label': `en savoir plus sur ${
-                    isNewOnboardingActive
-                      ? 'l’activité principale'
-                      : 'le type de lieu'
-                  }`,
-                  target: '_blank',
-                  rel: 'noopener noreferrer',
-                }}
-              />
-            )
-          }
-        >
+        <FormLayout.Row>
           <Select
             options={[
               {
@@ -92,7 +71,7 @@ const Activity = ({
                     ...venueLabels,
                   ]}
                   name="venueLabel"
-                  label="Label du ministère de la Culture ou du CNC"
+                  label="Label du ministère de la Culture ou du Centre national du cinéma et de l'image animée"
                   isOptional
                 />
               </FormLayout.Row>
