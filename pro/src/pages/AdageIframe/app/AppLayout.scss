@@ -4,7 +4,7 @@ main.app-layout {
   display: flex;
   flex-direction: column;
   grid-column-start: col-main;
-  grid-row-start: row-main;
+  grid-row-start: row-nav;
 }
 
 .app-layout-header {
@@ -15,7 +15,7 @@ main.app-layout {
 
   .app-logo {
     width: rem.torem(120px);
-    fill : #7b1e82;
+    fill: #7b1e82;
   }
 
   &-right {
