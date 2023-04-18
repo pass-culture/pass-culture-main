@@ -500,11 +500,12 @@ def _check_ean_field(extra_data: models.OfferExtraData) -> None:
         raise exceptions.EanFormatException("L'EAN doit être composé de 8 ou 13 chiffres")
 
 
-def check_offer_is_from_current_cinema_provider(offer: models.Offer) -> bool:
+def check_offer_is_from_current_cinema_provider(offer: models.Offer) -> None:
     venue_cinema_pivot = providers_models.CinemaProviderPivot.query.filter(
         providers_models.CinemaProviderPivot.venueId == offer.venueId
     ).one_or_none()
-    return venue_cinema_pivot and offer.lastProviderId == venue_cinema_pivot.providerId
+    if not venue_cinema_pivot or offer.lastProviderId != venue_cinema_pivot.providerId:
+        raise exceptions.UnexpectedCinemaProvider()
 
 
 def check_is_duo_compliance(is_duo: bool | None, subcategory: subcategories.Subcategory) -> None:

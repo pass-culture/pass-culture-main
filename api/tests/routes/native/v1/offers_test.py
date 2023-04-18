@@ -419,6 +419,29 @@ class OffersTest:
         assert first_show_stock.remainingQuantity == 95
         assert second_show_stock.remainingQuantity == 0
 
+    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    def test_get_inactive_cinema_provider_offer(self, app):
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+        offer = OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            idAtProvider="toto",
+            lastProviderId=venue_provider.providerId,
+            venue=venue_provider.venue,
+        )
+        EventStockFactory(offer=offer, idAtProviders="toto")
+
+        response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
+
+        assert response.json["isReleased"] is False
+        assert offer.isActive is False
+
 
 class SendOfferWebAppLinkTest:
     def test_sendinblue_send_offer_webapp_link_by_email(self, client):
