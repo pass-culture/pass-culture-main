@@ -47,3 +47,7 @@ class VenueSiretNotRegistered(VenueProviderException):
 
 class ConnexionToProviderApiFailed(VenueProviderException):
     pass
+
+
+class InactiveProvider(VenueProviderException):
+    pass

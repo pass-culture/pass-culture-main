@@ -234,3 +234,7 @@ class UnapplicableModel(Exception):
 
 class CannotDeleteProductWithBookings(Exception):
     pass
+
+
+class UnexpectedCinemaProvider(Exception):
+    pass

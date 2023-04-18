@@ -1891,9 +1891,16 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
     ):
         cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+        providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
         movie_id = 456
         offer_id_at_provider = f"{movie_id}%{venue_provider.venue.siret}%CDS"
-        offer = factories.EventOfferFactory(venue=venue_provider.venue, idAtProvider=offer_id_at_provider)
+        offer = factories.EventOfferFactory(
+            venue=venue_provider.venue, idAtProvider=offer_id_at_provider, lastProviderId=cds_provider.id
+        )
         showtime = "2023-02-08"
         stock = factories.EventStockFactory(
             offer=offer,
@@ -1903,7 +1910,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         )
 
         mocked_get_shows_stock.return_value = api_return_value
-        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer, venue_provider)
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
         assert stock.remainingQuantity == expected_remaining_quantity
         if expected_remaining_quantity == 0:
@@ -1936,9 +1943,16 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
     ):
         boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
+        providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
         movie_id = 456
         offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%Boost"
-        offer = factories.EventOfferFactory(venue=venue_provider.venue, idAtProvider=offer_id_at_provider)
+        offer = factories.EventOfferFactory(
+            venue=venue_provider.venue, idAtProvider=offer_id_at_provider, lastProviderId=boost_provider.id
+        )
         stock = factories.EventStockFactory(
             offer=offer,
             quantity=10,
@@ -1947,7 +1961,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         )
 
         mocked_get_movie_shows_stock.return_value = api_return_value
-        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer, venue_provider)
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
         assert stock.remainingQuantity == expected_remaining_quantity
         if expected_remaining_quantity == 0:
@@ -1980,9 +1994,16 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
     ):
         cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
+        providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
         movie_id = 523
         offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%CGR"
-        offer = factories.EventOfferFactory(venue=venue_provider.venue, idAtProvider=offer_id_at_provider)
+        offer = factories.EventOfferFactory(
+            venue=venue_provider.venue, idAtProvider=offer_id_at_provider, lastProviderId=cgr_provider.id
+        )
         stock = factories.EventStockFactory(
             offer=offer,
             quantity=10,
@@ -1991,7 +2012,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         )
 
         mocked_get_movie_shows_stock.return_value = api_return_value
-        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer, venue_provider)
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
         assert stock.remainingQuantity == expected_remaining_quantity
         if expected_remaining_quantity == 0:
@@ -2008,7 +2029,14 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         movie_id = 456
         show_id = 777
         offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%Boost"
-        offer = factories.EventOfferFactory(venue=venue_provider.venue, idAtProvider=offer_id_at_provider)
+        providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        offer = factories.EventOfferFactory(
+            venue=venue_provider.venue, idAtProvider=offer_id_at_provider, lastProviderId=boost_provider.id
+        )
         stock = factories.EventStockFactory(
             offer=offer,
             quantity=10,
@@ -2018,7 +2046,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         stock.dnBookedQuantity = 0
 
         mocked_get_movie_shows_stock.return_value = {777: 0}
-        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer, venue_provider)
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
         assert stock.remainingQuantity == 0
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
