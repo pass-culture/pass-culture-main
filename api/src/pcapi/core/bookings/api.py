@@ -19,15 +19,18 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
 import pcapi.core.external_bookings.api as external_bookings_api
+import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offers import repository as offers_repository
+import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Stock
 import pcapi.core.offers.validation as offers_validation
+import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_and_lock_user
@@ -122,12 +125,10 @@ def book_offer(
             booking.mark_as_used()
 
         stock.dnBookedQuantity += booking.quantity
-
         is_external_ticket_applicable = providers_repository.is_external_ticket_applicable(stock.offer)
 
         if is_external_ticket_applicable:
-            if not offers_validation.check_offer_is_from_current_cinema_provider(stock.offer):
-                raise ValueError("This offer is from the wrong cinema provider")
+            offers_validation.check_offer_is_from_current_cinema_provider(stock.offer)
             _book_external_ticket(booking, stock, beneficiary)
 
         repository.save(booking, stock)
@@ -183,15 +184,18 @@ def _book_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> 
             if FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS.is_active():
                 raise feature.DisabledFeatureError("DISABLE_CGR_EXTERNAL_BOOKINGS is active")
         case _:
-            raise ValueError(f"Unknown Provider: {venue_provider_name}")
-
+            raise providers_exceptions.UnknownProvider(f"Unknown Provider: {venue_provider_name}")
     show_id = cinema_providers_utils.get_showtime_id_from_uuid(stock.idAtProviders, venue_provider_name)
     if not show_id:
-        raise ValueError("Could not retrieve show_id")
+        raise providers_exceptions.ShowIdNotFound("Could not retrieve show_id")
+    try:
+        tickets = external_bookings_api.book_ticket(
+            venue_id=stock.offer.venueId, show_id=show_id, booking=booking, beneficiary=beneficiary
+        )
+    except Exception as exc:
+        logger.exception("Could not book external ticket: %s", exc)
+        raise external_bookings_exceptions.ExternalBookingException
 
-    tickets = external_bookings_api.book_ticket(
-        venue_id=stock.offer.venueId, show_id=show_id, booking=booking, beneficiary=beneficiary
-    )
     booking.externalBookings = [ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets]
 
 
@@ -255,7 +259,7 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
             if not FeatureToggle.ENABLE_CGR_INTEGRATION.is_active():
                 raise feature.DisabledFeatureError("ENABLE_CGR_INTEGRATION is inactive")
         case _:
-            raise ValueError(f"Unknown Provider: {venue_provider_name}")
+            raise offers_exceptions.UnexpectedCinemaProvider(f"Unknown Provider: {venue_provider_name}")
     barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
     external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
 
