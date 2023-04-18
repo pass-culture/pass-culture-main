@@ -87,3 +87,9 @@ zeep==4.1.0
 libsass==0.22.0
 boussole==2.1.0
 djlint==1.23.0
+# FIXME (kopax-polyconseil, 2023-04-18): do not use 67.3.0 that has a new
+# deprecation warning for which we're not ready
+# https://setuptools.pypa.io/en/stable/history.html#v67-3-0
+# Issue to follow for the fix:
+# https://github.com/googleapis/python-storage/issues/1000
+setuptools<67.3
