@@ -21,7 +21,6 @@ jest.mock('apiClient/api', () => ({
     getVenueStats: jest.fn().mockResolvedValue({}),
   },
 }))
-
 const renderVenue = (
   props: IVenueProps,
   features?: { list: { isActive: true; nameKey: string }[] }
@@ -207,6 +206,7 @@ describe('venues', () => {
         .mockReturnValue(true)
       // When
       renderVenue(props)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
       // Then
       expect(
@@ -233,6 +233,7 @@ describe('venues', () => {
         '/structures/OFFERER01/lieux/VENUE01?modification#remboursement'
       )
     })
+
     it('should display dms timeline link when venue has dms applicaiton and adage id less than 30 days', async () => {
       // When
       await jest
@@ -241,7 +242,6 @@ describe('venues', () => {
       renderVenue(
         {
           ...props,
-          initialOpenState: true,
           hasAdageId: true,
           adageInscriptionDate: addDays(new Date(), -15).toISOString(),
           dmsInformations: {

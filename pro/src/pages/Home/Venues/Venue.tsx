@@ -36,7 +36,6 @@ export interface IVenueProps {
   id: string
   nonHumanizedId: number
   isVirtual?: boolean
-  initialOpenState?: boolean
   name: string
   offererId: string
   publicName?: string | null
@@ -53,13 +52,30 @@ const Venue = ({
   isVirtual = false,
   name,
   offererId,
-  initialOpenState,
   publicName,
   hasCreatedOffer,
   dmsInformations,
   hasAdageId,
   adageInscriptionDate,
 }: IVenueProps) => {
+  const hasNewOfferCreationJourney = useNewOfferCreationJourney()
+  const isCollectiveDmsTrackingActive = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
+  )
+  const hasAdageIdForMoreThan30Days =
+    hasAdageId &&
+    !!adageInscriptionDate &&
+    isBefore(new Date(adageInscriptionDate), addDays(new Date(), -30))
+
+  const shouldDisplayEACInformationSection =
+    isCollectiveDmsTrackingActive &&
+    !(dmsInformations?.state === DMSApplicationstatus.REFUSE) &&
+    Boolean(dmsInformations) &&
+    !hasAdageIdForMoreThan30Days
+  const initialOpenState =
+    shouldDisplayEACInformationSection ||
+    (hasNewOfferCreationJourney && !hasCreatedOffer)
+
   const [prevInitialOpenState, setPrevInitialOpenState] =
     useState(initialOpenState)
   const [prevOffererId, setPrevOffererId] = useState(offererId)
@@ -146,22 +162,6 @@ const Venue = ({
     },
   ]
 
-  const hasNewOfferCreationJourney = useNewOfferCreationJourney()
-  const isCollectiveDmsTrackingActive = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
-  )
-  const hasAdageIdForMoreThan30Days =
-    hasAdageId &&
-    !!adageInscriptionDate &&
-    isBefore(new Date(adageInscriptionDate), addDays(new Date(), -30))
-
-  const shouldDisplayEACInformationSection =
-    !hasNewOfferCreationJourney &&
-    isCollectiveDmsTrackingActive &&
-    !(dmsInformations?.state === DMSApplicationstatus.REFUSE) &&
-    Boolean(dmsInformations) &&
-    !hasAdageIdForMoreThan30Days
-
   if (prevInitialOpenState != initialOpenState) {
     setIsStatOpen(initialOpenState)
     setPrevInitialOpenState(initialOpenState)
@@ -194,7 +194,6 @@ const Venue = ({
 
   const editVenueLink = `/structures/${offererId}/lieux/${id}?modification`
   const reimbursementSectionLink = `/structures/${offererId}/lieux/${id}?modification#remboursement`
-
   return (
     <div
       className="h-section-row nested offerer-venue"
@@ -325,37 +324,38 @@ const Venue = ({
                       adageInscriptionDate={adageInscriptionDate}
                     />
                   )}
-                  {shouldDisplayEACInformationSection && (
-                    <div
-                      className={cn(
-                        styles['card-wrapper'],
-                        styles['no-shadow'],
-                        styles['dms-container'],
-                        'h-card'
-                      )}
-                      data-testid={'venue-offer-steps'}
-                    >
-                      <div className="h-card-inner">
-                        <h4>Démarche en cours : </h4>
+                  {!hasNewOfferCreationJourney &&
+                    shouldDisplayEACInformationSection && (
+                      <div
+                        className={cn(
+                          styles['card-wrapper'],
+                          styles['no-shadow'],
+                          styles['dms-container'],
+                          'h-card'
+                        )}
+                        data-testid={'venue-offer-steps'}
+                      >
+                        <div className="h-card-inner">
+                          <h4>Démarche en cours : </h4>
 
-                        <div className={styles['venue-offer-steps']}>
-                          <div className={styles['step-venue-creation']}>
-                            <ButtonLink
-                              className={styles['step-button-width']}
-                              variant={ButtonVariant.BOX}
-                              Icon={CircleArrowIcon}
-                              link={{
-                                to: `/structures/${offererId}/lieux/${id}#venue-collective-data`,
-                                isExternal: false,
-                              }}
-                            >
-                              Suivre ma demande de référencement ADAGE
-                            </ButtonLink>
+                          <div className={styles['venue-offer-steps']}>
+                            <div className={styles['step-venue-creation']}>
+                              <ButtonLink
+                                className={styles['step-button-width']}
+                                variant={ButtonVariant.BOX}
+                                Icon={CircleArrowIcon}
+                                link={{
+                                  to: `/structures/${offererId}/lieux/${id}#venue-collective-data`,
+                                  isExternal: false,
+                                }}
+                              >
+                                Suivre ma demande de référencement ADAGE
+                              </ButtonLink>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                   <div className="venue-stats">
                     {venueStatData.map(stat => (
                       <Fragment key={stat.label}>
