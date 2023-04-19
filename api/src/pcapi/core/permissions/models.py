@@ -112,7 +112,7 @@ class Permission(PcObject, Base, Model):
 
     name: str = sa.Column(sa.String(length=140), nullable=False, unique=True)
     category = sa.Column(sa.String(140), nullable=True, default=None)
-    roles = sa.orm.relationship(  # type: ignore [misc]
+    roles: sa.orm.Mapped["Role"] = sa.orm.relationship(
         "Role", secondary="role_permission", back_populates="permissions"
     )
 

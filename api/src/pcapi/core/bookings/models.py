@@ -41,6 +41,9 @@ from pcapi.utils.human_ids import humanize
 
 if TYPE_CHECKING:
     from pcapi.core.finance.models import Deposit
+    from pcapi.core.offerers import models as offerers_models
+    from pcapi.core.offers import models as offers_models
+    from pcapi.core.users import models as users_models
 
 
 class BookingCancellationReasons(enum.Enum):
@@ -72,7 +75,7 @@ class BookingExportType(enum.Enum):
 class ExternalBooking(PcObject, Base, Model):
     bookingId: int = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
 
-    booking = relationship("Booking", foreign_keys=[bookingId], backref="externalBookings")  # type: ignore [misc]
+    booking: Mapped["Booking"] = relationship("Booking", foreign_keys=[bookingId], backref="externalBookings")
 
     barcode: str = Column(String, nullable=False)
 
@@ -89,15 +92,15 @@ class Booking(PcObject, Base, Model):
 
     stockId: int = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
 
-    stock = relationship("Stock", foreign_keys=[stockId], backref="bookings")  # type: ignore [misc]
+    stock: Mapped["offers_models.Stock"] = relationship("Stock", foreign_keys=[stockId], backref="bookings")
 
     venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
 
-    venue = relationship("Venue", foreign_keys=[venueId], backref="bookings")  # type: ignore [misc]
+    venue: Mapped["offerers_models.Venue"] = relationship("Venue", foreign_keys=[venueId], backref="bookings")
 
     offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer = relationship("Offerer", foreign_keys=[offererId], backref="bookings")  # type: ignore [misc]
+    offerer: Mapped["offerers_models.Offerer"] = relationship("Offerer", foreign_keys=[offererId], backref="bookings")
 
     quantity: int = Column(Integer, nullable=False, default=1)
 
@@ -107,7 +110,7 @@ class Booking(PcObject, Base, Model):
 
     activationCode = relationship("ActivationCode", uselist=False, back_populates="booking")  # type: ignore [misc]
 
-    user = relationship("User", foreign_keys=[userId], backref="userBookings")  # type: ignore [misc]
+    user: Mapped["users_models.User"] = relationship("User", foreign_keys=[userId], backref="userBookings")
 
     amount: Decimal = Column(Numeric(10, 2), nullable=False)
 
