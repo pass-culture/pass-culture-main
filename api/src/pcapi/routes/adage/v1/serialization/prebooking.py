@@ -45,7 +45,7 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     beginningDatetime: datetime = Field(description="Beginnning date of event")
     cancellationDate: datetime | None = Field(description="Date of cancellation if prebooking is cancelled")
     cancellationLimitDate: datetime | None = Field(description="Limit date to cancel the prebooking")
-    city: str
+    city: str | None
     confirmationDate: datetime | None = Field(description="Date of confirmation if prebooking is confirmed")
     confirmationLimitDate: datetime = Field(description="Limit date to confirm the prebooking")
     contact: Contact = Field(description="Contact of the prebooking")
@@ -59,7 +59,7 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     venueName: str = Field(description="Name of cultural venue proposing the event")
     name: str = Field(description="Name of event")
     numberOfTickets: int | None = Field(description="Number of tickets")
-    postalCode: str
+    postalCode: str | None
     price: float
     quantity: int = Field(description="Number of place prebooked")
     redactor: Redactor
@@ -160,7 +160,7 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         beginningDatetime=stock.beginningDatetime,
         cancellationDate=collective_booking.cancellationDate,
         cancellationLimitDate=collective_booking.cancellationLimitDate,
-        city=venue.city,  # type: ignore [arg-type]
+        city=venue.city,
         confirmationDate=collective_booking.confirmationDate,
         confirmationLimitDate=collective_booking.confirmationLimitDate,
         contact=_get_collective_offer_contact(offer),
@@ -179,7 +179,7 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         numberOfTickets=stock.numberOfTickets,
         participants=[student.value for student in offer.students],
         priceDetail=stock.priceDetail,
-        postalCode=venue.postalCode,  # type: ignore [arg-type]
+        postalCode=venue.postalCode,
         price=stock.price,
         quantity=1,
         redactor={  # type: ignore [arg-type]

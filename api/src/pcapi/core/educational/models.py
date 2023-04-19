@@ -451,7 +451,7 @@ class CollectiveOffer(
         return query.scalar()
 
     @property
-    def lastBookingStatus(self) -> int | CollectiveBookingStatus:
+    def lastBookingStatus(self) -> CollectiveBookingStatus | None:
         subquery = db.session.query(func.max(CollectiveBooking.id))
         subquery = subquery.join(CollectiveStock, CollectiveBooking.collectiveStock)
         subquery = subquery.filter(CollectiveStock.collectiveOfferId == self.id)
@@ -460,7 +460,7 @@ class CollectiveOffer(
         query = query.join(CollectiveStock, CollectiveBooking.collectiveStock)
         query = query.filter(CollectiveStock.collectiveOfferId == self.id, CollectiveBooking.id.in_(subquery))
         result = query.one_or_none()
-        return result[0] if result else None  # type: ignore [return-value]
+        return result[0] if result else None
 
 
 class CollectiveOfferTemplate(
