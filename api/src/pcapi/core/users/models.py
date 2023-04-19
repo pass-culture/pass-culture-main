@@ -731,32 +731,6 @@ class UserEmailHistory(PcObject, Base, Model):
         return func.concat(cls.newUserEmail, "@", cls.newDomainEmail)
 
 
-class UserSuspension(PcObject, Base, Model):
-    __tablename__ = "user_suspension"
-
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
-    user = orm.relationship(  # type: ignore [misc]
-        "User",
-        foreign_keys=[userId],
-        backref=orm.backref(
-            "suspension_history", order_by="UserSuspension.eventDate.asc().nullsfirst()", passive_deletes=True
-        ),
-    )
-
-    eventType: constants.SuspensionEventType = sa.Column(sa.Enum(constants.SuspensionEventType), nullable=False)
-
-    # nullable because of old suspensions without date migrated here; but mandatory for new actions
-    eventDate = sa.Column(sa.DateTime, nullable=True, server_default=sa.func.now())
-
-    # Super-admin or the user himself who initiated the suspension event on user account
-    # nullable because of old suspensions without author migrated here; but mandatory for new actions
-    actorUserId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
-    actorUser = orm.relationship("User", foreign_keys=[actorUserId])  # type: ignore [misc]
-
-    # Reason is filled in only when suspended but could be useful also when unsuspended for support traceability
-    reasonCode = sa.Column(sa.Enum(constants.SuspensionReason), nullable=True)
-
-
 class UserSession(PcObject, Base, Model):
     userId: int = sa.Column(sa.BigInteger, nullable=False)
     uuid: UUID = sa.Column(postgresql.UUID(as_uuid=True), unique=True, nullable=False)

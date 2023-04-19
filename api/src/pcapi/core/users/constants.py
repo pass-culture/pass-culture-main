@@ -67,16 +67,3 @@ SUSPENSION_REASON_CHOICES = {
 }
 
 assert set(SUSPENSION_REASON_CHOICES) == set(SuspensionReason)
-
-
-class SuspensionEventType(enum.Enum):
-    SUSPENDED = "SUSPENDED"
-    UNSUSPENDED = "UNSUSPENDED"
-
-
-SUSPENSION_EVENT_TYPE_CHOICES = (
-    (SuspensionEventType.SUSPENDED, "Suspendu"),
-    (SuspensionEventType.UNSUSPENDED, "Réactivé"),
-)
-
-assert set(_t[0] for _t in SUSPENSION_EVENT_TYPE_CHOICES) == set(SuspensionEventType)
