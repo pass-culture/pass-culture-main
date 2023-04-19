@@ -23,6 +23,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import validation as offer_validation
+import pcapi.core.offers.models as offers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
@@ -729,3 +730,14 @@ def duplicate_offer_and_stock(original_offer: educational_models.CollectiveOffer
         db.session.commit()
 
     return offer
+
+
+def get_paginated_collective_offer_ids_by_venue_id(venue_id: int, limit: int, page: int = 0) -> list[int]:
+    query = (
+        educational_models.CollectiveOffer.query.with_entities(offers_models.Offer.id)
+        .filter(offers_models.Offer.venueId == venue_id)
+        .order_by(offers_models.Offer.id)
+        .offset(page * limit)  # first page is 0
+        .limit(limit)
+    )
+    return [offer_id for offer_id, in query]

@@ -364,6 +364,8 @@ def _reindex_collective_offer_template_ids(
 
 def index_offers_of_venues_in_queue() -> None:
     """Pop venues from indexation queue and reindex their offers."""
+    import pcapi.core.educational.api.offer as educational_offer_api  # avoid circular import
+
     backend = _get_backend()
     try:
         venue_ids = backend.pop_venue_ids_for_offers_from_queue(count=settings.REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE)
@@ -378,6 +380,18 @@ def index_offers_of_venues_in_queue() -> None:
                     break
                 reindex_offer_ids(offer_ids)
                 page += 1
+
+            page = 0
+            logger.info("Starting to index collective offers of venue", extra={"venue": venue_id})
+            while True:
+                collective_offer_ids = educational_offer_api.get_paginated_collective_offer_ids_by_venue_id(
+                    limit=settings.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE, page=page, venue_id=venue_id
+                )
+                if not collective_offer_ids:
+                    break
+                _reindex_collective_offer_ids(backend, collective_offer_ids)
+                page += 1
+
             logger.info("Finished indexing offers of venue", extra={"venue": venue_id})
     except Exception:  # pylint: disable=broad-except
         if settings.IS_RUNNING_TESTS:

@@ -66,6 +66,7 @@ class T_UNCHANGED(enum.Enum):
 
 UNCHANGED = T_UNCHANGED.TOKEN
 VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "postalCode", "city", "latitude", "longitude", "criteria"]
+VENUES_OFFER_ALGOLIA_INDEXED_FIELDS = {"name", "publicName", "postalCode"}
 API_KEY_SEPARATOR = "_"
 APE_TAG_MAPPING = {"84.11Z": "Collectivité"}
 
@@ -134,8 +135,7 @@ def update_venue(
 
     search.async_index_venue_ids([venue.id])
 
-    indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
-    if indexing_modifications_fields or contact_data:
+    if set(modifications) & VENUES_OFFER_ALGOLIA_INDEXED_FIELDS:
         search.async_index_offers_of_venue_ids([venue.id])
 
     # Former booking email address shall no longer receive emails about data related to this venue.
