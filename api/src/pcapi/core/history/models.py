@@ -61,10 +61,6 @@ class ActionHistory(PcObject, Base, Model):
 
     Additional information related to a specific action (e.g. reasonCode which is related to user suspension) may be
     stored in extraData field.
-
-    Currently, this class is a first "draft" implementation to start storing log information required for offerer
-    validation. Later, it should store information about all resources. Data should also be migrated from UserSuspension
-    table when working on user history features.
     """
 
     __tablename__ = "action_history"
