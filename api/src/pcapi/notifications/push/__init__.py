@@ -7,12 +7,6 @@ from pcapi.notifications.push.transactional_notifications import TransactionalNo
 from pcapi.utils.module_loading import import_string
 
 
-class BatchEvent(enum.Enum):
-    USER_DEPOSIT_ACTIVATED = "user_deposit_activated"
-    USER_IDENTITY_CHECK_STARTED = "user_identity_check_started"
-    HAS_UBBLE_KO_STATUS = "has_ubble_ko_status"
-
-
 def update_user_attributes(
     batch_api: BatchAPI, user_id: int, attribute_values: dict, can_be_asynchronously_retried: bool = False
 ) -> None:

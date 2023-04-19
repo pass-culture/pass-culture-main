@@ -1,6 +1,5 @@
 import logging
 
-from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.tasks import amplitude_tasks
