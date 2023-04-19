@@ -32,8 +32,6 @@ def list_tags() -> utils.BackofficeResponse:
     base_query = criteria_models.Criterion.query
 
     if not form.validate():
-        error_msg = utils.build_form_error_msg(form)
-        flash(error_msg, "warning")
         return render_template("tags/list_tags.html", rows=base_query.all(), form=form, dst=url_for(".list_tags")), 400
 
     if form.is_empty():
