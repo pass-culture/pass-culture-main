@@ -14,7 +14,6 @@
  * @example
  * // To initialize the application, within the `<head>` of the HTML document:
  * const app = new BackofficeApp({
- *   csrfToken: '{{ csrf_token }}', // This value is passed by jinja and contains the csrf token input as a string
  *   addOns: [
  *     // add custom JavaScript addons here
  *   ],
@@ -25,30 +24,21 @@ class PcBackofficeApp {
   /** This static string is used as the localStorage key for the application. */
   static LOCALSTORAGE_KEY = 'pc'
 
+  /** This static string is used to retrieve the current csrf token */
+  static META_CSRF_SELECTOR = 'meta[name="csrf-token"]'
+
   /** Each application's addons instance is available from within the `app` instance through `app.addons[name]`. */
   addons = {}
 
   /** This is the JS application state. It is used by PcAddOn and allow partial persistence of any addon state using `addon.saveState(state)` */
   appState = {}
 
-  /** To pass csrf security when submitting a form, the backend provides a string which holds `<input />` with the csrf token.
-   * We store the string in `app.csrfTokenValue` in case you need it to post a FormData with JavaScript.
-   */
-  csrfTokenValue
-
-  /** To pass csrf security when submitting a form, the backend provides a string which holds `<input />` with the csrf token.
-   * We store the string in `app.csrfTokenInput` in case you need it to render a form with JavaScript.
-   */
-  csrfTokenInput
-
   /**
    * @constructor
-   * @param {{ addOns: Array<PcAddOn>, csrfTokenInput: string }} config - the application configuration.
+   * @param {{ addOns: Array<PcAddOn> }} config - the application configuration.
    */
-  constructor({ addOns: AddOns, csrfTokenInput }) {
+  constructor({ addOns: AddOns }) {
     this.#rehydrateState()
-    this.csrfTokenInput = csrfTokenInput
-    this.csrfTokenValue = csrfTokenInput.match(/value="(.*)"/)[1]
     AddOns.forEach((AddOn) => {
       const name = `${AddOn.name[0].toLowerCase()}${AddOn.name.slice(1)}`
       this.addons[name] = new AddOn({
@@ -60,6 +50,20 @@ class PcBackofficeApp {
     PcUtils.addLoadEvent(this.bindTurboFrameEvents)
     PcUtils.addLoadEvent(this.initialize)
     PcUtils.addLoadEvent(this.bindEvents)
+  }
+
+  /**
+   * Return the current CSRF token value
+   */
+  get csrfTokenValue() {
+    return document.querySelector(PcBackofficeApp.META_CSRF_SELECTOR).content
+  }
+
+  /**
+   * Return CSRF html input string
+   */
+  get csrfTokenInput() {
+    return `<input name="csrf_token" type="hidden" value="${document.querySelector(PcBackofficeApp.META_CSRF_SELECTOR).content}">`
   }
 
   /**
@@ -80,14 +84,21 @@ class PcBackofficeApp {
    * This method is automatically called on window `load` event and will bind turbo frame events.
    * We have 3 turbo events binding at the moments:
    * 1. `turbo:before-frame-render`: trigger `app.unbindEvents` on XHR response right before frame render,
-   * 1. `turbo:frame-render`: trigger `app.bindEvents` on XHR response right after frame render,
+   * 1. `turbo:frame-load`: trigger `app.bindEvents` on XHR response right after frame load,
+   * 1. `turbo:before-visit`: trigger `app.unbindEvents` on XHR before visit navigation,
+   * 1. `turbo:load`: trigger `app.initialize` and `app.bindEvents` on XHR visit navigation load,
    * 1. `turbo:frame-missing`: trigger `app.onTurboFrameMissing` on XHR response if the `id` of the turbo frame doesn't exist.
    *
    * Read more: https://turbo.hotwired.dev/reference/events
    */
   bindTurboFrameEvents = () => {
     addEventListener('turbo:before-frame-render', this.unbindEvents)
-    addEventListener('turbo:frame-render', this.bindEvents)
+    addEventListener('turbo:frame-load', this.bindEvents)
+    addEventListener('turbo:before-visit', this.unbindEvents)
+    addEventListener('turbo:load', () => {
+      this.initialize()
+      this.bindEvents()
+    })
     addEventListener("turbo:frame-missing", this.onTurboFrameMissing)
   }
 
