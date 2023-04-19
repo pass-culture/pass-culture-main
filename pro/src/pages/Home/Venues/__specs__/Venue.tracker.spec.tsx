@@ -1,4 +1,8 @@
-import { screen, within } from '@testing-library/react'
+import {
+  screen,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -160,6 +164,7 @@ describe('venue create offer link', () => {
       .spyOn(useNewOfferCreationJourney, 'default')
       .mockReturnValue(true)
     await renderVenue(props)
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
     expect(
       screen.getByRole('link', { name: 'Éditer le lieu' })
     ).toHaveAttribute(
