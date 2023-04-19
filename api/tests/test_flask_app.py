@@ -19,6 +19,10 @@ def test_log_request_details(client, caplog):
                 "device-id": "B35033A8-F7D9-4417-8A99-AC43F1ACC552",
                 "request-id": "abcd",
                 "X-Forwarded-For": "82.65.58.211",
+                "app-version": "1.230.0",
+                "code-push-id": "1234",
+                "commit-hash": "abcefgh",
+                "platform": "ios",
             },
         )
         assert caplog.records[0].extra["deviceId"] == "B35033A8-F7D9-4417-8A99-AC43F1ACC552"
@@ -26,3 +30,7 @@ def test_log_request_details(client, caplog):
         assert caplog.records[0].extra["sourceIp"] == "82.65.58.211"
         assert caplog.records[0].extra["route"] == "/native/v1/me"
         assert caplog.records[0].extra["path"] == "/native/v1/me"
+        assert caplog.records[0].extra["appVersion"] == "1.230.0"
+        assert caplog.records[0].extra["codePushId"] == "1234"
+        assert caplog.records[0].extra["commitHash"] == "abcefgh"
+        assert caplog.records[0].extra["platform"] == "ios"
