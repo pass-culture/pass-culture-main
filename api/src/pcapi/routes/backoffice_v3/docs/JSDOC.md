@@ -532,7 +532,7 @@ To work, each `.btn-group` must set the following attributes:
 Within the `.btn-group` container, you can add as many buttons as needed, and you must set some attributes too:
 
 *   `[data-use-confirmation-modal]`: `true` to open a modal to add a comment or `false` to submit directly, (required)
-*   \`\[data-modal-selector]: this value must be the modal selector that contains the form, (optional)
+*   `[data-modal-selector]`: this value must be the modal selector that contains the form, (optional)
 *   `[data-url]`: this value is required when you do not use confirmation modal (`[data-use-confirmation-modal]`) and should be the `POST` endpoint,
 *   `[data-mode]`: set this attributes to `fetch` if you want to use a form data (requires a POST controller),
 *   `[data-fetch-url]`: URL that renders the form, it uses `POST` with the `selectedRowsIds` from table multi select.
