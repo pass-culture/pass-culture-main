@@ -40,6 +40,8 @@ from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
+    from pcapi.core.bookings.models import Booking
+    from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import Venue
     from pcapi.core.users.models import User
 
@@ -110,7 +112,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     # FIXME (cgaunet, 2022-08-02): this field seems to be unused
     mediaUrls: list[str] = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
     name: str = sa.Column(sa.String(140), nullable=False)
-    owningOfferer = sa_orm.relationship("Offerer", backref="events")  # type: ignore [misc]
+    owningOfferer: sa_orm.Mapped["Offerer | None"] = sa_orm.relationship("Offerer", backref="events")
     owningOffererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), nullable=True)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
     thumb_path_component = "products"
@@ -145,7 +147,7 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
     credit = sa.Column(sa.String(255), nullable=True)
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    offer = sa.orm.relationship("Offer", backref="mediations")  # type: ignore [misc]
+    offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="mediations")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
     thumb_path_component = "mediations"
 
@@ -163,7 +165,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     dnBookedQuantity: int = sa.Column(sa.BigInteger, nullable=False, server_default=sa.text("0"))
     educationalPriceDetail = sa.Column(sa.Text, nullable=True)
     numberOfTickets = sa.Column(sa.Integer, nullable=True)
-    offer = sa.orm.relationship("Offer", backref="stocks")  # type: ignore [misc]
+    offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="stocks")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
     price: decimal.Decimal = sa.Column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
@@ -402,7 +404,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
     url = sa.Column(sa.String(255), nullable=True)
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
-    venue = sa.orm.relationship("Venue", foreign_keys=[venueId], backref="offers")  # type: ignore [misc]
+    venue: sa_orm.Mapped["Venue"] = sa.orm.relationship("Venue", foreign_keys=[venueId], backref="offers")
     withdrawalDelay = sa.Column(sa.BigInteger, nullable=True)
     withdrawalDetails = sa.Column(sa.Text, nullable=True)
     withdrawalType = sa.Column(sa.Enum(WithdrawalTypeEnum), nullable=True)
@@ -668,11 +670,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 class ActivationCode(PcObject, Base, Model):
     __tablename__ = "activation_code"
 
-    booking = sa.orm.relationship("Booking", back_populates="activationCode")  # type: ignore [misc]
+    booking: sa.orm.Mapped["Booking | None"] = sa.orm.relationship("Booking", back_populates="activationCode")
     bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
     code: str = sa.Column(sa.Text, nullable=False)
     expirationDate = sa.Column(sa.DateTime, nullable=True, default=None)
-    stock = sa.orm.relationship("Stock", back_populates="activationCodes")  # type: ignore [misc]
+    stock: sa.orm.Mapped["Stock"] = sa.orm.relationship("Stock", back_populates="activationCodes")
     stockId: int = sa.Column(sa.BigInteger, sa.ForeignKey("stock.id"), index=True, nullable=False)
 
     __table_args__ = (
@@ -760,9 +762,9 @@ class OfferReport(PcObject, Base, Model):
         ),
     )
 
-    user = sa.orm.relationship("User", backref="reported_offers")  # type: ignore [misc]
+    user: sa.orm.Mapped["User"] = sa.orm.relationship("User", backref="reported_offers")
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
-    offer = sa.orm.relationship("Offer", backref="reports")  # type: ignore [misc]
+    offer: sa.orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="reports")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
     reason: Reason = sa.Column(sa.Enum(Reason, create_constraint=False), nullable=False, index=True)
     reportedAt: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
