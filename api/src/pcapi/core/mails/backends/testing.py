@@ -1,6 +1,7 @@
 from dataclasses import asdict
 from typing import Iterable
 
+import pcapi.core.events.backend as events_backend
 from pcapi.core.users import testing as users_testing
 from pcapi.tasks.serialization import sendinblue_tasks
 
@@ -32,3 +33,8 @@ class TestingBackend(BaseBackend):
         users_testing.sendinblue_requests.append(
             {"email": payload.email, "attributes": payload.attributes, "emailBlacklisted": payload.emailBlacklisted}
         )
+
+    def handle_event(self, event: events_backend.Event) -> None:
+        recipients = [event.payload["email"]]
+        data = event.payload["data"]
+        self.send_mail(recipients=recipients, data=data)

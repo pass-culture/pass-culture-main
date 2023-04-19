@@ -1,11 +1,11 @@
 from typing import Iterable
 
+from pcapi.core.events import backend as events_backend
+from pcapi.core.mails import models
 from pcapi.tasks.serialization import sendinblue_tasks
 
-from .. import models
 
-
-class BaseBackend:
+class BaseBackend(events_backend.ExternalServiceBackend):
     def send_mail(
         self,
         recipients: Iterable,
@@ -16,3 +16,6 @@ class BaseBackend:
 
     def create_contact(self, payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
         raise NotImplementedError()
+
+    def handle_event(self, event: events_backend.Event) -> None:
+        return super().handle_event(event)

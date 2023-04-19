@@ -2,9 +2,10 @@ from dataclasses import asdict
 import logging
 import typing
 
+from pcapi.core.events import backend as events_backend
+from pcapi.core.mails import models
 from pcapi.tasks.serialization import sendinblue_tasks
 
-from .. import models
 from .base import BaseBackend
 
 
@@ -38,4 +39,11 @@ class LoggerBackend(BaseBackend):
             payload.email,
             payload.attributes,
             payload.emailBlacklisted,
+        )
+
+    def handle_event(self, event: events_backend.Event) -> None:
+        logger.info(
+            "An event would be tracked with name='%s' and payload='%s'.",
+            event.name,
+            event.payload,
         )

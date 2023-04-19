@@ -6,6 +6,7 @@ import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
 
 from pcapi import settings
+from pcapi.core.events import backend as events_backend
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task
@@ -97,6 +98,9 @@ class SendinblueBackend(BaseBackend):
 
         except Exception as exception:
             raise ExternalAPIException(is_retryable=True) from exception
+
+    def handle_event(self, event: events_backend.Event) -> None:
+        pass
 
 
 class ToDevSendinblueBackend(SendinblueBackend):

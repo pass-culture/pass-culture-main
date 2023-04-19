@@ -5,6 +5,7 @@ from sib_api_v3_sdk.rest import ApiException
 
 from pcapi import settings
 from pcapi.core import mails
+from pcapi.core.events import backend as events_backend
 import pcapi.core.mails.models as mails_models
 from pcapi.utils import requests
 
@@ -12,7 +13,7 @@ from pcapi.utils import requests
 logger = logging.getLogger(__name__)
 
 
-class SendinblueBackend:
+class SendinblueBackend(events_backend.ExternalServiceBackend):
     def __init__(self) -> None:
         configuration = sib_api_v3_sdk.Configuration()
         configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
@@ -52,6 +53,9 @@ class SendinblueBackend:
         if recipient.startswith("+"):
             return recipient[1:]
         return recipient
+
+    def handle_event(self, event: events_backend.Event) -> None:
+        pass
 
 
 class ToDevSendinblueBackend(SendinblueBackend):
