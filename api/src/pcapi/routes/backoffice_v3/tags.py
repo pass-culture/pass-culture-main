@@ -2,7 +2,6 @@ from flask import escape
 from flask import flash
 from flask import redirect
 from flask import render_template
-from flask import request
 from flask import url_for
 import sqlalchemy as sa
 
@@ -27,7 +26,7 @@ tags_blueprint = utils.child_backoffice_blueprint(
 
 @tags_blueprint.route("", methods=["GET"])
 def list_tags() -> utils.BackofficeResponse:
-    form = SearchTagForm(request.args)
+    form = SearchTagForm(formdata=utils.get_query_params())
 
     base_query = criteria_models.Criterion.query
 

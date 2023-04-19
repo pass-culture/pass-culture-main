@@ -36,7 +36,7 @@ class SearchTagForm(FlaskForm):
     class Meta:
         csrf = False
 
-    q = fields.PCSearchField("Tags offres et lieux")
+    q = fields.PCOptSearchField("Tags offres et lieux")
 
     def is_empty(self) -> bool:
         return not any((self.q.data,))
