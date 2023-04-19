@@ -69,7 +69,7 @@ const VenueOfferSteps = ({
       })}
       data-testid={hasVenue ? 'venue-offer-steps' : 'home-offer-steps'}
     >
-      {!hasCreatedOffer && (
+      {(!hasCreatedOffer || shouldDisplayEACInformationSection) && (
         <div className="h-card-inner">
           <h4>Prochaines étapes : </h4>
 
@@ -113,26 +113,28 @@ const VenueOfferSteps = ({
                 </ButtonLink>
               </div>
             )}
-            <ButtonLink
-              className={styles['step-button-width']}
-              isDisabled={!hasVenue}
-              variant={ButtonVariant.BOX}
-              Icon={CircleArrowIcon}
-              link={{
-                to: `/offre/creation?lieu=${venueId}&structure=${offererId}`,
-                isExternal: false,
-              }}
-              onClick={() =>
-                logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                  from: OFFER_FORM_NAVIGATION_IN.HOME,
-                  to: OFFER_FORM_HOMEPAGE,
-                  used: OFFER_FORM_NAVIGATION_MEDIUM.VENUE_OFFER_STEPS,
-                  isEdition: false,
-                })
-              }
-            >
-              Créer une offre
-            </ButtonLink>
+            {!hasCreatedOffer && (
+              <ButtonLink
+                className={styles['step-button-width']}
+                isDisabled={!hasVenue}
+                variant={ButtonVariant.BOX}
+                Icon={CircleArrowIcon}
+                link={{
+                  to: `/offre/creation?lieu=${venueId}&structure=${offererId}`,
+                  isExternal: false,
+                }}
+                onClick={() =>
+                  logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                    from: OFFER_FORM_NAVIGATION_IN.HOME,
+                    to: OFFER_FORM_HOMEPAGE,
+                    used: OFFER_FORM_NAVIGATION_MEDIUM.VENUE_OFFER_STEPS,
+                    isEdition: false,
+                  })
+                }
+              >
+                Créer une offre
+              </ButtonLink>
+            )}
             {hasMissingReimbursementPoint && (
               <ButtonLink
                 className={styles['step-button-width']}
@@ -153,21 +155,20 @@ const VenueOfferSteps = ({
                 Renseigner des coordonnées bancaires
               </ButtonLink>
             )}
-            {dmsStatus !== DMSApplicationstatus.REFUSE &&
-              !hasAdageIdForMoreThan30Days && (
-                <ButtonLink
-                  className={styles['step-button-width']}
-                  isDisabled={!hasAdageId}
-                  variant={ButtonVariant.BOX}
-                  Icon={CircleArrowIcon}
-                  link={{
-                    to: `/structures/${offererId}/lieux/${venueId}/eac`,
-                    isExternal: false,
-                  }}
-                >
-                  Renseigner mes informations à destination des enseignants
-                </ButtonLink>
-              )}
+            {shouldDisplayEACInformationSection && (
+              <ButtonLink
+                className={styles['step-button-width']}
+                isDisabled={!hasAdageId}
+                variant={ButtonVariant.BOX}
+                Icon={CircleArrowIcon}
+                link={{
+                  to: `/structures/${offererId}/lieux/${venueId}/eac`,
+                  isExternal: false,
+                }}
+              >
+                Renseigner mes informations à destination des enseignants
+              </ButtonLink>
+            )}
           </div>
         </div>
       )}

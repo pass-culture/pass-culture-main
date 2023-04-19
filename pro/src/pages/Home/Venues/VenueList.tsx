@@ -2,7 +2,6 @@ import React from 'react'
 
 import { GetOffererVenueResponseModel } from 'apiClient/v1'
 import { getLastCollectiveDmsApplication } from 'core/Venue/adapters/getVenueAdapter/serializers'
-import { useNewOfferCreationJourney } from 'hooks'
 
 import Venue from './Venue'
 
@@ -17,7 +16,6 @@ const VenueList = ({
   selectedOffererId,
   virtualVenue,
 }: IVenueListProps) => {
-  const hasNewOfferCreationJourney = useNewOfferCreationJourney()
   return (
     <div className="h-venue-list">
       {virtualVenue && (
@@ -29,9 +27,6 @@ const VenueList = ({
           offererId={selectedOffererId}
           hasMissingReimbursementPoint={
             virtualVenue.hasMissingReimbursementPoint
-          }
-          initialOpenState={
-            hasNewOfferCreationJourney ? !virtualVenue.hasCreatedOffer : false
           }
           hasCreatedOffer={virtualVenue.hasCreatedOffer}
           dmsInformations={getLastCollectiveDmsApplication(
@@ -52,9 +47,6 @@ const VenueList = ({
           publicName={venue.publicName}
           hasMissingReimbursementPoint={venue.hasMissingReimbursementPoint}
           hasCreatedOffer={venue.hasCreatedOffer}
-          initialOpenState={
-            hasNewOfferCreationJourney ? !venue.hasCreatedOffer : false
-          }
           dmsInformations={getLastCollectiveDmsApplication(
             venue.collectiveDmsApplications
           )}

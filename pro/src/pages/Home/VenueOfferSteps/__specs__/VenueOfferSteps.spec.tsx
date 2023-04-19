@@ -14,6 +14,7 @@ jest.mock('hooks/useActiveFeature', () => ({
 
 const renderVenueOfferSteps = ({
   hasVenue = false,
+  hasCreatedOffer = false,
   hasMissingReimbursementPoint = true,
   dmsStatus = DMSApplicationstatus.EN_CONSTRUCTION,
   dmsInProgress = false,
@@ -37,6 +38,7 @@ const renderVenueOfferSteps = ({
       hasMissingReimbursementPoint={hasMissingReimbursementPoint}
       dmsStatus={dmsStatus}
       dmsInProgress={dmsInProgress}
+      hasCreatedOffer={hasCreatedOffer}
       hasAdageId={hasAdageId}
       adageInscriptionDate={adageInscriptionDate}
     />,
@@ -82,8 +84,22 @@ describe('VenueOfferSteps', () => {
       screen.getByText('Suivre ma demande de référencement ADAGE')
     ).toBeInTheDocument()
   })
+  it('Should display link for eac informations if has adage id and already created offer', async () => {
+    renderVenueOfferSteps({
+      hasVenue: false,
+      hasAdageId: true,
+      dmsInProgress: true,
+      hasCreatedOffer: true,
+      dmsStatus: DMSApplicationstatus.ACCEPTE,
+    })
+    expect(
+      screen.getByText(
+        'Renseigner mes informations à destination des enseignants'
+      )
+    ).toBeInTheDocument()
+  })
 
-  it('Should not display informations for teacher link if status procedure is refused ', async () => {
+  it('Should not display link for eac informations if status procedure is refused ', async () => {
     renderVenueOfferSteps({
       hasVenue: false,
       hasAdageId: false,
