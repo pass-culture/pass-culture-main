@@ -8,6 +8,8 @@
           content="pass Culture,Backoffice" />
     <meta name="robots"
           content="noindex,nofollow" />
+    <meta name="csrf-token"
+          content="{{ csrf_token.current_token }}">
     <title>Backoffice</title>
     <link rel="icon"
           type="image/x-icon"
@@ -57,7 +59,6 @@
     <script src="{{ url_for('static', filename='backofficev3/js/pc-backoffice-app.js') }}"></script>
     <script>
       const app = new PcBackofficeApp({
-        csrfTokenInput: '{{ csrf_token }}',
         addOns: [
           BsTooltips,
           PcFilterDataset,
