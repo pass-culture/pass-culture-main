@@ -87,7 +87,7 @@ class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):
 
     venueId: int = Column(BigInteger, ForeignKey("venue.id"), nullable=False)
 
-    venue = relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
+    venue: sa_orm.Mapped["Venue"] = relationship("Venue", foreign_keys=[venueId])
 
     providerId: int = Column(BigInteger, ForeignKey("provider.id"), index=True, nullable=False)
 
@@ -152,11 +152,11 @@ class CinemaProviderPivot(PcObject, Base, Model):
 
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=True, unique=True)
 
-    venue = relationship(Venue, foreign_keys=[venueId])  # type: ignore [misc]
+    venue: sa_orm.Mapped["Venue | None"] = relationship(Venue, foreign_keys=[venueId])
 
     providerId: int = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
 
-    provider = relationship("Provider", foreign_keys=[providerId])  # type: ignore [misc]
+    provider: sa_orm.Mapped["Provider"] = relationship("Provider", foreign_keys=[providerId])
 
     idAtProvider: str = Column(Text, nullable=False)
 
@@ -181,7 +181,9 @@ class CDSCinemaDetails(PcObject, Base, Model):
         BigInteger, ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )
 
-    cinemaProviderPivot = relationship(CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId])  # type: ignore [misc]
+    cinemaProviderPivot: sa_orm.Mapped["CinemaProviderPivot | None"] = relationship(
+        CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId]
+    )
 
     cinemaApiToken: str = Column(Text, nullable=False)
 
@@ -211,7 +213,7 @@ class AllocineVenueProviderPriceRule(PcObject, Base, Model):
         BigInteger, ForeignKey("allocine_venue_provider.id"), index=True, nullable=False
     )
 
-    allocineVenueProvider = relationship(  # type: ignore [misc]
+    allocineVenueProvider: sa_orm.Mapped["AllocineVenueProvider"] = relationship(
         "AllocineVenueProvider", foreign_keys=[allocineVenueProviderId], backref="priceRules"
     )
 
@@ -261,7 +263,7 @@ class StockDetail:
 class AllocinePivot(PcObject, Base, Model):
     venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=False, unique=True)
 
-    venue = relationship(Venue, foreign_keys=[venueId])  # type: ignore [misc]
+    venue: sa_orm.Mapped["Venue"] = relationship(Venue, foreign_keys=[venueId])
 
     theaterId: str = Column(String(20), nullable=False, unique=True)
 
@@ -288,7 +290,7 @@ class LocalProviderEventType(enum.Enum):
 
 class LocalProviderEvent(PcObject, Base, Model):
     providerId: int = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
-    provider = relationship("Provider", foreign_keys=[providerId])  # type: ignore [misc]
+    provider: sa_orm.Mapped["Provider"] = relationship("Provider", foreign_keys=[providerId])
     date: datetime.datetime = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     type: LocalProviderEventType = Column(Enum(LocalProviderEventType), nullable=False)
     payload = Column(String(50), nullable=True)
@@ -300,7 +302,9 @@ class BoostCinemaDetails(PcObject, Base, Model):
     cinemaProviderPivotId = Column(
         BigInteger, ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )
-    cinemaProviderPivot = relationship(CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId])  # type: ignore [misc]
+    cinemaProviderPivot: sa_orm.Mapped["CinemaProviderPivot | None"] = relationship(
+        CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId]
+    )
     cinemaUrl: str = Column(Text, nullable=False)  # including http:// or https:// and trailing /
     username: str = Column(Text, nullable=False)
     password: str = Column(Text, nullable=False)
@@ -314,7 +318,9 @@ class CGRCinemaDetails(PcObject, Base, Model):
     cinemaProviderPivotId = Column(
         BigInteger, ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )
-    cinemaProviderPivot = relationship(CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId])  # type: ignore [misc]
+    cinemaProviderPivot: sa_orm.Mapped["CinemaProviderPivot | None"] = relationship(
+        CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId]
+    )
     cinemaUrl: str = Column(Text, nullable=False)
     numCinema: int = Column(Integer, nullable=True)
     password: str = Column(

@@ -39,6 +39,8 @@ from pcapi.utils.phone_number import ParsedPhoneNumber
 if typing.TYPE_CHECKING:
     from pcapi.core.finance.models import Deposit
     from pcapi.core.offerers.models import UserOfferer
+    from pcapi.core.offers.models import Mediation
+    from pcapi.core.offers.models import Offer
 
 
 VOID_FIRST_NAME = ""
@@ -66,7 +68,9 @@ class Token(PcObject, Base, Model):
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("tokens", passive_deletes=True))  # type: ignore [misc]
+    user: orm.Mapped["User"] = orm.relationship(
+        "User", foreign_keys=[userId], backref=orm.backref("tokens", passive_deletes=True)
+    )
 
     value: str = sa.Column(sa.String, index=True, unique=True, nullable=False)
 
@@ -635,15 +639,15 @@ class Favorite(PcObject, Base, Model):
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    user = orm.relationship("User", foreign_keys=[userId], backref="favorites")  # type: ignore [misc]
+    user: orm.Mapped["User"] = orm.relationship("User", foreign_keys=[userId], backref="favorites")
 
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
-    offer = orm.relationship("Offer", foreign_keys=[offerId], backref="favorites")  # type: ignore [misc]
+    offer: orm.Mapped["Offer"] = orm.relationship("Offer", foreign_keys=[offerId], backref="favorites")
 
     mediationId = sa.Column(sa.BigInteger, sa.ForeignKey("mediation.id"), index=True, nullable=True)
 
-    mediation = orm.relationship("Mediation", foreign_keys=[mediationId], backref="favorites")  # type: ignore [misc]
+    mediation: orm.Mapped["Mediation"] = orm.relationship("Mediation", foreign_keys=[mediationId], backref="favorites")
 
     dateCreated = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
