@@ -13,7 +13,7 @@ class DevEnvironmentPasswordHasherTest:
         assert crypto.check_password("secret", hashed)
 
 
-@override_settings(IS_DEV=False)
+@override_settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=False)
 class ProdEnvironmentPasswordHasherTest:
     def test_hash_password_uses_bcrypt(self):
         hashed = crypto.hash_password("secret")
