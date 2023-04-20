@@ -20,5 +20,7 @@
       {{ macro.build_idcheck_histories(step.id_check_histories) }}
     {% endcall %}
   {% endfor %}
-  <div class="all-id-check-history-container d-none">{{ macro.build_idcheck_histories(id_check_histories_desc) }}</div>
+  <div class="row all-id-check-history-container d-none">
+    <div class="col-md-12 well text-center">{{ macro.build_idcheck_histories(id_check_histories_desc) }}</div>
+  </div>
 {% endcall %}
