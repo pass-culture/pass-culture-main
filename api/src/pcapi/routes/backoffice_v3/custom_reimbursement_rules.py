@@ -6,7 +6,6 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.utils.clean_accents import clean_accents
 
 from . import autocomplete
 from . import utils
@@ -69,9 +68,8 @@ def _get_custom_reimbursement_rules(
             query = base_query.filter(offers_models.Offer.id == int(search_query))
 
         else:
-            name = search_query.replace(" ", "%").replace("-", "%")
-            name = clean_accents(name)
-            query = base_query.filter(sa.func.unaccent(offers_models.Offer.name).ilike(f"%{name}%"))
+            name = "%{}%".format(search_query)
+            query = base_query.filter(offers_models.Offer.name.ilike(name))
     else:
         query = base_query
 

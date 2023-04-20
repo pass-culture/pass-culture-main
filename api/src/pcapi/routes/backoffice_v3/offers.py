@@ -21,7 +21,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.utils import date as date_utils
-from pcapi.utils.clean_accents import clean_accents
 from pcapi.workers import push_notification_job
 
 from . import autocomplete
@@ -139,9 +138,8 @@ def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer
         if form.where.data == offer_forms.OfferSearchColumn.NAME.name or (
             form.where.data == offer_forms.OfferSearchColumn.ALL.name and not or_filters
         ):
-            name_query = search_query.replace(" ", "%").replace("-", "%")
-            name_query = clean_accents(name_query)
-            or_filters.append(sa.func.unaccent(offers_models.Offer.name).ilike(f"%{name_query}%"))
+            name_query = "%{}%".format(search_query)
+            or_filters.append(offers_models.Offer.name.ilike(name_query))
 
         if or_filters:
             query = base_query.filter(or_filters[0])
