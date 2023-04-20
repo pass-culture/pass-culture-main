@@ -9,6 +9,8 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { DMSApplicationstatus } from 'apiClient/v1'
+import { Events } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
@@ -380,6 +382,51 @@ describe('venues', () => {
           name: 'Suivre ma demande de référencement ADAGE',
         })
       ).not.toBeInTheDocument()
+    })
+
+    it('should log event when clicking on dms timeline link', async () => {
+      // When
+      const mockLogEvent = jest.fn()
+      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+        ...jest.requireActual('hooks/useAnalytics'),
+        logEvent: mockLogEvent,
+      }))
+      await jest
+        .spyOn(useNewOfferCreationJourney, 'default')
+        .mockReturnValue(false)
+      renderVenue(
+        {
+          ...props,
+          hasAdageId: true,
+          adageInscriptionDate: addDays(new Date(), -15).toISOString(),
+          dmsInformations: {
+            ...defaultCollectiveDmsApplication,
+            state: DMSApplicationstatus.ACCEPTE,
+          },
+        },
+        {
+          list: [
+            {
+              isActive: true,
+              nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
+            },
+          ],
+        }
+      )
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+      // Then
+      const dmsLink = screen.getByRole('link', {
+        name: 'Suivre ma demande de référencement ADAGE',
+      })
+      expect(dmsLink).toBeInTheDocument()
+      await userEvent.click(dmsLink)
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_EAC_DMS_TIMELINE,
+        {
+          from: '/',
+        }
+      )
     })
   })
 })

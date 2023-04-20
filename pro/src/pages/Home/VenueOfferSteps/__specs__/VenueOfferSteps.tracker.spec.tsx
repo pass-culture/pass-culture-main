@@ -18,7 +18,8 @@ const mockLogEvent = jest.fn()
 
 const renderVenueOfferSteps = (
   venueId: string | null = null,
-  hasMissingReimbursementPoint = true
+  hasMissingReimbursementPoint = true,
+  shouldDisplayEacSection = false
 ) => {
   const currentUser = {
     id: 'EY',
@@ -36,6 +37,7 @@ const renderVenueOfferSteps = (
       venueId={venueId}
       offererId="AB"
       hasMissingReimbursementPoint={hasMissingReimbursementPoint}
+      shouldDisplayEACInformationSection={shouldDisplayEacSection}
     />,
     { storeOverrides, initialRouterEntries: ['/accueil'] }
   )
@@ -109,6 +111,19 @@ describe('VenueOfferSteps', () => {
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_NO_VENUE, {
+      from: location.pathname,
+    })
+  })
+
+  it('should track click on dms timeline link', async () => {
+    renderVenueOfferSteps('V1', true, true)
+
+    await userEvent.click(
+      screen.getByText('Suivre ma demande de référencement ADAGE')
+    )
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_EAC_DMS_TIMELINE, {
       from: location.pathname,
     })
   })

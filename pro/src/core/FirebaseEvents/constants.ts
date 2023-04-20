@@ -53,6 +53,7 @@ export enum Events {
   TUTO_PAGE_VIEW = 'tutoPageView',
   DELETE_DRAFT_OFFER = 'DeleteDraftOffer',
   CLICKED_NO_VENUE = 'hasClickedNoVenue',
+  CLICKED_EAC_DMS_TIMELINE = 'hasClickedEacDmsTimeline',
   CLICKED_EAC_DMS_LINK = 'hasClickedEacDmsLink',
 }
 export enum VenueEvents {
