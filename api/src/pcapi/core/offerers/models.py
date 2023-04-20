@@ -31,7 +31,6 @@ from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import aliased
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
@@ -55,7 +54,6 @@ from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.validation_status_mixin import ValidationStatusMixin
 from pcapi.utils import crypto
-from pcapi.utils.date import CUSTOM_TIMEZONES
 from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_postal_code_timezone
@@ -261,6 +259,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
     city = Column(String(50), nullable=True)
 
+    timezone = Column(String(50), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
+
     publicName = Column(String(255), nullable=True)
     sa.Index("idx_venue_trgm_public_name", publicName, postgresql_using="gin")
 
@@ -411,6 +411,13 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
             return
         self.departementCode = postal_code_utils.PostalCode(self.postalCode).get_departement_code()
 
+    def store_timezone(self) -> None:
+        self.timezone = (
+            get_department_timezone(self.departementCode)
+            if self.departementCode
+            else get_postal_code_timezone(self.managingOfferer.postalCode)
+        )
+
     @property
     def bic(self) -> str | None:
         return self.bankInformation.bic if self.bankInformation else None
@@ -526,31 +533,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     def isReleased(self) -> bool:
         return self.managingOfferer.isActive and self.managingOfferer.isValidated
 
-    @hybrid_property
-    def timezone(self) -> str:
-        if self.departementCode is None:
-            return get_postal_code_timezone(self.managingOfferer.postalCode)
-        return get_department_timezone(self.departementCode)
-
-    @timezone.expression  # type: ignore [no-redef]
-    def timezone(cls) -> Case:  # pylint: disable=no-self-argument
-        offerer_alias = aliased(Offerer)
-        return case(
-            [
-                (
-                    cls.departementCode.is_(None),
-                    case(
-                        CUSTOM_TIMEZONES,
-                        value=db.session.query(offerer_alias.departementCode)
-                        .filter(cls.managingOffererId == offerer_alias.id)
-                        .as_scalar(),
-                        else_=METROPOLE_TIMEZONE,
-                    ),
-                )
-            ],
-            else_=case(CUSTOM_TIMEZONES, value=cls.departementCode, else_=METROPOLE_TIMEZONE),
-        )
-
     def field_exists_and_has_changed(self, field: str, value: typing.Any) -> typing.Any:
         if field not in type(self).__table__.columns:
             raise ValueError(f"Unknown field {field} for model {type(self)}")
@@ -638,19 +620,20 @@ class VenueContact(PcObject, Base, Model):
 
 @listens_for(Venue, "before_insert")
 def before_insert(mapper: typing.Any, connect: typing.Any, venue: Venue) -> None:
-    _fill_departement_code_from_postal_code(venue)
+    _fill_departement_code_and_timezone(venue)
 
 
 @listens_for(Venue, "before_update")
 def before_update(mapper: typing.Any, connect: typing.Any, venue: Venue) -> None:
-    _fill_departement_code_from_postal_code(venue)
+    _fill_departement_code_and_timezone(venue)
 
 
-def _fill_departement_code_from_postal_code(venue: Venue) -> None:
+def _fill_departement_code_and_timezone(venue: Venue) -> None:
     if not venue.isVirtual:
         if not venue.postalCode:
             raise IntegrityError(None, None, None)
         venue.store_departement_code()
+    venue.store_timezone()
 
 
 class VenuePricingPointLink(Base, Model):
