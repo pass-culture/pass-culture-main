@@ -723,6 +723,7 @@ class Offerer(
 
     tags: list["OffererTag"] = sa.orm.relationship("OffererTag", secondary="offerer_tag_mapping")
 
+    offererProviders: list["OffererProvider"] = sa.orm.relationship("OffererProvider", back_populates="offerer")
     thumb_path_component = "offerers"
 
     @property
@@ -888,6 +889,10 @@ class OffererTagMapping(PcObject, Base, Model):
 class OffererProvider(PcObject, Base, Model):
     __tablename__ = "offerer_provider"
     offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
+    offerer: Offerer = relationship("Offerer", foreign_keys=[offererId], back_populates="offererProviders")
     providerId: int = Column(BigInteger, ForeignKey("provider.id"), index=True, nullable=False)
+    provider: sa_orm.Mapped["providers_models.Provider"] = relationship(
+        "Provider", foreign_keys=[providerId], back_populates="offererProvider"
+    )
 
     __table_args__ = (UniqueConstraint("offererId", "providerId", name="unique_offerer_provider"),)

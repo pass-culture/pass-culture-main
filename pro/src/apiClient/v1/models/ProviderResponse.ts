@@ -4,6 +4,7 @@
 
 export type ProviderResponse = {
   enabledForPro: boolean;
+  hasOffererProvider: boolean;
   id: string;
   isActive: boolean;
   localClass?: string;
