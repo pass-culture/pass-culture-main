@@ -225,9 +225,6 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
     target: Target
     venueTypeCode: offerers_models.VenueTypeCode | None
     webPresence: str
-    # FIXME(fseguin, 2023-03-27): delete these 2 attributes when pcpro is updated
-    name: str | None
-    venueType: str | None
 
     class Config:
         extra = "forbid"
