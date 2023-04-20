@@ -167,7 +167,7 @@
                 </p>
               {% endif %}
               <p class="mb-1">
-                <span class="fw-bold">{{ "Activité principale" if is_feature_active("WIP_ENABLE_NEW_ONBOARDING") else "Type de lieu" }}</span>
+                <span class="fw-bold">{{ "Activité principale" if is_feature_active("WIP_ENABLE_NEW_ONBOARDING") else "Type de lieu" }} :</span>
                 {{ venue.venueTypeCode.value }}
               </p>
               <p class="mb-1">
