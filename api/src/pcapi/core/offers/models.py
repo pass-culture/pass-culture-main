@@ -1,9 +1,8 @@
-from dataclasses import dataclass
+import dataclasses
 import datetime
 import decimal
 import enum
 import logging
-import typing
 from typing import TYPE_CHECKING
 from typing import Union
 
@@ -57,44 +56,45 @@ class BookFormat(enum.Enum):
 UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER = "xxx"
 
 
-class OfferExtraData(typing.TypedDict, total=False):
-    author: str | None
-    ean: str | None
-    isbn: str | None
-    musicSubType: str | None
-    musicType: str | None
-    performer: str | None
-    showSubType: str | None
-    showType: str | None
-    speaker: str | None
-    stageDirector: str | None
-    visa: str | None
+@dataclasses.dataclass
+class OfferExtraData:
+    author: str | None = None
+    ean: str | None = None
+    isbn: str | None = None
+    musicSubType: str | None = None
+    musicType: str | None = None
+    performer: str | None = None
+    showSubType: str | None = None
+    showType: str | None = None
+    speaker: str | None = None
+    stageDirector: str | None = None
+    visa: str | None = None
 
     # allocine
-    cast: str | None
-    companies: list[dict] | None
-    countries: str | None
-    diffusionVersion: str | None
-    genres: list[str] | None
-    releaseDate: str | None
-    theater: dict | None
-    type: str | None
+    cast: str | None = None
+    companies: list[dict] | None = None
+    countries: str | None = None
+    diffusionVersion: str | None = None
+    genres: list[str] | None = None
+    releaseDate: str | None = None
+    theater: dict | None = None
+    type: str | None = None
 
     # titelive
-    bookFormat: str | None
-    collection: str | None
-    comic_series: str | None
-    comment: str | None
-    date_parution: str | None
-    dewey: str | None
-    distributeur: str | None
-    editeur: str | None
-    num_in_collection: str | None
-    prix_livre: str | None
-    rayon: str | None
-    top: str | None
-    schoolbook: bool | None
-    titelive_regroup: str | None
+    bookFormat: str | None = None
+    collection: str | None = None
+    comic_series: str | None = None
+    comment: str | None = None
+    date_parution: str | None = None
+    dewey: str | None = None
+    distributeur: str | None = None
+    editeur: str | None = None
+    num_in_collection: str | None = None
+    prix_livre: str | None = None
+    rayon: str | None = None
+    top: str | None = None
+    schoolbook: bool | None = None
+    titelive_regroup: str | None = None
 
 
 class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
@@ -345,7 +345,7 @@ Stock.trig_update_date_ddl = """
 sa.event.listen(Stock.__table__, "after_create", sa.DDL(Stock.trig_update_date_ddl))
 
 
-@dataclass
+@dataclasses.dataclass
 class OfferImage:
     url: str
     credit: str | None = None
@@ -377,7 +377,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     externalTicketOfficeUrl = sa.Column(sa.String, nullable=True)
-    extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
+    _extraData: dict = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB), nullable=False)
     fieldsUpdated: list[str] = sa.Column(
         postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
     )
@@ -408,12 +408,25 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     withdrawalType = sa.Column(sa.Enum(WithdrawalTypeEnum), nullable=True)
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
-    sa.Index("offer_ean_idx", extraData["ean"].astext)
-    sa.Index("offer_isbn_idx", extraData["isbn"].astext)
-    sa.Index("offer_visa_idx", extraData["visa"].astext)
+    sa.Index("offer_ean_idx", _extraData["ean"].astext)
+    sa.Index("offer_isbn_idx", _extraData["isbn"].astext)
+    sa.Index("offer_visa_idx", _extraData["visa"].astext)
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
     sa.Index("venueId_idAtProvider_index", venueId, idAtProvider, unique=True)
+
+    @hybrid_property
+    def extraData(self) -> OfferExtraData:
+        return OfferExtraData(**self._extraData)
+
+    @extraData.setter  # type: ignore [no-redef]
+    def extraData(self, value: OfferExtraData) -> None:
+        # self._extraData = value.asdict()
+        self._extraData = dataclasses.asdict(value)
+
+    @extraData.expression  # type: ignore [no-redef]
+    def extraData(cls):  # pylint: disable=no-self-argument
+        return cls._extraData
 
     @property
     def isEducational(self) -> bool:
@@ -625,7 +638,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     @property
     def showSubType(self) -> str | None:  # used in validation rule, do not remove
         if self.extraData:
-            return self.extraData.get("showSubType")
+            return getattr(self.extraData, "showSubType")
         return None
 
     @hybrid_property
@@ -693,7 +706,7 @@ class OfferValidationConfig(PcObject, Base, Model):
     specs: dict = sa.Column("specs", postgresql.JSONB, nullable=False)
 
 
-@dataclass
+@dataclasses.dataclass
 class ReasonMeta:
     description: str
     title: str

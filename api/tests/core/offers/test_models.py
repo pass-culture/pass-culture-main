@@ -293,6 +293,37 @@ class OfferShowSubTypeTest:
         assert offer_with_showsubtype.showSubType == "1101"
 
 
+class OfferExtraDataTest:
+    def test_can_get_extraData(self):
+        offer = factories.OfferFactory(extraData=models.OfferExtraData(author="Lagaff"))
+
+        assert offer.extraData.author == "Lagaff"
+        assert offer._extraData["author"] == "Lagaff"
+        assert offer.extraData.ean is None
+        assert offer._extraData["ean"] is None
+
+    def test_can_set_extraData(self, db_session):
+        offer = factories.OfferFactory()
+
+        offer.extraData = models.OfferExtraData(author="Sim")
+        repository.save(offer)
+        db_session.refresh(offer)
+
+        assert offer.extraData.author == "Sim"
+        assert offer._extraData["author"] == "Sim"
+
+    def test_can_set_extraData_child_field(self, db_session):
+        offer = factories.OfferFactory(extraData=models.OfferExtraData(author="Lagaff"))
+
+        # offer._extraData["author"] = "Sim"  # ça fonctionne
+        offer.extraData.author = "Sim"  # pas ça :/
+        repository.save(offer)
+        db_session.refresh(offer)
+
+        assert offer.extraData.author == "Sim"
+        assert offer._extraData["author"] == "Sim"
+
+
 class StockBookingsQuantityTest:
     def test_bookings_quantity_without_bookings(self):
         offer = factories.OfferFactory()
