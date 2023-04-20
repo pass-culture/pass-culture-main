@@ -109,6 +109,14 @@ de l'équipe.
 
 Ces utilisateurs existent également pour le 97, en remplaçant `93` par `97`.
 
+
+#### Backoffice v3
+
+- `pc start-backoffice`
+- `http://localhost:5001/backofficev3/` devrait être lancé et fonctionnel
+- Cliquez sur _Se connecter via Google_
+- Vous arriverez alors sur la page d'accueil du BO v3, en tant qu'utilisateur admin `admin@passculture.local`
+
 ### Commandes utiles
 
 - Rebuild : `pc rebuild-backend` (reconstruire l'image docker sans cache)
