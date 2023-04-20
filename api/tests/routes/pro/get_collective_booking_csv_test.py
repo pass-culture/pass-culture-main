@@ -31,6 +31,7 @@ class Returns200Test:
             offerer=user_offerer.offerer,
             educationalRedactor__firstName="Bob",
             educationalRedactor__lastName="Kelso",
+            educationalInstitution=educational_factories.EducationalInstitutionFactory(),
         )
 
         client = TestClient(app.test_client()).with_session_auth(user_offerer.user.email)
@@ -50,6 +51,11 @@ class Returns200Test:
         assert reader[0]["Date et heure de validation"] == "2020-08-15 14:00:00+02:00"
         assert reader[0]["Prix de la réservation"] == booking.collectiveStock.price
         assert reader[0]["Date et heure de remboursement"] == "2021-08-11 14:00:00+02:00"
+        assert reader[0]["uai de l'institution"] == booking.educationalInstitution.institutionId
+        assert (
+            reader[0]["nom de l'institution"]
+            == f"{booking.educationalInstitution.institutionType} {booking.educationalInstitution.name}"
+        )
 
     def test_created_booking_single(self, app):
         user_offerer = offerers_factories.UserOffererFactory()

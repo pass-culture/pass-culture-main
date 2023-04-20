@@ -329,6 +329,8 @@ COLLECTIVE_BOOKING_EXPORT_HEADER = [
     "Prix de la réservation",
     "Statut de la réservation",
     "Date et heure de remboursement",
+    "uai de l'institution",
+    "nom de l'institution",
 ]
 
 
@@ -351,6 +353,8 @@ def serialize_collective_booking_csv_report(query: BaseQuery) -> str:
                 collective_booking.price,
                 _get_booking_status(collective_booking.status, collective_booking.isConfirmed),
                 convert_booking_dates_utc_to_venue_timezone(collective_booking.reimbursedAt, collective_booking),
+                collective_booking.institutionId,
+                f"{collective_booking.institutionType} {collective_booking.institutionName}",
             )
         )
 
@@ -399,6 +403,9 @@ def serialize_collective_booking_excel_report(query: BaseQuery) -> bytes:
             9,
             str(convert_booking_dates_utc_to_venue_timezone(collective_booking.reimbursedAt, collective_booking)),
         )
+        worksheet.write(row, 10, collective_booking.institutionId, currency_format)
+        worksheet.write(row, 11, f"{collective_booking.institutionType} {collective_booking.institutionName}")
+
         row += 1
 
     workbook.close()

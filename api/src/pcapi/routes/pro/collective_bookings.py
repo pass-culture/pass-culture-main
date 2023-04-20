@@ -133,7 +133,6 @@ def _create_collective_bookings_export_file(
         venue_id=venue_id,
         export_type=export_type,
     )
-
     if export_type == BookingExportType.CSV:
         return cast(str, export_data).encode("utf-8-sig")
     return cast(bytes, export_data)
