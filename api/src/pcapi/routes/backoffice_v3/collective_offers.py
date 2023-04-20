@@ -19,7 +19,6 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils import date as date_utils
-from pcapi.utils.clean_accents import clean_accents
 
 from . import autocomplete
 from . import utils
@@ -95,11 +94,8 @@ def _get_collective_offers(
         if search_query.isnumeric():
             base_query = base_query.filter(educational_models.CollectiveOffer.id == int(search_query))
         else:
-            name_query = search_query.replace(" ", "%").replace("-", "%")
-            name_query = clean_accents(name_query)
-            base_query = base_query.filter(
-                sa.func.unaccent(educational_models.CollectiveOffer.name).ilike(f"%{name_query}%")
-            )
+            name_query = "%{}%".format(search_query)
+            base_query = base_query.filter(educational_models.CollectiveOffer.name.ilike(name_query))
 
     if form.sort.data:
         base_query = base_query.order_by(getattr(educational_models.CollectiveOffer, form.sort.data))
