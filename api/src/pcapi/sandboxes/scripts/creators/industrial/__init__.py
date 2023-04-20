@@ -37,6 +37,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venues import
 from pcapi.sandboxes.scripts.creators.industrial.create_offer_with_thousand_stocks import (
     create_offer_with_thousand_stocks,
 )
+from pcapi.sandboxes.scripts.creators.industrial.create_offerer_providers_for_apis import (
+    create_offerer_providers_for_apis,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_offerer_with_several_venues import (
     create_offerer_with_several_venues,
 )
@@ -129,3 +132,5 @@ def save_industrial_sandbox() -> None:
     create_offers_with_price_categories()
 
     create_industrial_offerer_with_custom_reimbursement_rule()
+
+    create_offerer_providers_for_apis()
