@@ -31,6 +31,8 @@ const CollectiveDmsTimeline = ({
 }) => {
   const collectiveDmsApplicationLink = `https://www.demarches-simplifiees.fr/dossiers/${collectiveDmsApplication.application}/messagerie`
   const collectiveVenueInformationsLink = `/structures/${offererId}/lieux/${collectiveDmsApplication.venueId}/eac`
+  const collectiveDmsContactSupport =
+    'https://aide.passculture.app/hc/fr/articles/8491401511708'
 
   const buildDate =
     collectiveDmsApplication.buildDate &&
@@ -95,6 +97,17 @@ const CollectiveDmsTimeline = ({
           }
         >
           Consulter ma messagerie sur Démarches Simplifiées
+        </ButtonLink>
+        <ButtonLink
+          variant={ButtonVariant.TERNARY}
+          link={{
+            to: collectiveDmsContactSupport,
+            isExternal: true,
+          }}
+          Icon={ExternalSiteIcon}
+        >
+          Contacter les services des Ministères de l’Education Nationale et de
+          la Culture
         </ButtonLink>
       </>
     ),
@@ -272,6 +285,17 @@ const CollectiveDmsTimeline = ({
           >
             Consulter ma messagerie sur Démarches Simplifiées
           </ButtonLink>
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            link={{
+              to: collectiveDmsContactSupport,
+              isExternal: true,
+            }}
+            Icon={ExternalSiteIcon}
+          >
+            Contacter les services des Ministères de l’Education Nationale et de
+            la Culture
+          </ButtonLink>
         </div>
       </div>
     </>
@@ -296,6 +320,17 @@ const CollectiveDmsTimeline = ({
             onClick={() => logClickOnDmsLink(DMSApplicationstatus.SANS_SUITE)}
           >
             Consulter ma messagerie sur Démarches Simplifiées
+          </ButtonLink>
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            link={{
+              to: collectiveDmsContactSupport,
+              isExternal: true,
+            }}
+            Icon={ExternalSiteIcon}
+          >
+            Contacter les services des Ministères de l’Education Nationale et de
+            la Culture
           </ButtonLink>
         </div>
       </div>
