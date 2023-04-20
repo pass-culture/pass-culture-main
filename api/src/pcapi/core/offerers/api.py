@@ -1644,12 +1644,10 @@ def create_from_onboarding_data(
             longitude=additional_info.longitude,
             managingOffererId=user_offerer.offererId,
             name=additional_info.name,
-            # FIXME(fseguin, 2023-03-27): use only publicName when pcpro is updated
-            publicName=onboarding_data.publicName or onboarding_data.name,
+            publicName=onboarding_data.publicName,
             postalCode=additional_info.postalCode,
             venueLabelId=None,
-            # FIXME(fseguin, 2023-03-27): use only venueTypeCode when pcpro is updated
-            venueTypeCode=onboarding_data.venueTypeCode or onboarding_data.venueType,
+            venueTypeCode=onboarding_data.venueTypeCode,
             withdrawalDetails=None,
             description=None,
             contact=None,
