@@ -662,42 +662,44 @@ def get_filtered_collective_booking_report(
     event_date: datetime | None = None,
     venue_id: int | None = None,
 ) -> BaseQuery:
-    bookings_query = (
-        _get_filtered_collective_bookings_query(
-            pro_user,
-            period,
-            status_filter,
-            event_date,
-            venue_id,
-            extra_joins=(
-                educational_models.CollectiveStock.collectiveOffer,
-                educational_models.CollectiveBooking.educationalRedactor,
-            ),
-        )
-        .with_entities(
-            offerers_models.Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-            offerers_models.Venue.departementCode.label("venueDepartmentCode"),
-            offerers_models.Offerer.postalCode.label("offererPostalCode"),
-            educational_models.CollectiveOffer.name.label("offerName"),
-            educational_models.CollectiveStock.price,
-            educational_models.CollectiveStock.beginningDatetime.label("stockBeginningDatetime"),
-            educational_models.CollectiveStock.beginningDatetime.label("stockBookingLimitDatetime"),
-            educational_models.EducationalRedactor.firstName,
-            educational_models.EducationalRedactor.lastName,
-            educational_models.EducationalRedactor.email,
-            educational_models.CollectiveBooking.id,
-            educational_models.CollectiveBooking.dateCreated.label("bookedAt"),
-            educational_models.CollectiveBooking.dateUsed.label("usedAt"),
-            educational_models.CollectiveBooking.reimbursementDate.label("reimbursedAt"),
-            educational_models.CollectiveBooking.status,
-            educational_models.CollectiveBooking.isConfirmed,
-            # `get_batch` function needs a field called exactly `id` to work,
-            # the label prevents SA from using a bad (prefixed) label for this field
-            educational_models.CollectiveBooking.id.label("id"),
-            educational_models.CollectiveBooking.educationalRedactorId,
-        )
-        .distinct(educational_models.CollectiveBooking.id)
+    bookings_query = _get_filtered_collective_bookings_query(
+        pro_user,
+        period,
+        status_filter,
+        event_date,
+        venue_id,
+        extra_joins=(
+            educational_models.CollectiveStock.collectiveOffer,
+            educational_models.CollectiveBooking.educationalRedactor,
+            educational_models.CollectiveBooking.educationalInstitution,
+        ),
     )
+    bookings_query = bookings_query.with_entities(
+        offerers_models.Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
+        offerers_models.Venue.departementCode.label("venueDepartmentCode"),
+        offerers_models.Offerer.postalCode.label("offererPostalCode"),
+        educational_models.CollectiveOffer.name.label("offerName"),
+        educational_models.CollectiveStock.price,
+        educational_models.CollectiveStock.beginningDatetime.label("stockBeginningDatetime"),
+        educational_models.CollectiveStock.beginningDatetime.label("stockBookingLimitDatetime"),
+        educational_models.EducationalRedactor.firstName,
+        educational_models.EducationalRedactor.lastName,
+        educational_models.EducationalRedactor.email,
+        educational_models.CollectiveBooking.id,
+        educational_models.CollectiveBooking.dateCreated.label("bookedAt"),
+        educational_models.CollectiveBooking.dateUsed.label("usedAt"),
+        educational_models.CollectiveBooking.reimbursementDate.label("reimbursedAt"),
+        educational_models.CollectiveBooking.status,
+        educational_models.CollectiveBooking.isConfirmed,
+        educational_models.EducationalInstitution.institutionId,
+        educational_models.EducationalInstitution.name.label("institutionName"),
+        educational_models.EducationalInstitution.institutionType,
+        # `get_batch` function needs a field called exactly `id` to work,
+        # the label prevents SA from using a bad (prefixed) label for this field
+        educational_models.CollectiveBooking.id.label("id"),
+        educational_models.CollectiveBooking.educationalRedactorId,
+    )
+    bookings_query = bookings_query.distinct(educational_models.CollectiveBooking.id)
 
     return bookings_query
 
