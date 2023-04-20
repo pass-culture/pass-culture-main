@@ -6,7 +6,8 @@ import secrets
 
 import factory
 
-from pcapi.core.offerers.factories import VenueFactory
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.testing import BaseFactory
 
@@ -17,7 +18,7 @@ class AllocinePivotFactory(BaseFactory):
     class Meta:
         model = models.AllocinePivot
 
-    venue = factory.SubFactory(VenueFactory)
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
     theaterId = "XXXXXXXXXXXXXXXXXX=="
     internalId = "PXXXXX"
 
@@ -61,7 +62,7 @@ class VenueProviderFactory(BaseFactory):
     class Meta:
         model = models.VenueProvider
 
-    venue = factory.SubFactory(VenueFactory)
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
     provider = factory.SubFactory(APIProviderFactory)
     isActive = True
 
@@ -72,7 +73,7 @@ class CinemaProviderPivotFactory(BaseFactory):
     class Meta:
         model = models.CinemaProviderPivot
 
-    venue = factory.SubFactory(VenueFactory)
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
     provider = factory.SubFactory(ProviderFactory)
     idAtProvider = factory.Sequence("idProvider{}".format)
 
@@ -144,7 +145,7 @@ class AllocineVenueProviderFactory(BaseFactory):
     class Meta:
         model = models.AllocineVenueProvider
 
-    venue = factory.SubFactory(VenueFactory)
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
     provider = factory.SubFactory(AllocineProviderFactory)
     venueIdAtOfferProvider = factory.SelfAttribute("venue.siret")
     internalId = factory.Sequence("P{}".format)
@@ -159,3 +160,11 @@ class AllocineVenueProviderPriceRuleFactory(BaseFactory):
     allocineVenueProvider = factory.SubFactory(AllocineVenueProviderFactory)
     priceRule = "default"
     price = decimal.Decimal("5.7")
+
+
+class OffererProviderFactory(BaseFactory):
+    class Meta:
+        model = offerers_models.OffererProvider
+
+    offerer = factory.SubFactory(offerers_factories.OffererFactory)
+    provider = factory.SubFactory(ProviderFactory)
