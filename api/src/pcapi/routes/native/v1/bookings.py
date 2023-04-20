@@ -82,13 +82,13 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
             "Could not book offer: The CinemaProvider for the Venue does not match the Offer Provider",
             extra={"offer_id": stock.offer.id, "venue_id": stock.offer.venue.id},
         )
-        raise ApiErrors({"external_booking": "Cette offre n'est plus réservable"})
+        raise ApiErrors({"external_booking": "Cette offre n'est plus réservable."})
     except InactiveProvider:
         logger.info(
             "Could not book offer: The CinemaProvider for this offer is inactive",
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
-        raise ApiErrors({"external_booking": "Cette offre n'est plus réservable"})
+        raise ApiErrors({"external_booking": "Cette offre n'est plus réservable."})
     except ExternalBookingException:
         logger.info(
             "Could not book offer: Error when booking external ticket",
@@ -225,9 +225,9 @@ def cancel_booking(user: User, booking_id: int) -> None:
         logger.error("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s", user.id)
         raise ApiErrors()
     except UnexpectedCinemaProvider:
-        raise ApiErrors({"code": "UNEXPECTED_CINEMA_PROVIDER"})
+        raise ApiErrors({"external_booking": "L'annulation de réservation a échoué."})
     except InactiveProvider:
-        raise ApiErrors({"code": "INACTIVE_CINEMA_PROVIDER"})
+        raise ApiErrors({"external_booking": "L'annulation de réservation a échoué."})
 
 
 @blueprint.native_v1.route("/bookings/<int:booking_id>/toggle_display", methods=["POST"])

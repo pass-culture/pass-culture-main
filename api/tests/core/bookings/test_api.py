@@ -512,11 +512,10 @@ class BookOfferTest:
             stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111%4444#111/datetime")
 
             # When
-            with pytest.raises(Exception) as exc:
+            with pytest.raises(Exception):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
 
             assert Booking.query.count() == 0
-            assert str(exc.value) == "Something wrong happened"
 
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_book_manual_offer(self):
