@@ -33,6 +33,7 @@ class Returns200Test:
             offerer=user_offerer.offerer,
             educationalRedactor__firstName="Bob",
             educationalRedactor__lastName="Kelso",
+            educationalInstitution=educational_factories.EducationalInstitutionFactory(),
         )
 
         client = TestClient(app.test_client()).with_session_auth(user_offerer.user.email)
@@ -56,6 +57,11 @@ class Returns200Test:
         assert sheet.cell(row=2, column=8).value == booking.collectiveStock.price
         assert sheet.cell(row=2, column=9).value == "réservé"
         assert sheet.cell(row=2, column=10).value == "2021-08-11 14:00:00+02:00"
+        assert sheet.cell(row=2, column=11).value == booking.educationalInstitution.institutionId
+        assert (
+            sheet.cell(row=2, column=12).value
+            == f"{booking.educationalInstitution.institutionType} {booking.educationalInstitution.name}"
+        )
 
     def test_created_booking_single(self, app):
         user_offerer = offerers_factories.UserOffererFactory()
