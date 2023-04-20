@@ -55,12 +55,11 @@ const Validation = (): JSX.Element => {
 
   const onSubmit = async () => {
     const data: SaveNewOnboardingDataQueryModel = {
-      name: offerer.name,
       publicName: offerer.publicName ?? '',
       siret: offerer.siret.replaceAll(' ', ''),
       venueTypeCode:
         /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
-        activity.venueTypeCode === '' ? null : activity.venueTypeCode,
+        activity.venueTypeCode,
       webPresence: activity.socialUrls.join(', '),
       target:
         /* istanbul ignore next: the form validation already handles this */

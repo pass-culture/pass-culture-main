@@ -1411,7 +1411,7 @@ class CreateFromOnboardingDataTest:
             publicName="Nom public de mon lieu",
             siret="85331845900031",
             target=offerers_models.Target.INDIVIDUAL,
-            venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
+            venueTypeCode=offerers_models.VenueTypeCode.MOVIE.name,
             webPresence="www.example.com, instagram.com/example, @example@mastodon.example",
         )
 
