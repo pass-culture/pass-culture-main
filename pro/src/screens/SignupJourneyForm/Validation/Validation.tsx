@@ -60,7 +60,7 @@ const Validation = (): JSX.Element => {
       siret: offerer.siret.replaceAll(' ', ''),
       venueTypeCode:
         /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
-        activity.venueTypeCode === '' ? null : activity.venueTypeCode,
+        activity.venueTypeCode,
       webPresence: activity.socialUrls.join(', '),
       target:
         /* istanbul ignore next: the form validation already handles this */
