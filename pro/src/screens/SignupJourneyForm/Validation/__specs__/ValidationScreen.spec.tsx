@@ -179,7 +179,6 @@ describe('screens:SignupJourney::Validation', () => {
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer mon espace'))
       expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
-        name: 'nom',
         publicName: 'nom public',
         siret: '123123123',
         venueTypeCode: 'MUSEUM',
@@ -218,7 +217,6 @@ describe('screens:SignupJourney::Validation', () => {
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer mon espace'))
       expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
-        name: 'nom',
         publicName: '',
         siret: '123123123',
         venueTypeCode: 'MUSEUM',

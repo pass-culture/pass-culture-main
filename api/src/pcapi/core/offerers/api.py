@@ -415,7 +415,7 @@ def auto_tag_new_offerer(
 @dataclasses.dataclass
 class NewOnboardingInfo:
     target: models.Target | None
-    venueTypeCode: offerers_models.VenueTypeCode | None
+    venueTypeCode: str
     webPresence: str | None
 
 

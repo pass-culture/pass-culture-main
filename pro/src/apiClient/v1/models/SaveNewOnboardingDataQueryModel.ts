@@ -3,7 +3,6 @@
 /* eslint-disable */
 
 import type { Target } from './Target';
-import type { VenueTypeCode } from './VenueTypeCode';
 
 export type SaveNewOnboardingDataQueryModel = {
   createVenueWithoutSiret?: boolean;
@@ -12,7 +11,7 @@ export type SaveNewOnboardingDataQueryModel = {
   siret: string;
   target: Target;
   venueType?: string | null;
-  venueTypeCode?: VenueTypeCode | null;
+  venueTypeCode: string;
   webPresence: string;
 };
 
