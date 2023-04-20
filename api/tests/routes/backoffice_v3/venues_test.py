@@ -85,7 +85,7 @@ class GetVenueTest:
         assert "ID Adage" not in response_text
         assert f"Site web : {venue.contact.website}" in response_text
         assert "Pas de dossier DMS CB" in response_text
-        assert f"Activité principale {venue.venueTypeCode.value}" in response_text
+        assert f"Activité principale : {venue.venueTypeCode.value}" in response_text
         assert "Type de lieu" not in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
@@ -99,7 +99,7 @@ class GetVenueTest:
         response = authenticated_client.get(url)
 
         response_text = html_parser.content_as_text(response.data)
-        assert f"Type de lieu {venue.venueTypeCode.value}" in response_text
+        assert f"Type de lieu : {venue.venueTypeCode.value}" in response_text
         assert "Activité principale" not in response_text
 
     def test_get_venue_with_adage_id(self, authenticated_client):
