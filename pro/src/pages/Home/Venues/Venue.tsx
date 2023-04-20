@@ -358,6 +358,11 @@ const Venue = ({
                                   to: `/structures/${offererId}/lieux/${id}#venue-collective-data`,
                                   isExternal: false,
                                 }}
+                                onClick={() => {
+                                  logEvent?.(Events.CLICKED_EAC_DMS_TIMELINE, {
+                                    from: location.pathname,
+                                  })
+                                }}
                               >
                                 Suivre ma demande de référencement ADAGE
                               </ButtonLink>
