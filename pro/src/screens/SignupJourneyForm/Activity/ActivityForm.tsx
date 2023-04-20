@@ -2,7 +2,6 @@ import cn from 'classnames'
 import { FieldArray, useFormikContext } from 'formik'
 import React from 'react'
 
-import { VenueTypeCode } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { PlusCircleIcon, TrashFilledIcon } from 'icons'
 import { Button, CheckboxGroup, Select, TextInput } from 'ui-kit'
@@ -12,7 +11,7 @@ import styles from './ActivityForm.module.scss'
 import { activityTargetCustomerCheckboxGroup } from './constants'
 
 export interface IActivityFormValues {
-  venueTypeCode: keyof typeof VenueTypeCode | ''
+  venueTypeCode: string
   socialUrls: string[]
   targetCustomer: {
     individual: boolean
