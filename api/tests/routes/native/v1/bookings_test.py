@@ -87,57 +87,29 @@ class PostBookingTest:
         assert response.status_code == 400
         assert response.json == {"code": "OFFER_CATEGORY_NOT_BOOKABLE_BY_USER"}
 
-    @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
-    def test_unexpected_offer_provider(self, mocked_book_ticket, client):
+    @patch("pcapi.core.bookings.api.book_offer")
+    def test_unexpected_offer_provider(self, mocked_book_offer, client):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        cds_provider = providers_api.get_provider_by_local_class("CDSStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
-        providers_factories.CinemaProviderPivotFactory(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            idAtProvider=venue_provider.venueIdAtOfferProvider,
-        )
-        offer = offers_factories.EventOfferFactory(
-            name="Séance ciné solo",
-            venue=venue_provider.venue,
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            lastProviderId=cds_provider.id,
-        )
-        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%4444#111/datetime")
-        mocked_book_ticket.side_effect = UnexpectedCinemaProvider("Unknown Provider: Toto")
+        stock = offers_factories.EventStockFactory()
+        mocked_book_offer.side_effect = InactiveProvider()
 
         client = client.with_token(self.identifier)
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
-        assert response.json["code"] == "UNEXPECTED_CINEMA_PROVIDER"
+        assert response.json["external_booking"] == "Cette offre n'est plus réservable."
 
-    @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
-    def test_inactive_provider(self, mocked_book_ticket, client):
+    @patch("pcapi.core.bookings.api.book_offer")
+    def test_inactive_provider(self, mocked_book_offer, client):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        cds_provider = providers_api.get_provider_by_local_class("CDSStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
-        providers_factories.CinemaProviderPivotFactory(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            idAtProvider=venue_provider.venueIdAtOfferProvider,
-        )
-        offer = offers_factories.EventOfferFactory(
-            name="Séance ciné solo",
-            venue=venue_provider.venue,
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            lastProviderId=cds_provider.id,
-        )
-        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%4444#111/datetime")
-        mocked_book_ticket.side_effect = InactiveProvider(
-            f"No active cinema venue provider found for venue #{venue_provider.venue.id}"
-        )
+        stock = offers_factories.EventStockFactory()
+        mocked_book_offer.side_effect = InactiveProvider()
 
         client = client.with_token(self.identifier)
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
-        assert response.json["code"] == "INACTIVE_CINEMA_PROVIDER"
+        assert response.json["external_booking"] == "Cette offre n'est plus réservable."
 
 
 class GetBookingsTest:
@@ -424,7 +396,7 @@ class CancelBookingTest:
         response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 400
-        assert response.json["code"] == "UNEXPECTED_CINEMA_PROVIDER"
+        assert response.json["external_booking"] == "L'annulation de réservation a échoué."
 
     @patch("pcapi.core.bookings.api._cancel_external_booking")
     def test_inactive_provider(self, mocked_cancel_external_booking, client):
@@ -453,7 +425,7 @@ class CancelBookingTest:
         response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 400
-        assert response.json["code"] == "INACTIVE_CINEMA_PROVIDER"
+        assert response.json["external_booking"] == "L'annulation de réservation a échoué."
 
 
 class ToggleBookingVisibilityTest:
