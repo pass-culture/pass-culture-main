@@ -28,6 +28,7 @@ class ProviderResponse(BaseModel):
     id: str
     isActive: bool
     localClass: str | None
+    hasOffererProvider: bool
 
     _humanize_id = humanize_field("id")
 
@@ -36,23 +37,23 @@ class ProviderResponse(BaseModel):
 
 
 class VenueProviderResponse(BaseModel):
+    dateModifiedAtLastProvider: datetime | None
+    # TODO(asaunier): Check if this field is necessary
+    fieldsUpdated: List[str]
     id: int
     idAtProviders: str | None
-    dateModifiedAtLastProvider: datetime | None
     isActive: bool
+    isDuo: bool | None
     isFromAllocineProvider: bool
     lastProviderId: str | None
     lastSyncDate: datetime | None
     nOffers: int
+    price: float | None
+    provider: ProviderResponse
     providerId: int
+    quantity: int | None
     venueId: int
     venueIdAtOfferProvider: str
-    provider: ProviderResponse
-    # TODO(asaunier): Check if this field is necessary
-    fieldsUpdated: List[str]
-    quantity: int | None
-    isDuo: bool | None
-    price: float | None
 
     @classmethod
     def from_orm(cls: Any, venue_provider: VenueProvider) -> "VenueProviderResponse":
