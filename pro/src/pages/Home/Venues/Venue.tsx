@@ -67,11 +67,21 @@ const Venue = ({
     !!adageInscriptionDate &&
     isBefore(new Date(adageInscriptionDate), addDays(new Date(), -30))
 
+  const hasRefusedApplicationForMoreThan30Days =
+    (dmsInformations?.state == DMSApplicationstatus.REFUSE ||
+      dmsInformations?.state == DMSApplicationstatus.SANS_SUITE) &&
+    dmsInformations.processingDate &&
+    isBefore(
+      new Date(dmsInformations?.processingDate),
+      addDays(new Date(), -30)
+    )
+
   const shouldDisplayEACInformationSection =
     isCollectiveDmsTrackingActive &&
-    !(dmsInformations?.state === DMSApplicationstatus.REFUSE) &&
     Boolean(dmsInformations) &&
-    !hasAdageIdForMoreThan30Days
+    !hasAdageIdForMoreThan30Days &&
+    !hasRefusedApplicationForMoreThan30Days
+
   const initialOpenState =
     shouldDisplayEACInformationSection ||
     (hasNewOfferCreationJourney && !hasCreatedOffer)
@@ -318,10 +328,10 @@ const Venue = ({
                       hasMissingReimbursementPoint={
                         hasMissingReimbursementPoint
                       }
-                      dmsStatus={dmsInformations?.state}
-                      dmsInProgress={dmsInformations !== null}
                       hasAdageId={hasAdageId}
-                      adageInscriptionDate={adageInscriptionDate}
+                      shouldDisplayEACInformationSection={
+                        shouldDisplayEACInformationSection
+                      }
                     />
                   )}
                   {!hasNewOfferCreationJourney &&

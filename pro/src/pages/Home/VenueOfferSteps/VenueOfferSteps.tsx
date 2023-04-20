@@ -1,8 +1,6 @@
 import cn from 'classnames'
-import { addDays, isBefore } from 'date-fns'
 import React from 'react'
 
-import { DMSApplicationstatus } from 'apiClient/v1'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -26,10 +24,8 @@ interface IVenueOfferStepsProps {
   offererId: string
   venueId?: string | null
   hasCreatedOffer?: boolean
-  dmsStatus?: DMSApplicationstatus
-  dmsInProgress?: boolean
   hasAdageId?: boolean
-  adageInscriptionDate?: string | null
+  shouldDisplayEACInformationSection?: boolean
 }
 
 const VenueOfferSteps = ({
@@ -38,29 +34,14 @@ const VenueOfferSteps = ({
   hasMissingReimbursementPoint = true,
   venueId = null,
   hasCreatedOffer = false,
-  dmsStatus,
-  dmsInProgress = false,
   hasAdageId = false,
-  adageInscriptionDate,
+  shouldDisplayEACInformationSection = false,
 }: IVenueOfferStepsProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${offererId}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
   const { logEvent } = useAnalytics()
-  const isCollectiveDmsTrackingActive = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
-  )
-  const hasAdageIdForMoreThan30Days =
-    hasAdageId &&
-    !!adageInscriptionDate &&
-    isBefore(new Date(adageInscriptionDate), addDays(new Date(), -30))
-
-  const shouldDisplayEACInformationSection =
-    isCollectiveDmsTrackingActive &&
-    !(dmsStatus === DMSApplicationstatus.REFUSE) &&
-    dmsInProgress &&
-    !hasAdageIdForMoreThan30Days
 
   return (
     <div
