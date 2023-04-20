@@ -3,6 +3,7 @@ import datetime
 from typing import cast
 
 from flask_sqlalchemy import BaseQuery
+import sqlalchemy.orm as sqla_orm
 
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
@@ -19,7 +20,11 @@ def get_venue_provider_by_id(venue_provider_id: int) -> models.VenueProvider:
 
 
 def get_venue_provider_list(venue_id: int) -> list[models.VenueProvider]:
-    return models.VenueProvider.query.filter_by(venueId=venue_id).all()
+    return (
+        models.VenueProvider.query.filter_by(venueId=venue_id)
+        .options(sqla_orm.joinedload(models.VenueProvider.provider).joinedload(models.Provider.offererProvider))
+        .all()
+    )
 
 
 def get_active_venue_providers_by_provider(provider_id: int) -> list[models.VenueProvider]:
@@ -45,7 +50,9 @@ def get_active_providers_query() -> BaseQuery:
 def get_available_providers(venue: Venue) -> BaseQuery:
     from pcapi.local_providers import AllocineStocks
 
-    query = models.Provider.query.filter_by(isActive=True, enabledForPro=True)
+    query = models.Provider.query.filter_by(isActive=True, enabledForPro=True).options(
+        sqla_orm.joinedload(models.Provider.offererProvider)
+    )
 
     local_classes_to_exclude = set(constants.CINEMA_PROVIDER_NAMES)
     if pivot := get_cinema_provider_pivot_for_venue(venue):

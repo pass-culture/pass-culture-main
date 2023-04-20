@@ -233,6 +233,8 @@ def connect_venue_to_cinema_provider(
 
 
 def _check_provider_can_be_connected(provider: providers_models.Provider, id_at_provider: str) -> None:
+    if provider.hasOffererProvider:
+        return
     if not provider.implements_provider_api:
         raise providers_exceptions.ProviderWithoutApiImplementation()
 

@@ -41,6 +41,7 @@ from pcapi.models.providable_mixin import ProvidableMixin
 if typing.TYPE_CHECKING:
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.educational.models import CollectiveOfferTemplate
+    import pcapi.core.offerers.models as offerers_models
 
 
 class Provider(PcObject, Base, Model, DeactivableMixin):
@@ -72,6 +73,10 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
         "CollectiveOfferTemplate", back_populates="provider"
     )
 
+    offererProvider: sa_orm.Mapped["offerers_models.OffererProvider"] = relationship(
+        "OffererProvider", back_populates="provider", uselist=False
+    )
+
     @property
     def isAllocine(self) -> bool:
         from pcapi import local_providers  # avoid import loop
@@ -83,8 +88,12 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
         return self.localClass in provider_constants.CINEMA_PROVIDER_NAMES
 
     @property
+    def hasOffererProvider(self) -> bool:
+        return bool(self.offererProvider)
+
+    @property
     def implements_provider_api(self) -> bool:
-        return self.apiUrl != None
+        return self.apiUrl != None and not self.offererProvider
 
     def getProviderAPI(self) -> ProviderAPI:
         return ProviderAPI(
