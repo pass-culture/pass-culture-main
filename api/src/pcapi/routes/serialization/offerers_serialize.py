@@ -223,7 +223,7 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
     publicName: str | None
     siret: str
     target: Target
-    venueTypeCode: offerers_models.VenueTypeCode | None
+    venueTypeCode: str
     webPresence: str
 
     class Config:
