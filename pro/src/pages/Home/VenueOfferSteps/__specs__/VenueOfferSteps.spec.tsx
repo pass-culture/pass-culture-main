@@ -1,8 +1,6 @@
 import { screen } from '@testing-library/react'
-import { addDays } from 'date-fns'
 import React from 'react'
 
-import { DMSApplicationstatus } from 'apiClient/v1'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueOfferSteps } from '../index'
@@ -16,10 +14,8 @@ const renderVenueOfferSteps = ({
   hasVenue = false,
   hasCreatedOffer = false,
   hasMissingReimbursementPoint = true,
-  dmsStatus = DMSApplicationstatus.EN_CONSTRUCTION,
-  dmsInProgress = false,
   hasAdageId = false,
-  adageInscriptionDate = '',
+  shouldDisplayEACInformationSection = false,
 }) => {
   const currentUser = {
     id: 'EY',
@@ -36,11 +32,9 @@ const renderVenueOfferSteps = ({
       hasVenue={hasVenue}
       offererId="AB"
       hasMissingReimbursementPoint={hasMissingReimbursementPoint}
-      dmsStatus={dmsStatus}
-      dmsInProgress={dmsInProgress}
       hasCreatedOffer={hasCreatedOffer}
       hasAdageId={hasAdageId}
-      adageInscriptionDate={adageInscriptionDate}
+      shouldDisplayEACInformationSection={shouldDisplayEACInformationSection}
     />,
     { storeOverrides, initialRouterEntries: ['/accueil'] }
   )
@@ -74,23 +68,22 @@ describe('VenueOfferSteps', () => {
       screen.queryByText('Renseigner des coordonnées bancaires')
     ).not.toBeInTheDocument()
   })
-  it('Should display section procedure in progress if user has procedure in progress', async () => {
+  it('Should display eac dms link when condition to display it is true', async () => {
     renderVenueOfferSteps({
       hasVenue: false,
-      dmsInProgress: true,
+      shouldDisplayEACInformationSection: true,
     })
     expect(screen.getByText('Démarche en cours :')).toBeInTheDocument()
     expect(
       screen.getByText('Suivre ma demande de référencement ADAGE')
     ).toBeInTheDocument()
   })
+
   it('Should display link for eac informations if has adage id and already created offer', async () => {
     renderVenueOfferSteps({
       hasVenue: false,
       hasAdageId: true,
-      dmsInProgress: true,
-      hasCreatedOffer: true,
-      dmsStatus: DMSApplicationstatus.ACCEPTE,
+      shouldDisplayEACInformationSection: true,
     })
     expect(
       screen.getByText(
@@ -99,47 +92,23 @@ describe('VenueOfferSteps', () => {
     ).toBeInTheDocument()
   })
 
-  it('Should not display link for eac informations if status procedure is refused ', async () => {
+  it('Should display disabled link to eac informations if venue doesnt have adage id', async () => {
     renderVenueOfferSteps({
       hasVenue: false,
       hasAdageId: false,
-      dmsStatus: DMSApplicationstatus.REFUSE,
+      shouldDisplayEACInformationSection: true,
     })
-    expect(
-      screen.queryByText(
-        'Renseigner mes informations à destination des enseignants'
-      )
-    ).not.toBeInTheDocument()
+    const eacInformationsLink = screen.getByRole('link', {
+      name: 'Renseigner mes informations à destination des enseignants',
+    })
+    expect(eacInformationsLink).toBeInTheDocument()
+    expect(eacInformationsLink).toHaveAttribute('aria-disabled')
   })
-  it('should not display eac informations section if has adage id for more than 30 days', async () => {
+
+  it('should not display dms link if condition to display it is false', async () => {
     renderVenueOfferSteps({
       hasVenue: false,
-      hasAdageId: true,
-      adageInscriptionDate: addDays(new Date(), -31).toISOString(),
-      dmsStatus: DMSApplicationstatus.ACCEPTE,
-    })
-    expect(
-      screen.queryByText(
-        'Renseigner mes informations à destination des enseignants'
-      )
-    ).not.toBeInTheDocument()
-  })
-  it('should not display dms timeline if button has adage id for more than 30 days', async () => {
-    renderVenueOfferSteps({
-      hasVenue: false,
-      hasAdageId: true,
-      adageInscriptionDate: addDays(new Date(), -31).toISOString(),
-      dmsStatus: DMSApplicationstatus.ACCEPTE,
-    })
-    expect(
-      screen.queryByText('Suivre ma demande de référencement ADAGE')
-    ).not.toBeInTheDocument()
-  })
-  it('should not display dms timeline if dms application is refused', async () => {
-    renderVenueOfferSteps({
-      hasVenue: false,
-      hasAdageId: false,
-      dmsStatus: DMSApplicationstatus.REFUSE,
+      shouldDisplayEACInformationSection: false,
     })
     expect(
       screen.queryByText('Suivre ma demande de référencement ADAGE')
