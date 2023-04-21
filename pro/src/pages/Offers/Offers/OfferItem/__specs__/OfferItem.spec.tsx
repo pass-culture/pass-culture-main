@@ -43,6 +43,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
   beforeEach(() => {
     eventOffer = {
       id: 'M4',
+      nonHumanizedId: 1,
       isActive: true,
       isEditable: true,
       isEvent: true,
