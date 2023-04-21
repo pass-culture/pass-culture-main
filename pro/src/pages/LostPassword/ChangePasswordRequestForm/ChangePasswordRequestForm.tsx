@@ -34,7 +34,6 @@ const ChangePasswordRequestForm = ({
           onChange={onChange}
           placeholder="email@exemple.com"
           required
-          subLabel="obligatoire"
           type="email"
           value={emailValue}
         />
@@ -44,7 +43,7 @@ const ChangePasswordRequestForm = ({
           disabled={isChangePasswordRequestSubmitDisabled()}
           type="submit"
         >
-          Envoyer
+          Valider
         </button>
       </form>
     </div>
