@@ -8,16 +8,16 @@ from pcapi.models import db
 from pcapi.utils.clean_accents import clean_accents
 
 from .. import forms
-from .base import ProviderContext
+from .base import PivotContext
 
 
-class AllocineContext(ProviderContext):
+class AllocineContext(PivotContext):
     @classmethod
-    def provider_class(cls) -> typing.Type:
+    def pivot_class(cls) -> typing.Type:
         return providers_models.AllocinePivot
 
     @classmethod
-    def list_providers(cls, query_string: str | None = None) -> list[providers_models.AllocinePivot]:
+    def list_pivots(cls, query_string: str | None = None) -> list[providers_models.AllocinePivot]:
         query = providers_models.AllocinePivot.query.options(
             sa.orm.joinedload(providers_models.AllocinePivot.venue).load_only(
                 offerers_models.Venue.name,
@@ -40,34 +40,34 @@ class AllocineContext(ProviderContext):
         return forms.EditAllocineForm()
 
     @classmethod
-    def get_edit_form(cls, provider_id: int) -> forms.EditAllocineForm:
-        provider = providers_models.AllocinePivot.query.get_or_404(provider_id)
+    def get_edit_form(cls, pivot_id: int) -> forms.EditAllocineForm:
+        pivot = providers_models.AllocinePivot.query.get_or_404(pivot_id)
         return forms.EditAllocineForm(
-            venue_id=[provider.venueId],
-            theater_id=provider.theaterId,
-            internal_id=provider.internalId,
+            venue_id=[pivot.venueId],
+            theater_id=pivot.theaterId,
+            internal_id=pivot.internalId,
         )
 
     @classmethod
-    def create_provider(cls, form: forms.EditAllocineForm) -> bool:
-        provider = providers_models.AllocinePivot(
+    def create_pivot(cls, form: forms.EditAllocineForm) -> bool:
+        pivot = providers_models.AllocinePivot(
             venueId=form.venue_id.data[0],
             theaterId=form.theater_id.data,
             internalId=form.internal_id.data,
         )
-        db.session.add(provider)
+        db.session.add(pivot)
         return True
 
     @classmethod
-    def update_provider(cls, form: forms.EditAllocineForm, provider_id: int) -> bool:
-        provider = providers_models.AllocinePivot.query.get_or_404(provider_id)
-        provider.venueId = form.venue_id.data[0]
-        provider.theaterId = form.theater_id.data
-        provider.internalId = form.internal_id.data
-        db.session.add(provider)
+    def update_pivot(cls, form: forms.EditAllocineForm, pivot_id: int) -> bool:
+        pivot = providers_models.AllocinePivot.query.get_or_404(pivot_id)
+        pivot.venueId = form.venue_id.data[0]
+        pivot.theaterId = form.theater_id.data
+        pivot.internalId = form.internal_id.data
+        db.session.add(pivot)
         return True
 
     @classmethod
-    def delete_provider(cls, provider_id: int) -> bool:
-        # Delete Allocine provider is not allowed
+    def delete_pivot(cls, pivot_id: int) -> bool:
+        # Delete Allocine pivot is not allowed
         return False

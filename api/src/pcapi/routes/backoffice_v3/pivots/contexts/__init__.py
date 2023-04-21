@@ -3,13 +3,13 @@ import typing
 from werkzeug.exceptions import NotFound
 
 from .allocine import AllocineContext
-from .base import ProviderContext
+from .base import PivotContext
 from .boost import BoostContext
 from .cgr import CGRContext
 from .cineoffice import CineofficeContext
 
 
-def get_context(provider_name: str) -> typing.Type[ProviderContext]:
+def get_context(provider_name: str) -> typing.Type[PivotContext]:
     context = {
         "allocine": AllocineContext,
         "boost": BoostContext,

@@ -1,0 +1,29 @@
+{% import "components/links.html" as links %}
+{% import "pivots/get/common.html" as common %}
+<turbo-frame id="cineoffice_frame">
+{{ common.build_pivot_bar("cineoffice", form, dst, true) }}
+<table class="table table-hover my-4">
+  <thead>
+    <tr>
+      <th scope="col"></th>
+      <th scope="col">Id du Lieu</th>
+      <th scope="col">Lieu</th>
+      <th scope="col">Identifiant cinéma (CDS)</th>
+      <th scope="col">Nom de l'utilisateur (CDS)</th>
+      <th scope="col">Clé API (CDS)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for pivot in rows %}
+      <tr>
+        <th scope="row">{# common.build_pivot_row_menu("cineoffice", pivot, true, true) #}</th>
+        <td class="fw-bolder">{{ pivot.cinemaProviderPivot.venue.id }}</td>
+        <td>{{ links.build_venue_name_to_details_link(pivot.cinemaProviderPivot.venue, text_attr="name") }}</td>
+        <td>{{ pivot.cinemaProviderPivot.idAtProvider }}</td>
+        <td>{{ pivot.accountId }}</td>
+        <td>{{ pivot.cinemaApiToken }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</turbo-frame>
