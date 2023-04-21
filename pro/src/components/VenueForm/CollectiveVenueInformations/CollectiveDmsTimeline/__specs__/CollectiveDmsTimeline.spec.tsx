@@ -1,11 +1,16 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
+import { Events } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveDmsTimeline from '..'
+
+const mockLogEvent = jest.fn()
 
 const renderCollectiveDmsTimeline = ({
   collectiveDmsApplication,
@@ -103,6 +108,19 @@ describe('CollectiveDmsTimeline', () => {
       expectedLabel: 'Votre demande de référencement a été classée sans suite',
     },
   ]
+  const dmsStates = [
+    DMSApplicationstatus.EN_CONSTRUCTION,
+    DMSApplicationstatus.EN_INSTRUCTION,
+    DMSApplicationstatus.ACCEPTE,
+    DMSApplicationstatus.REFUSE,
+    DMSApplicationstatus.SANS_SUITE,
+  ]
+  beforeEach(() => {
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      ...jest.requireActual('hooks/useAnalytics'),
+      logEvent: mockLogEvent,
+    }))
+  })
   it.each(testCases)(
     'should render %s status',
     ({
@@ -117,6 +135,29 @@ describe('CollectiveDmsTimeline', () => {
         hasAdageIdForMoreThan30Days,
       })
       expect(screen.getByText(expectedLabel)).toBeInTheDocument()
+    }
+  )
+
+  it.each(dmsStates)(
+    'should log event on click dms link',
+    async (dmsState: DMSApplicationstatus) => {
+      renderCollectiveDmsTimeline({
+        collectiveDmsApplication: {
+          ...defaultCollectiveDmsApplication,
+          state: dmsState,
+        },
+      })
+      const dmsLink = screen.getByRole('link', {
+        name:
+          dmsState == DMSApplicationstatus.EN_CONSTRUCTION
+            ? 'Modifier mon dossier sur Démarches Simplifiées'
+            : 'Consulter ma messagerie sur Démarches Simplifiées',
+      })
+      await userEvent.click(dmsLink)
+      expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_EAC_DMS_LINK, {
+        from: '/',
+        dmsApplicationStatus: dmsState,
+      })
     }
   )
 

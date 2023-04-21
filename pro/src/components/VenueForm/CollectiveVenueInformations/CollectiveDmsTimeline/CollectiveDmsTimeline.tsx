@@ -1,6 +1,8 @@
 import React from 'react'
 
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
+import { Events } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import {
   ExternalSiteIcon,
   PenIcon,
@@ -44,6 +46,13 @@ const CollectiveDmsTimeline = ({
 
   const adageDate =
     adageInscriptionDate && getDateToFrenchText(adageInscriptionDate)
+  const { logEvent } = useAnalytics()
+  const logClickOnDmsLink = (status: DMSApplicationstatus) => {
+    logEvent?.(Events.CLICKED_EAC_DMS_LINK, {
+      from: location.pathname,
+      dmsApplicationStatus: status,
+    })
+  }
 
   const successSubmittedStep = {
     type: TimelineStepType.SUCCESS,
@@ -79,6 +88,9 @@ const CollectiveDmsTimeline = ({
             isExternal: true,
           }}
           Icon={ExternalSiteIcon}
+          onClick={() =>
+            logClickOnDmsLink(DMSApplicationstatus.EN_CONSTRUCTION)
+          }
         >
           Modifier mon dossier sur Démarches Simplifiées
         </ButtonLink>
@@ -108,6 +120,7 @@ const CollectiveDmsTimeline = ({
             isExternal: true,
           }}
           Icon={ExternalSiteIcon}
+          onClick={() => logClickOnDmsLink(DMSApplicationstatus.EN_INSTRUCTION)}
         >
           Consulter ma messagerie sur Démarches Simplifiées
         </ButtonLink>
@@ -147,6 +160,7 @@ const CollectiveDmsTimeline = ({
             isExternal: true,
           }}
           Icon={ExternalSiteIcon}
+          onClick={() => logClickOnDmsLink(DMSApplicationstatus.ACCEPTE)}
         >
           Consulter ma messagerie sur Démarches Simplifiées
         </ButtonLink>
@@ -246,6 +260,7 @@ const CollectiveDmsTimeline = ({
               isExternal: true,
             }}
             Icon={ExternalSiteIcon}
+            onClick={() => logClickOnDmsLink(DMSApplicationstatus.REFUSE)}
           >
             Consulter ma messagerie sur Démarches Simplifiées
           </ButtonLink>
@@ -270,6 +285,7 @@ const CollectiveDmsTimeline = ({
               isExternal: true,
             }}
             Icon={ExternalSiteIcon}
+            onClick={() => logClickOnDmsLink(DMSApplicationstatus.SANS_SUITE)}
           >
             Consulter ma messagerie sur Démarches Simplifiées
           </ButtonLink>
