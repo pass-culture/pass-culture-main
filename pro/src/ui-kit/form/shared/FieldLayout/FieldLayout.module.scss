@@ -12,7 +12,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    white-space: nowrap;
+    white-space: break-spaces;
 
     &-container {
       margin-bottom: rem.torem(forms.$label-space-before-input);
