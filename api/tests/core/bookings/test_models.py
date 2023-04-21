@@ -72,14 +72,6 @@ def test_too_many_bookings_postgresql_exception():
         assert exc.value.errors["global"] == ["La quantité disponible pour cette offre est atteinte."]
 
 
-def test_email_at_booking_date_without_mail_history():
-    user = users_factories.BeneficiaryGrant18Factory(
-        dateCreated=datetime.utcnow() - relativedelta(days=8), email="first@example.com"
-    )
-    booking = factories.BookingFactory(user=user, dateCreated=datetime.utcnow())
-    assert booking.emailAtDateCreated == "first@example.com"
-
-
 @pytest.mark.parametrize(
     "booking_date_created, email_at_booking_created_date",
     [
@@ -117,8 +109,6 @@ def test_email_at_booking_date_with_mail_history(booking_date_created, email_at_
         newDomainEmail="example.app",
         creationDate=datetime.utcnow() - relativedelta(days=2),
     )
-    booking = factories.BookingFactory(user=user, dateCreated=booking_date_created)
-    assert booking.emailAtDateCreated == email_at_booking_created_date
 
 
 class BookingIsConfirmedPropertyTest:

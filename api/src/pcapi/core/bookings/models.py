@@ -260,15 +260,6 @@ class Booking(PcObject, Base, Model):
     def email(self) -> str:
         return self.user.email
 
-    @property
-    def emailAtDateCreated(self) -> str:
-        email = self.user.email
-        for email_history in sorted(self.user.email_history, key=lambda history: history.creationDate):
-            if self.dateCreated < email_history.creationDate:
-                email = email_history.oldEmail
-                break
-        return email
-
     @hybrid_property
     def isExternal(self) -> bool:
         return any(externalBooking.id for externalBooking in self.externalBookings)

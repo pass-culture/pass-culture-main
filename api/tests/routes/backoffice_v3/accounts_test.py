@@ -524,17 +524,7 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
             assert "Crédit restant" not in html_parser.content_as_text(response.data)
 
     def test_get_beneficiary_bookings(self, authenticated_client):
-        user_initial_email = "first@example.com"
-        user_current_email = "second@example.com"
-        user = users_factories.BeneficiaryGrant18Factory(email=user_current_email)
-        users_factories.EmailValidationEntryFactory(
-            user=user,
-            oldUserEmail=user_initial_email.split("@", maxsplit=1)[0],
-            oldDomainEmail=user_initial_email.split("@", maxsplit=1)[1],
-            newUserEmail=user_current_email.split("@", maxsplit=1)[0],
-            newDomainEmail=user_current_email.split("@", maxsplit=1)[1],
-            creationDate=datetime.date.today() - relativedelta(days=1),
-        )
+        user = users_factories.BeneficiaryGrant18Factory()
         b1 = bookings_factories.CancelledBookingFactory(
             user=user, amount=12.5, dateCreated=datetime.date.today() - relativedelta(days=2)
         )
@@ -569,8 +559,8 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         assert f"Utilisée le : {datetime.date.today().strftime('%d/%m/%Y')}" in text
         assert f"Annulée le : {datetime.date.today().strftime('%d/%m/%Y')}" in text
         assert "Motif d'annulation : Annulée par le bénéficiaire" in text
-        assert f"E-mail à la réservation : {user_current_email}" in text  # extra row for bookings[1]
-        assert f"E-mail à la réservation : {user_initial_email}" in text  # extra row for bookings[0]
+        assert f"E-mail du pro : {b1.venue.bookingEmail}" in text  # extra row for bookings[1]
+        assert f"E-mail du pro : {b2.venue.bookingEmail}" in text  # extra row for bookings[0]
 
     def test_get_beneficiary_bookings_empty(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()
