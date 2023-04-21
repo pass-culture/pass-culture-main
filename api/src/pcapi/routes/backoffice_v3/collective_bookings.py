@@ -15,7 +15,6 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.utils import date as date_utils
-from pcapi.utils.clean_accents import clean_accents
 
 from . import autocomplete
 from . import utils
@@ -135,11 +134,10 @@ def _get_collective_bookings(
                 base_query.filter(educational_models.EducationalInstitution.id == int(search_query)),
             )
         else:
-            name = search_query.replace(" ", "%").replace("-", "%")
-            name = clean_accents(name)
+            name = "%{}%".format(search_query)
             query = base_query.filter(
-                sa.func.unaccent(educational_models.EducationalInstitution.name).ilike(f"%{name}%"),
-            ).union(base_query.filter(sa.func.unaccent(educational_models.CollectiveOffer.name).ilike(f"%{name}%")))
+                educational_models.EducationalInstitution.name.ilike(name),
+            ).union(base_query.filter(educational_models.CollectiveOffer.name.ilike(name)))
     else:
         query = base_query
 

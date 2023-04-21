@@ -202,9 +202,7 @@ class ListIndividualBookingsTest:
         assert len(rows) >= 1
         assert bookings[1].token in set(row["Contremarque"] for row in rows)
 
-    @pytest.mark.parametrize(
-        "search_query", ["napoleon", "bonaparte", "Napoléon Bonaparte", "napo@leon.com", "Napo@Leon.com"]
-    )
+    @pytest.mark.parametrize("search_query", ["bonaparte", "Napoléon Bonaparte", "napo@leon.com", "Napo@Leon.com"])
     def test_list_bookings_by_user(self, authenticated_client, bookings, search_query):
         # when
         with assert_num_queries(self.expected_num_queries):
