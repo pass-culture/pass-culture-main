@@ -12,10 +12,12 @@ from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import human_ids
 
@@ -783,6 +785,38 @@ class PostProductByEanTest:
                 "price": 1234,
             },
         }
+
+    @mock.patch("pcapi.tasks.sendinblue_tasks.update_pro_attributes_task")
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_valid_ean_without_task_autoflush(self, update_pro_task_mock, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
+        finance_factories.CustomReimbursementRuleFactory(offerer=api_key.offerer, rate=0.2, offer=None)
+
+        # the update task autoflushes the SQLAlchemy session, but is not executed synchronously in cloud
+        # environments, therefore we cannot rely on its side effects
+        update_pro_task_mock.side_effect = None
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "accessibility": ACCESSIBILITY_FIELDS,
+                "ean": product.extraData["ean"],
+                "idAtProvider": "id",
+                "location": {"type": "physical", "venueId": venue.id},
+                "stock": {
+                    "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                    "price": 1234,
+                    "quantity": 3,
+                },
+            },
+        )
+
+        assert response.status_code == 200
+
+        assert offers_models.Offer.query.count() == 1
+        assert offers_models.Stock.query.count() == 1
 
     def test_venue_accessibility_as_default(self, client):
         api_key = offerers_factories.ApiKeyFactory()
