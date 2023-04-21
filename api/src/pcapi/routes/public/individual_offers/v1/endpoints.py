@@ -319,6 +319,7 @@ def _create_offer_from_product(
         offer.visualDisabilityCompliant = venue.visualDisabilityCompliant
 
     repository.repository.add_to_session(offer)
+    db.session.flush()
 
     logger.info(
         "models.Offer has been created",
