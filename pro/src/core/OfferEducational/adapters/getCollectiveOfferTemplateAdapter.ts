@@ -4,7 +4,7 @@ import { CollectiveOfferTemplate } from '../types'
 
 type IPayloadFailure = null
 export type GetCollectiveOfferTemplateAdapter = Adapter<
-  string,
+  number,
   CollectiveOfferTemplate,
   IPayloadFailure
 >

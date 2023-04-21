@@ -9,6 +9,7 @@ import {
   collectiveOfferFactory,
   collectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
+import { dehumanizeId } from 'utils/dehumanize'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOfferStockCreation } from '../CollectiveOfferStockCreation'
@@ -92,7 +93,7 @@ describe('CollectiveOfferStockCreation', () => {
     ).toBeInTheDocument()
 
     const response = await getCollectiveOfferTemplateAdapter(
-      props.offer.templateId
+      dehumanizeId(props.offer.templateId) || 0
     )
     expect(response.isOk).toBeFalsy()
     await waitFor(() => {

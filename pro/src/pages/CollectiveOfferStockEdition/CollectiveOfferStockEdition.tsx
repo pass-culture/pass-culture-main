@@ -49,7 +49,9 @@ const CollectiveOfferStockEdition = ({
       values,
       initialValues,
     })
-    const offerResponse = await getStockCollectiveOfferAdapter(offer.id)
+    const offerResponse = await getStockCollectiveOfferAdapter(
+      offer.nonHumanizedId
+    )
 
     if (!stockResponse.isOk) {
       return notify.error(stockResponse.message)
