@@ -87,7 +87,7 @@ const CollectiveOfferVisibility = ({
   const onSubmit = async (values: VisibilityFormValues) => {
     setButtonPressed(true)
     const result = await patchInstitution({
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
       institutionId: values.visibility === 'all' ? null : values.institution,
       teacherEmail: selectedTeacher ? selectedTeacher.email : null,
     })
