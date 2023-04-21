@@ -31,7 +31,7 @@ const ActivityForm = ({ venueTypes }: IActivityFormProps): JSX.Element => {
       title="Activité"
       className={styles['activity-form-wrapper']}
     >
-      <FormLayout.Row>
+      <FormLayout.Row className={styles['input-gap']}>
         <Select
           options={[
             {
@@ -50,7 +50,11 @@ const ActivityForm = ({ venueTypes }: IActivityFormProps): JSX.Element => {
         render={arrayHelpers => (
           <FormLayout.Row>
             {values.socialUrls.map((url, index) => (
-              <FormLayout.Row key={index} inline>
+              <FormLayout.Row
+                key={index}
+                inline
+                className={styles['input-gap']}
+              >
                 <TextInput
                   name={`socialUrls[${index}]`}
                   label="Site internet, réseau social"
@@ -93,7 +97,7 @@ const ActivityForm = ({ venueTypes }: IActivityFormProps): JSX.Element => {
           </FormLayout.Row>
         )}
       />
-      <FormLayout.Row>
+      <FormLayout.Row className={styles['target-customer-row']}>
         <CheckboxGroup
           group={activityTargetCustomerCheckboxGroup}
           groupName="targetCustomer"
