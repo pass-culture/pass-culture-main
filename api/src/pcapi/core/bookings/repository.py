@@ -561,46 +561,50 @@ def _duplicate_booking_when_quantity_is_two(bookings_recap_query: BaseQuery) -> 
     return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == 2))
 
 
-def _serialize_booking_recap(booking: object) -> BookingRecap:
+def _serialize_booking_recap(booking: Booking) -> BookingRecap:
     return BookingRecap(
-        offer_identifier=booking.offerId,  # type: ignore [attr-defined]
-        offer_name=booking.offerName,  # type: ignore [attr-defined]
-        beneficiary_email=booking.beneficiaryEmail,  # type: ignore [attr-defined]
-        beneficiary_phonenumber=booking.beneficiaryPhoneNumber,  # type: ignore [attr-defined]
-        beneficiary_firstname=booking.beneficiaryFirstname,  # type: ignore [attr-defined]
-        beneficiary_lastname=booking.beneficiaryLastname,  # type: ignore [attr-defined]
-        booking_amount=booking.bookingAmount,  # type: ignore [attr-defined]
-        booking_token=booking.bookingToken,  # type: ignore [attr-defined]
-        booking_date=typing.cast(
-            datetime, convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)  # type: ignore [attr-defined]
-        ),
-        booking_is_used=booking.status in (BookingStatus.USED, BookingStatus.REIMBURSED),  # type: ignore [attr-defined]
-        booking_is_cancelled=booking.status == BookingStatus.CANCELLED,  # type: ignore [attr-defined]
-        booking_is_reimbursed=booking.status == BookingStatus.REIMBURSED,  # type: ignore [attr-defined]
-        booking_is_confirmed=booking.isConfirmed,  # type: ignore [attr-defined]
-        booking_is_duo=booking.quantity == DUO_QUANTITY,  # type: ignore [attr-defined]
-        booking_is_external=booking.isExternal,  # type: ignore [attr-defined]
-        booking_raw_status=booking.status,  # type: ignore [attr-defined]
+        offer_identifier=booking.offerId,
+        offer_name=booking.offerName,
+        beneficiary_email=booking.beneficiaryEmail,
+        beneficiary_phonenumber=booking.beneficiaryPhoneNumber,
+        beneficiary_firstname=booking.beneficiaryFirstname,
+        beneficiary_lastname=booking.beneficiaryLastname,
+        booking_amount=booking.bookingAmount,
+        booking_token=booking.bookingToken,
+        booking_date=typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)),
+        booking_is_used=booking.status in (BookingStatus.USED, BookingStatus.REIMBURSED),
+        booking_is_cancelled=booking.status == BookingStatus.CANCELLED,
+        booking_is_reimbursed=booking.status == BookingStatus.REIMBURSED,
+        booking_is_confirmed=bool(booking.isConfirmed),
+        booking_is_duo=booking.quantity == DUO_QUANTITY,
+        booking_is_external=bool(booking.isExternal),
+        booking_raw_status=booking.status,
         booking_confirmation_date=None,
         redactor_email=None,
         redactor_firstname=None,
         redactor_lastname=None,
-        date_used=convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),  # type: ignore [attr-defined]
-        payment_date=convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),  # type: ignore [attr-defined]
-        cancellation_date=convert_booking_dates_utc_to_venue_timezone(booking.cancelledAt, booking=booking),  # type: ignore [attr-defined]
-        cancellation_limit_date=convert_booking_dates_utc_to_venue_timezone(booking.cancellationLimitDate, booking),  # type: ignore [attr-defined]
+        date_used=typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)),
+        payment_date=typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)),
+        cancellation_date=typing.cast(
+            datetime, convert_booking_dates_utc_to_venue_timezone(booking.cancelledAt, booking=booking)
+        ),
+        cancellation_limit_date=typing.cast(
+            datetime, convert_booking_dates_utc_to_venue_timezone(booking.cancellationLimitDate, booking)
+        )
+        if booking.cancellationLimitDate
+        else None,
         event_beginning_datetime=(
-            _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode)  # type: ignore [attr-defined]
-            if booking.stockBeginningDatetime  # type: ignore [attr-defined]
+            _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode)
+            if booking.stockBeginningDatetime
             else None
         ),
-        offer_isbn=booking.offerIsbn,  # type: ignore [attr-defined]
-        stock_identifier=booking.stockId,  # type: ignore [attr-defined]
+        offer_isbn=booking.offerIsbn,
+        stock_identifier=booking.stockId,
     )
 
 
 def _paginated_bookings_sql_entities_to_bookings_recap(
-    paginated_bookings: list[object],
+    paginated_bookings: list[Booking],
     page: int,
     per_page_limit: int,
     total_bookings_recap: int,
