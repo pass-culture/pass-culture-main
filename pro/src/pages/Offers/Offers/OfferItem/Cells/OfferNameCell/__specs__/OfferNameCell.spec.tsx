@@ -33,6 +33,7 @@ describe('OfferNameCell', () => {
   beforeEach(() => {
     defaultOffer = {
       id: 'M4',
+      nonHumanizedId: 1,
       isActive: true,
       isEditable: true,
       isEvent: true,
