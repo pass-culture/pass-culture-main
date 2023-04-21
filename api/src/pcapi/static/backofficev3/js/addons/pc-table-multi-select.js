@@ -39,7 +39,8 @@
  * }
  */
 class PcTableMultiSelect extends PcAddOn {
-
+  /** Unique identifier of this addon, in order to reference it from another add on */
+  static ID = 'PcTableMultiSelectId'
   static TABLES_SELECTOR = 'table[data-table-multi-select-id]'
   static CHECKBOXES_SELECTOR = "input[name^='pc-table-multi-select-check-']:not([name='pc-table-multi-select-check-all'])"
   static CHECKBOX_ALL_SELECTOR = 'input[name="pc-table-multi-select-check-all"]'

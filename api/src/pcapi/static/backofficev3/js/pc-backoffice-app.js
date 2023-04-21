@@ -27,7 +27,10 @@ class PcBackofficeApp {
   /** This static string is used to retrieve the current csrf token */
   static META_CSRF_SELECTOR = 'meta[name="csrf-token"]'
 
-  /** Each application's addons instance is available from within the `app` instance through `app.addons[name]`. */
+  /** Each application's addons instance is available from within the `app` instance through `app.addons[name]`.
+   * You can also access the addon by setting a unique `static ID` within the addon, this is particularly useful
+   * when you need to reference an addon from another one in order to prevent the code from breaking if the name changes.
+   */
   addons = {}
 
   /** This is the JS application state. It is used by PcAddOn and allow partial persistence of any addon state using `addon.saveState(state)` */
@@ -41,11 +44,15 @@ class PcBackofficeApp {
     this.#rehydrateState()
     AddOns.forEach((AddOn) => {
       const name = `${AddOn.name[0].toLowerCase()}${AddOn.name.slice(1)}`
-      this.addons[name] = new AddOn({
+      const addon = new AddOn({
         name,
         app: this,
         addOnState: this.appState[name],
       })
+      this.addons[name] = addon
+      if (AddOn.ID) {
+        this.addons[AddOn.ID] = addon
+      }
     })
     PcUtils.addLoadEvent(this.bindTurboFrameEvents)
     PcUtils.addLoadEvent(this.initialize)

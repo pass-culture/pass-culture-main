@@ -25,6 +25,8 @@
  * ></select>
  */
 class PcTomSelectField extends PcAddOn {
+  /** Unique identifier of this addon, in order to reference it from another add on */
+  static ID = 'PcTomSelectFieldId'
   static SELECT_SELECTOR = 'select.pc-tom-select-field'
   static SELECT_AUTOCOMPLETE_CLASS = 'pc-tom-select-autocomplete-field'
   static SELECT_SETTINGS = {
