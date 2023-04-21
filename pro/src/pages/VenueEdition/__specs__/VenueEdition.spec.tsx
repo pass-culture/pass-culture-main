@@ -97,6 +97,7 @@ describe('route VenueEdition', () => {
         venueIdAtOfferProvider: 'cdsdemorc1',
         provider: {
           name: 'Ciné Office',
+          hasOffererProvider: false,
           enabledForPro: true,
           id: 'BY',
           isActive: true,

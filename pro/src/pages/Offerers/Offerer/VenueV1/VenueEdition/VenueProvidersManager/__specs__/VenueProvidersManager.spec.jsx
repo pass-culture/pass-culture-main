@@ -554,7 +554,13 @@ describe('src | VenueProvidersManager', () => {
 
       it('should display the stock form when the user choose another provider than Allociné', async () => {
         // given
-        providers = [{ id: providerId, name: 'My little provider' }]
+        providers = [
+          {
+            id: providerId,
+            name: 'My little provider',
+            hasOffererProvider: false,
+          },
+        ]
         pcapi.loadProviders.mockResolvedValue(providers)
         await renderVenueProvidersManager(props)
         const importOffersButton = screen.getByText('Synchroniser des offres')

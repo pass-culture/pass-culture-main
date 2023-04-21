@@ -5,6 +5,7 @@ export const serializeProvidersApi = (providers: any): ProviderResponse[] => {
     enabledForPro: provider.enabledForPro,
     id: provider.id,
     isActive: provider.isActive,
+    hasOffererProvider: provider.hasOffererProvider,
     name: provider.name,
   }))
 }
