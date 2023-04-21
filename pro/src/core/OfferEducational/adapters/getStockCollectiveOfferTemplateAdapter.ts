@@ -4,7 +4,7 @@ import { GetStockOfferSuccessPayload } from '../types'
 
 type IPayloadFailure = null
 type GetStockCollectiveOfferTemplateAdapter = Adapter<
-  string,
+  number,
   GetStockOfferSuccessPayload,
   IPayloadFailure
 >

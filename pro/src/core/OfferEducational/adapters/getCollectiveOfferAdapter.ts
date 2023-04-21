@@ -4,7 +4,7 @@ import { CollectiveOffer } from '../types'
 
 type IPayloadFailure = null
 export type GetCollectiveOfferAdapter = Adapter<
-  string,
+  number,
   CollectiveOffer,
   IPayloadFailure
 >

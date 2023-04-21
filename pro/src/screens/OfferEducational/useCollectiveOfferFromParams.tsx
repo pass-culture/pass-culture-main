@@ -9,6 +9,7 @@ import {
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { dehumanizeId } from 'utils/dehumanize'
 
 export type MandatoryCollectiveOfferFromParamsProps = {
   offer: CollectiveOffer | CollectiveOfferTemplate
@@ -53,7 +54,7 @@ export const useCollectiveOfferFromParams = (
     const adapter = isTemplate
       ? getCollectiveOfferTemplateAdapter
       : getCollectiveOfferAdapter
-    const response = await adapter(offerId)
+    const response = await adapter(dehumanizeId(offerId) || 0)
     if (response.isOk) {
       setOffer(response.payload)
     }

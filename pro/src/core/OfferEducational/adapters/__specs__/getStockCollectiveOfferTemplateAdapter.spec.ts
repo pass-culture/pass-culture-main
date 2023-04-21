@@ -28,7 +28,7 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
       )
 
       // when
-      const response = await getStockCollectiveOfferTemplateAdapter('A1')
+      const response = await getStockCollectiveOfferTemplateAdapter(1)
 
       // then
       expect(response.isOk).toBeFalsy()
@@ -86,7 +86,7 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
       })
 
       // when
-      const response = await getStockCollectiveOfferTemplateAdapter('A1')
+      const response = await getStockCollectiveOfferTemplateAdapter(1)
 
       // then
       expect(response.isOk).toBeTruthy()

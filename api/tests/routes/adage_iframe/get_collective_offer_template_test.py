@@ -140,7 +140,7 @@ class Returns200Test:
                 "otherAddress": "",
                 "postalCode": venue.postalCode,
                 "publicName": venue.publicName,
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
             },
             "students": ["Lycée - Seconde"],
             "offerId": None,
