@@ -95,7 +95,7 @@ def synchronize_adage_ids_on_venues() -> None:
 
     filtered_cultural_partner_by_ids = {}
     for cultural_partner in adage_cultural_partners.partners:
-        if cultural_partner.venueId is not None and (cultural_partner.synchroPass and cultural_partner.actif):
+        if cultural_partner.venueId is not None and (cultural_partner.synchroPass and cultural_partner.actif == 1):
             filtered_cultural_partner_by_ids[cultural_partner.venueId] = cultural_partner
 
     deactivated_venues: list[offerers_models.Venue] = offerers_models.Venue.query.filter(
