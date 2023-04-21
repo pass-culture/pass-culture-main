@@ -3,19 +3,23 @@ import { Offer, Venue } from 'core/Offers/types'
 
 let offerId = 1
 
-export const individualOfferFactory = (customOffer = {}): Offer => ({
-  id: `${offerId++}`,
-  status: OfferStatus.ACTIVE,
-  isActive: true,
-  hasBookingLimitDatetimesPassed: true,
-  isEducational: false,
-  name: `offer name ${offerId}`,
-  isEvent: true,
-  venue: venueFactory(),
-  stocks: [],
-  isEditable: true,
-  ...customOffer,
-})
+export const individualOfferFactory = (customOffer = {}): Offer => {
+  const currentOfferId = offerId++
+  return {
+    id: `${currentOfferId}`,
+    nonHumanizedId: currentOfferId,
+    status: OfferStatus.ACTIVE,
+    isActive: true,
+    hasBookingLimitDatetimesPassed: true,
+    isEducational: false,
+    name: `offer name ${offerId}`,
+    isEvent: true,
+    venue: venueFactory(),
+    stocks: [],
+    isEditable: true,
+    ...customOffer,
+  }
+}
 
 const venueFactory = (): Venue => ({
   name: 'venue name',

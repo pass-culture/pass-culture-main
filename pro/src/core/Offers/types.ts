@@ -45,6 +45,7 @@ export type Stock = {
 
 export type Offer = {
   id: string
+  nonHumanizedId: number
   status: OfferStatus
   isActive: boolean
   hasBookingLimitDatetimesPassed: boolean
