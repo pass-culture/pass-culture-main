@@ -39,7 +39,7 @@ describe('LostPassword', () => {
         screen.getByLabelText(/Adresse e-mail/),
         'coucou@example.com'
       )
-      await userEvent.click(screen.getByText(/Envoyer/))
+      await userEvent.click(screen.getByText(/Valider/))
 
       // he has been redirected to next step
       expect(screen.getByText(/Merci/)).toBeInTheDocument()
