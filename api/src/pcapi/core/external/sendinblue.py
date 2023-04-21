@@ -76,6 +76,7 @@ class SendinblueAttributes(Enum):
     OFFERER_NAME = "OFFERER_NAME"
     POSTAL_CODE = "POSTAL_CODE"
     PRODUCT_BRUT_X_USE_DATE = "PRODUCT_BRUT_X_USE_DATE"
+    USER_AGE = "USER_AGE"
     USER_ID = "USER_ID"
     USER_IS_ATTACHED = "USER_IS_ATTACHED"
     USER_IS_CREATOR = "USER_IS_CREATOR"
@@ -198,6 +199,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.PRODUCT_BRUT_X_USE_DATE.value: _get_attr(
             attributes, "products_use_date", lambda v: v.get("product_brut_x_use")
         ),
+        SendinblueAttributes.USER_AGE: _get_attr(attributes, "age"),
         SendinblueAttributes.USER_ID.value: _get_attr(attributes, "user_id"),
         SendinblueAttributes.USER_IS_ATTACHED.value: _get_attr(attributes, "user_is_attached"),
         SendinblueAttributes.USER_IS_CREATOR.value: _get_attr(attributes, "user_is_creator"),

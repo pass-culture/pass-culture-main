@@ -131,6 +131,7 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         attributes = get_user_attributes(user)
 
     assert attributes == UserAttributes(
+        age=18,
         domains_credit=DomainsCredit(
             all=Credit(initial=Decimal("500"), remaining=Decimal("480.00")),
             digital=Credit(initial=Decimal("200"), remaining=Decimal("200")),
@@ -193,6 +194,7 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
         attributes = get_user_attributes(user)
 
     assert attributes == UserAttributes(
+        age=20,
         domains_credit=DomainsCredit(
             all=Credit(initial=Decimal("300.00"), remaining=Decimal("0")),
             digital=Credit(initial=Decimal("100"), remaining=Decimal("0")),
@@ -262,6 +264,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         attributes = get_user_attributes(user)
 
     assert attributes == UserAttributes(
+        age=18,
         domains_credit=DomainsCredit(
             all=Credit(initial=Decimal("300"), remaining=Decimal("0.00")),
             digital=Credit(initial=Decimal("100"), remaining=Decimal("0.00")),
@@ -403,6 +406,7 @@ def test_get_user_attributes_not_beneficiary():
         attributes = get_user_attributes(user)
 
     assert attributes == UserAttributes(
+        age=18,
         booking_categories=[],
         booking_venues_count=0,
         city="Nice",
