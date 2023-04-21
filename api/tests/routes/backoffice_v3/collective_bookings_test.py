@@ -239,7 +239,7 @@ class ListCollectiveBookingsTest:
             ("Collège", (0, 1, 2)),
             ("Bref", (1,)),
             (
-                "lycee charlemagne",
+                "lycée charlemagne",
                 (
                     3,
                     4,

@@ -19,7 +19,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
-from pcapi.utils.clean_accents import clean_accents
 
 from . import autocomplete
 from . import utils
@@ -151,14 +150,11 @@ def _get_individual_bookings(
                 or_filters.append(users_models.User.email == sanitized_email)
 
         if not or_filters:
-            name = search_query.replace(" ", "%").replace("-", "%")
-            name = clean_accents(name)
+            name = "%{}%".format(search_query)
             or_filters.append(
-                sa.func.unaccent(sa.func.concat(users_models.User.firstName, " ", users_models.User.lastName)).ilike(
-                    f"%{name}%"
-                ),
+                sa.func.concat(users_models.User.firstName, " ", users_models.User.lastName).ilike(name),
             )
-            or_filters.append(sa.func.unaccent(offers_models.Offer.name).ilike(f"%{name}%"))
+            or_filters.append(offers_models.Offer.name.ilike(name))
 
         query = base_query.filter(or_filters[0])
 
