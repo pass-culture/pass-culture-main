@@ -257,7 +257,7 @@ class Booking(PcObject, Base, Model):
 
     @property
     def userName(self) -> str:
-        return self.user.full_name
+        return self.user.full_name  # type: ignore [return-value]
 
     @property
     def email(self) -> str:

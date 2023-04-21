@@ -316,11 +316,16 @@ class UserTest:
         assert user.hasPhysicalVenues
 
     def test_full_name(self):
+        # hybrid property: check both Python and SQL expressions
+
         user = users_factories.UserFactory()
-        assert user.full_name == f"{user.firstName} {user.lastName}"
+        expected_full_name = f"{user.firstName} {user.lastName}"
+        assert user.full_name == expected_full_name
+        assert db.session.query(user_models.User.full_name).filter_by(id=user.id).scalar() == expected_full_name
 
         no_name_user = users_factories.UserFactory(firstName="", lastName="")
-        assert no_name_user.full_name is no_name_user.email
+        assert no_name_user.full_name == no_name_user.email
+        assert db.session.query(user_models.User.full_name).filter_by(id=no_name_user.id).scalar() == no_name_user.email
 
     def test_pro_validation_status(self):
         user = users_factories.UserFactory()

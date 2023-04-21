@@ -72,8 +72,8 @@
             </tr>
           </thead>
           <tbody>
-            {% for offerer in rows.items %}
-              {% set owner = offerer.first_user %}
+            {% for item in rows.items %}
+              {% set offerer = item.Offerer %}
               <tr>
                 <td>
                   <div class="d-flex">
@@ -106,14 +106,14 @@
                         </li>
                       </ul>
                     </div>
-                    {{ build_offerer_validation_toggle_extra_row_button(offerer) }}
+                    {{ build_offerer_validation_toggle_extra_row_button(offerer.id, item.dms_venues) }}
                   </div>
                 </td>
                 <td>{{ offerer.id }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
                 <td>{{ build_offerer_status_badge(offerer) }}</td>
                 <td>
-                  {% set top_actor_checked = is_top_actor_func(offerer) %}
+                  {% set top_actor_checked = "top-acteur" in item.tags | map(attribute="name") %}
                   <div class="form-check form-switch">
                     <form action="{{ url_for("backoffice_v3_web.validation.toggle_top_actor", offerer_id=offerer.id) }}"
                           name="{{ url_for("backoffice_v3_web.validation.toggle_top_actor", offerer_id=offerer.id) | action_to_name }}"
@@ -123,10 +123,10 @@
                     </form>
                   </div>
                 </td>
-                <td>{{ offerer.tags | filter_homologation_tags | format_tag_object_list | escape }}</td>
+                <td>{{ item.tags | map(attribute="label") | join(", ") | escape }}</td>
                 <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>
-                  {{ get_last_comment_func(offerer) | empty_string_if_null | replace("\n", "
+                  {{ item.last_comment | empty_string_if_null | replace("\n", "
                   <br />
                   "|safe) }}
                 </td>
@@ -134,20 +134,21 @@
                   {{ links.build_siren_to_external_link(offerer) }}
                 </td>
                 <td>
-                  {{ (owner and owner.email) | empty_string_if_null }}
+                  {{ (item.creator_email) | empty_string_if_null }}
                 </td>
                 <td>
-                  {{ links.build_pro_user_name_to_details_link(owner) }}
+                  {{ links.build_pro_user_name_to_details_link(item.creator_id, item.creator_name) }}
                 </td>
                 <td>
                   {{ offerer.city | empty_string_if_null }}
                 </td>
               </tr>
-              {{ build_offerer_validation_extra_row(offerer) }}
+              {{ build_offerer_validation_extra_row(offerer.id, item.dms_venues) }}
             {% endfor %}
           </tbody>
         </table>
-        {% for offerer in rows.items %}
+        {% for item in rows.items %}
+          {% set offerer = item.Offerer %}
           {{ build_lazy_modal(
           url_for("backoffice_v3_web.validation.get_reject_offerer_form", offerer_id=offerer.id),
           "reject-modal-" + offerer.id|string) }}

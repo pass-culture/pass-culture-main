@@ -1,25 +1,25 @@
-{% macro build_offerer_validation_toggle_extra_row_button(offerer) %}
-  {% if offerer.dms_adage_statuses | length > 0 %}
-    <button class="btn btn-sm {{ 'btn-outline-success' if 'accepte' in offerer.dms_adage_statuses else 'btn-outline-danger' }} pc-btn-chevron-toggle"
+{% macro build_offerer_validation_toggle_extra_row_button(offerer_id, dms_venues) %}
+  {% if dms_venues %}
+    <button class="btn btn-sm {{ 'btn-outline-success' if 'accepte' in dms_venues | map(attribute="state") else 'btn-outline-danger' }} pc-btn-chevron-toggle"
             data-bs-toggle="collapse"
-            data-bs-target=".pc-offerer-validation-{{ offerer.id }}">
+            data-bs-target=".pc-offerer-validation-{{ offerer_id }}">
       <i class="bi bi-chevron-right"></i>
     </button>
   {% endif %}
 {% endmacro %}
-{% macro build_offerer_validation_extra_row(offerer) %}
-  {% if offerer.dms_adage_statuses | length > 0 %}
-    <tr class="collapse accordion-collapse pc-offerer-validation-{{ offerer.id }}">
+{% macro build_offerer_validation_extra_row(offerer_id, dms_venues) %}
+  {% if dms_venues %}
+    <tr class="collapse accordion-collapse pc-offerer-validation-{{ offerer_id }}">
       <td colspan="100%">
         <div class="row">
           <div class="col-6">
             <div class="card shadow-sm p-4 mx-2">
-              {% for venue in offerer.managedVenues %}
-                {% if venue.dms_adage_status %}
+              {% for dms_venue in dms_venues %}
+                {% if dms_venue.state %}
                   <ul>
-                    <li>Nom : {{ venue.name }}</li>
-                    <li>SIRET : {{ venue.siret }}</li>
-                    <li>Statut du dossier DMS Adage : {{ venue.dms_adage_status | format_dms_status }}</li>
+                    <li>Nom : {{ dms_venue.name }}</li>
+                    <li>SIRET : {{ dms_venue.siret }}</li>
+                    <li>Statut du dossier DMS Adage : {{ dms_venue.state | format_dms_status }}</li>
                   </ul>
                 {% endif %}
               {% endfor %}

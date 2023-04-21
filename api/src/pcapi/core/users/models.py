@@ -396,11 +396,27 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
         return fraud_api.decide_eligibility(self, self.birth_date, datetime.utcnow())
 
-    @property
+    @hybrid_property
     def full_name(self) -> str:
         # full_name is used for display and should never be empty, which would be confused with no user.
         # We use the email as a fallback because it is the most human-readable way to identify a single user
         return (f"{self.firstName or ''} {self.lastName or ''}".strip()) or self.email
+
+    @full_name.expression  # type: ignore [no-redef]
+    def full_name(cls) -> str:  # pylint: disable=no-self-argument
+        return sa.func.coalesce(
+            sa.func.nullif(
+                sa.func.trim(
+                    sa.func.concat(
+                        sa.case([(cls.firstName.isnot(None), cls.firstName)], else_=""),
+                        " ",
+                        sa.case([(cls.lastName.isnot(None), cls.lastName)], else_=""),
+                    )
+                ),
+                "",
+            ),
+            cls.email,
+        )
 
     @property
     def has_active_deposit(self):  # type: ignore [no-untyped-def]
