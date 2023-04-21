@@ -137,6 +137,7 @@ class UserProfileResponse(BaseModel):
     needsToFillCulturalSurvey: bool
     phoneNumber: str | None
     recreditAmountToShow: int | None
+    requires_id_check: bool
     roles: list[users_models.UserRole]
     show_eligible_card: bool
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
@@ -191,6 +192,7 @@ class UserProfileResponse(BaseModel):
         user.isBeneficiary = user.is_beneficiary
         user.subscriptionMessage = user_subscription_state.subscription_message
         user.status = user_subscription_state.young_status
+        user.requires_id_check = subscription_api.requires_identity_check_step(user)
 
         serialized_user = super().from_orm(user)
 
