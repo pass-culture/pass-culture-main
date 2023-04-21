@@ -29,6 +29,61 @@ from pcapi.utils.string import u_nbsp
 
 
 @pytest.mark.usefixtures("db_session")
+class RequiresIdCheckTest:
+    def test_requires_identity_check_step_with_no_underage_beneficiary_role(self):
+        user = users_factories.UserFactory()
+
+        assert subscription_api.requires_identity_check_step(user) is True
+
+    def test_requires_identity_check_step_with_fraud_check_not_present(self):
+        user = users_factories.ExUnderageBeneficiaryFactory()
+
+        assert subscription_api.requires_identity_check_step(user) is True
+
+    @pytest.mark.parametrize(
+        "fraud_check_type,expected_result",
+        [
+            (fraud_models.FraudCheckType.JOUVE, True),
+            (fraud_models.FraudCheckType.DMS, False),
+            (fraud_models.FraudCheckType.UBBLE, False),
+            (fraud_models.FraudCheckType.EDUCONNECT, True),
+        ],
+    )
+    def test_requires_identity_check_step_with_valid_identity_fraud_check(self, fraud_check_type, expected_result):
+        user = users_factories.ExUnderageBeneficiaryFactory()
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_check_type,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+
+        assert subscription_api.requires_identity_check_step(user) is expected_result
+
+    @pytest.mark.parametrize(
+        "fraud_check_type",
+        [
+            fraud_models.FraudCheckType.JOUVE,
+            fraud_models.FraudCheckType.DMS,
+            fraud_models.FraudCheckType.UBBLE,
+            fraud_models.FraudCheckType.EDUCONNECT,
+        ],
+    )
+    def test_requires_identity_check_step_with_invalid_identity_check(self, fraud_check_type):
+        user = users_factories.ExUnderageBeneficiaryFactory()
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            userId=user.id,
+            type=fraud_check_type,
+            status=fraud_models.FraudCheckStatus.KO,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+
+        assert subscription_api.requires_identity_check_step(user) is True
+
+
+@pytest.mark.usefixtures("db_session")
 class EduconnectFlowTest:
     @freeze_time("2021-10-10")
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")

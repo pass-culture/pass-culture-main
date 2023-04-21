@@ -822,7 +822,7 @@ def _get_ordered_steps(user: users_models.User) -> list[models.SubscriptionStep]
     if user.eligibility == users_models.EligibilityType.AGE18 and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
         ordered_steps.append(models.SubscriptionStep.PHONE_VALIDATION)
     ordered_steps.append(models.SubscriptionStep.PROFILE_COMPLETION)
-    if not can_skip_identity_check_step(user):
+    if requires_identity_check_step(user):
         ordered_steps.append(models.SubscriptionStep.IDENTITY_CHECK)
     ordered_steps.append(models.SubscriptionStep.HONOR_STATEMENT)
     return ordered_steps
@@ -866,20 +866,20 @@ def _get_steps_details(
     return steps
 
 
-def can_skip_identity_check_step(user: users_models.User) -> bool:
+def requires_identity_check_step(user: users_models.User) -> bool:
     if not user.has_underage_beneficiary_role:
-        return False
+        return True
 
     fraud_check = get_relevant_identity_fraud_check(user, users_models.EligibilityType.AGE18)
     if not fraud_check:
-        return False
+        return True
 
     if (
         fraud_check.status == fraud_models.FraudCheckStatus.OK
         and fraud_check.type in models.VALID_IDENTITY_CHECK_TYPES_AFTER_UNDERAGE_DEPOSIT_EXPIRATION
     ):
-        return True
-    return False
+        return False
+    return True
 
 
 def _get_step_subtitle(
