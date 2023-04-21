@@ -143,6 +143,9 @@ def render_public_account_details(
             sa.orm.joinedload(users_models.User.userBookings)
             .joinedload(bookings_models.Booking.offerer)
             .load_only(offerers_models.Offerer.name),
+            sa.orm.joinedload(users_models.User.userBookings)
+            .joinedload(bookings_models.Booking.venue)
+            .load_only(offerers_models.Venue.bookingEmail),
             sa.orm.joinedload(users_models.User.beneficiaryFraudChecks),
             sa.orm.joinedload(users_models.User.beneficiaryFraudReviews),
             sa.orm.joinedload(users_models.User.beneficiaryImports)
