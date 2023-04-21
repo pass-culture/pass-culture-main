@@ -5,6 +5,10 @@
  *
  * @example
  * class ExampleAddOn extend PcAddOn {
+ *   // Unique identifier in case you need to reference this addon from another addon.
+ *   // This is useful for preventing errors when renaming an addon.
+ *   static ID = 'ExampleAddOnId'
+ *
  *   initialize() {
  *     // prepare the DOM if necessary
  *   }

@@ -118,7 +118,7 @@ class PcBatchActionForm extends PcAddOn {
   #onBatchButtonClick = async (event) => {
     const { useConfirmationModal, pcTableMultiSelectId, toggleId, url, mode, fetchUrl } = event.target.dataset
     const { inputIdsName } = this.state[toggleId]
-    const tableMultiSelectState = this.app.addons.pcTableMultiSelect.state[pcTableMultiSelectId]
+    const tableMultiSelectState = this.app.addons.PcTableMultiSelectId.state[pcTableMultiSelectId]
     const idsStr = [...tableMultiSelectState.selectedRowsIds].join(',')
 
     if (url && useConfirmationModal !== 'true') {
@@ -154,9 +154,9 @@ class PcBatchActionForm extends PcAddOn {
         if (!response.ok) {
           throw new Error(`Bad response code (${response.status}): ${response.statusText}`)
         }
-        this.app.addons.pcSelectMultipleField.unbindEvents()
+        this.app.addons.PcTomSelectFieldId.unbindEvents()
         $turboFrame.parentElement.innerHTML = await response.text()
-        this.app.addons.pcSelectMultipleField.bindEvents()
+        this.app.addons.PcTomSelectFieldId.bindEvents()
       } catch (error) {
         throw new Error(error)
       }
