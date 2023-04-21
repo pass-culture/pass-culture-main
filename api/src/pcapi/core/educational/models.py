@@ -42,6 +42,7 @@ from pcapi.utils.image_conversion import standardize_image
 if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import Venue
+    from pcapi.core.providers.models import Provider
 
 
 class StudentLevels(enum.Enum):
@@ -334,6 +335,17 @@ class CollectiveOffer(
         uselist=False,
     )
 
+    providerId: int | None = sa.Column(
+        sa.BigInteger,
+        sa.ForeignKey("provider.id"),
+        nullable=True,
+        index=True,
+    )
+
+    provider: sa_orm.Mapped["Provider"] = relationship(
+        "Provider", foreign_keys=providerId, back_populates="collectiveOffers"
+    )
+
     @property
     def isEducational(self) -> bool:
         # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer
@@ -519,6 +531,17 @@ class CollectiveOfferTemplate(
     )
 
     collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="template")
+
+    providerId: int | None = sa.Column(
+        sa.BigInteger,
+        sa.ForeignKey("provider.id"),
+        nullable=True,
+        index=True,
+    )
+
+    provider: sa_orm.Mapped["Provider"] = relationship(
+        "Provider", foreign_keys=providerId, back_populates="collectiveOfferTemplates"
+    )
 
     @property
     def isEducational(self) -> bool:
