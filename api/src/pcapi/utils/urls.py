@@ -76,4 +76,4 @@ def build_backoffice_public_account_link_in_comment(comment: str) -> str:
 
 
 def build_backoffice_feature_flipping_link() -> str:
-    return f"{settings.BACKOFFICE_URL}/admin/feature-flipping"
+    return f"{settings.BACKOFFICE_URL}admin/feature-flipping"
