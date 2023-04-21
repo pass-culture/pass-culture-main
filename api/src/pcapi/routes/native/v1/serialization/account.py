@@ -123,7 +123,6 @@ class UserProfileResponse(BaseModel):
     date_of_birth: datetime.date | None  # TODO: remove when all app clients use birth_date field
     deposit_expiration_date: datetime.datetime | None
     deposit_type: finance_models.DepositType | None
-    deposit_version: int | None
     domains_credit: DomainsCredit | None
     eligibility: users_models.EligibilityType | None
     eligibility_end_datetime: datetime.datetime | None
