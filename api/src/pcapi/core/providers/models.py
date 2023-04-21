@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import datetime
 import decimal
 import enum
+import typing
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
@@ -37,6 +38,11 @@ from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 
 
+if typing.TYPE_CHECKING:
+    from pcapi.core.educational.models import CollectiveOffer
+    from pcapi.core.educational.models import CollectiveOfferTemplate
+
+
 class Provider(PcObject, Base, Model, DeactivableMixin):
     name: str = Column(String(90), index=True, nullable=False)
 
@@ -59,6 +65,12 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
 
     logoUrl: str = Column(Text(), nullable=True)
     pricesInCents: bool = Column(Boolean, nullable=False, default=False, server_default=expression.false())
+
+    collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="provider")
+
+    collectiveOfferTemplates: sa_orm.Mapped["CollectiveOfferTemplate"] = relationship(
+        "CollectiveOfferTemplate", back_populates="provider"
+    )
 
     @property
     def isAllocine(self) -> bool:
