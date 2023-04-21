@@ -17,7 +17,7 @@ export interface IOffererAuthenticationFormValues
 
 const OffererAuthenticationForm = (): JSX.Element => {
   return (
-    <FormLayout.Section title="Authentification">
+    <FormLayout.Section title="Identification">
       <FormLayout.Row>
         <TextInput name="siret" label="Numéro de SIRET" type="text" disabled />
         <TextInput name="name" label="Raison sociale" type="text" disabled />

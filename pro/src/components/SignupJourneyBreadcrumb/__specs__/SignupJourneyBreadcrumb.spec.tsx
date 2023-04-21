@@ -49,7 +49,7 @@ const renderSignupBreadcrumb = (
     { storeOverrides, initialRouterEntries: [url] }
   )
 
-  const tabAuthentication = screen.queryByText('Authentification')
+  const tabAuthentication = screen.queryByText('Identification')
   const tabActivity = screen.queryByText('Activité')
   const tabValidation = screen.queryByText('Validation')
 
