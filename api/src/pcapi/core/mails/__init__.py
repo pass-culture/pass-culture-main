@@ -6,8 +6,6 @@ from pcapi.tasks.serialization import sendinblue_tasks
 from pcapi.utils.module_loading import import_string
 
 from . import models
-from .backends.base import BaseBackend
-from .backends.logger import LoggerBackend
 
 
 def send(

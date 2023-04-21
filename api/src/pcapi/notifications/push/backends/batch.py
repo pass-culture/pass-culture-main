@@ -3,6 +3,8 @@ from enum import Enum
 import logging
 
 from pcapi import settings
+from pcapi.core.events import Event
+from pcapi.notifications.push.backends.base import BaseBackend
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
 from pcapi.utils import requests
 
@@ -24,7 +26,7 @@ class BatchAPI(Enum):
     ANDROID = settings.BATCH_ANDROID_API_KEY
 
 
-class BatchBackend:
+class BatchBackend(BaseBackend):
     def __init__(self) -> None:
         super().__init__()
         self.headers = {"Content-Type": "application/json", "X-Authorization": settings.BATCH_SECRET_API_KEY}
@@ -191,3 +193,9 @@ class BatchBackend:
 
         make_post_request(BatchAPI.ANDROID)
         make_post_request(BatchAPI.IOS)
+
+    def handle_event(self, event: Event) -> None:
+        if len(event.user_ids) > 1:
+            return self.bulk_track_events(event.user_ids, event.name.value, event.payload)
+
+        return self.track_event(event.user_ids[0], event.name.value, event.payload)

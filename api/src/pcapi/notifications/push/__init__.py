@@ -1,6 +1,5 @@
-import enum
-
 from pcapi import settings
+from pcapi.core.events.config import BatchEvent
 from pcapi.notifications.push.backends.batch import BatchAPI
 from pcapi.notifications.push.backends.batch import UserUpdateData
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData

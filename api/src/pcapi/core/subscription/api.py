@@ -3,7 +3,8 @@ import logging
 import typing
 
 from pcapi import settings
-from pcapi.analytics.amplitude import events as amplitude_events
+from pcapi.core import events
+import pcapi.core.events.api as events_api
 from pcapi.core.external import batch
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.finance.api as finance_api
@@ -89,8 +90,12 @@ def activate_beneficiary_for_eligibility(
         logger.warning("Could not send accepted as beneficiary email to user", extra={"user": user.id})
 
     external_attributes_api.update_external_user(user)
-    batch.track_deposit_activated_event(user.id, deposit)
-    amplitude_events.track_deposit_activation_event(user.id, deposit, fraud_check)
+    event = events.Event(
+        name=events.config.EventName.USER_DEPOSIT_ACTIVATED,
+        payload={"deposit": deposit, "fraud_check_type": fraud_check.type},
+        user_ids=[user.id],
+    )
+    events_api.dispatch(event)
 
     return user
 

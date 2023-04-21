@@ -1,3 +1,4 @@
+from pcapi.core.events import Event
 from pcapi.notifications.push import testing
 from pcapi.notifications.push.backends.batch import BatchAPI
 from pcapi.notifications.push.backends.batch import UserUpdateData
@@ -76,3 +77,9 @@ class TestingBackend(LoggerBackend):
                 "can_be_asynchronously_retried": can_be_asynchronously_retried,
             }
         )
+
+    def handle_event(self, event: Event) -> None:
+        if len(event.user_ids) > 1:
+            return self.bulk_track_events(event.user_ids, event.name.value, event.payload)
+
+        return self.track_event(event.user_ids[0], event.name.value, event.payload)

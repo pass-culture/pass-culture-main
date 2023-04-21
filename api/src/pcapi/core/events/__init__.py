@@ -8,3 +8,4 @@ class Event:
     name: config.EventName
     payload: dict
     user_ids: list[int]
+    legacy_name: str | None = None

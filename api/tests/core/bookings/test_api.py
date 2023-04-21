@@ -12,7 +12,6 @@ from sqlalchemy import create_engine
 import sqlalchemy.exc
 from sqlalchemy.sql import text
 
-from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
 import pcapi.analytics.amplitude.testing as amplitude_testing
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
@@ -25,6 +24,7 @@ from pcapi.core.categories import subcategories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.events.config import AmplitudeEventType
 from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.external_bookings.models import Ticket

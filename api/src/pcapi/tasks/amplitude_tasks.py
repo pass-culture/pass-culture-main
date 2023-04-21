@@ -1,5 +1,5 @@
 from pcapi import settings
-from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
+from pcapi.core.events.config import AmplitudeEventType
 from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
 from pcapi.utils.module_loading import import_string

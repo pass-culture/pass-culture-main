@@ -9,8 +9,8 @@ from flask_jwt_extended.utils import create_access_token
 import freezegun
 import pytest
 
-from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
 import pcapi.analytics.amplitude.testing as amplitude_testing
+from pcapi.core.events.config import AmplitudeEventType
 from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing

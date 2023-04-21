@@ -10,9 +10,12 @@
   "python.testing.nosetestsEnabled": false,
   "python.testing.pytestEnabled": true,
   "python.testing.pytestArgs": ["-vv", "-s"],
-  "python.formatting.provider": "black",
+  "python.formatting.provider": "none",
   "liveshare.languages.allowGuestCommandControl": true,
   "liveshare.allowGuestDebugControl": true,
   "liveshare.allowGuestTaskControl": true,
-  "liveshare.guestApprovalRequired": true
+  "liveshare.guestApprovalRequired": true,
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  }
 }

@@ -1125,8 +1125,8 @@ class HonorStatementTest:
         assert fraud_check.eligibilityType == eligibility_type
 
 
-@pytest.mark.usefixtures("db_session")
 class ActivateUserTest:
+    @pytest.mark.usefixtures("db_session")
     @pytest.mark.parametrize(
         "age, fraud_check_type",
         [
@@ -1137,8 +1137,8 @@ class ActivateUserTest:
         ],
     )
     def test_grant_notify_amplitude(self, client, age, fraud_check_type):
-        from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
         import pcapi.analytics.amplitude.testing as amplitude_testing
+        import pcapi.core.events.config as events_config
 
         if age == 18:
             user = users_factories.EligibleActivableFactory()
@@ -1160,9 +1160,9 @@ class ActivateUserTest:
 
         assert len(amplitude_testing.requests) == 1
         assert amplitude_testing.requests[0] == {
-            "event_name": AmplitudeEventType.DEPOSIT_GRANTED.value,
+            "event_name": events_config.AmplitudeEventType.DEPOSIT_GRANTED.value,
             "event_properties": {
                 "from": fraud_check_type,
             },
-            "user_id": str(user.id),
+            "user_id": user.id,
         }
