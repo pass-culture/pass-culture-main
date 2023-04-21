@@ -20,7 +20,7 @@
           <td>{{ action.actionDate | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
           <td class="text-break">
             {% if action.userId and is_user_offerer_action_type(action) %}
-              {{ links.build_pro_user_name_to_details_link(action.user) }}
+              {{ links.build_pro_user_name_to_details_link(action.user.id, action.user.full_name) }}
             {% elif action.actionType.name == "USER_SUSPENDED" %}
               <p>{{ action.extraData['reason'] | format_reason_label }}</p>
             {% endif %}

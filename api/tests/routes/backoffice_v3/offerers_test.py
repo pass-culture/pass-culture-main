@@ -1359,9 +1359,9 @@ class ListOfferersToValidateTest:
         @pytest.mark.parametrize(
             "search_filter, expected_offerer_names",
             (
-                ("cinema de la plage", {"Cinéma de la Petite Plage", "Cinéma de la Grande Plage"}),
-                ("cinéma", {"Cinéma de la Petite Plage", "Cinéma de la Grande Plage", "Cinéma du Centre"}),
-                ("Plage", {"Librairie de la Plage", "Cinéma de la Petite Plage", "Cinéma de la Grande Plage"}),
+                ("cinema de la plage", {"Cinéma de la Plage"}),
+                ("cinéma", {"Cinéma de la Petite Plage", "Cinéma de la Plage", "Cinéma du Centre"}),
+                ("Plage", {"Librairie de la Plage", "Cinéma de la Petite Plage", "Cinéma de la Plage"}),
                 ("Librairie du Centre", set()),
             ),
         )
@@ -1371,7 +1371,7 @@ class ListOfferersToValidateTest:
                 "Librairie de la Plage",
                 "Cinéma de la Petite Plage",
                 "Cinéma du Centre",
-                "Cinéma de la Grande Plage",
+                "Cinéma de la Plage",
             ):
                 offerers_factories.NotValidatedOffererFactory(name=name)
 
@@ -2126,7 +2126,7 @@ class ListUserOffererToValidateTest:
         # when
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
-                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", q="Fort De France")
+                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", q="Fort-De-France")
             )
 
         # then
