@@ -26,7 +26,7 @@ def install_routes(app: Flask) -> None:
     from . import tags
     from . import users
     from . import venues
-    from .providers import blueprint
+    from .pivots import blueprint
 
     if settings.ENABLE_TEST_USER_GENERATION:
         from .user_generation import blueprint as user_generation_blueprint
