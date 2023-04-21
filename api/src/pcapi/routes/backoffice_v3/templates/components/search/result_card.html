@@ -20,6 +20,13 @@
           <span class="fw-bold">Tél :</span> {{ row.phoneNumber | empty_string_if_null }}
         </p>
       {% endif %}
+      {% set suspension_reason = row.suspension_reason %}
+      {% if suspension_reason %}
+        <p>
+          <span class="fw-bold">Raison de suspension :</span> {{ suspension_reason | format_reason_label }}
+          <span class="fw-bold">le</span> {{ row.suspension_date | format_date }}
+        </p>
+      {% endif %}
     </div>
     <div class="d-flex flex-row-reverse">
       <a href="{{ get_link_to_detail(row.id) }}"
