@@ -370,7 +370,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOfferTemplate(
-    offerId: string,
+    offerId: number,
   ): CancelablePromise<GetCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -580,7 +580,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOffer(
-    offerId: string,
+    offerId: number,
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'GET',

@@ -23,6 +23,7 @@ import {
   withCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
+import { dehumanizeId } from 'utils/dehumanize'
 
 import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'
 import postCollectiveStockAdapter from './adapters/postCollectiveStock'
@@ -45,7 +46,9 @@ export const CollectiveOfferStockCreation = ({
         return null
       }
       const { isOk, payload, message } =
-        await getCollectiveOfferTemplateAdapter(offer.templateId)
+        await getCollectiveOfferTemplateAdapter(
+          dehumanizeId(offer.templateId) || 0
+        )
       if (!isOk) {
         return notify.error(message)
       }

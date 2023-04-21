@@ -24,7 +24,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers/{humanize(offer.id)}")
+        response = client.get(f"/collective/offers/{offer.id}")
 
         # Then
         response_json = response.json
@@ -60,7 +60,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers/{humanize(offer.id)}")
+        response = client.get(f"/collective/offers/{offer.id}")
 
         # Then
         response_json = response.json
@@ -78,7 +78,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers/{humanize(offer.id)}")
+        response = client.get(f"/collective/offers/{offer.id}")
 
         # Then
         response_json = response.json
@@ -97,7 +97,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers/{humanize(offer.id)}")
+        response = client.get(f"/collective/offers/{offer.id}")
 
         # Then
         response_json = response.json
@@ -115,10 +115,9 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        humanized_offer_id = humanize(offer.id)
 
         with testing.assert_no_duplicated_queries():
-            client.get(f"/collective/offers/{humanized_offer_id}")
+            client.get(f"/collective/offers/{offer.id}")
 
     def test_last_booking_fields(self, client):
         # Given
@@ -134,7 +133,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers/{humanize(offer.id)}")
+        response = client.get(f"/collective/offers/{offer.id}")
 
         # Then
         response_json = response.json
@@ -156,7 +155,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers/{humanize(offer.id)}")
+        response = client.get(f"/collective/offers/{offer.id}")
 
         # Then
         assert response.status_code == 200
@@ -174,7 +173,7 @@ class Returns403Test:
 
         # When
         client = client.with_session_auth(email=pro_user.email)
-        response = client.get(f"/collective/offers/{humanize(offer.id)}")
+        response = client.get(f"/collective/offers/{offer.id}")
 
         # Then
         assert response.status_code == 403
