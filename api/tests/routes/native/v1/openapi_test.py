@@ -1627,7 +1627,6 @@ def test_public_api(client):
                             "type": "string",
                         },
                         "depositType": {"anyOf": [{"$ref": "#/components/schemas/DepositType"}], "nullable": True},
-                        "depositVersion": {"nullable": True, "title": "Depositversion", "type": "integer"},
                         "domainsCredit": {
                             "anyOf": [{"$ref": "#/components/schemas/DomainsCredit"}],
                             "nullable": True,
