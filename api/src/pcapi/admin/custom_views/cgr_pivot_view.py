@@ -104,6 +104,7 @@ class CGRPivotView(BaseAdminView):
         if not self.can_edit:
             raise Forbidden()
 
+        assert CGR_cinema_details.cinemaProviderPivot
         CGR_cinema_details.cinemaProviderPivot.idAtProvider = str(form.cinema_id.data)
         CGR_cinema_details.cinemaUrl = form.cinema_url.data.rstrip("/")
         CGR_cinema_details.password = form.cinema_password.data
@@ -156,7 +157,7 @@ class CGRPivotView(BaseAdminView):
 
     def delete_model(self, CGR_cinema_details: providers_models.CGRCinemaDetails) -> bool:
         cinema_provider_pivot = CGR_cinema_details.cinemaProviderPivot
-        assert cinema_provider_pivot.venueId  # helps mypy
+        assert cinema_provider_pivot  # helps mypy
         venue_provider = providers_models.VenueProvider.query.filter_by(
             venueId=cinema_provider_pivot.venueId, providerId=cinema_provider_pivot.providerId
         ).one_or_none()
