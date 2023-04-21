@@ -98,4 +98,5 @@ export type IProviders = {
   id: string
   isActive: boolean
   name: string
+  hasOffererProvider: boolean
 }

@@ -34,9 +34,10 @@ const renderVenueProvidersManager = async props => {
 
 describe('src | StocksProviderForm', () => {
   let props
-  let provider
+  let providers
   const venueId = 1
   const providerId = 2
+  const otherProviderId = 4
   const venueProviderId = 3
 
   beforeEach(async () => {
@@ -54,25 +55,34 @@ describe('src | StocksProviderForm', () => {
     }
 
     api.listVenueProviders.mockResolvedValue({ venue_providers: [] })
-    provider = {
-      id: providerId,
-      name: 'TiteLive Stocks (Epagine / Place des libraires.com)',
-    }
-    pcapi.loadProviders.mockResolvedValue([provider])
+    providers = [
+      {
+        id: providerId,
+        name: 'TiteLive Stocks (Epagine / Place des libraires.com)',
+        hasOffererProvider: false,
+      },
+      {
+        id: otherProviderId,
+        name: 'Riot records',
+        hasOffererProvider: true,
+      },
+    ]
+
+    pcapi.loadProviders.mockResolvedValue(providers)
 
     await renderVenueProvidersManager(props)
   })
 
-  const renderStocksProviderForm = async () => {
+  const renderStocksProviderForm = async providerId => {
     const importOffersButton = screen.getByText('Synchroniser des offres')
     await userEvent.click(importOffersButton)
     const providersSelect = screen.getByRole('combobox')
-    await userEvent.selectOptions(providersSelect, provider.id.toString())
+    await userEvent.selectOptions(providersSelect, providerId.toString())
   }
 
   it('should display an import button and the venue siret as provider identifier', async () => {
     // when
-    await renderStocksProviderForm()
+    await renderStocksProviderForm(providers[0].id)
 
     // then
     expect(
@@ -82,11 +92,23 @@ describe('src | StocksProviderForm', () => {
     expect(screen.queryByText(props.venue.siret)).toBeInTheDocument()
   })
 
+  it('should display an import button but no account identifier', async () => {
+    // when
+    await renderStocksProviderForm(providers[1].id)
+
+    // then
+    expect(
+      screen.queryByRole('button', { name: 'Importer' })
+    ).toBeInTheDocument()
+    expect(screen.queryByText('Compte')).not.toBeInTheDocument()
+    expect(screen.queryByText(props.venue.siret)).not.toBeInTheDocument()
+  })
+
   describe('on form submit', () => {
     it('should display the spinner while waiting for server response', async () => {
       // given
       api.createVenueProvider.mockReturnValue(new Promise(() => {}))
-      await renderStocksProviderForm()
+      await renderStocksProviderForm(providers[0].id)
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
       // when
@@ -108,7 +130,7 @@ describe('src | StocksProviderForm', () => {
         screen.getByText('Vérification de votre rattachement')
       ).toBeInTheDocument()
       expect(api.createVenueProvider).toHaveBeenCalledWith({
-        providerId: provider.id,
+        providerId: providers[0].id,
         venueId: props.venue.nonHumanizedId,
         venueIdAtOfferProvider: props.venue.siret,
       })
@@ -118,15 +140,15 @@ describe('src | StocksProviderForm', () => {
       // given
       const createdVenueProvider = {
         id: venueProviderId,
-        provider,
-        providerId: provider.id,
+        provider: providers[0],
+        providerId: providers[0].id,
         venueId: props.venue.nonHumanizedId,
         venueIdAtOfferProvider: props.venue.siret,
         lastSyncDate: '2018-01-01T00:00:00Z',
         nOffers: 0,
       }
       api.createVenueProvider.mockResolvedValue(createdVenueProvider)
-      await renderStocksProviderForm()
+      await renderStocksProviderForm(providers[0].id)
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
       // when
@@ -159,7 +181,7 @@ describe('src | StocksProviderForm', () => {
       api.createVenueProvider.mockRejectedValue(
         new ApiError({}, { body: apiError, status: 400 }, '')
       )
-      await renderStocksProviderForm()
+      await renderStocksProviderForm(providers[0].id)
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
       // when

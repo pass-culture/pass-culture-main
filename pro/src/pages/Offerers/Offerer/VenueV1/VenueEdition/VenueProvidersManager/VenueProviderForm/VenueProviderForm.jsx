@@ -53,6 +53,7 @@ const VenueProviderForm = ({ afterSubmit, provider, venue }) => {
       saveVenueProvider={createVenueProvider}
       siret={venue.siret}
       venueId={venue.nonHumanizedId}
+      hasOffererProvider={provider.hasOffererProvider}
     />
   )
 }
