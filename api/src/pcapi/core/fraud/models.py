@@ -10,7 +10,6 @@ import pydantic.errors
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
-from pcapi.connectors.dms import models as dms_models
 from pcapi.core.users import models as users_models
 from pcapi.models import Base
 from pcapi.models import Model
@@ -262,7 +261,7 @@ class DMSContent(common_models.IdentityCheckContent):
         return self.postal_code
 
     def get_registration_datetime(self) -> datetime.datetime | None:
-        return dms_models.parse_dms_datetime(self.registration_datetime) if self.registration_datetime else None
+        return self.registration_datetime
 
 
 class HonorStatementContent(pydantic.BaseModel):
