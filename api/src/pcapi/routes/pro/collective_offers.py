@@ -439,7 +439,7 @@ def patch_collective_offers_educational_institution(
     return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/collective/offers/<offer_id>/publish", methods=["PATCH"])
+@private_api.route("/collective/offers/<int:offer_id>/publish", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -447,10 +447,9 @@ def patch_collective_offers_educational_institution(
     api=blueprint.pro_private_schema,
     response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
 )
-def patch_collective_offer_publication(offer_id: str) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
-    dehumanized_id = dehumanize_or_raise(offer_id)
+def patch_collective_offer_publication(offer_id: int) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     try:
-        offer = educational_api_offer.get_collective_offer_by_id(dehumanized_id)
+        offer = educational_api_offer.get_collective_offer_by_id(offer_id)
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors({"offerer": ["Acune offre trouvée pour cet id"]}, status_code=404)
 
@@ -464,7 +463,7 @@ def patch_collective_offer_publication(offer_id: str) -> collective_offers_seria
     return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/collective/offers-template/<offer_id>/publish", methods=["PATCH"])
+@private_api.route("/collective/offers-template/<int:offer_id>/publish", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -473,11 +472,10 @@ def patch_collective_offer_publication(offer_id: str) -> collective_offers_seria
     response_model=collective_offers_serialize.GetCollectiveOfferTemplateResponseModel,
 )
 def patch_collective_offer_template_publication(
-    offer_id: str,
+    offer_id: int,
 ) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
-    dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_api_offer.get_collective_offer_template_by_id(dehumanized_id)
+        offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors({"offerer": ["Acune offre trouvée pour cet id"]}, status_code=404)
 
