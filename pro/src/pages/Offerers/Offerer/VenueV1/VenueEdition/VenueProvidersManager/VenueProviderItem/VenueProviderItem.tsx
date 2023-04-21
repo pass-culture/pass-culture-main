@@ -49,37 +49,41 @@ const VenueProviderItem = ({
             />
           </div>
         </div>
-        {!lastSyncDate ? (
-          <div className={style['venue-id-at-offer-provider-container']}>
-            <div className="venue-id-at-offer-provider">
-              Compte : <span>{venueIdAtOfferProvider}</span>
-            </div>
-            <span>
-              Importation en cours. Cette étape peut durer plusieurs dizaines de
-              minutes. Vous pouvez fermer votre navigateur et revenir plus tard.
-            </span>
-          </div>
-        ) : (
-          <div className={style['venue-id-at-offer-provider-container']}>
-            <div className={style['last-synchronisation']}>
-              <span>Dernière synchronisation :</span>
-              <span data-testid="last-sync-date">
-                &nbsp;
-                {formatLocalTimeDateString(
-                  lastSyncDate,
-                  venueDepartmentCode,
-                  'dd/MM/yyyy à HH:mm'
-                )}
+        {!venueProvider.provider.hasOffererProvider ? (
+          !lastSyncDate ? (
+            <div className={style['venue-id-at-offer-provider-container']}>
+              <div className="venue-id-at-offer-provider">
+                Compte : <span>{venueIdAtOfferProvider}</span>
+              </div>
+              <span>
+                Importation en cours. Cette étape peut durer plusieurs dizaines
+                de minutes. Vous pouvez fermer votre navigateur et revenir plus
+                tard.
               </span>
             </div>
-            <div className="venue-id-at-offer-provider">
-              Compte : <span>{venueIdAtOfferProvider}</span>
+          ) : (
+            <div className={style['venue-id-at-offer-provider-container']}>
+              <div className={style['last-synchronisation']}>
+                <span>Dernière synchronisation :</span>
+                <span data-testid="last-sync-date">
+                  &nbsp;
+                  {formatLocalTimeDateString(
+                    lastSyncDate,
+                    venueDepartmentCode,
+                    'dd/MM/yyyy à HH:mm'
+                  )}
+                </span>
+              </div>
+              <div className="venue-id-at-offer-provider">
+                Compte : <span>{venueIdAtOfferProvider}</span>
+              </div>
+              <div className="offers-container-counter">
+                Offres synchronisées :{' '}
+                <span>{pluralize(nOffers, 'offres')}</span>
+              </div>
             </div>
-            <div className="offers-container-counter">
-              Offres synchronisées : <span>{pluralize(nOffers, 'offres')}</span>
-            </div>
-          </div>
-        )}
+          )
+        ) : null}
       </div>
       {isAllocineProvider(venueProvider.provider) && (
         <AllocineProviderParameters
