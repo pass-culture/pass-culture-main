@@ -23,7 +23,7 @@ const SignupJourneyBreadcrumb = () => {
   const signupJourneyBreadcrumbSteps: Step[] = [
     {
       id: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-      label: 'Authentification',
+      label: 'Identification',
       url: '/parcours-inscription/authentification',
     },
     {

@@ -83,9 +83,9 @@ const Validation = (): JSX.Element => {
   return (
     <div className={styles['validation-screen']}>
       <section>
-        <h1 className={styles['title']}>Vérification</h1>
+        <h1 className={styles['title']}>Validation</h1>
         <h2 className={styles['subtitle']}>
-          Informations structure
+          Identification
           <ButtonLink
             link={{
               to: '/parcours-inscription/authentification',
