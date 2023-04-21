@@ -362,6 +362,9 @@ class VenueDmsAdageStatusTest:
 
         assert venue.dms_adage_status is None
 
+        # hybrid property: also check SQL expression
+        assert db.session.query(models.Venue.dms_adage_status).filter_by(id=venue.id).scalar() is None
+
     def test_dms_adage_status_when_multiple_dms_application(self):
         venue = factories.VenueFactory()
         educational_factories.CollectiveDmsApplicationFactory.create_batch(
@@ -376,22 +379,5 @@ class VenueDmsAdageStatusTest:
 
         assert venue.dms_adage_status == latest.state
 
-
-class OffererDmsAdageStatusesTest:
-    def test_dms_adage_statuses_when_no_dms_application(self):
-        offerer = factories.OffererFactory()
-        factories.VenueFactory(managingOfferer=offerer)
-
-        assert offerer.dms_adage_statuses == set()
-
-    def test_dms_adage_status_when_multiple_dms_application(self):
-        offerer = factories.OffererFactory()
-        venue_accepted = factories.VenueFactory(managingOfferer=offerer)
-        educational_factories.CollectiveDmsApplicationFactory(venue=venue_accepted, state="accepte")
-
-        assert offerer.dms_adage_statuses == {"accepte"}
-
-        venue_rejected = factories.VenueFactory(managingOfferer=offerer)
-        educational_factories.CollectiveDmsApplicationFactory(venue=venue_rejected, state="refuse")
-
-        assert offerer.dms_adage_statuses == {"accepte", "refuse"}
+        # hybrid property: also check SQL expression
+        assert db.session.query(models.Venue.dms_adage_status).filter_by(id=venue.id).scalar() == latest.state

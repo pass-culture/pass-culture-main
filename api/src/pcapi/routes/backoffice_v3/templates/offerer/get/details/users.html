@@ -92,7 +92,7 @@
             </ul>
           </div>
         </td>
-        <td class="fw-bolder">{{ links.build_pro_user_name_to_details_link(user_offerer.user, text_attr="id") }}</td>
+        <td class="fw-bolder">{{ links.build_pro_user_name_to_details_link(user_offerer.userId) }}</td>
         <td class="text-muted">{{ build_user_offerer_status_badge(user_offerer) }}</td>
         <td class="fw-bolder text-break">{{ user_offerer.user.lastName | empty_string_if_null }}</td>
         <td class="text-muted">{{ user_offerer.user.firstName | empty_string_if_null }}</td>

@@ -1363,15 +1363,14 @@ def _apply_query_filters(
         elif email_utils.is_valid_email(sanitized_q):
             query = query.filter(users_models.User.email == sanitized_q)
         else:
-            name = q.replace(" ", "%").replace("-", "%")
-            name = clean_accents(name)
+            name_query = "%{}%".format(clean_accents(q))
             query = query.filter(
                 sa.or_(
-                    sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{name}%"),
-                    sa.func.unaccent(offerers_models.Offerer.city).ilike(f"%{name}%"),
+                    sa.func.unaccent(offerers_models.Offerer.name).ilike(name_query),
+                    sa.func.unaccent(offerers_models.Offerer.city).ilike(name_query),
                     sa.func.unaccent(
                         sa.func.concat(users_models.User.firstName, " ", users_models.User.lastName)
-                    ).ilike(f"%{name}%"),
+                    ).ilike(name_query),
                 )
             )
 
@@ -1425,6 +1424,8 @@ def _apply_query_filters(
     return query
 
 
+# TODO (prouzet) this function should be moved to backoffice v3 route files since query is very specific.
+# Keep here until backoffice_v3 directory tree is reorganized.
 def list_offerers_to_be_validated(
     q: str | None,  # search query
     regions: list[str] | None = None,
@@ -1434,28 +1435,108 @@ def list_offerers_to_be_validated(
     from_datetime: datetime | None = None,
     to_datetime: datetime | None = None,
 ) -> sa.orm.Query:
-    query = offerers_models.Offerer.query.options(
-        sa.orm.joinedload(offerers_models.Offerer.UserOfferers).joinedload(offerers_models.UserOfferer.user),
-        sa.orm.joinedload(offerers_models.Offerer.tags)
-        .joinedload(offerers_models.OffererTag.categories)
-        .load_only(offerers_models.OffererTagCategory.name),
-        sa.orm.joinedload(offerers_models.Offerer.action_history).joinedload(history_models.ActionHistory.authorUser),
-        sa.orm.joinedload(offerers_models.Offerer.managedVenues)
-        .load_only(offerers_models.Venue.name, offerers_models.Venue.siret)
-        .joinedload(offerers_models.Venue.collectiveDmsApplications)
-        .load_only(
-            educational_models.CollectiveDmsApplication.state,
-            educational_models.CollectiveDmsApplication.lastChangeDate,
-        ),
+    # Aggregate tags as a json dictionary returned in a single row (joinedload would fetch 1 result row per tag)
+    # For a single offerer, column value is like:
+    # [{'name': 'top-acteur', 'label': 'Top Acteur'}, {'name': 'culture-scientifique', 'label': 'Culture scientifique'}]
+    tags_subquery = (
+        sa.select(
+            sa.func.jsonb_agg(
+                sa.func.jsonb_build_object(
+                    "name",
+                    offerers_models.OffererTag.name,
+                    "label",
+                    offerers_models.OffererTag.label,
+                )
+            )
+        )
+        .select_from(offerers_models.OffererTag)
+        .join(offerers_models.OffererTagMapping)
+        .filter(offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id)
+        .join(offerers_models.OffererTagCategoryMapping)
+        .join(offerers_models.OffererTagCategory)
+        .filter(offerers_models.OffererTagCategory.name == "homologation")
+        .correlate(offerers_models.Offerer)
+        .scalar_subquery()
     )
 
-    if q:
-        if email_utils.is_valid_email(email_utils.sanitize_email(q)):
-            # Filter by attached user email address
-            query = query.join(offerers_models.UserOfferer).join(users_models.User)
-        else:
-            # outerjoin so that we filter on offerer name entities which may have no user attached
-            query = query.outerjoin(offerers_models.UserOfferer).outerjoin(users_models.User)
+    # Fetch only the single last comment to avoid loading the full history (joinedload would fetch 1 row per action)
+    # This replaces lookup for last comment in offerer.action_history after joining with all actions
+    last_comment_subquery = (
+        db.session.query(history_models.ActionHistory.comment)
+        .filter(
+            history_models.ActionHistory.offererId == offerers_models.Offerer.id,
+            history_models.ActionHistory.comment.isnot(None),
+            history_models.ActionHistory.actionType.in_(
+                [
+                    history_models.ActionType.OFFERER_NEW,
+                    history_models.ActionType.OFFERER_PENDING,
+                    history_models.ActionType.OFFERER_VALIDATED,
+                    history_models.ActionType.OFFERER_REJECTED,
+                    history_models.ActionType.COMMENT,
+                ]
+            ),
+            history_models.ActionHistory.userId.is_(None),
+        )
+        .order_by(history_models.ActionHistory.actionDate.desc())
+        .limit(1)
+        .correlate(offerers_models.Offerer)
+        .scalar_subquery()
+    )
+
+    # Ensure that we join with a single user, not on all attached users (would also multiply the number of rows)
+    # Same as User.first_user: the oldest entry in the table
+    creator_user_offerer_id = (
+        db.session.query(offerers_models.UserOfferer.id)
+        .filter(
+            offerers_models.UserOfferer.offererId == offerers_models.Offerer.id,
+        )
+        .order_by(offerers_models.UserOfferer.id.asc())
+        .limit(1)
+        .correlate(offerers_models.Offerer)
+        .scalar_subquery()
+    )
+
+    # Aggregate venues with DMS applications, as a json dictionary returned in a single row
+    # For a single offerer, column value is like:
+    # [{'id': 40, 'name': 'accepted_dms eac_with_two_adage_venues', 'siret': '42883745400057', 'state': 'accepte'},
+    # {'id': 41, 'name': 'rejected_dms eac_with_two_adage_venues', 'siret': '42883745400058', 'state': 'refuse'}]
+    dms_applications_subquery = (
+        sa.select(
+            sa.func.jsonb_agg(
+                sa.func.jsonb_build_object(
+                    "id",
+                    offerers_models.Venue.id,
+                    "siret",
+                    offerers_models.Venue.siret,
+                    "name",
+                    offerers_models.Venue.name,
+                    "state",
+                    offerers_models.Venue.dms_adage_status,
+                )
+            )
+        )
+        .select_from(offerers_models.Venue)
+        .filter(
+            offerers_models.Venue.managingOffererId == offerers_models.Offerer.id,
+            offerers_models.Venue.dms_adage_status.isnot(None),  # type: ignore [attr-defined]
+        )
+        .correlate(offerers_models.Offerer)
+        .scalar_subquery()
+    )
+
+    query = (
+        db.session.query(
+            offerers_models.Offerer,
+            tags_subquery.label("tags"),
+            last_comment_subquery.label("last_comment"),
+            users_models.User.id.label("creator_id"),
+            users_models.User.full_name.label("creator_name"),  # type: ignore [attr-defined]
+            users_models.User.email.label("creator_email"),
+            dms_applications_subquery.label("dms_venues"),
+        )
+        .outerjoin(offerers_models.UserOfferer, offerers_models.UserOfferer.id == creator_user_offerer_id)
+        .outerjoin(users_models.User, offerers_models.UserOfferer.user)
+    )
 
     query = _apply_query_filters(
         query,
@@ -1473,13 +1554,10 @@ def list_offerers_to_be_validated(
     return query.distinct()
 
 
-def is_top_actor(offerer: offerers_models.Offerer) -> bool:
-    for tag in offerer.tags:
-        if tag.name == "top-acteur":
-            return True
-    return False
-
-
+# TODO (prouzet) refactor request so that only only one row is returned for every candidate (same as above).
+# multiple joinedload causes too many rows fetched by postgresql.
+# TODO (prouzet) this function should be moved to backoffice v3 route files since query is very specific.
+# Keep here until backoffice_v3 directory tree is reorganized.
 def list_users_offerers_to_be_validated(
     q: str | None,  # search query
     regions: list[str] | None = None,

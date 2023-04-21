@@ -6,11 +6,11 @@
        target="_top">{{ user.full_name }} ({{ user.id }})</a>
   {% endif %}
 {% endmacro %}
-{% macro build_pro_user_name_to_details_link(user, text_attr="full_name") %}
-  {% if user %}
-    <a href="{{ url_for('backoffice_v3_web.pro_user.get', user_id=user.id) }}"
+{% macro build_pro_user_name_to_details_link(user_id, text) %}
+  {% if user_id %}
+    <a href="{{ url_for('backoffice_v3_web.pro_user.get', user_id=user_id) }}"
        class="link-primary"
-       target="_top">{{ user[text_attr] or user.id }}</a>
+       target="_top">{{ text|trim or user_id }}</a>
   {% endif %}
 {% endmacro %}
 {% macro build_offerer_name_to_details_link(offerer, text_attr="name") %}

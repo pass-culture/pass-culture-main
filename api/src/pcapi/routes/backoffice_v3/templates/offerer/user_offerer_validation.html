@@ -124,7 +124,7 @@
                 </td>
                 <td>{{ user_offerer.user.id }}</td>
                 <td>{{ user_offerer.user.email | empty_string_if_null }}</td>
-                <td>{{ links.build_pro_user_name_to_details_link(user_offerer.user) }}</td>
+                <td>{{ links.build_pro_user_name_to_details_link(user_offerer.user.id, user_offerer.user.full_name) }}</td>
                 <td>
                   {{ build_user_offerer_status_badge(user_offerer) }}
                 </td>

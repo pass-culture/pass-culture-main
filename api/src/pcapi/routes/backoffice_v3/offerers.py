@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 import datetime
 from functools import partial
 import typing
@@ -33,7 +32,6 @@ import pcapi.utils.regions as regions_utils
 
 from . import search_utils
 from . import utils
-from .filters import filter_homologation_tags
 from .forms import empty as empty_forms
 from .forms import offerer as offerer_forms
 from .serialization import offerers as serialization
@@ -45,6 +43,10 @@ offerer_blueprint = utils.child_backoffice_blueprint(
     url_prefix="/pro/offerer/<int:offerer_id>",
     permission=perm_models.Permissions.READ_PRO_ENTITY,
 )
+
+
+def filter_homologation_tags(tags: list[offerers_models.OffererTag]) -> list[offerers_models.OffererTag]:
+    return [tag for tag in tags if "homologation" in [cat.name for cat in tag.categories]]
 
 
 def render_offerer_details(
@@ -327,55 +329,11 @@ validation_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _get_serialized_last_comment(
-    action_types: typing.Collection[history_models.ActionType],
-    offerer: offerers_models.Offerer,
-    user_id: int | None = None,
-) -> str | None:
-    last = max(
-        (
-            action
-            for action in offerer.action_history
-            if bool(action.comment)
-            and (user_id is None or action.userId == user_id)
-            and action.actionType in action_types
-        ),
-        key=lambda action: action.actionDate,
-        default=None,
-    )
-    if last is not None:
-        return last.comment
-
-    return None
-
-
-def _get_serialized_offerer_last_comment(offerer: offerers_models.Offerer, user_id: int | None = None) -> str | None:
-    return _get_serialized_last_comment(
-        (
-            history_models.ActionType.OFFERER_NEW,
-            history_models.ActionType.OFFERER_PENDING,
-            history_models.ActionType.OFFERER_VALIDATED,
-            history_models.ActionType.OFFERER_REJECTED,
-            history_models.ActionType.COMMENT,
-        ),
-        offerer,
-        user_id=user_id,
-    )
-
-
 def _redirect_after_offerer_validation_action(code: int = 303) -> utils.BackofficeResponse:
     if request.referrer:
         return redirect(request.referrer, code)
 
     return redirect(url_for("backoffice_v3_web.validation.list_offerers_to_validate"), code)
-
-
-@dataclass
-class OffererToBeValidatedRow:
-    offerer: offerers_models.Offerer
-    is_top_actor: bool
-    last_comment: str | None
-    owner: users_models.User
 
 
 @validation_blueprint.route("/offerer", methods=["GET"])
@@ -423,8 +381,6 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
         rows=paginated_offerers,
         form=form,
         next_pages_urls=next_pages_urls,
-        is_top_actor_func=offerers_api.is_top_actor,
-        get_last_comment_func=_get_serialized_offerer_last_comment,
         date_created_sort_url=date_created_sort_url,
         stats=stats,
     )
@@ -554,17 +510,28 @@ def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
 def _get_serialized_user_offerer_last_comment(
     offerer: offerers_models.Offerer, user_id: int | None = None
 ) -> str | None:
-    return _get_serialized_last_comment(
+    last = max(
         (
-            history_models.ActionType.USER_OFFERER_NEW,
-            history_models.ActionType.USER_OFFERER_PENDING,
-            history_models.ActionType.USER_OFFERER_VALIDATED,
-            history_models.ActionType.USER_OFFERER_REJECTED,
-            history_models.ActionType.COMMENT,
+            action
+            for action in offerer.action_history
+            if bool(action.comment)
+            and action.userId == user_id
+            and action.actionType
+            in (
+                history_models.ActionType.USER_OFFERER_NEW,
+                history_models.ActionType.USER_OFFERER_PENDING,
+                history_models.ActionType.USER_OFFERER_VALIDATED,
+                history_models.ActionType.USER_OFFERER_REJECTED,
+                history_models.ActionType.COMMENT,
+            )
         ),
-        offerer,
-        user_id=user_id,
+        key=lambda action: action.actionDate,
+        default=None,
     )
+    if last is not None:
+        return last.comment
+
+    return None
 
 
 @validation_blueprint.route("/user-offerer", methods=["GET"])
@@ -610,7 +577,6 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
         rows=paginated_users_offerers,
         form=form,
         next_pages_urls=next_pages_urls,
-        is_top_actor_func=offerers_api.is_top_actor,
         get_last_comment_func=_get_serialized_user_offerer_last_comment,
         date_created_sort_url=date_created_sort_url,
     )

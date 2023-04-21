@@ -428,13 +428,24 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
         return self.bankInformation.applicationId
 
-    @property
+    @hybrid_property
     def dms_adage_status(self) -> str | None:
         if self.collectiveDmsApplications:
             return sorted(
-                self.collectiveDmsApplications, key=lambda application: application.lastChangeDate, reverse=True  # type: ignore [arg-type, return-value]
+                self.collectiveDmsApplications, key=lambda application: application.lastChangeDate, reverse=True
             )[0].state
         return None
+
+    @dms_adage_status.expression  # type: ignore [no-redef]
+    def dms_adage_status(cls) -> str | None:  # pylint: disable=no-self-argument
+        return (
+            db.session.query(educational_models.CollectiveDmsApplication.state)
+            .select_from(educational_models.CollectiveDmsApplication)
+            .filter(educational_models.CollectiveDmsApplication.venueId == cls.id)
+            .order_by(educational_models.CollectiveDmsApplication.lastChangeDate.desc())
+            .limit(1)
+            .scalar_subquery()
+        )
 
     @property
     def hasPendingBankInformationApplication(self) -> bool:
@@ -745,10 +756,6 @@ class Offerer(
             return None
 
         return self.bankInformation.applicationId
-
-    @property
-    def dms_adage_statuses(self) -> set[str]:
-        return {venue.dms_adage_status for venue in self.managedVenues if venue.dms_adage_status is not None}
 
     @hybrid_property
     def departementCode(self) -> str:
