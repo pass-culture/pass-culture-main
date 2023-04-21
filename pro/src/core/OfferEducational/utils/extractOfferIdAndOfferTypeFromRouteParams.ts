@@ -1,12 +1,12 @@
 export const extractOfferIdAndOfferTypeFromRouteParams = (
   offerIdFromParams: string
-): { offerId: string; isTemplateId: boolean } => {
+): { offerId: number; isTemplateId: boolean } => {
   const splitResult = offerIdFromParams.split('T-')
   if (splitResult.length === 2) {
-    return { offerId: splitResult[1], isTemplateId: true }
+    return { offerId: Number(splitResult[1]), isTemplateId: true }
   }
   return {
-    offerId: offerIdFromParams,
+    offerId: Number(offerIdFromParams),
     isTemplateId: false,
   }
 }
