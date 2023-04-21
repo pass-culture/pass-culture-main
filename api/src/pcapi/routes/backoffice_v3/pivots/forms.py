@@ -7,20 +7,20 @@ import pcapi.core.providers.repository as providers_repository
 from ..forms import fields
 
 
-class SearchProviderForm(FlaskForm):
+class SearchPivotForm(FlaskForm):
     class Meta:
         csrf = False
 
     q = fields.PCOptSearchField("ID ou nom de lieu, identifiant cinéma")
 
 
-class EditProviderForm(FlaskForm):
+class EditPivotForm(FlaskForm):
     venue_id = fields.PCTomSelectField(
         "Lieu", choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_venues", coerce=int
     )
 
 
-class EditAllocineForm(EditProviderForm):
+class EditAllocineForm(EditPivotForm):
     theater_id = fields.PCStringField(
         "Identifiant cinéma (Allociné)",
         validators=(
@@ -32,7 +32,7 @@ class EditAllocineForm(EditProviderForm):
 
 
 # TODO PC-21791
-class EditBoostForm(EditProviderForm):
+class EditBoostForm(EditPivotForm):
     cinema_id = fields.PCStringField("Identifiant Cinéma (Boost)")
     username = fields.PCStringField("Nom de l'utilisateur (Boost)")
     password = fields.PCStringField("Mot de passe (Boost)")
@@ -46,7 +46,7 @@ class EditBoostForm(EditProviderForm):
 
 
 # TODO PC-21790
-class EditCGRForm(EditProviderForm):
+class EditCGRForm(EditPivotForm):
     cinema_id = fields.PCStringField("Identifiant Cinéma (CGR)")
     cinema_url = fields.PCStringField(
         "URL du cinéma (CGR)",
@@ -74,7 +74,7 @@ class EditCGRForm(EditProviderForm):
 
 
 # TODO PC-21792
-class EditCineOfficeForm(EditProviderForm):
+class EditCineOfficeForm(EditPivotForm):
     cinema_id = fields.PCStringField("Identifiant cinéma (CDS)")
     account_id = fields.PCStringField("Nom de compte (CDS)")
     api_token = fields.PCStringField("Clé API (CDS)")

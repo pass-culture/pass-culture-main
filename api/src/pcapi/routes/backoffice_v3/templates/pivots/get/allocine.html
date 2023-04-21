@@ -1,8 +1,8 @@
 {% from "components/forms.html" import build_filters_form with context %}
 {% import "components/links.html" as links %}
-{% import "providers/get/common.html" as common %}
+{% import "pivots/get/common.html" as common %}
 <turbo-frame id="allocine_frame">
-{{ common.build_provider_bar("allocine", form, dst) }}
+{{ common.build_pivot_bar("allocine", form, dst) }}
 <table class="table table-hover my-4">
   <thead>
     <tr>
@@ -14,13 +14,13 @@
     </tr>
   </thead>
   <tbody>
-    {% for provider in rows %}
+    {% for pivot in rows %}
       <tr>
-        <th scope="row">{{ common.build_provider_row_menu("allocine", provider, false) }}</th>
-        <td class="fw-bolder">{{ provider.venue.id }}</td>
-        <td>{{ links.build_venue_name_to_details_link(provider.venue, text_attr="name") }}</td>
-        <td>{{ provider.theaterId }}</td>
-        <td>{{ provider.internalId }}</td>
+        <th scope="row">{{ common.build_pivot_row_menu("allocine", pivot, false) }}</th>
+        <td class="fw-bolder">{{ pivot.venue.id }}</td>
+        <td>{{ links.build_venue_name_to_details_link(pivot.venue, text_attr="name") }}</td>
+        <td>{{ pivot.theaterId }}</td>
+        <td>{{ pivot.internalId }}</td>
       </tr>
     {% endfor %}
   </tbody>

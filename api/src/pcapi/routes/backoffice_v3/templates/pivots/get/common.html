@@ -1,8 +1,8 @@
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{# TODO remove parameter: waiting_for_actions_implemented when all providers implement create, update, delete #}
-{% macro build_provider_bar(provider_name, form, dst, actions_not_implemented) %}
+{# TODO remove parameter: waiting_for_actions_implemented when all pivots implement create, update, delete #}
+{% macro build_pivot_bar(pivot_name, form, dst, actions_not_implemented) %}
   <div class="row">
-    <form name="filter-{{ provider_name }}"
+    <form name="filter-{{ pivot_name }}"
           action="{{ dst }}"
           method="get"
           class="col-8 row">
@@ -21,15 +21,15 @@
         <div>
           <button class="btn btn-outline-primary lead fw-bold"
                   data-bs-toggle="modal"
-                  data-bs-target="#create-{{ provider_name }}"
+                  data-bs-target="#create-{{ pivot_name }}"
                   type="button">Créer un pivot</button>
         </div>
       </div>
-      {{ build_lazy_modal(url_for("backoffice_v3_web.providers.get_create_provider_form", name=provider_name), "create-" + provider_name) }}
+      {{ build_lazy_modal(url_for("backoffice_v3_web.pivots.get_create_pivot_form", name=pivot_name), "create-" + pivot_name) }}
     {% endif %}
   </div>
 {% endmacro %}
-{% macro build_provider_row_menu(provider_name, row, can_delete) %}
+{% macro build_pivot_row_menu(pivot_name, row, can_delete) %}
   <div class="dropdown">
     <button type="button"
             data-bs-toggle="dropdown"
@@ -41,17 +41,17 @@
       <li class="dropdown-item p-0">
         <a class="btn btn-sm d-block w-100 text-start px-3"
            data-bs-toggle="modal"
-           data-bs-target="#update-{{ provider_name }}-{{ row.id }}">Modifier le pivot</a>
+           data-bs-target="#update-{{ pivot_name }}-{{ row.id }}">Modifier le pivot</a>
       </li>
       {% if can_delete %}
         <li class="dropdown-item p-0">
           <a class="btn btn-sm d-block w-100 text-start px-3"
              data-bs-toggle="modal"
-             data-bs-target="#delete-{{ provider_name }}-{{ row.id }}">Supprimer le pivot</a>
+             data-bs-target="#delete-{{ pivot_name }}-{{ row.id }}">Supprimer le pivot</a>
         </li>
       {% endif %}
     </ul>
-    {{ build_lazy_modal(url_for("backoffice_v3_web.providers.get_update_provider_form", name=provider_name, provider_id=row.id), "update-" + provider_name + "-" + row.id | string) }}
-    {{ build_lazy_modal(url_for("backoffice_v3_web.providers.get_delete_provider_form", name=provider_name, provider_id=row.id), "delete-" + provider_name + "-" + row.id | string) }}
+    {{ build_lazy_modal(url_for("backoffice_v3_web.pivots.get_update_pivot_form", name=pivot_name, pivot_id=row.id), "update-" + pivot_name + "-" + row.id | string) }}
+    {{ build_lazy_modal(url_for("backoffice_v3_web.pivots.get_delete_pivot_form", name=pivot_name, pivot_id=row.id), "delete-" + pivot_name + "-" + row.id | string) }}
   </div>
 {% endmacro %}

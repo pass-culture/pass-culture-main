@@ -9,19 +9,19 @@ from pcapi.utils.clean_accents import clean_accents
 from .. import forms
 
 
-class ProviderContext:
+class PivotContext:
     @classmethod
-    def provider_class(cls) -> typing.Type:
+    def pivot_class(cls) -> typing.Type:
         raise NotImplementedError()
 
     @classmethod
-    def list_providers(cls, query_string: str | None = None) -> list:
+    def list_pivots(cls, query_string: str | None = None) -> list:
         """
         Common implementation, except for Allocine which does not use cinemaProviderPivot
         """
-        provider_class = cls.provider_class()
-        query = provider_class.query.options(
-            sa.orm.joinedload(provider_class.cinemaProviderPivot)
+        pivot_class = cls.pivot_class()
+        query = pivot_class.query.options(
+            sa.orm.joinedload(pivot_class.cinemaProviderPivot)
             .load_only(providers_models.CinemaProviderPivot.idAtProvider)
             .joinedload(providers_models.CinemaProviderPivot.venue)
             .load_only(
@@ -30,7 +30,7 @@ class ProviderContext:
             )
         )
         if query_string:
-            query = query.join(provider_class.cinemaProviderPivot)
+            query = query.join(pivot_class.cinemaProviderPivot)
             if query_string.isnumeric():
                 query = query.filter(providers_models.CinemaProviderPivot.venueId == int(query_string))
             else:
@@ -43,21 +43,21 @@ class ProviderContext:
         return query.all()
 
     @classmethod
-    def get_form(cls) -> forms.EditProviderForm:
+    def get_form(cls) -> forms.EditPivotForm:
         raise NotImplementedError()
 
     @classmethod
-    def get_edit_form(cls, provider_id: int) -> forms.EditProviderForm:
+    def get_edit_form(cls, pivot_id: int) -> forms.EditPivotForm:
         raise NotImplementedError()
 
     @classmethod
-    def create_provider(cls, form: forms.EditProviderForm) -> bool:
+    def create_pivot(cls, form: forms.EditPivotForm) -> bool:
         raise NotImplementedError()
 
     @classmethod
-    def update_provider(cls, form: forms.EditProviderForm, provider_id: int) -> bool:
+    def update_pivot(cls, form: forms.EditPivotForm, pivot_id: int) -> bool:
         raise NotImplementedError()
 
     @classmethod
-    def delete_provider(cls, provider_id: int) -> bool:
+    def delete_pivot(cls, pivot_id: int) -> bool:
         raise NotImplementedError()

@@ -10,15 +10,15 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.models import db
 
 from .. import forms
-from .base import ProviderContext
+from .base import PivotContext
 
 
 logger = logging.getLogger(__name__)
 
 
-class CGRContext(ProviderContext):
+class CGRContext(PivotContext):
     @classmethod
-    def provider_class(cls) -> typing.Type:
+    def pivot_class(cls) -> typing.Type:
         return providers_models.CGRCinemaDetails
 
     @classmethod
@@ -26,20 +26,20 @@ class CGRContext(ProviderContext):
         return forms.EditCGRForm()
 
     @classmethod
-    def get_edit_form(cls, provider_id: int) -> forms.EditCGRForm:
-        provider = providers_models.CGRCinemaDetails.query.get_or_404(provider_id)
+    def get_edit_form(cls, pivot_id: int) -> forms.EditCGRForm:
+        pivot = providers_models.CGRCinemaDetails.query.get_or_404(pivot_id)
 
         form = forms.EditCGRForm(
-            venue_id=[provider.cinemaProviderPivot.venue.id],
-            cinema_id=provider.cinemaProviderPivot.idAtProvider,
-            cinema_url=provider.cinemaUrl,
-            password=provider.password,
+            venue_id=[pivot.cinemaProviderPivot.venue.id],
+            cinema_id=pivot.cinemaProviderPivot.idAtProvider,
+            cinema_url=pivot.cinemaUrl,
+            password=pivot.password,
         )
         form.venue_id.disabled = True
         return form
 
     @classmethod
-    def create_provider(cls, form: forms.EditCGRForm) -> bool:
+    def create_pivot(cls, form: forms.EditCGRForm) -> bool:
         cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
         if not cgr_provider:
             flash("Provider CGR n'existe pas.", "error")
@@ -62,40 +62,40 @@ class CGRContext(ProviderContext):
         cinema_provider_pivot = providers_models.CinemaProviderPivot(
             venue=venue, provider=cgr_provider, idAtProvider=cinema_id
         )
-        provider = providers_models.CGRCinemaDetails(
+        cinema_pivot = providers_models.CGRCinemaDetails(
             cinemaProviderPivot=cinema_provider_pivot, cinemaUrl=cinema_url, password=cinema_password
         )
 
-        num_cinema = cls.check_if_api_call_is_ok(provider)
+        num_cinema = cls.check_if_api_call_is_ok(cinema_pivot)
         if num_cinema:
-            provider.numCinema = num_cinema
+            cinema_pivot.numCinema = num_cinema
 
         db.session.add(cinema_provider_pivot)
-        db.session.add(provider)
+        db.session.add(cinema_pivot)
         return True
 
     @classmethod
-    def update_provider(cls, form: forms.EditCGRForm, provider_id: int) -> bool:
-        provider = providers_models.CGRCinemaDetails.query.get_or_404(provider_id)
+    def update_pivot(cls, form: forms.EditCGRForm, pivot_id: int) -> bool:
+        pivot = providers_models.CGRCinemaDetails.query.get_or_404(pivot_id)
 
-        if provider.cinemaProviderPivot is None:
+        if pivot.cinemaProviderPivot is None:
             flash("Le provider n'a pas de pivot", "danger")  #  Demander le message le mieux adapté
             return False
-        provider.cinemaProviderPivot.idAtProvider = form.cinema_id.data
-        provider.cinemaUrl = form.cinema_url.data.rstrip("/")
-        provider.password = form.password.data
-        num_cinema = cls.check_if_api_call_is_ok(provider)
+        pivot.cinemaProviderPivot.idAtProvider = form.cinema_id.data
+        pivot.cinemaUrl = form.cinema_url.data.rstrip("/")
+        pivot.password = form.password.data
+        num_cinema = cls.check_if_api_call_is_ok(pivot)
 
         if num_cinema:
-            provider.numCinema = num_cinema
+            pivot.numCinema = num_cinema
 
-        db.session.add(provider)
+        db.session.add(pivot)
         return True
 
     @classmethod
-    def delete_provider(cls, provider_id: int) -> bool:
-        provider = providers_models.CGRCinemaDetails.query.get_or_404(provider_id)
-        cinema_provider_pivot = provider.cinemaProviderPivot
+    def delete_pivot(cls, pivot_id: int) -> bool:
+        pivot = providers_models.CGRCinemaDetails.query.get_or_404(pivot_id)
+        cinema_provider_pivot = pivot.cinemaProviderPivot
         assert cinema_provider_pivot  # helps mypy
         venue_provider = providers_models.VenueProvider.query.filter_by(
             venueId=cinema_provider_pivot.venueId, providerId=cinema_provider_pivot.providerId
@@ -104,14 +104,14 @@ class CGRContext(ProviderContext):
         if venue_provider:
             flash("Ce lieu est toujours synchronisé avec CDS, Vous ne pouvez pas supprimer ce pivot CGR", "danger")
             return False
-        db.session.delete(provider)
+        db.session.delete(pivot)
         db.session.delete(cinema_provider_pivot)
         return True
 
     @classmethod
-    def check_if_api_call_is_ok(cls, provider: providers_models.CGRCinemaDetails) -> int | None:
+    def check_if_api_call_is_ok(cls, pivot: providers_models.CGRCinemaDetails) -> int | None:
         try:
-            response = cgr.get_seances_pass_culture(provider)
+            response = cgr.get_seances_pass_culture(pivot)
             flash("Connexion à l'API CGR OK.")
             return response.ObjetRetour.NumCine
         # it could be an unexpected XML parsing error

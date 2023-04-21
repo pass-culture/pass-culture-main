@@ -23,29 +23,29 @@ pytestmark = [
 ]
 
 
-class GetProvidersPageTest(GetEndpointHelper):
-    endpoint = "backoffice_v3_web.providers.get_providers"
+class GetPivotsPageTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.pivots.get_pivots"
     needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
 
-    def test_get_providers_page(self, authenticated_client):
+    def test_get_pivots_page(self, authenticated_client):
         with assert_num_queries(2):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
 
-class ListProvidersTest(GetEndpointHelper):
-    endpoint = "backoffice_v3_web.providers.list_providers"
+class ListPivotsTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.pivots.list_pivots"
     endpoint_kwargs = {"name": "allocine"}
     needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
 
     # - fetch session (1 query)
     # - fetch user (1 query)
-    # - fetch a single provider with joinedload (1 query)
+    # - fetch a single pivot with joinedload (1 query)
     expected_num_queries = 3
 
-    def test_list_providers_allocine(self, authenticated_client):
+    def test_list_pivots_allocine(self, authenticated_client):
         # given
-        allocine_provider = providers_factories.AllocinePivotFactory()
+        allocine_pivot = providers_factories.AllocinePivotFactory()
 
         # when
         with assert_num_queries(self.expected_num_queries):
@@ -54,10 +54,10 @@ class ListProvidersTest(GetEndpointHelper):
 
         # then
         allocine_rows = html_parser.extract_table_rows(response.data)
-        assert allocine_rows[0]["Id du Lieu"] == str(allocine_provider.venue.id)
-        assert allocine_rows[0]["Lieu"] == allocine_provider.venue.name
-        assert allocine_rows[0]["Identifiant cinéma (Allociné)"] == allocine_provider.theaterId
-        assert allocine_rows[0]["Identifiant interne Allociné"] == allocine_provider.internalId
+        assert allocine_rows[0]["Id du Lieu"] == str(allocine_pivot.venue.id)
+        assert allocine_rows[0]["Lieu"] == allocine_pivot.venue.name
+        assert allocine_rows[0]["Identifiant cinéma (Allociné)"] == allocine_pivot.theaterId
+        assert allocine_rows[0]["Identifiant interne Allociné"] == allocine_pivot.internalId
 
     @pytest.mark.parametrize(
         "query_string,expected_venues",
@@ -71,7 +71,7 @@ class ListProvidersTest(GetEndpointHelper):
             ("P01891", set()),  # not searchable
         ],
     )
-    def test_filter_providers_allocine(self, authenticated_client, query_string, expected_venues):
+    def test_filter_pivots_allocine(self, authenticated_client, query_string, expected_venues):
         # given
         providers_factories.AllocinePivotFactory(
             venue__id=10, venue__name="Cinéma Edison", theaterId="ABCDEFGHIJKLMNOPQR==", internalId="P01891"
@@ -92,9 +92,9 @@ class ListProvidersTest(GetEndpointHelper):
         allocine_rows = html_parser.extract_table_rows(response.data)
         assert {row["Lieu"] for row in allocine_rows} == expected_venues
 
-    def test_list_providers_boost(self, authenticated_client):
+    def test_list_pivots_boost(self, authenticated_client):
         # given
-        boost_provider = providers_factories.BoostCinemaDetailsFactory()
+        boost_pivot = providers_factories.BoostCinemaDetailsFactory()
 
         # when
         with assert_num_queries(self.expected_num_queries):
@@ -103,20 +103,20 @@ class ListProvidersTest(GetEndpointHelper):
 
         # then
         boost_rows = html_parser.extract_table_rows(response.data)
-        assert boost_rows[0]["Id du Lieu"] == str(boost_provider.cinemaProviderPivot.venue.id)
-        assert boost_rows[0]["Lieu"] == boost_provider.cinemaProviderPivot.venue.name
-        assert boost_rows[0]["Identifiant cinéma (Boost)"] == boost_provider.cinemaProviderPivot.idAtProvider
-        assert boost_rows[0]["Nom de l'utilisateur (Boost)"] == boost_provider.username
-        assert boost_rows[0]["Mot de passe (Boost)"] == boost_provider.password
-        assert boost_rows[0]["URL du cinéma (Boost)"] == boost_provider.cinemaUrl
+        assert boost_rows[0]["Id du Lieu"] == str(boost_pivot.cinemaProviderPivot.venue.id)
+        assert boost_rows[0]["Lieu"] == boost_pivot.cinemaProviderPivot.venue.name
+        assert boost_rows[0]["Identifiant cinéma (Boost)"] == boost_pivot.cinemaProviderPivot.idAtProvider
+        assert boost_rows[0]["Nom de l'utilisateur (Boost)"] == boost_pivot.username
+        assert boost_rows[0]["Mot de passe (Boost)"] == boost_pivot.password
+        assert boost_rows[0]["URL du cinéma (Boost)"] == boost_pivot.cinemaUrl
 
     @pytest.mark.skip(reason="TODO PC-21791")
-    def test_filter_providers_boost(self, authenticated_client, query_string, expected_venues):
+    def test_filter_pivots_boost(self, authenticated_client, query_string, expected_venues):
         pass  # TODO PC-21791
 
-    def test_list_providers_cgr(self, authenticated_client):
+    def test_list_pivots_cgr(self, authenticated_client):
         # given
-        cgr_provider = providers_factories.CGRCinemaDetailsFactory()
+        cgr_pivot = providers_factories.CGRCinemaDetailsFactory()
 
         # when
         with assert_num_queries(self.expected_num_queries):
@@ -125,10 +125,10 @@ class ListProvidersTest(GetEndpointHelper):
 
         # then
         cgr_rows = html_parser.extract_table_rows(response.data)
-        assert cgr_rows[0]["Id du Lieu"] == str(cgr_provider.cinemaProviderPivot.venue.id)
-        assert cgr_rows[0]["Lieu"] == cgr_provider.cinemaProviderPivot.venue.name
-        assert cgr_rows[0]["Identifiant cinéma (CGR)"] == cgr_provider.cinemaProviderPivot.idAtProvider
-        assert cgr_rows[0]["URL du cinéma (CGR)"] == cgr_provider.cinemaUrl
+        assert cgr_rows[0]["Id du Lieu"] == str(cgr_pivot.cinemaProviderPivot.venue.id)
+        assert cgr_rows[0]["Lieu"] == cgr_pivot.cinemaProviderPivot.venue.name
+        assert cgr_rows[0]["Identifiant cinéma (CGR)"] == cgr_pivot.cinemaProviderPivot.idAtProvider
+        assert cgr_rows[0]["URL du cinéma (CGR)"] == cgr_pivot.cinemaUrl
 
     @pytest.mark.parametrize(
         "query_string,expected_venues",
@@ -142,7 +142,7 @@ class ListProvidersTest(GetEndpointHelper):
             ("http://cgr-cinema-", set()),  # not searchable
         ],
     )
-    def test_filter_providers_cgr(self, authenticated_client, query_string, expected_venues):
+    def test_filter_pivots_cgr(self, authenticated_client, query_string, expected_venues):
         # given
         cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
         providers_factories.CGRCinemaDetailsFactory(
@@ -176,9 +176,9 @@ class ListProvidersTest(GetEndpointHelper):
         cgr_rows = html_parser.extract_table_rows(response.data)
         assert {row["Lieu"] for row in cgr_rows} == expected_venues
 
-    def test_list_providers_cineoffice(self, authenticated_client):
+    def test_list_pivots_cineoffice(self, authenticated_client):
         # given
-        cineoffice_provider = providers_factories.CDSCinemaDetailsFactory()
+        cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
 
         # when
         with assert_num_queries(self.expected_num_queries):
@@ -187,19 +187,19 @@ class ListProvidersTest(GetEndpointHelper):
 
         # then
         cineoffice_rows = html_parser.extract_table_rows(response.data)
-        assert cineoffice_rows[0]["Id du Lieu"] == str(cineoffice_provider.cinemaProviderPivot.venue.id)
-        assert cineoffice_rows[0]["Lieu"] == cineoffice_provider.cinemaProviderPivot.venue.name
-        assert cineoffice_rows[0]["Identifiant cinéma (CDS)"] == cineoffice_provider.cinemaProviderPivot.idAtProvider
-        assert cineoffice_rows[0]["Nom de l'utilisateur (CDS)"] == cineoffice_provider.accountId
-        assert cineoffice_rows[0]["Clé API (CDS)"] == cineoffice_provider.cinemaApiToken
+        assert cineoffice_rows[0]["Id du Lieu"] == str(cineoffice_pivot.cinemaProviderPivot.venue.id)
+        assert cineoffice_rows[0]["Lieu"] == cineoffice_pivot.cinemaProviderPivot.venue.name
+        assert cineoffice_rows[0]["Identifiant cinéma (CDS)"] == cineoffice_pivot.cinemaProviderPivot.idAtProvider
+        assert cineoffice_rows[0]["Nom de l'utilisateur (CDS)"] == cineoffice_pivot.accountId
+        assert cineoffice_rows[0]["Clé API (CDS)"] == cineoffice_pivot.cinemaApiToken
 
     @pytest.mark.skip(reason="TODO PC-21792")
-    def test_filter_providers_cineoffice(self, authenticated_client, query_string, expected_venues):
+    def test_filter_pivots_cineoffice(self, authenticated_client, query_string, expected_venues):
         pass  # TODO PC-21792
 
 
-class GetCreateProviderFormTest(GetEndpointHelper):
-    endpoint = "backoffice_v3_web.providers.get_create_provider_form"
+class GetCreatePivotFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.pivots.get_create_pivot_form"
     endpoint_kwargs = {"name": "allocine"}
     needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
 
@@ -207,33 +207,33 @@ class GetCreateProviderFormTest(GetEndpointHelper):
     # - fetch user (1 query)
     expected_num_queries = 2
 
-    def test_get_create_provider_form_allocine(self, authenticated_client):
+    def test_get_create_pivot_form_allocine(self, authenticated_client):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="allocine"))
             assert response.status_code == 200
 
-    def test_get_create_provider_form_boost(self, authenticated_client):
+    def test_get_create_pivot_form_boost(self, authenticated_client):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="boost"))
             assert response.status_code == 200
 
-    def test_get_create_provider_form_cgr(self, authenticated_client):
+    def test_get_create_pivot_form_cgr(self, authenticated_client):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="cgr"))
             assert response.status_code == 200
 
-    def test_get_create_provider_form_cineoffice(self, authenticated_client):
+    def test_get_create_pivot_form_cineoffice(self, authenticated_client):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="cineoffice"))
             assert response.status_code == 200
 
 
-class CreateProviderTest(PostEndpointHelper):
-    endpoint = "backoffice_v3_web.providers.create_provider"
+class CreatePivotTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.pivots.create_pivot"
     endpoint_kwargs = {"name": "allocine"}
     needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
 
-    def test_create_provider_allocine(self, authenticated_client):
+    def test_create_pivot_allocine(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
         form = {"venue_id": venue.id, "theater_id": "ABCDEFGHIJKLMNOPQR==", "internal_id": "P12345"}
 
@@ -246,10 +246,10 @@ class CreateProviderTest(PostEndpointHelper):
         assert created.internalId == form["internal_id"]
 
     @pytest.mark.skip(reason="TODO PC-21791")
-    def test_create_provider_boost(self, authenticated_client):
+    def test_create_pivot_boost(self, authenticated_client):
         pass  # TODO PC-21791
 
-    def test_create_provider_cgr(self, requests_mock, authenticated_client):
+    def test_create_pivot_cgr(self, requests_mock, authenticated_client):
         requests_mock.get("http://example.com/another_web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
         requests_mock.post(
             "http://example.com/another_web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
@@ -271,73 +271,73 @@ class CreateProviderTest(PostEndpointHelper):
         assert created.password == form["password"]
 
     @pytest.mark.skip(reason="TODO PC-21792")
-    def test_create_provider_cineoffice(self, authenticated_client):
+    def test_create_pivot_cineoffice(self, authenticated_client):
         pass  # TODO PC-21792
 
 
-class GetUpdateProviderFormTest(GetEndpointHelper):
-    endpoint = "backoffice_v3_web.providers.get_update_provider_form"
-    endpoint_kwargs = {"name": "allocine", "provider_id": 1}
+class GetUpdatePivotFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.pivots.get_update_pivot_form"
+    endpoint_kwargs = {"name": "allocine", "pivot_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
 
     # - fetch session (1 query)
     # - fetch user (1 query)
-    # - fetch provider (1 query)
+    # - fetch pivot (1 query)
     # - fetch venue to fill autocomplete (1 query)
     expected_num_queries = 4
 
-    def test_get_update_provider_form_allocine(self, authenticated_client):
+    def test_get_update_pivot_form_allocine(self, authenticated_client):
         # given
-        allocine_provider = providers_factories.AllocinePivotFactory()
-        provider_id = allocine_provider.id
+        allocine_pivot = providers_factories.AllocinePivotFactory()
+        pivot_id = allocine_pivot.id
 
-        db.session.expire(allocine_provider)
+        db.session.expire(allocine_pivot)
 
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, name="allocine", provider_id=provider_id))
+            response = authenticated_client.get(url_for(self.endpoint, name="allocine", pivot_id=pivot_id))
             assert response.status_code == 200
 
     @pytest.mark.skip(reason="TODO PC-21791")
-    def test_get_update_provider_form_boost(self, authenticated_client):
+    def test_get_update_pivot_form_boost(self, authenticated_client):
         pass  # TODO PC-21791
 
-    def test_get_update_provider_form_cgr(self, authenticated_client):
+    def test_get_update_pivot_form_cgr(self, authenticated_client):
         # given
         # - fetch cgr cinema details (1 query)
         # - fetch session (1 query)
         # - fetch user (1 query)
-        # - fetch provider (1 query)
+        # - fetch pivot (1 query)
         # - fetch venue for form validate (1 query)
         # - fetch venue to fill autocomplete (1 query)
         expected_num_queries = 6
 
-        cgr_provider = providers_factories.CGRCinemaDetailsFactory(cinemaUrl="http://example.com/another_web_service")
+        cgr_pivot = providers_factories.CGRCinemaDetailsFactory(cinemaUrl="http://example.com/another_web_service")
 
-        db.session.expire(cgr_provider)
+        db.session.expire(cgr_pivot)
 
         # when
         with assert_num_queries(expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, name="cgr", provider_id=cgr_provider.id))
+            response = authenticated_client.get(url_for(self.endpoint, name="cgr", pivot_id=cgr_pivot.id))
             assert response.status_code == 200
 
     @pytest.mark.skip(reason="TODO PC-21792")
-    def test_get_update_provider_form_cineoffice(self, authenticated_client):
+    def test_get_update_pivot_form_cineoffice(self, authenticated_client):
         pass  # TODO PC-21792
 
 
-class UpdateProviderTest(PostEndpointHelper):
-    endpoint = "backoffice_v3_web.providers.update_provider"
-    endpoint_kwargs = {"name": "allocine", "provider_id": 1}
+class UpdatePivotTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.pivots.update_pivot"
+    endpoint_kwargs = {"name": "allocine", "pivot_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
 
-    def test_update_provider_allocine(self, authenticated_client):
+    def test_update_pivot_allocine(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
-        provider_id = providers_factories.AllocinePivotFactory().id
+        pivot_id = providers_factories.AllocinePivotFactory().id
 
         form = {"venue_id": venue.id, "theater_id": "ABCDEFGHIJKLMNOPQR==", "internal_id": "P12345"}
 
-        response = self.post_to_endpoint(authenticated_client, name="allocine", provider_id=provider_id, form=form)
+        response = self.post_to_endpoint(authenticated_client, name="allocine", pivot_id=pivot_id, form=form)
         assert response.status_code == 303
 
         updated = providers_models.AllocinePivot.query.one()
@@ -346,15 +346,15 @@ class UpdateProviderTest(PostEndpointHelper):
         assert updated.internalId == form["internal_id"]
 
     @pytest.mark.skip(reason="TODO PC-21791")
-    def test_update_provider_boost(self, authenticated_client):
+    def test_update_pivot_boost(self, authenticated_client):
         pass  # TODO PC-21791
 
-    def test_update_provider_cgr(self, authenticated_client, requests_mock):
+    def test_update_pivot_cgr(self, authenticated_client, requests_mock):
         requests_mock.get("http://example.com/another_web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
         requests_mock.post(
             "http://example.com/another_web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
         )
-        cgr_provider = providers_factories.CGRCinemaDetailsFactory()
+        cgr_pivot = providers_factories.CGRCinemaDetailsFactory()
 
         form = {
             "cinema_id": "idProvider1000",
@@ -362,7 +362,7 @@ class UpdateProviderTest(PostEndpointHelper):
             "password": "Azerty!123",
         }
 
-        self.post_to_endpoint(authenticated_client, name="cgr", provider_id=cgr_provider.id, form=form)
+        self.post_to_endpoint(authenticated_client, name="cgr", pivot_id=cgr_pivot.id, form=form)
 
         updated = providers_models.CGRCinemaDetails.query.one()
         assert updated.cinemaProviderPivot.idAtProvider == form["cinema_id"]
@@ -370,26 +370,26 @@ class UpdateProviderTest(PostEndpointHelper):
         assert updated.password == form["password"]
 
     @pytest.mark.skip(reason="TODO PC-21792")
-    def test_update_provider_cineoffice(self, authenticated_client):
+    def test_update_pivot_cineoffice(self, authenticated_client):
         pass  # TODO PC-21792
 
 
 class DeleteProviderTest(PostEndpointHelper):
-    endpoint = "backoffice_v3_web.providers.delete_provider"
-    endpoint_kwargs = {"name": "cgr", "provider_id": 1}
+    endpoint = "backoffice_v3_web.pivots.delete_pivot"
+    endpoint_kwargs = {"name": "cgr", "pivot_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
 
     @pytest.mark.skip(reason="TODO PC-21791")
-    def test_delete_provider_boost(self, authenticated_client):
+    def test_delete_pivot_boost(self, authenticated_client):
         pass  # TODO PC-21791
 
-    def test_delete_provider_cgr(self, authenticated_client):
-        cgr_provider = providers_factories.CGRCinemaDetailsFactory()
+    def test_delete_pivot_cgr(self, authenticated_client):
+        cgr_pivot = providers_factories.CGRCinemaDetailsFactory()
 
-        self.post_to_endpoint(authenticated_client, name="cgr", provider_id=cgr_provider.id)
+        self.post_to_endpoint(authenticated_client, name="cgr", pivot_id=cgr_pivot.id)
 
-        assert not providers_models.CGRCinemaDetails.query.get(cgr_provider.id)
+        assert not providers_models.CGRCinemaDetails.query.get(cgr_pivot.id)
 
     @pytest.mark.skip(reason="TODO PC-21792")
-    def test_delete_provider_cineoffice(self, authenticated_client):
+    def test_delete_pivot_cineoffice(self, authenticated_client):
         pass  # TODO PC-21792
