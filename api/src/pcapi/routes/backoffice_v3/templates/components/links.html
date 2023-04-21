@@ -23,7 +23,7 @@
      class="link-primary"
      target="_top">{{ venue[text_attr] }}</a>
 {% endmacro %}
-{% macro a_offer_name_to_details(offer, text_attr="name") %}
+{% macro build_offer_name_to_details_link(offer, text_attr="name") %}
   <a href="{{ url_for('backoffice_v3_web.offer.list_offers', q=offer.id) }}"
      class="link-primary"
      target="_top">{{ offer[text_attr] }}</a>

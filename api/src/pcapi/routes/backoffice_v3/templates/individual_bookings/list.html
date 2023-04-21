@@ -138,7 +138,7 @@
                   {{ links.build_offer_name_to_pc_pro_link(offer) }}
                 </td>
                 <td>
-                  {{ links.a_offer_name_to_details(offer, text_attr="id") }}
+                  {{ links.build_offer_name_to_details_link(offer, text_attr="id") }}
                 </td>
                 <td>
                   {{ (offer.isDuo and booking.quantity == 2) | format_bool }}
