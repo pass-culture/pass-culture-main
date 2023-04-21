@@ -183,6 +183,8 @@ class JsonFormatter(logging.Formatter):
         try:
             return json.dumps(json_record, cls=JsonLogEncoder)
         except TypeError:
+            if settings.IS_RUNNING_TESTS:
+                raise
             # Perhaps the `extra` arguments were not serializable?
             # Let's try by dumping them as a string.
             assert _internal_logger is not None  # tell mypy it's been set

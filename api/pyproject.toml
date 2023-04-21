@@ -142,6 +142,7 @@ max-line-length = 120
 addopts = [
     "--verbose",
     "--tb=short",
+    "--log-level=INFO",
     "--disable-socket",
     # FIXME (dbaty, 2022-12-01): use network range 172.16.0.0/12 once pytest-socket
     # supports it.

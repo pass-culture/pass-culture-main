@@ -1,5 +1,4 @@
 import dataclasses
-import logging
 from unittest.mock import patch
 
 import pytest
@@ -195,8 +194,7 @@ class SendTest:
         data = models.TransactionalEmailData(template=mock_template_send_ehp_false, params={}, reply_to=mock_reply_to)
         recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
 
-        with caplog.at_level(logging.INFO):
-            result_bool = send(recipients=recipients, data=data)
+        result_bool = send(recipients=recipients, data=data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 0
         assert caplog.messages == [
@@ -219,8 +217,7 @@ class SendTest:
         data = models.TransactionalEmailData(template=mock_template_send_ehp_true, params={}, reply_to=mock_reply_to)
         recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
 
-        with caplog.at_level(logging.INFO):
-            result_bool = send(recipients=recipients, data=data)
+        result_bool = send(recipients=recipients, data=data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         assert caplog.records == []

@@ -1,5 +1,4 @@
 from datetime import datetime
-import logging
 import uuid
 
 import pytest
@@ -54,29 +53,28 @@ class CookiesConsentTest:
         user = users_factories.UserFactory()
         body["userId"] = user.id
 
-        with caplog.at_level(logging.INFO):
-            response = client.post("/native/v1/cookies_consent", json=body)
+        response = client.post("/native/v1/cookies_consent", json=body)
 
-            assert response.status_code == 204
-            assert caplog.records[0].extra == {
-                "consent": {
-                    "mandatory": [
-                        "firebase",
-                    ],
-                    "accepted": [
-                        "algolia search insight",
-                    ],
-                    "refused": [
-                        "amplitude",
-                        "batch",
-                    ],
-                },
-                "choice_datetime": datetime.fromisoformat("2022-08-23T00:00:00"),
-                "device_id": DEVICE_ID,
-                "user_id": user.id,
-                "analyticsSource": "app-native",
-            }
-            assert caplog.records[0].technical_message_id == "cookies_consent"
+        assert response.status_code == 204
+        assert caplog.records[0].extra == {
+            "consent": {
+                "mandatory": [
+                    "firebase",
+                ],
+                "accepted": [
+                    "algolia search insight",
+                ],
+                "refused": [
+                    "amplitude",
+                    "batch",
+                ],
+            },
+            "choice_datetime": datetime.fromisoformat("2022-08-23T00:00:00"),
+            "device_id": DEVICE_ID,
+            "user_id": user.id,
+            "analyticsSource": "app-native",
+        }
+        assert caplog.records[0].technical_message_id == "cookies_consent"
 
     def test_invalid_data_structure(self, client):
         body = None

@@ -1,6 +1,5 @@
 from datetime import datetime
 from decimal import Decimal
-import logging
 
 from freezegun import freeze_time
 import pytest
@@ -57,8 +56,7 @@ class Returns200Test:
         )
 
         client = client.with_eac_token()
-        with caplog.at_level(logging.INFO):
-            response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
+        response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
 
         assert caplog.records[0].message == "BookingApproval"
         assert caplog.records[0].extra == {

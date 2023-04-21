@@ -1,5 +1,6 @@
 import contextlib
 from functools import wraps
+import logging
 import os
 from pathlib import Path
 from pprint import pprint
@@ -9,6 +10,7 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 import urllib.parse
 
+from _pytest import logging as pytest_logging
 from alembic import command
 from alembic.config import Config
 from flask import Flask
@@ -25,6 +27,7 @@ import requests_mock
 from pcapi import settings
 from pcapi.analytics.amplitude import testing as amplitude_testing
 import pcapi.core.educational.testing as adage_api_testing
+import pcapi.core.logging as pcapi_logging
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
 from pcapi.core.providers import constants as providers_constants
@@ -53,9 +56,25 @@ def run_migrations():
     command.upgrade(alembic_cfg, "post@head")
 
 
+class CustomLoggingPlugin(pytest_logging.LoggingPlugin):
+    """A logging plugin that uses our formatter.
+
+    Used to detect incorrect logging (usually when an object is passed
+    to `extra` that is not JSON-serializable).
+    """
+
+    def _create_formatter(self, log_format, log_date_format, auto_indent) -> logging.Formatter:
+        return pcapi_logging.JsonFormatter()
+
+
+@pytest.hookimpl(trylast=True)  # run after "_pytest.logging"
 def pytest_configure(config):
     if config.getoption("capture") == "no":
         TestClient.WITH_DOC = True
+    plugin = config.pluginmanager.get_plugin("logging-plugin")
+    plugin.caplog_handler.setFormatter(pcapi_logging.JsonFormatter())
+    plugin.report_handler.setFormatter(pcapi_logging.JsonFormatter())
+    plugin.log_cli_handler.setFormatter(pcapi_logging.JsonFormatter())
 
 
 def build_backoffice_app():

@@ -118,9 +118,8 @@ class EduconnectTest:
         }
         mock_saml_response.in_response_to = self.request_id
 
-        with caplog.at_level(logging.INFO):
-            with freezegun.freeze_time("2021-10-10"):
-                response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+        with freezegun.freeze_time("2021-10-10"):
+            response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
         assert (
@@ -291,8 +290,7 @@ class EduconnectTest:
         }
         mock_saml_response.in_response_to = self.request_id
 
-        with caplog.at_level(logging.INFO):
-            response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
         assert (
@@ -320,8 +318,7 @@ class EduconnectTest:
         }
         mock_saml_response.in_response_to = self.request_id
 
-        with caplog.at_level(logging.INFO):
-            response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
         assert (
@@ -527,7 +524,7 @@ class EduconnectTest:
 
         client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
-        assert amplitude_testing.requests[0]["user_id"] == str(user.id)
+        assert amplitude_testing.requests[0]["user_id"] == user.id
         assert amplitude_testing.requests[0]["event_name"] == AmplitudeEventType.EDUCONNECT_ERROR.value
 
         assert (

@@ -1,7 +1,6 @@
 import copy
 from datetime import datetime
 from datetime import timedelta
-import logging
 import os
 import pathlib
 from unittest import mock
@@ -1026,8 +1025,7 @@ class BatchUpdateOffersTest:
         pending_offer = factories.OfferFactory(validation=models.OfferValidationStatus.PENDING)
 
         query = models.Offer.query.filter(models.Offer.id.in_({pending_offer.id}))
-        with caplog.at_level(logging.INFO):
-            api.batch_update_offers(query, {"isActive": True})
+        api.batch_update_offers(query, {"isActive": True})
 
         assert not models.Offer.query.get(pending_offer.id).isActive
         mocked_async_index_offer_ids.assert_not_called()
@@ -1056,8 +1054,7 @@ class BatchUpdateOffersTest:
         query = models.Offer.query.filter(
             models.Offer.id.in_({offer1.id, offer2.id, rejected_offer.id, pending_offer.id})
         )
-        with caplog.at_level(logging.INFO):
-            api.batch_update_offers(query, {"isActive": True})
+        api.batch_update_offers(query, {"isActive": True})
 
         assert models.Offer.query.get(offer1.id).isActive
         assert models.Offer.query.get(offer2.id).isActive
@@ -1088,8 +1085,7 @@ class BatchUpdateOffersTest:
         offer3 = factories.OfferFactory()
 
         query = models.Offer.query.filter(models.Offer.id.in_({offer1.id, offer2.id}))
-        with caplog.at_level(logging.INFO):
-            api.batch_update_offers(query, {"isActive": False})
+        api.batch_update_offers(query, {"isActive": False})
 
         assert not models.Offer.query.get(offer1.id).isActive
         assert not models.Offer.query.get(offer2.id).isActive

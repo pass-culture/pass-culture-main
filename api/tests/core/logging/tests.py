@@ -130,19 +130,20 @@ class JsonFormatterTest:
         assert deserialized["message"] == "Frobulated 12 blobs"
         assert deserialized["extra"] == {"unserializable": str({"blobs": obj})}
 
+    def test_fail_test_when_logging_non_serializable_object(self):
+        logger = logging.getLogger("testing-logger")
+        with pytest.raises(TypeError):
+            logger.info("A log", extra={"obj": object()})
+
 
 class LogElapsedTest:
     def test_log(self, caplog):
-        caplog.set_level(logging.INFO)
-
         logger = logging.getLogger("testing-logger")
         with log_elapsed(logger, "It worked!"):
             pass
         assert "It worked!" in caplog.messages
 
     def test_no_log_on_exception(self, caplog):
-        caplog.set_level(logging.INFO)
-
         def raise_exception():
             raise ValueError()
 

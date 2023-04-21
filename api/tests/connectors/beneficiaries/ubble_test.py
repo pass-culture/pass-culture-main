@@ -14,14 +14,13 @@ from tests.test_utils import json_default
 
 class StartIdentificationTest:
     def test_start_identification(self, ubble_mock, caplog):
-        with caplog.at_level(logging.INFO):
-            response = ubble.start_identification(
-                user_id=123,
-                first_name="prenom",
-                last_name="nom",
-                webhook_url="http://webhook/url/",
-                redirect_url="http://redirect/url",
-            )
+        response = ubble.start_identification(
+            user_id=123,
+            first_name="prenom",
+            last_name="nom",
+            webhook_url="http://webhook/url/",
+            redirect_url="http://redirect/url",
+        )
 
         assert isinstance(response, ubble_fraud_models.UbbleContent)
         assert ubble_mock.call_count == 1
@@ -86,8 +85,7 @@ class GetContentTest:
             ubble_response.data.attributes.identification_id,
             json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
         ):
-            with caplog.at_level(logging.INFO):
-                ubble.get_content(ubble_response.data.attributes.identification_id)
+            ubble.get_content(ubble_response.data.attributes.identification_id)
 
             assert caplog.records[0].message == "External service called"
 

@@ -1,5 +1,4 @@
 from dataclasses import asdict
-import logging
 import re
 from unittest.mock import patch
 
@@ -53,8 +52,7 @@ class EditVenueTest:
         data = base_form_data(venue) | dict(siret="88888888888888", comment=None)
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
-        with caplog.at_level(logging.INFO):
-            response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
+        response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
 
         assert response.status_code == 302
         venue_edited = Venue.query.get(venue.id)
@@ -85,8 +83,7 @@ class EditVenueTest:
         data = base_form_data(venue) | dict(siret="88888888888888")
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
-        with caplog.at_level(logging.INFO):
-            response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
+        response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
 
         assert response.status_code == 302
         venue_edited = Venue.query.get(venue.id)
@@ -116,8 +113,7 @@ class EditVenueTest:
         data = base_form_data(venue) | dict(siret="88888888888888", comment=None)
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
-        with caplog.at_level(logging.INFO):
-            response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data, follow_redirects=True)
+        response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data, follow_redirects=True)
 
         assert response.history[0].status_code == 302
         assert response.status_code == 200
