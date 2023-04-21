@@ -65,6 +65,29 @@ class T_UNCHANGED(enum.Enum):
 
 UNCHANGED = T_UNCHANGED.TOKEN
 
+OFFER_ALGOLIA_INDEXED_FIELDS = {
+    # no serialized but used to determine whether offer is eligible for
+    # search or not
+    "isActive",
+    "validation",
+    # fields needed by algolia serialization
+    "extraData",
+    "description",
+    "isDuo",
+    "subcategoryId",
+    "name",
+    "rankingWeight",
+    "thumbUrl",
+}
+
+COLLECTIVE_OFFER_ALGOLIA_INDEXED_FIELDS = {
+    "interventionArea",
+    "institutionId",
+    "offerVenue",
+    "name",
+    "subcategoryId",
+}
+
 
 def list_offers_for_pro_user(
     user_id: int,
@@ -294,7 +317,8 @@ def update_offer(
     if shouldSendMail and withdrawal_updated and FeatureToggle.WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL.is_active():
         transactional_mails.send_email_for_each_ongoing_booking(offer)
 
-    search.async_index_offer_ids([offer.id])
+    if set(modifications) & OFFER_ALGOLIA_INDEXED_FIELDS:
+        search.async_index_offer_ids([offer.id])
 
     return offer
 
@@ -331,7 +355,8 @@ def update_collective_offer(
             raise educational_exceptions.OffererOfVenueDontMatchOfferer()
     updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values)
 
-    search.async_index_collective_offer_ids([offer_to_update.id])
+    if set(new_values) & COLLECTIVE_OFFER_ALGOLIA_INDEXED_FIELDS:
+        search.async_index_collective_offer_ids([offer_to_update.id])
 
     educational_api_offer.notify_educational_redactor_on_collective_offer_or_stock_edit(
         offer_to_update.id,
@@ -352,7 +377,9 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
         if new_venue.managingOffererId != offerer.id:
             raise educational_exceptions.OffererOfVenueDontMatchOfferer()
     _update_collective_offer(offer=offer_to_update, new_values=new_values)
-    search.async_index_collective_offer_template_ids([offer_to_update.id])
+
+    if set(new_values) & COLLECTIVE_OFFER_ALGOLIA_INDEXED_FIELDS:
+        search.async_index_collective_offer_template_ids([offer_to_update.id])
 
 
 def _update_collective_offer(
@@ -413,7 +440,9 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
         query_to_update.update(update_fields, synchronize_session=False)
         db.session.commit()
 
-        search.async_index_offer_ids(offer_ids_batch)
+        # avoid unnecessary operation
+        if set(update_fields) & OFFER_ALGOLIA_INDEXED_FIELDS:
+            search.async_index_offer_ids(offer_ids_batch)
 
         withdrawal_updated = {"withdrawalDetails", "withdrawalType", "withdrawalDelay"}.intersection(
             update_fields.keys()
@@ -447,7 +476,8 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
         query_to_update.update(update_fields, synchronize_session=False)
         db.session.commit()
 
-        search.async_index_collective_offer_ids(collective_offer_ids_batch)
+        if set(update_fields) & COLLECTIVE_OFFER_ALGOLIA_INDEXED_FIELDS:
+            search.async_index_collective_offer_ids(collective_offer_ids_batch)
 
 
 def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
