@@ -76,10 +76,12 @@ const CollectiveDmsTimeline = ({
         <div>
           {buildDate}
           <br />
-          Votre demande de référencement a bien été déposée. Elle sera étudiée
-          par les services du Ministère de l’Education Nationale et de la
-          Culture lors d’une commission mensuelle. En fonction du nombre de
-          dossiers en cours, cela peut prendre jusqu’à 3 mois.
+          <div className={styles['timeline-step-description']}>
+            Votre demande de référencement a bien été déposée. Elle sera étudiée
+            par les services du Ministère de l’Education Nationale et de la
+            Culture lors d’une commission mensuelle. En fonction du nombre de
+            dossiers en cours, cela peut prendre jusqu’à 3 mois.
+          </div>
         </div>
         <ButtonLink
           variant={ButtonVariant.TERNARY}
@@ -92,7 +94,7 @@ const CollectiveDmsTimeline = ({
             logClickOnDmsLink(DMSApplicationstatus.EN_CONSTRUCTION)
           }
         >
-          Modifier mon dossier sur Démarches Simplifiées
+          Consulter ma messagerie sur Démarches Simplifiées
         </ButtonLink>
       </>
     ),
@@ -108,10 +110,12 @@ const CollectiveDmsTimeline = ({
         <div>
           {instructionDate}
           <br />
-          Votre dossier est en cours d’instruction par la commission régionale
-          DAAC et DRAC où est déclaré votre siège social. Si votre dossier
-          concerne un établissement public, il est traité par le Ministère de la
-          Culture.
+          <div className={styles['timeline-step-description']}>
+            Votre dossier est en cours d’instruction par la commission régionale
+            DAAC et DRAC où est déclaré votre siège social. Si votre dossier
+            concerne un établissement public, il est traité par le Ministère de
+            la Culture.
+          </div>
         </div>
         <ButtonLink
           variant={ButtonVariant.TERNARY}
@@ -150,8 +154,10 @@ const CollectiveDmsTimeline = ({
         <div>
           {processingDate}
           <br />
-          Votre lieu sera bientôt ajouté dans ADAGE par le Ministère de
-          l’Éducation Nationale. Cela peut prendre quelques jours.
+          <div className={styles['timeline-step-description']}>
+            Votre lieu sera bientôt ajouté dans ADAGE par le Ministère de
+            l’Éducation Nationale. Cela peut prendre quelques jours.
+          </div>
         </div>
         <ButtonLink
           variant={ButtonVariant.TERNARY}
@@ -192,7 +198,7 @@ const CollectiveDmsTimeline = ({
         <div className={styles['timeline-step-title']}>
           Votre lieu est en cours d’ajout dans ADAGE
         </div>
-        <div>
+        <div className={styles['timeline-step-description']}>
           Une fois votre lieu ajouté dans ADAGE par le Ministère de l’Education
           Nationale, vous pourrez renseigner vos informations à destination des
           enseignants et créer des offres à destination des scolaires.
@@ -248,10 +254,12 @@ const CollectiveDmsTimeline = ({
         <span>Votre demande de référencement a été refusée</span>
       </div>
       <div>
-        Votre dossier a été refusé le {processingDate} par la commission
-        régionale DAAC et DRAC de la région où est déclaré votre siège social.
-        Nous vous invitons à consulter votre messagerie sur Démarches
-        Simplifiées afin d’en savoir plus sur les raisons de ce refus.
+        <div className={styles['timeline-step-description']}>
+          Votre dossier a été refusé le {processingDate} par la commission
+          régionale DAAC et DRAC de la région où est déclaré votre siège social.
+          Nous vous invitons à consulter votre messagerie sur Démarches
+          Simplifiées afin d’en savoir plus sur les raisons de ce refus.
+        </div>
         <div className={styles['timeline-step-button']}>
           <ButtonLink
             variant={ButtonVariant.TERNARY}
@@ -274,7 +282,7 @@ const CollectiveDmsTimeline = ({
         <InfoWrongIcon className={styles['refused-state-icon']} />
         <span>Votre demande de référencement a été classée sans suite</span>
       </div>
-      <div>
+      <div className={styles['timeline-step-description']}>
         Nous vous invitons à consulter votre messagerie sur Démarches
         Simplifiées afin d’en savoir plus.
         <div className={styles['timeline-step-button']}>

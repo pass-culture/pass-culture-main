@@ -48,6 +48,10 @@
     margin-bottom: rem.torem(32px);
     gap: rem.torem(10px);
   }
+
+  &-step-description {
+    margin: rem.torem(8px) rem.torem(0);
+  }
 }
 
 .refused-state {
