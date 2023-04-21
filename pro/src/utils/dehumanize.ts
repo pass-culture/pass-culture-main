@@ -37,15 +37,18 @@ const dehumanizeString = (
   const dehumanizedIdRegex = new RegExp(/^\d+$/)
   let dehumanizedString = stringToDehumanize
   for (const [key, value] of Object.entries(paramObject)) {
+    let valueToDehumanize = value || ''
+    if (valueToDehumanize.startsWith('T-')) {
+      valueToDehumanize = valueToDehumanize.split('T-')[1]
+    }
     if (
       redirectionParams.includes(key) &&
-      value &&
-      !dehumanizedIdRegex.test(value)
+      !dehumanizedIdRegex.test(valueToDehumanize)
     ) {
-      const dehumanizedId = dehumanizeId(value)
+      const dehumanizedId = dehumanizeId(valueToDehumanize)
       if (dehumanizedId) {
         dehumanizedString = dehumanizedString.replace(
-          value,
+          valueToDehumanize,
           dehumanizedId.toString()
         )
       }
