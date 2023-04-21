@@ -117,7 +117,11 @@ def assert_user_equals(result_card_text: str, expected_user: users_models.User):
     if users_models.UserRole.UNDERAGE_BENEFICIARY in expected_user.roles:
         assert "Pass 15-17 " in result_card_text
     if not expected_user.isActive:
-        assert "Suspendu " in result_card_text
+        assert "Suspendu" in result_card_text
+        assert (
+            f"Raison de suspension : {users_constants.SUSPENSION_REASON_CHOICES.get(users_constants.SuspensionReason(expected_user.suspension_reason))} le {expected_user.suspension_date.strftime('%d/%m/%Y')}"
+            in result_card_text
+        )
 
 
 class SearchPublicAccountsUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
@@ -343,6 +347,26 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper):
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], young_and_pro)
+
+    def test_search_suspended_public_account_data(self, authenticated_client):
+        # given
+        underage, _, _, _, _ = create_bunch_of_accounts()
+        underage.isActive = False
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionDate=None,
+            user=underage,
+            extraData={"reason": users_constants.SuspensionReason.FRAUD_SUSPICION},
+        )
+
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, terms=underage.id))
+
+        # then
+        assert response.status_code == 200
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        assert_user_equals(cards_text[0], underage)
 
 
 class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
