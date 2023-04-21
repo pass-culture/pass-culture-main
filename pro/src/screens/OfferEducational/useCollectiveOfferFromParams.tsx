@@ -54,7 +54,7 @@ export const useCollectiveOfferFromParams = (
     const adapter = isTemplate
       ? getCollectiveOfferTemplateAdapter
       : getCollectiveOfferAdapter
-    const response = await adapter(dehumanizeId(offerId) || 0)
+    const response = await adapter(offerId)
     if (response.isOk) {
       setOffer(response.payload)
     }
