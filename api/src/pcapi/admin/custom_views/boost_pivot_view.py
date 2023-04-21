@@ -110,6 +110,7 @@ class BoostPivotView(BaseAdminView):
         if not self.can_edit:
             raise Forbidden()
 
+        assert boost_cinema_details.cinemaProviderPivot
         boost_cinema_details.cinemaProviderPivot.idAtProvider = str(form.cinema_id.data)
         boost_cinema_details.username = form.username.data
         boost_cinema_details.password = form.password.data
@@ -166,7 +167,7 @@ class BoostPivotView(BaseAdminView):
 
     def delete_model(self, boost_cinema_details: providers_models.BoostCinemaDetails) -> bool:
         cinema_provider_pivot = boost_cinema_details.cinemaProviderPivot
-        assert cinema_provider_pivot.venueId  # helps mypy
+        assert cinema_provider_pivot  # helps mypy
         venue_provider = providers_models.VenueProvider.query.filter_by(
             venueId=cinema_provider_pivot.venueId, providerId=cinema_provider_pivot.providerId
         ).one_or_none()

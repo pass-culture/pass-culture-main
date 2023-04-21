@@ -116,6 +116,7 @@ class CineOfficePivotView(BaseAdminView):
         cinema_id = form.cinema_id.data
         api_token = form.api_token.data
 
+        assert cds_cinema_details.cinemaProviderPivot is not None
         cds_cinema_details.cinemaProviderPivot.idAtProvider = cinema_id
         cds_cinema_details.accountId = account_id
         cds_cinema_details.cinemaApiToken = api_token
@@ -165,7 +166,7 @@ class CineOfficePivotView(BaseAdminView):
 
     def delete_model(self, cds_cinema_details: providers_models.CDSCinemaDetails) -> bool:
         cinema_provider_pivot = cds_cinema_details.cinemaProviderPivot
-        assert cinema_provider_pivot.venueId  # helps mypy
+        assert cinema_provider_pivot  # helps mypy
         venue_provider = providers_models.VenueProvider.query.filter_by(
             venueId=cinema_provider_pivot.venueId, providerId=cinema_provider_pivot.providerId
         ).one_or_none()
