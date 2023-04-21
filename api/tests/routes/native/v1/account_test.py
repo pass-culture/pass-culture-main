@@ -123,6 +123,7 @@ class AccountTest:
             "isEligibleForBeneficiaryUpgrade": False,
             "roles": ["BENEFICIARY"],
             "recreditAmountToShow": None,
+            "requiresIdCheck": True,
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
             "subscriptionMessage": None,
