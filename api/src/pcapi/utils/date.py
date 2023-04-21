@@ -102,7 +102,7 @@ def format_into_utc_date(date_to_format: datetime) -> str:
     return date_to_format.isoformat() + "Z"
 
 
-def isoformat(date_to_format: datetime) -> str:
+def isoformat(date_to_format: datetime | date) -> str:
     return date_to_format.isoformat()
 
 

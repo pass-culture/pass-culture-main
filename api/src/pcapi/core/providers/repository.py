@@ -49,7 +49,8 @@ def get_available_providers(venue: Venue) -> BaseQuery:
 
     local_classes_to_exclude = set(constants.CINEMA_PROVIDER_NAMES)
     if pivot := get_cinema_provider_pivot_for_venue(venue):
-        local_classes_to_exclude.remove(pivot.provider.localClass)
+        if pivot.provider.localClass is not None:
+            local_classes_to_exclude.remove(pivot.provider.localClass)
 
     try:
         AllocineVenue(venue)
