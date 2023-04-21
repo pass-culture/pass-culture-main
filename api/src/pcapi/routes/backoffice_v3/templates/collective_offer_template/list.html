@@ -1,0 +1,77 @@
+{% from "components/forms.html" import build_filters_form with context %}
+{% import "components/links.html" as links %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Offres collectives vitrines</h2>
+    {{ build_filters_form(form, dst) }}
+    <div>
+      {% if rows %}
+        <div class="d-flex justify-content-between">
+          <p class="lead num-results">
+            {{ rows | length }}{{ "+" if rows | length > 100 else "" }}
+            résultat{{ "s" if rows | length > 1 else "" }}
+          </p>
+        </div>
+        <table class="table mb-4">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">ID</th>
+              <th scope="col">Nom de l'offre</th>
+              <th scope="col">Catégorie</th>
+              <th scope="col">Sous-catégorie</th>
+              <th scope="col">État</th>
+              <th scope="col">Date de création</th>
+              <th scope="col">Structure</th>
+              <th scope="col">Lieu</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for collective_offer_template in rows %}
+              <tr>
+                <td>
+                  {% if has_permission("FRAUD_ACTIONS") %}
+                    <div class="dropdown">
+                      <button type="button"
+                              data-bs-toggle="dropdown"
+                              aria-expanded="false"
+                              class="btn p-0">
+                        <i class="bi bi-three-dots-vertical"></i>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li class="dropdown-item">
+                          <a class="btn btn-sm d-block w-100 text-start px-3"
+                             data-bs-toggle="modal"
+                             data-bs-target="#validate-collective-offer-template-modal-{{ collective_offer_template.id }}">Valider l'offre vitrine</a>
+                        </li>
+                        <li class="dropdown-item">
+                          <a class="btn btn-sm d-block w-100 text-start px-3"
+                             data-bs-toggle="modal"
+                             data-bs-target="#reject-collective-offer-template-modal-{{ collective_offer_template.id }}">Rejeter l'offre vitrine</a>
+                        </li>
+                      </ul>
+                    </div>
+                  {% endif %}
+                </td>
+                <td>{{ collective_offer_template.id }}</td>
+                <td>{{ links.build_offer_name_to_pc_pro_link(collective_offer_template) }}</td>
+                <td>{{ collective_offer_template.subcategory.category.pro_label }}</td>
+                <td>{{ collective_offer_template.subcategory.pro_label }}</td>
+                <td>{{ collective_offer_template.validation | format_offer_validation_status }}</td>
+                <td>{{ collective_offer_template.dateCreated | format_date("%d/%m/%Y") }}</td>
+                <td>{{ links.build_offerer_name_to_details_link(collective_offer_template.venue.managingOfferer) }}</td>
+                <td>{{ links.build_venue_name_to_details_link(collective_offer_template.venue) }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% for collective_offer_template in rows %}
+          {{ build_lazy_modal(url_for('backoffice_v3_web.collective_offer_template.get_validate_collective_offer_template_form', collective_offer_template_id=collective_offer_template.id), "validate-collective-offer-template-modal-" + collective_offer_template.id|string) }}
+          {{ build_lazy_modal(url_for('backoffice_v3_web.collective_offer_template.get_reject_collective_offer_template_form', collective_offer_template_id=collective_offer_template.id), "reject-collective-offer-template-modal-" + collective_offer_template.id|string) }}
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+{% endblock page %}
