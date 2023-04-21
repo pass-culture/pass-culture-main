@@ -6,7 +6,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import api as offers_api
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.utils.human_ids import humanize
 
 
 SIMPLE_OFFER_VALIDATION_CONFIG = """
@@ -30,7 +29,7 @@ class Returns204Test:
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=OfferValidationStatus.DRAFT)
         user_offerer = offerers_factories.UserOffererFactory(offerer=offer.venue.managingOfferer)
 
-        url = f"/collective/offers-template/{humanize(offer.id)}/publish"
+        url = f"/collective/offers-template/{offer.id}/publish"
 
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
@@ -43,7 +42,7 @@ class Returns204Test:
         )
         user_offerer = offerers_factories.UserOffererFactory(offerer=offer.venue.managingOfferer)
 
-        url = f"/collective/offers-template/{humanize(offer.id)}/publish"
+        url = f"/collective/offers-template/{offer.id}/publish"
         offers_api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG, user_offerer.user)
 
         response = client.with_session_auth(user_offerer.user.email).patch(url)
@@ -59,7 +58,7 @@ class Returns403Test:
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=OfferValidationStatus.DRAFT)
         user_offerer = offerers_factories.UserOffererFactory()
 
-        url = f"/collective/offers-template/{humanize(offer.id)}/publish"
+        url = f"/collective/offers-template/{offer.id}/publish"
 
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
@@ -73,7 +72,7 @@ class Returns401Test:
     def expect_offer_to_be_approved(self, client):
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=OfferValidationStatus.DRAFT)
 
-        url = f"/collective/offers-template/{humanize(offer.id)}/publish"
+        url = f"/collective/offers-template/{offer.id}/publish"
 
         response = client.patch(url)
 

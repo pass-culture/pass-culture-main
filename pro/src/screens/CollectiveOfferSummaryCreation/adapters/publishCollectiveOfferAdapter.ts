@@ -1,7 +1,7 @@
 import { api } from 'apiClient/api'
 import { CollectiveOffer } from 'core/OfferEducational'
 
-type PublishCollectiveOfferAdapter = Adapter<string, CollectiveOffer, null>
+type PublishCollectiveOfferAdapter = Adapter<number, CollectiveOffer, null>
 
 const publishCollectiveOfferAdapter: PublishCollectiveOfferAdapter =
   async offerId => {
