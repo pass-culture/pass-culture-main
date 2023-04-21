@@ -40,7 +40,9 @@ const CollectiveOfferSummaryCreation = ({
         )}/collectif/confirmation`
 
     if (offer.isTemplate) {
-      const response = await publishCollectiveOfferTemplateAdapter(offer.id)
+      const response = await publishCollectiveOfferTemplateAdapter(
+        offer.nonHumanizedId
+      )
       if (!response.isOk) {
         return notify.error(response.message)
       }
@@ -48,7 +50,7 @@ const CollectiveOfferSummaryCreation = ({
       return navigate(confirmationUrl)
     }
 
-    const response = await publishCollectiveOfferAdapter(offer.id)
+    const response = await publishCollectiveOfferAdapter(offer.nonHumanizedId)
     if (!response.isOk) {
       return notify.error(response.message)
     }

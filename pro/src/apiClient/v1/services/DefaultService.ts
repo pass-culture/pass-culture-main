@@ -490,7 +490,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchCollectiveOfferTemplatePublication(
-    offerId: string,
+    offerId: number,
   ): CancelablePromise<GetCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -745,7 +745,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchCollectiveOfferPublication(
-    offerId: string,
+    offerId: number,
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',

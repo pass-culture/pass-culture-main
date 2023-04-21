@@ -2,7 +2,7 @@ import { api } from 'apiClient/api'
 import { CollectiveOfferTemplate } from 'core/OfferEducational'
 
 type PublishCollectiveOfferTemplateAdapter = Adapter<
-  string,
+  number,
   CollectiveOfferTemplate,
   null
 >
