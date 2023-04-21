@@ -136,7 +136,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     ).toBeInTheDocument()
 
     expect(
-      await screen.getByRole('heading', { level: 2, name: 'Authentification' })
+      await screen.getByRole('heading', { level: 2, name: 'Identification' })
     ).toBeInTheDocument()
 
     const siretField = screen.getByLabelText('Numéro de SIRET')
@@ -159,7 +159,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
 
   it('should display activity screen on submit', async () => {
     renderOffererAuthentiationScreen(contextValue)
-    expect(await screen.findByText('Authentification')).toBeInTheDocument()
+    expect(await screen.findByText('Identification')).toBeInTheDocument()
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )
@@ -168,7 +168,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
 
   it('should display offerer screen on submit', async () => {
     renderOffererAuthentiationScreen(contextValue)
-    expect(await screen.findByText('Authentification')).toBeInTheDocument()
+    expect(await screen.findByText('Identification')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Retour' }))
     expect(screen.getByText('Offerer siret screen')).toBeInTheDocument()
   })
@@ -176,7 +176,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
   it('should redirect to offerer screen if there is no offerer siret', async () => {
     contextValue.offerer = DEFAULT_OFFERER_FORM_VALUES
     renderOffererAuthentiationScreen(contextValue)
-    expect(await screen.queryByText('Authentification')).not.toBeInTheDocument()
+    expect(await screen.queryByText('Identification')).not.toBeInTheDocument()
     expect(screen.getByText('Offerer siret screen')).toBeInTheDocument()
   })
 
@@ -186,7 +186,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
       siret: '12345678933333',
     }
     renderOffererAuthentiationScreen(contextValue)
-    expect(await screen.queryByText('Authentification')).not.toBeInTheDocument()
+    expect(await screen.queryByText('Identification')).not.toBeInTheDocument()
     expect(screen.getByText('Offerer siret screen')).toBeInTheDocument()
   })
 })
