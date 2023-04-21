@@ -3,7 +3,7 @@ import { CollectiveOffer } from 'core/OfferEducational'
 
 export type PatchEducationalInstitutionAdapter = Adapter<
   {
-    offerId: string
+    offerId: number
     institutionId: string | null
     teacherEmail: string | null
   },

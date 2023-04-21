@@ -400,7 +400,7 @@ def patch_collective_offers_template_active_status(
     offers_api.batch_update_collective_offers_template(collective_template_query, {"isActive": body.is_active})
 
 
-@private_api.route("/collective/offers/<offer_id>/educational_institution", methods=["PATCH"])
+@private_api.route("/collective/offers/<int:offer_id>/educational_institution", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -409,18 +409,17 @@ def patch_collective_offers_template_active_status(
     response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
 )
 def patch_collective_offers_educational_institution(
-    offer_id: str, body: collective_offers_serialize.PatchCollectiveOfferEducationalInstitution
+    offer_id: int, body: collective_offers_serialize.PatchCollectiveOfferEducationalInstitution
 ) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
-    dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offerer = offerers_api.get_offerer_by_collective_offer_id(dehumanized_id)
+        offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         offer = educational_api_offer.update_collective_offer_educational_institution(
-            offer_id=dehumanized_id,
+            offer_id=offer_id,
             educational_institution_id=body.educational_institution_id,
             teacher_email=body.teacher_email,
         )

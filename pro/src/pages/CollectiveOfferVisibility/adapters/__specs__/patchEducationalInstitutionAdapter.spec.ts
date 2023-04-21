@@ -9,7 +9,7 @@ describe('patchEducationalInstitutionAdapter', () => {
       .spyOn(api, 'patchCollectiveOffersEducationalInstitution')
       .mockRejectedValueOnce(null)
     const response = await patchEducationalInstitutionAdapter({
-      offerId: '12',
+      offerId: 12,
       institutionId: '24',
       teacherEmail: 'reda.khteur@example.com',
     })
@@ -24,7 +24,7 @@ describe('patchEducationalInstitutionAdapter', () => {
       .spyOn(api, 'patchCollectiveOffersEducationalInstitution')
       .mockResolvedValueOnce({} as CollectiveOffer) // we do not test the content
     const response = await patchEducationalInstitutionAdapter({
-      offerId: '12',
+      offerId: 12,
       institutionId: '24',
       teacherEmail: 'reda.khteur@example.com',
     })

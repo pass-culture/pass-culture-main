@@ -675,7 +675,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchCollectiveOffersEducationalInstitution(
-    offerId: string,
+    offerId: number,
     requestBody?: PatchCollectiveOfferEducationalInstitution,
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
