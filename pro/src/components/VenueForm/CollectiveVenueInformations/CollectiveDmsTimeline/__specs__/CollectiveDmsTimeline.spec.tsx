@@ -148,10 +148,7 @@ describe('CollectiveDmsTimeline', () => {
         },
       })
       const dmsLink = screen.getByRole('link', {
-        name:
-          dmsState == DMSApplicationstatus.EN_CONSTRUCTION
-            ? 'Modifier mon dossier sur Démarches Simplifiées'
-            : 'Consulter ma messagerie sur Démarches Simplifiées',
+        name: 'Consulter ma messagerie sur Démarches Simplifiées',
       })
       await userEvent.click(dmsLink)
       expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_EAC_DMS_LINK, {
