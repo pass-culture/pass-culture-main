@@ -363,9 +363,7 @@ class HandleDmsApplicationTest:
         result_content = fraud_check.source_data()
         assert result_content.application_number == 1
         assert result_content.birth_date == AGE18_ELIGIBLE_BIRTH_DATE
-        assert result_content.registration_datetime == datetime.datetime(
-            2020, 5, 13, 9, 9, 46, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))
-        )
+        assert result_content.registration_datetime == datetime.datetime(2020, 5, 13, 7, 9, 46)
         assert result_content.first_name == ""
         assert result_content.field_errors == [
             fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.first_name, value=""),

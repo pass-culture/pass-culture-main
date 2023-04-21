@@ -325,7 +325,7 @@ class DMSContent(common_models.IdentityCheckContent):
         return self.postal_code
 
     def get_registration_datetime(self) -> datetime.datetime | None:
-        return dms_models.parse_dms_datetime(self.registration_datetime) if self.registration_datetime else None
+        return dms_models.parse_dms_datetime(self.registration_datetime)
 
 
 UBBLE_REASON_CODE_MAPPING = {
