@@ -8,7 +8,7 @@ import {
 import { createPatchOfferPayload } from '../../../pages/CollectiveOfferEdition/utils/createPatchOfferPayload'
 
 type Params = {
-  offerId: string
+  offerId: number
   offer: IOfferEducationalFormValues
   initialValues: IOfferEducationalFormValues
 }

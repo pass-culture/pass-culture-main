@@ -6,6 +6,7 @@ import {
   parseDuration,
   serializeParticipants,
 } from 'core/OfferEducational'
+import { dehumanizeId } from 'utils/dehumanize'
 
 const serializer = {
   title: (
@@ -66,10 +67,16 @@ const serializer = {
   eventAddress: (
     payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
-  ) => ({
-    ...payload,
-    offerVenue: offer.eventAddress,
-  }),
+  ) => {
+    const eventAddressPayload = {
+      ...offer.eventAddress,
+      venueId: dehumanizeId(offer.eventAddress.venueId),
+    }
+    return {
+      ...payload,
+      offerVenue: eventAddressPayload,
+    }
+  },
   participants: (
     payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues

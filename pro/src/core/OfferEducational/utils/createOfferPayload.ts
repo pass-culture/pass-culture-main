@@ -37,7 +37,11 @@ export const createCollectiveOfferPayload = (
   durationMinutes: parseDuration(offer.duration),
   ...disabilityCompliances(offer.accessibility),
   students: serializeParticipants(offer.participants),
-  offerVenue: offer.eventAddress,
+  offerVenue: {
+    ...offer.eventAddress,
+    // @ts-expect-error api expect number
+    venueId: dehumanizeId(offer.eventAddress.venueId) || 0,
+  },
   contactEmail: offer.email,
   contactPhone: offer.phone,
   domains: offer.domains.map(domainIdString => Number(domainIdString)),
