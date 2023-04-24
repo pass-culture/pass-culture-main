@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { api } from 'apiClient/api'
 import { InvoiceResponseModel } from 'apiClient/v1'
 import useCurrentUser from 'hooks/useCurrentUser'
+import Icon from 'ui-kit/Icon/Icon'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import {
   formatBrowserTimezonedDateAsUTC,
@@ -156,6 +157,21 @@ const ReimbursementsInvoices = (): JSX.Element => {
     }
   }, [loadInvoices])
 
+  if (isLoading) {
+    return (
+      <div className="spinner">
+        <Spinner />
+      </div>
+    )
+  }
+  if (reimbursementPointsOptions.length === 0) {
+    return (
+      <div className="no-refunds">
+        <Icon alt="" svg="ico-no-bookings" />
+        <span>Aucun remboursement à afficher</span>
+      </div>
+    )
+  }
   return (
     <>
       <InvoicesFilters
