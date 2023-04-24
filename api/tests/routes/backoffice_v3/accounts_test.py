@@ -609,7 +609,7 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         parsed_html = html_parser.get_soup(response.data)
         underage_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.UNDERAGE.value}")
         age18_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.AGE18.value}")
-        bfc_date_created = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+        bfc_date_created = datetime.datetime.utcnow()
         assert underage_subscription_card is None
         assert age18_subscription_card is not None
 
