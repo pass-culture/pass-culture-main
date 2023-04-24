@@ -19,7 +19,7 @@ export const AppLayout = ({
 }): JSX.Element => {
   return (
     <div className="root-adage">
-      <main className="app-layout">
+      <main className="app-layout" id="content">
         <div className="app-layout-header">
           <div className="app-layout-header-right">
             <h2 className="app-layout-header-title">Rechercher une offre</h2>

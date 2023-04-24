@@ -1,5 +1,4 @@
 import React from 'react'
-import { useLocation } from 'react-router-dom'
 
 import { CircleArrowIcon } from 'icons'
 import { ButtonLink } from 'ui-kit'
@@ -12,16 +11,14 @@ interface SkipLinksProps {
 }
 
 const SkipLinks = ({ displayMenu = false }: SkipLinksProps): JSX.Element => {
-  const location = useLocation()
-
   return (
     <nav className={styles['skip-links']}>
       <ul className={styles['skip-list']}>
         <li>
           <ButtonLink
             link={{
-              to: `${location.pathname}${location.search}#content`,
-              isExternal: false,
+              to: '#content',
+              isExternal: true,
             }}
             Icon={CircleArrowIcon}
             className={styles['skip-list-button']}

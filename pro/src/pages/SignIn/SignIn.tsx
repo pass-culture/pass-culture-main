@@ -26,9 +26,6 @@ const SignIn = (): JSX.Element => {
           }}
         >
           <PageTitle title="Se connecter" />
-          <div className={styles['logo-side']}>
-            <Logo noLink signPage />
-          </div>
           <section className={styles['scrollable-content-side']}>
             <div className={styles['content']}>
               <h1>Bienvenue sur l’espace dédié aux acteurs culturels</h1>
