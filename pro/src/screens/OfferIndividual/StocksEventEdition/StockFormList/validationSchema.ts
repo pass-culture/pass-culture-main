@@ -25,6 +25,9 @@ const getSingleValidationSchema = (
   beginningDate: yup
     .date()
     .nullable()
+    // A date field getting an empty string throws an error even if field is nullable or not required.
+    // https://github.com/jquense/yup/issues/764
+    .typeError('Veuillez renseigner une date')
     .required('Veuillez renseigner une date')
     .when(['readOnlyFields'], ([readOnlyFields], schema) => {
       /* istanbul ignore next: DEBT, TO FIX */
