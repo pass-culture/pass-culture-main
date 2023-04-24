@@ -55,10 +55,10 @@ const acceptableErrors = [
   // - check why we manually track page changes with the data team
   // - remove all trackers used to track page changes
   // - remove the offending test
-  {
-    error: 'Error: Not implemented: navigation (except hash changes)',
-    files: [''],
-  },
+  // {
+  //   error: 'Error: Not implemented: navigation (except hash changes)',
+  //   files: [''],
+  // },
 ]
 
 const findErrorSourceFile = (...data: any[]) => {

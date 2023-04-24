@@ -87,8 +87,11 @@ const ButtonLink = ({
   // for internal links so that developers can't make mistakes/forget to add the slash
   const absoluteUrl = isExternal || to.startsWith('/') ? to : `/${to}`
 
-  const callback: MouseEventHandler<HTMLAnchorElement> = e =>
-    isDisabled ? e.preventDefault() : onClick?.(e)
+  const callback: MouseEventHandler<HTMLAnchorElement> = e => {
+    if (!isDisabled) onClick?.(e)
+    if (isDisabled || (isExternal && process.env.NODE_ENV === 'test'))
+      e.preventDefault()
+  }
 
   const disabled = isDisabled
     ? {
@@ -99,19 +102,20 @@ const ButtonLink = ({
   const tooltipId = uniqId()
   const tooltipProps = hasTooltip ? { 'aria-describedby': tooltipId } : {}
 
-  body = isExternal ? (
-    <a
-      className={classNames}
-      href={absoluteUrl}
-      onClick={callback}
-      {...disabled}
-      {...linkProps}
-      {...tooltipProps}
-    >
-      {body}
-    </a>
-  ) : (
-    /* istanbul ignore next: graphic variation */ <Link
+  // body = isExternal ? (
+  //   <a
+  //     className={classNames}
+  //     href={absoluteUrl}
+  //     onClick={callback}
+  //     {...disabled}
+  //     {...linkProps}
+  //     {...tooltipProps}
+  //   >
+  //     {body}
+  //   </a>
+  // ) : (
+  /* istanbul ignore next: graphic variation */ body = (
+    <Link
       className={classNames}
       onClick={callback}
       to={absoluteUrl}
