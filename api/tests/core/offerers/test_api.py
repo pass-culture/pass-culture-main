@@ -15,6 +15,8 @@ from pcapi.connectors import sirene
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import models as history_models
+import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -1403,6 +1405,12 @@ class CreateFromOnboardingDataTest:
         assert action.extraData["venue_type_code"] == offerers_models.VenueTypeCode.MOVIE.name
         assert action.extraData["web_presence"] == "www.example.com, instagram.com/example, @example@mastodon.example"
 
+    def assert_only_welcome_email_to_pro_was_sent(self) -> None:
+        assert len(mails_testing.outbox) == 1
+        assert (
+            mails_testing.outbox[0].sent_data["template"]["id_not_prod"] == TransactionalEmail.WELCOME_TO_PRO.value.id
+        )
+
     def get_onboarding_data(
         self, create_venue_without_siret: bool
     ) -> offerers_serialize.SaveNewOnboardingDataQueryModel:
@@ -1415,6 +1423,7 @@ class CreateFromOnboardingDataTest:
             webPresence="www.example.com, instagram.com/example, @example@mastodon.example",
         )
 
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_new_siren_new_siret(self):
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
@@ -1454,7 +1463,9 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
+        self.assert_only_welcome_email_to_pro_was_sent()
 
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_existing_siren_new_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
         offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
@@ -1487,7 +1498,9 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
+        self.assert_only_welcome_email_to_pro_was_sent()
 
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_existing_siren_new_venue_without_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
         offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
@@ -1521,7 +1534,9 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
+        self.assert_only_welcome_email_to_pro_was_sent()
 
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_existing_siren_existing_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
         _virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
@@ -1550,3 +1565,4 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
+        self.assert_only_welcome_email_to_pro_was_sent()
