@@ -2,6 +2,7 @@ import {
   OfferAddressType,
   PostCollectiveOfferTemplateBodyModel,
 } from 'apiClient/v1'
+import { dehumanizeId } from 'utils/dehumanize'
 
 import { IOfferEducationalFormValues } from '../types'
 
@@ -28,7 +29,7 @@ export const createCollectiveOfferPayload = (
   isTemplate: boolean,
   offerTemplateId?: string
 ): PostCollectiveOfferTemplateBodyModel => ({
-  venueId: offer.venueId,
+  venueId: dehumanizeId(offer.venueId) || 0,
   subcategoryId: offer.subCategory,
   name: offer.title,
   bookingEmails: offer.notificationEmails,
