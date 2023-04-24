@@ -5,7 +5,6 @@ import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 type Params = { token: string }
 
@@ -13,9 +12,6 @@ const SignupValidation = (): null => {
   const { token } = useParams<Params>()
   const { currentUser } = useCurrentUser()
   const navigate = useNavigate()
-  useEffect(() => {
-    campaignTracker.signUpValidation()
-  }, [])
   const notify = useNotification()
 
   useEffect(() => {
