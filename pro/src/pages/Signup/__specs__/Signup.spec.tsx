@@ -5,8 +5,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Signup from '../Signup'
 
-jest.mock('tracking/mediaCampaignsTracking')
-
 jest.mock('apiClient/api', () => ({
   api: {
     getProfile: jest.fn().mockResolvedValue({}),
