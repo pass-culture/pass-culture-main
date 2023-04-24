@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import PageTitle from 'components/PageTitle/PageTitle'
 import { ReactComponent as CircleArrowIcon } from 'icons/ico-circle-arrow-left.svg'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { ButtonLink } from 'ui-kit'
@@ -73,7 +72,6 @@ const OffererDetails = () => {
       >
         Accueil
       </ButtonLink>
-      <PageTitle title="Détails de votre structure" />
       <Titles subtitle={offerer.name} title="Structure" />
       <p className={styles['op-teaser']}>
         Détails de la structure rattachée, des lieux et des fournisseurs de ses

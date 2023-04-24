@@ -5,7 +5,6 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
-import PageTitle from 'components/PageTitle/PageTitle'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -183,7 +182,6 @@ const OfferType = (): JSX.Element => {
 
   return (
     <div className={styles['offer-type-container']}>
-      <PageTitle title="Nature de l'offre" />
       <h1 className={styles['offer-type-title']}>Créer une offre</h1>
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit}>

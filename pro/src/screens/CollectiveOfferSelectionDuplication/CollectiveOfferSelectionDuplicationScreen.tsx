@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
-import PageTitle from 'components/PageTitle/PageTitle'
 import { createOfferFromTemplate } from 'core/OfferEducational'
 import { computeOffersUrl, DEFAULT_SEARCH_FILTERS } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
@@ -82,7 +81,6 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
 
   return (
     <div className="container">
-      <PageTitle title="Créer une offre réservable" />
       <Titles title="Créer une offre réservable" />
       <Title as="h3" className="sub-title" level={4}>
         Séléctionner l’offre vitrine à dupliquer

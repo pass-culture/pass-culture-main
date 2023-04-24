@@ -1,7 +1,6 @@
 import React from 'react'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import PageTitle from 'components/PageTitle/PageTitle'
 import { Mode } from 'core/OfferEducational'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import {
@@ -28,7 +27,6 @@ const CollectiveOfferEdition = ({
 
   return (
     <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-      <PageTitle title="Détails de l'offre" />
       <OfferEducationalScreen
         categories={offerEducationalFormData.categories}
         userOfferers={offerEducationalFormData.offerers}

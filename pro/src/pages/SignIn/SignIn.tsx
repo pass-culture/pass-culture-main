@@ -25,7 +25,6 @@ const SignIn = (): JSX.Element => {
             pageName: 'sign-in',
           }}
         >
-          <PageTitle title="Se connecter" />
           <section className={styles['scrollable-content-side']}>
             <div className={styles['content']}>
               <h1>Bienvenue sur l’espace dédié aux acteurs culturels</h1>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import PageTitle from 'components/PageTitle/PageTitle'
 import {
   getEducationalCategoriesAdapter,
   EducationalCategories,
@@ -46,7 +45,6 @@ const CollectiveOfferSummaryEdition = ({
     <Spinner />
   ) : (
     <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-      <PageTitle title="Récapitulatif" />
       <CollectiveOfferSummaryEditionScreen
         offer={offer}
         categories={categories}

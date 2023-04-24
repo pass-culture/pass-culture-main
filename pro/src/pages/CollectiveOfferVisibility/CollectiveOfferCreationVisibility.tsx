@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import PageTitle from 'components/PageTitle/PageTitle'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   CollectiveOffer,
@@ -72,7 +71,6 @@ export const CollectiveOfferVisibility = ({
       isTemplate={isTemplate}
       isCreation={isCreation}
     >
-      <PageTitle title="Visibilité" />
       <CollectiveOfferVisibilityScreen
         mode={Mode.CREATION}
         patchInstitution={patchEducationalInstitutionAdapter}
