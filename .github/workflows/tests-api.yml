@@ -119,7 +119,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: ${{ env.tests_docker_image }}
-          run: pylint src tests --jobs=2
+          run: pylint src tests --jobs=15
       - name: Slack Notification
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: slackapi/slack-github-action@v1.23.0
