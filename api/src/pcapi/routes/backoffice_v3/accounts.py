@@ -235,12 +235,14 @@ def render_public_account_details(
 def _get_id_check_histories_desc(
     eligibility_history: dict[str, accounts.EligibilitySubscriptionHistoryModel]
 ) -> list[serialization_accounts.IdCheckItemModel]:
-    id_check_histories_desc = sorted(
-        [v.idCheckHistory for v in eligibility_history.values()][0] if len(eligibility_history) > 0 else [],
+    id_check_histories_desc: list[serialization_accounts.IdCheckItemModel] = []
+    for history in eligibility_history.values():
+        id_check_histories_desc += history.idCheckHistory
+    return sorted(
+        id_check_histories_desc,
         key=lambda h: h.dateCreated,
         reverse=True,
     )
-    return id_check_histories_desc
 
 
 class TunnelType(enum.Enum):
