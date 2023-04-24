@@ -3,12 +3,11 @@ import './Reimbursement.scss'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
+import { IRoute } from 'app/AppRouter/routesMap'
+import routesReimbursements from 'app/AppRouter/subroutesReimbursements'
 import { BannerReimbursementsInfo } from 'components/Banner'
 import { ReimbursementsBreadcrumb } from 'components/ReimbursementsBreadcrumb'
 import Titles from 'ui-kit/Titles/Titles'
-
-import ReimbursementsDetails from './ReimbursementsDetails/ReimbursementsDetails'
-import { ReimbursementsInvoices } from './ReimbursementsInvoices'
 
 const Reimbursements = (): JSX.Element => {
   return (
@@ -21,8 +20,9 @@ const Reimbursements = (): JSX.Element => {
         <ReimbursementsBreadcrumb />
 
         <Routes>
-          <Route path="/justificatifs" element={<ReimbursementsInvoices />} />
-          <Route path="/details" element={<ReimbursementsDetails />} />
+          {routesReimbursements.map(({ path, element }: IRoute) => (
+            <Route key={path} path={path} element={element} />
+          ))}
         </Routes>
       </>
     </>
