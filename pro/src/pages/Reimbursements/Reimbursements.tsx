@@ -10,7 +10,7 @@ import Titles from 'ui-kit/Titles/Titles'
 import ReimbursementsDetails from './ReimbursementsDetails/ReimbursementsDetails'
 import { ReimbursementsInvoices } from './ReimbursementsInvoices'
 
-const Reimbursements = () => {
+const Reimbursements = (): JSX.Element => {
   return (
     <>
       <Titles title="Remboursements" />
