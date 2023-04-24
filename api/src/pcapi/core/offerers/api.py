@@ -12,7 +12,6 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
-from pcapi.connectors import api_adresse
 from pcapi.connectors import sirene
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 import pcapi.connectors.thumb_storage as storage
@@ -1646,69 +1645,22 @@ def get_metabase_stats_iframe_url(
     return f"{settings.METABASE_SITE_URL}/embed/dashboard/{token}#bordered=false&titled=false"
 
 
-@dataclasses.dataclass
-class AdditionalInfo:
-    address: str
-    city: str
-    name: str
-    latitude: float
-    longitude: float
-    postalCode: str
-    siren: str
-
-
-def _get_additional_info_from_onboarding_data(siret: str) -> AdditionalInfo | None:
-    siret_info = sirene.get_siret(siret)
-
-    try:
-        address_info = api_adresse.get_address(
-            address=siret_info.address.street,
-            city=siret_info.address.city,
-            insee_code=siret_info.address.insee_code,
-        )
-    except api_adresse.AdresseException as exc:
-        logger.warning(
-            "Error on Adresse API when retrieving address",
-            extra={
-                "exc": exc,
-                "queried_address": siret_info.address.street,
-                "insee_code": siret_info.address.insee_code,
-            },
-        )
-        return None
-
-    return AdditionalInfo(
-        address=siret_info.address.street,
-        city=siret_info.address.city,
-        name=siret_info.name,
-        latitude=address_info.latitude,
-        longitude=address_info.longitude,
-        postalCode=siret_info.address.postal_code,
-        siren=siret[:9],
-    )
-
-
 def create_from_onboarding_data(
     user: users_models.User,
     onboarding_data: offerers_serialize.SaveNewOnboardingDataQueryModel,
 ) -> models.UserOfferer:
-    # Get additional info from external APIs (Sirene and Adresse)
-    additional_info = _get_additional_info_from_onboarding_data(onboarding_data.siret)
-    if not additional_info:
-        raise ApiErrors(
-            {
-                "additional_info": "Les informations relatives à l'adresse de cette structure n'ont pas pu être récupérées"
-            }
-        )
+    # Get name (raison sociale) from Sirene API
+    siret_info = sirene.get_siret(onboarding_data.siret)
+    name = siret_info.name
 
     # Create Offerer or attach user to existing Offerer
     offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
-        address=additional_info.address,
-        city=additional_info.city,
-        latitude=additional_info.latitude,
-        longitude=additional_info.longitude,
-        name=additional_info.name,
-        postalCode=additional_info.postalCode,
+        address=onboarding_data.address,
+        city=onboarding_data.city,
+        latitude=onboarding_data.latitude,
+        longitude=onboarding_data.longitude,
+        name=name,
+        postalCode=onboarding_data.postalCode,
         siren=onboarding_data.siret[:9],
     )
     new_onboarding_info = NewOnboardingInfo(
@@ -1721,15 +1673,15 @@ def create_from_onboarding_data(
     # Create Venue with siret if it's not in DB yet, or Venue without siret if requested
     if not offerers_repository.find_venue_by_siret(onboarding_data.siret) or onboarding_data.createVenueWithoutSiret:
         common_kwargs = dict(
-            address=additional_info.address,
+            address=onboarding_data.address,
             bookingEmail=user.email,
-            city=additional_info.city,
-            latitude=additional_info.latitude,
-            longitude=additional_info.longitude,
+            city=onboarding_data.city,
+            latitude=onboarding_data.latitude,
+            longitude=onboarding_data.longitude,
             managingOffererId=user_offerer.offererId,
-            name=additional_info.name,
+            name=name,
             publicName=onboarding_data.publicName,
-            postalCode=additional_info.postalCode,
+            postalCode=onboarding_data.postalCode,
             venueLabelId=None,
             venueTypeCode=onboarding_data.venueTypeCode,
             withdrawalDetails=None,
