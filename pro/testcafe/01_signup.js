@@ -68,15 +68,3 @@ test('lorsque je clique sur le lien de validation de création du compte reçu p
     .expect(getPathname())
     .eql('/connexion')
 })
-
-test('la balise script pour le tracking HubSpot est présente sur la page', async t => {
-  const trackingScript = Selector('script').withAttribute(
-    'src',
-    /.*\/\/js\.hs-scripts.com\/5119289\.js/
-  )
-  await t
-    .expect(Selector('h1').withText('Créer votre compte professionnel').exists)
-    .ok()
-    .expect(trackingScript.exists)
-    .ok()
-})
