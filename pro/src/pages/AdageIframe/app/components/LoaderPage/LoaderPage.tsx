@@ -10,7 +10,7 @@ export const LoaderPage = (): JSX.Element => (
     <header>
       <Logo />
     </header>
-    <main className="loader-page">
+    <main className="loader-page" id="content">
       {' '}
       <Spinner message="Chargement en cours" />
     </main>

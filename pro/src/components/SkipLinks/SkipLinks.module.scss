@@ -1,10 +1,14 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
 
 .skip-links {
   height: 0;
   position: absolute;
+  background-color: colors.$secondary;
   top: rem.torem(-100px);
+  display: grid;
+  grid-template-columns: size.$header-grid-template-columns;
 
   &:focus-within {
     min-height: rem.torem(32px);
@@ -16,13 +20,12 @@
   .skip-list {
     display: flex;
     gap: rem.torem(16px);
-    background-color: colors.$secondary;
     align-items: center;
     height: rem.torem(32px);
-
-    & li:first-child {
-      margin-left: 5%;
-    }
+    justify-content: flex-end;
+    margin-right: calc(
+      size.$nav-brand-margin-right + size.$header-nav-item-padding
+    );
 
     &-button {
       color: colors.$white;
