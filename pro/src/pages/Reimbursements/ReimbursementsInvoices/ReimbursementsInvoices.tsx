@@ -2,12 +2,14 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { InvoiceResponseModel } from 'apiClient/v1'
+import useCurrentUser from 'hooks/useCurrentUser'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import {
   formatBrowserTimezonedDateAsUTC,
   FORMAT_ISO_DATE_ONLY,
   getToday,
 } from 'utils/date'
+import { sortByDisplayName } from 'utils/strings'
 
 import { DEFAULT_INVOICES_FILTERS } from '../_constants'
 
@@ -18,17 +20,14 @@ import InvoicesServerError from './InvoicesServerError'
 import { InvoiceTable } from './InvoiceTable'
 import NoInvoicesYet from './NoInvoicesYet'
 
-interface IReimbursementsInvoicesProps {
-  isCurrentUserAdmin: boolean
-  reimbursementPointsOptions: SelectOptionsRFF
+interface SelectOptions {
+  id: string
+  displayName: string
 }
 
-const ReimbursementsInvoices = ({
-  isCurrentUserAdmin,
-  reimbursementPointsOptions,
-}: IReimbursementsInvoicesProps): JSX.Element => {
+const ReimbursementsInvoices = (): JSX.Element => {
   const ALL_REIMBURSEMENT_POINT_OPTION_ID = 'all'
-
+  const { currentUser } = useCurrentUser()
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
     const oneMonthAgo = new Date(
@@ -51,6 +50,9 @@ const ReimbursementsInvoices = ({
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
   const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
   const isCalledOnceRef = useRef(false)
+  const [reimbursementPointsOptions, setReimbursementPointsOptions] = useState<
+    SelectOptions[]
+  >([])
 
   const {
     reimbursementPoint: selectedReimbursementPoint,
@@ -60,18 +62,18 @@ const ReimbursementsInvoices = ({
 
   const isPeriodFilterSelected = selectedPeriodStart && selectedPeriodEnd
   const requireBUFilterForAdmin =
-    isCurrentUserAdmin &&
+    currentUser.isAdmin &&
     selectedReimbursementPoint === ALL_REIMBURSEMENT_POINT_OPTION_ID
 
   const hasNoSearchResult =
     !hasError && invoices.length === 0 && (hasSearchedOnce || !noInvoices)
 
   const shouldDisplayAdminInfo =
-    !hasError && isCurrentUserAdmin && !hasSearchedOnce
+    !hasError && currentUser.isAdmin && !hasSearchedOnce
 
   const hasNoInvoicesYetForNonAdmin =
     !hasError &&
-    !isCurrentUserAdmin &&
+    !currentUser.isAdmin &&
     invoices.length === 0 &&
     noInvoices &&
     !hasSearchedOnce
@@ -133,6 +135,24 @@ const ReimbursementsInvoices = ({
     if (!isCalledOnceRef.current) {
       isCalledOnceRef.current = true
       loadInvoices()
+    }
+    try {
+      /* istanbul ignore next: TO FIX */
+      api.getReimbursementPoints().then(reimbursementPointsResponse =>
+        setReimbursementPointsOptions(
+          sortByDisplayName(
+            reimbursementPointsResponse.map(item => ({
+              id: String(item.id),
+              displayName: item.publicName || item.name,
+            }))
+          )
+        )
+      )
+    } catch (err) {
+      /* istanbul ignore next: TO FIX */
+      // FIX ME
+      // eslint-disable-next-line
+      console.error(err)
     }
   }, [loadInvoices])
 
