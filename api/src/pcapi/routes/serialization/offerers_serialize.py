@@ -218,8 +218,12 @@ class CreateOffererQueryModel(BaseModel):
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
-    # FIXME(fseguin, 2023-03-27): make these attributes not optional when UI is implemented
+    address: str
+    city: str
     createVenueWithoutSiret: bool = False
+    latitude: float
+    longitude: float
+    postalCode: str
     publicName: str | None
     siret: str
     target: Target
