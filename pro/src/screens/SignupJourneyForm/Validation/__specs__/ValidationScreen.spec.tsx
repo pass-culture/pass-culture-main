@@ -2,6 +2,7 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
+import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel, Target } from 'apiClient/v1'
@@ -14,12 +15,16 @@ import {
 } from 'context/SignupJourneyContext'
 import { Validation } from 'screens/SignupJourneyForm/Validation/index'
 import { renderWithProviders } from 'utils/renderWithProviders'
-
 jest.mock('apiClient/api', () => ({
   api: {
     getVenueTypes: jest.fn(),
     saveNewOnboardingData: jest.fn(),
   },
+}))
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: jest.fn(),
 }))
 
 const addressInformations: IAddress = {
@@ -85,13 +90,21 @@ describe('screens:SignupJourney::Validation', () => {
   })
 
   describe('Data incomplete', () => {
-    it('Should see authentication screen if no offerer is selected', async () => {
+    it('Should redirect to authentication if no offerer is selected', async () => {
+      const mockNavigate = jest.fn()
+      jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      expect(await screen.findByText('Authentication')).toBeInTheDocument()
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        '/parcours-inscription/authentification'
+      )
     })
 
     it('Should see activity screen if no activity data is set but an offerer is set', async () => {
+      const mockNavigate = jest.fn()
+      jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
       renderValidationScreen({
         ...contextValue,
         offerer: {
@@ -102,7 +115,9 @@ describe('screens:SignupJourney::Validation', () => {
         },
       })
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      expect(await screen.findByText('Activite')).toBeInTheDocument()
+      expect(mockNavigate).toHaveBeenCalledWith(
+        '/parcours-inscription/activite'
+      )
     })
   })
 
@@ -151,30 +166,40 @@ describe('screens:SignupJourney::Validation', () => {
     })
 
     it('Should navigate to activity page with the previous step button', async () => {
+      const mockNavigate = jest.fn()
+      jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
       await userEvent.click(screen.getByText('Étape précédente'))
-      expect(screen.getByText('Activite')).toBeInTheDocument()
+      expect(mockNavigate).toHaveBeenCalledWith(
+        '/parcours-inscription/activite'
+      )
     })
 
     it('Should navigate to authentication page when clicking the first update button', async () => {
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getAllByText('Modifier')[0])
+
       expect(screen.getByText('Authentication')).toBeInTheDocument()
     })
 
-    it('Should navigate to authentication page when clicking the first update button', async () => {
+    it('Should navigate to activite page when clicking the second update button', async () => {
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getAllByText('Modifier')[1])
+
       expect(screen.getByText('Activite')).toBeInTheDocument()
     })
 
-    it('Should send the data on submit', async () => {
+    it('Should send the data on submit and redirect to home', async () => {
       jest
         .spyOn(api, 'saveNewOnboardingData')
         .mockResolvedValue({} as GetOffererResponseModel)
+      const mockNavigate = jest.fn()
+      jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer mon espace'))
@@ -187,7 +212,7 @@ describe('screens:SignupJourney::Validation', () => {
         createVenueWithoutSiret: false,
       })
 
-      expect(screen.getByText('accueil')).toBeInTheDocument()
+      expect(mockNavigate).toHaveBeenCalledWith('/accueil')
     })
   })
 
