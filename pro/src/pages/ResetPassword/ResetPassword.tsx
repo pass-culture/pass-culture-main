@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import AppLayout from 'app/AppLayout'
-import PageTitle from 'components/PageTitle/PageTitle'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Hero from 'ui-kit/Hero'
 import Logo from 'ui-kit/Logo/Logo'
@@ -51,8 +50,6 @@ const ResetPassword = (): JSX.Element => {
           pageName: 'reset-password',
         }}
       >
-        <PageTitle title="Mot de passe perdu" />
-
         <div className={styles['scrollable-content-side']}>
           <div className={styles['content']}>
             {passwordChanged && !isBadToken && (

@@ -5,7 +5,6 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { BannerReimbursementsInfo } from 'components/Banner'
-import PageTitle from 'components/PageTitle/PageTitle'
 import { ReimbursementsBreadcrumb } from 'components/ReimbursementsBreadcrumb'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -75,7 +74,6 @@ const Reimbursements = () => {
 
   return (
     <>
-      <PageTitle title="Vos remboursements" />
       <Titles title="Remboursements" />
       {isLoading && <Spinner />}
       {hasNoResults && (

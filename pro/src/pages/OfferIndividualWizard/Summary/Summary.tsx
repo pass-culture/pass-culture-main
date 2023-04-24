@@ -1,7 +1,6 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import React from 'react'
 
-import PageTitle from 'components/PageTitle/PageTitle'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { useOfferWizardMode } from 'hooks'
 import {
@@ -21,7 +20,6 @@ const Summary = (): JSX.Element | null => {
       title={title}
       withStepper={mode !== OFFER_WIZARD_MODE.EDITION}
     >
-      <PageTitle title="Récapitulatif" />
       <SummaryScreen />
     </WizardTemplate>
   )

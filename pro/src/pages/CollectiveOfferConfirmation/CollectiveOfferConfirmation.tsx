@@ -1,6 +1,5 @@
 import React from 'react'
 
-import PageTitle from 'components/PageTitle/PageTitle'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import CollectiveOfferConfirmationScreen from 'screens/CollectiveOfferConfirmation'
 import {
@@ -27,7 +26,6 @@ const CollectiveOfferConfirmation = ({
 
   return (
     <>
-      <PageTitle title="Confirmation" />
       <CollectiveOfferConfirmationScreen
         isShowcase={offer.isTemplate}
         offerStatus={offer?.status}

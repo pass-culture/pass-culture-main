@@ -2,7 +2,6 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import PageTitle from 'components/PageTitle/PageTitle'
 import {
   Mode,
   OfferEducationalStockFormValues,
@@ -73,7 +72,6 @@ const CollectiveOfferStockEdition = ({
 
   return (
     <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-      <PageTitle title="Date et prix" />
       <OfferEducationalStockScreen
         initialValues={initialValues}
         mode={

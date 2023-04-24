@@ -7,7 +7,6 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import NoData from 'components/NoData'
-import PageTitle from 'components/PageTitle/PageTitle'
 import {
   DEFAULT_PRE_FILTERS,
   GetBookingsCSVFileAdapter,
@@ -243,7 +242,6 @@ const Bookings = <
 
   return (
     <div className="bookings-page">
-      <PageTitle title="Vos réservations" />
       <Titles title="Réservations" />
       <Tabs
         selectedKey={audience}
