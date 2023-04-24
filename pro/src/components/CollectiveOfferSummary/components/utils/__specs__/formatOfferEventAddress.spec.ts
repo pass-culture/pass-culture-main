@@ -11,7 +11,7 @@ describe('formatOfferEventAddress', () => {
         {
           addressType: OfferAddressType.OFFERER_VENUE,
           otherAddress: '',
-          venueId: 'A1',
+          venueId: 12,
         },
         {
           id: 'A1',
@@ -31,7 +31,7 @@ describe('formatOfferEventAddress', () => {
         {
           addressType: OfferAddressType.SCHOOL,
           otherAddress: '',
-          venueId: '',
+          venueId: null,
         },
         {
           id: 'A1',
@@ -51,7 +51,7 @@ describe('formatOfferEventAddress', () => {
         {
           addressType: OfferAddressType.OTHER,
           otherAddress: 'A la mairie',
-          venueId: '',
+          venueId: 12,
         },
         {
           id: 'A1',

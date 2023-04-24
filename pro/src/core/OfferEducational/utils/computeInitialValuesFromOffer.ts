@@ -59,7 +59,7 @@ export const getInitialOffererId = (
   offererIdQueryParam?: string | null
 ): string => {
   if (offer !== undefined) {
-    return offer.venue.managingOffererId
+    return offer.venue.managingOfferer.nonHumanizedId.toString()
   }
 
   if (offererIdQueryParam) {
@@ -67,7 +67,7 @@ export const getInitialOffererId = (
   }
 
   if (offerers.length === 1) {
-    return offerers[0].id
+    return offerers[0].nonHumanizedId.toString()
   }
 
   return DEFAULT_EAC_FORM_VALUES.offererId
@@ -80,7 +80,7 @@ export const getInitialVenueId = (
   venueIdQueryParam?: string | null
 ): string => {
   if (offer !== undefined) {
-    return offer.venueId
+    return offer.venue.nonHumanizedId.toString()
   }
 
   if (venueIdQueryParam) {
@@ -88,10 +88,12 @@ export const getInitialVenueId = (
   }
 
   if (offererId) {
-    const currentOfferer = offerers.find(offerer => offerer.id === offererId)
+    const currentOfferer = offerers.find(
+      offerer => offerer.nonHumanizedId.toString() === offererId
+    )
 
     if (currentOfferer?.managedVenues.length === 1) {
-      return currentOfferer.managedVenues[0].id
+      return currentOfferer.managedVenues[0].nonHumanizedId.toString()
     }
   }
 
@@ -149,6 +151,7 @@ export const computeInitialValuesFromOffer = (
     title: offer.name,
     description: offer.description ?? DEFAULT_EAC_FORM_VALUES.description,
     duration: computeDurationString(offer.durationMinutes),
+    // @ts-expect-error This is because we store a dehumanizedId in database.
     eventAddress: eventAddress || DEFAULT_EAC_FORM_VALUES.eventAddress,
     participants: participants || DEFAULT_EAC_FORM_VALUES.participants,
     accessibility: {

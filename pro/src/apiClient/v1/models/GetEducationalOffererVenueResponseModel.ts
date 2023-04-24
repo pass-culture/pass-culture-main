@@ -15,6 +15,7 @@ export type GetEducationalOffererVenueResponseModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
+  nonHumanizedId: number;
   postalCode?: string | null;
   publicName?: string | null;
   visualDisabilityCompliant?: boolean | null;

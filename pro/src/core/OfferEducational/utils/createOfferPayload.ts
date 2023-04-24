@@ -2,7 +2,6 @@ import {
   OfferAddressType,
   PostCollectiveOfferTemplateBodyModel,
 } from 'apiClient/v1'
-import { dehumanizeId } from 'utils/dehumanize'
 
 import { IOfferEducationalFormValues } from '../types'
 
@@ -29,7 +28,7 @@ export const createCollectiveOfferPayload = (
   isTemplate: boolean,
   offerTemplateId?: string
 ): PostCollectiveOfferTemplateBodyModel => ({
-  venueId: dehumanizeId(offer.venueId) || 0,
+  venueId: Number(offer.venueId),
   subcategoryId: offer.subCategory,
   name: offer.title,
   bookingEmails: offer.notificationEmails,
@@ -39,8 +38,7 @@ export const createCollectiveOfferPayload = (
   students: serializeParticipants(offer.participants),
   offerVenue: {
     ...offer.eventAddress,
-    // @ts-expect-error api expect number
-    venueId: dehumanizeId(offer.eventAddress.venueId) || 0,
+    venueId: Number(offer.eventAddress.venueId),
   },
   contactEmail: offer.email,
   contactPhone: offer.phone,

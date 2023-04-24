@@ -6,6 +6,8 @@ import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/uti
 import { createPatchOfferPayload } from '../createPatchOfferPayload'
 
 describe('createPatchOfferPayload', () => {
+  const offerId = '17'
+  const venueId = 12
   const initialValues: IOfferEducationalFormValues = {
     title: 'Test Offer',
     description: 'Test Description',
@@ -25,7 +27,7 @@ describe('createPatchOfferPayload', () => {
     eventAddress: {
       addressType: OfferAddressType.OFFERER_VENUE,
       otherAddress: 'TestOtherAddress',
-      venueId: 'KM',
+      venueId: 12,
     },
     participants: {
       ...buildStudentLevelsMapWithDefaultValue(true),
@@ -39,7 +41,7 @@ describe('createPatchOfferPayload', () => {
   const offer: IOfferEducationalFormValues = {
     title: 'Test Offer update',
     description: 'Test Description update',
-    offererId: 'DY',
+    offererId: offerId,
     category: 'JEUX',
     duration: '2:00',
     subCategory: SubcategoryIdEnum.ABO_CONCERT,
@@ -51,11 +53,11 @@ describe('createPatchOfferPayload', () => {
       none: true,
     },
     notificationEmails: ['test3@email.com', 'test4@email.com'],
-    venueId: 'KC',
+    venueId: venueId.toString(),
     eventAddress: {
       addressType: OfferAddressType.SCHOOL,
       otherAddress: 'TestOtherAddress update',
-      venueId: 'KC',
+      venueId: 12,
     },
     participants: {
       ...buildStudentLevelsMapWithDefaultValue(false),
@@ -77,12 +79,11 @@ describe('createPatchOfferPayload', () => {
     audioDisabilityCompliant: false,
     visualDisabilityCompliant: true,
     bookingEmails: ['test3@email.com', 'test4@email.com'],
-    venueId: 12,
+    venueId: venueId,
     offerVenue: {
       addressType: OfferAddressType.SCHOOL,
       otherAddress: 'TestOtherAddress update',
-      // @ts-expect-error api expect number
-      venueId: 15,
+      venueId: venueId,
     },
     students: [],
     contactPhone: '0123456788',
@@ -94,7 +95,10 @@ describe('createPatchOfferPayload', () => {
   it('should return the correct patch offer payload for a non-template offer', () => {
     const payload = createPatchOfferPayload({ ...offer }, initialValues, false)
 
-    expect(payload).toMatchObject(patchOfferPayload)
+    expect(payload).toMatchObject({
+      ...patchOfferPayload,
+      venueId: venueId.toString(),
+    })
   })
 
   it('should return the correct patch offer payload for a template offer', () => {
@@ -105,7 +109,7 @@ describe('createPatchOfferPayload', () => {
     )
 
     expect(payload).toMatchObject({
-      venueId: 'KC',
+      venueId: venueId.toString(),
       priceDetail: '123',
     })
   })
