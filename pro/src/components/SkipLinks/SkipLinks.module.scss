@@ -7,7 +7,7 @@
   top: rem.torem(-100px);
 
   &:focus-within {
-    min-height: rem.torem(36px);
+    min-height: rem.torem(32px);
     position: relative;
     z-index: 2;
     top: 0;
@@ -16,8 +16,25 @@
   .skip-list {
     display: flex;
     gap: rem.torem(16px);
-    background-color: colors.$grey-light;
-    justify-content: center;
-    padding: rem.torem(8px);
+    background-color: colors.$secondary;
+    align-items: center;
+    height: rem.torem(32px);
+
+    & li:first-child {
+      margin-left: 5%;
+    }
+
+    &-button {
+      color: colors.$white;
+      font-size: rem.torem(12px);
+      padding: 0 rem.torem(4px);
+      border-radius: rem.torem(4px);
+      margin-top: rem.torem(6px);
+      margin-bottom: rem.torem(6px);
+
+      & svg {
+        fill: colors.$white;
+      }
+    }
   }
 }
