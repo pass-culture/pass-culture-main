@@ -202,8 +202,8 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       speaker: 'Offer speaker',
       subcategoryId: 'SCID physical',
       image: undefined,
-      url: 'http://offer.example.com',
-      externalTicketOfficeUrl: 'http://external.example.com',
+      url: 'https://offer.example.com',
+      externalTicketOfficeUrl: 'https://external.example.com',
       venueId: 2,
       venue: {
         id: 2,

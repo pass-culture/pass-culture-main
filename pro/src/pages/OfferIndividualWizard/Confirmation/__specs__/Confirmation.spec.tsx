@@ -24,7 +24,7 @@ window.open = jest.fn()
 
 jest.mock('utils/config', () => {
   return {
-    WEBAPP_URL: 'http://localhost',
+    WEBAPP_URL: 'https://localhost',
   }
 })
 
@@ -121,7 +121,7 @@ describe('Confirmation', () => {
       screen.getByText('Visualiser l’offre dans l’application', {
         selector: 'a',
       })
-    ).toHaveAttribute('href', `http://localhost/offre/${offer.nonHumanizedId}`)
+    ).toHaveAttribute('href', `https://localhost/offre/${offer.nonHumanizedId}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
     ).toHaveAttribute(
@@ -140,7 +140,7 @@ describe('Confirmation', () => {
       screen.getByText('Visualiser l’offre dans l’application', {
         selector: 'a',
       })
-    ).toHaveAttribute('href', `http://localhost/offre/${offer.nonHumanizedId}`)
+    ).toHaveAttribute('href', `https://localhost/offre/${offer.nonHumanizedId}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
     ).toHaveAttribute(

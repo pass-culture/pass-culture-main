@@ -284,7 +284,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       // deactivate type interpolation : https://testing-library.com/docs/ecosystem-user-event/#keyboardtext-options
       await userEvent.type(
         urlField,
-        'http://example.com/routes?params={{offerId}'
+        'https://example.com/routes?params={{offerId}'
       )
       await userEvent.click(await screen.findByText('Submit'))
 
@@ -301,7 +301,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
           offererId: offererId.toString(),
           subCategoryFields: [],
           subcategoryId: 'VIRTUAL_SUB_CATEGORY',
-          url: 'http://example.com/routes?params={offerId}',
+          url: 'https://example.com/routes?params={offerId}',
           venueId: venueList[1].nonHumanizedId.toString(),
           withdrawalDelay: undefined,
           withdrawalDetails: '',
@@ -338,7 +338,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
 
       await userEvent.type(
         urlField,
-        'http://example.com/routes?params={offerId}'
+        'https://example.com/routes?params={offerId}'
       )
       expect(
         screen.queryByText(

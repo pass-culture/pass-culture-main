@@ -513,7 +513,7 @@ describe('CollectiveDataEdition', () => {
     it('should prefill form with educational partner data when venue has no collectiva data', async () => {
       jest.spyOn(api, 'getEducationalPartner').mockResolvedValueOnce({
         id: 1,
-        siteWeb: 'http://monsite.com',
+        siteWeb: 'https://monsite.com',
         statutId: 2,
         domaineIds: [1, 2],
       })
@@ -532,7 +532,7 @@ describe('CollectiveDataEdition', () => {
       )
 
       await waitFor(() => {
-        expect(websiteField).toHaveValue('http://monsite.com')
+        expect(websiteField).toHaveValue('https://monsite.com')
       })
       expect(statusField).toHaveValue('2')
 

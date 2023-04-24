@@ -9,10 +9,10 @@ describe('test apiClient:helpers', () => {
     it("should return ApiError body's error code", () => {
       const request: ApiRequestOptions = {
         method: 'GET',
-        url: 'http://test.url',
+        url: 'https://test.url',
       }
       const response: ApiResult = {
-        url: 'http://test.url',
+        url: 'https://test.url',
         ok: false,
         status: 501,
         statusText: 'UNAUTHORIZED',

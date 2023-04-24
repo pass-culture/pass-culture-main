@@ -44,8 +44,8 @@ describe('setFormReadOnlyFields', () => {
       speaker: 'Offer speaker',
       subcategoryId: 'SCID',
       image: undefined,
-      url: 'http://offer.example.com',
-      externalTicketOfficeUrl: 'http://external.example.com',
+      url: 'https://offer.example.com',
+      externalTicketOfficeUrl: 'https://external.example.com',
       venueId: venueId,
       venue: {
         id: venueId,
@@ -137,8 +137,8 @@ describe('setFormReadOnlyFields', () => {
       stageDirector: 'Offer stageDirector',
       visa: '',
       durationMinutes: '2:20',
-      url: 'http://offer.example.com',
-      externalTicketOfficeUrl: 'http://external.example.com',
+      url: 'https://offer.example.com',
+      externalTicketOfficeUrl: 'https://external.example.com',
     }
 
     const initialFormValues = setInitialFormValues(offer, subCategoryList)

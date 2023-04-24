@@ -340,7 +340,7 @@ describe('OfferIndividualForm', () => {
     await userEvent.type(nameField, 'Le nom de mon offre')
     const urlField = await screen.findByLabelText('URL d’accès à l’offre')
 
-    await userEvent.type(urlField, 'http://example.com/')
+    await userEvent.type(urlField, 'https://example.com/')
 
     await userEvent.click(await screen.findByText('Submit'))
 
@@ -377,7 +377,7 @@ describe('OfferIndividualForm', () => {
         stageDirector: '',
         subCategoryFields: [],
         subcategoryId: 'virtual',
-        url: 'http://example.com/',
+        url: 'https://example.com/',
         venueId: virtualVenueId,
         visa: '',
         withdrawalDelay: undefined,

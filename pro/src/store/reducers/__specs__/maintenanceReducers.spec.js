@@ -15,7 +15,7 @@ describe('src | Reducers | Maintenance Reducer', () => {
         const action = {
           config: {
             method: 'GET',
-            rootUrl: 'http://localhost',
+            rootUrl: 'https://localhost',
             timeout: 50000,
             apiPath: '/offerers/DY',
             normalizer: {
@@ -53,7 +53,7 @@ describe('src | Reducers | Maintenance Reducer', () => {
         const action = {
           config: {
             method: 'GET',
-            rootUrl: 'http://localhost',
+            rootUrl: 'https://localhost',
             timeout: 50000,
             apiPath: '/offerers/DY',
             normalizer: {
@@ -91,7 +91,7 @@ describe('src | Reducers | Maintenance Reducer', () => {
         const action = {
           config: {
             method: 'GET',
-            rootUrl: 'http://localhost',
+            rootUrl: 'https://localhost',
             timeout: 50000,
             apiPath: '/offerers/DY',
             normalizer: {
@@ -130,7 +130,7 @@ describe('src | Reducers | Maintenance Reducer', () => {
         const action = {
           config: {
             method: 'GET',
-            rootUrl: 'http://localhost',
+            rootUrl: 'https://localhost',
             timeout: 50000,
             apiPath: '/features',
           },

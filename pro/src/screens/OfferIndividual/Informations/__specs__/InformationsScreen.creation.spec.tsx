@@ -311,7 +311,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
 
     const urlField = await screen.findByLabelText('URL d’accès à l’offre')
 
-    await userEvent.type(urlField, 'http://example.com/')
+    await userEvent.type(urlField, 'https://example.com/')
 
     await userEvent.click(await screen.findByText('Étape suivante'))
 
@@ -329,7 +329,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       motorDisabilityCompliant: false,
       name: 'Le nom de mon offre',
       subcategoryId: 'virtual',
-      url: 'http://example.com/',
+      url: 'https://example.com/',
       venueId: 2,
       visualDisabilityCompliant: false,
       withdrawalDelay: null,

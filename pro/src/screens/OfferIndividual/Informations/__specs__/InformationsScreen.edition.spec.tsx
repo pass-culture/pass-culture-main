@@ -217,8 +217,8 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       speaker: 'Offer speaker',
       subcategoryId: 'SCID physical',
       image: undefined,
-      url: 'http://offer.example.com',
-      externalTicketOfficeUrl: 'http://external.example.com',
+      url: 'https://offer.example.com',
+      externalTicketOfficeUrl: 'https://external.example.com',
       venueId: 1,
       venue: {
         id: 1,
@@ -320,7 +320,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
       durationMinutes: 140,
-      externalTicketOfficeUrl: 'http://external.example.com',
+      externalTicketOfficeUrl: 'https://external.example.com',
       extraData: {
         author: 'Offer author',
         isbn: '',
@@ -339,7 +339,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       mentalDisabilityCompliant: true,
       motorDisabilityCompliant: true,
       name: 'Le nom de mon offre édité',
-      url: 'http://offer.example.com',
+      url: 'https://offer.example.com',
       visualDisabilityCompliant: true,
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: 140,
@@ -383,7 +383,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
       durationMinutes: 140,
-      externalTicketOfficeUrl: 'http://external.example.com',
+      externalTicketOfficeUrl: 'https://external.example.com',
       extraData: {
         author: 'Offer author',
         isbn: '',
@@ -402,7 +402,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       mentalDisabilityCompliant: true,
       motorDisabilityCompliant: true,
       name: 'Le nom de mon offre édité',
-      url: 'http://offer.example.com',
+      url: 'https://offer.example.com',
       visualDisabilityCompliant: true,
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: undefined,
@@ -421,8 +421,8 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     contextOverride.offer = {
       ...offer,
       image: {
-        originalUrl: 'http://image.url',
-        url: 'http://image.url',
+        originalUrl: 'https://image.url',
+        url: 'https://image.url',
         credit: 'John Do',
       },
     }
@@ -448,8 +448,8 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     contextOverride.offer = {
       ...offer,
       image: {
-        originalUrl: 'http://image.url',
-        url: 'http://image.url',
+        originalUrl: 'https://image.url',
+        url: 'https://image.url',
         credit: 'John Do',
       },
     }
@@ -539,7 +539,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         bookingEmail: 'booking@email.com',
         description: 'Offer description',
         durationMinutes: 140,
-        externalTicketOfficeUrl: 'http://external.example.com',
+        externalTicketOfficeUrl: 'https://external.example.com',
         extraData: {
           author: 'Offer author',
           isbn: '',
@@ -558,7 +558,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         mentalDisabilityCompliant: true,
         motorDisabilityCompliant: true,
         name: 'Le nom de mon offre édité',
-        url: 'http://offer.example.com',
+        url: 'https://offer.example.com',
         visualDisabilityCompliant: true,
         withdrawalDetails: 'Offer withdrawalDetails',
         withdrawalDelay: undefined,
