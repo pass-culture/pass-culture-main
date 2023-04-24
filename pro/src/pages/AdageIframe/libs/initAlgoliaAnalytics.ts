@@ -5,13 +5,12 @@ import {
   ALGOLIA_APP_ID,
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
 } from 'utils/config'
-import { uniqId } from 'utils/uniqId'
 
-export const initAlgoliaAnalytics = () => {
+export const initAlgoliaAnalytics = (uniqueId: string) => {
   AlgoliaSearchInsights('init', {
     appId: ALGOLIA_APP_ID,
     apiKey: ALGOLIA_API_KEY,
-    userToken: uniqId(),
+    userToken: uniqueId,
   })
 }
 

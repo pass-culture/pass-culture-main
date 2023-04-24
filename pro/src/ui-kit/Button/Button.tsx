@@ -1,12 +1,11 @@
 /* istanbul ignore file : no need to test styled html tag  */
 
 import cn from 'classnames'
-import React from 'react'
+import React, { useId } from 'react'
 
 import { ReactComponent as IcoArrowRight } from 'icons/ico-mini-arrow-right.svg'
 import { ReactComponent as SpinnerIcon } from 'icons/loader.svg'
 import Tooltip from 'ui-kit/Tooltip'
-import { uniqId } from 'utils/uniqId'
 
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
@@ -34,7 +33,7 @@ const Button = ({
   isLoading = false,
   ...buttonAttrs
 }: IButtonProps): JSX.Element => {
-  const tooltipId = uniqId()
+  const tooltipId = useId()
 
   const button = (
     <button

@@ -1,8 +1,7 @@
-import React from 'react'
+import React, { useId } from 'react'
 
 import DialogBox from 'components/DialogBox/DialogBox'
 import { ReactComponent as AlertSvg } from 'icons/ico-alert-grey.svg'
-import { uniqId } from 'utils/uniqId'
 
 import styles from './Dialog.module.scss'
 
@@ -28,7 +27,7 @@ const Dialog = ({
   extraClassNames,
 }: IDialogProps): JSX.Element => {
   const Icon = icon ?? AlertSvg
-  const titleId = uniqId()
+  const titleId = useId()
 
   return (
     <DialogBox

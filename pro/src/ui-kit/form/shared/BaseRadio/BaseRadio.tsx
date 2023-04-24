@@ -1,7 +1,5 @@
 import cn from 'classnames'
-import React, { useState } from 'react'
-
-import { uniqId } from 'utils/uniqId'
+import React, { useState, useId } from 'react'
 
 import styles from './BaseRadio.module.scss'
 import { BaseRadioVariant } from './types'
@@ -25,7 +23,7 @@ const BaseInput = ({
   ...props
 }: IBaseInputProps): JSX.Element => {
   // TODO : https://stackoverflow.com/a/71681435 when upgrading React 18
-  const [id] = useState(uniqId())
+  const [id] = useState(useId())
 
   return (
     <div
