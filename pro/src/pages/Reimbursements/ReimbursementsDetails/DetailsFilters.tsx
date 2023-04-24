@@ -4,12 +4,10 @@ import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
 import Select from 'ui-kit/form_raw/Select'
 import { getToday } from 'utils/date'
 
-type selectableOptionsType = [
-  {
-    id: string
-    displayName: string
-  }
-]
+type SelectableOptionsType = {
+  id: string
+  displayName: string
+}
 
 type filtersType = {
   venue: string
@@ -27,7 +25,7 @@ interface IReimbursementsSectionHeaderProps {
   selectLabel: string
   selectName: string
   setFilters: Dispatch<SetStateAction<filtersType>>
-  selectableOptions: selectableOptionsType
+  selectableOptions: SelectableOptionsType[]
 }
 
 const DetailsFilters = ({
