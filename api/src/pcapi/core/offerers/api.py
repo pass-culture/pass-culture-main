@@ -1670,4 +1670,10 @@ def create_from_onboarding_data(
         venue_creation_info = venues_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore [arg-type]
         create_venue(venue_creation_info, strict_accessibility_compliance=False)
 
+    if not transactional_mails.send_welcome_to_pro_email(user):
+        logger.warning(
+            "Could not send welcome to pro email",
+            extra={"user": user.id},
+        )
+
     return user_offerer

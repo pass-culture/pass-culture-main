@@ -9,11 +9,13 @@ from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
 import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
+from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.feature import feature_required
 from pcapi.utils.rest import check_user_has_access_to_offerer
 
 from . import blueprint
@@ -174,6 +176,7 @@ def get_offerer_stats_dashboard_url(
 
 
 @private_api.route("/offerers/new", methods=["POST"])
+@feature_required(feature.FeatureToggle.WIP_ENABLE_NEW_ONBOARDING)
 @login_required
 @spectree_serialize(
     on_success_status=201, response_model=offerers_serialize.GetOffererResponseModel, api=blueprint.pro_private_schema

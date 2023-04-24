@@ -13,6 +13,8 @@ import pcapi.core.finance.conf as finance_conf
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.history import models as history_models
+import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
@@ -1066,7 +1068,8 @@ class SkipPhoneValidationTest:
 
 
 class UserEmailValidationTest:
-    def test_validate_pro_user_email_from_pro(self):
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
+    def test_validate_pro_user_email_from_pro_ff_off(self):
         user_offerer = offerers_factories.UserOffererFactory(
             user__validationToken="token", user__isEmailValidated=False
         )
@@ -1076,8 +1079,26 @@ class UserEmailValidationTest:
         assert history_models.ActionHistory.query.count() == 0
         assert user_offerer.user.validationToken is None
         assert user_offerer.user.isEmailValidated is True
+        assert len(mails_testing.outbox) == 1
+        assert (
+            mails_testing.outbox[0].sent_data["template"]["id_not_prod"] == TransactionalEmail.WELCOME_TO_PRO.value.id
+        )
 
-    def test_validate_pro_user_email_from_backoffice(self):
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
+    def test_validate_pro_user_email_from_pro_ff_on(self):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__validationToken="token", user__isEmailValidated=False
+        )
+
+        users_api.validate_pro_user_email(user_offerer.user)
+
+        assert history_models.ActionHistory.query.count() == 0
+        assert user_offerer.user.validationToken is None
+        assert user_offerer.user.isEmailValidated is True
+        assert len(mails_testing.outbox) == 0
+
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
+    def test_validate_pro_user_email_from_backoffice_ff_off(self):
         backoffice_user = users_factories.AdminFactory()
         user_offerer = offerers_factories.UserOffererFactory(
             user__validationToken="token", user__isEmailValidated=False
@@ -1093,6 +1114,29 @@ class UserEmailValidationTest:
 
         assert user_offerer.user.validationToken is None
         assert user_offerer.user.isEmailValidated is True
+        assert len(mails_testing.outbox) == 1
+        assert (
+            mails_testing.outbox[0].sent_data["template"]["id_not_prod"] == TransactionalEmail.WELCOME_TO_PRO.value.id
+        )
+
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
+    def test_validate_pro_user_email_from_backoffice_ff_on(self):
+        backoffice_user = users_factories.AdminFactory()
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__validationToken="token", user__isEmailValidated=False
+        )
+
+        users_api.validate_pro_user_email(user_offerer.user, backoffice_user)
+
+        assert history_models.ActionHistory.query.count() == 1
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.USER_EMAIL_VALIDATED
+        assert action.user == user_offerer.user
+        assert action.authorUser == backoffice_user
+
+        assert user_offerer.user.validationToken is None
+        assert user_offerer.user.isEmailValidated is True
+        assert len(mails_testing.outbox) == 0
 
 
 class SaveFlagsTest:

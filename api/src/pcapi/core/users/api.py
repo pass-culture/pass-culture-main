@@ -32,6 +32,7 @@ import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
 from pcapi.domain.password import random_hashed_password
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
@@ -1072,11 +1073,12 @@ def validate_pro_user_email(user: users_models.User, author_user: users_models.U
     else:
         repository.save(user)
 
-    if not transactional_mails.send_welcome_to_pro_email(user):
-        logger.warning(
-            "Could not send welcome email when pro user is valid",
-            extra={"user": user.id},
-        )
+    if not feature.FeatureToggle.WIP_ENABLE_NEW_ONBOARDING.is_active():
+        if not transactional_mails.send_welcome_to_pro_email(user):
+            logger.warning(
+                "Could not send welcome email when pro user is valid",
+                extra={"user": user.id},
+            )
 
 
 def save_firebase_flags(user: models.User, firebase_value: dict) -> None:
