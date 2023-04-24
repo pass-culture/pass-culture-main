@@ -49,6 +49,7 @@ import type { ListOffersResponseModel } from '../models/ListOffersResponseModel'
 import type { ListVenueProviderResponse } from '../models/ListVenueProviderResponse';
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
+import type { OffererReimbursementPointListResponseModel } from '../models/OffererReimbursementPointListResponseModel';
 import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
 import type { OfferType } from '../models/OfferType';
 import type { PatchAllCollectiveOffersActiveStatusBodyModel } from '../models/PatchAllCollectiveOffersActiveStatusBodyModel';
@@ -69,7 +70,6 @@ import type { PriceCategoryBody } from '../models/PriceCategoryBody';
 import type { ProFlagsQueryModel } from '../models/ProFlagsQueryModel';
 import type { ProUserCreationBodyModel } from '../models/ProUserCreationBodyModel';
 import type { ProUserCreationBodyV2Model } from '../models/ProUserCreationBodyV2Model';
-import type { ReimbursementPointListResponseModel } from '../models/ReimbursementPointListResponseModel';
 import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel';
 import type { SaveNewOnboardingDataQueryModel } from '../models/SaveNewOnboardingDataQueryModel';
 import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUserResponseModel';
@@ -1167,12 +1167,12 @@ export class DefaultService {
   /**
    * get_available_reimbursement_points <GET>
    * @param offererId
-   * @returns ReimbursementPointListResponseModel OK
+   * @returns OffererReimbursementPointListResponseModel OK
    * @throws ApiError
    */
   public getAvailableReimbursementPoints(
     offererId: number,
-  ): CancelablePromise<ReimbursementPointListResponseModel> {
+  ): CancelablePromise<OffererReimbursementPointListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{offerer_id}/reimbursement-points',
