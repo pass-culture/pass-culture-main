@@ -6,7 +6,6 @@ import {
   GetOfferersNamesResponseModel,
 } from 'apiClient/v1'
 import { Newsletter } from 'components/Newsletter'
-import PageTitle from 'components/PageTitle/PageTitle'
 import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -107,7 +106,6 @@ const Homepage = (): JSX.Element => {
   return (
     <>
       <div className="homepage">
-        <PageTitle title="Espace acteurs culturels" />
         <h1>Bienvenue dans l’espace acteurs culturels</h1>
         <HomepageBreadcrumb
           activeStep={STEP_ID_OFFERERS}

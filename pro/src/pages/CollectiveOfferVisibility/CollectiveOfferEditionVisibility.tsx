@@ -2,7 +2,6 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import PageTitle from 'components/PageTitle/PageTitle'
 import {
   Mode,
   CollectiveOffer,
@@ -68,7 +67,6 @@ const CollectiveOfferVisibility = ({
 
   return (
     <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-      <PageTitle title="Visibilité" />
       <CollectiveOfferVisibilityScreen
         mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
         patchInstitution={patchEducationalInstitutionAdapter}

@@ -2,7 +2,6 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import PageTitle from 'components/PageTitle/PageTitle'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import { Mode, isCollectiveOffer } from 'core/OfferEducational'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
@@ -37,7 +36,6 @@ export const CollectiveOfferCreation = ({
       isTemplate={isTemplate}
       isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
     >
-      <PageTitle title="Détails de l'offre" />
       <OfferEducationalScreen
         categories={offerEducationalFormData.categories}
         userOfferers={offerEducationalFormData.offerers}

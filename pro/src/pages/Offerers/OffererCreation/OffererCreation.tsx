@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { CreateOffererQueryModel } from 'apiClient/v1'
-import PageTitle from 'components/PageTitle/PageTitle'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as CircleArrowIcon } from 'icons/ico-circle-arrow-left.svg'
@@ -64,7 +63,6 @@ const OffererCreation = (): JSX.Element => {
       >
         Accueil
       </ButtonLink>
-      <PageTitle title="Créer une structure" />
       <Titles title="Structure" />
       {isEntrepriseApiDisabled ? (
         <OffererCreationUnavailable />

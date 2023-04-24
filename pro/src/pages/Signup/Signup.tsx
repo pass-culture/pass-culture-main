@@ -29,8 +29,6 @@ const Signup = () => {
             pageName: 'sign-up',
           }}
         >
-          <PageTitle title="S’inscrire" />
-
           {isProAccountCreationEnabled ? (
             <Routes>
               {routesSignup.map(({ path, element }: IRoute) => (

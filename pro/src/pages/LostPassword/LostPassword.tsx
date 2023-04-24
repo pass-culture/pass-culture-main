@@ -69,8 +69,6 @@ const ResetPassword = (): JSX.Element => {
             pageName: 'lost-password',
           }}
         >
-          <PageTitle title="Demande de mot de passe" />
-
           <div className={styles['scrollable-content-side']}>
             <div className={styles['content']}>
               {mailSent ? (

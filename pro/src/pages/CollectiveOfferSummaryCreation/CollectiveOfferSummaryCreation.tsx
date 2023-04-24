@@ -1,7 +1,6 @@
 import React from 'react'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import PageTitle from 'components/PageTitle/PageTitle'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
   getEducationalCategoriesAdapter,
@@ -43,7 +42,6 @@ export const CollectiveOfferSummaryCreation = ({
       isTemplate={isTemplate}
       isCreation={true}
     >
-      <PageTitle title="Récapitulatif" />
       <CollectiveOfferSummaryCreationScreen
         offer={offer}
         categories={categories}
