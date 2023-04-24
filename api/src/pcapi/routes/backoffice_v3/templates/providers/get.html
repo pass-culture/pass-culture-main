@@ -1,0 +1,44 @@
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Synchronisation Prestataires</h2>
+    <div>
+      <table class="table mb-4">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Prestataire technique</th>
+            <th scope="col">SIREN</th>
+            <th scope="col">Ville</th>
+            <th scope="col">Code postal</th>
+            <th scope="col">Nombre de clés d'API</th>
+            <th scope="col">URL du logo</th>
+            <th scope="col">Actif pour les pros</th>
+            <th scope="col">Actif</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for provider in providers %}
+            <tr>
+              <td>{{ provider.id }}</td>
+              <td>{{ provider.name }}</td>
+              <td>
+                {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.siren }}{% endif %}
+              </td>
+              <td>
+                {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.city }}{% endif %}
+              </td>
+              <td>
+                {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.postalCode }}{% endif %}
+              </td>
+              <td>{{ provider.apiKeys | length }}</td>
+              <td>{{ provider.logoUrl | empty_string_if_null }}</td>
+              <td>{{ provider.enabledForPro | format_bool }}</td>
+              <td>{{ provider.isActive | format_bool }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

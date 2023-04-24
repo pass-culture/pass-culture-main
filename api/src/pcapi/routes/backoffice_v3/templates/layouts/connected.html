@@ -104,6 +104,7 @@
                     {% endif %}
                     {% if has_permission("MANAGE_PROVIDERS") %}
                       {{ menu_section_item("Synchronisation Pivot", "backoffice_v3_web.pivots.get_pivots") }}
+                      {{ menu_section_item("Synchronisation Prestataires", "backoffice_v3_web.providers.get_providers") }}
                     {% endif %}
                     {% if has_permission("READ_REIMBURSEMENT_RULES") %}
                       {{ menu_section_item("Tarifs dérogatoires", "backoffice_v3_web.reimbursement_rules.list_custom_reimbursement_rules") }}
