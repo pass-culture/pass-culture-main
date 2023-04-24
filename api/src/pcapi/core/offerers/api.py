@@ -776,7 +776,7 @@ def rm_previous_venue_thumbs(venue: models.Venue) -> None:
         return
 
     # handle old banner urls that did not have a timestamp
-    timestamp = get_timestamp_from_url(venue.bannerUrl) if "_" in venue.bannerUrl else ""
+    timestamp = get_timestamp_from_url(venue.bannerUrl) if "_" in venue.bannerUrl else ""  # type: ignore [arg-type, operator]
     storage.remove_thumb(venue, storage_id_suffix=str(timestamp), ignore_thumb_count=True)
 
     # some older venues might have a banner but not the original file
@@ -786,7 +786,7 @@ def rm_previous_venue_thumbs(venue: models.Venue) -> None:
         original_image_timestamp = get_timestamp_from_url(original_image_url)
         storage.remove_thumb(venue, storage_id_suffix=original_image_timestamp)
 
-    venue.bannerUrl = None
+    venue.bannerUrl = None  # type: ignore [method-assign, assignment]
     venue.bannerMeta = None
     venue.thumbCount = 1
 
@@ -825,7 +825,7 @@ def save_venue_banner(
         model_with_thumb=venue, image_as_bytes=content, storage_id_suffix_str=original_image_timestamp, keep_ratio=True
     )
 
-    venue.bannerUrl = f"{venue.thumbUrl}_{banner_timestamp}"
+    venue.bannerUrl = f"{venue.thumbUrl}_{banner_timestamp}"  # type: ignore [method-assign, assignment]
     venue.bannerMeta = {
         "image_credit": image_credit,
         "author_id": user.id,
