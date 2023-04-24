@@ -3,7 +3,6 @@ import './Reimbursement.scss'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 
-import { api } from 'apiClient/api'
 import { BannerReimbursementsInfo } from 'components/Banner'
 import { ReimbursementsBreadcrumb } from 'components/ReimbursementsBreadcrumb'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
@@ -31,9 +30,6 @@ const Reimbursements = () => {
   const { currentUser } = useCurrentUser()
   const [isLoading, setIsLoading] = useState(true)
   const [venuesOptions, setVenuesOptions] = useState([])
-  const [reimbursementPointsOptions, setReimbursementPointsOptions] = useState(
-    []
-  )
 
   const loadVenues = useCallback(async () => {
     const venuesResponse = await getVenuesForOffererAdapter({
@@ -44,33 +40,12 @@ const Reimbursements = () => {
     setIsLoading(false)
   }, [setVenuesOptions])
 
-  const loadReimbursementPoints = useCallback(async () => {
-    try {
-      /* istanbul ignore next: TO FIX */
-      const reimbursementPointsResponse = await api.getReimbursementPoints()
-      setReimbursementPointsOptions(
-        sortByDisplayName(
-          reimbursementPointsResponse.map(item => ({
-            id: item['id'].toString(),
-            displayName: item['publicName'] || item['name'],
-          }))
-        )
-      )
-    } catch (err) {
-      /* istanbul ignore next: TO FIX */
-      // FIX ME
-      // eslint-disable-next-line
-      console.error(err)
-    }
-  }, [setReimbursementPointsOptions])
-
   const hasNoResults = !isLoading && !venuesOptions.length
   const hasResults = !isLoading && venuesOptions.length > 0
 
   useEffect(() => {
-    loadReimbursementPoints()
     loadVenues()
-  }, [loadVenues, loadReimbursementPoints])
+  }, [loadVenues])
 
   return (
     <>
@@ -89,15 +64,7 @@ const Reimbursements = () => {
           <ReimbursementsBreadcrumb />
 
           <Routes>
-            <Route
-              path="/justificatifs"
-              element={
-                <ReimbursementsInvoices
-                  reimbursementPointsOptions={reimbursementPointsOptions}
-                  isCurrentUserAdmin={currentUser.isAdmin}
-                />
-              }
-            />
+            <Route path="/justificatifs" element={<ReimbursementsInvoices />} />
             <Route
               path="/details"
               element={
