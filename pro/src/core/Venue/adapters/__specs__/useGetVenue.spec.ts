@@ -13,7 +13,7 @@ describe('useGetVenue', () => {
       bannerMeta: {
         image_credit: null,
         original_image_url:
-          'http://localhost/storage/thumbs/venues/CU_1661432578',
+          'https://localhost/storage/thumbs/venues/CU_1661432578',
         crop_params: {
           x_crop_percent: 0.005169172932330823,
           y_crop_percent: 0,
@@ -21,13 +21,13 @@ describe('useGetVenue', () => {
           width_crop_percent: 0.9896616541353384,
         },
       },
-      bannerUrl: 'http://localhost/storage/thumbs/venues/CU_1661432577',
+      bannerUrl: 'https://localhost/storage/thumbs/venues/CU_1661432577',
       city: 'Paris',
       collectiveDomains: [],
       contact: {
         email: 'test@test.com',
         phoneNumber: '0606060606',
-        website: 'http://test.com',
+        website: 'https://test.com',
       },
       dateCreated: '2022-07-29T12:18:43.087097Z',
       dmsToken: 'dms-token-12345',
@@ -95,7 +95,7 @@ describe('useGetVenue', () => {
       bannerMeta: {
         image_credit: '',
         original_image_url:
-          'http://localhost/storage/thumbs/venues/CU_1661432578',
+          'https://localhost/storage/thumbs/venues/CU_1661432578',
         crop_params: {
           x_crop_percent: 0.005169172932330823,
           y_crop_percent: 0,
@@ -103,13 +103,13 @@ describe('useGetVenue', () => {
           width_crop_percent: 0.9896616541353384,
         },
       },
-      bannerUrl: 'http://localhost/storage/thumbs/venues/CU_1661432577',
+      bannerUrl: 'https://localhost/storage/thumbs/venues/CU_1661432577',
       city: 'Paris',
       collectiveDomains: [],
       contact: {
         email: 'test@test.com',
         phoneNumber: '0606060606',
-        webSite: 'http://test.com',
+        webSite: 'https://test.com',
       },
       dateCreated: '2022-07-29T12:18:43.087097Z',
       demarchesSimplifieesApplicationId: null,

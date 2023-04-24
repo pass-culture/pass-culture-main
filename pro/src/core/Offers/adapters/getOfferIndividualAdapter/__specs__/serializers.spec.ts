@@ -138,12 +138,12 @@ describe('serializer', () => {
   const serializeOfferApiImageDataSet = [
     {
       activeMediation: {
-        thumbUrl: 'http://image.url',
+        thumbUrl: 'https://image.url',
         credit: 'John Do',
       } as unknown as GetIndividualOfferResponseModel[],
       expectedImage: {
-        originalUrl: 'http://image.url',
-        url: 'http://image.url',
+        originalUrl: 'https://image.url',
+        url: 'https://image.url',
         credit: 'John Do',
       },
     },
@@ -159,12 +159,12 @@ describe('serializer', () => {
     },
     {
       activeMediation: {
-        thumbUrl: 'http://image.url',
+        thumbUrl: 'https://image.url',
         credit: null,
       } as unknown as GetIndividualOfferResponseModel[],
       expectedImage: {
-        originalUrl: 'http://image.url',
-        url: 'http://image.url',
+        originalUrl: 'https://image.url',
+        url: 'https://image.url',
         credit: '',
       },
     },
@@ -181,13 +181,13 @@ describe('serializer', () => {
   )
   it('serializeOfferApiImage from thumbUrl', () => {
     const offerApi = {
-      thumbUrl: 'http://image.url',
+      thumbUrl: 'https://image.url',
       mediations: [],
     } as unknown as GetIndividualOfferResponseModel
 
     expect(serializeOfferApiImage(offerApi)).toEqual({
-      originalUrl: 'http://image.url',
-      url: 'http://image.url',
+      originalUrl: 'https://image.url',
+      url: 'https://image.url',
       credit: '',
     })
   })

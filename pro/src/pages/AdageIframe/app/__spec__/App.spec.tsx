@@ -106,7 +106,7 @@ describe('app', () => {
 
     beforeEach(() => {
       global.window = Object.create(window)
-      const url = 'http://www.example.com'
+      const url = 'https://www.example.com'
       Object.defineProperty(window, 'location', {
         value: {
           href: url,

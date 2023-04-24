@@ -88,8 +88,8 @@ describe('test updateIndividualOffer::serializers', () => {
         receiveNotificationEmails: true,
         bookingEmail: 'booking@email.org',
         isDuo: false,
-        externalTicketOfficeUrl: 'http://external.url',
-        url: 'http://my.url',
+        externalTicketOfficeUrl: 'https://external.url',
+        url: 'https://my.url',
         isVenueVirtual: false,
       } as IOfferIndividualFormValues
       patchBody = {
@@ -101,14 +101,14 @@ describe('test updateIndividualOffer::serializers', () => {
         mentalDisabilityCompliant: true,
         motorDisabilityCompliant: true,
         name: 'test name',
-        url: 'http://my.url',
+        url: 'https://my.url',
         visualDisabilityCompliant: true,
         withdrawalDelay: undefined,
         withdrawalDetails: 'test withdrawalDetails',
         withdrawalType: undefined,
         durationMinutes: 120,
         bookingEmail: 'booking@email.org',
-        externalTicketOfficeUrl: 'http://external.url',
+        externalTicketOfficeUrl: 'https://external.url',
         shouldSendMail: false,
       }
     })
