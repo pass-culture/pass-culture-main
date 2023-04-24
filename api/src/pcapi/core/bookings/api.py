@@ -442,6 +442,9 @@ def _compute_edition_cancellation_limit_date(
 
 
 def recompute_dnBookedQuantity(stock_ids: list[int]) -> None:
+    """
+    Changes are not commited within this function, use db.session.commit() if necessary.
+    """
     query = f"""
       WITH bookings_per_stock AS (
         SELECT
