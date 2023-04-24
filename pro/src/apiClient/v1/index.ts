@@ -69,6 +69,8 @@ export type { EducationalRedactorQueryModel } from './models/EducationalRedactor
 export type { EducationalRedactorResponseModel } from './models/EducationalRedactorResponseModel';
 export type { EducationalRedactors } from './models/EducationalRedactors';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
+export type { FinanceReimbursementPointListResponseModel } from './models/FinanceReimbursementPointListResponseModel';
+export type { FinanceReimbursementPointResponseModel } from './models/FinanceReimbursementPointResponseModel';
 export { GenderEnum } from './models/GenderEnum';
 export type { GenerateOffererApiKeyResponse } from './models/GenerateOffererApiKeyResponse';
 export type { GetCollectiveOfferCollectiveStockResponseModel } from './models/GetCollectiveOfferCollectiveStockResponseModel';
