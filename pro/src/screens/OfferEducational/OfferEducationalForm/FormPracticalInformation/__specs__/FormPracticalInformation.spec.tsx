@@ -50,16 +50,22 @@ describe('FormPracticalInformation', () => {
       currentOfferer: {
         ...offererFactory({}),
         managedVenues: [
-          getOfferVenueFactory({
-            id: 'V1',
-            publicName: 'Venue1',
-            name: 'Venue1',
-          }),
-          getOfferVenueFactory({
-            id: 'V2',
-            publicName: 'Venue2',
-            name: 'Venue2',
-          }),
+          {
+            ...getOfferVenueFactory({
+              id: 'V1',
+              publicName: 'Venue1',
+              name: 'Venue1',
+            }),
+            nonHumanizedId: 1,
+          },
+          {
+            ...getOfferVenueFactory({
+              id: 'V2',
+              publicName: 'Venue2',
+              name: 'Venue2',
+            }),
+            nonHumanizedId: 1,
+          },
         ],
       },
       disableForm: false,
@@ -67,7 +73,7 @@ describe('FormPracticalInformation', () => {
 
     initialValues = {
       eventAddress: {
-        venueId: 'V1',
+        venueId: 1,
         addressType: OfferAddressType.OFFERER_VENUE,
         otherAddress: '',
       },
@@ -118,7 +124,7 @@ describe('FormPracticalInformation', () => {
         eventAddress: {
           addressType: OfferAddressType.OTHER,
           otherAddress: 'A la mairie',
-          venueId: '',
+          venueId: null,
         },
       })
 
@@ -138,7 +144,7 @@ describe('FormPracticalInformation', () => {
         eventAddress: {
           addressType: OfferAddressType.SCHOOL,
           otherAddress: '',
-          venueId: '',
+          venueId: null,
         },
       })
 

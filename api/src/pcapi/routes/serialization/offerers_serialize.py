@@ -164,6 +164,7 @@ class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityCompliance
     address: str | None
     city: str | None
     id: str
+    nonHumanizedId: int
     isVirtual: bool
     publicName: str | None
     name: str
@@ -180,6 +181,7 @@ class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityCompliance
 
 class GetEducationalOffererResponseModel(BaseModel):
     id: str
+    nonHumanizedId: int
     name: str
     managedVenues: list[GetEducationalOffererVenueResponseModel]
 

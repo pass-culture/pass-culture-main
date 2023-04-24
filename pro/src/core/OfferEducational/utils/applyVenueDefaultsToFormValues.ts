@@ -13,8 +13,12 @@ export const applyVenueDefaultsToFormValues = (
   categories: EducationalCategories
 ): IOfferEducationalFormValues => {
   const venue = offerers
-    ?.find(({ id }) => id === values.offererId)
-    ?.managedVenues?.find(({ id }) => id === values.venueId)
+    ?.find(
+      ({ nonHumanizedId }) => nonHumanizedId.toString() === values.offererId
+    )
+    ?.managedVenues?.find(
+      ({ nonHumanizedId }) => nonHumanizedId.toString() === values.venueId
+    )
 
   if (isOfferCreated || venue === undefined) {
     return { ...values }
@@ -32,7 +36,7 @@ export const applyVenueDefaultsToFormValues = (
       DEFAULT_EAC_FORM_VALUES.interventionArea,
     eventAddress: {
       ...values.eventAddress,
-      venueId: values.venueId,
+      venueId: Number(values.venueId),
     },
     category: venueSubCategory?.categoryId ?? DEFAULT_EAC_FORM_VALUES.category,
     subCategory:

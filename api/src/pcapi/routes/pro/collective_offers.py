@@ -19,6 +19,7 @@ from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import educational_redactors
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize_or_raise
+from pcapi.utils.human_ids import humanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.workers.update_all_offers_active_status_job import update_all_collective_offers_active_status_job
 
@@ -118,6 +119,7 @@ def create_collective_offer(
     if body.offerer_id is not None:
         logger.error("offerer_id sent in body", extra={"offerer_id": body.offerer_id})
     try:
+        body.offer_venue.venueId = humanize(body.offer_venue.venueId)  # type: ignore [assignment]
         offer = educational_api_offer.create_collective_offer(offer_data=body, user=current_user)
     except offerers_exceptions.CannotFindOffererSiren:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
@@ -196,8 +198,8 @@ def edit_collective_offer(
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     new_values = body.dict(exclude_unset=True)
-    if "venueId" in new_values:
-        new_values["venueId"] = new_values["venueId"]
+    if "offerVenue" in new_values and "venueId" in new_values["offerVenue"]:
+        new_values["offerVenue"]["venueId"] = humanize(new_values["offerVenue"]["venueId"])
 
     try:
         offerers_api.can_offerer_create_educational_offer(offerer.id)
@@ -290,8 +292,6 @@ def edit_collective_offer_template(
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     new_values = body.dict(exclude_unset=True)
-    if "venueId" in new_values:
-        new_values["venueId"] = dehumanize_or_raise(new_values["venueId"])
 
     try:
         offerers_api.can_offerer_create_educational_offer(offerer.id)

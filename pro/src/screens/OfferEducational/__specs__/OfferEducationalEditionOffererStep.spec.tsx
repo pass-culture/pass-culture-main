@@ -5,6 +5,7 @@ import { CollectiveBookingStatus } from 'apiClient/v1'
 import { Mode } from 'core/OfferEducational'
 import {
   collectiveOfferFactory,
+  collectiveOfferOffererFactory,
   collectiveOfferVenueFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -18,6 +19,12 @@ import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : edition offerer step', () => {
   let props: IOfferEducationalProps
+  const firstvenueId = 34
+  const secondVenueId = 56
+  const thirdVenueId = 67
+  const fourthVenueId = 92
+  const firstOffererId = 45
+  const secondOffererId = 92
 
   beforeEach(() => {
     props = defaultEditionProps
@@ -28,24 +35,41 @@ describe('screens | OfferEducational : edition offerer step', () => {
       ...props,
       userOfferers: userOfferersFactory([
         {
-          id: 'OFFERER_1',
+          id: firstOffererId.toString(),
+          nonHumanizedId: firstOffererId,
           managedVenues: managedVenuesFactory([
-            { id: 'VENUE_1' },
-            { id: 'VENUE_2' },
+            { id: firstvenueId.toString(), nonHumanizedId: firstvenueId },
+            { id: secondVenueId.toString(), nonHumanizedId: secondVenueId },
           ]),
         },
         {
-          id: 'OFFERER_2',
+          id: secondOffererId.toString(),
+          nonHumanizedId: secondOffererId,
           managedVenues: managedVenuesFactory([
-            { id: 'VENUE_3' },
-            { id: 'VENUE_4' },
+            { id: thirdVenueId.toString(), nonHumanizedId: thirdVenueId },
+            { id: fourthVenueId.toString(), nonHumanizedId: fourthVenueId },
           ]),
         },
       ]),
       offer: collectiveOfferFactory(
-        { venueId: 'VENUE_3' },
+        {
+          venueId: thirdVenueId.toString(),
+          nonHumanizedId: thirdVenueId,
+          venue: {
+            ...collectiveOfferVenueFactory({
+              managingOfferer: collectiveOfferOffererFactory({
+                id: secondOffererId.toString(),
+                nonHumanizedId: secondOffererId,
+              }),
+            }),
+            nonHumanizedId: thirdVenueId,
+            id: thirdVenueId.toString(),
+          },
+        },
         undefined,
-        collectiveOfferVenueFactory({ managingOffererId: 'OFFERER_2' })
+        collectiveOfferVenueFactory({
+          managingOffererId: secondOffererId.toString(),
+        })
       ),
     }
 
@@ -59,13 +83,13 @@ describe('screens | OfferEducational : edition offerer step', () => {
     const offererSelect = await screen.findByLabelText('Structure')
 
     expect(offererSelect).toBeInTheDocument()
-    expect(offererSelect).toHaveValue('OFFERER_2')
+    expect(offererSelect).toHaveValue(secondOffererId.toString())
     expect(offererSelect).toBeDisabled()
 
     const venueSelect = await screen.findByLabelText('Lieu')
 
     expect(venueSelect).toBeInTheDocument()
-    expect(venueSelect).toHaveValue('VENUE_3')
+    expect(venueSelect).toHaveValue(thirdVenueId.toString())
     expect(venueSelect).not.toBeDisabled()
   })
 
@@ -74,24 +98,42 @@ describe('screens | OfferEducational : edition offerer step', () => {
       ...props,
       userOfferers: userOfferersFactory([
         {
-          id: 'OFFERER_1',
+          id: firstOffererId.toString(),
+          nonHumanizedId: firstOffererId,
           managedVenues: managedVenuesFactory([
-            { id: 'VENUE_1' },
-            { id: 'VENUE_2' },
+            { id: firstvenueId.toString(), nonHumanizedId: firstvenueId },
+            { id: secondVenueId.toString(), nonHumanizedId: secondVenueId },
           ]),
         },
         {
-          id: 'OFFERER_2',
+          id: secondOffererId.toString(),
+          nonHumanizedId: secondOffererId,
           managedVenues: managedVenuesFactory([
-            { id: 'VENUE_3' },
-            { id: 'VENUE_4' },
+            { id: thirdVenueId.toString(), nonHumanizedId: thirdVenueId },
+            { id: fourthVenueId.toString(), nonHumanizedId: fourthVenueId },
           ]),
         },
       ]),
       offer: collectiveOfferFactory(
-        { venueId: 'VENUE_3', lastBookingStatus: CollectiveBookingStatus.USED },
+        {
+          venueId: thirdVenueId.toString(),
+          nonHumanizedId: thirdVenueId,
+          venue: {
+            ...collectiveOfferVenueFactory({
+              managingOfferer: collectiveOfferOffererFactory({
+                id: secondOffererId.toString(),
+                nonHumanizedId: secondOffererId,
+              }),
+            }),
+            nonHumanizedId: thirdVenueId,
+            id: thirdVenueId.toString(),
+          },
+          lastBookingStatus: CollectiveBookingStatus.USED,
+        },
         undefined,
-        collectiveOfferVenueFactory({ managingOffererId: 'OFFERER_2' })
+        collectiveOfferVenueFactory({
+          managingOffererId: secondOffererId.toString(),
+        })
       ),
     }
     renderWithProviders(<OfferEducational {...props} />)
@@ -99,7 +141,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     const venueSelect = await screen.findByLabelText('Lieu')
 
     expect(venueSelect).toBeInTheDocument()
-    expect(venueSelect).toHaveValue('VENUE_3')
+    expect(venueSelect).toHaveValue(thirdVenueId.toString())
     expect(venueSelect).toBeDisabled()
   })
 

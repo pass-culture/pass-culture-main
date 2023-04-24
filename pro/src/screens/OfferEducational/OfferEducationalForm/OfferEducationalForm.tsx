@@ -17,7 +17,6 @@ import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import { Banner, ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { dehumanizeId } from 'utils/dehumanize'
 import { sortByLabel } from 'utils/strings'
 
 import { IOfferEducationalProps } from '../OfferEducational'
@@ -80,7 +79,7 @@ const OfferEducationalForm = ({
   const onOffererChange = useCallback(
     (newOffererId: string) => {
       const selectedOfferer = userOfferers.find(
-        offerer => offerer.id === newOffererId
+        offerer => offerer.nonHumanizedId.toString() === newOffererId
       )
 
       if (selectedOfferer) {
@@ -93,7 +92,7 @@ const OfferEducationalForm = ({
           setIsLoading(true)
 
           const { isOk, message, payload } = await getIsOffererEligible(
-            dehumanizeId(selectedOfferer.id) || 0
+            selectedOfferer.nonHumanizedId
           )
 
           if (isOk) {
@@ -111,7 +110,7 @@ const OfferEducationalForm = ({
         checkOffererEligibilityToEducationalOffer()
 
         let venuesOptions = selectedOfferer.managedVenues.map(item => ({
-          value: item['id'] as string,
+          value: item['nonHumanizedId'].toString(),
           label: item['name'] as string,
         }))
         if (venuesOptions.length > 1) {

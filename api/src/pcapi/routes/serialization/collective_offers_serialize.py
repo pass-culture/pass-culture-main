@@ -220,6 +220,7 @@ class GetCollectiveOfferManagingOffererResponseModel(BaseModel):
     dateCreated: datetime
     dateModifiedAtLastProvider: datetime | None
     id: str
+    nonHumanizedId: int
     idAtProviders: str | None
     isActive: bool
     isValidated: bool
@@ -281,7 +282,9 @@ class OfferAddressType(enum.Enum):
 class CollectiveOfferOfferVenueResponseModel(BaseModel):
     addressType: OfferAddressType
     otherAddress: str
-    venueId: str
+    venueId: int | None
+
+    _humanize_venueId = dehumanize_field("venueId")
 
 
 class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):

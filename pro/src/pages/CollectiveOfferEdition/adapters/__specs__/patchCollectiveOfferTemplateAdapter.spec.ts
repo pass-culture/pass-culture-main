@@ -35,7 +35,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
         eventAddress: {
           addressType: OfferAddressType.OTHER,
           otherAddress: '1 rue des polissons, Paris 75017',
-          venueId: '',
+          venueId: null,
         },
         interventionArea: [],
         participants: allParticipantsOptionsToFalse,
@@ -62,7 +62,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
         eventAddress: {
           addressType: OfferAddressType.OTHER,
           otherAddress: '1 rue des polissons, Paris 75017',
-          venueId: '',
+          venueId: null,
         },
         interventionArea: [],
         participants: allParticipantsOptionsToFalse,

@@ -42,9 +42,7 @@ describe('screens | OfferEducational : event address step', () => {
       ).not.toBeChecked()
       expect(screen.getByLabelText('Autre')).not.toBeChecked()
 
-      expect(screen.getByLabelText('Sélectionner le lieu')).toHaveValue(
-        'VENUE_ID'
-      )
+      expect(screen.getByLabelText('Sélectionner le lieu')).toHaveValue('1')
       expect(screen.getByLabelText('Sélectionner le lieu')).toBeDisabled()
 
       expect(
@@ -100,15 +98,24 @@ describe('screens | OfferEducational : event address step', () => {
   })
   // TO DO: move this test, it does not belong to Address step
   describe('when there are multiple venues managed by the offerer', () => {
+    const firstVenueId = '12'
+    const secondVenueId = '23'
     beforeEach(() => {
       props = {
         ...defaultCreationProps,
         userOfferers: userOfferersFactory([
           {
-            id: 'OFFERER_1',
+            id: '1',
+            nonHumanizedId: 1,
             managedVenues: [
-              managedVenueFactory({ id: 'VENUE_1' }),
-              managedVenueFactory({ id: 'VENUE_2' }),
+              managedVenueFactory({
+                id: firstVenueId,
+                nonHumanizedId: Number(firstVenueId),
+              }),
+              managedVenueFactory({
+                id: secondVenueId,
+                nonHumanizedId: Number(secondVenueId),
+              }),
             ],
           },
         ]),
@@ -127,19 +134,19 @@ describe('screens | OfferEducational : event address step', () => {
       // wait for page to be rendered
       const offererSelect = await screen.findByLabelText('Lieu')
       // select venue to open step Address
-      await userEvent.selectOptions(offererSelect, ['VENUE_1'])
+      await userEvent.selectOptions(offererSelect, [firstVenueId])
 
       const offerVenueSelect = await screen.findByLabelText(
         'Sélectionner le lieu'
       )
-      expect(offerVenueSelect).toHaveValue('VENUE_1')
+      expect(offerVenueSelect).toHaveValue(firstVenueId)
       expect(offerVenueSelect.children).toHaveLength(3)
 
-      await userEvent.selectOptions(offerVenueSelect, 'VENUE_2')
+      await userEvent.selectOptions(offerVenueSelect, secondVenueId)
       await userEvent.selectOptions(offerVenueSelect, '')
       await userEvent.tab()
 
-      expect(offerVenueSelect).toHaveValue('VENUE_1')
+      expect(offerVenueSelect).toHaveValue(firstVenueId)
     })
 
     it('should prefill the venue data when switching from one event adress type to offerer venue type', async () => {
@@ -148,12 +155,12 @@ describe('screens | OfferEducational : event address step', () => {
       // wait for page to be rendered
       const offererSelect = await screen.findByLabelText('Lieu')
       // select venue to open step Address
-      await userEvent.selectOptions(offererSelect, ['VENUE_1'])
+      await userEvent.selectOptions(offererSelect, [firstVenueId])
 
       const offerVenueSelect = await screen.findByLabelText(
         'Sélectionner le lieu'
       )
-      expect(offerVenueSelect).toHaveValue('VENUE_1')
+      expect(offerVenueSelect).toHaveValue(firstVenueId)
 
       await userEvent.click(await screen.findByLabelText('Autre'))
       expect(screen.getByLabelText('Autre')).toBeChecked()
@@ -161,21 +168,25 @@ describe('screens | OfferEducational : event address step', () => {
       await userEvent.click(await screen.findByLabelText('Dans votre lieu'))
       expect(screen.getByLabelText('Dans votre lieu')).toBeChecked()
 
-      expect(offerVenueSelect).toHaveValue('VENUE_1')
+      expect(offerVenueSelect).toHaveValue(firstVenueId)
     })
 
     it('should prefill intervention field with venue intervention field when selecting venue', async () => {
+      const offererId = '55'
+      const venueId = '42'
       renderWithProviders(
         <OfferEducational
           {...props}
           userOfferers={[
             ...props.userOfferers,
             userOffererFactory({
-              id: 'OFFERER_WITH_INTERVENTION_AREA',
+              id: offererId,
+              nonHumanizedId: Number(offererId),
               managedVenues: [
                 managedVenueFactory({}),
                 managedVenueFactory({
-                  id: 'VENUE_WITH_INTERVENTION_AREA',
+                  id: venueId,
+                  nonHumanizedId: Number(venueId),
                   collectiveInterventionArea: ['01', '02'],
                 }),
               ],
@@ -186,22 +197,14 @@ describe('screens | OfferEducational : event address step', () => {
 
       const offererSelect = await screen.findByLabelText('Structure')
 
-      await userEvent.selectOptions(offererSelect, [
-        'OFFERER_WITH_INTERVENTION_AREA',
-      ])
-      expect(screen.queryByLabelText('Structure')).toHaveValue(
-        'OFFERER_WITH_INTERVENTION_AREA'
-      )
+      await userEvent.selectOptions(offererSelect, [offererId])
+      expect(screen.queryByLabelText('Structure')).toHaveValue(offererId)
 
       const venuesSelect = await screen.findByLabelText('Lieu')
 
-      await userEvent.selectOptions(venuesSelect, [
-        'VENUE_WITH_INTERVENTION_AREA',
-      ])
+      await userEvent.selectOptions(venuesSelect, [venueId])
 
-      expect(screen.queryByLabelText('Lieu')).toHaveValue(
-        'VENUE_WITH_INTERVENTION_AREA'
-      )
+      expect(screen.queryByLabelText('Lieu')).toHaveValue(venueId)
 
       await userEvent.click(await screen.findByLabelText('Autre'))
       expect(screen.getByLabelText('Autre')).toBeChecked()

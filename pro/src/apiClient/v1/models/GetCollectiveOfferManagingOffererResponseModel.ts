@@ -13,6 +13,7 @@ export type GetCollectiveOfferManagingOffererResponseModel = {
   isValidated: boolean;
   lastProviderId?: string | null;
   name: string;
+  nonHumanizedId: number;
   postalCode: string;
   siren?: string | null;
   thumbCount: number;

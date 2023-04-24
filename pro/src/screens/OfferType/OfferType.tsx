@@ -107,9 +107,7 @@ const OfferType = (): JSX.Element => {
 
       if (offererId) {
         const { isOk, message, payload } =
-          await canOffererCreateCollectiveOfferAdapter(
-            dehumanizeId(offererId) || 0
-          )
+          await canOffererCreateCollectiveOfferAdapter(Number(offererId))
 
         if (!isOk) {
           notify.error(message)
