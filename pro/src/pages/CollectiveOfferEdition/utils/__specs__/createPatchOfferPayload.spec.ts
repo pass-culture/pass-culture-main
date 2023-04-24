@@ -77,11 +77,12 @@ describe('createPatchOfferPayload', () => {
     audioDisabilityCompliant: false,
     visualDisabilityCompliant: true,
     bookingEmails: ['test3@email.com', 'test4@email.com'],
-    venueId: 'KC',
+    venueId: 12,
     offerVenue: {
       addressType: OfferAddressType.SCHOOL,
       otherAddress: 'TestOtherAddress update',
-      venueId: 'KC',
+      // @ts-expect-error api expect number
+      venueId: 15,
     },
     students: [],
     contactPhone: '0123456788',
