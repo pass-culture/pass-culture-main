@@ -32,18 +32,12 @@ const acceptableErrors = [
   {
     error:
       'Warning: Cannot update during an existing state transition (such as within `render`). Render methods should be a pure function of props and state.%s',
-    files: [
-      'pages/VenueEdition/VenueEdition.tsx',
-      'screens/SignupJourneyForm/Validation/Validation.tsx',
-    ],
+    files: ['screens/SignupJourneyForm/Validation/Validation.tsx'],
   },
   {
     error:
       'Warning: Cannot update a component (`%s`) while rendering a different component (`%s`). To locate the bad setState() call inside `%s`, follow the stack trace as described in https://reactjs.org/link/setstate-in-render%s',
-    files: [
-      'pages/VenueEdition/VenueEdition.tsx',
-      'screens/SignupJourneyForm/Validation/Validation.tsx',
-    ],
+    files: ['screens/SignupJourneyForm/Validation/Validation.tsx'],
   },
   // This error exists in the following test:
   // src/pages/OfferIndividualWizard/Confirmation/__specs__/Confirmation.spec.tsx
