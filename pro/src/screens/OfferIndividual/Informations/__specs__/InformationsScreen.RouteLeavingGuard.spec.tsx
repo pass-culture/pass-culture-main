@@ -158,8 +158,8 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       speaker: 'Offer speaker',
       subcategoryId: 'physical',
       image: undefined,
-      url: 'http://offer.example.com',
-      externalTicketOfficeUrl: 'http://external.example.com',
+      url: 'https://offer.example.com',
+      externalTicketOfficeUrl: 'https://external.example.com',
       venueId: 1,
       venue: {
         id: 1,

@@ -48,12 +48,12 @@ describe('routes::Summary::serializers', () => {
       speaker: 'Offer speaker',
       subcategoryId: 'SCID',
       image: {
-        originalUrl: 'http://image.url.test',
-        url: 'http://image.url.test',
+        originalUrl: 'https://image.url.test',
+        url: 'https://image.url.test',
         credit: 'John Do',
       },
-      url: 'http://offer.example.com',
-      externalTicketOfficeUrl: 'http://external.example.com',
+      url: 'https://offer.example.com',
+      externalTicketOfficeUrl: 'https://external.example.com',
       venueId: 1,
       venue: {
         id: 1,
@@ -167,8 +167,8 @@ describe('routes::Summary::serializers', () => {
         [AccessiblityEnum.NONE]: false,
       },
       isDuo: false,
-      url: 'http://offer.example.com',
-      externalTicketOfficeUrl: 'http://external.example.com',
+      url: 'https://offer.example.com',
+      externalTicketOfficeUrl: 'https://external.example.com',
 
       author: 'Offer author',
       stageDirector: 'Offer stageDirector',

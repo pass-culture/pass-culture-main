@@ -19,8 +19,8 @@ describe('test ImageUploader:utils:buildInitialValues', () => {
   })
   it('should build initial values for given data', () => {
     const imageOffer: IOfferIndividualImage = {
-      originalUrl: 'http://cropped.test.url',
-      url: 'http://test.url',
+      originalUrl: 'https://cropped.test.url',
+      url: 'https://test.url',
       credit: 'John Do',
       cropParams: {
         xCropPercent: 0.5,

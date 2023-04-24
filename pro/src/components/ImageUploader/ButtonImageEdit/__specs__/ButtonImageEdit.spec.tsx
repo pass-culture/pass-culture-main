@@ -34,7 +34,7 @@ describe('test ButtonImageEdit', () => {
       ...props,
       initialValues: {
         ...props.initialValues,
-        imageUrl: 'http://test.url',
+        imageUrl: 'https://test.url',
       },
     }
     renderButtonImageEdit(props)
@@ -63,8 +63,8 @@ describe('test ButtonImageEdit', () => {
     props = {
       ...props,
       initialValues: {
-        imageUrl: 'http://test.url',
-        originalImageUrl: 'http://test.url',
+        imageUrl: 'https://test.url',
+        originalImageUrl: 'https://test.url',
         credit: 'John Do',
       },
     }

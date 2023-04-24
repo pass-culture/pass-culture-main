@@ -24,7 +24,7 @@ describe('src | components | Layout | ButtonDownloadCSV', () => {
 
       const props = {
         filename: 'test-csv',
-        href: 'http://test.com',
+        href: 'https://test.com',
         mimeType: 'text/csv',
         isDisabled: false,
       }
@@ -49,7 +49,7 @@ describe('src | components | Layout | ButtonDownloadCSV', () => {
 
       const props = {
         filename: 'test-csv',
-        href: 'http://test.com',
+        href: 'https://test.com',
         mimeType: 'text/csv',
         isDisabled: false,
       }
