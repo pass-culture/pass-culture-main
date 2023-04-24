@@ -125,6 +125,8 @@ export type { NewPasswordBodyModel } from './models/NewPasswordBodyModel';
 export { OfferAddressType } from './models/OfferAddressType';
 export type { OfferDomain } from './models/OfferDomain';
 export type { OffererApiKey } from './models/OffererApiKey';
+export type { OffererReimbursementPointListResponseModel } from './models/OffererReimbursementPointListResponseModel';
+export type { OffererReimbursementPointResponseModel } from './models/OffererReimbursementPointResponseModel';
 export type { OffererStatsResponseModel } from './models/OffererStatsResponseModel';
 export { OfferStatus } from './models/OfferStatus';
 export { OfferType } from './models/OfferType';
@@ -150,8 +152,6 @@ export type { ProUserCreationBodyModel } from './models/ProUserCreationBodyModel
 export type { ProUserCreationBodyV2Model } from './models/ProUserCreationBodyV2Model';
 export type { ProviderResponse } from './models/ProviderResponse';
 export type { ReimbursementCsvQueryModel } from './models/ReimbursementCsvQueryModel';
-export type { ReimbursementPointListResponseModel } from './models/ReimbursementPointListResponseModel';
-export type { ReimbursementPointResponseModel } from './models/ReimbursementPointResponseModel';
 export type { ResetPasswordBodyModel } from './models/ResetPasswordBodyModel';
 export type { SaveNewOnboardingDataQueryModel } from './models/SaveNewOnboardingDataQueryModel';
 export type { SharedCurrentUserResponseModel } from './models/SharedCurrentUserResponseModel';

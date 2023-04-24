@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type ReimbursementPointResponseModel = {
+export type OffererReimbursementPointResponseModel = {
   iban: string;
   venueId: number;
   venueName: string;
