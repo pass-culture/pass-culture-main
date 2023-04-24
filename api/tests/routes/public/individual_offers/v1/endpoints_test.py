@@ -17,7 +17,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import human_ids
 
