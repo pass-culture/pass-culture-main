@@ -288,7 +288,7 @@ def get_venue_and_check_access_for_offer_creation(
     if offer_data.template_id is not None:
         template = get_collective_offer_template_by_id(dehumanize_or_raise(offer_data.template_id))
         rest.check_user_has_access_to_offerer(user, offerer_id=template.venue.managingOffererId)
-    venue: offerers_models.Venue = rest.load_or_raise_error(offerers_models.Venue, offer_data.venue_id)
+    venue: offerers_models.Venue = offerers_models.Venue.query.get_or_404(offer_data.venue_id)
     rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
     offerers_api.can_offerer_create_educational_offer(venue.managingOffererId)
     offer_validation.check_offer_subcategory_is_valid(offer_data.subcategory_id)

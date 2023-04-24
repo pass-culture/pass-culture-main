@@ -26,7 +26,7 @@ class Returns200Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
@@ -37,7 +37,7 @@ class Returns200Test:
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -69,7 +69,7 @@ class Returns200Test:
         assert offer.contactPhone == "01 99 00 25 68"
         assert offer.offerVenue == {
             "addressType": "school",
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "otherAddress": "17 rue aléatoire",
         }
         assert offer.interventionArea == ["75", "92", "93"]
@@ -93,7 +93,7 @@ class Returns200Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
@@ -104,7 +104,7 @@ class Returns200Test:
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Collège - 6e"],
@@ -136,7 +136,7 @@ class Returns200Test:
         assert offer.contactPhone == "01 99 00 25 68"
         assert offer.offerVenue == {
             "addressType": "school",
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "otherAddress": "17 rue aléatoire",
         }
         assert offer.interventionArea == ["75", "92", "93"]
@@ -156,7 +156,7 @@ class Returns200Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "domains": [educational_domain.id],
             "description": "Ma super description",
@@ -193,7 +193,7 @@ class Returns200Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "description": "Ma super description",
             "bookingEmails": [],
             "domains": [],
@@ -204,7 +204,7 @@ class Returns200Test:
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -239,7 +239,7 @@ class Returns200Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
@@ -250,7 +250,7 @@ class Returns200Test:
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Collège - 6e", "Collège - 4e"],
@@ -305,7 +305,7 @@ class Returns403Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
@@ -316,7 +316,7 @@ class Returns403Test:
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -345,7 +345,7 @@ class Returns403Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
@@ -356,7 +356,7 @@ class Returns403Test:
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -386,7 +386,7 @@ class Returns400Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
             "description": "Ma super description",
@@ -423,7 +423,7 @@ class Returns400Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
@@ -460,7 +460,7 @@ class Returns400Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
@@ -497,7 +497,7 @@ class Returns400Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "durationMinutes": 60,
@@ -539,7 +539,7 @@ class Returns404Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "description": "Ma super description",
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "domains": [0, educational_domain1.id, educational_domain2.id],
@@ -550,7 +550,7 @@ class Returns404Test:
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -579,7 +579,7 @@ class Returns404Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "bookingEmails": ["offer1@example.com", "offer2@example.com"],
             "description": "Ma super description",
             "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
@@ -590,7 +590,7 @@ class Returns404Test:
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -620,7 +620,7 @@ class Returns404Test:
 
         # When
         data = {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "description": "Ma super description",
             "bookingEmails": [],
             "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
@@ -631,7 +631,7 @@ class Returns404Test:
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
