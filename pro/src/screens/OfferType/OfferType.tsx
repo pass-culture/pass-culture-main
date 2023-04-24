@@ -179,6 +179,7 @@ const OfferType = (): JSX.Element => {
     onSubmit: getNextPageHref,
   })
   const { values, handleChange } = formik
+
   return (
     <div className={styles['offer-type-container']}>
       <PageTitle title="Nature de l'offre" />
@@ -240,9 +241,12 @@ const OfferType = (): JSX.Element => {
                         COLLECTIVE_OFFER_SUBTYPE.TEMPLATE
                       }
                       label="Une offre vitrine"
-                      description={`Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée.${
-                        isDuplicateOfferSelectionActive &&
-                        ' Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.'
+                      description={`Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet 
+                      aux enseignants de vous contacter pour co-construire une offre adaptée.
+                      ${
+                        isDuplicateOfferSelectionActive
+                          ? ' Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.'
+                          : ''
                       }`}
                       onChange={handleChange}
                       value={COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
