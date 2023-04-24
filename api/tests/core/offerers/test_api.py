@@ -10,7 +10,6 @@ import jwt
 import pytest
 import sqlalchemy as sa
 
-from pcapi.connectors import api_adresse
 from pcapi.connectors import sirene
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -1347,43 +1346,6 @@ class UpdateOffererTagTest:
         assert offerer_tag.description == "Why so serious ?"
 
 
-class GetAdditionalInfoFromOnboardingDataTest:
-    def test_simple(self):
-        siret = "12345678901234"
-        info = offerers_api._get_additional_info_from_onboarding_data(siret)
-
-        assert info == offerers_api.AdditionalInfo(
-            address="3 RUE DE VALOIS",
-            city="Paris",
-            name="MINISTERE DE LA CULTURE",
-            latitude=2.308289,
-            longitude=48.87171,
-            postalCode="75001",
-            siren="123456789",
-        )
-
-    @patch("pcapi.connectors.sirene.get_siret", side_effect=sirene.SireneApiException)
-    def test_no_siret_info(self, _mocked_get_siret):
-        siret = "12345678901234"
-
-        with pytest.raises(sirene.SireneApiException):
-            offerers_api._get_additional_info_from_onboarding_data(siret)
-
-    @patch("pcapi.connectors.api_adresse.get_address", side_effect=api_adresse.NoResultException)
-    def test_no_address_info(self, _mocked_get_address):
-        siret = "12345678901234"
-        info = offerers_api._get_additional_info_from_onboarding_data(siret)
-
-        assert info is None
-
-    @patch("pcapi.connectors.api_adresse.get_address", side_effect=api_adresse.AdresseApiException)
-    def test_api_adresse_error(self, _mocked_get_address):
-        siret = "12345678901234"
-        info = offerers_api._get_additional_info_from_onboarding_data(siret)
-
-        assert info is None
-
-
 class CreateFromOnboardingDataTest:
     def assert_common_venue_attrs(self, venue: offerers_models.Venue) -> None:
         assert venue.address == "3 RUE DE VALOIS"
@@ -1417,7 +1379,12 @@ class CreateFromOnboardingDataTest:
         self, create_venue_without_siret: bool
     ) -> offerers_serialize.SaveNewOnboardingDataQueryModel:
         return offerers_serialize.SaveNewOnboardingDataQueryModel(
+            address="3 RUE DE VALOIS",
+            city="Paris",
             createVenueWithoutSiret=create_venue_without_siret,
+            latitude=2.30829,
+            longitude=48.87171,
+            postalCode="75001",
             publicName="Nom public de mon lieu",
             siret="85331845900031",
             target=offerers_models.Target.INDIVIDUAL,

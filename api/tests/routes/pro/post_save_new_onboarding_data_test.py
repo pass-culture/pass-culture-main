@@ -11,7 +11,12 @@ import pcapi.core.users.factories as users_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 REQUEST_BODY = {
+    "address": "3 RUE DE VALOIS",
+    "city": "Paris",
     "createVenueWithoutSiret": False,
+    "latitude": 2.30829,
+    "longitude": 48.87171,
+    "postalCode": "75001",
     "publicName": "Pass Culture",
     "siret": "85331845900031",
     "target": "INDIVIDUAL",
