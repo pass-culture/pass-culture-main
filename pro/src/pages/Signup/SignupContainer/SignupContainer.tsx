@@ -26,22 +26,6 @@ const SignupContainer = (): JSX.Element => {
 
   const newOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
 
-  useEffect(() => {
-    const script = document.createElement('script')
-
-    script.src = '//js.hs-scripts.com/5119289.js'
-    script.async = true
-    script.type = 'text/javascript'
-    script.id = 'hs-script-loader'
-    script.defer = true
-
-    document.body.appendChild(script)
-    return () => {
-      const script = document.getElementById('hs-script-loader') as Node
-      document.body.removeChild(script)
-    }
-  }, [])
-
   const onSubmit = (values: ISignupFormValues) => {
     const { legalUnitValues, siren, ...flattenvalues } = values
 
