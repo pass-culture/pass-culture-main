@@ -3,7 +3,7 @@ import * as React from 'react'
 
 export const UnauthenticatedError = (): JSX.Element => {
   return (
-    <main className="error">
+    <main className="error" id="content">
       <h1>Une erreur s’est produite.</h1>
       <div>
         Contactez{' '}

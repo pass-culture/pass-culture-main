@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom'
 import { ROOT_PATH } from 'utils/config'
 
 const Logo = ({ className, noLink, onClick, signPage }) => {
-  let src = `${ROOT_PATH}/icons/brand-logo-pro-small-pro.png`
+  let src = `${ROOT_PATH}/icons/logo-pass-culture-header.svg`
   if (signPage) {
     src = `${ROOT_PATH}/icons/logo-pass-culture-white.svg`
   }

@@ -5,6 +5,7 @@ import AppLayout from 'app/AppLayout'
 import { IRoute } from 'app/AppRouter/routesMap'
 import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
+import SkipLinks from 'components/SkipLinks'
 import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
@@ -25,38 +26,41 @@ const SignupJourneyRoutes = () => {
   }
 
   return (
-    <AppLayout
-      layoutConfig={{
-        fullscreen: true,
-        pageName: 'sign-up-journey',
-      }}
-      className={styles['sign-up-journey']}
-    >
-      <header className={styles['header']}>
-        <div className={styles['header-content']}>
-          <img
-            alt="Pass Culture pro, l'espace Pass Culture des acteurs culturels"
-            src={`${ROOT_PATH}/icons/brand-logo-pc-purple.png`}
-          />
-          <Button
-            onClick={onSignoutClick}
-            variant={ButtonVariant.TERNARY}
-            Icon={DisconnectFullIcon}
-          >
-            Se déconnecter
-          </Button>
-        </div>
-      </header>
-      <SignupJourneyContextProvider>
-        <SignupJourneyFormLayout>
-          <Routes>
-            {routesSignupJourney.map(({ path, element }: IRoute) => (
-              <Route key={path} path={path} element={element} />
-            ))}
-          </Routes>
-        </SignupJourneyFormLayout>
-      </SignupJourneyContextProvider>
-    </AppLayout>
+    <>
+      <SkipLinks displayMenu={false} />
+      <AppLayout
+        layoutConfig={{
+          fullscreen: true,
+          pageName: 'sign-up-journey',
+        }}
+        className={styles['sign-up-journey']}
+      >
+        <header className={styles['header']}>
+          <div className={styles['header-content']}>
+            <img
+              alt="Pass Culture pro, l'espace Pass Culture des acteurs culturels"
+              src={`${ROOT_PATH}/icons/brand-logo-pc-purple.png`}
+            />
+            <Button
+              onClick={onSignoutClick}
+              variant={ButtonVariant.TERNARY}
+              Icon={DisconnectFullIcon}
+            >
+              Se déconnecter
+            </Button>
+          </div>
+        </header>
+        <SignupJourneyContextProvider>
+          <SignupJourneyFormLayout>
+            <Routes>
+              {routesSignupJourney.map(({ path, element }: IRoute) => (
+                <Route key={path} path={path} element={element} />
+              ))}
+            </Routes>
+          </SignupJourneyFormLayout>
+        </SignupJourneyContextProvider>
+      </AppLayout>
+    </>
   )
 }
 
