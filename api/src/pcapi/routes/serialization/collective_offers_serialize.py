@@ -385,11 +385,17 @@ class CollectiveOfferResponseIdModel(BaseModel):
 class CollectiveOfferVenueBodyModel(BaseModel):
     addressType: OfferAddressType
     otherAddress: str
-    venueId: str
+    venueId: int | str
 
     class Config:
         alias_generator = to_camel
         extra = "forbid"
+
+    @validator("venueId", pre=True)
+    def validate_venueId(cls, venue_id: str | int) -> int | None:
+        if isinstance(venue_id, str):
+            return None
+        return venue_id
 
 
 def is_intervention_area_valid(
@@ -528,7 +534,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     subcategoryId: SubcategoryIdEnum | None
     domains: list[int] | None
     interventionArea: list[str] | None
-    venueId: str | None
+    venueId: int | None
 
     @validator("name", allow_reuse=True)
     def validate_name(cls, name: str | None) -> str | None:
@@ -584,7 +590,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         return booking_emails
 
     @validator("venueId", allow_reuse=True)
-    def validate_venue_id(cls, venue_id: str | None) -> str | None:
+    def validate_venue_id(cls, venue_id: int | None) -> int | None:
         if venue_id is None:
             raise ValueError("venue_id cannot be NULL.")
         return venue_id

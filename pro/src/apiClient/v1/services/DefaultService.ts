@@ -603,7 +603,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public editCollectiveOffer(
-    offerId: string,
+    offerId: number,
     requestBody?: PatchCollectiveOfferBodyModel,
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({

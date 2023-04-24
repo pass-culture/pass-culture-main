@@ -102,7 +102,7 @@ const OfferEducational = ({
         response = await patchCollectiveOfferAdapter({
           offer: offerValues,
           initialValues,
-          offerId: offer.id,
+          offerId: offer.nonHumanizedId,
         })
       }
     }
