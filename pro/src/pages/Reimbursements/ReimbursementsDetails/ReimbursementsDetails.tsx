@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
 import ButtonDownloadCSV from 'components/ButtonDownloadCSV'
+import useCurrentUser from 'hooks/useCurrentUser'
 import { ButtonLink } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { API_URL } from 'utils/config'
@@ -20,8 +21,7 @@ type venuesOptionsType = [
   }
 ]
 
-interface ReimbursementsDetailsProps {
-  isCurrentUserAdmin: boolean
+interface IReimbursementsDetailsProps {
   venuesOptions: venuesOptionsType
 }
 
@@ -32,9 +32,9 @@ interface ICsvQueryParams {
 }
 
 const ReimbursementsDetails = ({
-  isCurrentUserAdmin,
   venuesOptions,
-}: ReimbursementsDetailsProps): JSX.Element => {
+}: IReimbursementsDetailsProps): JSX.Element => {
+  const { currentUser } = useCurrentUser()
   const ALL_VENUES_OPTION_ID = 'allVenues'
   const today = getToday()
   const oneMonthAGo = new Date(
@@ -56,7 +56,7 @@ const ReimbursementsDetails = ({
     formatBrowserTimezonedDateAsUTC(date, FORMAT_ISO_DATE_ONLY)
   const isPeriodFilterSelected = periodStart && periodEnd
   const requireVenueFilterForAdmin =
-    isCurrentUserAdmin && venue === ALL_VENUES_OPTION_ID
+    currentUser.isAdmin && venue === ALL_VENUES_OPTION_ID
   const shouldDisableButtons =
     !isPeriodFilterSelected || requireVenueFilterForAdmin
 

@@ -25,7 +25,7 @@ interface IReimbursementPointV2 {
   readOnly: boolean
   venueHasPricingPoint?: boolean
 }
-type IReimbursementPointOptions = {
+export type IReimbursementPointOptions = {
   key: string
   displayName: string
   id: number

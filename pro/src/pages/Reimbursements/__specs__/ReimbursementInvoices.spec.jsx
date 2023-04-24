@@ -5,7 +5,7 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Reimbursements from '../Reimbursements'
+import { ReimbursementsInvoices } from '../ReimbursementsInvoices'
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
@@ -16,13 +16,12 @@ jest.mock('utils/date', () => ({
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getVenues: jest.fn(),
     getReimbursementPoints: jest.fn(),
     getInvoices: jest.fn(),
   },
 }))
 
-const renderReimbursements = props => {
+const renderReimbursementsInvoices = () => {
   const storeOverrides = {
     user: {
       currentUser: {
@@ -33,34 +32,10 @@ const renderReimbursements = props => {
     },
   }
 
-  renderWithProviders(<Reimbursements {...props} />, {
+  renderWithProviders(<ReimbursementsInvoices />, {
     storeOverrides,
-    initialRouterEntries: ['/justificatifs'],
   })
 }
-
-const BASE_VENUES = [
-  {
-    id: 'VENUE1',
-    managingOffererId: 'MO1',
-    name: 'name venue 1',
-    offererName: 'Offerer name venue 1',
-    publicName: 'Public Name venue 1',
-    isVirtual: false,
-    bookingEmail: 'fake@email.com',
-    withdrawalDetails: '',
-  },
-  {
-    id: 'VENUE2',
-    managingOffererId: 'MO1',
-    name: 'Offre numérique',
-    offererName: 'Offerer name venue 2',
-    publicName: '',
-    isVirtual: true,
-    bookingEmail: '',
-    withdrawalDetails: '',
-  },
-]
 
 const BASE_INVOICES = [
   {
@@ -89,18 +64,29 @@ const BASE_INVOICES = [
   },
 ]
 
-describe('reimbursementsWithFilters', () => {
-  let props
+const BASE_REIMBURSEMENT_POINTS = [
+  {
+    id: 1,
+    name: 'First reimbursement point',
+    publicName: 'My first Reimbursement Point',
+  },
+  {
+    id: 2,
+    name: 'Second reimbursement point',
+    publicName: 'My second Reimbursement Point',
+  },
+]
 
+describe('reimbursementsWithFilters', () => {
   beforeEach(() => {
-    props = { currentUser: { isAdmin: false } }
-    jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: BASE_VENUES })
     jest.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
-    jest.spyOn(api, 'getReimbursementPoints').mockResolvedValue([])
+    jest
+      .spyOn(api, 'getReimbursementPoints')
+      .mockResolvedValue(BASE_REIMBURSEMENT_POINTS)
   })
 
   it('shoud render a table with invoices', async () => {
-    renderReimbursements(props)
+    renderReimbursementsInvoices()
 
     const button = screen.queryByRole('link', {
       name: /Lancer la recherche/i,
@@ -152,7 +138,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should reorder invoices on order buttons click', async () => {
-    renderReimbursements(props)
+    renderReimbursementsInvoices()
     const button = screen.queryByRole('link', {
       name: /Lancer la recherche/i,
     })
