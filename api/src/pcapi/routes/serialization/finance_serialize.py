@@ -15,7 +15,7 @@ class ReimbursementPointListQueryModel(BaseModel):
     offerer_id: int | None
 
 
-class ReimbursementPointResponseModel(BaseModel):
+class FinanceReimbursementPointResponseModel(BaseModel):
     class Config:
         orm_mode = True
 
@@ -24,8 +24,8 @@ class ReimbursementPointResponseModel(BaseModel):
     publicName: str | None
 
 
-class ReimbursementPointListResponseModel(BaseModel):
-    __root__: list[ReimbursementPointResponseModel]
+class FinanceReimbursementPointListResponseModel(BaseModel):
+    __root__: list[FinanceReimbursementPointResponseModel]
 
 
 class InvoiceListQueryModel(BaseModel):

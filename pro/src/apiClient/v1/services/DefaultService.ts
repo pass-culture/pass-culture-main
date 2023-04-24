@@ -27,6 +27,7 @@ import type { EditVenueCollectiveDataBodyModel } from '../models/EditVenueCollec
 import type { EducationalDomainsResponseModel } from '../models/EducationalDomainsResponseModel';
 import type { EducationalInstitutionsResponseModel } from '../models/EducationalInstitutionsResponseModel';
 import type { EducationalRedactors } from '../models/EducationalRedactors';
+import type { FinanceReimbursementPointListResponseModel } from '../models/FinanceReimbursementPointListResponseModel';
 import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApiKeyResponse';
 import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
 import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetCollectiveOfferTemplateResponseModel';
@@ -947,10 +948,10 @@ export class DefaultService {
 
   /**
    * get_reimbursement_points <GET>
-   * @returns ReimbursementPointListResponseModel OK
+   * @returns FinanceReimbursementPointListResponseModel OK
    * @throws ApiError
    */
-  public getReimbursementPoints(): CancelablePromise<ReimbursementPointListResponseModel> {
+  public getReimbursementPoints(): CancelablePromise<FinanceReimbursementPointListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/finance/reimbursement-points',

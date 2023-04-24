@@ -43,9 +43,9 @@ def get_invoices(
 @private_api.route("/finance/reimbursement-points", methods=["GET"])
 @login_required
 @spectree_serialize(
-    response_model=finance_serialize.ReimbursementPointListResponseModel, api=blueprint.pro_private_schema
+    response_model=finance_serialize.FinanceReimbursementPointListResponseModel, api=blueprint.pro_private_schema
 )
-def get_reimbursement_points() -> finance_serialize.ReimbursementPointListResponseModel:
+def get_reimbursement_points() -> finance_serialize.FinanceReimbursementPointListResponseModel:
     reimbursement_points = finance_repository.get_reimbursement_points_query(
         user=current_user,
     )
@@ -53,9 +53,9 @@ def get_reimbursement_points() -> finance_serialize.ReimbursementPointListRespon
         sqla_orm.contains_eager(offerers_models.Venue.bankInformation),
     )
     reimbursement_points = reimbursement_points.order_by(offerers_models.Venue.name)
-    return finance_serialize.ReimbursementPointListResponseModel(
+    return finance_serialize.FinanceReimbursementPointListResponseModel(
         __root__=[
-            finance_serialize.ReimbursementPointResponseModel.from_orm(reimbursement_point)
+            finance_serialize.FinanceReimbursementPointResponseModel.from_orm(reimbursement_point)
             for reimbursement_point in reimbursement_points
         ],
     )
