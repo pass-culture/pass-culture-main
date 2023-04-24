@@ -1,6 +1,7 @@
-import { screen } from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
+import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -64,6 +65,7 @@ jest.mock('react-router-dom', () => ({
     offererId: '1234',
     venueId: '12',
   }),
+  useNavigate: jest.fn(),
 }))
 
 describe('route VenueEdition', () => {
@@ -195,14 +197,15 @@ describe('route VenueEdition', () => {
         ''
       )
     )
+    const mockNavigate = jest.fn()
+    jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     // When
     renderVenueEdition(venue.nonHumanizedId, offerer.nonHumanizedId)
 
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
     // Then
     expect(api.getVenue).toHaveBeenCalledTimes(1)
-    const homeTitle = await screen.findByRole('heading', {
-      name: 'Home',
-    })
-    expect(homeTitle).toBeInTheDocument()
+
+    expect(mockNavigate).toHaveBeenCalledWith('/accueil')
   })
 })
