@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useId, useState } from 'react'
 
 import {
   AdageFrontRoles,
@@ -78,8 +78,10 @@ export const App = (): JSX.Element => {
 
   const removeVenueFilter = useCallback(() => setVenueFilter(null), [])
 
+  const uniqueId = useId()
+
   useEffect(() => {
-    initAlgoliaAnalytics()
+    initAlgoliaAnalytics(uniqueId)
   }, [])
 
   if (isLoading) {

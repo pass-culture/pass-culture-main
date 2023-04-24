@@ -1,9 +1,8 @@
 import cn from 'classnames'
-import React from 'react'
+import React, { useId } from 'react'
 
 import { ClearIcon } from 'icons'
 import Tooltip from 'ui-kit/Tooltip'
-import { uniqId } from 'utils/uniqId'
 
 import FieldError from '../FieldError'
 
@@ -61,7 +60,7 @@ const FieldLayout = ({
 }: FieldLayoutProps): JSX.Element => {
   const hasError = showError && !!error
   const hasCounter = count !== undefined && maxLength !== undefined
-  const tooltipId = uniqId()
+  const tooltipId = useId()
 
   const clearButton = (
     <button
