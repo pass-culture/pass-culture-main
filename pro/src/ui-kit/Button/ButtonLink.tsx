@@ -1,10 +1,9 @@
 import cn from 'classnames'
-import React, { MouseEventHandler } from 'react'
+import React, { MouseEventHandler, useId } from 'react'
 import { Link } from 'react-router-dom'
 
 import { ReactComponent as IcoArrowRight } from 'icons/ico-mini-arrow-right.svg'
 import Tooltip from 'ui-kit/Tooltip'
-import { uniqId } from 'utils/uniqId'
 
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
@@ -96,7 +95,7 @@ const ButtonLink = ({
       }
     : {}
 
-  const tooltipId = uniqId()
+  const tooltipId = useId()
   const tooltipProps = hasTooltip ? { 'aria-describedby': tooltipId } : {}
 
   body = isExternal ? (
