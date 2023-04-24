@@ -50,7 +50,7 @@ const sharedCollectiveOfferData = {
   isPublicApi: false,
   nonHumanizedId: 123,
   offerVenue: {
-    venueId: '',
+    venueId: null,
     otherAddress: 'A la mairie',
     addressType: OfferAddressType.OTHER,
   },
@@ -68,10 +68,11 @@ export const collectiveOfferFactory = (
   customVenue: GetCollectiveOfferVenueResponseModel = collectiveOfferVenueFactory()
 ): CollectiveOffer => {
   const stock = customStock === null ? null : customStock
-
+  const currentOfferId = offerId++
   return {
     ...sharedCollectiveOfferData,
-    id: (offerId++).toString(),
+    id: currentOfferId.toString(),
+    nonHumanizedId: currentOfferId,
     venue: customVenue,
     isBookable: true,
     isVisibilityEditable: true,
@@ -138,6 +139,7 @@ export const collectiveOfferOffererFactory = (
   const currentOffererId = offererId++
   return {
     id: `OFFERER${currentOffererId}`,
+    nonHumanizedId: currentOffererId,
     name: `La nom de la structure ${currentOffererId}`,
     city: 'Paris',
     dateCreated: new Date().toISOString(),
@@ -227,7 +229,7 @@ export const collectiveBookingDetailsFactory = (
     offerVenue: {
       addressType: OfferAddressType.SCHOOL,
       otherAddress: '',
-      venueId: 'V1',
+      venueId: 1,
     },
     offererId: 'O1',
     price: 100,

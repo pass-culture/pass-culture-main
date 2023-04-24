@@ -6,7 +6,6 @@ import {
   parseDuration,
   serializeParticipants,
 } from 'core/OfferEducational'
-import { dehumanizeId } from 'utils/dehumanize'
 
 const serializer = {
   title: (
@@ -70,7 +69,7 @@ const serializer = {
   ) => {
     const eventAddressPayload = {
       ...offer.eventAddress,
-      venueId: dehumanizeId(offer.eventAddress.venueId),
+      venueId: offer.eventAddress.venueId,
     }
     return {
       ...payload,

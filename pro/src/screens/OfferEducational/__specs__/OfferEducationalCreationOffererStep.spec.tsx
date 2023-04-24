@@ -40,7 +40,9 @@ describe('screens | OfferEducational : creation offerer step', () => {
       renderWithProviders(<OfferEducational {...props} />)
       const offererSelect = await screen.findByLabelText('Structure')
 
-      expect(offererSelect).toHaveValue('OFFERER_ID')
+      expect(offererSelect).toHaveValue(
+        props.userOfferers[0].nonHumanizedId.toString()
+      )
       expect(offererSelect).toBeDisabled()
       expect(offererSelect.children).toHaveLength(1)
     })
@@ -143,14 +145,18 @@ describe('screens | OfferEducational : creation offerer step', () => {
       const venueSelect = await screen.findByLabelText('Lieu')
 
       expect(offererSelect).toBeInTheDocument()
-      expect(offererSelect).toHaveValue('OFFERER_ID')
+      expect(offererSelect).toHaveValue(
+        props.userOfferers[0].nonHumanizedId.toString()
+      )
       expect(offererSelect.children).toHaveLength(1)
       expect(offererSelect).toBeDisabled()
 
       expect(screen.queryByTestId('error-offererId')).not.toBeInTheDocument()
 
       expect(venueSelect).toBeInTheDocument()
-      expect(venueSelect).toHaveValue('VENUE_ID')
+      expect(venueSelect).toHaveValue(
+        props.userOfferers[0].managedVenues[0].nonHumanizedId.toString()
+      )
       expect(venueSelect.children).toHaveLength(1)
       expect(venueSelect).toBeDisabled()
       expect(screen.queryByTestId('error-venueId')).not.toBeInTheDocument()
@@ -160,16 +166,14 @@ describe('screens | OfferEducational : creation offerer step', () => {
   })
 
   describe('when there is multiple offerers associated with an account', () => {
-    const nonHumanizedFirstOffererId = 1
-    const firstOffererId = 'AE'
-    const nonHumanizedSecondOffererId = 2
-    const secondOffererId = 'A9'
+    const firstOffererId = 1
+    const secondOffererId = 2
     beforeEach(() => {
       props = {
         ...defaultCreationProps,
         userOfferers: userOfferersFactory([
-          { id: firstOffererId },
-          { id: secondOffererId },
+          { id: firstOffererId.toString(), nonHumanizedId: firstOffererId },
+          { id: secondOffererId.toString(), nonHumanizedId: secondOffererId },
         ]),
       }
 
@@ -203,7 +207,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
       expect(getIsOffererEligible).toHaveBeenCalledTimes(0)
 
-      await userEvent.selectOptions(offererSelect, firstOffererId)
+      await userEvent.selectOptions(offererSelect, firstOffererId.toString())
 
       await userEvent.click(offererSelect)
       await userEvent.tab()
@@ -213,9 +217,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       ).not.toBeInTheDocument()
 
       expect(getIsOffererEligible).toHaveBeenCalledTimes(1)
-      expect(getIsOffererEligible).toHaveBeenCalledWith(
-        nonHumanizedFirstOffererId
-      )
+      expect(getIsOffererEligible).toHaveBeenCalledWith(firstOffererId)
     })
 
     it('should check eligibility every time a diferent offerer is selected', async () => {
@@ -228,31 +230,29 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
       const offererSelect = await screen.findByLabelText('Structure')
 
-      await userEvent.selectOptions(offererSelect, firstOffererId)
+      await userEvent.selectOptions(offererSelect, firstOffererId.toString())
 
-      await userEvent.selectOptions(offererSelect, secondOffererId)
+      await userEvent.selectOptions(offererSelect, secondOffererId.toString())
 
       await waitFor(() => expect(getIsOffererEligible).toHaveBeenCalledTimes(2))
-
-      expect(getIsOffererEligible).toHaveBeenCalledWith(
-        nonHumanizedFirstOffererId
-      )
-      expect(getIsOffererEligible).toHaveBeenCalledWith(
-        nonHumanizedSecondOffererId
-      )
+      expect(getIsOffererEligible).toHaveBeenCalledWith(secondOffererId)
+      expect(getIsOffererEligible).toHaveBeenCalledWith(secondOffererId)
     })
   })
 
   describe('when there is multiple venues managed by an offerer', () => {
+    const venue1Id = 1
+    const venue2Id = 2
+    const venue3Id = 3
     beforeEach(() => {
       props = {
         ...defaultCreationProps,
         userOfferers: userOfferersFactory([
           {
             managedVenues: managedVenuesFactory([
-              { id: 'VENUE_1', name: 'Venue 1' },
-              { id: 'VENUE_2', name: 'Venue 2' },
-              { id: 'VENUE_3', name: 'A - Venue 3' },
+              { id: 'VENUE_1', name: 'Venue 1', nonHumanizedId: venue1Id },
+              { id: 'VENUE_2', name: 'Venue 2', nonHumanizedId: venue2Id },
+              { id: 'VENUE_3', name: 'A - Venue 3', nonHumanizedId: venue3Id },
             ]),
           },
         ]),
@@ -285,7 +285,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
         await screen.findByText('Veuillez sélectionner un lieu')
       ).toBeInTheDocument()
 
-      await userEvent.selectOptions(venueSelect, 'VENUE_1')
+      await userEvent.selectOptions(venueSelect, venue1Id.toString())
 
       expect(
         screen.queryByText('Veuillez sélectionner un lieu')

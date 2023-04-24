@@ -18,6 +18,9 @@ describe('screens | OfferEducational : event address step', () => {
   let props: IOfferEducationalProps
   let store: Partial<RootState>
 
+  const firstVenueId = 12
+  const secondVenueId = 13
+  const offererId = 15
   beforeEach(() => {
     props = {
       ...defaultCreationProps,
@@ -34,11 +37,13 @@ describe('screens | OfferEducational : event address step', () => {
     props.userOfferers = [
       ...props.userOfferers,
       userOffererFactory({
-        id: 'OFFERER_WITH_ACCESSIBILITY',
+        id: offererId.toString(),
+        nonHumanizedId: offererId,
         managedVenues: [
           managedVenueFactory({}),
           managedVenueFactory({
-            id: 'VENUE_WITH_ACCESSIBILITY',
+            id: '43',
+            nonHumanizedId: 43,
             mentalDisabilityCompliant: true,
             motorDisabilityCompliant: true,
             visualDisabilityCompliant: false,
@@ -53,10 +58,10 @@ describe('screens | OfferEducational : event address step', () => {
 
     const offererSelect = await screen.findByLabelText('Structure')
 
-    await userEvent.selectOptions(offererSelect, ['OFFERER_WITH_ACCESSIBILITY'])
+    await userEvent.selectOptions(offererSelect, [offererId.toString()])
 
     const venuesSelect = await screen.findByLabelText('Lieu')
-    await userEvent.selectOptions(venuesSelect, ['VENUE_WITH_ACCESSIBILITY'])
+    await userEvent.selectOptions(venuesSelect, ['43'])
 
     const accessibilityCheckboxes = screen.queryAllByRole('checkbox', {
       checked: true,
@@ -69,11 +74,17 @@ describe('screens | OfferEducational : event address step', () => {
     props.userOfferers = [
       ...props.userOfferers,
       userOffererFactory({
-        id: 'offerer',
+        id: offererId.toString(),
+        nonHumanizedId: offererId,
         managedVenues: [
-          managedVenueFactory({ id: 'first_venue', name: 'First venue name' }),
           managedVenueFactory({
-            id: 'second_venue',
+            id: firstVenueId.toString(),
+            nonHumanizedId: firstVenueId,
+            name: 'First venue name',
+          }),
+          managedVenueFactory({
+            id: secondVenueId.toString(),
+            nonHumanizedId: secondVenueId,
             name: 'Second venue name',
           }),
         ],
@@ -85,23 +96,23 @@ describe('screens | OfferEducational : event address step', () => {
 
     const offererSelect = await screen.findByLabelText('Structure')
 
-    await userEvent.selectOptions(offererSelect, ['offerer'])
+    await userEvent.selectOptions(offererSelect, [offererId.toString()])
 
     const venuesSelect = await screen.findByLabelText('Lieu')
-    await userEvent.selectOptions(venuesSelect, ['first_venue'])
+    await userEvent.selectOptions(venuesSelect, [firstVenueId.toString()])
 
     const offerVenueSelect = await screen.findByLabelText(
       'Sélectionner le lieu'
     )
-    expect(offerVenueSelect).toHaveValue('first_venue')
+    expect(offerVenueSelect).toHaveValue(firstVenueId.toString())
 
     expect(
       screen.getByText('First venue name', { exact: false, selector: 'div' })
     ).toBeInTheDocument()
 
-    await userEvent.selectOptions(venuesSelect, ['second_venue'])
+    await userEvent.selectOptions(venuesSelect, [secondVenueId.toString()])
 
-    expect(offerVenueSelect).toHaveValue('second_venue')
+    expect(offerVenueSelect).toHaveValue(secondVenueId.toString())
 
     expect(
       screen.getByText('Second venue name', { exact: false, selector: 'div' })

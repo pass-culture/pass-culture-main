@@ -58,7 +58,7 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
         offerVenue: {
           addressType: OfferAddressType.OFFERER_VENUE,
           otherAddress: '',
-          venueId: 'A1',
+          venueId: 12,
         },
         status: OfferStatus.ACTIVE,
         students: [],
@@ -70,6 +70,7 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
           nonHumanizedId: 1,
           managingOfferer: {
             city: 'Vélizy',
+            nonHumanizedId: 1,
             dateCreated: 'date',
             id: '1',
             isActive: true,

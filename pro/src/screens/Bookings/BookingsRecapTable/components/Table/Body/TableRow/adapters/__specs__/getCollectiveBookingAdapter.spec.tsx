@@ -52,7 +52,7 @@ describe('getCollectiveBookingAdapter', () => {
       offerVenue: {
         addressType: OfferAddressType.OTHER,
         otherAddress: 'Quelque part',
-        venueId: '',
+        venueId: null,
       },
       venueId: 'A1',
       offererId: 'O1',
