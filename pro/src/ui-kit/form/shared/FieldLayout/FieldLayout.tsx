@@ -16,6 +16,7 @@ export type FieldLayoutBaseProps = {
   description?: string
   maxLength?: number
   isLabelHidden?: boolean
+  hasLabelLineBreak?: boolean
   isOptional?: boolean
   className?: string
   classNameLabel?: string
@@ -42,6 +43,7 @@ const FieldLayout = ({
   children,
   label,
   isLabelHidden = false,
+  hasLabelLineBreak = true,
   className,
   name,
   showError = false,
@@ -87,7 +89,13 @@ const FieldLayout = ({
           classNameLabel,
         })}
       >
-        <label className={cn(styles['field-layout-label'])} htmlFor={name}>
+        <label
+          className={cn(
+            styles['field-layout-label'],
+            hasLabelLineBreak && styles['field-layout-label-break']
+          )}
+          htmlFor={name}
+        >
           {label}
           {isOptional && (
             <span className={styles['field-layout-optional']}>Optionnel</span>
