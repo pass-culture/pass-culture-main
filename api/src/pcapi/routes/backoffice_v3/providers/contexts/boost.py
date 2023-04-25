@@ -13,10 +13,11 @@ class BoostContext(ProviderContext):
         return providers_models.BoostCinemaDetails
 
     @classmethod
-    def get_form(cls, provider_id: int | None = None) -> forms.EditBoostForm:
-        if provider_id is None:
-            return forms.EditBoostForm()
+    def get_form(cls) -> forms.EditBoostForm:
+        return forms.EditBoostForm()
 
+    @classmethod
+    def get_edit_form(cls, provider_id: int) -> forms.EditBoostForm:
         provider = providers_models.BoostCinemaDetails.query.get_or_404(provider_id)
         return forms.EditBoostForm(
             # TODO PC-21791
@@ -27,7 +28,7 @@ class BoostContext(ProviderContext):
         )
 
     @classmethod
-    def create_provider(cls, form: forms.EditBoostForm) -> None:
+    def create_provider(cls, form: forms.EditBoostForm) -> bool:
         provider = providers_models.BoostCinemaDetails(
             # TODO PC-21791
             # venueId=form.venue_id.data[0],
@@ -36,9 +37,10 @@ class BoostContext(ProviderContext):
             cinemaUrl=form.cinema_url.data,
         )
         db.session.add(provider)
+        return True
 
     @classmethod
-    def update_provider(cls, form: forms.EditBoostForm, provider_id: int) -> None:
+    def update_provider(cls, form: forms.EditBoostForm, provider_id: int) -> bool:
         provider = providers_models.BoostCinemaDetails.query.get_or_404(provider_id)
         # TODO PC-21791
         provider.venueId = form.venue_id.data[0]
@@ -46,7 +48,8 @@ class BoostContext(ProviderContext):
         provider.password = form.password.data
         provider.cinemaUrl = form.cinema_url.data
         db.session.add(provider)
+        return True
 
     @classmethod
-    def delete_provider(cls, provider_id: int) -> None:
-        pass  # TODO PC-21791
+    def delete_provider(cls, provider_id: int) -> bool:
+        return False  # TODO PC-21791

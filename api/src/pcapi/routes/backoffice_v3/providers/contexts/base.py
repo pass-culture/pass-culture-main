@@ -43,17 +43,21 @@ class ProviderContext:
         return query.all()
 
     @classmethod
-    def get_form(cls, provider_id: int | None = None) -> forms.EditProviderForm:
+    def get_form(cls) -> forms.EditProviderForm:
         raise NotImplementedError()
 
     @classmethod
-    def create_provider(cls, form: forms.EditProviderForm) -> None:
+    def get_edit_form(cls, provider_id: int) -> forms.EditProviderForm:
         raise NotImplementedError()
 
     @classmethod
-    def update_provider(cls, form: forms.EditProviderForm, provider_id: int) -> None:
+    def create_provider(cls, form: forms.EditProviderForm) -> bool:
         raise NotImplementedError()
 
     @classmethod
-    def delete_provider(cls, provider_id: int) -> None:
+    def update_provider(cls, form: forms.EditProviderForm, provider_id: int) -> bool:
+        raise NotImplementedError()
+
+    @classmethod
+    def delete_provider(cls, provider_id: int) -> bool:
         raise NotImplementedError()

@@ -71,19 +71,22 @@ def create_provider(name: str) -> utils.BackofficeResponse:
     provider_context = get_context(name)
 
     form = provider_context.get_form()
+
     if not form.validate():
         error_msg = utils.build_form_error_msg(form)
         flash(error_msg, "warning")
         return redirect(url_for(".get_providers", active_tab=name), code=303)
 
     try:
-        provider_context.create_provider(form)
-        db.session.commit()
+        can_create_provider = provider_context.create_provider(form)
+        if can_create_provider:
+            db.session.commit()
     except sa.exc.IntegrityError as exc:
         db.session.rollback()
         flash(f"Une erreur s'est produite : {exc}", "warning")
     else:
-        flash("Le pivot a été créé", "success")
+        if can_create_provider:
+            flash("Le pivot a été créé", "success")
 
     return redirect(url_for(".get_providers", active_tab=name), code=303)
 
@@ -92,7 +95,7 @@ def create_provider(name: str) -> utils.BackofficeResponse:
 def get_update_provider_form(name: str, provider_id: int) -> utils.BackofficeResponse:
     provider_context = get_context(name)
 
-    form = provider_context.get_form(provider_id)
+    form = provider_context.get_edit_form(provider_id)
     autocomplete.prefill_venues_choices(form.venue_id)
 
     return render_template(
@@ -109,20 +112,22 @@ def get_update_provider_form(name: str, provider_id: int) -> utils.BackofficeRes
 def update_provider(name: str, provider_id: int) -> utils.BackofficeResponse:
     provider_context = get_context(name)
 
-    form = provider_context.get_form()
+    form = provider_context.get_edit_form(provider_id)
     if not form.validate():
         error_msg = utils.build_form_error_msg(form)
         flash(error_msg, "warning")
         return redirect(url_for(".get_providers", active_tab=name), code=303)
 
     try:
-        provider_context.update_provider(form, provider_id)
-        db.session.commit()
+        can_update_provider = provider_context.update_provider(form, provider_id)
+        if can_update_provider:
+            db.session.commit()
     except sa.exc.IntegrityError as exc:
         db.session.rollback()
         flash(f"Une erreur s'est produite : {exc}", "warning")
     else:
-        flash("Le pivot a été mis à jour", "success")
+        if can_update_provider:
+            flash("Le pivot a été mis à jour", "success")
 
     return redirect(url_for(".get_providers", active_tab=name), code=303)
 
@@ -145,12 +150,14 @@ def delete_provider(name: str, provider_id: int) -> utils.BackofficeResponse:
     provider_context = get_context(name)
 
     try:
-        provider_context.delete_provider(provider_id)
-        db.session.commit()
+        can_delete_provider = provider_context.delete_provider(provider_id)
+        if can_delete_provider:
+            db.session.commit()
     except sa.exc.IntegrityError as exc:
         db.session.rollback()
         flash(f"Une erreur s'est produite : {exc}", "warning")
     else:
-        flash("Le pivot a été supprimé", "success")
+        if can_delete_provider:
+            flash("Le pivot a été supprimé", "success")
 
     return redirect(url_for(".get_providers", active_tab=name), code=303)
