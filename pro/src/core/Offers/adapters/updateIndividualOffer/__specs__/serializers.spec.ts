@@ -103,7 +103,7 @@ describe('test updateIndividualOffer::serializers', () => {
         name: 'test name',
         url: 'http://my.url',
         visualDisabilityCompliant: true,
-        withdrawalDelay: undefined,
+        withdrawalDelay: null,
         withdrawalDetails: 'test withdrawalDetails',
         withdrawalType: undefined,
         durationMinutes: 120,
