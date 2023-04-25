@@ -69,6 +69,14 @@ class OffererTagNotFoundException(Exception):
     pass
 
 
+class CannotSuspendOffererWithBookingsException(ClientError):
+    def __init__(self) -> None:
+        super().__init__(
+            "cannotSuspendOffererWithBookingsException",
+            "Structure juridique non désactivable car elle contient des réservations",
+        )
+
+
 class CannotDeleteOffererWithBookingsException(ClientError):
     def __init__(self) -> None:
         super().__init__(
