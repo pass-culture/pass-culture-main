@@ -1,12 +1,21 @@
 from flask import flash
 from flask import redirect
 from flask import render_template
+from flask import url_for
+from flask_login import current_user
 import sqlalchemy as sa
 
+from pcapi.core.external import zendesk_sell
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import models as providers_models
+from pcapi.models import db
+from pcapi.models.validation_status_mixin import ValidationStatus
 
+from . import forms
 from .. import utils
 
 
@@ -30,3 +39,66 @@ def get_providers() -> utils.BackofficeResponse:
         .all()
     )
     return render_template("providers/get.html", providers=providers)
+
+
+@providers_blueprint.route("/new", methods=["GET"])
+def get_create_provider_form() -> utils.BackofficeResponse:
+    form = forms.CreateProviderForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.providers.create_provider"),
+        div_id="create-provider",  # must be consistent with parameter passed to build_lazy_modal
+        title="Créer un prestataire qui se synchronisera avec le pass Culture",
+        button_text="Créer le prestataire",
+    )
+
+
+@providers_blueprint.route("/", methods=["POST"])
+def create_provider() -> utils.BackofficeResponse:
+    form = forms.CreateProviderForm()
+
+    if not form.validate():
+        error_msg = utils.build_form_error_msg(form)
+        flash(error_msg, "warning")
+        return redirect(url_for("backoffice_v3_web.providers.get_providers"), code=303)
+
+    try:
+        provider = providers_models.Provider(
+            name=form.name.data,
+            logoUrl=form.logo_url.data,
+            enabledForPro=form.enabled_for_pro.data,
+            isActive=form.is_active.data,
+        )
+        offerer = offerers_models.Offerer(
+            name=form.name.data,
+            siren=form.siren.data,
+            city=form.city.data,
+            postalCode=form.postal_code.data,
+            validationStatus=ValidationStatus.VALIDATED,
+        )
+        offerer_provider = offerers_models.OffererProvider(offerer=offerer, provider=provider)
+        api_key, clear_secret = offerers_api.generate_provider_api_key(provider)
+
+        action_history = history_api.log_action(
+            history_models.ActionType.OFFERER_NEW,
+            current_user,
+            offerer=offerer,
+            comment="Création automatique via création de prestataire",
+            save=False,
+        )
+
+        db.session.add_all([provider, offerer, offerer_provider, api_key, action_history])
+        db.session.commit()
+    except sa.exc.IntegrityError:
+        db.session.rollback()
+        flash("Ce prestataire existe déjà", "warning")
+    else:
+        zendesk_sell.create_offerer(offerer)
+        flash(
+            f"Le prestataire {provider.name} a été créé. La Clé API ne peut être régénérée ni ré-affichée, veillez à la sauvegarder immédiatement : {clear_secret}",
+            "success",
+        )
+
+    return redirect(url_for("backoffice_v3_web.providers.get_providers"), code=303)
