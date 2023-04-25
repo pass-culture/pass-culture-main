@@ -1,4 +1,6 @@
 {% from "components/history/view.html" import build_history_view with context %}
+<turbo-frame id="offerer_history_frame">
 {% call build_history_view(dst, form, actions, true) %}
-  {{ offerer.name }}
+  Ajouter un commentaire
 {% endcall %}
+</turbo-frame>

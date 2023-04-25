@@ -308,8 +308,8 @@ class UpdateOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOff
         assert f"Région : {expected_new_region}" in html_parser.content_as_text(response.data)
 
         # Test history
-        history_url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer_to_edit.id)
-        response = authenticated_client.get(history_url)
+        history_url = url_for("backoffice_v3_web.offerer.get_history", offerer_id=offerer_to_edit.id)
+        history_response = authenticated_client.get(history_url)
 
         offerer_to_edit = offerers_models.Offerer.query.get(offerer_to_edit.id)
         assert offerer_to_edit.name == new_name
@@ -327,7 +327,7 @@ class UpdateOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOff
             "address",
         }
 
-        history_rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
+        history_rows = html_parser.extract_table_rows(history_response.data)
         assert len(history_rows) == 1
         assert history_rows[0]["Type"] == history_models.ActionType.INFO_MODIFIED.value
         assert f"Nom juridique : {old_name} => {offerer_to_edit.name}" in history_rows[0]["Commentaire"]
@@ -356,15 +356,15 @@ class UpdateOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOff
         assert response.status_code == 303
 
         # Test history
-        history_url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer_to_edit.id)
-        response = authenticated_client.get(history_url)
+        history_url = url_for("backoffice_v3_web.offerer.get_history", offerer_id=offerer_to_edit.id)
+        history_response = authenticated_client.get(history_url)
 
         updated_offerer = offerers_models.Offerer.query.get(offerer_to_edit.id)
         assert updated_offerer.city == "Brest"
         assert updated_offerer.postalCode == "29200"
         assert updated_offerer.address == "Place de la Liberté"
 
-        history_rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
+        history_rows = html_parser.extract_table_rows(history_response.data)
         assert len(history_rows) == 1
         assert history_rows[0]["Type"] == history_models.ActionType.INFO_MODIFIED.value
         assert history_rows[0]["Auteur"] == legit_user.full_name
@@ -561,11 +561,14 @@ class GetOffererStatsDataTest:
         assert total_revenue == 0.0
 
 
-class GetOffererDetailsTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.offerer.get_details"
-        endpoint_kwargs = {"offerer_id": 1}
-        needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+class GetOffererHistoryTest(unauthorized_helpers.UnauthorizedHelper):
+    endpoint = "backoffice_v3_web.offerer.get_history"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # - session + authenticated user (2 queries)
+    # - full history with joined data (1 query)
+    expected_num_queries = 3
 
     class CommentButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -574,7 +577,7 @@ class GetOffererDetailsTest:
         @property
         def path(self):
             offerer = offerers_factories.UserOffererFactory().offerer
-            return url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
+            return url_for("backoffice_v3_web.offerer.get_history", offerer_id=offerer.id)
 
     def test_get_history(self, authenticated_client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -582,7 +585,7 @@ class GetOffererDetailsTest:
         action = history_factories.ActionHistoryFactory(offerer=offerer)
         history_factories.ActionHistoryFactory(offerer=offerers_factories.OffererFactory())  # other offerer
 
-        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
+        url = url_for(self.endpoint, offerer_id=offerer.id)
 
         # if offerer is not removed from the current session, any get
         # query won't be executed because of this specific testing
@@ -590,14 +593,14 @@ class GetOffererDetailsTest:
         # count.
         db.session.expire(offerer)
 
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
+        rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["Type"] == history_models.ActionType.COMMENT.value
+        assert rows[0]["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))
         assert rows[0]["Commentaire"] == action.comment
         assert rows[0]["Auteur"] == action.authorUser.full_name
 
@@ -608,7 +611,7 @@ class GetOffererDetailsTest:
             offerer=offerer, actionType=history_models.ActionType.OFFERER_NEW, authorUser=None
         )
 
-        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
+        url = url_for(self.endpoint, offerer_id=offerer.id)
 
         # if offerer is not removed from the current session, any get
         # query won't be executed because of this specific testing
@@ -616,19 +619,18 @@ class GetOffererDetailsTest:
         # count.
         db.session.expire(offerer)
 
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
+        rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["Type"] == history_models.ActionType.OFFERER_NEW.value
         assert rows[0]["Commentaire"] == action.comment
         assert not rows[0]["Auteur"]
 
-    def test_no_details_data(self, authenticated_client, offerer):
-        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
+    def test_no_action(self, authenticated_client, offerer):
+        url = url_for(self.endpoint, offerer_id=offerer.id)
 
         # if offerer is not removed from the current session, any get
         # query won't be executed because of this specific testing
@@ -636,11 +638,11 @@ class GetOffererDetailsTest:
         # count.
         db.session.expire(offerer)
 
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
-        assert html_parser.count_table_rows(response.data, parent_class="history-tab-pane") == 0
+        assert html_parser.count_table_rows(response.data) == 0
 
     def test_action_name_depends_on_type(self, authenticated_client, offerer):
         admin_user = users_factories.AdminFactory()
@@ -664,11 +666,11 @@ class GetOffererDetailsTest:
             offerer=offerer,
             comment=None,
         )
-        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
+        url = url_for(self.endpoint, offerer_id=offerer.id)
 
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
-        assert response.status_code == 200
+            assert response.status_code == 200
 
         content = response.data.decode("utf-8")
 
@@ -721,13 +723,13 @@ class GetOffererDetailsTest:
         )
 
         # when
-        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=user_offerer.offerer.id)
-        with assert_no_duplicated_queries():
+        url = url_for(self.endpoint, offerer_id=user_offerer.offerer.id)
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
+            assert response.status_code == 200
 
         # then
-        assert response.status_code == 200
-        rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
+        rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 4
 
         assert rows[0]["Type"] == "Structure validée"
@@ -750,6 +752,16 @@ class GetOffererDetailsTest:
         assert rows[3]["Commentaire"] == ""
         assert rows[3]["Auteur"] == user_offerer.user.full_name
 
+
+class GetOffererUsersTest(unauthorized_helpers.UnauthorizedHelper):
+    endpoint = "backoffice_v3_web.offerer.get_pro_users"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # - session + authenticated user (2 queries)
+    # - users with joined data (1 query)
+    expected_num_queries = 3
+
     def test_get_pro_users(self, authenticated_client, offerer):
         # given
         uo1 = offerers_factories.UserOffererFactory(
@@ -763,12 +775,13 @@ class GetOffererDetailsTest:
         offerers_factories.UserOffererFactory(user=users_factories.ProFactory())
 
         # when
-        with assert_no_duplicated_queries():
-            response = authenticated_client.get(url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id))
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
 
         # then
-        assert response.status_code == 200
-        rows = html_parser.extract_table_rows(response.data, "pro-users-tab-pane")
+        rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 3
 
         assert rows[0]["ID"] == str(uo1.user.id)
@@ -813,17 +826,27 @@ class GetOffererDetailsTest:
             offerer=offerer,
         )
 
-        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
+        url = url_for(self.endpoint, offerer_id=offerer.id)
 
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
-
-        assert response.status_code == 200
+            assert response.status_code == 200
 
         parsed_html = html_parser.get_soup(response.data)
         select = parsed_html.find("select", attrs={"name": "pro_user_id"})
         options = select.find_all("option")
         assert [option["value"] for option in options] == ["", str(user3.id), str(user2.id)]
+
+
+class GetOffererVenuesTest(unauthorized_helpers.UnauthorizedHelper):
+    endpoint = "backoffice_v3_web.offerer.get_managed_venues"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # - session + authenticated user (2 queries)
+    # - venues with joined data (1 query)
+    # - FF: WIP_ENABLE_NEW_ONBOARDING (1 query)
+    expected_num_queries = 4
 
     @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_get_managed_venues(self, authenticated_client, offerer):
@@ -833,13 +856,13 @@ class GetOffererDetailsTest:
         educational_factories.CollectiveDmsApplicationFactory(venue=venue_2)
         offerers_factories.VenueFactory(managingOfferer=other_offerer)
 
-        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
+        url = url_for(self.endpoint, offerer_id=offerer.id)
 
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
-        assert response.status_code == 200
+            assert response.status_code == 200
 
-        rows = html_parser.extract_table_rows(response.data, "managed-venues-tab-pane")
+        rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
 
         # Sort before checking rows data to avoid flaky test
@@ -862,62 +885,15 @@ class GetOffererDetailsTest:
     @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
     def test_get_managed_venues_ff_off(self, authenticated_client, offerer):
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        url = url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id)
+        url = url_for(self.endpoint, offerer_id=offerer.id)
 
-        response = authenticated_client.get(url)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
 
-        rows = html_parser.extract_table_rows(response.data, "managed-venues-tab-pane")
+        rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Type de lieu"] == venue.venueTypeCode.value
         assert not rows[0].get("Activité principale")
-
-
-class GetOffererHistoryDataTest:
-    def test_one_action(self):
-        user_offerer = offerers_factories.UserOffererFactory()
-        action = history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime(2022, 10, 3, 13, 1),
-            actionType=history_models.ActionType.OFFERER_NEW,
-            authorUser=user_offerer.user,
-            user=user_offerer.user,
-            offerer=user_offerer.offerer,
-            comment=None,
-        )
-
-        # load with joinedload
-        offerer = offerers.get_offerer(user_offerer.offererId)
-
-        with assert_num_queries(0):
-            history = offerers.get_offerer_history_data(offerer)
-
-        assert len(history) == 1
-
-        found_action = history[0]
-
-        assert found_action.actionType.value == action.actionType.value
-        assert found_action.actionDate == action.actionDate
-        assert found_action.authorUser.full_name == action.authorUser.full_name
-
-    def test_no_action(self, offerer):
-        assert not offerers.get_offerer_history_data(offerer)
-
-    def test_many_actions(self):
-        user_offerer = offerers_factories.UserOffererFactory()
-        actions = history_factories.ActionHistoryFactory.create_batch(
-            3,
-            authorUser=user_offerer.user,
-            user=user_offerer.user,
-            offerer=user_offerer.offerer,
-        )
-
-        offerer = user_offerer.offerer
-
-        history = offerers.get_offerer_history_data(offerer)
-        assert len(history) == len(actions)
-
-        found_comments = {event.comment for event in history}
-        expected_comments = {event.comment for event in actions}
-
-        assert found_comments == expected_comments
 
 
 class CommentOffererTest(
@@ -2401,7 +2377,10 @@ class AddUserOffererAndValidateTest:
         # then
         assert response.status_code == 303
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert html_parser.extract_alert(redirected_response.data) == "Les données envoyées comportent des erreurs"
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "L'ID ne correspond pas à un ancien rattachement à la structure"
+        )
 
         assert offerers_models.UserOfferer.query.count() == 1  # existing before request
         assert history_models.ActionHistory.query.count() == 0
@@ -2423,7 +2402,10 @@ class AddUserOffererAndValidateTest:
         # then
         assert response.status_code == 303
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert html_parser.extract_alert(redirected_response.data) == "Les données envoyées comportent des erreurs"
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "L'ID ne correspond pas à un ancien rattachement à la structure"
+        )
 
     def test_add_user_empty(self, legit_user, authenticated_client):
         # given
