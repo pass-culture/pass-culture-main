@@ -11,7 +11,7 @@ import ValidationMessageList from './ValidationMessageList'
 interface IPasswordInputProps {
   label: string
   name: string
-  placeholder: string
+  placeholder?: string
   withErrorPreview?: boolean
 }
 
