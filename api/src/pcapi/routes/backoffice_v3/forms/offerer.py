@@ -192,7 +192,7 @@ class TopActorForm(FlaskForm):
 
 
 class AddProUserForm(FlaskForm):
-    pro_user_id = fields.PCSelectField("Compte pro", coerce=int)
+    pro_user_id = fields.PCSelectField("Compte pro", choices=[], validate_choice=False, coerce=int)
     comment = fields.PCCommentField("Commentaire interne")
 
     # Empty choice is proposed to avoid select first user by default, but empty choice is not allowed
