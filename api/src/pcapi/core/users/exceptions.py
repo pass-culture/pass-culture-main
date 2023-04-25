@@ -83,3 +83,7 @@ class ExpiredToken(InvalidToken):
     def __init__(self, user: models.User):
         self.user = user
         super().__init__()
+
+
+class UserGenerationForbiddenException(Exception):
+    pass
