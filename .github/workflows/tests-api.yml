@@ -266,13 +266,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pytest_args:
-          [
-            "tests/core/bookings tests/core/offers tests/core/finance",
-            "tests/core --ignore=tests/core/bookings --ignore=tests/core/offers --ignore=tests/core/finance",
-            "tests/routes -m 'not backoffice_v3'",
-            "tests --ignore=tests/core --ignore=tests/routes",
-          ]
+        group: [1, 2, 3, 4, 5, 6]
     needs: build-tests-docker-image
     permissions:
       id-token: write
@@ -345,7 +339,7 @@ jobs:
           shell: bash
           options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests
           run: |
-            pytest ${{ matrix.pytest_args }} --durations=10 --junitxml='/tests/junit.xml'
+            pytest --splits 6 --group ${{ matrix.group }} --junitxml='/tests/junit.xml' --ignore=tests/routes/backoffice_v3
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
         if: always() # always run even if the previous step fails
