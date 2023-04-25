@@ -53,7 +53,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
         unique=True,
     )
 
-    # Presence of this fields signify the provider implements pass Culture's provider API
+    # presence of this field signifies the provider implements pass Culture's provider API
     apiUrl = Column(String, nullable=True)
 
     authToken = Column(String, nullable=True)
@@ -76,6 +76,9 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
     offererProvider: sa_orm.Mapped["offerers_models.OffererProvider"] = relationship(
         "OffererProvider", back_populates="provider", uselist=False
     )
+
+    # presence of this field signifies the provider implements pass Culture's individual offers API
+    apiKeys: sa_orm.Mapped["offerers_models.ApiKey"] = relationship("ApiKey", back_populates="provider")
 
     @property
     def isAllocine(self) -> bool:
