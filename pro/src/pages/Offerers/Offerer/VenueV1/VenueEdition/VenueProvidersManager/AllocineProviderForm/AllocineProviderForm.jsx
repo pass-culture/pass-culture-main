@@ -3,12 +3,13 @@ import React, { useCallback, useState } from 'react'
 import { Form } from 'react-final-form'
 import { Tooltip } from 'react-tooltip'
 
+import { Banner, CheckboxField } from 'ui-kit'
 import 'react-tooltip/dist/react-tooltip.css'
-import { CheckboxField } from 'ui-kit'
 import NumberField from 'ui-kit/form_rff/fields/NumberField'
 import Icon from 'ui-kit/Icon/Icon'
-import Insert from 'ui-kit/Insert/Insert'
 import { getCanSubmit } from 'utils/react-final-form'
+import './AllocineProviderForm.scss'
+
 const AllocineProviderForm = ({
   saveVenueProvider,
   providerId,
@@ -62,21 +63,21 @@ const AllocineProviderForm = ({
                   <label htmlFor="price">
                     Prix de vente/place{' '}
                     <span className="field-asterisk">*</span>
+                    <span
+                      className="apf-tooltip"
+                      data-tooltip-place="bottom"
+                      data-tooltip-html="<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>"
+                      data-tooltip-id="tooltip-price"
+                      data-type="info"
+                    >
+                      <Icon svg="picto-info" />
+                    </span>
+                    <Tooltip
+                      className="type-info flex-center items-center"
+                      delayHide={500}
+                      id="tooltip-price"
+                    />
                   </label>
-                  <span
-                    className="apf-tooltip"
-                    data-tooltip-place="bottom"
-                    data-tooltip-html="<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>"
-                    data-tooltip-id="tooltip-price"
-                    data-type="info"
-                  >
-                    <Icon svg="picto-info" />
-                  </span>
-                  <Tooltip
-                    className="type-info flex-center items-center"
-                    delayHide={500}
-                    id="tooltip-price"
-                  />
                 </div>
                 <NumberField
                   onKeyPress={e =>
@@ -108,31 +109,36 @@ const AllocineProviderForm = ({
                   label="Accepter les réservations DUO"
                   name="isDuo"
                 />
-                <span
-                  className="apf-tooltip"
-                  data-tooltip-place="bottom"
-                  data-tooltip-html="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>"
-                  data-tooltip-type="info"
-                  data-tooltip-id="tooltip-duo"
-                >
-                  <Icon svg="picto-info" />
-                </span>
-                <Tooltip
-                  className="type-info flex-center items-center"
-                  delayHide={500}
-                  id="tooltip-duo"
-                />
               </div>
+              <span
+                className="apf-tooltip"
+                data-tooltip-place="bottom"
+                data-tooltip-html="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>"
+                data-tooltip-type="info"
+                data-tooltip-id="tooltip-duo"
+              >
+                <Icon svg="picto-info" />
+              </span>
+              <Tooltip
+                className="type-info flex-center items-center"
+                delayHide={500}
+                id="tooltip-duo"
+              />
 
-              <Insert className="blue-insert" icon="picto-info-solid-black">
-                Pour le moment, seules les séances &quot;classiques&quot;
-                peuvent être importées.
-                <br />
-                Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront
-                pas d’offres.
-                <br />
-                Nous travaillons actuellement à l’ajout de séances spécifiques.
-              </Insert>
+              <Banner type="notification-info">
+                <p>
+                  Pour le moment, seules les séances "classiques" peuvent être
+                  importées.
+                </p>
+                <p>
+                  Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne
+                  génèreront pas d’offres.
+                </p>
+                <p>
+                  Nous travaillons actuellement à l’ajout de séances
+                  spécifiques.
+                </p>
+              </Banner>
               {isCreatedEntity ? (
                 <div className="apf-provider-import-button-section">
                   <button

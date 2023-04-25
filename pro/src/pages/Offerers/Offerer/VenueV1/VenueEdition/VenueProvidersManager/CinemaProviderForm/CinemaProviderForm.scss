@@ -2,16 +2,14 @@
 
 .cinema-provider-form {
   margin-bottom: 0;
+  margin-top: rem.torem(32px);
 
   .cpf-is-duo {
     margin-right: 0 !important;
-    margin-top: rem.torem(32px);
     max-height: rem.torem(31px);
   }
 
   .cpf-tooltip {
     margin-left: rem.torem(4px);
-    margin-top: rem.torem(10px);
-    display: flex;
   }
 }
