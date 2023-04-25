@@ -29,6 +29,7 @@ const DatePicker = ({
   disabled,
   label,
   isLabelHidden = false,
+  hasLabelLineBreak = true,
   smallLabel,
   isOptional = false,
   onChange,
@@ -46,6 +47,7 @@ const DatePicker = ({
       error={meta.error}
       label={label}
       isLabelHidden={isLabelHidden}
+      hasLabelLineBreak={hasLabelLineBreak}
       name={name}
       showError={showError}
       smallLabel={smallLabel}
