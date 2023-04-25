@@ -1,7 +1,6 @@
 import typing
 
 import sqlalchemy as sa
-from werkzeug.exceptions import NotFound
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
@@ -37,10 +36,11 @@ class AllocineContext(ProviderContext):
         return query.all()
 
     @classmethod
-    def get_form(cls, provider_id: int | None = None) -> forms.EditAllocineForm:
-        if provider_id is None:
-            return forms.EditAllocineForm()
+    def get_form(cls) -> forms.EditAllocineForm:
+        return forms.EditAllocineForm()
 
+    @classmethod
+    def get_edit_form(cls, provider_id: int) -> forms.EditAllocineForm:
         provider = providers_models.AllocinePivot.query.get_or_404(provider_id)
         return forms.EditAllocineForm(
             venue_id=[provider.venueId],
@@ -49,23 +49,25 @@ class AllocineContext(ProviderContext):
         )
 
     @classmethod
-    def create_provider(cls, form: forms.EditAllocineForm) -> None:
+    def create_provider(cls, form: forms.EditAllocineForm) -> bool:
         provider = providers_models.AllocinePivot(
             venueId=form.venue_id.data[0],
             theaterId=form.theater_id.data,
             internalId=form.internal_id.data,
         )
         db.session.add(provider)
+        return True
 
     @classmethod
-    def update_provider(cls, form: forms.EditAllocineForm, provider_id: int) -> None:
+    def update_provider(cls, form: forms.EditAllocineForm, provider_id: int) -> bool:
         provider = providers_models.AllocinePivot.query.get_or_404(provider_id)
         provider.venueId = form.venue_id.data[0]
         provider.theaterId = form.theater_id.data
         provider.internalId = form.internal_id.data
         db.session.add(provider)
+        return True
 
     @classmethod
-    def delete_provider(cls, provider_id: int) -> None:
+    def delete_provider(cls, provider_id: int) -> bool:
         # Delete Allocine provider is not allowed
-        raise NotFound()
+        return False
