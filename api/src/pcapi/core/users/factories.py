@@ -53,10 +53,13 @@ class UserFactory(BaseFactory):
     class Meta:
         model = models.User
 
+    class Params:
+        age = 40
+
     email = factory.Sequence("jean.neige{}@example.com".format)
     address = factory.Sequence("{} place des noces rouges".format)
     city = "La Rochelle"
-    dateOfBirth = datetime.combine(date(1980, 1, 1), time(0, 0))
+    dateOfBirth = LazyAttribute(lambda o: date.today() - relativedelta(years=o.age))
     firstName = "Jean"
     lastName = "Neige"
     isEmailValidated = True
