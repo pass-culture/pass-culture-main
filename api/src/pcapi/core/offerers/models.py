@@ -824,13 +824,13 @@ class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
 
 class ApiKey(PcObject, Base, Model):
     offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
-
     offerer: sa_orm.Mapped[Offerer] = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKeys"))
-
+    providerId: int = Column(BigInteger, ForeignKey("provider.id", ondelete="CASCADE"), index=True, unique=True)
+    provider: sa_orm.Mapped["providers_models.Provider"] = relationship(
+        "Provider", foreign_keys=[providerId], back_populates="apiKeys"
+    )
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
-
     prefix = Column(Text, nullable=True, unique=True)
-
     secret: bytes = Column(LargeBinary, nullable=True)
 
     def check_secret(self, clear_text: str) -> bool:
