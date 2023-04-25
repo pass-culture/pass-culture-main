@@ -18,6 +18,7 @@ from pcapi.connectors.dms.models import GraphQLApplicationStates
 import pcapi.connectors.thumb_storage as storage
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
@@ -1677,3 +1678,39 @@ def create_from_onboarding_data(
         )
 
     return user_offerer
+
+
+def suspend_offerer(offerer: models.Offerer, actor: users_models.User, comment: str | None) -> None:
+    if not offerer.isActive:
+        return
+
+    if bookings_repository.offerer_has_ongoing_bookings(offerer.id):
+        raise exceptions.CannotSuspendOffererWithBookingsException()
+
+    offerer.isActive = False
+    action = history_api.log_action(
+        history_models.ActionType.OFFERER_SUSPENDED, author=actor, offerer=offerer, comment=comment, save=False
+    )
+    repository.save(offerer, action)
+
+    _update_external_offerer(offerer)
+
+
+def unsuspend_offerer(offerer: models.Offerer, actor: users_models.User, comment: str | None) -> None:
+    if offerer.isActive:
+        return
+
+    offerer.isActive = True
+    action = history_api.log_action(
+        history_models.ActionType.OFFERER_UNSUSPENDED, author=actor, offerer=offerer, comment=comment, save=False
+    )
+    repository.save(offerer, action)
+
+    _update_external_offerer(offerer)
+
+
+def _update_external_offerer(offerer: models.Offerer) -> None:
+    for email in offerers_repository.get_emails_by_offerer(offerer):
+        external_attributes_api.update_external_pro(email)
+
+    zendesk_sell.update_offerer(offerer)

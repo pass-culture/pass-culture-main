@@ -1,5 +1,6 @@
 {% from "components/badges.html" import build_offerer_badges %}
 {% from "components/forms.html" import build_form_fields_group with context %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
 {% import "components/links.html" as links %}
 {% extends "layouts/pro.html" %}
 {% set edit_offerer_aria_described_by_id = random_hash() %}
@@ -14,7 +15,7 @@
             <span class="fs-5 ps-4">{{ build_offerer_badges(offerer) }}</span>
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if has_permission("MANAGE_PRO_ENTITY") %}
-                <button class="btn btn-outline-primary lead fw-bold mt-2 mx-3"
+                <button class="btn btn-outline-primary lead fw-bold mt-2 mx-2"
                         data-bs-toggle="modal"
                         data-bs-target=".pc-edit-offerer-modal"
                         type="button">Modifier les informations</button>
@@ -44,8 +45,17 @@
                   </div>
                 </div>
               {% endif %}
+              {% if has_permission("FRAUD_ACTIONS") %}
+                {% if offerer.isActive %}
+                  {{ build_modal_form("suspend", url_for("backoffice_v3_web.offerer.suspend_offerer", offerer_id=offerer.id),
+                  suspension_form, "Suspendre la structure", "Confirmer la suspension") }}
+                {% else %}
+                  {{ build_modal_form("unsuspend", url_for("backoffice_v3_web.offerer.unsuspend_offerer", offerer_id=offerer.id),
+                  suspension_form, "Réactiver la structure", "Confirmer la réactivation") }}
+                {% endif %}
+              {% endif %}
               {% if has_permission("DELETE_PRO_ENTITY") %}
-                <button class="btn btn-outline-primary lead fw-bold mt-2"
+                <button class="btn btn-outline-primary lead fw-bold mt-2 mx-2"
                         data-bs-toggle="modal"
                         data-bs-target=".pc-delete-offerer-modal"
                         type="button">

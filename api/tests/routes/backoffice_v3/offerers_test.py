@@ -68,16 +68,15 @@ def booking_fixture(offer) -> bookings_models.Booking:
     )
 
 
-class GetOffererTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.offerer.get"
-        endpoint_kwargs = {"offerer_id": 1}
-        needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+class GetOffererTest(unauthorized_helpers.UnauthorizedHelper):
+    endpoint = "backoffice_v3_web.offerer.get"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     def test_get_offerer(self, authenticated_client, offerer, top_acteur_tag):
         offerers_factories.OffererTagMappingFactory(tagId=top_acteur_tag.id, offererId=offerer.id)
 
-        url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id)
+        url = url_for(self.endpoint, offerer_id=offerer.id)
 
         # if offerer is not removed from the current session, any get
         # query won't be executed because of this specific testing
@@ -117,7 +116,7 @@ class GetOffererTest:
         random_venue,
     ):
         # when
-        response = authenticated_client.get(url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id))
+        response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer.id))
 
         # then
         assert response.status_code == 200
@@ -125,7 +124,7 @@ class GetOffererTest:
 
     def test_offerer_with_educational_venue_has_adage_data(self, authenticated_client, offerer, venue_with_adage_id):
         # when
-        response = authenticated_client.get(url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id))
+        response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer.id))
 
         # then
         assert response.status_code == 200
@@ -135,26 +134,111 @@ class GetOffererTest:
         self, authenticated_client, offerer, venue_with_accepted_bank_info
     ):
         # when
-        response = authenticated_client.get(url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id))
+        response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer.id))
 
         # then
         assert response.status_code == 200
         assert "Référencement Adage : 0/1" in html_parser.content_as_text(response.data)
 
 
-class DeleteOffererTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.offerer.delete_offerer"
-        endpoint_kwargs = {"offerer_id": 1}
-        needed_permission = perm_models.Permissions.DELETE_PRO_ENTITY
+class PostOffererEndpoint:
+    endpoint = NotImplemented
+
+    def post_to_endpoint(self, authenticated_client, offerer, form=None):
+        # generate csrf token
+        offerer_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id)
+        authenticated_client.get(offerer_url)
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        if form is None:
+            form = {}
+        form["csrf_token"] = g.get("csrf_token", "")
+        return authenticated_client.post(url, form=form)
+
+
+class SuspendOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOffererEndpoint):
+    method = "post"
+    endpoint = "backoffice_v3_web.offerer.suspend_offerer"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+
+    def test_suspend_offerer(self, legit_user, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+
+        response = self.post_to_endpoint(authenticated_client, offerer, form={"comment": "Test suspension"})
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id, _external=True)
+        response = authenticated_client.get(response.location)
+        assert html_parser.extract_alert(response.data) == f"La structure {offerer.name} ({offerer.id}) a été suspendue"
+
+        updated_offerer = offerers_models.Offerer.query.get(offerer.id)
+        assert not updated_offerer.isActive
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.OFFERER_SUSPENDED
+        assert action.authorUser == legit_user
+        assert action.comment == "Test suspension"
+
+    def test_cant_suspend_offerer_with_bookings(self, legit_user, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+        offers_factories.OfferFactory(venue__managingOfferer=offerer)
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer)
+
+        response = self.post_to_endpoint(authenticated_client, offerer)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id, _external=True)
+        response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Impossible de suspendre une structure juridique pour laquelle il existe des réservations"
+        )
+
+        not_updated_offerer = offerers_models.Offerer.query.get(offerer.id)
+        assert not_updated_offerer.isActive
+
+        assert history_models.ActionHistory.query.count() == 0
+
+
+class UnsuspendOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOffererEndpoint):
+    method = "post"
+    endpoint = "backoffice_v3_web.offerer.unsuspend_offerer"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+
+    def test_unsuspend_offerer(self, legit_user, authenticated_client):
+        offerer = offerers_factories.OffererFactory(isActive=False)
+
+        response = self.post_to_endpoint(authenticated_client, offerer, form={"comment": "Test réactivation"})
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id, _external=True)
+        response = authenticated_client.get(response.location)
+        assert html_parser.extract_alert(response.data) == f"La structure {offerer.name} ({offerer.id}) a été réactivée"
+
+        updated_offerer = offerers_models.Offerer.query.get(offerer.id)
+        assert updated_offerer.isActive
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.OFFERER_UNSUSPENDED
+        assert action.authorUser == legit_user
+        assert action.comment == "Test réactivation"
+
+
+class DeleteOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOffererEndpoint):
+    method = "post"
+    endpoint = "backoffice_v3_web.offerer.delete_offerer"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.DELETE_PRO_ENTITY
 
     def test_delete_offerer(self, legit_user, authenticated_client):
         offerer_to_delete = offerers_factories.OffererFactory()
         offerer_to_delete_name = offerer_to_delete.name
         offerer_to_delete_id = offerer_to_delete.id
 
-        response = self.delete_offerer(authenticated_client, offerer_to_delete)
+        response = self.post_to_endpoint(authenticated_client, offerer_to_delete)
         assert response.status_code == 303
         assert offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_to_delete.id).count() == 0
 
@@ -172,7 +256,7 @@ class DeleteOffererTest:
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer_to_delete)
         offerer_to_delete_id = offerer_to_delete.id
 
-        response = self.delete_offerer(authenticated_client, offerer_to_delete)
+        response = self.post_to_endpoint(authenticated_client, offerer_to_delete)
         assert response.status_code == 303
         assert offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_to_delete_id).count() == 1
 
@@ -184,23 +268,12 @@ class DeleteOffererTest:
             == "Impossible d'effacer une structure juridique pour laquelle il existe des réservations"
         )
 
-    def delete_offerer(self, authenticated_client, offerer_to_delete):
-        # generate csrf token
-        offerer_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_to_delete.id)
-        authenticated_client.get(offerer_url)
 
-        url = url_for("backoffice_v3_web.offerer.delete_offerer", offerer_id=offerer_to_delete.id)
-
-        form = {"csrf_token": g.get("csrf_token", "")}
-        return authenticated_client.post(url, form=form)
-
-
-class UpdateOffererTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.offerer.update_offerer"
-        endpoint_kwargs = {"offerer_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+class UpdateOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOffererEndpoint):
+    method = "post"
+    endpoint = "backoffice_v3_web.offerer.update_offerer"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_update_offerer(self, legit_user, authenticated_client):
         offerer_to_edit = offerers_factories.OffererFactory()
@@ -223,7 +296,7 @@ class UpdateOffererTest:
             "tags": [tag.id for tag in offerer_to_edit.tags],
         }
 
-        response = self.update_offerer(authenticated_client, offerer_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, offerer_to_edit, base_form)
         assert response.status_code == 303
 
         # Test redirection
@@ -279,7 +352,7 @@ class UpdateOffererTest:
             "tags": [tag2.id, tag3.id],
         }
 
-        response = self.update_offerer(authenticated_client, offerer_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, offerer_to_edit, base_form)
         assert response.status_code == 303
 
         # Test history
@@ -310,29 +383,18 @@ class UpdateOffererTest:
             "tags": [],
         }
 
-        response = self.update_offerer(authenticated_client, offerer, base_form)
+        response = self.post_to_endpoint(authenticated_client, offerer, base_form)
         assert response.status_code == 400
         assert "Les données envoyées comportent des erreurs" in html_parser.extract_alert(response.data)
 
         assert offerer.name == "Original"
         assert len(offerer.action_history) == 0
 
-    def update_offerer(self, authenticated_client, offerer_to_edit, form):
-        # generate csrf token
-        edit_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_to_edit.id)
-        authenticated_client.get(edit_url)
 
-        url = url_for("backoffice_v3_web.offerer.update_offerer", offerer_id=offerer_to_edit.id)
-
-        form["csrf_token"] = g.get("csrf_token", "")
-        return authenticated_client.post(url, form=form)
-
-
-class GetOffererStatsTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.offerer.get_stats"
-        endpoint_kwargs = {"offerer_id": 1}
-        needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+class GetOffererStatsTest(unauthorized_helpers.UnauthorizedHelper):
+    endpoint = "backoffice_v3_web.offerer.get_stats"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     def test_get_stats(self, authenticated_client, offerer, offer, booking):
         url = url_for("backoffice_v3_web.offerer.get_stats", offerer_id=offerer.id)
@@ -858,15 +920,16 @@ class GetOffererHistoryDataTest:
         assert found_comments == expected_comments
 
 
-class CommentOffererTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, unauthorized_helpers.MissingCSRFHelper):
-        endpoint = "backoffice_v3_web.offerer.comment_offerer"
-        endpoint_kwargs = {"offerer_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+class CommentOffererTest(
+    unauthorized_helpers.UnauthorizedHelperWithCsrf, unauthorized_helpers.MissingCSRFHelper, PostOffererEndpoint
+):
+    endpoint = "backoffice_v3_web.offerer.comment_offerer"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_add_comment(self, authenticated_client, legit_user, offerer):
         comment = "Code APE non éligible"
-        response = self.send_comment_offerer_request(authenticated_client, offerer, comment)
+        response = self.post_to_endpoint(authenticated_client, offerer, {"comment": comment})
 
         assert response.status_code == 303
 
@@ -885,21 +948,11 @@ class CommentOffererTest:
         assert action.comment == comment
 
     def test_add_invalid_comment(self, authenticated_client, offerer):
-        response = self.send_comment_offerer_request(authenticated_client, offerer, "")
+        response = self.post_to_endpoint(authenticated_client, offerer, {"comment": ""})
 
         assert response.status_code == 303
         redirected_response = authenticated_client.get(response.headers["location"])
         assert "Les données envoyées comportent des erreurs" in redirected_response.data.decode("utf8")
-
-    def send_comment_offerer_request(self, authenticated_client, offerer, comment):
-        # generate and fetch (inside g) csrf token
-        offerer_detail_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id)
-        authenticated_client.get(offerer_detail_url)
-
-        url = url_for("backoffice_v3_web.offerer.comment_offerer", offerer_id=offerer.id)
-        form = {"comment": comment, "csrf_token": g.get("csrf_token", "")}
-
-        return authenticated_client.post(url, form=form)
 
 
 class ListOfferersToValidateUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
