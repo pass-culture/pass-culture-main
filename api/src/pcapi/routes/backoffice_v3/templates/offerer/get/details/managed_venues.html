@@ -1,4 +1,5 @@
 {% import "components/links.html" as links %}
+<turbo-frame id="offerer_venues_frame">
 <table class="table table-hover my-4">
   <thead>
     <tr>
@@ -11,7 +12,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for venue in offerer.managedVenues %}
+    {% for venue in venues %}
       <tr>
         <th scope="row"></th>
         <td class="fw-bolder">{{ links.build_venue_name_to_details_link(venue, text_attr="id") }}</td>
@@ -23,3 +24,4 @@
     {% endfor %}
   </tbody>
 </table>
+</turbo-frame>

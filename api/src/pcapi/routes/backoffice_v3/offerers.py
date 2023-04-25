@@ -84,6 +84,7 @@ def render_offerer_details(
         edit_offerer_form=edit_offerer_form,
         suspension_form=offerer_forms.SuspendOffererForm(),
         delete_offerer_form=empty_forms.EmptyForm(),
+        active_tab=request.args.get("active_tab", "history"),
     )
 
 
@@ -120,66 +121,6 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
         stats=data.stats,
         total_revenue=data.total_revenue,
     )
-
-
-def get_offerer_history_data(offerer: offerers_models.Offerer) -> typing.Sequence[history_models.ActionHistory]:
-    # this should not be necessary but in case there is a huge amount
-    # of actions, it is safer to set a limit
-    max_actions_count = 50
-
-    actions = sorted(offerer.action_history, key=lambda action: action.actionDate, reverse=True)
-    return actions[:max_actions_count]
-
-
-def get_offerer(offerer_id: int) -> offerers_models.Offerer:
-    offerer = (
-        offerers_models.Offerer.query.filter_by(id=offerer_id)
-        .options(
-            sa.orm.joinedload(offerers_models.Offerer.UserOfferers).joinedload(offerers_models.UserOfferer.user),
-        )
-        .options(
-            sa.orm.joinedload(offerers_models.Offerer.action_history).joinedload(history_models.ActionHistory.user),
-            sa.orm.joinedload(offerers_models.Offerer.action_history).joinedload(
-                history_models.ActionHistory.authorUser
-            ),
-        )
-        .options(
-            sa.orm.joinedload(offerers_models.Offerer.managedVenues)
-            .load_only(
-                offerers_models.Venue.id,
-                offerers_models.Venue.name,
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.siret,
-                offerers_models.Venue.venueTypeCode,
-                offerers_models.Venue.isVirtual,
-                offerers_models.Venue.managingOffererId,
-            )
-            .joinedload(offerers_models.Venue.collectiveDmsApplications)
-            .load_only(
-                educational_models.CollectiveDmsApplication.state,
-                educational_models.CollectiveDmsApplication.lastChangeDate,
-            ),
-        )
-        .one_or_none()
-    )
-
-    if not offerer:
-        raise NotFound()
-
-    return offerer
-
-
-def _get_add_pro_user_form(offerer: offerers_models.Offerer) -> offerer_forms.AddProUserForm:
-    # Users whose association to the offerer has been removed, for which relationship is only from history
-    removed_users = sorted(
-        {action.user for action in offerer.action_history if action.user} - {uo.user for uo in offerer.UserOfferers},
-        key=lambda user: user.full_name,
-    )
-
-    form = offerer_forms.AddProUserForm()
-    form.pro_user_id.choices = [(user.id, f"{user.full_name} ({user.id})") for user in removed_users]
-
-    return form
 
 
 @offerer_blueprint.route("/suspend", methods=["POST"])
@@ -280,29 +221,123 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     return redirect(url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id), code=303)
 
 
-@offerer_blueprint.route("/details", methods=["GET"])
-def get_details(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = get_offerer(offerer_id)
+@offerer_blueprint.route("/history", methods=["GET"])
+def get_history(offerer_id: int) -> utils.BackofficeResponse:
+    # this should not be necessary but in case there is a huge amount
+    # of actions, it is safer to set a limit
+    max_actions_count = 50
 
-    history = get_offerer_history_data(offerer)
-
-    form = offerer_forms.CommentForm()
-    dst = url_for("backoffice_v3_web.offerer.comment_offerer", offerer_id=offerer.id)
-
-    can_add_user = utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
-    add_user_form = _get_add_pro_user_form(offerer) if can_add_user else None
-    add_user_dst = url_for("backoffice_v3_web.offerer.add_user_offerer_and_validate", offerer_id=offerer.id)
+    actions_history = (
+        history_models.ActionHistory.query.filter_by(offererId=offerer_id)
+        .order_by(history_models.ActionHistory.actionDate.desc())
+        .limit(max_actions_count)
+        .options(
+            sa.orm.joinedload(history_models.ActionHistory.user).load_only(
+                users_models.User.id, users_models.User.firstName, users_models.User.lastName
+            ),
+            sa.orm.joinedload(history_models.ActionHistory.authorUser).load_only(
+                users_models.User.id, users_models.User.firstName, users_models.User.lastName
+            ),
+        )
+        .all()
+    )
 
     return render_template(
-        "offerer/get/details.html",
-        offerer=offerer,
-        actions=history,
-        dst=dst,
-        form=form,
-        users_offerer=offerer.UserOfferers,
-        active_tab=request.args.get("active_tab", "history"),
-        add_user_dst=add_user_dst,
-        add_user_form=add_user_form,
+        "offerer/get/details/history.html",
+        actions=actions_history,
+        form=offerer_forms.CommentForm(),
+        dst=url_for("backoffice_v3_web.offerer.comment_offerer", offerer_id=offerer_id),
+    )
+
+
+@offerer_blueprint.route("/users", methods=["GET"])
+def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
+    # All ids which appear in either offerer history or attached users
+    # Double join takes 30 seconds on staging, union takes 0.03 s.
+    user_ids_subquery = (
+        db.session.query(offerers_models.UserOfferer.userId)
+        .filter(offerers_models.UserOfferer.offererId == offerer_id)
+        .union(
+            db.session.query(history_models.ActionHistory.userId).filter(
+                history_models.ActionHistory.offererId == offerer_id, history_models.ActionHistory.userId.isnot(None)
+            )
+        )
+        .distinct()
+        .subquery()
+    )
+
+    rows = (
+        db.session.query(
+            users_models.User.id,
+            users_models.User.firstName,
+            users_models.User.lastName,
+            users_models.User.full_name,
+            users_models.User.email,
+            offerers_models.UserOfferer,
+        )
+        .select_from(users_models.User)
+        .outerjoin(
+            offerers_models.UserOfferer,
+            sa.and_(
+                offerers_models.UserOfferer.userId == users_models.User.id,
+                offerers_models.UserOfferer.offererId == offerer_id,
+            ),
+        )
+        .filter(users_models.User.id.in_(user_ids_subquery))
+        .order_by(offerers_models.UserOfferer.id, users_models.User.full_name)
+        .all()
+    )
+
+    kwargs = {}
+
+    can_add_user = utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
+    if can_add_user:
+        # Users whose association to the offerer has been removed, for which relationship is only from history
+        removed_users = [row for row in rows if row.UserOfferer is None]
+        if removed_users:
+            add_user_form = offerer_forms.AddProUserForm()
+            add_user_form.pro_user_id.choices = [(user.id, f"{user.full_name} ({user.id})") for user in removed_users]
+            kwargs.update(
+                {
+                    "add_user_form": add_user_form,
+                    "add_user_dst": url_for(
+                        "backoffice_v3_web.offerer.add_user_offerer_and_validate", offerer_id=offerer_id
+                    ),
+                }
+            )
+
+    return render_template(
+        "offerer/get/details/users.html",
+        rows=[row for row in rows if row.UserOfferer is not None],
+        **kwargs,
+    )
+
+
+@offerer_blueprint.route("/venues", methods=["GET"])
+def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
+    venues = (
+        offerers_models.Venue.query.filter_by(managingOffererId=offerer_id)
+        .options(
+            sa.orm.load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.siret,
+                offerers_models.Venue.venueTypeCode,
+                offerers_models.Venue.isVirtual,
+                offerers_models.Venue.managingOffererId,
+            ),
+            sa.orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
+                educational_models.CollectiveDmsApplication.state,
+                educational_models.CollectiveDmsApplication.lastChangeDate,
+            ),
+        )
+        .all()
+    )
+
+    return render_template(
+        "offerer/get/details/managed_venues.html",
+        venues=venues,
     )
 
 
@@ -732,15 +767,37 @@ def set_user_offerer_pending(user_offerer_id: int) -> utils.BackofficeResponse:
 def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
-    form = _get_add_pro_user_form(offerer)
-    # validate() checks that the id is within the list of previously attached users, so this ensures that:
-    # - user exists with given id
-    # - user_offerer entry does not exist with same ids
+    form = offerer_forms.AddProUserForm()
     if not form.validate():
         flash("Les données envoyées comportent des erreurs", "warning")
         return _redirect_after_user_offerer_validation_action(offerer.id)
 
-    user = users_models.User.query.get(form.pro_user_id.data)
+    # Single request to get User object and check that the id is within the list of previously attached users, which
+    # ensures that:
+    # - user exists with given id
+    # - user_offerer entry does not exist with same ids
+    user = (
+        users_models.User.query.join(
+            history_models.ActionHistory,
+            sa.and_(
+                history_models.ActionHistory.userId == users_models.User.id,
+                history_models.ActionHistory.offererId == offerer_id,
+            ),
+        )
+        .filter(
+            users_models.User.id == form.pro_user_id.data,
+            users_models.User.id.not_in(
+                db.session.query(offerers_models.UserOfferer.userId)
+                .filter(offerers_models.UserOfferer.offererId == offerer_id)
+                .subquery()
+            ),
+        )
+        .limit(1)
+    ).one_or_none()
+
+    if not user:
+        flash("L'ID ne correspond pas à un ancien rattachement à la structure", "warning")
+        return _redirect_after_user_offerer_validation_action(offerer.id)
 
     new_user_offerer = offerers_models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
     offerers_api.validate_offerer_attachment(new_user_offerer, current_user, form.comment.data)

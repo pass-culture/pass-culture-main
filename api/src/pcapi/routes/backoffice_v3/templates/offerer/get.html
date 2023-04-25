@@ -2,6 +2,11 @@
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% import "components/links.html" as links %}
+{% from "components/presentation/details/tabs.html" import build_details_tab %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+{% from "components/turbo/spinner.html" import build_loading_spinner with context %}
 {% extends "layouts/pro.html" %}
 {% set edit_offerer_aria_described_by_id = random_hash() %}
 {% set delete_offerer_aria_described_by_id = random_hash() %}
@@ -159,25 +164,32 @@
       </div>
       <div class="mt-4">
         <turbo-frame id="total_revenue_frame" src="{{ url_for("backoffice_v3_web.offerer.get_stats", offerer_id=offerer.id) }}">
-        <p class="text-center">
-          <span class="spinner-grow spinner-grow-sm"
-                role="status">
-            <span class="visually-hidden">Chargement...</span>
-          </span>
-          Chargement...
-        </p>
+        {{ build_loading_spinner() }}
         </turbo-frame>
       </div>
       <div class="mt-4">
-        <turbo-frame id="offerer_details_frame" src="{{ url_for("backoffice_v3_web.offerer.get_details", offerer_id=offerer.id, active_tab=request.args.get("active_tab", "history")) }}">
-        <p class="text-center">
-          <span class="spinner-grow spinner-grow-sm"
-                role="status">
-            <span class="visually-hidden">Chargement...</span>
-          </span>
-          Chargement...
-        </p>
-        </turbo-frame>
+        {% call build_details_tabs_wrapper() %}
+          {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
+          {{ build_details_tab("pro-users", "Compte(s) pro rattaché(s)", active_tab == 'users') }}
+          {{ build_details_tab("managed-venues", "Lieux associés", active_tab == 'managed_venues') }}
+        {% endcall %}
+        {% call build_details_tabs_content_wrapper() %}
+          {% call build_details_tab_content("history", active_tab == 'history') %}
+            <turbo-frame data-turbo="false" id="offerer_history_frame" loading="lazy" src="{{ url_for("backoffice_v3_web.offerer.get_history", offerer_id=offerer.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+          {% call build_details_tab_content("pro-users", active_tab == 'users') %}
+            <turbo-frame data-turbo="false" id="offerer_users_frame" loading="lazy" src="{{ url_for("backoffice_v3_web.offerer.get_pro_users", offerer_id=offerer.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+          {% call build_details_tab_content("managed-venues", active_tab == 'managed_venues') %}
+            <turbo-frame data-turbo="false" id="offerer_venues_frame" loading="lazy" src="{{ url_for("backoffice_v3_web.offerer.get_managed_venues", offerer_id=offerer.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+        {% endcall %}
       </div>
     </div>
   </div>

@@ -1,12 +1,4 @@
-{% macro build_loading_spinner() %}
-  <p class="text-center">
-    <span class="spinner-grow spinner-grow-sm"
-          role="status">
-      <span class="visually-hidden">Chargement...</span>
-    </span>
-    Chargement...
-  </p>
-{% endmacro %}
+{% from "components/turbo/spinner.html" import build_loading_spinner with context %}
 {% macro build_lazy_modal(url, div_id, loading = "lazy") %}
   <div class="modal fade"
        id="{{ div_id }}"
