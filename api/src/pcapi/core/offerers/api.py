@@ -309,15 +309,27 @@ def generate_and_save_api_key(offerer_id: int) -> str:
     # keys through a race condition. It's fine.
     if models.ApiKey.query.filter_by(offererId=offerer_id).count() >= settings.MAX_API_KEY_PER_OFFERER:
         raise exceptions.ApiKeyCountMaxReached()
-    model_api_key, clear_api_key = generate_api_key(offerer_id)
+    model_api_key, clear_api_key = generate_offerer_api_key(offerer_id)
     repository.save(model_api_key)
     return clear_api_key
 
 
-def generate_api_key(offerer_id: int) -> tuple[models.ApiKey, str]:
+def generate_offerer_api_key(offerer_id: int) -> tuple[models.ApiKey, str]:
     clear_secret = secrets.token_hex(32)
     prefix = _generate_api_key_prefix()
     key = models.ApiKey(offererId=offerer_id, prefix=prefix, secret=crypto.hash_password(clear_secret))
+
+    return key, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
+
+
+def generate_provider_api_key(provider: providers_models.Provider) -> tuple[models.ApiKey, str]:
+    offerer = provider.offererProvider.offerer if provider.offererProvider else None
+    if offerer is None:
+        raise exceptions.CannotFindProviderOfferer()
+
+    clear_secret = secrets.token_hex(32)
+    prefix = _generate_api_key_prefix()
+    key = models.ApiKey(offerer=offerer, provider=provider, prefix=prefix, secret=crypto.hash_password(clear_secret))
 
     return key, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
 
