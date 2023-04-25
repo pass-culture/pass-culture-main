@@ -5,10 +5,14 @@ import { useNavigate } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { CreateOffererQueryModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
+import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { IOfferer, useSignupJourneyContext } from 'context/SignupJourneyContext'
+import { Events } from 'core/FirebaseEvents/constants'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter'
 import { useAdapter } from 'hooks'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { AddUserIcon, ArrowUpBIcon } from 'icons'
 import { Button } from 'ui-kit'
@@ -20,6 +24,7 @@ import { ActionBar } from '../ActionBar'
 import styles from './Offerers.module.scss'
 
 const Offerers = (): JSX.Element => {
+  const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
   const [isVenueListOpen, setIsVenueListOpen] = useState<boolean>(false)
@@ -55,11 +60,21 @@ const Offerers = (): JSX.Element => {
       ...offerer,
       createVenueWithoutSiret: true,
     }
+    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+      from: location.pathname,
+      to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
+      used: OnboardingFormNavigationAction.NewOfferer,
+    })
     setOfferer(newOfferer)
     navigate('/parcours-inscription/authentification')
   }
 
   const doLinkAccount = async () => {
+    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+      from: location.pathname,
+      to: '/parcours-inscription/structure/rattachement/confirmation',
+      used: OnboardingFormNavigationAction.JoinModal,
+    })
     /* istanbul ignore next: venuesOfOfferer will always be defined here or else,
      the user would have been redirected */
     try {
@@ -145,7 +160,9 @@ const Offerers = (): JSX.Element => {
         previousStepTitle="Retour"
         hideRightButton
         onClickPrevious={() => navigate('/parcours-inscription/structure')}
+        previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
         isDisabled={false}
+        logEvent={logEvent}
       />
       {showLinkDialog && (
         <ConfirmDialog

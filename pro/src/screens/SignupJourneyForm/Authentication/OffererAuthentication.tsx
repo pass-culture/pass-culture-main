@@ -3,7 +3,9 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import FormLayout from 'components/FormLayout'
+import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
+import useAnalytics from 'hooks/useAnalytics'
 
 import { ActionBar } from '../ActionBar'
 import { DEFAULT_OFFERER_FORM_VALUES } from '../Offerer/constants'
@@ -15,6 +17,7 @@ import OffererAuthenticationForm, {
 import { validationSchema } from './validationSchema'
 
 const OffererAuthentication = (): JSX.Element => {
+  const { logEvent } = useAnalytics()
   const navigate = useNavigate()
 
   const { offerer, setOfferer } = useSignupJourneyContext()
@@ -62,8 +65,11 @@ const OffererAuthentication = (): JSX.Element => {
           <OffererAuthenticationForm />
           <ActionBar
             onClickPrevious={handlePreviousStep}
+            previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
+            nextTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
             previousStepTitle="Retour"
             isDisabled={formik.isSubmitting}
+            logEvent={logEvent}
           />
         </form>
       </FormikProvider>
