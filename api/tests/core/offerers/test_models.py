@@ -1,10 +1,10 @@
 import datetime
-import pathlib
 from unittest.mock import patch
 
 import pytest
 from sqlalchemy.exc import IntegrityError
 
+from pcapi import settings
 from pcapi.connectors import sirene
 from pcapi.core.educational import factories as educational_factories
 import pcapi.core.finance.factories as finance_factories
@@ -152,7 +152,9 @@ class VenueBannerUrlTest:
     def test_can_get_category_default_banner_url_when_exists(self, venue_type_code):
         venue = factories.VenueFactory(venueTypeCode=venue_type_code)
 
-        assert pathlib.Path(venue.bannerUrl).name in models.VENUE_TYPE_DEFAULT_BANNERS[venue_type_code]
+        banner_base_url, banner_name = venue.bannerUrl.rsplit("/", 1)
+        assert banner_name in models.VENUE_TYPE_DEFAULT_BANNERS[venue_type_code]
+        assert banner_base_url == f"{settings.OBJECT_STORAGE_URL}/assets/venue_default_images"
 
     @pytest.mark.parametrize(
         "venue_type_code",
