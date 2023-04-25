@@ -43,7 +43,7 @@ from tests.test_utils import json_default
 class DmsWebhookApplicationTest:
     def test_dms_request_no_token(self, client):
         response = client.post("/webhooks/dms/application_status")
-        assert response.status_code == 403
+        assert response.status_code == 400
 
     def test_dms_request_no_params_with_token(self, client):
         response = client.post(f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}")
