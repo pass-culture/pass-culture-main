@@ -16,11 +16,11 @@ class SuspendUserForm(FlaskForm):
             (opt.name, users_constants.SUSPENSION_REASON_CHOICES[opt]) for opt in users_constants.SuspensionReason
         ],
     )
-    comment = fields.PCOptStringField("Commentaire interne optionnel")
+    comment = fields.PCOptCommentField("Commentaire interne optionnel")
 
 
 class UnsuspendUserForm(FlaskForm):
-    comment = fields.PCOptStringField("Commentaire interne optionnel")
+    comment = fields.PCOptCommentField("Commentaire interne optionnel")
 
 
 def get_toggle_suspension_args(user: users_models.User) -> dict:

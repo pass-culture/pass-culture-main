@@ -71,6 +71,10 @@ class EditOffererForm(FlaskForm):
     postal_code = fields.PCPostalCodeHiddenField("Code postal")
 
 
+class SuspendOffererForm(FlaskForm):
+    comment = fields.PCOptCommentField("Commentaire interne optionnel")
+
+
 class OffererValidationListForm(utils.PCForm):
     class Meta:
         csrf = False

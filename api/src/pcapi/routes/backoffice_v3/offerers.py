@@ -74,15 +74,14 @@ def render_offerer_details(
             tags=offerer.tags,
         )
 
-    delete_offerer_form = empty_forms.EmptyForm()
-
     return render_template(
         "offerer/get.html",
         offerer=offerer,
         region=regions_utils.get_region_name_from_postal_code(offerer.postalCode),
         bank_information_status=bank_information_status,
         edit_offerer_form=edit_offerer_form,
-        delete_offerer_form=delete_offerer_form,
+        suspension_form=offerer_forms.SuspendOffererForm(),
+        delete_offerer_form=empty_forms.EmptyForm(),
     )
 
 
@@ -179,6 +178,40 @@ def _get_add_pro_user_form(offerer: offerers_models.Offerer) -> offerer_forms.Ad
     form.pro_user_id.choices = [(user.id, f"{user.full_name} ({user.id})") for user in removed_users]
 
     return form
+
+
+@offerer_blueprint.route("/suspend", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    form = offerer_forms.SuspendOffererForm()
+
+    if not form.validate():
+        flash("Les données envoyées comportent des erreurs", "warning")
+    else:
+        try:
+            offerers_api.suspend_offerer(offerer, current_user, form.comment.data)
+        except offerers_exceptions.CannotSuspendOffererWithBookingsException:
+            flash("Impossible de suspendre une structure juridique pour laquelle il existe des réservations", "warning")
+        else:
+            flash(f"La structure {offerer.name} ({offerer_id}) a été suspendue", "success")
+
+    return redirect(url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id), code=303)
+
+
+@offerer_blueprint.route("/unsuspend", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    form = offerer_forms.SuspendOffererForm()
+
+    if not form.validate():
+        flash("Les données envoyées comportent des erreurs", "warning")
+    else:
+        offerers_api.unsuspend_offerer(offerer, current_user, form.comment.data)
+        flash(f"La structure {offerer.name} ({offerer_id}) a été réactivée", "success")
+
+    return redirect(url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id), code=303)
 
 
 @offerer_blueprint.route("/delete", methods=["POST"])
