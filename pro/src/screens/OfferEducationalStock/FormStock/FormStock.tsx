@@ -72,6 +72,7 @@ const FormStock = ({
       <DatePicker
         disabled={mode === Mode.READ_ONLY}
         label={BOOKING_LIMIT_DATETIME_LABEL}
+        hasLabelLineBreak={false}
         minDateTime={new Date(offerDateCreated)}
         maxDateTime={values.eventDate ? values.eventDate : undefined}
         name="bookingLimitDatetime"

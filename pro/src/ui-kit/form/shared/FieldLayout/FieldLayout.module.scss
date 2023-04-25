@@ -12,7 +12,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    white-space: break-spaces;
+    white-space: nowrap;
 
     &-container {
       margin-bottom: rem.torem(forms.$label-space-before-input);
@@ -20,6 +20,10 @@
       &.label-hidden {
         display: none;
       }
+    }
+
+    &-break {
+      white-space: break-spaces;
     }
   }
 
