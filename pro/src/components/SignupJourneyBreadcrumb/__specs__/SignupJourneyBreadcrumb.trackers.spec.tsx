@@ -5,15 +5,21 @@ import { Route, Routes } from 'react-router-dom'
 
 import { Target } from 'apiClient/v1'
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address'
+import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
+import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import {
   DEFAULT_ACTIVITY_VALUES,
   ISignupJourneyContext,
   SignupJourneyContext,
 } from 'context/SignupJourneyContext'
+import { Events } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SignupBreadcrumb from '../SignupJourneyBreadcrumb'
+
+const mockLogEvent = jest.fn()
 
 const renderSignupBreadcrumb = (
   contextValue: ISignupJourneyContext,
@@ -64,6 +70,10 @@ const renderSignupBreadcrumb = (
 describe('test SignupBreadcrumb', () => {
   let contextValue: ISignupJourneyContext
   beforeEach(() => {
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
     contextValue = {
       activity: DEFAULT_ACTIVITY_VALUES,
       offerer: DEFAULT_OFFERER_FORM_VALUES,
@@ -71,44 +81,61 @@ describe('test SignupBreadcrumb', () => {
       setOfferer: () => {},
     }
   })
-  it('should render authentication step', async () => {
+  it('Should not log current tab click and disabled ones', async () => {
     const { tabAuthentication, tabActivity, tabValidation } =
       renderSignupBreadcrumb(contextValue)
 
-    expect(tabAuthentication).toBeInTheDocument()
-    expect(tabActivity).toBeInTheDocument()
-    expect(tabValidation).toBeInTheDocument()
+    tabAuthentication && (await userEvent.click(tabAuthentication))
 
-    expect(screen.getByText('Authentication screen')).toBeInTheDocument()
+    expect(mockLogEvent).toHaveBeenCalledTimes(0)
 
     tabActivity && (await userEvent.click(tabActivity))
-    expect(screen.queryByText('Activity screen')).not.toBeInTheDocument()
+    expect(mockLogEvent).toHaveBeenCalledTimes(0)
 
     tabValidation && (await userEvent.click(tabValidation))
-    expect(screen.queryByText('Validation screen')).not.toBeInTheDocument()
+    expect(mockLogEvent).toHaveBeenCalledTimes(0)
   })
 
-  it('should render activity step', async () => {
+  it('should log breadcrumbs navigation to authentication', async () => {
     contextValue.offerer = {
       name: 'test name',
       siret: '1234567893333',
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
-    const { tabAuthentication, tabValidation } = renderSignupBreadcrumb(
+    const { tabAuthentication } = renderSignupBreadcrumb(
       contextValue,
       '/parcours-inscription/activite'
     )
 
-    expect(screen.getByText('Activity screen')).toBeInTheDocument()
-
-    tabValidation && (await userEvent.click(tabValidation))
-    expect(screen.queryByText('Validation screen')).not.toBeInTheDocument()
-
     tabAuthentication && (await userEvent.click(tabAuthentication))
-    expect(screen.getByText('Authentication screen')).toBeInTheDocument()
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
+      {
+        from: '/parcours-inscription/activite',
+        to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
+        used: OnboardingFormNavigationAction.Breadcrumb,
+      }
+    )
   })
 
-  it('should render validation step and navigate through steps', async () => {
+  it('should not log breadcrumbs navigation to activity', async () => {
+    contextValue.offerer = {
+      name: 'test name',
+      siret: '1234567893333',
+      ...DEFAULT_ADDRESS_FORM_VALUES,
+    }
+    const { tabActivity } = renderSignupBreadcrumb(
+      contextValue,
+      '/parcours-inscription/activite'
+    )
+
+    tabActivity && (await userEvent.click(tabActivity))
+    expect(mockLogEvent).not.toHaveBeenCalled()
+  })
+
+  it('should log breadcrumbs navigation', async () => {
     contextValue.offerer = {
       name: 'test name',
       siret: '1234567893333',
@@ -125,24 +152,39 @@ describe('test SignupBreadcrumb', () => {
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
 
     tabActivity && (await userEvent.click(tabActivity))
-    expect(screen.getByText('Activity screen')).toBeInTheDocument()
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
+      {
+        from: '/parcours-inscription/validation',
+        to: SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
+        used: OnboardingFormNavigationAction.Breadcrumb,
+      }
+    )
 
     tabValidation && (await userEvent.click(tabValidation))
-    expect(screen.getByText('Validation screen')).toBeInTheDocument()
+    expect(mockLogEvent).toHaveBeenCalledTimes(2)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      2,
+      Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
+      {
+        from: '/parcours-inscription/activite',
+        to: SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
+        used: OnboardingFormNavigationAction.Breadcrumb,
+      }
+    )
 
     tabAuthentication && (await userEvent.click(tabAuthentication))
-    expect(screen.getByText('Authentication screen')).toBeInTheDocument()
-
-    tabValidation && (await userEvent.click(tabValidation))
-    expect(screen.getByText('Validation screen')).toBeInTheDocument()
-  })
-
-  it('should not render breadcrumb when step is not included in breadcrumb step', async () => {
-    const { tabAuthentication, tabActivity, tabValidation } =
-      renderSignupBreadcrumb(contextValue, '/parcours-inscription/structure')
-
-    expect(tabAuthentication).not.toBeInTheDocument()
-    expect(tabActivity).not.toBeInTheDocument()
-    expect(tabValidation).not.toBeInTheDocument()
+    expect(mockLogEvent).toHaveBeenCalledTimes(3)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      3,
+      Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
+      {
+        from: '/parcours-inscription/validation',
+        to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
+        used: OnboardingFormNavigationAction.Breadcrumb,
+      }
+    )
   })
 })

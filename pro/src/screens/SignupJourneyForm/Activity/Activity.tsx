@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom'
 
 import { Target } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
+import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { IActivity } from 'context/SignupJourneyContext/SignupJourneyContext'
 import { FORM_ERROR_MESSAGE } from 'core/shared'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -26,6 +28,7 @@ const Activity = (): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
   const { activity, setActivity } = useSignupJourneyContext()
+  const { logEvent } = useAnalytics()
 
   const serializeActivityContext = (
     activity: IActivity
@@ -112,6 +115,9 @@ const Activity = (): JSX.Element => {
             onClickPrevious={handlePreviousStep}
             onClickNext={handleNextStep()}
             isDisabled={formik.isSubmitting}
+            previousTo={SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION}
+            nextTo={SIGNUP_JOURNEY_STEP_IDS.VALIDATION}
+            logEvent={logEvent}
           />
         </form>
       </FormikProvider>
