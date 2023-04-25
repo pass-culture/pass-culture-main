@@ -40,6 +40,7 @@ import sqlalchemy.sql.functions as sqla_func
 from sqlalchemy.sql.sqltypes import LargeBinary
 from werkzeug.utils import cached_property
 
+from pcapi import settings
 from pcapi.connectors import sirene
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.models as finance_models
@@ -147,7 +148,7 @@ class VenueTypeCode(enum.Enum):
         return value
 
 
-VENUE_DEFAULTS_DIR = "venue_default_images"
+VENUE_DEFAULTS_DIR = "assets/venue_default_images"
 VENUE_TYPE_DEFAULT_BANNERS: dict[VenueTypeCode, tuple[str, ...]] = {
     VenueTypeCode.ADMINISTRATIVE: (),
     VenueTypeCode.ARTISTIC_COURSE: (
@@ -382,7 +383,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
             default_banner = elligible_banners[self.id % 2]
         except IndexError:
             return None
-        return os.path.join(VENUE_DEFAULTS_DIR, default_banner)
+        return os.path.join(settings.OBJECT_STORAGE_URL, VENUE_DEFAULTS_DIR, default_banner)
 
     @hybrid_property
     def bannerUrl(self) -> str | None:

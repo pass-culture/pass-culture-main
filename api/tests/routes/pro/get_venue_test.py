@@ -16,7 +16,7 @@ from tests.conftest import TestClient
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def when_user_has_rights_on_managing_offerer(self, client):
+    def when_user_has_rights_on_managing_offerer(self, client, db_session):
         now = datetime.datetime.utcnow()
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
         venue = offerers_factories.CollectiveVenueFactory(
@@ -156,7 +156,7 @@ class Returns200Test:
             "adageInscriptionDate": format_into_utc_date(venue.adageInscriptionDate),
         }
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        db.session.commit()  # clear SQLA cached objects
+        db_session.commit()  # clear SQLA cached objects
 
         with testing.assert_no_duplicated_queries():
             response = auth_request.get("/venues/%s" % venue_id)
