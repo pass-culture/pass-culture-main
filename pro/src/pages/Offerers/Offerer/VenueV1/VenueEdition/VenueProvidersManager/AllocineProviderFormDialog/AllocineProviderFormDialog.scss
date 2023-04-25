@@ -12,46 +12,10 @@
 
   .title {
     @include fonts.gabarit;
+    @include fonts.title3;
   }
 
   .explanation {
     margin-top: rem.torem(24px);
-  }
-
-  form {
-    width: 100%;
-
-    .allocine-provider-form {
-      margin-top: rem.torem(32px);
-
-      input[type="number"] {
-        height: rem.torem(40px);
-      }
-
-      .imported-offres-clarification {
-        @include fonts.caption;
-
-        color: colors.$grey-dark;
-        margin-top: rem.torem(24px);
-      }
-
-      .actions {
-        display: flex;
-        justify-content: center;
-        margin-top: rem.torem(40px);
-
-        .secondary-button {
-          margin-right: rem.torem(20px);
-        }
-
-        .primary-button {
-          margin-left: rem.torem(20px);
-        }
-
-        button {
-          padding: 0 rem.torem(80px);
-        }
-      }
-    }
   }
 }
