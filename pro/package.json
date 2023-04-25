@@ -123,7 +123,7 @@
     "@typescript-eslint/parser": "^5.58.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^29.0.5",
-    "babel-loader": "^9.0.0",
+    "babel-loader": "^9.1.2",
     "babel-plugin-typescript-to-proptypes": "^2.0.0",
     "count-lines-in-file": "^1.1.0",
     "cypress": "^12.10.0",
