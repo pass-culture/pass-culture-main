@@ -1,7 +1,7 @@
 {% from "components/forms.html" import build_filters_form with context %}
 {% import "components/links.html" as links %}
 {% import "providers/get/common.html" as common %}
-<turbo-frame id="allocine_frame">
+<turbo-frame id="allocine_frame" data-turbo="false">
 {{ common.build_provider_bar("allocine", form, dst) }}
 <table class="table table-hover my-4">
   <thead>
