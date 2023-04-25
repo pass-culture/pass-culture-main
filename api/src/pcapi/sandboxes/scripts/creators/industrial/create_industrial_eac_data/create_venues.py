@@ -49,6 +49,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         departementCode="56",
         postalCode="56000",
         city="Lorient",
+        siret="55208131766522",
     )
     # eac_2
     offerer = next(offerer_iterator)
@@ -58,19 +59,19 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         adageId="7894896",
         adageInscriptionDate=datetime.utcnow() - timedelta(days=5),
         reimbursement=True,
-        siret="12345678200010",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         departementCode="91",
         postalCode="91000",
         city="CORBEIL-ESSONNES",
+        siret="44460844212351",
     )
     create_venue(
         managingOfferer=offerer,
         name=f"real_venue 1 {offerer.name}",
-        siret="12345678200036",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="44460844212690",
     )
     # eac_pending_bank_informations
     offerer = next(offerer_iterator)
@@ -81,6 +82,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         adageInscriptionDate=datetime.utcnow() - timedelta(days=30),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="55204695506065",
     )
     pending_reimbursement_venue.bankInformation = finance_factories.BankInformationFactory(
         status=finance_models.BankInformationStatus.DRAFT
@@ -98,6 +100,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         adageInscriptionDate=datetime.utcnow() - timedelta(days=13),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="44478651100022",
     )
     # eac_rejected
     offerer = next(offerer_iterator)
@@ -107,12 +110,14 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         reimbursement=True,
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="89749229400011",
     )
     create_venue(
         managingOfferer=offerer,
         name=f"real_venue 1 {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="89749229400326",
     )
     # DMS venues
     application_id_generator = count(11922836)
@@ -123,7 +128,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="42883745400050",
+        siret="53816052400012",
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue,
@@ -144,7 +149,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="42883745400051",
+        siret="53816065600012",
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue,
@@ -165,7 +170,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="42883745400052",
+        siret="84308238900019",
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue,
@@ -186,7 +191,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="42883745400053",
+        siret="52423735100019",
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue,
@@ -207,7 +212,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="42883745400054",
+        siret="53816061500018",
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue,
@@ -228,7 +233,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="42883745400055",
+        siret="45650053700018",
         adageId="98763",
         adageInscriptionDate=datetime.utcnow() - timedelta(days=30),
     )
@@ -251,7 +256,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="42883745400056",
+        siret="84800945200014",
         adageId="98763",
         adageInscriptionDate=datetime.utcnow(),
     )
@@ -274,7 +279,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"accepted_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="42883745400057",
+        siret="84817150000384",
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue_with_accepted_dms_status,
@@ -293,7 +298,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"rejected_dms {offerer.name}",
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        siret="42883745400058",
+        siret="84817150000632",
     )
     educational_factories.CollectiveDmsApplicationFactory(
         venue=venue_with_rejected_dms_status,
