@@ -24,7 +24,8 @@ $arrow-triangle-height: rem.torem(8px);
   display: inline-block;
 
   &:hover,
-  &:focus {
+  &:focus,
+  &:focus-within {
     cursor: pointer;
 
     .tooltip {
