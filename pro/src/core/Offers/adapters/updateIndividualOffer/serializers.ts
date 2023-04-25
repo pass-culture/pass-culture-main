@@ -86,7 +86,7 @@ export const serializePatchOffer = ({
       sentValues.accessibility &&
       sentValues.accessibility[AccessiblityEnum.MOTOR],
     name: sentValues.name,
-    withdrawalDelay: Number(sentValues.withdrawalDelay) || undefined,
+    withdrawalDelay: Number(sentValues.withdrawalDelay) || null,
     withdrawalDetails: sentValues.withdrawalDetails || undefined,
     visualDisabilityCompliant:
       sentValues.accessibility &&

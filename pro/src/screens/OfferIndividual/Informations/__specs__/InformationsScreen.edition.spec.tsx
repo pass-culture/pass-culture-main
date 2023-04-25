@@ -410,7 +410,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       url: 'http://offer.example.com',
       visualDisabilityCompliant: true,
       withdrawalDetails: 'Offer withdrawalDetails',
-      withdrawalDelay: undefined,
+      withdrawalDelay: null,
       withdrawalType: undefined,
       shouldSendMail: false,
     })
@@ -565,7 +565,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         url: 'http://offer.example.com',
         visualDisabilityCompliant: true,
         withdrawalDetails: 'Offer withdrawalDetails',
-        withdrawalDelay: undefined,
+        withdrawalDelay: null,
         withdrawalType: undefined,
         shouldSendMail: false,
       }
@@ -898,7 +898,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           ]
         }
 
-        expectedBody.withdrawalDelay = undefined
+        expectedBody.withdrawalDelay = null
         expectedBody.withdrawalType = WithdrawalTypeEnum.ON_SITE
         expectedBody.shouldSendMail = true
 
