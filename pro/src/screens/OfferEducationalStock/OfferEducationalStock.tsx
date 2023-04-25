@@ -11,6 +11,7 @@ import ActionsBarSticky from 'components/ActionsBarSticky'
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import FormLayout from 'components/FormLayout'
 import OfferEducationalActions from 'components/OfferEducationalActions'
+import { Events } from 'core/FirebaseEvents/constants'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
@@ -22,6 +23,7 @@ import {
   OPENING_DATE_FOR_6E_AND_5E,
 } from 'core/OfferEducational'
 import { isOfferDisabled } from 'core/Offers/utils'
+import useAnalytics from 'hooks/useAnalytics'
 import { Banner, ButtonLink, SubmitButton, TextArea } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -70,6 +72,8 @@ const OfferEducationalStock = <
           isBefore(new Date(), addDays(new Date(beginningDatetime), 2))))
   )
 
+  const { logEvent } = useAnalytics()
+
   const disablePriceAndParticipantInputs =
     isCollectiveOffer(offer) &&
     mode === Mode.READ_ONLY &&
@@ -98,6 +102,10 @@ const OfferEducationalStock = <
         offer.students.includes(StudentLevels.COLL_GE_5E))
     ) {
       setIsWrongStudentsModalVisible(true)
+      logEvent?.(Events.EAC_WRONG_STUDENTS_MODAL_OPEN, {
+        from: location.pathname,
+        hasOnly6eAnd5eStudents: hasOnly6eAnd5eStudents,
+      })
       return
     }
     postForm(values)

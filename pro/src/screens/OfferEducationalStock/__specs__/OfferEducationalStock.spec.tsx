@@ -3,11 +3,13 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { StudentLevels } from 'apiClient/adage'
+import { Events } from 'core/FirebaseEvents/constants'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
   Mode,
 } from 'core/OfferEducational'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -218,6 +220,63 @@ describe('OfferEducationalStock', () => {
       expect(
         screen.queryByText('Cette offre ne peut pas s’adresser aux 6e et 5e')
       ).not.toBeInTheDocument()
+    })
+    it('should log event when wrong students modal is displayed with only wrong students', async () => {
+      const mockLogEvent = jest.fn()
+      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+        ...jest.requireActual('hooks/useAnalytics'),
+        logEvent: mockLogEvent,
+      }))
+
+      const offer = collectiveOfferFactory({
+        id: 'A1',
+        students: [StudentLevels.COLL_GE_6E, StudentLevels.COLL_GE_5E],
+      })
+      const testProps: IOfferEducationalStockProps = {
+        ...defaultProps,
+        offer,
+        initialValues: initialValuesNotEmpty,
+      }
+      renderWithProviders(<OfferEducationalStock {...testProps} />)
+
+      const submitButton = screen.getByRole('button', {
+        name: 'Étape suivante',
+      })
+      await userEvent.click(submitButton)
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.EAC_WRONG_STUDENTS_MODAL_OPEN,
+        { from: '/', hasOnly6eAnd5eStudents: true }
+      )
+    })
+
+    it('should log event when wrong students modal is displayed with not only wrong students', async () => {
+      const mockLogEvent = jest.fn()
+      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+        ...jest.requireActual('hooks/useAnalytics'),
+        logEvent: mockLogEvent,
+      }))
+
+      const offer = collectiveOfferFactory({
+        id: 'A1',
+        students: [StudentLevels.COLL_GE_6E, StudentLevels.LYC_E_SECONDE],
+      })
+      const testProps: IOfferEducationalStockProps = {
+        ...defaultProps,
+        offer,
+        initialValues: initialValuesNotEmpty,
+      }
+      renderWithProviders(<OfferEducationalStock {...testProps} />)
+
+      const submitButton = screen.getByRole('button', {
+        name: 'Étape suivante',
+      })
+      await userEvent.click(submitButton)
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.EAC_WRONG_STUDENTS_MODAL_OPEN,
+        { from: '/', hasOnly6eAnd5eStudents: false }
+      )
     })
   })
 })
