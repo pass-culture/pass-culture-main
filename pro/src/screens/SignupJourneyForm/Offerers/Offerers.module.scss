@@ -77,8 +77,7 @@ $small-gap: rem.torem(8px);
 }
 
 .dialog-info {  
-  padding-right: rem.torem(85px);
-  padding-left: rem.torem(85px);
+  padding: 0 rem.torem(85px);
 }
 
 .button-add-new-offerer {
