@@ -44,7 +44,8 @@ def extra_funcs() -> dict:
     return {
         "csrf_token": empty_forms.EmptyForm().csrf_token,
         "has_permission": utils.has_current_user_permission,
+        "is_feature_active": utils.is_feature_active,
         "is_user_offerer_action_type": utils.is_user_offerer_action_type,
         "random_hash": utils.random_hash,
-        "is_feature_active": utils.is_feature_active,
+        "get_setting": utils.get_setting,
     }

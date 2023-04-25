@@ -1,5 +1,7 @@
 from flask import Flask
 
+from pcapi import settings
+
 
 def install_routes(app: Flask) -> None:
     # pylint: disable=unused-import
@@ -25,6 +27,9 @@ def install_routes(app: Flask) -> None:
     from . import users
     from . import venues
     from .providers import blueprint
+
+    if settings.ENABLE_TEST_USER_GENERATION:
+        from .user_generation import blueprint as user_generation_blueprint
 
     filters.install_template_filters(app)
     i18n.install_template_filters(app)
