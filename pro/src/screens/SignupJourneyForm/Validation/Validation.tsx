@@ -3,11 +3,15 @@ import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
+import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
+import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import {
   DEFAULT_ACTIVITY_VALUES,
   useSignupJourneyContext,
 } from 'context/SignupJourneyContext'
+import { Events } from 'core/FirebaseEvents/constants'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { PenIcon } from 'icons'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
@@ -20,6 +24,7 @@ import { ActionBar } from '../ActionBar'
 import styles from './Validation.module.scss'
 
 const Validation = (): JSX.Element => {
+  const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
   const { activity, offerer } = useSignupJourneyContext()
@@ -96,6 +101,13 @@ const Validation = (): JSX.Element => {
               to: '/parcours-inscription/authentification',
               isExternal: false,
             }}
+            onClick={() => {
+              logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                from: location.pathname,
+                to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
+                used: OnboardingFormNavigationAction.UpdateFromValidation,
+              })
+            }}
             variant={ButtonVariant.TERNARY}
             iconPosition={IconPositionEnum.LEFT}
             Icon={PenIcon}
@@ -122,6 +134,13 @@ const Validation = (): JSX.Element => {
             link={{
               to: '/parcours-inscription/activite',
               isExternal: false,
+            }}
+            onClick={() => {
+              logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                from: location.pathname,
+                to: SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
+                used: OnboardingFormNavigationAction.UpdateFromValidation,
+              })
             }}
             variant={ButtonVariant.TERNARY}
             iconPosition={IconPositionEnum.LEFT}
@@ -156,10 +175,13 @@ const Validation = (): JSX.Element => {
       </Banner>
       <ActionBar
         onClickPrevious={handlePreviousStep}
+        previousTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
+        nextTo={SIGNUP_JOURNEY_STEP_IDS.COMPLETED}
         onClickNext={onSubmit}
         isDisabled={false}
         withRightIcon={false}
         nextStepTitle="Valider et créer mon espace"
+        logEvent={logEvent}
       />
     </div>
   )

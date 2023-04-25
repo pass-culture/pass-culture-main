@@ -1,6 +1,11 @@
 import React from 'react'
+import { useLocation } from 'react-router-dom'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
+import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
+import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
+import { logEventType } from 'context/analyticsContext'
+import { Events } from 'core/FirebaseEvents/constants'
 import { ReactComponent as IcoMiniArrowLeft } from 'icons/ico-mini-arrow-left.svg'
 import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.svg'
 import { Button, SubmitButton } from 'ui-kit'
@@ -11,9 +16,12 @@ export interface IActionBarProps {
   onClickPrevious?: () => void
   isDisabled: boolean
   nextStepTitle?: string
+  nextTo?: SIGNUP_JOURNEY_STEP_IDS
   previousStepTitle?: string
+  previousTo?: SIGNUP_JOURNEY_STEP_IDS
   hideRightButton?: boolean
   withRightIcon?: boolean
+  logEvent: logEventType | null
 }
 
 const ActionBar = ({
@@ -22,9 +30,21 @@ const ActionBar = ({
   isDisabled,
   hideRightButton = false,
   nextStepTitle = 'Étape suivante',
+  nextTo,
   previousStepTitle = 'Étape précédente',
+  previousTo,
   withRightIcon = true,
+  logEvent,
 }: IActionBarProps) => {
+  const location = useLocation()
+
+  const logActionBarNavigation = (to: SIGNUP_JOURNEY_STEP_IDS) => {
+    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+      from: location.pathname,
+      to,
+      used: OnboardingFormNavigationAction.ActionBar,
+    })
+  }
   const Left = (): JSX.Element => {
     if (!onClickPrevious) {
       return <></>
@@ -33,7 +53,10 @@ const ActionBar = ({
     return (
       <Button
         Icon={IcoMiniArrowLeft}
-        onClick={onClickPrevious}
+        onClick={() => {
+          onClickPrevious()
+          previousTo && logActionBarNavigation(previousTo)
+        }}
         variant={ButtonVariant.SECONDARY}
         disabled={isDisabled}
       >
@@ -52,7 +75,10 @@ const ActionBar = ({
         Icon={withRightIcon ? IcoMiniArrowRight : undefined}
         iconPosition={IconPositionEnum.RIGHT}
         disabled={isDisabled}
-        onClick={onClickNext}
+        onClick={() => {
+          onClickNext && onClickNext()
+          nextTo && logActionBarNavigation(nextTo)
+        }}
       >
         {nextStepTitle}
       </SubmitButton>
