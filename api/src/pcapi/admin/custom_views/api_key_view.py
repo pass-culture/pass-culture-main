@@ -7,7 +7,7 @@ from wtforms.validators import ValidationError
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.offerers.api import API_KEY_SEPARATOR
-from pcapi.core.offerers.api import generate_api_key
+from pcapi.core.offerers.api import generate_offerer_api_key
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.models import db
@@ -45,7 +45,7 @@ class ApiKeyView(BaseAdminView):
         if is_created:
             with db.session.no_autoflush:
                 offerer_id = find_offerer_by_siren(form.offererSiren.data).id  # type: ignore [union-attr]
-                api_key, clear_api_key = generate_api_key(offerer_id)
+                api_key, clear_api_key = generate_offerer_api_key(offerer_id)
             model.offererId = offerer_id
             model.prefix = api_key.prefix
             model.secret = api_key.secret

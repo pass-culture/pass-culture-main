@@ -29,6 +29,10 @@ class CannotFindOffererSiren(Exception):
     pass
 
 
+class CannotFindProviderOfferer(Exception):
+    pass
+
+
 class MissingOffererIdQueryParameter(Exception):
     pass
 
