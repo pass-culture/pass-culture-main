@@ -67,14 +67,10 @@ const SignupForm = (): JSX.Element => {
       <FormLayout>
         <div className={styles['sign-up-form']}>
           <FormLayout.Row>
-            <TextInput label="Nom" name="lastName" placeholder="Votre nom" />
+            <TextInput label="Nom" name="lastName" />
           </FormLayout.Row>
           <FormLayout.Row>
-            <TextInput
-              label="Prénom"
-              name="firstName"
-              placeholder="Votre prénom"
-            />
+            <TextInput label="Prénom" name="firstName" />
           </FormLayout.Row>
           <FormLayout.Row>
             <EmailSpellCheckInput
@@ -87,7 +83,6 @@ const SignupForm = (): JSX.Element => {
             <PasswordInput
               name="password"
               label="Mot de passe"
-              placeholder="Votre mot de passe"
               withErrorPreview={true}
             />
           </FormLayout.Row>
