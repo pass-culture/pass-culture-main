@@ -36,3 +36,7 @@ class CreateProviderForm(FlaskForm):
     )
     enabled_for_pro = fields.PCSwitchBooleanField("Actif pour les pros", default="checked")
     is_active = fields.PCSwitchBooleanField("Actif", default="checked")
+
+
+class EditProviderForm(CreateProviderForm):
+    siren = None  # type: ignore [assignment]
