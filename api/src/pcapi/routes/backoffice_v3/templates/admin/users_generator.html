@@ -1,9 +1,84 @@
-<!-- WIP ; the correct layout will come later -->
-<form>
-  <button>Generate</button>
-</form>
-<div>
-  <div>{{ user.id }}</div>
-  <div>{{ user.email }}</div>
-  <div>{{ user.clearTextPassword }}</div>
-</div>
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Générateur d'utilisateurs de test</h2>
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex flex-row justify-content-start">
+            <h5 class="card-title">
+              {{ user.firstName }} {{ user.lastName | upper }}
+              {% for role in
+                user.roles %}
+                <span class="ms-5 me-2 badge rounded-pill text-bg-primary align-middle">{{ role | format_role }}</span>
+              {% endfor %}
+              {% if not user.isActive %}
+                <span class="badge rounded-pill text-bg-secondary align-middle">{{ user.isActive | format_state }}</span>
+              {% endif %}
+            </h5>
+          </div>
+          <div>
+            <div class="mb-1">
+              <span class="fw-bold">User ID :</span> {{ user.id }}
+            </div>
+            <div class="mb-1">
+              <span class="fw-bold">E-mail :</span> {{ user.email }}
+            </div>
+            <div class="mb-1">
+              <span class="fw-bold">Mot de passe :</span> {{
+              user.clearTextPassword }}
+            </div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="d-flex flex-column">
+              <p class="my-1">
+                <span class="fw-bold">Date de naissance</span>
+                {% if user.birth_date %}
+                  <span>{{ user.birth_date | format_date }} ({{ user.age |
+                  empty_string_if_null }} ans)</span>
+                {% endif %}
+              </p>
+              {% if user.dateOfBirth and user.dateOfBirth.date() !=
+                user.birth_date %}
+                <p class="my-1">
+                  <span class="fw-bold">Date de naissance déclarée à l'inscription</span>
+                  <span>{{ user.dateOfBirth | format_date }}</span>
+                </p>
+              {% endif %}
+              <p class="mb-1">
+                <span class="fw-bold">Crédité le :</span> {{
+                user.deposit_activation_date | format_date }}
+              </p>
+              <p class="mb-1">
+                <span class="fw-bold">Date de création du compte :</span> {{
+                user.dateCreated | format_date }}
+              </p>
+              <div class="mb-1">
+                <span class="fw-bold">Adresse</span>
+                <p class="mb-0">{{ user.address }}</p>
+                <p>
+                  {{ user.postalCode | empty_string_if_null }}&nbsp;{{ user.city |
+                  empty_string_if_null }}
+                </p>
+              </div>
+            </div>
+            <div class="d-flex flex-column ms-5">
+              <div class="mb-1">
+                <span class="fw-bold">Numéro de pièce d'identité</span>
+                <p>{{ user.idPieceNumber | empty_string_if_null }}</p>
+                <div class="mb-1">
+                  <span class="fw-bold">Tél :</span> {{ user.phoneNumber |
+                  empty_string_if_null }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <form class="pt-3">
+        <button type="submit"
+                class="btn btn-primary">Générer</button>
+      </form>
+    </div>
+  </div>
+{% endblock page %}
