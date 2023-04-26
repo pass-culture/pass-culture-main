@@ -9,10 +9,7 @@ import {
 import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as GuichetFullIcon } from 'icons/ico-guichet-full.svg'
-import { ButtonLink } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
-
-import styles from '../../OfferItem.module.scss'
+import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
 const EditStocksCell = ({
   editionStockLink,
@@ -24,25 +21,23 @@ const EditStocksCell = ({
   const { logEvent } = useAnalytics()
 
   return (
-    <td className={styles['switch-column']}>
-      <ButtonLink
-        variant={ButtonVariant.SECONDARY}
-        onClick={() =>
-          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-            from: OFFER_FORM_NAVIGATION_IN.OFFERS,
-            to: OFFER_WIZARD_STEP_IDS.STOCKS,
-            used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_STOCKS,
-            isEdition: true,
-            offerId: offer.id,
-            isDraft: false,
-          })
-        }
-        link={{ isExternal: false, to: editionStockLink }}
-        Icon={GuichetFullIcon}
-      >
-        Stocks
-      </ButtonLink>
-    </td>
+    <ListIconButton
+      onClick={() =>
+        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+          from: OFFER_FORM_NAVIGATION_IN.OFFERS,
+          to: OFFER_WIZARD_STEP_IDS.STOCKS,
+          used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_STOCKS,
+          isEdition: true,
+          offerId: offer.id,
+          isDraft: false,
+        })
+      }
+      url={editionStockLink}
+      Icon={GuichetFullIcon}
+      hasTooltip
+    >
+      {offer.isEvent ? `Dates et capacités` : `Stocks`}
+    </ListIconButton>
   )
 }
 

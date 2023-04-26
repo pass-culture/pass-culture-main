@@ -10,8 +10,7 @@ import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import { PenIcon } from 'icons'
-import { ButtonLink } from 'ui-kit'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
 import styles from '../../OfferItem.module.scss'
 
@@ -41,19 +40,15 @@ const EditOfferCell = ({
   }
 
   return (
-    <td className={styles['edit-column']}>
-      <ButtonLink
-        variant={ButtonVariant.SECONDARY}
-        onClick={onEditOfferClick}
-        link={{ isExternal: false, to: editionOfferLink }}
-        className={styles['button']}
-        Icon={PenIcon}
-        iconPosition={IconPositionEnum.CENTER}
-        hasTooltip
-      >
-        Modifier l’offre
-      </ButtonLink>
-    </td>
+    <ListIconButton
+      onClick={onEditOfferClick}
+      url={editionOfferLink}
+      className={styles['button']}
+      Icon={PenIcon}
+      hasTooltip
+    >
+      Modifier
+    </ListIconButton>
   )
 }
 

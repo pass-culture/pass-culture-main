@@ -3,8 +3,7 @@ import React from 'react'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as ArrowIcon } from 'icons/ico-arrow-right.svg'
-import { ButtonLink } from 'ui-kit'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
@@ -33,23 +32,19 @@ const BookingLinkCell = ({
   )
   const bookingLink = `/reservations/collectives?page=1&offerEventDate=${eventDateFormated}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=${bookingId}`
   return (
-    <td className={styles['booking-link-column']}>
-      <ButtonLink
-        variant={ButtonVariant.SECONDARY}
-        className={styles['button']}
-        link={{ isExternal: false, to: bookingLink }}
-        Icon={ArrowIcon}
-        iconPosition={IconPositionEnum.CENTER}
-        onClick={() =>
-          logEvent?.(CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING, {
-            from: location.pathname,
-          })
-        }
-        hasTooltip
-      >
-        Voir la {bookingStatus == 'PENDING' ? 'préréservation' : 'réservation'}
-      </ButtonLink>
-    </td>
+    <ListIconButton
+      className={styles['button']}
+      url={bookingLink}
+      Icon={ArrowIcon}
+      onClick={() =>
+        logEvent?.(CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING, {
+          from: location.pathname,
+        })
+      }
+      hasTooltip
+    >
+      Voir la {bookingStatus == 'PENDING' ? 'préréservation' : 'réservation'}
+    </ListIconButton>
   )
 }
 

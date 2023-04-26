@@ -11,8 +11,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
-import { Button } from 'ui-kit'
-import { IconPositionEnum, ButtonVariant } from 'ui-kit/Button/types'
+import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
 import { deleteDraftOffersAdapter } from '../../../adapters/deleteDraftOffers'
 import styles from '../../OfferItem.module.scss'
@@ -54,28 +53,24 @@ const DeleteDraftCell = ({ offer, refreshOffers }: IDeleteDraftOffers) => {
 
   return (
     <>
-      <td className={styles['draft-column']} align="right">
-        {isConfirmDialogOpen && (
-          <ConfirmDialog
-            icon={TrashIcon}
-            cancelText="Annuler"
-            confirmText="Supprimer ce brouillon"
-            onCancel={closeDeleteDraftDialog}
-            onConfirm={onConfirmDeleteDraftOffer}
-            title={`Voulez-vous supprimer le brouillon : "${offer.name}" ?`}
-          />
-        )}
-        <Button
-          variant={ButtonVariant.SECONDARY}
-          onClick={() => setIsConfirmDialogOpen(true)}
-          className={styles['button']}
-          Icon={TrashFilledIcon}
-          iconPosition={IconPositionEnum.CENTER}
-          hasTooltip
-        >
-          Supprimer le brouillon
-        </Button>
-      </td>
+      {isConfirmDialogOpen && (
+        <ConfirmDialog
+          icon={TrashIcon}
+          cancelText="Annuler"
+          confirmText="Supprimer ce brouillon"
+          onCancel={closeDeleteDraftDialog}
+          onConfirm={onConfirmDeleteDraftOffer}
+          title={`Voulez-vous supprimer le brouillon : "${offer.name}" ?`}
+        />
+      )}
+      <ListIconButton
+        onClick={() => setIsConfirmDialogOpen(true)}
+        className={styles['button']}
+        Icon={TrashFilledIcon}
+        hasTooltip
+      >
+        Supprimer
+      </ListIconButton>
     </>
   )
 }
