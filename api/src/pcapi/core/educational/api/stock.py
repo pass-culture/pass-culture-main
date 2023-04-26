@@ -116,11 +116,7 @@ def edit_collective_stock(
 
     if "beginningDatetime" not in stock_data and "bookingLimitDatetime" not in stock_data:
         price = updatable_fields.get("price")
-        if current_booking and current_booking.status == CollectiveBookingStatus.USED:
-            last_edition_date = current_booking.dateUsed + datetime.timedelta(days=2)
-            if last_edition_date > datetime.datetime.utcnow() and price:
-                validation.check_if_edition_lower_price_possible(stock, price)
-        elif current_booking and current_booking.status == CollectiveBookingStatus.CONFIRMED:
+        if current_booking and current_booking.status == CollectiveBookingStatus.CONFIRMED:
             if price is not None:
                 validation.check_if_edition_lower_price_possible(stock, price)
         else:

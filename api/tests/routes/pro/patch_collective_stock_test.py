@@ -452,36 +452,6 @@ class Return400Test:
         # Then
         assert response.status_code == 200
 
-    def should_not_edit_stock_when_event_expired_if_price_is_higher_than_before(self, client):
-        # Given
-        stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime.utcnow() - timedelta(minutes=1),
-            price=1400,
-        )
-        educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock,
-            status=CollectiveBookingStatus.USED,
-            dateUsed=datetime.utcnow() + timedelta(days=-1),
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
-        )
-
-        # When
-        stock_edition_payload = {
-            "totalPrice": 1500,
-        }
-
-        client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
-
-        # Then
-        assert response.status_code == 403
-        assert response.json == {
-            "educationalStock": "Le prix demandé ne peux être supérieur aux prix actuel si l'offre a été confirmée."
-        }
-
     def should_not_allow_stock_edition_when_numberOfTickets_has_been_set_to_none(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory()
