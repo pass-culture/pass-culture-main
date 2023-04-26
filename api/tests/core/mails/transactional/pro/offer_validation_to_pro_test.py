@@ -10,7 +10,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.settings import PRO_URL
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -29,7 +28,7 @@ class SendinblueSendOfferValidationTest:
         assert new_offer_validation_email.params == {
             "OFFER_NAME": "Ma petite offre",
             "VENUE_NAME": "Mon stade",
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{humanize(offer.id)}/recapitulatif",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
         }
 
     def test_send_offer_approval_email(
@@ -48,7 +47,7 @@ class SendinblueSendOfferValidationTest:
         assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": offer.name,
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{humanize(offer.id)}/recapitulatif",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "VENUE_NAME": venue.name,
         }
 
@@ -65,7 +64,7 @@ class SendinblueSendOfferValidationTest:
             "IS_COLLECTIVE_OFFER": False,
             "OFFER_NAME": "Ma petite offre",
             "VENUE_NAME": "Mon stade",
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{humanize(offer.id)}/recapitulatif",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
         }
 
     def test_get_validation_rejection_correct_collective_attribute(self):
@@ -107,6 +106,6 @@ class SendinblueSendOfferValidationTest:
         assert mails_testing.outbox[0].sent_data["params"] == {
             "IS_COLLECTIVE_OFFER": False,
             "OFFER_NAME": offer.name,
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{humanize(offer.id)}/recapitulatif",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "VENUE_NAME": venue.name,
         }

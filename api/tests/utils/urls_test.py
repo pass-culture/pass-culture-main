@@ -1,7 +1,6 @@
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_settings
 from pcapi.utils import urls
-from pcapi.utils.human_ids import humanize
 
 
 class FirebaseLinksTest:
@@ -32,8 +31,7 @@ class FirebaseLinksTest:
 @override_settings(PRO_URL="http://pcpro.com")
 def test_build_pc_pro_offer_link():
     offer = offers_factories.OfferFactory.build(id=123)
-    human_id = humanize(offer.id)
 
     url = urls.build_pc_pro_offer_link(offer)
 
-    assert url == f"http://pcpro.com/offre/individuelle/{human_id}/recapitulatif"
+    assert url == f"http://pcpro.com/offre/individuelle/{offer.id}/recapitulatif"

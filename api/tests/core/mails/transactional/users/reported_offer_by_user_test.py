@@ -10,7 +10,6 @@ from pcapi.core.mails.transactional.users.reported_offer_by_user import send_ema
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.models import Reason
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -60,5 +59,5 @@ class ReportedOfferByUserEmailTest:
             "OFFER_ID": offer.id,
             "OFFER_NAME": offer.name,
             "REASON": "Le contenu est inapproprié",
-            "OFFER_URL": "http://localhost:3001/offre/" + f"individuelle/{humanize(offer.id)}/recapitulatif",
+            "OFFER_URL": "http://localhost:3001/offre/" + f"individuelle/{offer.id}/recapitulatif",
         }
