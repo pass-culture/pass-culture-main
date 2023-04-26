@@ -9,7 +9,6 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.human_ids import humanize
 
 
 base_collective_offer_payload = {
@@ -43,12 +42,12 @@ class Returns200Test:
         # When
         data = {
             **base_collective_offer_payload,
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -74,7 +73,7 @@ class Returns200Test:
         assert offer.contactPhone == "01 99 00 25 68"
         assert offer.offerVenue == {
             "addressType": "school",
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "otherAddress": "17 rue aléatoire",
         }
         assert offer.interventionArea == ["75", "92", "93"]
@@ -96,13 +95,13 @@ class Returns200Test:
         # When
         data = {
             **base_collective_offer_payload,
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "domains": [educational_domain.id],
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "offerVenue": {
                 "addressType": "offererVenue",
                 "otherAddress": "",
-                "venueId": "",
+                "venueId": venue.id,
             },
             "interventionArea": [],
         }
@@ -125,12 +124,12 @@ class Returns403Test:
         # When
         data = {
             **base_collective_offer_payload,
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "domains": [educational_factories.EducationalDomainFactory().id],
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -153,12 +152,12 @@ class Returns403Test:
         # When
         data = {
             **base_collective_offer_payload,
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "domains": [educational_factories.EducationalDomainFactory().id],
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -182,10 +181,10 @@ class Returns400Test:
         # When
         data = {
             **base_collective_offer_payload,
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(125),
+                "venueId": 125,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -206,11 +205,11 @@ class Returns400Test:
         # When
         data = {
             **base_collective_offer_payload,
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "subcategoryId": subcategories.OEUVRE_ART.id,
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(125),
+                "venueId": 125,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -231,11 +230,11 @@ class Returns400Test:
         # When
         data = {
             **base_collective_offer_payload,
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(125),
+                "venueId": 125,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -256,11 +255,11 @@ class Returns400Test:
         # When
         data = {
             **base_collective_offer_payload,
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(125),
+                "venueId": 125,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -280,11 +279,11 @@ class Returns400Test:
         # When
         data = {
             **base_collective_offer_payload,
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(125),
+                "venueId": 125,
                 "otherAddress": "17 rue aléatoire",
             },
             "priceDetail": "a" * 1001,
@@ -310,12 +309,12 @@ class Returns404Test:
         # When
         data = {
             **base_collective_offer_payload,
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "domains": [0, educational_domain1.id, educational_domain2.id],
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
                 "otherAddress": "17 rue aléatoire",
             },
         }

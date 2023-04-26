@@ -245,8 +245,7 @@ class Returns404Test:
             offerer=offerer,
         )
         offer = CollectiveOfferTemplateFactory(venue__managingOfferer=offerer)
-        humanized_venue = humanize(0)
-        data = {"venueId": humanized_venue}
+        data = {"venueId": 0}
 
         # WHEN
         client = client.with_session_auth("user@example.com")
@@ -269,8 +268,7 @@ class Returns404Test:
         )
         offer = CollectiveOfferTemplateFactory(venue__managingOfferer=offerer)
         venue2 = offerers_factories.VenueFactory(managingOfferer=offerer2)
-        humanized_venue = humanize(venue2.id)
-        data = {"venueId": humanized_venue}
+        data = {"venueId": venue2.id}
 
         # WHEN
         client = client.with_session_auth("user@example.com")

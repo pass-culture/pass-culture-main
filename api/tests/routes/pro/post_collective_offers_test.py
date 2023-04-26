@@ -69,7 +69,7 @@ class Returns200Test:
         assert offer.contactPhone == "01 99 00 25 68"
         assert offer.offerVenue == {
             "addressType": "school",
-            "venueId": venue.id,
+            "venueId": humanize(venue.id),
             "otherAddress": "17 rue aléatoire",
         }
         assert offer.interventionArea == ["75", "92", "93"]
@@ -136,7 +136,7 @@ class Returns200Test:
         assert offer.contactPhone == "01 99 00 25 68"
         assert offer.offerVenue == {
             "addressType": "school",
-            "venueId": venue.id,
+            "venueId": humanize(venue.id),
             "otherAddress": "17 rue aléatoire",
         }
         assert offer.interventionArea == ["75", "92", "93"]
@@ -168,7 +168,7 @@ class Returns200Test:
             "offerVenue": {
                 "addressType": "offererVenue",
                 "otherAddress": "",
-                "venueId": "",
+                "venueId": venue.id,
             },
             "students": ["Lycée - Seconde"],
             "audioDisabilityCompliant": False,
