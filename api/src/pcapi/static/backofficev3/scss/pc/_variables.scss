@@ -1,13 +1,8 @@
 // Bootstrap 5 requirements
 @import "../bootstrap/functions";
-@import "../bootstrap/variables";
+@import "./bootstrap-variables-extend";
 
 $pc-body-body-bg-color: #f9f9f9;
 $pc-code-font-family: Consolas, "courier new", serif;
 $pc-code-padding: 0.5rem;
 $pc-nav-pills-bg-color-active: #DBDADAFF;
-
-$zindex-levels: map-merge($zindex-levels, (
-  4: 4,
-  5: 5
-))

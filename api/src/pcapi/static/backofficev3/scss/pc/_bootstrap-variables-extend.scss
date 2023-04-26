@@ -1,0 +1,8 @@
+$zindex-levels: map-merge($zindex-levels, (
+  4: 4,
+  5: 5
+));
+
+$theme-colors: map-merge($theme-colors, (
+  "error":     $danger,
+));
