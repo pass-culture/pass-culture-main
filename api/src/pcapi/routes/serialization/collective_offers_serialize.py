@@ -30,6 +30,7 @@ from pcapi.serialization.utils import dehumanize_list_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.image_conversion import CropParams
 from pcapi.validation.routes.offers import check_collective_offer_name_length_is_valid
@@ -284,7 +285,13 @@ class CollectiveOfferOfferVenueResponseModel(BaseModel):
     otherAddress: str
     venueId: int | None
 
-    _humanize_venueId = dehumanize_field("venueId")
+    @validator("venueId", pre=True)
+    def validate_venueId(cls, venue_id: str | int | None) -> int | None:
+        if isinstance(venue_id, int):
+            return venue_id
+        if not venue_id:
+            return None
+        return dehumanize(venue_id)
 
 
 class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):

@@ -28,7 +28,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "id": booking.id,
-            "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": ""},
+            "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": None},
             "beginningDatetime": "2022-05-02T15:00:00",
             "students": ["Lycée - Seconde"],
             "bankInformationStatus": "MISSING",
@@ -77,7 +77,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "id": booking.id,
-            "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": ""},
+            "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": None},
             "beginningDatetime": "2022-05-02T15:00:00",
             "students": ["Lycée - Seconde"],
             "bankInformationStatus": "DRAFT",

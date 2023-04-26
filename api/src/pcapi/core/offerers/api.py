@@ -43,7 +43,6 @@ from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 import pcapi.routes.serialization.base as serialize_base
 from pcapi.utils import crypto
-from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
 from pcapi.utils.clean_accents import clean_accents
 import pcapi.utils.db as db_utils
@@ -883,7 +882,7 @@ def get_educational_offerers(offerer_id: str | None, current_user: users_models.
             models.Offerer.query.filter(
                 models.Offerer.isValidated,
                 models.Offerer.isActive.is_(True),
-                models.Offerer.id == human_ids.dehumanize(offerer_id),
+                models.Offerer.id == offerer_id,
             )
             .options(sa.orm.joinedload(models.Offerer.managedVenues))
             .all()

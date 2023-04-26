@@ -16,7 +16,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers-template/{humanize(offer.id)}")
+        response = client.get(f"/collective/offers-template/{offer.id}")
 
         # Then
         response_json = response.json
@@ -59,7 +59,7 @@ class Returns403Test:
 
         # When
         client = client.with_session_auth(email=pro_user.email)
-        response = client.get(f"/collective/offers-template/{humanize(offer.id)}")
+        response = client.get(f"/collective/offers-template/{offer.id}")
 
         # Then
         assert response.status_code == 403
