@@ -12,7 +12,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.settings import PRO_URL
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -34,7 +33,7 @@ class SendinblueSendFirstVenueOfferEmailTest:
             "IS_EVENT": False,
             "IS_THING": True,
             "IS_DIGITAL": False,
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{humanize(offer.id)}/recapitulatif",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "WITHDRAWAL_PERIOD": 30,
         }
 
@@ -54,7 +53,7 @@ class SendinblueSendFirstVenueOfferEmailTest:
             "IS_EVENT": False,
             "IS_THING": True,
             "IS_DIGITAL": False,
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{humanize(offer.id)}/recapitulatif",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "WITHDRAWAL_PERIOD": 10,
         }
 
@@ -75,7 +74,7 @@ class SendinblueSendFirstVenueOfferEmailTest:
         assert mails_testing.outbox[0].sent_data["To"] == "venue@bookingEmail.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": offer.name,
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{humanize(offer.id)}/recapitulatif",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "VENUE_NAME": venue.name,
             "IS_EVENT": False,
             "IS_THING": True,
