@@ -484,6 +484,7 @@ class CreateOffererTest:
         assert created_offerer.postalCode == offerer_informations.postalCode
         assert created_offerer.city == offerer_informations.city
         assert created_offerer.validationStatus == ValidationStatus.NEW
+        assert created_offerer.isActive
         assert "Collectivité" in (tag.label for tag in created_offerer.tags)
 
         assert created_user_offerer.userId == user.id
@@ -529,6 +530,7 @@ class CreateOffererTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == offerer.name
         assert created_offerer.isValidated
+        assert created_offerer.isActive
 
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationStatus == ValidationStatus.NEW
@@ -572,10 +574,9 @@ class CreateOffererTest:
         offerer_informations = offerers_serialize.CreateOffererQueryModel(
             name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
         )
-        offerer = offerers_factories.OffererFactory(
+        offerer = offerers_factories.RejectedOffererFactory(
             name="Rejected Offerer",
             siren=offerer_informations.siren,
-            validationStatus=ValidationStatus.REJECTED,
         )
         first_creation_date = offerer.dateCreated
 
@@ -591,6 +592,7 @@ class CreateOffererTest:
         assert created_offerer.postalCode == offerer_informations.postalCode
         assert created_offerer.city == offerer_informations.city
         assert created_offerer.validationStatus == ValidationStatus.NEW
+        assert created_offerer.isActive
         assert created_offerer.dateCreated > first_creation_date
 
         assert created_user_offerer.userId == user.id

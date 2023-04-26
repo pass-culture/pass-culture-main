@@ -381,6 +381,7 @@ def _fill_in_offerer(
     offerer.postalCode = offerer_informations.postalCode
     offerer.siren = offerer_informations.siren
     offerer.validationStatus = ValidationStatus.NEW
+    offerer.isActive = True
     offerer.dateCreated = datetime.utcnow()
 
 
@@ -544,6 +545,18 @@ def update_offerer(
     return modified_info
 
 
+def remove_pro_role_and_add_non_attached_pro_role(users: list[users_models.User]) -> None:
+    users_with_offerers = (
+        users_models.User.query.outerjoin(models.UserOfferer)
+        .filter(users_models.User.id.in_([user.id for user in users]))
+        .all()
+    )
+
+    for user_with_offerers in users_with_offerers:
+        if not any(user_offerer.isValidated for user_offerer in user_with_offerers.UserOfferers):
+            user_with_offerers.add_non_attached_pro_role()
+
+
 def validate_offerer_attachment(
     user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str | None = None
 ) -> None:
@@ -623,6 +636,7 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
     applicants = users_repository.get_users_with_validated_attachment_by_offerer(offerer)
     offerer.validationStatus = ValidationStatus.VALIDATED
     offerer.dateValidated = datetime.utcnow()
+    offerer.isActive = True
     for applicant in applicants:
         applicant.add_pro_role()
     managed_venues = offerer.managedVenues
@@ -668,6 +682,7 @@ def reject_offerer(
     was_validated = offerer.isValidated
     offerer.validationStatus = ValidationStatus.REJECTED
     offerer.dateValidated = None
+    offerer.isActive = False
     db.session.add(offerer)
     db.session.add(
         history_api.log_action(
@@ -702,18 +717,6 @@ def reject_offerer(
             external_attributes_api.update_external_pro(applicant.email)
 
 
-def remove_pro_role_and_add_non_attached_pro_role(users: list[users_models.User]) -> None:
-    users_with_offerers = (
-        users_models.User.query.outerjoin(models.UserOfferer)
-        .filter(users_models.User.id.in_([user.id for user in users]))
-        .all()
-    )
-
-    for user_with_offerers in users_with_offerers:
-        if not any(user_offerer.isValidated for user_offerer in user_with_offerers.UserOfferers):
-            user_with_offerers.add_non_attached_pro_role()
-
-
 def set_offerer_pending(
     offerer: offerers_models.Offerer,
     author_user: users_models.User,
@@ -722,6 +725,8 @@ def set_offerer_pending(
     tags_to_remove: typing.Iterable[offerers_models.OffererTag] | None = None,
 ) -> None:
     offerer.validationStatus = ValidationStatus.PENDING
+    offerer.isActive = True
+
     applicants = users_repository.get_users_with_validated_attachment_by_offerer(offerer)
     for applicant in applicants:
         applicant.remove_pro_role()
