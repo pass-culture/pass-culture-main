@@ -88,7 +88,7 @@ class Returns200Test:
             "description": offer.description,
             "durationMinutes": None,
             "students": ["Lycée - Seconde"],
-            "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": ""},
+            "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": None},
             "contactEmail": "collectiveofferfactory+contact@example.com",
             "contactPhone": "+33199006328",
             "hasBookingLimitDatetimesPassed": False,
@@ -125,6 +125,7 @@ class Returns200Test:
                         venue.managingOfferer.dateModifiedAtLastProvider
                     ),
                     "id": humanize(offerer.id),
+                    "nonHumanizedId": offerer.id,
                     "idAtProviders": None,
                     "isActive": True,
                     "isValidated": True,

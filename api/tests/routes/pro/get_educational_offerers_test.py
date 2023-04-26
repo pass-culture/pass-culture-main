@@ -34,6 +34,7 @@ class GetEducationalOfferersTest:
             "educationalOfferers": [
                 {
                     "id": humanize(offerer_1.id),
+                    "nonHumanizedId": offerer_1.id,
                     "name": offerer_1.name,
                     "managedVenues": [
                         {
@@ -41,6 +42,7 @@ class GetEducationalOfferersTest:
                             "audioDisabilityCompliant": venue_offerer_1.audioDisabilityCompliant,
                             "city": venue_offerer_1.city,
                             "id": humanize(venue_offerer_1.id),
+                            "nonHumanizedId": venue_offerer_1.id,
                             "isVirtual": venue_offerer_1.isVirtual,
                             "mentalDisabilityCompliant": venue_offerer_1.mentalDisabilityCompliant,
                             "motorDisabilityCompliant": venue_offerer_1.motorDisabilityCompliant,
@@ -57,6 +59,7 @@ class GetEducationalOfferersTest:
                 },
                 {
                     "id": humanize(offerer_2.id),
+                    "nonHumanizedId": offerer_2.id,
                     "name": offerer_2.name,
                     "managedVenues": [
                         {
@@ -64,6 +67,7 @@ class GetEducationalOfferersTest:
                             "audioDisabilityCompliant": venue_offerer_2.audioDisabilityCompliant,
                             "city": venue_offerer_2.city,
                             "id": humanize(venue_offerer_2.id),
+                            "nonHumanizedId": venue_offerer_2.id,
                             "isVirtual": venue_offerer_2.isVirtual,
                             "mentalDisabilityCompliant": venue_offerer_2.mentalDisabilityCompliant,
                             "motorDisabilityCompliant": venue_offerer_2.motorDisabilityCompliant,
@@ -107,7 +111,7 @@ class GetEducationalOfferersTest:
         venue_offerer_2 = offerers_factories.CollectiveVenueFactory(managingOfferer=offerer_2)
 
         # when
-        api_url = f"/offerers/educational?offerer_id={humanize(offerer_2.id)}"
+        api_url = f"/offerers/educational?offerer_id={offerer_2.id}"
         response = client.with_session_auth(admin_user.email).get(api_url)
 
         # then
@@ -116,6 +120,7 @@ class GetEducationalOfferersTest:
             "educationalOfferers": [
                 {
                     "id": humanize(offerer_2.id),
+                    "nonHumanizedId": offerer_2.id,
                     "name": offerer_2.name,
                     "managedVenues": [
                         {
@@ -123,6 +128,7 @@ class GetEducationalOfferersTest:
                             "audioDisabilityCompliant": venue_offerer_2.audioDisabilityCompliant,
                             "city": venue_offerer_2.city,
                             "id": humanize(venue_offerer_2.id),
+                            "nonHumanizedId": venue_offerer_2.id,
                             "isVirtual": venue_offerer_2.isVirtual,
                             "mentalDisabilityCompliant": venue_offerer_2.mentalDisabilityCompliant,
                             "motorDisabilityCompliant": venue_offerer_2.motorDisabilityCompliant,
