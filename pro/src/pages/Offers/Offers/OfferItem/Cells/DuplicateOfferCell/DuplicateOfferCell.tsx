@@ -9,10 +9,7 @@ import { createOfferFromTemplate } from 'core/OfferEducational'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as PlusIcon } from 'icons/ico-plus.svg'
-import { Button } from 'ui-kit'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
-
-import styles from '../../OfferItem.module.scss'
+import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
 import DuplicateOfferDialog from './DuplicateOfferDialog'
 
@@ -54,25 +51,20 @@ const DuplicateOfferCell = ({
 
   return (
     <>
-      <td className={styles['duplicate-offer-column']}>
-        <Button
-          variant={ButtonVariant.SECONDARY}
-          className={styles['button']}
-          onClick={handleCreateOfferClick}
-          Icon={PlusIcon}
-          iconPosition={IconPositionEnum.CENTER}
-          innerRef={buttonRef}
-          hasTooltip
-        >
-          Créer une offre réservable pour un établissement scolaire
-        </Button>
-        {isModalOpen && shouldDisplayModal && (
-          <DuplicateOfferDialog
-            onCancel={() => setIsModalOpen(false)}
-            onConfirm={onDialogConfirm}
-          />
-        )}
-      </td>
+      <ListIconButton
+        onClick={handleCreateOfferClick}
+        Icon={PlusIcon}
+        innerRef={buttonRef}
+        hasTooltip
+      >
+        Dupliquer
+      </ListIconButton>
+      {isModalOpen && shouldDisplayModal && (
+        <DuplicateOfferDialog
+          onCancel={() => setIsModalOpen(false)}
+          onConfirm={onDialogConfirm}
+        />
+      )}
     </>
   )
 }

@@ -159,6 +159,10 @@
       }
     }
 
+    th.th-actions {
+      text-align: right;
+    }
+
     tbody > tr {
       border-bottom: rem.torem(1px) solid colors.$grey-medium;
 

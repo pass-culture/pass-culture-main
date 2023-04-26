@@ -33,7 +33,9 @@ const renderDuplicateOfferCell = () => {
           <table>
             <tbody>
               <tr>
-                <DuplicateOfferCell templateOfferId="AE" />
+                <td>
+                  <DuplicateOfferCell templateOfferId="AE" />
+                </td>
               </tr>
             </tbody>
           </table>
@@ -53,7 +55,7 @@ describe('DuplicateOfferCell', () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'false')
     renderDuplicateOfferCell()
     const button = screen.getByRole('button', {
-      name: 'Créer une offre réservable pour un établissement scolaire',
+      name: 'Dupliquer',
     })
 
     await userEvent.click(button)
@@ -68,18 +70,14 @@ describe('DuplicateOfferCell', () => {
     expect(
       createFromTemplateUtils.createOfferFromTemplate
     ).not.toHaveBeenCalled()
-    expect(
-      screen.queryByLabelText(
-        'Créer une offre réservable pour un établissement scolaire'
-      )
-    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Dupliquer')).not.toBeInTheDocument()
   })
 
   it('should update local storage if user check option to not display modal again ', async () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'false')
     renderDuplicateOfferCell()
     const button = screen.getByRole('button', {
-      name: 'Créer une offre réservable pour un établissement scolaire',
+      name: 'Dupliquer',
     })
 
     await userEvent.click(button)
@@ -106,7 +104,7 @@ describe('DuplicateOfferCell', () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'false')
     renderDuplicateOfferCell()
     const button = screen.getByRole('button', {
-      name: 'Créer une offre réservable pour un établissement scolaire',
+      name: 'Dupliquer',
     })
     await userEvent.click(button)
 
@@ -127,7 +125,7 @@ describe('DuplicateOfferCell', () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
     renderDuplicateOfferCell()
     const button = screen.getByRole('button', {
-      name: 'Créer une offre réservable pour un établissement scolaire',
+      name: 'Dupliquer',
     })
 
     jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
