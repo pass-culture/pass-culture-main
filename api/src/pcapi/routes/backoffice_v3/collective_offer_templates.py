@@ -96,7 +96,9 @@ def _get_collective_offer_templates(
             base_query = base_query.filter(educational_models.CollectiveOfferTemplate.name.ilike(name_query))
 
     if form.sort.data:
-        base_query = base_query.order_by(getattr(educational_models.CollectiveOfferTemplate, form.sort.data))
+        base_query = base_query.order_by(
+            getattr(getattr(educational_models.CollectiveOfferTemplate, form.sort.data), form.order.data)()
+        )
 
     # +1 to check if there are more results than requested
     return base_query.limit(form.limit.data + 1).all()
