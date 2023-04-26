@@ -89,7 +89,7 @@ class ListCollectiveOfferTemplatesTest:
         # when
         searched_name = collective_offer_templates[1].name
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=searched_name))
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_name, sort="id", order="asc"))
 
         # then
         assert response.status_code == 200
