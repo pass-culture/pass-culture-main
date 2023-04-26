@@ -31,6 +31,7 @@ class NotValidatedOffererFactory(OffererFactory):
 
 class RejectedOffererFactory(OffererFactory):
     validationStatus = ValidationStatus.REJECTED
+    isActive = False
 
 
 class CollectiveOffererFactory(OffererFactory):

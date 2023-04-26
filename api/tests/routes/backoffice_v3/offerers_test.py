@@ -1483,6 +1483,7 @@ class ValidateOffererTest:
 
         db.session.refresh(user_offerer)
         assert user_offerer.offerer.isValidated
+        assert user_offerer.offerer.isActive
         assert user_offerer.user.has_pro_role
 
         action = history_models.ActionHistory.query.one()
@@ -1492,6 +1493,21 @@ class ValidateOffererTest:
         assert action.userId == user_offerer.user.id
         assert action.offererId == user_offerer.offerer.id
         assert action.venueId is None
+
+    def test_validate_rejected_offerer(self, legit_user, authenticated_client):
+        # given
+        offerer = offerers_factories.RejectedOffererFactory()
+
+        # when
+        url = url_for("backoffice_v3_web.validation.validate_offerer", offerer_id=offerer.id)
+        response = send_request(authenticated_client, offerer.id, url)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(offerer)
+        assert offerer.isValidated
+        assert offerer.isActive
 
     def test_validate_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
         # when
@@ -1561,6 +1577,7 @@ class RejectOffererTest:
         db.session.refresh(user)
         db.session.refresh(offerer)
         assert not offerer.isValidated
+        assert not offerer.isActive
         assert offerer.isRejected
         assert not user.has_pro_role
 
@@ -1645,6 +1662,7 @@ class SetOffererPendingTest:
 
         db.session.refresh(offerer)
         assert not offerer.isValidated
+        assert offerer.isActive
         assert offerer.validationStatus == ValidationStatus.PENDING
         assert set(offerer.tags) == {non_homologation_tag, offerer_tags[0], offerer_tags[2]}
         action = history_models.ActionHistory.query.one()

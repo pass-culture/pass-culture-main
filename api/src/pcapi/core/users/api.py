@@ -810,6 +810,7 @@ def _generate_user_offerer_when_existing_offerer(
 def _generate_offerer(data: dict, existing_offerer: offerers_models.Offerer | None = None) -> offerers_models.Offerer:
     if existing_offerer is not None:
         offerer = existing_offerer
+        offerer.isActive = True
     else:
         offerer = offerers_models.Offerer()
     offerer.populate_from_dict(data)
