@@ -96,7 +96,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
     it('should track when clicking on offer stocks', async () => {
       // given
       renderOfferItem(props)
-      await userEvent.click(screen.getByText('Stocks'))
+      await userEvent.click(
+        screen.getByRole('link', { name: 'Dates et capacités' })
+      )
 
       // then
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -193,7 +195,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       // then
       const deleteDraftOfferButton = screen.getByRole('button', {
-        name: 'Supprimer le brouillon',
+        name: 'Supprimer',
       })
       await userEvent.click(deleteDraftOfferButton)
       const confirmDeleteButton = screen.getByRole('button', {

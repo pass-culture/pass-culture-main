@@ -70,30 +70,21 @@
   width: rem.torem(82px);
 }
 
-.duplicate-offer-column,
-.booking-link-column {
-  width: rem.torem(44px);
+.actions-column {
+  display: table-cell;
+  text-align: center;
+  width: rem.torem(140px);
+
+  &-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: rem.torem(4px);
+  }
 }
 
 .isbn {
   margin-top: rem.torem(8px);
-}
-
-.button {
-  padding: 0 0.5rem;
-
-  &-icon {
-    width: rem.torem(20px);
-    height: rem.torem(20px);
-    fill: colors.$primary;
-  }
-
-  &:hover,
-  &:focus {
-    .button-icon {
-      fill: colors.$white;
-    }
-  }
 }
 
 .stocks {

@@ -12,9 +12,7 @@ import { Audience } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
 
 import CheckboxCell from './Cells/CheckboxCell'
-import DeleteDraftCell from './Cells/DeleteDraftCell'
-import EditOfferCell from './Cells/EditOfferCell'
-import EditStocksCell from './Cells/EditStocksCell'
+import IndividualActionsCells from './Cells/IndividualActionsCells'
 import OfferNameCell from './Cells/OfferNameCell'
 import OfferRemainingStockCell from './Cells/OfferRemainingStockCell'
 import OfferStatusCell from './Cells/OfferStatusCell'
@@ -84,16 +82,12 @@ const IndividualOfferItem = ({
       <OfferVenueCell venue={venue} />
       <OfferRemainingStockCell stocks={offer.stocks} />
       <OfferStatusCell status={offer.status} />
-      {offer.status === OFFER_STATUS_DRAFT ? (
-        <DeleteDraftCell offer={offer} refreshOffers={refreshOffers} />
-      ) : (
-        <EditStocksCell offer={offer} editionStockLink={editionStockLink} />
-      )}
-
-      <EditOfferCell
+      <IndividualActionsCells
+        offer={offer}
         isOfferEditable={isOfferEditable}
         editionOfferLink={editionOfferLink}
-        offer={offer}
+        editionStockLink={editionStockLink}
+        refreshOffers={refreshOffers}
       />
     </>
   )

@@ -100,9 +100,11 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // given
         renderOfferItem(props)
 
-        // then
-        expect(screen.queryByText('Stocks')).toBeInTheDocument()
-        expect(screen.queryByText('Stocks')).toHaveAttribute(
+        const stockLink = screen.getByRole('link', {
+          name: 'Dates et capacités',
+        })
+        expect(stockLink).toBeInTheDocument()
+        expect(stockLink).toHaveAttribute(
           'href',
           `/offre/individuelle/${eventOffer.id}/stocks`
         )
@@ -526,7 +528,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props)
 
         const duplicateButton = screen.queryByRole('button', {
-          name: 'Créer une offre réservable pour un établissement scolaire',
+          name: 'Dupliquer',
         })
 
         expect(duplicateButton).not.toBeInTheDocument()
@@ -539,13 +541,11 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props)
 
         const duplicateButton = screen.getByRole('button', {
-          name: 'Créer une offre réservable pour un établissement scolaire',
+          name: 'Dupliquer',
         })
         await userEvent.click(duplicateButton)
 
-        const modalTitle = screen.getAllByText(
-          'Créer une offre réservable pour un établissement scolaire'
-        )
+        const modalTitle = screen.getAllByText('Dupliquer')
         expect(modalTitle.length > 1).toBeTruthy()
       })
 
@@ -556,13 +556,11 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props)
 
         const duplicateButton = screen.getByRole('button', {
-          name: 'Créer une offre réservable pour un établissement scolaire',
+          name: 'Dupliquer',
         })
         await userEvent.click(duplicateButton)
 
-        const modalTitle = screen.queryByLabelText(
-          'Créer une offre réservable pour un établissement scolaire'
-        )
+        const modalTitle = screen.queryByLabelText('Dupliquer')
         expect(modalTitle).not.toBeInTheDocument()
       })
 
