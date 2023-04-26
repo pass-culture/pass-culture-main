@@ -65,6 +65,11 @@ const Validation = (): JSX.Element => {
         /* istanbul ignore next: the form validation already handles this */
         activity.targetCustomer ?? Target.EDUCATIONAL,
       createVenueWithoutSiret: offerer?.createVenueWithoutSiret ?? false,
+      address: offerer.address,
+      longitude: offerer.longitude ?? 0,
+      latitude: offerer.latitude ?? 0,
+      city: offerer.city,
+      postalCode: offerer.postalCode,
     }
 
     try {
