@@ -166,10 +166,9 @@ class Returns204Test:
 
     def test_when_offerer_was_previously_rejected(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory(
+        offerer = offerers_factories.RejectedOffererFactory(
             name="Rejected Offerer",
             siren=BASE_DATA_PRO["siren"],
-            validationStatus=ValidationStatus.REJECTED,
         )
 
         first_creation_date = offerer.dateCreated
@@ -187,6 +186,7 @@ class Returns204Test:
         offerer = Offerer.query.filter_by(siren="349974931").one()
         assert offerer.name == BASE_DATA_PRO["name"]
         assert offerer.validationStatus == ValidationStatus.NEW
+        assert offerer.isActive
         assert offerer.dateCreated > first_creation_date
         user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).one()
         assert user_offerer.validationStatus == ValidationStatus.VALIDATED
