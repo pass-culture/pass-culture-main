@@ -102,3 +102,56 @@ def create_provider() -> utils.BackofficeResponse:
         )
 
     return redirect(url_for("backoffice_v3_web.providers.get_providers"), code=303)
+
+
+@providers_blueprint.route("/<int:provider_id>/update", methods=["GET"])
+def get_update_provider_form(provider_id: int) -> utils.BackofficeResponse:
+    provider = providers_models.Provider.query.get(provider_id)
+    form = forms.EditProviderForm(
+        name=provider.name,
+        logo_url=provider.logoUrl,
+        enabled_for_pro=provider.enabledForPro,
+        is_active=provider.isActive,
+    )
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.providers.update_provider", provider_id=provider_id),
+        div_id=f"update-provider-{provider_id}",  # must be consistent with parameter passed to build_lazy_modal
+        title="Modifier un prestataire synchronisé avec le pass Culture",
+        button_text="Modifier le prestataire",
+    )
+
+
+@providers_blueprint.route("/<int:provider_id>/update", methods=["POST"])
+def update_provider(provider_id: int) -> utils.BackofficeResponse:
+    provider = providers_models.Provider.query.get(provider_id)
+
+    form = forms.EditProviderForm()
+    if not form.validate():
+        error_msg = utils.build_form_error_msg(form)
+        flash(error_msg, "warning")
+        return redirect(url_for("backoffice_v3_web.providers.get_providers"), code=303)
+
+    provider.name = form.name.data
+    provider.logoUrl = form.logo_url.data
+    provider.enabledForPro = form.enabled_for_pro.data
+    provider.isActive = form.is_active.data
+
+    try:
+        offerers_api.update_offerer(
+            provider.offererProvider.offerer,
+            name=form.name.data,
+            city=form.city.data,
+            postal_code=form.postal_code.data,
+        )
+        db.session.add(provider)
+        db.session.commit()
+    except sa.exc.IntegrityError:
+        db.session.rollback()
+        flash("Ce prestataire existe déjà", "warning")
+    else:
+        flash(f"Le prestataire {provider.name} a été modifié.", "success")
+
+    return redirect(url_for("backoffice_v3_web.providers.get_providers"), code=303)
