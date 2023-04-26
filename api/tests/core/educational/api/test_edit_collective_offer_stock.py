@@ -150,7 +150,7 @@ class EditCollectiveOfferStocksTest:
     #     stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
     #     mocked_async_index_offer_ids.assert_called_once_with([stock.collectiveOfferId])
 
-    def test_should_not_allow_stock_edition_when_booking_status_is_REIMBURSED(self) -> None:
+    def test_should_not_allow_stock_edition_when_booking_status_is_REIMBURSED_or_USED(self) -> None:
         # Given
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
             price=1500,
@@ -492,93 +492,6 @@ class returnErrorTest:
 
         # Then
         assert error.value.errors == {"global": ["Les évènements passés ne sont pas modifiables"]}
-
-    # BORIS
-    def test_edit_price_lower_if_offer_less_than_48h_and_not_reimbursed(self):
-        initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
-        initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=4)
-        stock_to_be_updated = educational_factories.CollectiveStockFactory(
-            beginningDatetime=initial_event_date,
-            price=1500,
-            numberOfTickets=30,
-            bookingLimitDatetime=initial_booking_limit_date,
-        )
-        educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock_to_be_updated,
-            status=CollectiveBookingStatus.USED,
-            dateUsed=datetime.datetime.utcnow() + datetime.timedelta(days=-1),
-        )
-        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            totalPrice=1200,
-            numberOfTickets=35,
-        )
-
-        # When
-        educational_api_stock.edit_collective_stock(
-            stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
-        )
-
-        # Then
-        stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
-        assert stock.price == 1200
-        assert stock.numberOfTickets == 35
-
-    def test_edit_price_higher_if_offer_more_than_48h_and_not_reimbursed(self):
-        initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=10)
-        initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
-        stock_to_be_updated = educational_factories.CollectiveStockFactory(
-            beginningDatetime=initial_event_date,
-            price=1200,
-            numberOfTickets=30,
-            bookingLimitDatetime=initial_booking_limit_date,
-        )
-        educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock_to_be_updated,
-            status=CollectiveBookingStatus.USED,
-            dateUsed=datetime.datetime.utcnow() + datetime.timedelta(days=-2),
-        )
-        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            totalPrice=1500,
-            numberOfTickets=35,
-        )
-
-        # When
-        educational_api_stock.edit_collective_stock(
-            stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
-        )
-
-        # Then
-        stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
-        assert stock.price == 1500
-
-    @freeze_time("2020-11-17 15:00:00")
-    def test_edit_price_or_ticket_number_if_offer_USED_less_than_48h(self):
-        initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=-1)
-        initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=-2)
-        stock_to_be_updated = educational_factories.CollectiveStockFactory(
-            beginningDatetime=initial_event_date,
-            price=1500,
-            numberOfTickets=30,
-            bookingLimitDatetime=initial_booking_limit_date,
-        )
-        educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock_to_be_updated,
-            status=CollectiveBookingStatus.USED,
-            dateUsed=datetime.datetime.utcnow() + datetime.timedelta(days=-1),
-        )
-        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            totalPrice=1200,
-            numberOfTickets=35,
-        )
-
-        # When
-        educational_api_stock.edit_collective_stock(
-            stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
-        )
-
-        # Then
-        stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
-        assert stock.price == 1200
 
     def test_edit_price_or_ticket_number_if_status_confirmed(self):
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=10)
