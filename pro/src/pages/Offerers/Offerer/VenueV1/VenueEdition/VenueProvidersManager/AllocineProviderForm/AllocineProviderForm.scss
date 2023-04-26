@@ -2,18 +2,18 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-form {
+.allocine-provider-form {
   width: 100%;
 
-  .allocine-provider-form {
+  .allocine-provider-content {
     margin-top: rem.torem(24px);
 
-    input { 
+    .apf-quantity-section, .apf-price-section, .apf-is-duo-section { 
       margin-bottom: rem.torem(8px);
-      text-align: left;
     }
 
     input[type="number"] {
+      text-align: left;
       height: rem.torem(40px);
     }
 
@@ -30,15 +30,15 @@ form {
       margin-top: rem.torem(40px);
 
       .secondary-button {
-          margin-right: rem.torem(20px);
+        margin-right: rem.torem(20px);
       }
 
       .primary-button {
-          margin-left: rem.torem(20px);
+        margin-left: rem.torem(20px);
       }
 
       button {
-          padding: 0 rem.torem(80px);
+        padding: 0 rem.torem(80px);
       }
     }
   }
