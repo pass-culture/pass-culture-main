@@ -245,7 +245,7 @@ def get_batch_edit_offer_form() -> utils.BackofficeResponse:
         try:
             offer_ids = [int(id) for id in form.object_ids.data.split(",")]
         except ValueError:
-            flash("L'un des identifiants sélectionnés est invalide", "error")
+            flash("L'un des identifiants sélectionnés est invalide", "danger")
             return redirect(request.referrer, 400)
         offers = (
             offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids))
@@ -279,7 +279,7 @@ def batch_edit_offer() -> utils.BackofficeResponse:
     try:
         offer_ids = [int(id) for id in form.object_ids.data.split(",")]
     except ValueError:
-        flash("L'un des identifiants sélectionnés est invalide", "error")
+        flash("L'un des identifiants sélectionnés est invalide", "danger")
         return redirect(request.referrer, 400)
     offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids)).all()
     criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
@@ -315,7 +315,7 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     form = offer_forms.EditOfferForm()
 
     if not form.validate():
-        flash("Le formulaire n'est pas valide", "error")
+        flash("Le formulaire n'est pas valide", "danger")
         return redirect(request.referrer, 400)
 
     criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
