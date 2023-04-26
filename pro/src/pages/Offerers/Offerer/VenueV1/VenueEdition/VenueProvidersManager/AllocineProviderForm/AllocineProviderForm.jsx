@@ -55,9 +55,9 @@ const AllocineProviderForm = ({
         pristine: formProps.pristine,
       })
       return (
-        <form>
+        <form className="allocine-provider-form">
           {!isLoading && (
-            <div className="allocine-provider-form">
+            <div className="allocine-provider-content">
               <div className="apf-price-section">
                 <div className="price-section-label">
                   <label htmlFor="price">
@@ -99,6 +99,7 @@ const AllocineProviderForm = ({
                   isDecimal={false}
                   min="0"
                   name="quantity"
+                  className="quantity-field"
                   placeholder="Illimité"
                   step={1}
                 />
