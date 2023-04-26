@@ -1,7 +1,12 @@
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
 
 .choose-pre-filters {
-  svg .svg-color {
-    fill: colors.$grey-medium;
+  svg {
+    height: rem.torem(165px);
+    
+    .svg-color {
+      fill: colors.$grey-medium;
+    }
   }
 }
