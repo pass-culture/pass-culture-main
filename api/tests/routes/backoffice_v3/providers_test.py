@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
@@ -93,3 +94,41 @@ class CreateProviderTest(PostEndpointHelper):
 
         created_api_key = created_provider.apiKeys[0]
         assert created_api_key.offerer == created_offerer
+
+
+class UpdateProviderTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.providers.update_provider"
+    endpoint_kwargs = {"provider_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+
+    def test_update_provider(self, authenticated_client):
+        provider = providers_factories.ProviderFactory()
+        offerer = offerers_factories.OffererFactory()
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+
+        form_data = {
+            "name": "Individual Offer API consumer",
+            "city": "Paris",
+            "postal_code": "75008",
+            "logo_url": "https://example.org/image.png",
+            "enabled_for_pro": False,
+            "is_active": True,
+        }
+        response = self.post_to_endpoint(authenticated_client, form_data, provider_id=provider.id)
+        assert response.status_code == 303
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        created_provider_alert = html_parser.extract_alert(redirected_response.data)
+        assert created_provider_alert == f'Le prestataire {form_data["name"]} a été modifié.'
+
+        updated_provider = providers_models.Provider.query.get(provider.id)
+        assert updated_provider.name == form_data["name"]
+        assert updated_provider.logoUrl == form_data["logo_url"]
+        assert updated_provider.enabledForPro == form_data["enabled_for_pro"]
+        assert updated_provider.isActive == form_data["is_active"]
+        assert not updated_provider.apiKeys
+
+        updated_offerer = offerers_models.Offerer.query.get(offerer.id)
+        assert updated_offerer.name == form_data["name"]
+        assert updated_offerer.city == form_data["city"]
+        assert updated_offerer.postalCode == form_data["postal_code"]
