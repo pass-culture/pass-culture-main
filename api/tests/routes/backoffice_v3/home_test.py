@@ -68,5 +68,5 @@ class HomePageTest:
         assert cards_text == [
             "2 offres individuelles en attente CONSULTER",
             "3 offres collectives en attente CONSULTER",
-            "4 offres collectives vitrine en attente À VENIR",
+            "4 offres collectives vitrine en attente CONSULTER",
         ]
