@@ -2,6 +2,7 @@
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
+{% from "components/turbo/spinner.html" import build_loading_spinner with context %}
 {% extends "layouts/pro.html" %}
 {% block pro_main_content %}
   <div class="row row-cols-1 g-4 py-3">
@@ -99,13 +100,7 @@
       </div>
       <div class="mt-4">
         <turbo-frame data-turbo="false" id="pro_user_details_frame" src="{{ url_for("backoffice_v3_web.pro_user.get_details", user_id=user.id, active_tab=request.args.get("active_tab", "history")) }}">
-        <p class="text-center">
-          <span class="spinner-grow spinner-grow-sm"
-                role="status">
-            <span class="visually-hidden">Chargement...</span>
-          </span>
-          Chargement...
-        </p>
+        {{ build_loading_spinner() }}
         </turbo-frame>
       </div>
     </div>
