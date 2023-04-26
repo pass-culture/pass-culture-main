@@ -30,8 +30,8 @@ jest.mock('react-router-dom', () => ({
 const addressInformations: IAddress = {
   address: '3 Rue de Valois',
   city: 'Paris',
-  latitude: 0,
-  longitude: 0,
+  latitude: 1.23,
+  longitude: 2.9887,
   postalCode: '75001',
 }
 
@@ -210,6 +210,11 @@ describe('screens:SignupJourney::Validation', () => {
         webPresence: 'url1, url2',
         target: Target.EDUCATIONAL,
         createVenueWithoutSiret: false,
+        address: '3 Rue de Valois',
+        city: 'Paris',
+        latitude: 1.23,
+        longitude: 2.9887,
+        postalCode: '75001',
       })
 
       expect(mockNavigate).toHaveBeenCalledWith('/accueil')
@@ -228,6 +233,8 @@ describe('screens:SignupJourney::Validation', () => {
           name: 'nom',
           siret: '123123123',
           ...addressInformations,
+          longitude: null,
+          latitude: null,
         },
         setActivity: () => {},
         setOfferer: () => {},
@@ -248,6 +255,11 @@ describe('screens:SignupJourney::Validation', () => {
         webPresence: 'url1, url2',
         target: Target.EDUCATIONAL,
         createVenueWithoutSiret: false,
+        address: '3 Rue de Valois',
+        city: 'Paris',
+        latitude: 0,
+        longitude: 0,
+        postalCode: '75001',
       })
     })
 
