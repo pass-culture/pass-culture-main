@@ -1,45 +1,45 @@
-name: "[PRO] Deploy PR version for validation"
+# name: "[PRO] Deploy PR version for validation"
 
 
-on:  
-  pull_request:
-    paths:
-      - 'pro/**'
-    branches:
-      - master
+# on:  
+#   pull_request:
+#     paths:
+#       - 'pro/**'
+#     branches:
+#       - master
 
-jobs:  
-  deploy_on_firebase:
-    permissions: write-all
-    defaults:
-      run:
-        working-directory: pro
-    runs-on: [self-hosted, linux, x64]
-    if: ${{ github.actor != 'dependabot[bot]' }}
-    steps:
-      - uses: actions/checkout@v3
-      - id: openid-auth
-        name: "OpenID Connect Authentication"
-        uses: 'google-github-actions/auth@v1'
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: Get Secret
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v1'
-        with:
-          secrets: |-
-            FIREBASE_TOKEN:passculture-metier-ehp/pc_pro_testing_firebase_json
-      - run: yarn install
-      - run: |
-          set -a; 
-          source ../config/run_envs/testing;
-          source .env.testing;
-          yarn build:testing;
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: ${{ steps.secrets.outputs.FIREBASE_TOKEN }}
-          expires: 2d
-          projectId: pc-pro-testing
-          entryPoint: pro
+# jobs:  
+#   deploy_on_firebase:
+#     permissions: write-all
+#     defaults:
+#       run:
+#         working-directory: pro
+#     runs-on: [self-hosted, linux, x64]
+#     if: ${{ github.actor != 'dependabot[bot]' }}
+#     steps:
+#       - uses: actions/checkout@v3
+#       - id: openid-auth
+#         name: "OpenID Connect Authentication"
+#         uses: 'google-github-actions/auth@v1'
+#         with:
+#           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+#           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+#       - name: Get Secret
+#         id: 'secrets'
+#         uses: 'google-github-actions/get-secretmanager-secrets@v1'
+#         with:
+#           secrets: |-
+#             FIREBASE_TOKEN:passculture-metier-ehp/pc_pro_testing_firebase_json
+#       - run: yarn install
+#       - run: |
+#           set -a; 
+#           source ../config/run_envs/testing;
+#           source .env.testing;
+#           yarn build:testing;
+#       - uses: FirebaseExtended/action-hosting-deploy@v0
+#         with:
+#           repoToken: "${{ secrets.GITHUB_TOKEN }}"
+#           firebaseServiceAccount: ${{ steps.secrets.outputs.FIREBASE_TOKEN }}
+#           expires: 2d
+#           projectId: pc-pro-testing
+#           entryPoint: pro

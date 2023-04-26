@@ -1,29 +1,29 @@
-name: Dependabot auto-merge
-on: workflow_call
+# name: Dependabot auto-merge
+# on: workflow_call
 
-permissions:
-  contents: write
-  pull-requests: write
+# permissions:
+#   contents: write
+#   pull-requests: write
 
-jobs:
-  dependabot:
-    runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
-    steps:
-      - name: Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@v1
-        with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-      - name: Approve the PR
-        if: ${{contains(steps.metadata.outputs.directory, 'pro')}}
-        run: gh pr review --approve "$PR_URL"
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Merge Dependabot PR
-        if: ${{contains(steps.metadata.outputs.directory, 'pro')}}
-        run: gh pr merge --rebase "$PR_URL"
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+# jobs:
+#   dependabot:
+#     runs-on: ubuntu-latest
+#     if: ${{ github.actor == 'dependabot[bot]' }}
+#     steps:
+#       - name: Dependabot metadata
+#         id: metadata
+#         uses: dependabot/fetch-metadata@v1
+#         with:
+#           github-token: "${{ secrets.GITHUB_TOKEN }}"
+#       - name: Approve the PR
+#         if: ${{contains(steps.metadata.outputs.directory, 'pro')}}
+#         run: gh pr review --approve "$PR_URL"
+#         env:
+#           PR_URL: ${{github.event.pull_request.html_url}}
+#           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+#       - name: Merge Dependabot PR
+#         if: ${{contains(steps.metadata.outputs.directory, 'pro')}}
+#         run: gh pr merge --rebase "$PR_URL"
+#         env:
+#           PR_URL: ${{github.event.pull_request.html_url}}
+#           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

@@ -1,37 +1,37 @@
-name: Node run
-on:
-  workflow_call:
-    inputs:
-      node_version:
-        type: string
-        required: true
-      app_folder:
-        type: string
-        required: true
-      use_cache:
-        type: boolean
-        required: true
-      command:
-        type: string
-        required: true
+# name: Node run
+# on:
+#   workflow_call:
+#     inputs:
+#       node_version:
+#         type: string
+#         required: true
+#       app_folder:
+#         type: string
+#         required: true
+#       use_cache:
+#         type: boolean
+#         required: true
+#       command:
+#         type: string
+#         required: true
 
-jobs:
-  node-run-command:
-    runs-on: [self-hosted, linux, x64]
-    container:
-      image: node:18
-    steps:
-      - uses: actions/checkout@v3
-      - if: inputs.use_cache
-        uses: actions/setup-node@v3
-        with:
-          cache: yarn
-          node-version: ${{ inputs.node_version }}
-      - if: inputs.use_cache == false
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.node_version }}
-      - run: yarn install
-        working-directory: ${{ inputs.app_folder }}
-      - run: ${{ inputs.command }}
-        working-directory: ${{ inputs.app_folder }}
+# jobs:
+#   node-run-command:
+#     runs-on: [self-hosted, linux, x64]
+#     container:
+#       image: node:18
+#     steps:
+#       - uses: actions/checkout@v3
+#       - if: inputs.use_cache
+#         uses: actions/setup-node@v3
+#         with:
+#           cache: yarn
+#           node-version: ${{ inputs.node_version }}
+#       - if: inputs.use_cache == false
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: ${{ inputs.node_version }}
+#       - run: yarn install
+#         working-directory: ${{ inputs.app_folder }}
+#       - run: ${{ inputs.command }}
+#         working-directory: ${{ inputs.app_folder }}

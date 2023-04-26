@@ -1,13 +1,13 @@
-name: Reset cache on master on dependency update
+# name: Reset cache on master on dependency update
 
-on:
-  push:
-    branches:
-      - "master"
+# on:
+#   push:
+#     branches:
+#       - "master"
 
-jobs:
-  prepare-cache-master:
-    uses: ./.github/workflows/update-api-client-template.yml
-    with:
-      trigger-only-on-api-change: false
-      trigger-only-on-dependency-change: true
+# jobs:
+#   prepare-cache-master:
+#     uses: ./.github/workflows/update-api-client-template.yml
+#     with:
+#       trigger-only-on-api-change: false
+#       trigger-only-on-dependency-change: true

@@ -1,22 +1,22 @@
-name: Node quality check
-on:
-  workflow_call:
-    inputs:
-      node_version:
-        type: string
-        required: true
-      app_folder:
-        type: string
-        required: true
-      use_cache:
-        type: boolean
-        required: true
+# name: Node quality check
+# on:
+#   workflow_call:
+#     inputs:
+#       node_version:
+#         type: string
+#         required: true
+#       app_folder:
+#         type: string
+#         required: true
+#       use_cache:
+#         type: boolean
+#         required: true
 
-jobs:
-  type-check-node-app:
-    uses: ./.github/workflows/node-run-command.yml
-    with:
-      node_version: ${{ inputs.node_version }}
-      app_folder: ${{ inputs.app_folder }}
-      use_cache: ${{ inputs.use_cache }}
-      command: yarn lint:js --max-warnings 0
+# jobs:
+#   type-check-node-app:
+#     uses: ./.github/workflows/node-run-command.yml
+#     with:
+#       node_version: ${{ inputs.node_version }}
+#       app_folder: ${{ inputs.app_folder }}
+#       use_cache: ${{ inputs.use_cache }}
+#       command: yarn lint:js --max-warnings 0

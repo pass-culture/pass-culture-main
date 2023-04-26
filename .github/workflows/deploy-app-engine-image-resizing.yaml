@@ -1,43 +1,43 @@
-name: Deploy app engine image resizing
-on:
-  workflow_call:
-    inputs:
-      base_ref:
-        required: true
-        type: string
-      environment:
-        type: string
-        required: true
-      google_project:
-        type: string
-        required: true
+# name: Deploy app engine image resizing
+# on:
+#   workflow_call:
+#     inputs:
+#       base_ref:
+#         required: true
+#         type: string
+#       environment:
+#         type: string
+#         required: true
+#       google_project:
+#         type: string
+#         required: true
 
-jobs:
-  check-image-resizing-folder-changes:
-    name: "Check if folder changed"
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: app-engine/image-resizing
+# jobs:
+#   check-image-resizing-folder-changes:
+#     name: "Check if folder changed"
+#     uses: ./.github/workflows/check-folder-changes.yml
+#     with:
+#       folder: app-engine/image-resizing
 
-  deploy-image-resizing:
-    needs: check-image-resizing-folder-changes
-    if: ${{ needs.check-image-resizing-folder-changes.outputs.folder_changed == 'true' }}
-    environment: ${{ inputs.environment }}
-    runs-on: [self-hosted, linux, x64]
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-    steps:
-      - name: 'Checkout actual repository'
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ inputs.base_ref }}
-      - name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v1'
-        with:
-          token_format: 'access_token'
-          workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }}
-      - name: 'Deploy the image-resizing service to the given environment'
-        working-directory: ./app-engine/image-resizing
-        run:  gcloud app deploy --user-output-enabled=false --quiet --service-account=${{ secrets.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }} --project ${{ inputs.google_project }} --version=$(echo ${{ inputs.base_ref }}| tr '.' '-'| tr '/' '-'| tr '[:upper:]' '[:lower:]' | cut -c1-25)
+#   deploy-image-resizing:
+#     needs: check-image-resizing-folder-changes
+#     if: ${{ needs.check-image-resizing-folder-changes.outputs.folder_changed == 'true' }}
+#     environment: ${{ inputs.environment }}
+#     runs-on: [self-hosted, linux, x64]
+#     permissions:
+#       contents: 'read'
+#       id-token: 'write'
+#     steps:
+#       - name: 'Checkout actual repository'
+#         uses: actions/checkout@v3
+#         with:
+#           ref: ${{ inputs.base_ref }}
+#       - name: 'Authenticate to Google Cloud'
+#         uses: 'google-github-actions/auth@v1'
+#         with:
+#           token_format: 'access_token'
+#           workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+#           service_account: ${{ secrets.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }}
+#       - name: 'Deploy the image-resizing service to the given environment'
+#         working-directory: ./app-engine/image-resizing
+#         run:  gcloud app deploy --user-output-enabled=false --quiet --service-account=${{ secrets.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }} --project ${{ inputs.google_project }} --version=$(echo ${{ inputs.base_ref }}| tr '.' '-'| tr '/' '-'| tr '[:upper:]' '[:lower:]' | cut -c1-25)

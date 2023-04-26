@@ -1,148 +1,148 @@
-name: Update API Client template
+# name: Update API Client template
 
-on:
-  workflow_call:
-    inputs:
-      trigger-only-on-api-change:
-        required: true
-        type: boolean
-      trigger-only-on-dependency-change:
-        required: true
-        type: boolean
+# on:
+#   workflow_call:
+#     inputs:
+#       trigger-only-on-api-change:
+#         required: true
+#         type: boolean
+#       trigger-only-on-dependency-change:
+#         required: true
+#         type: boolean
 
-jobs:
-  reusable-update-api-client:
-    runs-on: [self-hosted, linux, x64]
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.head_ref }}
+# jobs:
+#   reusable-update-api-client:
+#     runs-on: [self-hosted, linux, x64]
+#     steps:
+#       - name: Checkout 🛎️
+#         uses: actions/checkout@v3
+#         with:
+#           ref: ${{ github.head_ref }}
 
-      - name: Check changes in API
-        uses: dorny/paths-filter@v2
-        if: ${{ inputs.trigger-only-on-api-change }}
-        id: changes-api
-        with:
-          filters: |
-            src:
-              - 'api/**'
+#       - name: Check changes in API
+#         uses: dorny/paths-filter@v2
+#         if: ${{ inputs.trigger-only-on-api-change }}
+#         id: changes-api
+#         with:
+#           filters: |
+#             src:
+#               - 'api/**'
 
-      - name: Get changed files
-        if: ${{ inputs.trigger-only-on-dependency-change }}
-        id: files
-        uses: jitterbit/get-changed-files@v1
+#       - name: Get changed files
+#         if: ${{ inputs.trigger-only-on-dependency-change }}
+#         id: files
+#         uses: jitterbit/get-changed-files@v1
 
-      - name: Check if dependencies changed
-        id: check-dependency-change
-        run: |
-          for changed_file in ${{ steps.files.outputs.all }}; do
-            if [[ "$changed_file" == "pro/yarn.lock" || "$changed_file" == "adage-front/yarn.lock" || "$changed_file" == "api/requirements.txt" ]];
-              then
-                echo "dependency-change=true" >> $GITHUB_OUTPUT
-            fi
-          done
+#       - name: Check if dependencies changed
+#         id: check-dependency-change
+#         run: |
+#           for changed_file in ${{ steps.files.outputs.all }}; do
+#             if [[ "$changed_file" == "pro/yarn.lock" || "$changed_file" == "adage-front/yarn.lock" || "$changed_file" == "api/requirements.txt" ]];
+#               then
+#                 echo "dependency-change=true" >> $GITHUB_OUTPUT
+#             fi
+#           done
 
-      - name: Should run cache
-        id: evaluate-variables
-        run: |
-          if ${{ (!inputs.trigger-only-on-api-change && !inputs.trigger-only-on-dependency-change) || (inputs.trigger-only-on-api-change && steps.changes-api.outputs.src == 'true') || (inputs.trigger-only-on-dependency-change && steps.check-dependency-change.outputs.dependency-change == 'true') }};
-            then
-              echo "should-run-cache=true" >> $GITHUB_OUTPUT
-            else
-              echo "should-run-cache=false" >> $GITHUB_OUTPUT
-          fi
+#       - name: Should run cache
+#         id: evaluate-variables
+#         run: |
+#           if ${{ (!inputs.trigger-only-on-api-change && !inputs.trigger-only-on-dependency-change) || (inputs.trigger-only-on-api-change && steps.changes-api.outputs.src == 'true') || (inputs.trigger-only-on-dependency-change && steps.check-dependency-change.outputs.dependency-change == 'true') }};
+#             then
+#               echo "should-run-cache=true" >> $GITHUB_OUTPUT
+#             else
+#               echo "should-run-cache=false" >> $GITHUB_OUTPUT
+#           fi
 
-      - uses: actions/setup-node@v2
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        with:
-          node-version: 18.12.x
+#       - uses: actions/setup-node@v2
+#         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+#         with:
+#           node-version: 18.12.x
 
-      - name: Install dockerize
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: |
-          ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
+#       - name: Install dockerize
+#         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+#         run: |
+#           ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
 
-      - name: Cache
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        uses: satackey/action-docker-layer-caching@v0.0.11
-        # Ignore the failure of a step and avoid terminating the job.
-        continue-on-error: true
-        with:
-          key: docker-cache-${{ hashFiles('api/requirements.txt') }}
-          restore-keys: |
-            docker-cache-${{ hashFiles('api/requirements.txt') }}
-            docker-cache
+#       - name: Cache
+#         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+#         uses: satackey/action-docker-layer-caching@v0.0.11
+#         # Ignore the failure of a step and avoid terminating the job.
+#         continue-on-error: true
+#         with:
+#           key: docker-cache-${{ hashFiles('api/requirements.txt') }}
+#           restore-keys: |
+#             docker-cache-${{ hashFiles('api/requirements.txt') }}
+#             docker-cache
 
-      - name: Run API
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: |
-          sudo chown -R 1000:1000 .
-          ./pc start-backend &
+#       - name: Run API
+#         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+#         run: |
+#           sudo chown -R 1000:1000 .
+#           ./pc start-backend &
 
-      - uses: actions/cache@v2
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        with:
-          path: pro/node_modules
-          key: ${{ runner.os }}-node-16-yarn-${{ hashFiles('pro/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-16-yarn-${{ hashFiles('pro/yarn.lock') }}
-            ${{ runner.os }}-node-16-yarn-
+#       - uses: actions/cache@v2
+#         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+#         with:
+#           path: pro/node_modules
+#           key: ${{ runner.os }}-node-16-yarn-${{ hashFiles('pro/yarn.lock') }}
+#           restore-keys: |
+#             ${{ runner.os }}-node-16-yarn-${{ hashFiles('pro/yarn.lock') }}
+#             ${{ runner.os }}-node-16-yarn-
 
-      - uses: actions/cache@v2
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        with:
-          path: adage-front/node_modules
-          key: ${{ runner.os }}-adage-node-16-yarn-${{ hashFiles('adage-front/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-adage-node-16-yarn-${{ hashFiles('adage-front/yarn.lock') }}
-            ${{ runner.os }}-adage-node-16-yarn-
+#       - uses: actions/cache@v2
+#         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+#         with:
+#           path: adage-front/node_modules
+#           key: ${{ runner.os }}-adage-node-16-yarn-${{ hashFiles('adage-front/yarn.lock') }}
+#           restore-keys: |
+#             ${{ runner.os }}-adage-node-16-yarn-${{ hashFiles('adage-front/yarn.lock') }}
+#             ${{ runner.os }}-adage-node-16-yarn-
 
-      - name: Install dependencies PRO
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: |
-          cd pro
-          yarn install
+#       - name: Install dependencies PRO
+#         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+#         run: |
+#           cd pro
+#           yarn install
 
-      - name: Install dependencies ADAGE FRONT
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: |
-          cd adage-front
-          yarn install
+#       - name: Install dependencies ADAGE FRONT
+#         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+#         run: |
+#           cd adage-front
+#           yarn install
 
-      - name: Wait for backend
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: dockerize -wait http://localhost:5001/health/api -timeout 10m -wait-retry-interval 5s
+#       - name: Wait for backend
+#         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+#         run: dockerize -wait http://localhost:5001/health/api -timeout 10m -wait-retry-interval 5s
 
-      - name: Update api client
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: |
-          cd pro
-          yarn generate:api:client:local
-          cd ../adage-front
-          yarn generate:api:client:local
+#       - name: Update api client
+#         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+#         run: |
+#           cd pro
+#           yarn generate:api:client:local
+#           cd ../adage-front
+#           yarn generate:api:client:local
 
-      - name: Check if there are changes
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        id: changes
-        run: |
-          if [[ -z "$(git status --porcelain $STATUS_ARGS $PATHSPEC)" ]];
-            then
-              echo "changed=false" >> $GITHUB_OUTPUT
-            else
-              echo "changed=true" >> $GITHUB_OUTPUT
-            fi
+#       - name: Check if there are changes
+#         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+#         id: changes
+#         run: |
+#           if [[ -z "$(git status --porcelain $STATUS_ARGS $PATHSPEC)" ]];
+#             then
+#               echo "changed=false" >> $GITHUB_OUTPUT
+#             else
+#               echo "changed=true" >> $GITHUB_OUTPUT
+#             fi
 
-      - name: Commit
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git add pro/src/apiClient adage-front/src/apiClient
-          git commit -m "(BSR) chore: update api client"
+#       - name: Commit
+#         if: steps.changes.outputs.changed == 'true'
+#         run: |
+#           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+#           git config --global user.name "github-actions[bot]"
+#           git add pro/src/apiClient adage-front/src/apiClient
+#           git commit -m "(BSR) chore: update api client"
 
-      - name: Push changes
-        if: steps.changes.outputs.changed == 'true'
-        uses: ad-m/github-push-action@master
-        with:
-          branch: ${{ github.head_ref }}
+#       - name: Push changes
+#         if: steps.changes.outputs.changed == 'true'
+#         uses: ad-m/github-push-action@master
+#         with:
+#           branch: ${{ github.head_ref }}

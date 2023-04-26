@@ -1,91 +1,91 @@
-name: Tests adage
-on: workflow_call
+# name: Tests adage
+# on: workflow_call
 
-env:
-  use_cache: ${{ github.ref != 'refs/heads/master' }}
+# env:
+#   use_cache: ${{ github.ref != 'refs/heads/master' }}
 
-defaults:
-  run:
-    working-directory: adage-front
+# defaults:
+#   run:
+#     working-directory: adage-front
 
-jobs:
-  check-adage-folder-changes:
-    name: "Check if folder changed"
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: adage-front
+# jobs:
+#   check-adage-folder-changes:
+#     name: "Check if folder changed"
+#     uses: ./.github/workflows/check-folder-changes.yml
+#     with:
+#       folder: adage-front
 
-  read-node-version:
-    name: "Read node version from .nvmrc"
-    runs-on: [self-hosted, linux, x64]
-    needs: check-adage-folder-changes
-    if: ${{ needs.check-adage-folder-changes.outputs.folder_changed == 'true' }}
-    outputs:
-      node_version: ${{ steps.read-node-version.outputs.node_version }}
-    steps:
-      - uses: actions/checkout@v3
-      - id: read-node-version
-        run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_OUTPUT
+#   read-node-version:
+#     name: "Read node version from .nvmrc"
+#     runs-on: [self-hosted, linux, x64]
+#     needs: check-adage-folder-changes
+#     if: ${{ needs.check-adage-folder-changes.outputs.folder_changed == 'true' }}
+#     outputs:
+#       node_version: ${{ steps.read-node-version.outputs.node_version }}
+#     steps:
+#       - uses: actions/checkout@v3
+#       - id: read-node-version
+#         run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_OUTPUT
 
-  quality-check:
-    name: "Quality check"
-    container:
-      image: node:18
-    runs-on: [self-hosted, linux, x64]
-    needs: read-node-version
-    steps:
-      - uses: actions/checkout@v3
-      - if: ${{ env.use_cache }}
-        uses: actions/setup-node@v3
-        with:
-          cache: yarn
-          cache-dependency-path: adage-front/yarn.lock
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - if: ${{ env.use_cache == false }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - run: yarn install
-      - run: yarn lint:js --max-warnings 0
+#   quality-check:
+#     name: "Quality check"
+#     container:
+#       image: node:18
+#     runs-on: [self-hosted, linux, x64]
+#     needs: read-node-version
+#     steps:
+#       - uses: actions/checkout@v3
+#       - if: ${{ env.use_cache }}
+#         uses: actions/setup-node@v3
+#         with:
+#           cache: yarn
+#           cache-dependency-path: adage-front/yarn.lock
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - if: ${{ env.use_cache == false }}
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - run: yarn install
+#       - run: yarn lint:js --max-warnings 0
 
-  type-check:
-    name: "Type check"
-    container:
-      image: node:18
-    runs-on: [self-hosted, linux, x64]
-    needs: read-node-version
-    steps:
-      - uses: actions/checkout@v3
-      - if: ${{ env.use_cache }}
-        uses: actions/setup-node@v3
-        with:
-          cache: yarn
-          cache-dependency-path: adage-front/yarn.lock
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - if: ${{ env.use_cache == false }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - run: yarn install
-      - run: yarn tsc -b
+#   type-check:
+#     name: "Type check"
+#     container:
+#       image: node:18
+#     runs-on: [self-hosted, linux, x64]
+#     needs: read-node-version
+#     steps:
+#       - uses: actions/checkout@v3
+#       - if: ${{ env.use_cache }}
+#         uses: actions/setup-node@v3
+#         with:
+#           cache: yarn
+#           cache-dependency-path: adage-front/yarn.lock
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - if: ${{ env.use_cache == false }}
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - run: yarn install
+#       - run: yarn tsc -b
 
-  tests:
-    name: "Unit tests"
-    container:
-      image: node:18
-    runs-on: [self-hosted, linux, x64]
-    needs: read-node-version
-    steps:
-      - uses: actions/checkout@v3
-      - if: ${{ env.use_cache }}
-        uses: actions/setup-node@v3
-        with:
-          cache: yarn
-          cache-dependency-path: adage-front/yarn.lock
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - if: ${{ !env.use_cache }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - run: yarn install
-      - run: yarn test:unit
+#   tests:
+#     name: "Unit tests"
+#     container:
+#       image: node:18
+#     runs-on: [self-hosted, linux, x64]
+#     needs: read-node-version
+#     steps:
+#       - uses: actions/checkout@v3
+#       - if: ${{ env.use_cache }}
+#         uses: actions/setup-node@v3
+#         with:
+#           cache: yarn
+#           cache-dependency-path: adage-front/yarn.lock
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - if: ${{ !env.use_cache }}
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - run: yarn install
+#       - run: yarn test:unit

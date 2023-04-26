@@ -1,64 +1,64 @@
-name: Deploy GCS front
-on:
-  workflow_call:
-    inputs:
-      app_name:
-        type: string
-        required: true
-      app_directory:
-        type: string
-        required: true
-      environment:
-        type: string
-        required: true
-    secrets:
-      gcp_project:
-        required: true
-      service_account:
-        required: true
-      workload_identity_provider:
-        required: true
+# name: Deploy GCS front
+# on:
+#   workflow_call:
+#     inputs:
+#       app_name:
+#         type: string
+#         required: true
+#       app_directory:
+#         type: string
+#         required: true
+#       environment:
+#         type: string
+#         required: true
+#     secrets:
+#       gcp_project:
+#         required: true
+#       service_account:
+#         required: true
+#       workload_identity_provider:
+#         required: true
 
-jobs:
-  deploy-app:
-    name: "[${{ inputs.app_name }}] Deployment"
-    runs-on: [self-hosted, linux, x64]
-    environment: ${{ inputs.environment }}
-    permissions:
-      id-token: write
-      contents: read
-    defaults:
-      run:
-        working-directory: ${{ inputs.app_directory }}
-    steps:
-      - uses: actions/checkout@v3
-      - id: openid-auth
-        name: "OpenID Connect Authentication"
-        uses: 'google-github-actions/auth@v1'
-        with:
-          workload_identity_provider: ${{ secrets.workload_identity_provider }}
-          service_account: ${{ secrets.service_account }}
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v0'
-      - run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_ENV
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.node_version }}
-          cache-dependency-path: ${{ inputs.app_directory }}/yarn.lock
-      - run: yarn install
-      - run: |
-          set -a; source ../config/run_envs/${{ inputs.environment }};
-          yarn build:${{ inputs.environment }}
-      - if: ${{ inputs.environment != 'testing' }}
-        run: >
-          cat package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > build/version.txt
-      - uses: 'google-github-actions/upload-cloud-storage@v1'
-        with:
-          path: ${{ inputs.app_directory }}/build
-          destination: ${{ secrets.gcp_project }}-${{ inputs.environment }}-${{ inputs.app_name }}
-          parent: false
-      - if: ${{ inputs.environment == 'production' }}
-        run: |
-          gcloud compute url-maps invalidate-cdn-cache ${{ inputs.environment }}-${{ inputs.app_name }}-url-map --path "/*"  --async
-          echo "An invalidateCache operation has been requested. You can follow its progress on https://console.cloud.google.com/compute/operations"
+# jobs:
+#   deploy-app:
+#     name: "[${{ inputs.app_name }}] Deployment"
+#     runs-on: [self-hosted, linux, x64]
+#     environment: ${{ inputs.environment }}
+#     permissions:
+#       id-token: write
+#       contents: read
+#     defaults:
+#       run:
+#         working-directory: ${{ inputs.app_directory }}
+#     steps:
+#       - uses: actions/checkout@v3
+#       - id: openid-auth
+#         name: "OpenID Connect Authentication"
+#         uses: 'google-github-actions/auth@v1'
+#         with:
+#           workload_identity_provider: ${{ secrets.workload_identity_provider }}
+#           service_account: ${{ secrets.service_account }}
+#       - name: 'Set up Cloud SDK'
+#         uses: 'google-github-actions/setup-gcloud@v0'
+#       - run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_ENV
+#       - uses: actions/setup-node@v3
+#         with:
+#           node-version: ${{ env.node_version }}
+#           cache-dependency-path: ${{ inputs.app_directory }}/yarn.lock
+#       - run: yarn install
+#       - run: |
+#           set -a; source ../config/run_envs/${{ inputs.environment }};
+#           yarn build:${{ inputs.environment }}
+#       - if: ${{ inputs.environment != 'testing' }}
+#         run: >
+#           cat package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > build/version.txt
+#       - uses: 'google-github-actions/upload-cloud-storage@v1'
+#         with:
+#           path: ${{ inputs.app_directory }}/build
+#           destination: ${{ secrets.gcp_project }}-${{ inputs.environment }}-${{ inputs.app_name }}
+#           parent: false
+#       - if: ${{ inputs.environment == 'production' }}
+#         run: |
+#           gcloud compute url-maps invalidate-cdn-cache ${{ inputs.environment }}-${{ inputs.app_name }}-url-map --path "/*"  --async
+#           echo "An invalidateCache operation has been requested. You can follow its progress on https://console.cloud.google.com/compute/operations"
 

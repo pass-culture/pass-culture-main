@@ -1,38 +1,38 @@
-name: Build and Deploy Storybook
-on:
-  push:
-    branches:
-      - master
-jobs:
-  build-and-deploy:
-    runs-on: [self-hosted, linux, x64]
-    container:
-      image: node:18
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 18.12.x
-      - name: Install tools needed
-        run: |
-          apt-get update && apt-get install rsync -y
-      - name: Install and Build Storybook 🔧
-        run: | # Install npm packages and build the Storybook files
-          cd pro
-          yarn install
-          yarn build-storybook
-        env:
-          STORYBOOK_ROOT_PATH: "https://pass-culture.github.io/pass-culture-main/"
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4.4.1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: docs # The branch the action should deploy to.
-          folder: pro/docs-build # The folder that the build-storybook script generates files.
-          clean: true # Automatically remove deleted files from the deploy branch
-          target-folder: docs # The folder that we serve our Storybook files from
-          clean-exclude: |
-            .circleci/config.yml
+# name: Build and Deploy Storybook
+# on:
+#   push:
+#     branches:
+#       - master
+# jobs:
+#   build-and-deploy:
+#     runs-on: [self-hosted, linux, x64]
+#     container:
+#       image: node:18
+#     steps:
+#       - name: Checkout 🛎️
+#         uses: actions/checkout@v3
+#         with:
+#           persist-credentials: false
+#       - uses: actions/setup-node@v2
+#         with:
+#           node-version: 18.12.x
+#       - name: Install tools needed
+#         run: |
+#           apt-get update && apt-get install rsync -y
+#       - name: Install and Build Storybook 🔧
+#         run: | # Install npm packages and build the Storybook files
+#           cd pro
+#           yarn install
+#           yarn build-storybook
+#         env:
+#           STORYBOOK_ROOT_PATH: "https://pass-culture.github.io/pass-culture-main/"
+#       - name: Deploy 🚀
+#         uses: JamesIves/github-pages-deploy-action@v4.4.1
+#         with:
+#           token: ${{ secrets.GITHUB_TOKEN }}
+#           branch: docs # The branch the action should deploy to.
+#           folder: pro/docs-build # The folder that the build-storybook script generates files.
+#           clean: true # Automatically remove deleted files from the deploy branch
+#           target-folder: docs # The folder that we serve our Storybook files from
+#           clean-exclude: |
+#             .circleci/config.yml

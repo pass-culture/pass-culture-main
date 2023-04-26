@@ -1,24 +1,24 @@
-name: Ping data team on slack
-# This action pings slack for every new PR that adds, changes or removes a db migration.
-# The ping is done on every push.
+# name: Ping data team on slack
+# # This action pings slack for every new PR that adds, changes or removes a db migration.
+# # The ping is done on every push.
 
-on:
-  pull_request:
-    types: [closed]
-    paths:
-      - 'api/src/pcapi/alembic/versions/**'
-      - 'api/src/pcapi/alembic/run_migrations.py'
+# on:
+#   pull_request:
+#     types: [closed]
+#     paths:
+#       - 'api/src/pcapi/alembic/versions/**'
+#       - 'api/src/pcapi/alembic/run_migrations.py'
 
-jobs:
-  send-message:
-    runs-on: [self-hosted, linux, x64]
-    if: github.event.pull_request.merged == true
-    steps:
-      - uses: actions/checkout@v3
+# jobs:
+#   send-message:
+#     runs-on: [self-hosted, linux, x64]
+#     if: github.event.pull_request.merged == true
+#     steps:
+#       - uses: actions/checkout@v3
 
-      - name: Ping slack
-        shell: bash
-        env:
-          SLACK_WEBHOOK_DB_CHANGE: ${{ secrets.SLACK_WEBHOOK_DB_CHANGE }}
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Nouvelle PR avec une migration db ou une colonne en cours de suppression -> ${{ github.event.pull_request.html_url }}"}'  "$SLACK_WEBHOOK_DB_CHANGE"
+#       - name: Ping slack
+#         shell: bash
+#         env:
+#           SLACK_WEBHOOK_DB_CHANGE: ${{ secrets.SLACK_WEBHOOK_DB_CHANGE }}
+#         run: |
+#           curl -X POST -H 'Content-type: application/json' --data '{"text":"Nouvelle PR avec une migration db ou une colonne en cours de suppression -> ${{ github.event.pull_request.html_url }}"}'  "$SLACK_WEBHOOK_DB_CHANGE"

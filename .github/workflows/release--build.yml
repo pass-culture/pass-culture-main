@@ -1,39 +1,39 @@
-name: "[Deployment] Create a release"
+# name: "[Deployment] Create a release"
 
-on:
-  workflow_dispatch:
-    inputs:
-      commitHash:
-        description: "Hash du commit à déployer (ex: cadd172232c80206107e2f0122542adf19fb42af)"
-        required: true
-        type: string
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       commitHash:
+#         description: "Hash du commit à déployer (ex: cadd172232c80206107e2f0122542adf19fb42af)"
+#         required: true
+#         type: string
 
-      releaseNumber:
-        description: "Numéro de l'itération (ex: 199)"
-        required: true
-        type: string
+#       releaseNumber:
+#         description: "Numéro de l'itération (ex: 199)"
+#         required: true
+#         type: string
 
-jobs:
-  build-and-tag-version:
-    name: Build and tag version
-    uses: ./.github/workflows/reusable--build-and-tag.yml
-    secrets: inherit
-    with:
-      base_ref: ${{ github.event.inputs.commitHash }}
-      tag_number: ${{ github.event.inputs.releaseNumber }}.0.0
+# jobs:
+#   build-and-tag-version:
+#     name: Build and tag version
+#     uses: ./.github/workflows/reusable--build-and-tag.yml
+#     secrets: inherit
+#     with:
+#       base_ref: ${{ github.event.inputs.commitHash }}
+#       tag_number: ${{ github.event.inputs.releaseNumber }}.0.0
 
-  create-maintenance-branch:
-    name: Create maintenance branch
-    needs: build-and-tag-version
-    runs-on: [self-hosted, linux, x64]
-    env:
-      MAINTENANCE_BRANCH: maint/v${{ github.event.inputs.releaseNumber }}
-    steps:
-      - name: Checkout new tag
-        uses: actions/checkout@v3
-        with:
-          ref: v${{ github.event.inputs.releaseNumber }}.0.0
-      - name: Create maintenance branch
-        run: |
-          git checkout -b "$MAINTENANCE_BRANCH"
-          git push origin "$MAINTENANCE_BRANCH"
+#   create-maintenance-branch:
+#     name: Create maintenance branch
+#     needs: build-and-tag-version
+#     runs-on: [self-hosted, linux, x64]
+#     env:
+#       MAINTENANCE_BRANCH: maint/v${{ github.event.inputs.releaseNumber }}
+#     steps:
+#       - name: Checkout new tag
+#         uses: actions/checkout@v3
+#         with:
+#           ref: v${{ github.event.inputs.releaseNumber }}.0.0
+#       - name: Create maintenance branch
+#         run: |
+#           git checkout -b "$MAINTENANCE_BRANCH"
+#           git push origin "$MAINTENANCE_BRANCH"

@@ -1,139 +1,139 @@
-name: "[reusable] build and tag"
+# name: "[reusable] build and tag"
 
-# This reusable workflow should be called by another workflow.
-# It builds then tags the release so it's ready to deploy.
+# # This reusable workflow should be called by another workflow.
+# # It builds then tags the release so it's ready to deploy.
 
-on:
-  workflow_call:
-    inputs:
-      base_ref:
-        # The base ref to tag from.
-        # Can be a branch name, a tag or a commit.
-        required: true
-        type: string
+# on:
+#   workflow_call:
+#     inputs:
+#       base_ref:
+#         # The base ref to tag from.
+#         # Can be a branch name, a tag or a commit.
+#         required: true
+#         type: string
 
-      tag_number:
-        # 200.0.2 for example.
-        required: true
-        type: string
+#       tag_number:
+#         # 200.0.2 for example.
+#         required: true
+#         type: string
 
-      base_ref_is_a_branch:
-        required: false
-        type: boolean
-        default: false
+#       base_ref_is_a_branch:
+#         required: false
+#         type: boolean
+#         default: false
 
-env:
-  DOCKER_REGISTRY_PROJECT_ID: passculture-infra-prod
-  DOCKER_REGISTRY_REGION: europe-west1
-  DOCKER_REGISTRY_REPOSITORY: pass-culture-artifact-registry
+# env:
+#   DOCKER_REGISTRY_PROJECT_ID: passculture-infra-prod
+#   DOCKER_REGISTRY_REGION: europe-west1
+#   DOCKER_REGISTRY_REPOSITORY: pass-culture-artifact-registry
 
-jobs:
-  build-and-tag-version:
-    runs-on: [self-hosted, linux, x64]
-    permissions:
-      id-token: write
-      contents: write
+# jobs:
+#   build-and-tag-version:
+#     runs-on: [self-hosted, linux, x64]
+#     permissions:
+#       id-token: write
+#       contents: write
 
-    env:
-      GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
-      GIT_CONFIG_NAME: ${{ github.actor }}
-      TAG_NAME: v${{ inputs.tag_number }}
+#     env:
+#       GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
+#       GIT_CONFIG_NAME: ${{ github.actor }}
+#       TAG_NAME: v${{ inputs.tag_number }}
 
-    steps:
-      - name: Checkout ref
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ inputs.base_ref }}
+#     steps:
+#       - name: Checkout ref
+#         uses: actions/checkout@v3
+#         with:
+#           ref: ${{ inputs.base_ref }}
 
-      - name: Author
-        run: |
-          git config --global user.email "$GIT_CONFIG_EMAIL"
-          git config --global user.name "$GIT_CONFIG_NAME"
+#       - name: Author
+#         run: |
+#           git config --global user.email "$GIT_CONFIG_EMAIL"
+#           git config --global user.name "$GIT_CONFIG_NAME"
 
-      - name: Add version to api
-        run: |
-          cd ./api
-          echo "${{ inputs.tag_number }}" > version.txt
-          git add version.txt
+#       - name: Add version to api
+#         run: |
+#           cd ./api
+#           echo "${{ inputs.tag_number }}" > version.txt
+#           git add version.txt
 
-      - name: Add version to pro
-        run: |
-          cd pro
-          yarn version --new-version "${{ inputs.tag_number }}"
-          git add package.json
+#       - name: Add version to pro
+#         run: |
+#           cd pro
+#           yarn version --new-version "${{ inputs.tag_number }}"
+#           git add package.json
 
-      - name: Add version to adage
-        run: |
-          cd adage-front
-          yarn version --new-version "${{ inputs.tag_number }}"
-          git add package.json
+#       - name: Add version to adage
+#         run: |
+#           cd adage-front
+#           yarn version --new-version "${{ inputs.tag_number }}"
+#           git add package.json
 
-      - name: Output variables
-        id: vars
-        run: echo "DOCKER_REPO=${DOCKER_REGISTRY_REGION}-docker.pkg.dev/${DOCKER_REGISTRY_PROJECT_ID}/${DOCKER_REGISTRY_REPOSITORY}" >> $GITHUB_ENV
+#       - name: Output variables
+#         id: vars
+#         run: echo "DOCKER_REPO=${DOCKER_REGISTRY_REGION}-docker.pkg.dev/${DOCKER_REGISTRY_PROJECT_ID}/${DOCKER_REGISTRY_REPOSITORY}" >> $GITHUB_ENV
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-        with:
-          driver: docker
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v2
+#         with:
+#           driver: docker
 
-      - id: openid-auth
-        name: "OpenID Connect Authentication"
-        uses: "google-github-actions/auth@v1"
-        with:
-          create_credentials_file: false
-          token_format: "access_token"
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+#       - id: openid-auth
+#         name: "OpenID Connect Authentication"
+#         uses: "google-github-actions/auth@v1"
+#         with:
+#           create_credentials_file: false
+#           token_format: "access_token"
+#           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+#           service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
 
-      - id: docker-login
-        uses: "docker/login-action@v1"
-        name: "Docker login"
-        with:
-          registry: "${{ env.DOCKER_REGISTRY_REGION }}-docker.pkg.dev"
-          username: "oauth2accesstoken"
-          password: "${{ steps.openid-auth.outputs.access_token }}"
+#       - id: docker-login
+#         uses: "docker/login-action@v1"
+#         name: "Docker login"
+#         with:
+#           registry: "${{ env.DOCKER_REGISTRY_REGION }}-docker.pkg.dev"
+#           username: "oauth2accesstoken"
+#           password: "${{ steps.openid-auth.outputs.access_token }}"
 
-      - name: "Build and push pcapi image"
-        uses: docker/build-push-action@v2
-        with:
-          context: api
-          push: true
-          target: pcapi
-          tags: ${{ env.DOCKER_REPO }}/pcapi:${{ inputs.tag_number }}
+#       - name: "Build and push pcapi image"
+#         uses: docker/build-push-action@v2
+#         with:
+#           context: api
+#           push: true
+#           target: pcapi
+#           tags: ${{ env.DOCKER_REPO }}/pcapi:${{ inputs.tag_number }}
 
-      - name: "Build and push pcapi-console image"
-        uses: docker/build-push-action@v2
-        with:
-          context: api
-          push: true
-          target: pcapi-console
-          tags: ${{ env.DOCKER_REPO }}/pcapi-console:${{ inputs.tag_number }}
+#       - name: "Build and push pcapi-console image"
+#         uses: docker/build-push-action@v2
+#         with:
+#           context: api
+#           push: true
+#           target: pcapi-console
+#           tags: ${{ env.DOCKER_REPO }}/pcapi-console:${{ inputs.tag_number }}
 
-      - name: Tag Release
-        run: |
-          git commit -m "🚀 $TAG_NAME" -n
-          git tag -a "$TAG_NAME" -m "🚀 $TAG_NAME"
-          git push origin "$TAG_NAME"
+#       - name: Tag Release
+#         run: |
+#           git commit -m "🚀 $TAG_NAME" -n
+#           git tag -a "$TAG_NAME" -m "🚀 $TAG_NAME"
+#           git push origin "$TAG_NAME"
 
-      - name: Push tag to base ref
-        if: ${{ inputs.base_ref_is_a_branch }}
-        run: git push origin "${{ inputs.base_ref }}"
+#       - name: Push tag to base ref
+#         if: ${{ inputs.base_ref_is_a_branch }}
+#         run: git push origin "${{ inputs.base_ref }}"
 
-      - name: Slack success notification
-        uses: rtCamp/action-slack-notify@v2
-        if: ${{ !failure() }}
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_RELEASE_MANAGEMENT_WEBHOOK }}
-          SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: "La pose du tag *${{ env.TAG_NAME }}* a réussi. Rdv sur <https://github.com/pass-culture/pass-culture-main/actions/workflows/release--deploy.yml|cette action Github> pour le déployer :rocket:"
-          MSG_MINIMAL: true
+#       - name: Slack success notification
+#         uses: rtCamp/action-slack-notify@v2
+#         if: ${{ !failure() }}
+#         env:
+#           SLACK_WEBHOOK: ${{ secrets.SLACK_RELEASE_MANAGEMENT_WEBHOOK }}
+#           SLACK_COLOR: ${{ job.status }}
+#           SLACK_MESSAGE: "La pose du tag *${{ env.TAG_NAME }}* a réussi. Rdv sur <https://github.com/pass-culture/pass-culture-main/actions/workflows/release--deploy.yml|cette action Github> pour le déployer :rocket:"
+#           MSG_MINIMAL: true
 
-      - name: Slack failure notification
-        uses: rtCamp/action-slack-notify@v2
-        if: ${{ failure() }}
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_RELEASE_MANAGEMENT_WEBHOOK }}
-          SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: "La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
-          MSG_MINIMAL: true
+#       - name: Slack failure notification
+#         uses: rtCamp/action-slack-notify@v2
+#         if: ${{ failure() }}
+#         env:
+#           SLACK_WEBHOOK: ${{ secrets.SLACK_RELEASE_MANAGEMENT_WEBHOOK }}
+#           SLACK_COLOR: ${{ job.status }}
+#           SLACK_MESSAGE: "La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
+#           MSG_MINIMAL: true

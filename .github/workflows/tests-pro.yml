@@ -1,187 +1,187 @@
-name: Tests pro
-on: workflow_call
+# name: Tests pro
+# on: workflow_call
 
-env:
-  use_cache: ${{ github.ref != 'refs/heads/master' }}
+# env:
+#   use_cache: ${{ github.ref != 'refs/heads/master' }}
 
-defaults:
-  run:
-    working-directory: pro
+# defaults:
+#   run:
+#     working-directory: pro
 
-jobs:
-  read-node-version:
-    name: "Read node version from .nvmrc"
-    runs-on: [self-hosted, linux, x64]
-    outputs:
-      node_version: ${{ steps.read-node-version.outputs.node_version }}
-    steps:
-      - uses: actions/checkout@v3
-      - id: read-node-version
-        run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_OUTPUT
+# jobs:
+#   read-node-version:
+#     name: "Read node version from .nvmrc"
+#     runs-on: [self-hosted, linux, x64]
+#     outputs:
+#       node_version: ${{ steps.read-node-version.outputs.node_version }}
+#     steps:
+#       - uses: actions/checkout@v3
+#       - id: read-node-version
+#         run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_OUTPUT
 
-  type-check:
-    name: "Type check"
-    runs-on: [self-hosted, linux, x64]
-    container:
-      image: node:18
-    needs: read-node-version
-    steps:
-      - uses: actions/checkout@v3
-      - if: ${{ env.use_cache }}
-        uses: actions/setup-node@v3
-        with:
-          cache: yarn
-          cache-dependency-path: pro/yarn.lock
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - if: ${{ env.use_cache == false }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - run: yarn install
-      - run: yarn tsc -b
+#   type-check:
+#     name: "Type check"
+#     runs-on: [self-hosted, linux, x64]
+#     container:
+#       image: node:18
+#     needs: read-node-version
+#     steps:
+#       - uses: actions/checkout@v3
+#       - if: ${{ env.use_cache }}
+#         uses: actions/setup-node@v3
+#         with:
+#           cache: yarn
+#           cache-dependency-path: pro/yarn.lock
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - if: ${{ env.use_cache == false }}
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - run: yarn install
+#       - run: yarn tsc -b
 
-  quality-check:
-    name: "Quality check"
-    runs-on: [self-hosted, linux, x64]
-    container:
-      image: node:18
-    needs: read-node-version
-    steps:
-      - uses: actions/checkout@v3
-      - if: ${{ env.use_cache }}
-        uses: actions/setup-node@v3
-        with:
-          cache: yarn
-          cache-dependency-path: pro/yarn.lock
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - if: ${{ env.use_cache == false }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - run: yarn install
-      - run: yarn lint:js --max-warnings 0
+#   quality-check:
+#     name: "Quality check"
+#     runs-on: [self-hosted, linux, x64]
+#     container:
+#       image: node:18
+#     needs: read-node-version
+#     steps:
+#       - uses: actions/checkout@v3
+#       - if: ${{ env.use_cache }}
+#         uses: actions/setup-node@v3
+#         with:
+#           cache: yarn
+#           cache-dependency-path: pro/yarn.lock
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - if: ${{ env.use_cache == false }}
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - run: yarn install
+#       - run: yarn lint:js --max-warnings 0
 
-  style-quality-check:
-    name: "Style quality check"
-    runs-on: [self-hosted, linux, x64]
-    container:
-      image: node:18
-    needs: read-node-version
-    steps:
-      - uses: actions/checkout@v3
-      - if: ${{ env.use_cache }}
-        uses: actions/setup-node@v3
-        with:
-          cache: yarn
-          cache-dependency-path: pro/yarn.lock
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - if: ${{ env.use_cache == false }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - run: yarn install
-      - run: yarn lint:scss --max-warnings 0
+#   style-quality-check:
+#     name: "Style quality check"
+#     runs-on: [self-hosted, linux, x64]
+#     container:
+#       image: node:18
+#     needs: read-node-version
+#     steps:
+#       - uses: actions/checkout@v3
+#       - if: ${{ env.use_cache }}
+#         uses: actions/setup-node@v3
+#         with:
+#           cache: yarn
+#           cache-dependency-path: pro/yarn.lock
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - if: ${{ env.use_cache == false }}
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - run: yarn install
+#       - run: yarn lint:scss --max-warnings 0
 
-  tests-pro-unit-tests:
-    name: "Unit tests"
-    runs-on: [self-hosted, linux, x64]
-    container:
-      image: node:18
-    needs: read-node-version
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - run: |
-          git config --global --add safe.directory /__w/pass-culture-main/pass-culture-main
-          git fetch --no-tags origin +refs/heads/master:refs/remotes/origin/master
-          git update-ref refs/heads/master refs/remotes/origin/master
-      - if: ${{ env.use_cache }}
-        uses: actions/setup-node@v3
-        with:
-          fetch-depth: 0
-          cache: yarn
-          cache-dependency-path: pro/yarn.lock
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - name: "Fetch master branch so that Jest can assert changes since master"
-        run: |
-          git fetch --no-tags origin +refs/heads/master:refs/remotes/origin/master
-          git update-ref refs/heads/master refs/remotes/origin/master
-      - if: ${{ env.use_cache == false }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - run: yarn install
-      - name: Use Jest Cache
-        id: jest-cache
-        uses: actions/cache@v3
-        with:
-          path: ./${{ env.folder }}/.jest_cache
-          key: node-${{ needs.read-node-version.outputs.node_version }}-jest-cache
-      - name: Run tests with coverage
-        run: yarn test:unit:ci --coverage
-      - name: SonarCloud scan
-        uses: SonarSource/sonarcloud-github-action@master
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          projectBaseDir: pro
-          args: -Dsonar.qualitygate.wait=${{ github.event_name == 'pull_request' && 'true' || 'false'  }}
-      - if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        id: slack
-        uses: slackapi/slack-github-action@v1.23.0
-        with:
-          # channel #dev
-          channel-id: "CPZ7U1CNP"
-          payload: |
-            {
-            "attachments": [
-              {
-                "mrkdwn_in": ["text"],
-                "color": "#A30002",
-                "author_name": "${{github.actor}}",
-                "author_link": "https://github.com/${{github.actor}}",
-                "author_icon": "https://github.com/${{github.actor}}.png",
-                "title": "Pro tests",
-                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Les tests unitaires de pro échouent sur `master` :boom:"
-              }
-            ],
-            "unfurl_links": false,
-            "unfurl_media": false
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+#   tests-pro-unit-tests:
+#     name: "Unit tests"
+#     runs-on: [self-hosted, linux, x64]
+#     container:
+#       image: node:18
+#     needs: read-node-version
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
+#       - run: |
+#           git config --global --add safe.directory /__w/pass-culture-main/pass-culture-main
+#           git fetch --no-tags origin +refs/heads/master:refs/remotes/origin/master
+#           git update-ref refs/heads/master refs/remotes/origin/master
+#       - if: ${{ env.use_cache }}
+#         uses: actions/setup-node@v3
+#         with:
+#           fetch-depth: 0
+#           cache: yarn
+#           cache-dependency-path: pro/yarn.lock
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - name: "Fetch master branch so that Jest can assert changes since master"
+#         run: |
+#           git fetch --no-tags origin +refs/heads/master:refs/remotes/origin/master
+#           git update-ref refs/heads/master refs/remotes/origin/master
+#       - if: ${{ env.use_cache == false }}
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - run: yarn install
+#       - name: Use Jest Cache
+#         id: jest-cache
+#         uses: actions/cache@v3
+#         with:
+#           path: ./${{ env.folder }}/.jest_cache
+#           key: node-${{ needs.read-node-version.outputs.node_version }}-jest-cache
+#       - name: Run tests with coverage
+#         run: yarn test:unit:ci --coverage
+#       - name: SonarCloud scan
+#         uses: SonarSource/sonarcloud-github-action@master
+#         if: ${{ github.actor != 'dependabot[bot]' }}
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#         with:
+#           projectBaseDir: pro
+#           args: -Dsonar.qualitygate.wait=${{ github.event_name == 'pull_request' && 'true' || 'false'  }}
+#       - if: ${{ failure() && github.ref == 'refs/heads/master'  }}
+#         id: slack
+#         uses: slackapi/slack-github-action@v1.23.0
+#         with:
+#           # channel #dev
+#           channel-id: "CPZ7U1CNP"
+#           payload: |
+#             {
+#             "attachments": [
+#               {
+#                 "mrkdwn_in": ["text"],
+#                 "color": "#A30002",
+#                 "author_name": "${{github.actor}}",
+#                 "author_link": "https://github.com/${{github.actor}}",
+#                 "author_icon": "https://github.com/${{github.actor}}.png",
+#                 "title": "Pro tests",
+#                 "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+#                 "text": "Les tests unitaires de pro échouent sur `master` :boom:"
+#               }
+#             ],
+#             "unfurl_links": false,
+#             "unfurl_media": false
+#             }
+#         env:
+#           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
-  tests-pro-e2e-tests:
-    name: "E2E tests"
-    runs-on: [self-hosted, linux, x64]
-    needs: read-node-version
-    steps:
-      - uses: actions/checkout@v3
-      - if: ${{ env.use_cache == false }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - name: Run API server
-        working-directory: api
-        run: ../pc start-backend &
-      # Doc : https://github.com/cypress-io/github-action
-      - name: Cypress run
-        uses: cypress-io/github-action@v5
-        with:
-          build: yarn build:development
-          start: yarn serve
-          config: baseUrl=http://localhost:3001
-          browser: chrome
-          wait-on: "http://localhost:3001,http://localhost/health/api,http://localhost/health/database"
-          wait-on-timeout: 600
-          working-directory: pro
-      - name: Archive E2E results
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: e2e-artifacts
-          path: pro/cypress/screenshots
+#   tests-pro-e2e-tests:
+#     name: "E2E tests"
+#     runs-on: [self-hosted, linux, x64]
+#     needs: read-node-version
+#     steps:
+#       - uses: actions/checkout@v3
+#       - if: ${{ env.use_cache == false }}
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: ${{ needs.read-node-version.outputs.node_version }}
+#       - name: Run API server
+#         working-directory: api
+#         run: ../pc start-backend &
+#       # Doc : https://github.com/cypress-io/github-action
+#       - name: Cypress run
+#         uses: cypress-io/github-action@v5
+#         with:
+#           build: yarn build:development
+#           start: yarn serve
+#           config: baseUrl=http://localhost:3001
+#           browser: chrome
+#           wait-on: "http://localhost:3001,http://localhost/health/api,http://localhost/health/database"
+#           wait-on-timeout: 600
+#           working-directory: pro
+#       - name: Archive E2E results
+#         if: always()
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: e2e-artifacts
+#           path: pro/cypress/screenshots

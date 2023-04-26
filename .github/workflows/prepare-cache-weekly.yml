@@ -1,12 +1,12 @@
-name: Reset cache weekly
+# name: Reset cache weekly
 
-on:
-  schedule:
-    - cron: "0 0 * * 0"
+# on:
+#   schedule:
+#     - cron: "0 0 * * 0"
 
-jobs:
-  prepare-cache-weekly:
-    uses: ./.github/workflows/update-api-client-template.yml
-    with:
-      trigger-only-on-api-change: false
-      trigger-only-on-dependency-change: false
+# jobs:
+#   prepare-cache-weekly:
+#     uses: ./.github/workflows/update-api-client-template.yml
+#     with:
+#       trigger-only-on-api-change: false
+#       trigger-only-on-dependency-change: false

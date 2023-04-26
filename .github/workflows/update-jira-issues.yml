@@ -1,112 +1,112 @@
-name: Update jira issues
-concurrency: ${{ github.workflow }}-${{ github.ref }}
-on:
-  push:
-    branches:
-      - master
+# name: Update jira issues
+# concurrency: ${{ github.workflow }}-${{ github.ref }}
+# on:
+#   push:
+#     branches:
+#       - master
 
-jobs:
-  issue-number:
-    outputs:
-      status: ${{ steps.issue-check.outputs.status }}
-      commit-hash: ${{ steps.get_commit_info.outputs.commit-hash }}
-      commit-number: ${{ steps.get_commit_info.outputs.commit-number }}
-    runs-on: [self-hosted, linux, x64]
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.4
-        with:
-          persist-credentials: false
-          fetch-depth: 0 # Fetch all history for "git rev-list --count HEAD" info
+# jobs:
+#   issue-number:
+#     outputs:
+#       status: ${{ steps.issue-check.outputs.status }}
+#       commit-hash: ${{ steps.get_commit_info.outputs.commit-hash }}
+#       commit-number: ${{ steps.get_commit_info.outputs.commit-number }}
+#     runs-on: [self-hosted, linux, x64]
+#     steps:
+#       - name: Checkout 🛎️
+#         uses: actions/checkout@v2.3.4
+#         with:
+#           persist-credentials: false
+#           fetch-depth: 0 # Fetch all history for "git rev-list --count HEAD" info
 
-      - name: Get commit info
-        id: get_commit_info
-        run: |
-          echo "commit-number=$(git rev-list --count HEAD)" >> $GITHUB_OUTPUT
-          echo "commit-hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+#       - name: Get commit info
+#         id: get_commit_info
+#         run: |
+#           echo "commit-number=$(git rev-list --count HEAD)" >> $GITHUB_OUTPUT
+#           echo "commit-hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Setup gajira cli
-        uses: atlassian/gajira-cli@master
-        with:
-          version: 1.0.20
+#       - name: Setup gajira cli
+#         uses: atlassian/gajira-cli@master
+#         with:
+#           version: 1.0.20
 
-      - name: Login
-        uses: atlassian/gajira-login@master
-        env:
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+#       - name: Login
+#         uses: atlassian/gajira-login@master
+#         env:
+#           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+#           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+#           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
-      - name: Get jira issue key in commit
-        id: get_jira_key
-        uses: atlassian/gajira-find-issue-key@master
-        with:
-          from: commits
+#       - name: Get jira issue key in commit
+#         id: get_jira_key
+#         uses: atlassian/gajira-find-issue-key@master
+#         with:
+#           from: commits
 
-      # set the output with the issue number, only if the issue type is not equal to "OPS Task"
-      - id: issue-check
-        name: issue check
-        if: ${{ steps.get_jira_key.outputs.issue != null }}
-        env:
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-        run: |
-          issue_type=$(jira view ${{ steps.get_jira_key.outputs.issue }} --template viewTicketType)
-          if [[ $issue_type != "OPS Task" ]]; then 
-            echo "status=${{ steps.get_jira_key.outputs.issue }}" >> $GITHUB_OUTPUT
-          fi
+#       # set the output with the issue number, only if the issue type is not equal to "OPS Task"
+#       - id: issue-check
+#         name: issue check
+#         if: ${{ steps.get_jira_key.outputs.issue != null }}
+#         env:
+#           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+#         run: |
+#           issue_type=$(jira view ${{ steps.get_jira_key.outputs.issue }} --template viewTicketType)
+#           if [[ $issue_type != "OPS Task" ]]; then 
+#             echo "status=${{ steps.get_jira_key.outputs.issue }}" >> $GITHUB_OUTPUT
+#           fi
 
-  # run only if previous job issue-number has set his output to the issue number 
-  update-jira-issues:
-    runs-on: [self-hosted, linux, x64]
-    needs: issue-number
-    if: needs.issue-number.outputs.status != null
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.4
-        with:
-          persist-credentials: false
-          fetch-depth: 0 # Fetch all history for "git rev-list --count HEAD" info
+#   # run only if previous job issue-number has set his output to the issue number 
+#   update-jira-issues:
+#     runs-on: [self-hosted, linux, x64]
+#     needs: issue-number
+#     if: needs.issue-number.outputs.status != null
+#     steps:
+#       - name: Checkout 🛎️
+#         uses: actions/checkout@v2.3.4
+#         with:
+#           persist-credentials: false
+#           fetch-depth: 0 # Fetch all history for "git rev-list --count HEAD" info
 
-      - name: Setup gajira cli
-        uses: atlassian/gajira-cli@master
-        with:
-          version: 1.0.20
+#       - name: Setup gajira cli
+#         uses: atlassian/gajira-cli@master
+#         with:
+#           version: 1.0.20
 
-      - name: Login
-        uses: atlassian/gajira-login@master
-        env:
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+#       - name: Login
+#         uses: atlassian/gajira-login@master
+#         env:
+#           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+#           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+#           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
-      - name: Get jira previous commit number
-        id: get_previous_commit_number
-        env:
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-        # The jira view command uses .jira.d/templates/view template by default
-        run: |
-          echo "value=$(jira view ${{ needs.issue-number.outputs.status }})" >> $GITHUB_OUTPUT
+#       - name: Get jira previous commit number
+#         id: get_previous_commit_number
+#         env:
+#           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+#         # The jira view command uses .jira.d/templates/view template by default
+#         run: |
+#           echo "value=$(jira view ${{ needs.issue-number.outputs.status }})" >> $GITHUB_OUTPUT
 
-      - name: Mark issue as not deployable
-        env:
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-        if: ${{ steps.get_previous_commit_number.outputs.value != null && steps.get_previous_commit_number.outputs.value != '<no value>' }}
-        # If previous_commit_number is not null, it means this push-to-master is a fix.
-        # All commits with number between previous_commit_number and this commit number are therefore not safe to deploy.
-        # So mark them as "impropre: true".
+#       - name: Mark issue as not deployable
+#         env:
+#           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+#         if: ${{ steps.get_previous_commit_number.outputs.value != null && steps.get_previous_commit_number.outputs.value != '<no value>' }}
+#         # If previous_commit_number is not null, it means this push-to-master is a fix.
+#         # All commits with number between previous_commit_number and this commit number are therefore not safe to deploy.
+#         # So mark them as "impropre: true".
 
-        # The echo command is to clear jira config.yml file set in get jira issue step
-        # The jira edit command uses .jira.d/templates/edit template by default
-        run: |
-          echo "issue:" >> $HOME/.jira.d/config.yml
-          jira edit --query='"Numéro de commit[Number]" > ${{ steps.get_previous_commit_number.outputs.value }}' --override customfield_10044=true --noedit
+#         # The echo command is to clear jira config.yml file set in get jira issue step
+#         # The jira edit command uses .jira.d/templates/edit template by default
+#         run: |
+#           echo "issue:" >> $HOME/.jira.d/config.yml
+#           jira edit --query='"Numéro de commit[Number]" > ${{ steps.get_previous_commit_number.outputs.value }}' --override customfield_10044=true --noedit
 
-      - name: Push commit number and commit hash to jira issue
-        env:
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-        run: |
-          jira edit ${{ needs.issue-number.outputs.status }} \
-            --override customfield_10044=false \
-            --override customfield_10059=${{ needs.issue-number.outputs.commit-number }} \
-            --override customfield_10060=${{ needs.issue-number.outputs.commit-hash }} \
-            --noedit
+#       - name: Push commit number and commit hash to jira issue
+#         env:
+#           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+#         run: |
+#           jira edit ${{ needs.issue-number.outputs.status }} \
+#             --override customfield_10044=false \
+#             --override customfield_10059=${{ needs.issue-number.outputs.commit-number }} \
+#             --override customfield_10060=${{ needs.issue-number.outputs.commit-hash }} \
+#             --noedit

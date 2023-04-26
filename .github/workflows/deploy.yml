@@ -1,201 +1,201 @@
-name: Deploy
-on:
-  workflow_call:
-    inputs:
-      environment:
-        type: string
-        required: true
-      app_version:
-        type: string
-        required: true
-      teleport_version:
-        type: string
-        required: true
-      teleport_proxy:
-        type: string
-        required: true
-      teleport_kubernetes_cluster:
-        type: string
-        required: true
-      deploy_adage:
-        type: boolean
-        required: false
-        default: false
-      deploy_api:
-        type: boolean
-        required: false
-        default: false
-      deploy_pro:
-        type: boolean
-        required: false
-        default: false
+# name: Deploy
+# on:
+#   workflow_call:
+#     inputs:
+#       environment:
+#         type: string
+#         required: true
+#       app_version:
+#         type: string
+#         required: true
+#       teleport_version:
+#         type: string
+#         required: true
+#       teleport_proxy:
+#         type: string
+#         required: true
+#       teleport_kubernetes_cluster:
+#         type: string
+#         required: true
+#       deploy_adage:
+#         type: boolean
+#         required: false
+#         default: false
+#       deploy_api:
+#         type: boolean
+#         required: false
+#         default: false
+#       deploy_pro:
+#         type: boolean
+#         required: false
+#         default: false
 
-env:
-  REGION: europe-west1
+# env:
+#   REGION: europe-west1
 
-jobs:
-  generate-pcapi-helm-secrets-file:
-    name: "[pcapi] Generate helm secrets values file"
-    runs-on: [self-hosted, linux, x64]
-    if: ${{ inputs.deploy_api }}
-    environment: ${{ inputs.environment }}
-    permissions:
-      id-token: write
-      contents: read
-    outputs:
-      pcapi_helm_secrets_file_base64: ${{ steps.set-secrets-file-output.outputs.secrets_file_base64 }}
-    steps:
-      - name: Output variables
-        id: vars
-        run: echo "DOCKER_REPO=${REGION}-docker.pkg.dev/${{ secrets.INFRA_PROD_GCP_PROJECT }}/${{ secrets.PCAPI_ARTIFACT_REGISTRY_REPOSITORY }}" >> $GITHUB_ENV
-      - id: openid-auth
-        name: "OpenID Connect Authentication"
-        uses: 'google-github-actions/auth@v1'
-        with:
-          create_credentials_file: false
-          token_format: 'access_token'
-          workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - name: "Generate pcapi helm values file"
-        id: generate-secrets-file
-        uses: addnab/docker-run-action@v3
-        with:
-          options: --user 0 -v ${{ github.workspace }}:/workspace
-          registry: '${{ env.REGION }}-docker.pkg.dev'
-          username: 'oauth2accesstoken'
-          password: '${{ steps.openid-auth.outputs.access_token }}'
-          image: '${{ env.DOCKER_REPO }}/pcapi:${{ inputs.app_version }}'
-          run: |
-            su pcapi -c "flask print_secret_keys | base64 -w 0 > /tmp/helm_secrets_file_base64"
-            cp /tmp/helm_secrets_file_base64 /workspace/helm_secrets_file_base64
-      - name: "Set pcapi helm secrets values file as output"
-        id: set-secrets-file-output
-        run: echo "secrets_file_base64=$(cat ${{ github.workspace }}/helm_secrets_file_base64)" >> $GITHUB_OUTPUT
+# jobs:
+#   generate-pcapi-helm-secrets-file:
+#     name: "[pcapi] Generate helm secrets values file"
+#     runs-on: [self-hosted, linux, x64]
+#     if: ${{ inputs.deploy_api }}
+#     environment: ${{ inputs.environment }}
+#     permissions:
+#       id-token: write
+#       contents: read
+#     outputs:
+#       pcapi_helm_secrets_file_base64: ${{ steps.set-secrets-file-output.outputs.secrets_file_base64 }}
+#     steps:
+#       - name: Output variables
+#         id: vars
+#         run: echo "DOCKER_REPO=${REGION}-docker.pkg.dev/${{ secrets.INFRA_PROD_GCP_PROJECT }}/${{ secrets.PCAPI_ARTIFACT_REGISTRY_REPOSITORY }}" >> $GITHUB_ENV
+#       - id: openid-auth
+#         name: "OpenID Connect Authentication"
+#         uses: 'google-github-actions/auth@v1'
+#         with:
+#           create_credentials_file: false
+#           token_format: 'access_token'
+#           workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+#           service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+#       - name: "Generate pcapi helm values file"
+#         id: generate-secrets-file
+#         uses: addnab/docker-run-action@v3
+#         with:
+#           options: --user 0 -v ${{ github.workspace }}:/workspace
+#           registry: '${{ env.REGION }}-docker.pkg.dev'
+#           username: 'oauth2accesstoken'
+#           password: '${{ steps.openid-auth.outputs.access_token }}'
+#           image: '${{ env.DOCKER_REPO }}/pcapi:${{ inputs.app_version }}'
+#           run: |
+#             su pcapi -c "flask print_secret_keys | base64 -w 0 > /tmp/helm_secrets_file_base64"
+#             cp /tmp/helm_secrets_file_base64 /workspace/helm_secrets_file_base64
+#       - name: "Set pcapi helm secrets values file as output"
+#         id: set-secrets-file-output
+#         run: echo "secrets_file_base64=$(cat ${{ github.workspace }}/helm_secrets_file_base64)" >> $GITHUB_OUTPUT
 
-  deploy-api:
-    name: Deploy api
-    runs-on: [self-hosted, linux, x64]
-    environment: ${{ inputs.environment }}
-    permissions:
-      id-token: write
-      contents: read
-    needs: generate-pcapi-helm-secrets-file
-    if: ${{ inputs.deploy_api }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
-        with:
-          repository: pass-culture/pass-culture-deployment
-          token: ${{ secrets.PASSCULTURE_SA_ACCESS_TOKEN }}
-          path: ./pass-culture-deployment
-      - id: openid-auth-infra
-        name: "OpenID Connect Authentication"
-        uses: 'google-github-actions/auth@v1'
-        with:
-          create_credentials_file: false
-          token_format: 'access_token'
-          workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - name: Install Teleport
-        uses: teleport-actions/setup@v1
-        with:
-          version: ${{ inputs.teleport_version }}
-      - id: teleport-auth
-        name: "Teleport Authentication"
-        uses: teleport-actions/auth-k8s@v1
-        with:
-          proxy: ${{ inputs.teleport_proxy }}
-          token: github-token
-          certificate-ttl: 1h
-          kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
-      - name: Setup helmfile
-        uses: mamezou-tech/setup-helmfile@v1.0.0
-        with:
-          helmfile-version: "v0.147.0"
-      - name: Deploy pcapi
-        run: |
-          PASSCULTURE_USERNAME="oauth2accesstoken" \
-          PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
-          PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.${{ inputs.environment }}.yaml \
-          PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
-          helmfile -e ${{ inputs.environment }} sync --set image.tag=${{ inputs.app_version }}
+#   deploy-api:
+#     name: Deploy api
+#     runs-on: [self-hosted, linux, x64]
+#     environment: ${{ inputs.environment }}
+#     permissions:
+#       id-token: write
+#       contents: read
+#     needs: generate-pcapi-helm-secrets-file
+#     if: ${{ inputs.deploy_api }}
+#     steps:
+#       - uses: actions/checkout@v3
+#       - uses: actions/checkout@v3
+#         with:
+#           repository: pass-culture/pass-culture-deployment
+#           token: ${{ secrets.PASSCULTURE_SA_ACCESS_TOKEN }}
+#           path: ./pass-culture-deployment
+#       - id: openid-auth-infra
+#         name: "OpenID Connect Authentication"
+#         uses: 'google-github-actions/auth@v1'
+#         with:
+#           create_credentials_file: false
+#           token_format: 'access_token'
+#           workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+#           service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+#       - name: Install Teleport
+#         uses: teleport-actions/setup@v1
+#         with:
+#           version: ${{ inputs.teleport_version }}
+#       - id: teleport-auth
+#         name: "Teleport Authentication"
+#         uses: teleport-actions/auth-k8s@v1
+#         with:
+#           proxy: ${{ inputs.teleport_proxy }}
+#           token: github-token
+#           certificate-ttl: 1h
+#           kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
+#       - name: Setup helmfile
+#         uses: mamezou-tech/setup-helmfile@v1.0.0
+#         with:
+#           helmfile-version: "v0.147.0"
+#       - name: Deploy pcapi
+#         run: |
+#           PASSCULTURE_USERNAME="oauth2accesstoken" \
+#           PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
+#           PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.${{ inputs.environment }}.yaml \
+#           PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
+#           helmfile -e ${{ inputs.environment }} sync --set image.tag=${{ inputs.app_version }}
 
-  deploy-pro:
-    name: Deploy pro
-    needs: deploy-api
-    if: |
-      always() &&
-      (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
-      inputs.deploy_pro == true
-    uses: ./.github/workflows/deploy-gcs-front.yml
-    with:
-      app_name: pro
-      app_directory: pro
-      environment: ${{ inputs.environment }}
-    secrets:
-      gcp_project: ${{ secrets.METIER_GCP_PROJECT }}
-      service_account: ${{ secrets.METIER_CIRCLECI_SERVICE_ACCOUNT }}
-      workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+#   deploy-pro:
+#     name: Deploy pro
+#     needs: deploy-api
+#     if: |
+#       always() &&
+#       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
+#       inputs.deploy_pro == true
+#     uses: ./.github/workflows/deploy-gcs-front.yml
+#     with:
+#       app_name: pro
+#       app_directory: pro
+#       environment: ${{ inputs.environment }}
+#     secrets:
+#       gcp_project: ${{ secrets.METIER_GCP_PROJECT }}
+#       service_account: ${{ secrets.METIER_CIRCLECI_SERVICE_ACCOUNT }}
+#       workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
 
-  deploy-adage-front:
-    name: Deploy adage
-    needs: deploy-api
-    if: |
-      always() &&
-      (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
-      inputs.deploy_adage == true
-    uses: ./.github/workflows/deploy-gcs-front.yml
-    with:
-      app_name: adage
-      app_directory: adage-front
-      environment: ${{ inputs.environment }}
-    secrets:
-      gcp_project: ${{ secrets.METIER_GCP_PROJECT }}
-      service_account: ${{ secrets.METIER_CIRCLECI_SERVICE_ACCOUNT }}
-      workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+#   deploy-adage-front:
+#     name: Deploy adage
+#     needs: deploy-api
+#     if: |
+#       always() &&
+#       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
+#       inputs.deploy_adage == true
+#     uses: ./.github/workflows/deploy-gcs-front.yml
+#     with:
+#       app_name: adage
+#       app_directory: adage-front
+#       environment: ${{ inputs.environment }}
+#     secrets:
+#       gcp_project: ${{ secrets.METIER_GCP_PROJECT }}
+#       service_account: ${{ secrets.METIER_CIRCLECI_SERVICE_ACCOUNT }}
+#       workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
 
-  apply-algolia-config:
-    name: "apply Algolia settings"
-    needs: deploy-api
-    if: |
-      (inputs.environment == 'staging' || inputs.environment == 'production') &&
-      (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped')
-    environment: ${{ inputs.environment }}
-    permissions:
-      id-token: write
-      contents: read
-    runs-on: [self-hosted, linux, x64]
-    steps:
-      - name: Install Teleport
-        uses: teleport-actions/setup@v1
-        with:
-          version: ${{ inputs.teleport_version }}
-      - id: teleport-auth
-        name: "Teleport Authentication"
-        uses: teleport-actions/auth-k8s@v1
-        with:
-          proxy: ${{ inputs.teleport_proxy }}
-          token: github-token
-          certificate-ttl: 1h
-          kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
-      - id: set_algolia_settings
-        name: "Configure algolia"
-        run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          POD_NAME=$(./kubectl -n ${{ inputs.environment }} get po -l role=api -o jsonpath='{.items[0].metadata.name}')
-          ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings offers --dry-run=false
-          ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings collective_offers --dry-run=false
-          ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings venues --dry-run=false
+#   apply-algolia-config:
+#     name: "apply Algolia settings"
+#     needs: deploy-api
+#     if: |
+#       (inputs.environment == 'staging' || inputs.environment == 'production') &&
+#       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped')
+#     environment: ${{ inputs.environment }}
+#     permissions:
+#       id-token: write
+#       contents: read
+#     runs-on: [self-hosted, linux, x64]
+#     steps:
+#       - name: Install Teleport
+#         uses: teleport-actions/setup@v1
+#         with:
+#           version: ${{ inputs.teleport_version }}
+#       - id: teleport-auth
+#         name: "Teleport Authentication"
+#         uses: teleport-actions/auth-k8s@v1
+#         with:
+#           proxy: ${{ inputs.teleport_proxy }}
+#           token: github-token
+#           certificate-ttl: 1h
+#           kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
+#       - id: set_algolia_settings
+#         name: "Configure algolia"
+#         run: |
+#           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+#           chmod +x kubectl
+#           POD_NAME=$(./kubectl -n ${{ inputs.environment }} get po -l role=api -o jsonpath='{.items[0].metadata.name}')
+#           ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings offers --dry-run=false
+#           ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings collective_offers --dry-run=false
+#           ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings venues --dry-run=false
 
-  deploy-image-resizing:
-    name: "Deploy image-resizing"
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-    uses: ./.github/workflows/deploy-app-engine-image-resizing.yaml
-    with:
-      environment: ${{ inputs.environment == 'production' && 'production' || 'testing' }}
-      google_project: ${{ inputs.environment == 'production' && 'passculture-metier-prod' || 'passculture-metier-ehp' }}
-      base_ref: ${{ github.ref }}
-    secrets: inherit
+#   deploy-image-resizing:
+#     name: "Deploy image-resizing"
+#     permissions:
+#       contents: 'read'
+#       id-token: 'write'
+#     uses: ./.github/workflows/deploy-app-engine-image-resizing.yaml
+#     with:
+#       environment: ${{ inputs.environment == 'production' && 'production' || 'testing' }}
+#       google_project: ${{ inputs.environment == 'production' && 'passculture-metier-prod' || 'passculture-metier-ehp' }}
+#       base_ref: ${{ github.ref }}
+#     secrets: inherit

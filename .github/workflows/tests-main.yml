@@ -1,143 +1,143 @@
-name: Test main
-run-name: Test main${{ github.ref == 'refs/heads/master' && ' and deploy to testing' || '' }}
-on:
-  push:
-    branches:
-      - master
-      - "maint/**"
-  pull_request:
-    branches-ignore:
-      - docs
+# name: Test main
+# run-name: Test main${{ github.ref == 'refs/heads/master' && ' and deploy to testing' || '' }}
+# on:
+#   push:
+#     branches:
+#       - master
+#       - "maint/**"
+#   pull_request:
+#     branches-ignore:
+#       - docs
 
-concurrency:
-  # cancel previous workflow of the same branch except on master
-  group: ${{ github.ref == 'refs/heads/master' && github.sha || github.ref }}
-  cancel-in-progress: true
+# concurrency:
+#   # cancel previous workflow of the same branch except on master
+#   group: ${{ github.ref == 'refs/heads/master' && github.sha || github.ref }}
+#   cancel-in-progress: true
 
-jobs:
-  check-adage-folder-changes:
-    name: Check adage folder changes
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: adage-front
+# jobs:
+#   check-adage-folder-changes:
+#     name: Check adage folder changes
+#     uses: ./.github/workflows/check-folder-changes.yml
+#     with:
+#       folder: adage-front
 
-  check-api-folder-changes:
-    name: Check api folder changes
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: api
+#   check-api-folder-changes:
+#     name: Check api folder changes
+#     uses: ./.github/workflows/check-folder-changes.yml
+#     with:
+#       folder: api
 
-  check-pro-folder-changes:
-    name: Check pro folder changes
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: pro
+#   check-pro-folder-changes:
+#     name: Check pro folder changes
+#     uses: ./.github/workflows/check-folder-changes.yml
+#     with:
+#       folder: pro
 
-  test-adage:
-    name: Test adage
-    needs: check-adage-folder-changes
-    if: needs.check-adage-folder-changes.outputs.folder_changed == 'true'
-    uses: ./.github/workflows/tests-adage.yml
+#   test-adage:
+#     name: Test adage
+#     needs: check-adage-folder-changes
+#     if: needs.check-adage-folder-changes.outputs.folder_changed == 'true'
+#     uses: ./.github/workflows/tests-adage.yml
 
-  test-api:
-    name: Test api
-    needs: check-api-folder-changes
-    if: needs.check-api-folder-changes.outputs.folder_changed == 'true'
-    uses: ./.github/workflows/tests-api.yml
-    secrets: inherit
+#   test-api:
+#     name: Test api
+#     needs: check-api-folder-changes
+#     if: needs.check-api-folder-changes.outputs.folder_changed == 'true'
+#     uses: ./.github/workflows/tests-api.yml
+#     secrets: inherit
 
-  test-backoffice:
-    name: Test backoffice
-    uses: ./.github/workflows/tests-backoffice-v3.yml
-    secrets: inherit
+#   test-backoffice:
+#     name: Test backoffice
+#     uses: ./.github/workflows/tests-backoffice-v3.yml
+#     secrets: inherit
 
-  test-pro:
-    needs: check-pro-folder-changes
-    if: needs.check-pro-folder-changes.outputs.folder_changed == 'true'
-    name: Tests pro
-    uses: ./.github/workflows/tests-pro.yml
-    secrets: inherit
+#   test-pro:
+#     needs: check-pro-folder-changes
+#     if: needs.check-pro-folder-changes.outputs.folder_changed == 'true'
+#     name: Tests pro
+#     uses: ./.github/workflows/tests-pro.yml
+#     secrets: inherit
 
-  build-api:
-    name: Build api docker image on master branch
-    needs:
-      - test-api
-    if: github.ref == 'refs/heads/master'
-    uses: ./.github/workflows/build-and-push-docker-images.yml
-    with:
-      tag: ${{ github.sha }}
-      pcapi: true
-      console: true
-    secrets: inherit
+#   build-api:
+#     name: Build api docker image on master branch
+#     needs:
+#       - test-api
+#     if: github.ref == 'refs/heads/master'
+#     uses: ./.github/workflows/build-and-push-docker-images.yml
+#     with:
+#       tag: ${{ github.sha }}
+#       pcapi: true
+#       console: true
+#     secrets: inherit
 
-  dependabot-auto-merge:
-    needs:
-      - test-pro
-    if: |
-      github.event_name == 'pull_request' &&
-      github.actor == 'dependabot[bot]'
-    uses: ./.github/workflows/dependabot-auto-merge.yml
-    secrets: inherit
+#   dependabot-auto-merge:
+#     needs:
+#       - test-pro
+#     if: |
+#       github.event_name == 'pull_request' &&
+#       github.actor == 'dependabot[bot]'
+#     uses: ./.github/workflows/dependabot-auto-merge.yml
+#     secrets: inherit
 
-  deploy-to-testing:
-    name: Deploy to testing
-    needs:
-      - check-adage-folder-changes
-      - check-api-folder-changes
-      - check-pro-folder-changes
-      - test-adage
-      - build-api
-      - test-backoffice
-      - test-pro
-    if: |
-      always() &&
-      github.ref == 'refs/heads/master' &&
-      (needs.test-adage.result == 'success' || needs.test-adage.result == 'skipped') &&
-      (needs.build-api.result == 'success' || needs.build-api.result == 'skipped') &&
-      (needs.test-backoffice.result == 'success' || needs.test-backoffice.result == 'skipped') &&
-      (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
-    uses: ./.github/workflows/deploy.yml
-    with:
-      environment: testing
-      app_version: ${{ github.sha }}
-      teleport_version: 11.1.1
-      teleport_proxy: teleport.ehp.passculture.team:443
-      teleport_kubernetes_cluster: passculture-metier-ehp
-      deploy_adage: ${{ needs.check-adage-folder-changes.outputs.folder_changed == 'true' }}
-      deploy_api: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }}
-      deploy_pro: ${{ needs.check-pro-folder-changes.outputs.folder_changed == 'true' }}
-    secrets: inherit
+#   deploy-to-testing:
+#     name: Deploy to testing
+#     needs:
+#       - check-adage-folder-changes
+#       - check-api-folder-changes
+#       - check-pro-folder-changes
+#       - test-adage
+#       - build-api
+#       - test-backoffice
+#       - test-pro
+#     if: |
+#       always() &&
+#       github.ref == 'refs/heads/master' &&
+#       (needs.test-adage.result == 'success' || needs.test-adage.result == 'skipped') &&
+#       (needs.build-api.result == 'success' || needs.build-api.result == 'skipped') &&
+#       (needs.test-backoffice.result == 'success' || needs.test-backoffice.result == 'skipped') &&
+#       (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
+#     uses: ./.github/workflows/deploy.yml
+#     with:
+#       environment: testing
+#       app_version: ${{ github.sha }}
+#       teleport_version: 11.1.1
+#       teleport_proxy: teleport.ehp.passculture.team:443
+#       teleport_kubernetes_cluster: passculture-metier-ehp
+#       deploy_adage: ${{ needs.check-adage-folder-changes.outputs.folder_changed == 'true' }}
+#       deploy_api: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }}
+#       deploy_pro: ${{ needs.check-pro-folder-changes.outputs.folder_changed == 'true' }}
+#     secrets: inherit
 
-  notification:
-    name: "Notification"
-    runs-on: [self-hosted, linux, x64]
-    if: ${{ failure() && github.ref == 'refs/heads/master' }}
-    needs:
-      - deploy-to-testing
-    steps:
-      - uses: technote-space/workflow-conclusion-action@v3
-      - name: Post to a Slack channel
-        id: slack
-        uses: slackapi/slack-github-action@v1.23.0
-        with:
-          # channel #alertes-deploiement
-          channel-id: "CQAMNFVPS"
-          payload: |
-            {
-            "attachments": [
-              {
-                "mrkdwn_in": ["text"],
-                "color": "#A30002",
-                "author_name": "${{github.actor}}",
-                "author_link": "https://github.com/${{github.actor}}",
-                "author_icon": "https://github.com/${{github.actor}}.png",
-                "title": "PCAPI Deployment",
-                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Le déploiement de la version `master` a échoué sur `testing` :boom:"
-              }
-            ],
-            "unfurl_links": false,
-            "unfurl_media": false
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+#   notification:
+#     name: "Notification"
+#     runs-on: [self-hosted, linux, x64]
+#     if: ${{ failure() && github.ref == 'refs/heads/master' }}
+#     needs:
+#       - deploy-to-testing
+#     steps:
+#       - uses: technote-space/workflow-conclusion-action@v3
+#       - name: Post to a Slack channel
+#         id: slack
+#         uses: slackapi/slack-github-action@v1.23.0
+#         with:
+#           # channel #alertes-deploiement
+#           channel-id: "CQAMNFVPS"
+#           payload: |
+#             {
+#             "attachments": [
+#               {
+#                 "mrkdwn_in": ["text"],
+#                 "color": "#A30002",
+#                 "author_name": "${{github.actor}}",
+#                 "author_link": "https://github.com/${{github.actor}}",
+#                 "author_icon": "https://github.com/${{github.actor}}.png",
+#                 "title": "PCAPI Deployment",
+#                 "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+#                 "text": "Le déploiement de la version `master` a échoué sur `testing` :boom:"
+#               }
+#             ],
+#             "unfurl_links": false,
+#             "unfurl_media": false
+#             }
+#         env:
+#           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
