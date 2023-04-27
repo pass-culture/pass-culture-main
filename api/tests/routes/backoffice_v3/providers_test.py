@@ -1,4 +1,3 @@
-from flask import g
 from flask import url_for
 import pytest
 
@@ -10,7 +9,8 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 
 from .helpers import html_parser
-from .helpers import unauthorized as unauthorized_helpers
+from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
@@ -19,7 +19,7 @@ pytestmark = [
 ]
 
 
-class GetProvidersPageTest(unauthorized_helpers.UnauthorizedHelper):
+class GetProvidersPageTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.providers.get_providers"
     needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
 
@@ -29,7 +29,7 @@ class GetProvidersPageTest(unauthorized_helpers.UnauthorizedHelper):
             assert response.status_code == 200
 
 
-class ListProvidersTest(unauthorized_helpers.UnauthorizedHelper):
+class ListProvidersTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.providers.list_providers"
     endpoint_kwargs = {"name": "allocine"}
     needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
@@ -152,7 +152,7 @@ class ListProvidersTest(unauthorized_helpers.UnauthorizedHelper):
         pass  # TODO PC-21792
 
 
-class GetCreateProviderFormTest(unauthorized_helpers.UnauthorizedHelper):
+class GetCreateProviderFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.providers.get_create_provider_form"
     endpoint_kwargs = {"name": "allocine"}
     needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
@@ -182,23 +182,17 @@ class GetCreateProviderFormTest(unauthorized_helpers.UnauthorizedHelper):
             assert response.status_code == 200
 
 
-class CreateProviderTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+class CreateProviderTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.providers.create_provider"
     endpoint_kwargs = {"name": "allocine"}
     needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
-
-    def _post_request(self, authenticated_client, provider_name, form):
-        authenticated_client.get(url_for("backoffice_v3_web.providers.get_create_provider_form", name=provider_name))
-        form["csrf_token"] = g.get("csrf_token", "")
-        response = authenticated_client.post(url_for(self.endpoint, name=provider_name), form=form)
-        assert response.status_code == 303
-        return response
 
     def test_create_provider_allocine(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
         form = {"venue_id": venue.id, "theater_id": "ABCDEFGHIJKLMNOPQR==", "internal_id": "P12345"}
 
-        self._post_request(authenticated_client, "allocine", form)
+        response = self.post_to_endpoint(authenticated_client, name="allocine", form=form)
+        assert response.status_code == 303
 
         created = providers_models.AllocinePivot.query.one()
         assert created.venueId == venue.id
@@ -218,7 +212,7 @@ class CreateProviderTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
         pass  # TODO PC-21792
 
 
-class GetUpdateProviderFormTest(unauthorized_helpers.UnauthorizedHelper):
+class GetUpdateProviderFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.providers.get_update_provider_form"
     endpoint_kwargs = {"name": "allocine", "provider_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
@@ -254,21 +248,10 @@ class GetUpdateProviderFormTest(unauthorized_helpers.UnauthorizedHelper):
         pass  # TODO PC-21792
 
 
-class UpdateProviderTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
+class UpdateProviderTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.providers.update_provider"
     endpoint_kwargs = {"name": "allocine", "provider_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
-
-    def _post_request(self, authenticated_client, provider_name, provider_id, form):
-        authenticated_client.get(
-            url_for("backoffice_v3_web.providers.get_update_provider_form", name=provider_name, provider_id=provider_id)
-        )
-        form["csrf_token"] = g.get("csrf_token", "")
-        response = authenticated_client.post(
-            url_for(self.endpoint, name=provider_name, provider_id=provider_id), form=form
-        )
-        assert response.status_code == 303
-        return response
 
     def test_update_provider_allocine(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
@@ -276,7 +259,8 @@ class UpdateProviderTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
 
         form = {"venue_id": venue.id, "theater_id": "ABCDEFGHIJKLMNOPQR==", "internal_id": "P12345"}
 
-        self._post_request(authenticated_client, "allocine", provider_id, form)
+        response = self.post_to_endpoint(authenticated_client, name="allocine", provider_id=provider_id, form=form)
+        assert response.status_code == 303
 
         updated = providers_models.AllocinePivot.query.one()
         assert updated.venueId == venue.id
