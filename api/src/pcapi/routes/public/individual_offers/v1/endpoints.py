@@ -262,8 +262,10 @@ def post_product_offer_by_ean(
     """
     Create a product offer using its European Article Number (EAN-13).
     """
+    allowed_product_subcategories = [subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, subcategories.LIVRE_PAPIER.id]
     product = offers_models.Product.query.filter(
-        offers_models.Product.extraData["ean"].astext == body.ean
+        offers_models.Product.extraData["ean"].astext == body.ean,
+        offers_models.Product.subcategoryId.in_(allowed_product_subcategories),
     ).one_or_none()
     if not product:
         raise api_errors.ApiErrors({"ean": ["The product is not present in pass Culture's database"]}, status_code=404)
