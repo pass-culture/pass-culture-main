@@ -7,6 +7,11 @@ import pcapi.core.users.factories as users_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+class FailureTest:
+    def test_failure(self):
+        assert False, "Ceci est un échec"
+
+
 class AutocompleteOfferersTest:
     def test_autocomplete_on_name(self, client):
         admin = users_factories.AdminFactory()

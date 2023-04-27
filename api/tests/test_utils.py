@@ -6,6 +6,11 @@ import uuid
 from pcapi.core.offerers import factories as offerers_factories
 
 
+class FailureTest:
+    def test_failure(self):
+        assert False, "Ceci est un échec"
+
+
 def json_default(data):
     conversions = {
         enum.Enum: operator.attrgetter("value"),
