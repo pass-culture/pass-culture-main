@@ -18,7 +18,8 @@ from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice_v3.forms import offer as offer_forms
 
 from .helpers import html_parser
-from .helpers import unauthorized as unauthorized_helpers
+from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
@@ -65,8 +66,9 @@ def offers_fixture(criteria) -> tuple:
     return offer_with_unlimited_stock, offer_with_limited_stock, offer_with_two_criteria
 
 
-class ListOffersTest:
+class ListOffersTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.offer.list_offers"
+    needed_permission = perm_models.Permissions.READ_OFFERS
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
@@ -74,10 +76,6 @@ class ListOffersTest:
     # - fetch user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
     expected_num_queries = 3
-
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.offer.list_offers"
-        needed_permission = perm_models.Permissions.READ_OFFERS
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # when
@@ -365,12 +363,10 @@ class ListOffersTest:
         assert [row["Nom de l'offre"] for row in rows] == ["Offre 4", "Offre 3", "Offre 2", "Offre 1"]
 
 
-class EditOffersTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.offer.edit_offer"
-        endpoint_kwargs = {"offer_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+class EditOfferTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.offer.edit_offer"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
     @patch("pcapi.core.search.reindex_offer_ids")
     def test_update_offer_tags(self, mock_reindex_offer_ids, legit_user, authenticated_client, criteria):
@@ -384,7 +380,7 @@ class EditOffersTest:
         choosen_ranking_weight = 22
         base_form = {"criteria": [criteria[0].id, criteria[1].id], "rankingWeight": choosen_ranking_weight}
 
-        response = self._update_offer(authenticated_client, offer_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_edit.id, form=base_form)
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_v3_web.offer.list_offers", _external=True)
@@ -407,7 +403,7 @@ class EditOffersTest:
 
         # New Update without rankingWeight
         base_form = {"criteria": [criteria[2].id, criteria[1].id], "rankingWeight": ""}
-        response = self._update_offer(authenticated_client, offer_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_edit.id, form=base_form)
         assert response.status_code == 303
 
         offer_list_url = url_for("backoffice_v3_web.offer.list_offers", q=offer_to_edit.id, _external=True)
@@ -425,42 +421,29 @@ class EditOffersTest:
         # offer should be reindexed
         mock_reindex_offer_ids.assert_called_once_with([offer_to_edit.id])
 
-    def _update_offer(self, authenticated_client, offer, form):
-        edit_url = url_for("backoffice_v3_web.offer.list_offers")
-        authenticated_client.get(edit_url)
 
-        url = url_for("backoffice_v3_web.offer.edit_offer", offer_id=offer.id)
-        form["csrf_token"] = g.get("csrf_token", "")
-
-        return authenticated_client.post(url, form=form)
-
-
-class EditOfferFormTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.offer.get_edit_offer_form"
-        endpoint_kwargs = {"offer_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+class GetEditOfferFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.offer.get_edit_offer_form"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
     def test_get_edit_form_test(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory()
 
-        form_url = url_for("backoffice_v3_web.offer.get_edit_offer_form", offer_id=offer.id, _external=True)
+        form_url = url_for(self.endpoint, offer_id=offer.id)
 
         with assert_num_queries(3):  # session + user + tested_query
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
 
-class BatchEditOfferFormTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.offer.get_batch_edit_offer_form"
-        endpoint_kwargs = {"offer_ids": "1,2"}
-        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+class GetBatchEditOfferFormTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.offer.get_batch_edit_offer_form"
+    endpoint_kwargs = {"offer_ids": "1,2"}
+    needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
     def test_get_empty_edit_form_test(self, legit_user, authenticated_client):
-        form_url = url_for("backoffice_v3_web.offer.get_batch_edit_offer_form", _external=True)
+        form_url = url_for(self.endpoint, _external=True)
 
         with assert_num_queries(2):  # session + user
             response = authenticated_client.get(form_url)
@@ -511,7 +494,7 @@ class BatchEditOfferFormTest:
         edit_url = url_for("backoffice_v3_web.offer.list_offers")
         authenticated_client.get(edit_url)
 
-        url = url_for("backoffice_v3_web.offer.get_batch_edit_offer_form")
+        url = url_for(self.endpoint)
         form["csrf_token"] = g.get("csrf_token", "")
 
         return authenticated_client.post(url, form=form)
@@ -529,12 +512,10 @@ class BatchEditOfferFormTest:
         return authenticated_client.post(url, form=form)
 
 
-class BatchEditOfferTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.offer.batch_edit_offer"
-        endpoint_kwargs = {"offer_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_OFFERS
+class BatchEditOfferTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.offer.batch_edit_offer"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_batch_edit_offer(self, mock_async_index, legit_user, authenticated_client, criteria):
@@ -547,7 +528,7 @@ class BatchEditOfferTest:
             "object_ids": parameter_ids,
         }
 
-        response = self._update_offers(authenticated_client, base_form)
+        response = self.post_to_endpoint(authenticated_client, form=base_form)
         assert response.status_code == 303
 
         for offer in offers:
@@ -558,28 +539,16 @@ class BatchEditOfferTest:
 
         mock_async_index.assert_called_once_with([offer.id for offer in offers])
 
-    def _update_offers(self, authenticated_client, form):
-        edit_url = url_for("backoffice_v3_web.offer.list_offers")
-        authenticated_client.get(edit_url)
 
-        url = url_for("backoffice_v3_web.offer.batch_edit_offer")
-        form["csrf_token"] = g.get("csrf_token", "")
-
-        return authenticated_client.post(url, form=form)
-
-
-class ValidateOfferTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.offer.validate_offer"
-        endpoint_kwargs = {"offer_id": 1}
-        needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+class ValidateOfferTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.offer.validate_offer"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
 
     def test_validate_offer(self, legit_user, authenticated_client):
         offer_to_validate = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.REJECTED)
-        base_form = {}
 
-        response = self._validate_offer(authenticated_client, offer_to_validate, base_form)
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_validate.id)
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_v3_web.offer.list_offers", _external=True)
@@ -597,45 +566,31 @@ class ValidateOfferTest:
         assert offer_to_validate.isActive is True
         assert offer_to_validate.lastValidationType == OfferValidationType.MANUAL
 
-    def _validate_offer(self, authenticated_client, offer, form):
-        edit_url = url_for("backoffice_v3_web.offer.list_offers")
-        authenticated_client.get(edit_url)
 
-        url = url_for("backoffice_v3_web.offer.validate_offer", offer_id=offer.id)
-        form["csrf_token"] = g.get("csrf_token", "")
-
-        return authenticated_client.post(url, form=form)
-
-
-class ValidateOfferFormTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.offer.get_validate_offer_form"
-        endpoint_kwargs = {"offer_id": 1}
-        needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+class GetValidateOfferFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.offer.get_validate_offer_form"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
 
     def test_get_validate_form_test(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory()
 
-        form_url = url_for("backoffice_v3_web.offer.get_validate_offer_form", offer_id=offer.id, _external=True)
+        form_url = url_for(self.endpoint, offer_id=offer.id)
 
         with assert_num_queries(3):  # session + user + tested_query
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
 
-class RejectOfferTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.offer.reject_offer"
-        endpoint_kwargs = {"offer_id": 1}
-        needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+class RejectOfferTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.offer.reject_offer"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
 
     def test_reject_offer(self, legit_user, authenticated_client):
         offer_to_reject = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.APPROVED)
-        base_form = {}
 
-        response = self._reject_offer(authenticated_client, offer_to_reject, base_form)
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_reject.id)
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_v3_web.offer.list_offers", _external=True)
@@ -653,27 +608,16 @@ class RejectOfferTest:
         assert offer_to_reject.isActive is False
         assert offer_to_reject.lastValidationType == OfferValidationType.MANUAL
 
-    def _reject_offer(self, authenticated_client, offer, form):
-        edit_url = url_for("backoffice_v3_web.offer.list_offers")
-        authenticated_client.get(edit_url)
 
-        url = url_for("backoffice_v3_web.offer.reject_offer", offer_id=offer.id)
-        form["csrf_token"] = g.get("csrf_token", "")
-
-        return authenticated_client.post(url, form=form)
-
-
-class RejectOfferFormTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.offer.get_reject_offer_form"
-        endpoint_kwargs = {"offer_id": 1}
-        needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+class GetRejectOfferFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.offer.get_reject_offer_form"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
 
     def test_get_edit_form_test(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory()
 
-        form_url = url_for("backoffice_v3_web.offer.get_reject_offer_form", offer_id=offer.id, _external=True)
+        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
 
         with assert_num_queries(3):  # session + user + tested_query
             response = authenticated_client.get(form_url)

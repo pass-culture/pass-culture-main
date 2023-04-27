@@ -1,7 +1,6 @@
 import datetime
 from operator import attrgetter
 
-from flask import g
 from flask import url_for
 import pytest
 
@@ -29,7 +28,8 @@ from pcapi.routes.backoffice_v3 import offerers
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
-from .helpers import unauthorized as unauthorized_helpers
+from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
@@ -68,7 +68,7 @@ def booking_fixture(offer) -> bookings_models.Booking:
     )
 
 
-class GetOffererTest(unauthorized_helpers.UnauthorizedHelper):
+class GetOffererTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.offerer.get"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
@@ -141,24 +141,7 @@ class GetOffererTest(unauthorized_helpers.UnauthorizedHelper):
         assert "Référencement Adage : 0/1" in html_parser.content_as_text(response.data)
 
 
-class PostOffererEndpoint:
-    endpoint = NotImplemented
-
-    def post_to_endpoint(self, authenticated_client, offerer, form=None):
-        # generate csrf token
-        offerer_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id)
-        authenticated_client.get(offerer_url)
-
-        url = url_for(self.endpoint, offerer_id=offerer.id)
-
-        if form is None:
-            form = {}
-        form["csrf_token"] = g.get("csrf_token", "")
-        return authenticated_client.post(url, form=form)
-
-
-class SuspendOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOffererEndpoint):
-    method = "post"
+class SuspendOffererTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offerer.suspend_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.FRAUD_ACTIONS
@@ -166,7 +149,9 @@ class SuspendOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOf
     def test_suspend_offerer(self, legit_user, authenticated_client):
         offerer = offerers_factories.OffererFactory()
 
-        response = self.post_to_endpoint(authenticated_client, offerer, form={"comment": "Test suspension"})
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, form={"comment": "Test suspension"}
+        )
 
         assert response.status_code == 303
         assert response.location == url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id, _external=True)
@@ -186,7 +171,7 @@ class SuspendOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOf
         offers_factories.OfferFactory(venue__managingOfferer=offerer)
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer)
 
-        response = self.post_to_endpoint(authenticated_client, offerer)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
         assert response.status_code == 303
         assert response.location == url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id, _external=True)
@@ -202,8 +187,7 @@ class SuspendOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOf
         assert history_models.ActionHistory.query.count() == 0
 
 
-class UnsuspendOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOffererEndpoint):
-    method = "post"
+class UnsuspendOffererTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offerer.unsuspend_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.FRAUD_ACTIONS
@@ -211,7 +195,9 @@ class UnsuspendOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, Post
     def test_unsuspend_offerer(self, legit_user, authenticated_client):
         offerer = offerers_factories.OffererFactory(isActive=False)
 
-        response = self.post_to_endpoint(authenticated_client, offerer, form={"comment": "Test réactivation"})
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, form={"comment": "Test réactivation"}
+        )
 
         assert response.status_code == 303
         assert response.location == url_for("backoffice_v3_web.offerer.get", offerer_id=offerer.id, _external=True)
@@ -227,8 +213,7 @@ class UnsuspendOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, Post
         assert action.comment == "Test réactivation"
 
 
-class DeleteOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOffererEndpoint):
-    method = "post"
+class DeleteOffererTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offerer.delete_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.DELETE_PRO_ENTITY
@@ -238,7 +223,7 @@ class DeleteOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOff
         offerer_to_delete_name = offerer_to_delete.name
         offerer_to_delete_id = offerer_to_delete.id
 
-        response = self.post_to_endpoint(authenticated_client, offerer_to_delete)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer_to_delete.id)
         assert response.status_code == 303
         assert offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_to_delete.id).count() == 0
 
@@ -256,7 +241,7 @@ class DeleteOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOff
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer_to_delete)
         offerer_to_delete_id = offerer_to_delete.id
 
-        response = self.post_to_endpoint(authenticated_client, offerer_to_delete)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer_to_delete.id)
         assert response.status_code == 303
         assert offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_to_delete_id).count() == 1
 
@@ -269,8 +254,7 @@ class DeleteOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOff
         )
 
 
-class UpdateOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOffererEndpoint):
-    method = "post"
+class UpdateOffererTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offerer.update_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -296,7 +280,7 @@ class UpdateOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOff
             "tags": [tag.id for tag in offerer_to_edit.tags],
         }
 
-        response = self.post_to_endpoint(authenticated_client, offerer_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer_to_edit.id, form=base_form)
         assert response.status_code == 303
 
         # Test redirection
@@ -352,7 +336,7 @@ class UpdateOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOff
             "tags": [tag2.id, tag3.id],
         }
 
-        response = self.post_to_endpoint(authenticated_client, offerer_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer_to_edit.id, form=base_form)
         assert response.status_code == 303
 
         # Test history
@@ -383,7 +367,7 @@ class UpdateOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOff
             "tags": [],
         }
 
-        response = self.post_to_endpoint(authenticated_client, offerer, base_form)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=base_form)
         assert response.status_code == 400
         assert "Les données envoyées comportent des erreurs" in html_parser.extract_alert(response.data)
 
@@ -391,7 +375,7 @@ class UpdateOffererTest(unauthorized_helpers.UnauthorizedHelperWithCsrf, PostOff
         assert len(offerer.action_history) == 0
 
 
-class GetOffererStatsTest(unauthorized_helpers.UnauthorizedHelper):
+class GetOffererStatsTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.offerer.get_stats"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
@@ -561,7 +545,7 @@ class GetOffererStatsDataTest:
         assert total_revenue == 0.0
 
 
-class GetOffererHistoryTest(unauthorized_helpers.UnauthorizedHelper):
+class GetOffererHistoryTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.offerer.get_history"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
@@ -753,7 +737,7 @@ class GetOffererHistoryTest(unauthorized_helpers.UnauthorizedHelper):
         assert rows[3]["Auteur"] == user_offerer.user.full_name
 
 
-class GetOffererUsersTest(unauthorized_helpers.UnauthorizedHelper):
+class GetOffererUsersTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.offerer.get_pro_users"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
@@ -838,7 +822,7 @@ class GetOffererUsersTest(unauthorized_helpers.UnauthorizedHelper):
         assert [option["value"] for option in options] == ["", str(user3.id), str(user2.id)]
 
 
-class GetOffererVenuesTest(unauthorized_helpers.UnauthorizedHelper):
+class GetOffererVenuesTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.offerer.get_managed_venues"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
@@ -896,16 +880,14 @@ class GetOffererVenuesTest(unauthorized_helpers.UnauthorizedHelper):
         assert not rows[0].get("Activité principale")
 
 
-class CommentOffererTest(
-    unauthorized_helpers.UnauthorizedHelperWithCsrf, unauthorized_helpers.MissingCSRFHelper, PostOffererEndpoint
-):
+class CommentOffererTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offerer.comment_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_add_comment(self, authenticated_client, legit_user, offerer):
         comment = "Code APE non éligible"
-        response = self.post_to_endpoint(authenticated_client, offerer, {"comment": comment})
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form={"comment": comment})
 
         assert response.status_code == 303
 
@@ -924,19 +906,17 @@ class CommentOffererTest(
         assert action.comment == comment
 
     def test_add_invalid_comment(self, authenticated_client, offerer):
-        response = self.post_to_endpoint(authenticated_client, offerer, {"comment": ""})
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form={"comment": ""})
 
         assert response.status_code == 303
         redirected_response = authenticated_client.get(response.headers["location"])
         assert "Les données envoyées comportent des erreurs" in redirected_response.data.decode("utf8")
 
 
-class ListOfferersToValidateUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+class ListOfferersToValidateTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.validation.list_offerers_to_validate"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class ListOfferersToValidateTest:
     class ListOfferersToBeValidatedTest:
         @pytest.mark.parametrize(
             "row_key,sort,order",
@@ -1462,21 +1442,17 @@ class ListOfferersToValidateTest:
             assert html_parser.count_table_rows(response.data) == 0
 
 
-class ValidateOffererUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class ValidateOffererTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.validation.validate_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class ValidateOffererTest:
     def test_validate_offerer(self, legit_user, authenticated_client):
         # given
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.validation.validate_offerer", offerer_id=user_offerer.offerer.id)
-        response = send_request(authenticated_client, user_offerer.offererId, url)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=user_offerer.offererId)
 
         # then
         assert response.status_code == 303
@@ -1499,8 +1475,7 @@ class ValidateOffererTest:
         offerer = offerers_factories.RejectedOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.validation.validate_offerer", offerer_id=offerer.id)
-        response = send_request(authenticated_client, offerer.id, url)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
         # then
         assert response.status_code == 303
@@ -1511,8 +1486,7 @@ class ValidateOffererTest:
 
     def test_validate_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
         # when
-        url = url_for("backoffice_v3_web.validation.validate_offerer", offerer_id=1)
-        response = send_request(authenticated_client, 1, url)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=1)
 
         # then
         assert response.status_code == 404
@@ -1522,8 +1496,7 @@ class ValidateOffererTest:
         user_offerer = offerers_factories.UserOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.validation.validate_offerer", offerer_id=user_offerer.offerer.id)
-        response = send_request(authenticated_client, user_offerer.offererId, url)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=user_offerer.offererId)
 
         # then
         assert response.status_code == 303
@@ -1532,20 +1505,17 @@ class ValidateOffererTest:
         assert "est déjà validée" in redirected_response.data.decode("utf8")
 
 
-class GetRejectOffererFormUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class GetRejectOffererFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.validation.get_reject_offerer_form"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class GetRejectOffererFormTest:
     def test_get_reject_offerer_form(self, legit_user, authenticated_client):
         # given
         offerer = offerers_factories.NotValidatedOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.validation.get_reject_offerer_form", offerer_id=offerer.id)
+        url = url_for(self.endpoint, offerer_id=offerer.id)
         response = authenticated_client.get(url)
 
         # then
@@ -1553,14 +1523,11 @@ class GetRejectOffererFormTest:
         assert response.status_code == 200
 
 
-class RejectOffererUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class RejectOffererTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.validation.reject_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class RejectOffererTest:
     def test_reject_offerer(self, legit_user, authenticated_client):
         # given
         user = users_factories.UserFactory()
@@ -1568,8 +1535,7 @@ class RejectOffererTest:
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # deleted when rejected
 
         # when
-        url = url_for("backoffice_v3_web.validation.reject_offerer", offerer_id=offerer.id)
-        response = send_request(authenticated_client, offerer.id, url)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
         # then
         assert response.status_code == 303
@@ -1591,8 +1557,7 @@ class RejectOffererTest:
 
     def test_reject_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
         # when
-        url = url_for("backoffice_v3_web.validation.reject_offerer", offerer_id=1)
-        response = send_request(authenticated_client, 1, url)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=1)
 
         # then
         assert response.status_code == 404
@@ -1602,8 +1567,7 @@ class RejectOffererTest:
         offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.REJECTED)
 
         # when
-        url = url_for("backoffice_v3_web.validation.reject_offerer", offerer_id=offerer.id)
-        response = send_request(authenticated_client, offerer.id, url)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
         # then
         assert response.status_code == 303
@@ -1612,20 +1576,17 @@ class RejectOffererTest:
         assert "est déjà rejetée" in redirected_response.data.decode("utf8")
 
 
-class GetOffererPendingFormUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class GetOffererPendingFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.validation.get_offerer_pending_form"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class GetOffererPendingFormTest:
     def test_get_offerer_pending_form(self, legit_user, authenticated_client):
         # given
         offerer = offerers_factories.NotValidatedOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.validation.get_offerer_pending_form", offerer_id=offerer.id)
+        url = url_for(self.endpoint, offerer_id=offerer.id)
         response = authenticated_client.get(url)
 
         # then
@@ -1633,14 +1594,11 @@ class GetOffererPendingFormTest:
         assert response.status_code == 200
 
 
-class SetOffererPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class SetOffererPendingTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.validation.set_offerer_pending"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class SetOffererPendingTest:
     def test_set_offerer_pending(self, legit_user, authenticated_client, offerer_tags):
         # given
         non_homologation_tag = offerers_factories.OffererTagFactory(name="Tag conservé")
@@ -1649,12 +1607,10 @@ class SetOffererPendingTest:
         )
 
         # when
-        url = url_for("backoffice_v3_web.validation.set_offerer_pending", offerer_id=offerer.id)
-        response = send_request(
+        response = self.post_to_endpoint(
             authenticated_client,
-            offerer.id,
-            url,
-            {"comment": "En attente de documents", "tags": [offerer_tags[0].id, offerer_tags[2].id]},
+            offerer_id=offerer.id,
+            form={"comment": "En attente de documents", "tags": [offerer_tags[0].id, offerer_tags[2].id]},
         )
 
         # then
@@ -1682,27 +1638,22 @@ class SetOffererPendingTest:
 
     def test_set_offerer_pending_returns_404_if_offerer_is_not_found(self, authenticated_client):
         # when
-        url = url_for("backoffice_v3_web.validation.set_offerer_pending", offerer_id=1)
-        response = send_request(authenticated_client, 1, url, {"comment": "Questionnaire"})
+        response = self.post_to_endpoint(authenticated_client, offerer_id=1, form={"comment": "Questionnaire"})
         # then
         assert response.status_code == 404
 
 
-class ToggleTopActorUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class ToggleTopActorTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.validation.toggle_top_actor"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class ToggleTopActorTest:
     def test_toggle_is_top_actor(self, authenticated_client, top_acteur_tag):
         # given
         offerer = offerers_factories.UserNotValidatedOffererFactory().offerer
 
         # when
-        url = url_for("backoffice_v3_web.validation.toggle_top_actor", offerer_id=offerer.id)
-        response = send_request(authenticated_client, offerer.id, url, {"is_top_actor": "on"})
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form={"is_top_actor": "on"})
 
         # then
         assert response.status_code == 303
@@ -1712,8 +1663,7 @@ class ToggleTopActorTest:
         assert offerer_mappings[0].offererId == offerer.id
 
         # when
-        url = url_for("backoffice_v3_web.validation.toggle_top_actor", offerer_id=offerer.id)
-        response = send_request(authenticated_client, offerer.id, url)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
         # then
         assert response.status_code == 303
@@ -1725,8 +1675,7 @@ class ToggleTopActorTest:
 
         # when
         for _ in range(2):
-            url = url_for("backoffice_v3_web.validation.toggle_top_actor", offerer_id=offerer.id)
-            response = send_request(authenticated_client, offerer.id, url, {"is_top_actor": "on"})
+            response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form={"is_top_actor": "on"})
 
             # then
             assert response.status_code == 303
@@ -1741,18 +1690,15 @@ class ToggleTopActorTest:
         # given
 
         # when
-        url = url_for("backoffice_v3_web.validation.toggle_top_actor", offerer_id=1)
-        response = send_request(authenticated_client, 1, url, {"is_top_actor": "on"})
+        response = self.post_to_endpoint(authenticated_client, offerer_id=1, form={"is_top_actor": "on"})
         # then
         assert response.status_code == 404
 
 
-class ListUserOffererToValidateUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+class ListUserOffererToValidateTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.validation.list_offerers_attachments_to_validate"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class ListUserOffererToValidateTest:
     @pytest.mark.parametrize(
         "row_key,sort,order",
         [
@@ -1777,9 +1723,7 @@ class ListUserOffererToValidateTest:
 
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", order=order, sort=sort)
-            )
+            response = authenticated_client.get(url_for(self.endpoint, order=order, sort=sort))
 
         # then
         assert response.status_code == 200
@@ -1841,9 +1785,7 @@ class ListUserOffererToValidateTest:
 
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate")
-            )
+            response = authenticated_client.get(url_for(self.endpoint))
 
         # then
         assert response.status_code == 200
@@ -1873,9 +1815,7 @@ class ListUserOffererToValidateTest:
 
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate")
-            )
+            response = authenticated_client.get(url_for(self.endpoint))
 
         # then
         assert response.status_code == 200
@@ -1915,9 +1855,7 @@ class ListUserOffererToValidateTest:
             offerers_factories.NotValidatedUserOffererFactory()
 
         # when
-        response = authenticated_client.get(
-            url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", **pagination_config)
-        )
+        response = authenticated_client.get(url_for(self.endpoint, **pagination_config))
 
         # then
         assert response.status_code == 200
@@ -1953,9 +1891,7 @@ class ListUserOffererToValidateTest:
     ):
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", status=status_filter)
-            )
+            response = authenticated_client.get(url_for(self.endpoint, status=status_filter))
 
         # then
         assert response.status_code == expected_status
@@ -1997,7 +1933,7 @@ class ListUserOffererToValidateTest:
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
                 url_for(
-                    "backoffice_v3_web.validation.list_offerers_attachments_to_validate",
+                    self.endpoint,
                     offerer_status=offerer_status_filter,
                 )
             )
@@ -2022,9 +1958,7 @@ class ListUserOffererToValidateTest:
     ):
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", regions=region_filter)
-            )
+            response = authenticated_client.get(url_for(self.endpoint, regions=region_filter))
 
         # then
         assert response.status_code == 200
@@ -2053,9 +1987,7 @@ class ListUserOffererToValidateTest:
 
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", tags=tags_ids)
-            )
+            response = authenticated_client.get(url_for(self.endpoint, tags=tags_ids))
 
         # then
         assert response.status_code == 200
@@ -2081,7 +2013,7 @@ class ListUserOffererToValidateTest:
         with assert_no_duplicated_queries():
             response = authenticated_client.get(
                 url_for(
-                    "backoffice_v3_web.validation.list_offerers_attachments_to_validate",
+                    self.endpoint,
                     from_date="2022-11-25",
                     to_date="2022-11-25",
                 )
@@ -2095,9 +2027,7 @@ class ListUserOffererToValidateTest:
     def test_list_search_by_postal_code(self, authenticated_client, user_offerer_to_be_validated):
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", q="97100")
-            )
+            response = authenticated_client.get(url_for(self.endpoint, q="97100"))
 
         # then
         assert response.status_code == 200
@@ -2107,9 +2037,7 @@ class ListUserOffererToValidateTest:
     def test_list_search_by_department_code(self, authenticated_client, user_offerer_to_be_validated):
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", q="972")
-            )
+            response = authenticated_client.get(url_for(self.endpoint, q="972"))
 
         # then
         assert response.status_code == 200
@@ -2119,9 +2047,7 @@ class ListUserOffererToValidateTest:
     def test_list_search_by_city(self, authenticated_client, user_offerer_to_be_validated):
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", q="Fort-De-France")
-            )
+            response = authenticated_client.get(url_for(self.endpoint, q="Fort-De-France"))
 
         # then
         assert response.status_code == 200
@@ -2131,9 +2057,7 @@ class ListUserOffererToValidateTest:
     def test_list_search_by_email(self, authenticated_client, user_offerer_to_be_validated):
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate", q="b@example.com")
-            )
+            response = authenticated_client.get(url_for(self.endpoint, q="b@example.com"))
 
         # then
         assert response.status_code == 200
@@ -2141,21 +2065,17 @@ class ListUserOffererToValidateTest:
         assert {row["Email Compte pro"] for row in rows} == {"b@example.com"}
 
 
-class ValidateOffererAttachmentUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class ValidateOffererAttachmentTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.validation.validate_user_offerer"
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class ValidateOffererAttachmentTest:
     def test_validate_offerer_attachment(self, legit_user, authenticated_client):
         # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.validation.validate_user_offerer", user_offerer_id=user_offerer.id)
-        response = send_request(authenticated_client, user_offerer.offererId, url)
+        response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
 
         # then
         assert response.status_code == 303
@@ -2181,8 +2101,7 @@ class ValidateOffererAttachmentTest:
 
     def test_validate_offerer_attachment_returns_404_if_offerer_is_not_found(self, authenticated_client, offerer):
         # when
-        url = url_for("backoffice_v3_web.validation.validate_user_offerer", user_offerer_id=42)
-        response = send_request(authenticated_client, offerer.id, url)
+        response = self.post_to_endpoint(authenticated_client, user_offerer_id=42)
 
         # then
         assert response.status_code == 404
@@ -2192,8 +2111,7 @@ class ValidateOffererAttachmentTest:
         user_offerer = offerers_factories.UserOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.validation.validate_user_offerer", user_offerer_id=user_offerer.id)
-        response = send_request(authenticated_client, user_offerer.offererId, url)
+        response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
 
         # then
         assert response.status_code == 303
@@ -2202,20 +2120,17 @@ class ValidateOffererAttachmentTest:
         assert "est déjà validé" in redirected_response.data.decode("utf8")
 
 
-class GetRejectOffererAttachmentFormUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class GetRejectOffererAttachmentFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.validation.get_reject_user_offerer_form"
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class GetRejectOffererAttachmentFormTest:
     def test_get_reject_offerer_attachment_form(self, legit_user, authenticated_client):
         # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer.id)
+        url = url_for(self.endpoint, user_offerer_id=user_offerer.id)
         response = authenticated_client.get(url)
 
         # then
@@ -2223,21 +2138,17 @@ class GetRejectOffererAttachmentFormTest:
         assert response.status_code == 200
 
 
-class RejectOffererAttachmentUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class RejectOffererAttachmentTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.validation.reject_user_offerer"
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class RejectOffererAttachmentTest:
     def test_reject_offerer_attachment(self, legit_user, authenticated_client):
         # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.validation.reject_user_offerer", user_offerer_id=user_offerer.id)
-        response = send_request(authenticated_client, user_offerer.offererId, url)
+        response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
 
         # then
         assert response.status_code == 303
@@ -2262,27 +2173,23 @@ class RejectOffererAttachmentTest:
 
     def test_reject_offerer_returns_404_if_offerer_attachment_is_not_found(self, authenticated_client, offerer):
         # when
-        url = url_for("backoffice_v3_web.validation.reject_user_offerer", user_offerer_id=42)
-        response = send_request(authenticated_client, offerer.id, url)
+        response = self.post_to_endpoint(authenticated_client, user_offerer_id=42)
 
         # then
         assert response.status_code == 404
 
 
-class GetOffererAttachmentPendingFormUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class GetOffererAttachmentPendingFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.validation.get_user_offerer_pending_form"
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class GetOffererAttachmentPendingFormTest:
     def test_get_offerer_attachment_pending_form(self, legit_user, authenticated_client):
         # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer.id)
+        url = url_for(self.endpoint, user_offerer_id=user_offerer.id)
         response = authenticated_client.get(url)
 
         # then
@@ -2290,22 +2197,18 @@ class GetOffererAttachmentPendingFormTest:
         assert response.status_code == 200
 
 
-class SetOffererAttachmentPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class SetOffererAttachmentPendingTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.validation.set_user_offerer_pending"
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class SetOffererAttachmentPendingTest:
     def test_set_offerer_attachment_pending(self, legit_user, authenticated_client):
         # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # when
-        url = url_for("backoffice_v3_web.validation.set_user_offerer_pending", user_offerer_id=user_offerer.id)
-        response = send_request(
-            authenticated_client, user_offerer.offererId, url, {"comment": "En attente de documents"}
+        response = self.post_to_endpoint(
+            authenticated_client, user_offerer_id=user_offerer.id, form={"comment": "En attente de documents"}
         )
 
         # then
@@ -2324,15 +2227,10 @@ class SetOffererAttachmentPendingTest:
         assert action.comment == "En attente de documents"
 
 
-class AddUserOffererAndValidateUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class AddUserOffererAndValidateTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offerer.add_user_offerer_and_validate"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
-
-
-class AddUserOffererAndValidateTest:
-    endpoint = "backoffice_v3_web.offerer.add_user_offerer_and_validate"
 
     def test_add_user_offerer_and_validate(self, legit_user, authenticated_client):
         # given
@@ -2346,11 +2244,10 @@ class AddUserOffererAndValidateTest:
         )
 
         # when
-        response = send_request(
+        response = self.post_to_endpoint(
             authenticated_client,
-            offerer.id,
-            url_for(self.endpoint, offerer_id=offerer.id),
-            {"pro_user_id": user.id, "comment": "Le rattachement avait été rejeté par erreur"},
+            offerer_id=offerer.id,
+            form={"pro_user_id": user.id, "comment": "Le rattachement avait été rejeté par erreur"},
         )
 
         # then
@@ -2385,11 +2282,10 @@ class AddUserOffererAndValidateTest:
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
         # when
-        response = send_request(
+        response = self.post_to_endpoint(
             authenticated_client,
-            user_offerer.offererId,
-            url_for(self.endpoint, offerer_id=user_offerer.offererId),
-            {"pro_user_id": user_offerer.userId, "comment": "test"},
+            offerer_id=user_offerer.offererId,
+            form={"pro_user_id": user_offerer.userId, "comment": "test"},
         )
 
         # then
@@ -2410,11 +2306,8 @@ class AddUserOffererAndValidateTest:
         user = users_factories.UserFactory()
 
         # when
-        response = send_request(
-            authenticated_client,
-            offerer.id,
-            url_for(self.endpoint, offerer_id=offerer.id),
-            {"pro_user_id": user.id, "comment": "test"},
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, form={"pro_user_id": user.id, "comment": "test"}
         )
 
         # then
@@ -2436,11 +2329,8 @@ class AddUserOffererAndValidateTest:
         )
 
         # when
-        response = send_request(
-            authenticated_client,
-            offerer.id,
-            url_for(self.endpoint, offerer_id=offerer.id),
-            {"pro_user_id": 0, "comment": "test"},
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, form={"pro_user_id": 0, "comment": "test"}
         )
 
         # then
@@ -2449,22 +2339,16 @@ class AddUserOffererAndValidateTest:
         assert html_parser.extract_alert(redirected_response.data) == "Les données envoyées comportent des erreurs"
 
 
-class SetBatchOffererAttachmentPendingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class SetBatchOffererAttachmentPendingTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.validation.batch_set_user_offerer_pending"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class SetBatchOffererAttachmentPendingTest:
     def test_batch_set_offerer_attachment_pending(self, legit_user, authenticated_client):
         user_offerers = offerers_factories.NotValidatedUserOffererFactory.create_batch(10)
         parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
-        url = url_for("backoffice_v3_web.validation.batch_set_user_offerer_pending")
-        response = send_request(
+        response = self.post_to_endpoint(
             authenticated_client,
-            user_offerers[0].offerer.id,
-            url,
-            {"object_ids": parameter_ids, "comment": "test comment"},
+            form={"object_ids": parameter_ids, "comment": "test comment"},
         )
 
         assert response.status_code == 303
@@ -2485,22 +2369,15 @@ class SetBatchOffererAttachmentPendingTest:
             assert action.comment == "test comment"
 
 
-class BatchOffererAttachmentValidateUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class BatchOffererAttachmentValidateTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.validation.batch_validate_user_offerer"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class BatchOffererAttachmentValidateTest:
     def test_batch_set_offerer_attachment_validate(self, legit_user, authenticated_client):
         user_offerers = offerers_factories.NotValidatedUserOffererFactory.create_batch(10)
         parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
-        url = url_for("backoffice_v3_web.validation.batch_validate_user_offerer")
-        response = send_request(
-            authenticated_client,
-            user_offerers[0].offerer.id,
-            url,
-            {"object_ids": parameter_ids, "comment": "test comment"},
+        response = self.post_to_endpoint(
+            authenticated_client, form={"object_ids": parameter_ids, "comment": "test comment"}
         )
 
         assert response.status_code == 303
@@ -2533,22 +2410,15 @@ class BatchOffererAttachmentValidateTest:
             )
 
 
-class BatchOffererAttachmentRejectUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-    method = "post"
+class BatchOffererAttachmentRejectTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.validation.batch_reject_user_offerer"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-
-class BatchOffererAttachmentRejectTest:
     def test_batch_set_offerer_attachment_reject(self, legit_user, authenticated_client):
         user_offerers = offerers_factories.NotValidatedUserOffererFactory.create_batch(10)
         parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
-        url = url_for("backoffice_v3_web.validation.batch_reject_user_offerer")
-        response = send_request(
-            authenticated_client,
-            user_offerers[0].offerer.id,
-            url,
-            {"object_ids": parameter_ids, "comment": "test comment"},
+        response = self.post_to_endpoint(
+            authenticated_client, form={"object_ids": parameter_ids, "comment": "test comment"}
         )
 
         assert response.status_code == 303
@@ -2580,21 +2450,9 @@ class BatchOffererAttachmentRejectTest:
             )
 
 
-def send_request(authenticated_client, offerer_id, url, form_data=None):
-    # generate and fetch (inside g) csrf token
-    offerer_detail_url = url_for("backoffice_v3_web.offerer.get", offerer_id=offerer_id)
-    authenticated_client.get(offerer_detail_url)
-
-    form_data = form_data if form_data else {}
-    form = {"csrf_token": g.get("csrf_token", ""), **form_data}
-
-    return authenticated_client.post(url, form=form)
-
-
-class ListOffererTagsTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.offerer_tag.list_offerer_tags"
-        needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
+class ListOffererTagsTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.offerer_tag.list_offerer_tags"
+    needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
 
     def test_list_offerer_tags(self, authenticated_client):
         # given
@@ -2608,7 +2466,7 @@ class ListOffererTagsTest:
 
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(url_for("backoffice_v3_web.offerer_tag.list_offerer_tags"))
+            response = authenticated_client.get(url_for(self.endpoint))
 
         # then
         assert response.status_code == 200
@@ -2620,12 +2478,10 @@ class ListOffererTagsTest:
         assert rows[0]["Catégories"] == category.label
 
 
-class UpdateOffererTagTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.offerer_tag.update_offerer_tag"
-        endpoint_kwargs = {"offerer_tag_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
+class UpdateOffererTagTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.offerer_tag.update_offerer_tag"
+    endpoint_kwargs = {"offerer_tag_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
 
     def test_update_offerer_tag(self, authenticated_client):
         offerer_tag_not_to_edit = offerers_factories.OffererTagFactory(name="zzzzzzzz-end-of-the-list")
@@ -2650,7 +2506,7 @@ class UpdateOffererTagTest:
             "description": new_description,
             "categories": new_categories,
         }
-        response = self.update_offerer_tag(authenticated_client, offerer_tag_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, offerer_tag_id=offerer_tag_to_edit.id, form=base_form)
         assert response.status_code == 303
 
         # Test redirection
@@ -2677,7 +2533,7 @@ class UpdateOffererTagTest:
             "name": "",
             "label": "Le tagalog c'est du philippin",
         }
-        response = self.update_offerer_tag(authenticated_client, offerer_tag_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, offerer_tag_id=offerer_tag_to_edit.id, form=base_form)
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", _external=True)
@@ -2702,7 +2558,7 @@ class UpdateOffererTagTest:
             "categories": [],
         }
 
-        response = self.update_offerer_tag(authenticated_client, offerer_tag_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, offerer_tag_id=offerer_tag_to_edit.id, form=base_form)
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", _external=True)
@@ -2711,22 +2567,10 @@ class UpdateOffererTagTest:
         assert html_parser.extract_alert(response.data) == "Ce nom de tag existe déjà"
         assert offerer_tag_to_edit.name == "a-silly-name"
 
-    def update_offerer_tag(self, authenticated_client, offerer_tag_to_edit, form):
-        # generate csrf token
-        edit_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags")
-        authenticated_client.get(edit_url)
 
-        url = url_for("backoffice_v3_web.offerer_tag.update_offerer_tag", offerer_tag_id=offerer_tag_to_edit.id)
-
-        form["csrf_token"] = g.get("csrf_token", "")
-        return authenticated_client.post(url, form=form)
-
-
-class CreateOffererTagTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.offerer_tag.create_offerer_tag"
-        needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
+class CreateOffererTagTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.offerer_tag.create_offerer_tag"
+    needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
 
     def test_create_offerer(self, authenticated_client):
         category = offerers_factories.OffererTagCategoryFactory(label="La catégorie des sucreries")
@@ -2742,7 +2586,7 @@ class CreateOffererTagTest:
             "description": description,
             "categories": categories,
         }
-        response = self.create_offerer_tag(authenticated_client, base_form)
+        response = self.post_to_endpoint(authenticated_client, form=base_form)
         assert response.status_code == 303
 
         # Test redirection
@@ -2763,7 +2607,7 @@ class CreateOffererTagTest:
             "name": "",
             "label": "Mon nom est Personne",
         }
-        response = self.create_offerer_tag(authenticated_client, base_form)
+        response = self.post_to_endpoint(authenticated_client, form=base_form)
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", _external=True)
@@ -2779,7 +2623,7 @@ class CreateOffererTagTest:
         base_form = {
             "name": "i-was-here-first",
         }
-        response = self.create_offerer_tag(authenticated_client, base_form)
+        response = self.post_to_endpoint(authenticated_client, form=base_form)
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", _external=True)
@@ -2788,29 +2632,17 @@ class CreateOffererTagTest:
         assert html_parser.extract_alert(response.data) == "Ce tag existe déjà"
         assert html_parser.count_table_rows(response.data) == 1
 
-    def create_offerer_tag(self, authenticated_client, form):
-        # generate csrf token
-        edit_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags")
-        authenticated_client.get(edit_url)
 
-        url = url_for("backoffice_v3_web.offerer_tag.create_offerer_tag")
-
-        form["csrf_token"] = g.get("csrf_token", "")
-        return authenticated_client.post(url, form=form)
-
-
-class DeleteOffererTagTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.offerer_tag.delete_offerer_tag"
-        endpoint_kwargs = {"offerer_tag_id": 1}
-        needed_permission = perm_models.Permissions.DELETE_OFFERER_TAG
+class DeleteOffererTagTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.offerer_tag.delete_offerer_tag"
+    endpoint_kwargs = {"offerer_tag_id": 1}
+    needed_permission = perm_models.Permissions.DELETE_OFFERER_TAG
 
     def test_delete_offerer_tag(self, authenticated_client):
         tags = offerers_factories.OffererTagFactory.create_batch(3)
         offerers_factories.OffererFactory(tags=tags[1:])
 
-        response = self.delete_offerer_tag(authenticated_client, tags[1].id)
+        response = self.post_to_endpoint(authenticated_client, offerer_tag_id=tags[1].id)
 
         assert response.status_code == 303
         assert set(offerers_models.OffererTag.query.all()) == {tags[0], tags[2]}
@@ -2819,16 +2651,7 @@ class DeleteOffererTagTest:
     def test_delete_non_existing_tag(self, authenticated_client):
         tag = offerers_factories.OffererTagFactory()
 
-        response = self.delete_offerer_tag(authenticated_client, tag.id + 1)
+        response = self.post_to_endpoint(authenticated_client, offerer_tag_id=tag.id + 1)
 
         assert response.status_code == 404
         assert offerers_models.OffererTag.query.count() == 1
-
-    def delete_offerer_tag(self, authenticated_client, offerer_tag_id):
-        # generate csrf token
-        authenticated_client.get(url_for("backoffice_v3_web.offerer_tag.list_offerer_tags"))
-
-        form = {"csrf_token": g.get("csrf_token", "")}
-        return authenticated_client.post(
-            url_for("backoffice_v3_web.offerer_tag.delete_offerer_tag", offerer_tag_id=offerer_tag_id), form=form
-        )

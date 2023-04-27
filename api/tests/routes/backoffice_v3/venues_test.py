@@ -3,7 +3,6 @@ from datetime import timedelta
 from decimal import Decimal
 from unittest import mock
 
-from flask import g
 from flask import url_for
 import pytest
 
@@ -25,7 +24,8 @@ from pcapi.routes.backoffice_v3 import venues
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
-from .helpers import unauthorized as unauthorized_helpers
+from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
@@ -44,17 +44,16 @@ def venue_fixture(offerer) -> offerers_models.Venue:
     return venue
 
 
-class GetVenueTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.venue.get"
-        endpoint_kwargs = {"venue_id": 1}
-        needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+class GetVenueTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.venue.get"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_get_venue(self, authenticated_client, venue):
         venue.publicName = "Le grand Rantanplan 1"
 
-        url = url_for("backoffice_v3_web.venue.get", venue_id=venue.id)
+        url = url_for(self.endpoint, venue_id=venue.id)
 
         # if venue is not removed from the current session, any get
         # query won't be executed because of this specific testing
@@ -94,7 +93,7 @@ class GetVenueTest:
 
     @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
     def test_get_venue_ff_off(self, authenticated_client, venue):
-        url = url_for("backoffice_v3_web.venue.get", venue_id=venue.id)
+        url = url_for(self.endpoint, venue_id=venue.id)
 
         response = authenticated_client.get(url)
 
@@ -106,7 +105,7 @@ class GetVenueTest:
         venue = offerers_factories.VenueFactory(adageId="7122022", contact=None)
 
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(url_for("backoffice_v3_web.venue.get", venue_id=venue.id))
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
@@ -115,7 +114,7 @@ class GetVenueTest:
 
     def test_get_venue_with_no_contact(self, authenticated_client, venue_with_no_contact):
         # when
-        response = authenticated_client.get(url_for("backoffice_v3_web.venue.get", venue_id=venue_with_no_contact.id))
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_with_no_contact.id))
 
         # then
         assert response.status_code == 200
@@ -128,7 +127,7 @@ class GetVenueTest:
     ):
         # when
         response = authenticated_client.get(
-            url_for("backoffice_v3_web.venue.get", venue_id=venue_with_accepted_self_reimbursement_point.id)
+            url_for(self.endpoint, venue_id=venue_with_accepted_self_reimbursement_point.id)
         )
 
         # then
@@ -139,9 +138,7 @@ class GetVenueTest:
         self, authenticated_client, venue_with_accepted_reimbursement_point
     ):
         # when
-        response = authenticated_client.get(
-            url_for("backoffice_v3_web.venue.get", venue_id=venue_with_accepted_reimbursement_point.id)
-        )
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_with_accepted_reimbursement_point.id))
 
         # then
         assert response.status_code == 200
@@ -151,9 +148,7 @@ class GetVenueTest:
         self, authenticated_client, venue_with_expired_reimbursement_point
     ):
         # when
-        response = authenticated_client.get(
-            url_for("backoffice_v3_web.venue.get", venue_id=venue_with_expired_reimbursement_point.id)
-        )
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_with_expired_reimbursement_point.id))
 
         # then
         assert response.status_code == 200
@@ -169,9 +164,7 @@ class GetVenueTest:
                 }
             }
             # when
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.venue.get", venue_id=venue_with_draft_bank_info.id)
-            )
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_with_draft_bank_info.id))
 
         # then
         assert response.status_code == 200
@@ -191,9 +184,7 @@ class GetVenueTest:
                 }
             }
             # when
-            response = authenticated_client.get(
-                url_for("backoffice_v3_web.venue.get", venue_id=venue_with_draft_bank_info.id)
-            )
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_with_draft_bank_info.id))
 
         # then
         assert response.status_code == 200
@@ -205,9 +196,7 @@ class GetVenueTest:
 
     def test_get_venue_none_dms_stats_when_no_application_id(self, authenticated_client, venue_with_accepted_bank_info):
         # when
-        response = authenticated_client.get(
-            url_for("backoffice_v3_web.venue.get", venue_id=venue_with_accepted_bank_info.id)
-        )
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_with_accepted_bank_info.id))
 
         # then
         assert response.status_code == 200
@@ -217,7 +206,7 @@ class GetVenueTest:
         educational_factories.CollectiveDmsApplicationFactory(venue=random_venue, state="en_construction")
 
         # when
-        response = authenticated_client.get(url_for("backoffice_v3_web.venue.get", venue_id=random_venue.id))
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=random_venue.id))
 
         # then
         assert response.status_code == 200
@@ -263,21 +252,20 @@ class GetVenueStatsDataTest:
         assert not stats.lastSync.provider
 
 
-class GetVenueStatsTest:
+class GetVenueStatsTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.venue.get_stats"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get total revenue (1 query)
     # get venue stats (1 query)
     expected_num_queries = 4
 
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.venue.get_stats"
-        endpoint_kwargs = {"venue_id": 1}
-        needed_permission = perm_models.Permissions.READ_PRO_ENTITY
-
     def test_get_stats(self, authenticated_client, venue):
         booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
-        url = url_for("backoffice_v3_web.venue.get_stats", venue_id=venue.id)
+        url = url_for(self.endpoint, venue_id=venue.id)
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
@@ -292,7 +280,7 @@ class GetVenueStatsTest:
         # when
         venue_id = venue_with_accepted_bank_info.id
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_v3_web.venue.get_stats", venue_id=venue_id))
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
 
         # then
         assert response.status_code == 200
@@ -307,7 +295,7 @@ class GetVenueStatsTest:
         # when
         venue_id = venue_with_accepted_bank_info.id
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_v3_web.venue.get_stats", venue_id=venue_id))
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
 
         # then
         assert response.status_code == 200
@@ -319,7 +307,7 @@ class GetVenueStatsTest:
         # when
         venue_id = venue_with_accepted_bank_info.id
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_v3_web.venue.get_stats", venue_id=venue_id))
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
 
         # then
         assert response.status_code == 200
@@ -329,7 +317,7 @@ class GetVenueStatsTest:
         # when
         venue_id = venue_with_accepted_bank_info.id
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_v3_web.venue.get_stats", venue_id=venue_id))
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
 
         # then
         assert response.status_code == 200
@@ -347,7 +335,7 @@ class GetVenueStatsTest:
         # when
         venue_id = venue_with_accepted_bank_info.id
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_v3_web.venue.get_stats", venue_id=venue_id))
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
 
         # then
         assert response.status_code == 200
@@ -358,7 +346,7 @@ class GetVenueStatsTest:
         # when
         venue_id = venue_with_accepted_bank_info.id
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for("backoffice_v3_web.venue.get_stats", venue_id=venue_id))
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
 
         # then
         assert response.status_code == 200
@@ -401,19 +389,17 @@ class HasReimbursementPointTest:
         assert not venues.has_reimbursement_point(venue)
 
 
-class DeleteVenueTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.venue.delete_venue"
-        endpoint_kwargs = {"venue_id": 1}
-        needed_permission = perm_models.Permissions.DELETE_PRO_ENTITY
+class DeleteVenueTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.venue.delete_venue"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.DELETE_PRO_ENTITY
 
     def test_delete_venue(self, legit_user, authenticated_client):
         venue_to_delete = offerers_factories.VenueFactory()
         venue_to_delete_name = venue_to_delete.name
         venue_to_delete_id = venue_to_delete.id
 
-        response = self.delete_venue(authenticated_client, venue_to_delete)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue_to_delete.id)
         assert response.status_code == 303
         assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 0
 
@@ -430,7 +416,7 @@ class DeleteVenueTest:
         venue_to_delete = booking.venue
         venue_to_delete_id = venue_to_delete.id
 
-        response = self.delete_venue(authenticated_client, venue_to_delete)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue_to_delete.id)
         assert response.status_code == 303
         assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
 
@@ -447,7 +433,7 @@ class DeleteVenueTest:
         offerers_factories.VenueFactory(pricing_point=venue_to_delete, managingOfferer=venue_to_delete.managingOfferer)
         venue_to_delete_id = venue_to_delete.id
 
-        response = self.delete_venue(authenticated_client, venue_to_delete)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue_to_delete.id)
         assert response.status_code == 303
         assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
 
@@ -466,7 +452,7 @@ class DeleteVenueTest:
         )
         venue_to_delete_id = venue_to_delete.id
 
-        response = self.delete_venue(authenticated_client, venue_to_delete)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue_to_delete.id)
         assert response.status_code == 303
         assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
 
@@ -478,22 +464,11 @@ class DeleteVenueTest:
             == "Impossible d'effacer un lieu utilisé comme point de remboursement d'un autre lieu"
         )
 
-    def delete_venue(self, authenticated_client, venue_to_delete):
-        # generate csrf token
-        venue_url = url_for("backoffice_v3_web.venue.get", venue_id=venue_to_delete.id)
-        authenticated_client.get(venue_url)
 
-        url = url_for("backoffice_v3_web.venue.delete_venue", venue_id=venue_to_delete.id)
-
-        form = {"csrf_token": g.get("csrf_token", "")}
-        return authenticated_client.post(url, form=form)
-
-
-class UpdateVenueTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        endpoint = "backoffice_v3_web.venue.update_venue"
-        endpoint_kwargs = {"venue_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+class UpdateVenueTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.venue.update_venue"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def _get_current_data(self, venue: offerers_models.Venue) -> dict:
         return {
@@ -521,7 +496,6 @@ class UpdateVenueTest:
             contact__social_medias=social_medias,
         )
 
-        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = {
             "name": "IKEA",
             "public_name": "Kanelbulle café",
@@ -536,7 +510,7 @@ class UpdateVenueTest:
             "longitude": "2.34767",
         }
 
-        response = send_request(authenticated_client, venue.id, url, data)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
         assert response.location == url_for("backoffice_v3_web.venue.get", venue_id=venue.id, _external=True)
@@ -579,11 +553,10 @@ class UpdateVenueTest:
             contact__social_medias=social_medias,
         )
 
-        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = self._get_current_data(venue)
         data["phone_number"] = "+33102030456"
 
-        response = send_request(authenticated_client, venue.id, url, data)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
         assert response.location == url_for("backoffice_v3_web.venue.get", venue_id=venue.id, _external=True)
@@ -606,11 +579,10 @@ class UpdateVenueTest:
     def test_update_venue_empty_phone_number(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
 
-        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = self._get_current_data(venue)
         data["phone_number"] = ""
 
-        response = send_request(authenticated_client, venue.id, url, data)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
         db.session.refresh(venue)
@@ -619,10 +591,9 @@ class UpdateVenueTest:
     def test_update_venue_with_same_data(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
 
-        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = self._get_current_data(venue)
 
-        response = send_request(authenticated_client, venue.id, url, data)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
         assert response.status_code == 303
         assert response.location == url_for("backoffice_v3_web.venue.get", venue_id=venue.id, _external=True)
 
@@ -633,13 +604,12 @@ class UpdateVenueTest:
     def test_update_virtual_venue(self, authenticated_client, offerer):
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
-        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = {
             "booking_email": venue.bookingEmail + ".update",
             "phone_number": "+33102030456",
         }
 
-        response = send_request(authenticated_client, venue.id, url, data)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
         assert response.location == url_for("backoffice_v3_web.venue.get", venue_id=venue.id, _external=True)
@@ -650,11 +620,9 @@ class UpdateVenueTest:
         assert venue.contact.phone_number == data["phone_number"]
 
     def test_update_with_missing_data(self, authenticated_client, venue):
-        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = {"email": venue.contact.email + ".update"}
 
-        response = authenticated_client.post(url, json=data)
-        response = send_request(authenticated_client, venue.id, url, data)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 400
         assert "Les données envoyées comportent des erreurs" in response.data.decode("utf-8")
@@ -667,11 +635,10 @@ class UpdateVenueTest:
         criteria_factories.VenueCriterionFactory(venueId=venue.id, criterionId=tag1.id)
         criteria_factories.VenueCriterionFactory(venueId=venue.id, criterionId=tag2.id)
 
-        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = self._get_current_data(venue)
         data["tags"] = [tag2.id, tag3.id]
 
-        response = send_request(authenticated_client, venue.id, url, data)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
         assert response.status_code == 303
         assert response.location == url_for("backoffice_v3_web.venue.get", venue_id=venue.id, _external=True)
 
@@ -689,11 +656,10 @@ class UpdateVenueTest:
         offerers_factories.VenueFactory(siret="", comment="other venue without siret")
         venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
 
-        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = self._get_current_data(venue)
         data["phone_number"] = "+33203040506"
 
-        response = send_request(authenticated_client, venue.id, url, data)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
         db.session.refresh(venue)
@@ -703,11 +669,10 @@ class UpdateVenueTest:
     def test_update_venue_create_siret(self, authenticated_client, offerer):
         venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
 
-        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = self._get_current_data(venue)
         data["siret"] = f"{venue.managingOfferer.siren}12345"
 
-        response = send_request(authenticated_client, venue.id, url, data)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 400
         db.session.refresh(venue)
@@ -720,11 +685,10 @@ class UpdateVenueTest:
     def test_update_venue_remove_siret(self, authenticated_client, offerer, siret):
         venue = offerers_factories.VenueFactory()
 
-        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = self._get_current_data(venue)
         data["siret"] = siret
 
-        response = send_request(authenticated_client, venue.id, url, data)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 400
         db.session.refresh(venue)
@@ -737,31 +701,18 @@ class UpdateVenueTest:
     def test_update_venue_invalid_siret(self, authenticated_client, offerer, siret):
         venue = offerers_factories.VenueFactory(siret="12345678900001", managingOfferer__siren="123456789")
 
-        url = url_for("backoffice_v3_web.venue.update_venue", venue_id=venue.id)
         data = self._get_current_data(venue)
         data["siret"] = " "
 
-        response = send_request(authenticated_client, venue.id, url, data)
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 400
 
 
-def send_request(authenticated_client, venue_id, url, form_data=None):
-    # generate and fetch (inside g) csrf token
-    venue_detail_url = url_for("backoffice_v3_web.venue.get", venue_id=venue_id)
-    authenticated_client.get(venue_detail_url)
-
-    form_data = form_data if form_data else {}
-    form = {"csrf_token": g.get("csrf_token", ""), **form_data}
-
-    return authenticated_client.post(url, form=form)
-
-
-class GetVenueDetailsTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.venue.get_details"
-        endpoint_kwargs = {"venue_id": 1}
-        needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+class GetVenueDetailsTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.venue.get_details"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     class CommentButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -778,7 +729,7 @@ class GetVenueDetailsTest:
         comment = "test comment"
         history_factories.ActionHistoryFactory(authorUser=legit_user, venue=venue, comment=comment)
 
-        url = url_for("backoffice_v3_web.venue.get_details", venue_id=venue.id)
+        url = url_for(self.endpoint, venue_id=venue.id)
 
         # if venue is not removed from the current session, any get
         # query won't be executed because of this specific testing
@@ -798,7 +749,7 @@ class GetVenueDetailsTest:
     def test_venue_without_history(self, authenticated_client, legit_user):
         venue = offerers_factories.VenueFactory()
 
-        url = url_for("backoffice_v3_web.venue.get_details", venue_id=venue.id)
+        url = url_for(self.endpoint, venue_id=venue.id)
 
         # if venue is not removed from the current session, any get
         # query won't be executed because of this specific testing

@@ -12,7 +12,7 @@ from pcapi.models.validation_status_mixin import ValidationStatus
 
 from .helpers import html_parser
 from .helpers import search as search_helpers
-from .helpers import unauthorized as unauthorized_helpers
+from .helpers.get import GetEndpointHelper
 
 
 pytestmark = [
@@ -21,7 +21,7 @@ pytestmark = [
 ]
 
 
-class SearchProUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+class SearchProUnauthorizedTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.search_pro"
     needed_permission = perm_models.Permissions.SEARCH_PRO_ACCOUNT
 

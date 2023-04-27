@@ -1,7 +1,6 @@
 import logging
 from unittest.mock import patch
 
-from flask import g
 from flask import url_for
 import pytest
 
@@ -9,6 +8,8 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+
+from .helpers.post import PostEndpointWithoutPermissionHelper
 
 
 pytestmark = [
@@ -106,23 +107,15 @@ class AuthorizePageTest:
         assert "Failed authentication attempt" in caplog.messages
 
 
-class LogoutTest:
-    def test_logout_success(self, client):
-        user = users_factories.UserFactory()
+class LogoutTest(PostEndpointWithoutPermissionHelper):
+    endpoint = "backoffice_v3_web.logout"
+    needed_permission = None
 
-        # fetch home page to get the logout csrf token
-        response = client.get(url_for("backoffice_v3_web.home"))
-        assert response.status_code == 200
-
-        url = url_for("backoffice_v3_web.logout")
-        response = client.with_bo_session_auth(user).post(url, form={"csrf_token": g.get("csrf_token", "")})
+    def test_logout_success(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client)
 
         assert response.status_code == 302
         assert response.location == url_for("backoffice_v3_web.home", _external=True)
-
-    def test_no_csrf_token(self, client):
-        response = client.post(url_for("backoffice_v3_web.logout"))
-        assert response.status_code == 400
 
 
 class UserNotFoundPageTest:

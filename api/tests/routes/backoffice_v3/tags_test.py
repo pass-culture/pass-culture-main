@@ -2,7 +2,6 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 
-from flask import g
 from flask import url_for
 import pytest
 
@@ -13,7 +12,8 @@ import pcapi.core.permissions.models as perm_models
 from pcapi.models import db
 
 from .helpers import html_parser
-from .helpers import unauthorized as unauthorized_helpers
+from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
@@ -22,15 +22,14 @@ pytestmark = [
 ]
 
 
-class CreateTagTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        endpoint = "backoffice_v3_web.tags.create_tag"
-        needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
+class CreateTagTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.tags.create_tag"
+    needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
 
     def test_create_tag(self, authenticated_client):
         form = {"name": "my-tag", "description": "description"}
 
-        response = send_request(authenticated_client, form, "create_tag")
+        response = self.post_to_endpoint(authenticated_client, form=form)
 
         assert response.status_code == 303
         assert response.location == url_for("backoffice_v3_web.tags.list_tags", _external=True)
@@ -43,18 +42,17 @@ class CreateTagTest:
         assert not tag.endDateTime
 
 
-class DeleteTagTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        endpoint = "backoffice_v3_web.tags.delete_tag"
-        endpoint_kwargs = {"tag_id": 1}
-        needed_permission = perm_models.Permissions.DELETE_OFFERER_TAG
+class DeleteTagTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.tags.delete_tag"
+    endpoint_kwargs = {"tag_id": 1}
+    needed_permission = perm_models.Permissions.DELETE_OFFERER_TAG
 
     def test_delete_tag(self, authenticated_client):
         offer = offers_factories.OfferFactory()
         tag = criteria_factories.CriterionFactory()
         offer.criteria = [tag]
 
-        response = send_request(authenticated_client, {}, "delete_tag", tag_id=tag.id)
+        response = self.post_to_endpoint(authenticated_client, tag_id=tag.id)
 
         assert response.status_code == 303
         assert response.location == url_for("backoffice_v3_web.tags.list_tags", _external=True)
@@ -62,11 +60,10 @@ class DeleteTagTest:
         assert criteria_models.Criterion.query.count() == 0
 
 
-class UpdateTagTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        endpoint = "backoffice_v3_web.tags.update_tag"
-        endpoint_kwargs = {"tag_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
+class UpdateTagTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.tags.update_tag"
+    endpoint_kwargs = {"tag_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
 
     def test_update_tag(self, authenticated_client):
         tag = criteria_factories.CriterionFactory(description="desc", startDateTime=None, endDateTime=None)
@@ -83,7 +80,7 @@ class UpdateTagTest:
             "end_date": new_end_date,
         }
 
-        response = send_request(authenticated_client, form, "update_tag", tag_id=tag.id)
+        response = self.post_to_endpoint(authenticated_client, tag_id=tag.id, form=form)
 
         assert response.status_code == 303
         assert response.location == url_for("backoffice_v3_web.tags.list_tags", _external=True)
@@ -96,7 +93,11 @@ class UpdateTagTest:
         assert tag.endDateTime.date() == new_end_date
 
 
-class ListTagsTest:
+class ListTagsTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.tags.list_tags"
+    endpoint_kwargs = {"tag_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
+
     def test_list_tags(self, authenticated_client):
         offer = offers_factories.OfferFactory()
 
@@ -106,7 +107,7 @@ class ListTagsTest:
 
         offer.criteria = [tag_1, tag_2]
 
-        response = authenticated_client.get(url_for("backoffice_v3_web.tags.list_tags"))
+        response = authenticated_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
 
@@ -141,7 +142,7 @@ class ListTagsTest:
 
         offer.criteria = [tags["tag1"], tags["tag2"]]
 
-        response = authenticated_client.get(url_for("backoffice_v3_web.tags.list_tags", q=q))
+        response = authenticated_client.get(url_for(self.endpoint, q=q))
 
         assert response.status_code == 200
 
@@ -156,11 +157,3 @@ class ListTagsTest:
                     assert rows[index]["Description"] == tags.get(key).description
                     count += 1
                     break
-
-
-def send_request(authenticated_client, form, route_suffix, **route_extra):
-    authenticated_client.get(url_for("backoffice_v3_web.tags.list_tags"))
-    form["csrf_token"] = g.get("csrf_token", "")
-
-    url = url_for(f"backoffice_v3_web.tags.{route_suffix}", **route_extra)
-    return authenticated_client.post(url, form=form)
