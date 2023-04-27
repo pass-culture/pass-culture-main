@@ -5,7 +5,6 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.common import models as common_fraud_models
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
-from pcapi.utils.string import u_nbsp
 
 from . import models
 
@@ -45,6 +44,22 @@ def get_ubble_retryable_message(
         user_message = models.UbbleRetryableUserMessage.ID_CHECK_EXPIRED.value
         message_summary = models.UbbleRetryableMessageSummary.ID_CHECK_EXPIRED.value
         action_hint = models.UbbleRetryableActionHint.ID_CHECK_EXPIRED.value
+    elif fraud_models.FraudReasonCode.BLURRY_VIDEO in reason_codes:
+        user_message = models.UbbleRetryableUserMessage.BLURRY_VIDEO.value
+        message_summary = models.UbbleRetryableMessageSummary.BLURRY_VIDEO.value
+        action_hint = models.UbbleRetryableActionHint.BLURRY_VIDEO.value
+    elif fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE in reason_codes:
+        user_message = models.UbbleRetryableUserMessage.NETWORK_CONNECTION_ISSUE.value
+        message_summary = models.UbbleRetryableMessageSummary.NETWORK_CONNECTION_ISSUE.value
+        action_hint = models.UbbleRetryableActionHint.NETWORK_CONNECTION_ISSUE.value
+    elif fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY in reason_codes:
+        user_message = models.UbbleRetryableUserMessage.LACK_OF_LUMINOSITY.value
+        message_summary = models.UbbleRetryableMessageSummary.LACK_OF_LUMINOSITY.value
+        action_hint = models.UbbleRetryableActionHint.LACK_OF_LUMINOSITY.value
+    elif fraud_models.FraudReasonCode.DOCUMENT_DAMAGED in reason_codes:
+        user_message = models.UbbleRetryableUserMessage.DOCUMENT_DAMAGED.value
+        message_summary = models.UbbleRetryableMessageSummary.DOCUMENT_DAMAGED.value
+        action_hint = models.UbbleRetryableActionHint.DOCUMENT_DAMAGED.value
     else:
         user_message = models.UbbleRetryableUserMessage.DEFAULT.value
         message_summary = models.UbbleRetryableMessageSummary.DEFAULT.value
@@ -72,19 +87,19 @@ def get_ubble_not_retryable_message(
     call_to_action = None
     pop_over_icon = None
     if fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in reason_codes:
-        user_message = "Nous n'arrivons pas à lire ton document. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
+        user_message = models.UbbleNotRetryableUserMessage.ID_CHECK_UNPROCESSABLE.value
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in reason_codes:
-        user_message = "Ton dossier a été refusé car le document que tu as présenté n’est pas authentique. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
+        user_message = models.UbbleNotRetryableUserMessage.ID_CHECK_NOT_AUTHENTIC.value
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in reason_codes:
-        user_message = "Le document d'identité que tu as présenté n'est pas accepté. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
+        user_message = models.UbbleNotRetryableUserMessage.ID_CHECK_NOT_SUPPORTED.value
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     elif fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in reason_codes:
-        user_message = "Ton document d'identité est expiré. Rends-toi sur le site demarches-simplifiees.fr avec un document en cours de validité pour renouveler ta demande."
+        user_message = models.UbbleNotRetryableUserMessage.ID_CHECK_EXPIRED.value
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     elif fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
@@ -100,29 +115,43 @@ def get_ubble_not_retryable_message(
         call_to_action = subscription_messages.compute_support_call_to_action(fraud_check.user.id)
 
     elif fraud_models.FraudReasonCode.AGE_TOO_YOUNG in reason_codes:
-        user_message = f"Ton dossier a été refusé{u_nbsp}: tu n'as pas encore l'âge pour bénéficier du pass Culture. Reviens à tes 15 ans pour profiter de ton crédit."
+        user_message = models.UbbleNotRetryableUserMessage.AGE_TOO_YOUNG.value
         pop_over_icon = subscription_models.PopOverIcon.ERROR
 
     elif fraud_models.FraudReasonCode.AGE_TOO_OLD in reason_codes:
-        user_message = f"Ton dossier a été refusé{u_nbsp}: tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans."
+        user_message = models.UbbleNotRetryableUserMessage.AGE_TOO_OLD.value
         pop_over_icon = subscription_models.PopOverIcon.ERROR
 
     elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in reason_codes:
-        user_message = f"Ton dossier a été refusé{u_nbsp}: tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans."
+        user_message = models.UbbleNotRetryableUserMessage.NOT_ELIGIBLE.value
         pop_over_icon = subscription_models.PopOverIcon.ERROR
 
     elif fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in reason_codes:
-        user_message = f"Ton dossier a été refusé{u_nbsp}: le prénom et le nom que tu as renseignés ne correspondent pas à ta pièce d'identité. Tu peux contacter le support si tu penses qu’il s’agit d’une erreur."
+        user_message = models.UbbleNotRetryableUserMessage.ID_CHECK_DATA_MATCH.value
         call_to_action = subscription_messages.compute_support_call_to_action(fraud_check.user.id)
 
+    elif fraud_models.FraudReasonCode.BLURRY_VIDEO in reason_codes:
+        user_message = models.UbbleNotRetryableUserMessage.BLURRY_VIDEO.value
+        call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
+
+    elif fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE in reason_codes:
+        user_message = models.UbbleNotRetryableUserMessage.NETWORK_CONNECTION_ISSUE.value
+        call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
+
+    elif fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY in reason_codes:
+        user_message = models.UbbleNotRetryableUserMessage.LACK_OF_LUMINOSITY.value
+        call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
+
+    elif fraud_models.FraudReasonCode.DOCUMENT_DAMAGED in reason_codes:
+        user_message = models.UbbleNotRetryableUserMessage.DOCUMENT_DAMAGED.value
+        call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
+
     elif fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in reason_codes:
-        user_message = (
-            "Ton dossier a été refusé. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
-        )
+        user_message = models.UbbleNotRetryableUserMessage.ID_CHECK_BLOCKED_OTHER.value
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     else:
-        user_message = "Désolé, la vérification de ton identité n'a pas pu aboutir. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
+        user_message = models.UbbleNotRetryableUserMessage.DEFAULT.value
         call_to_action = subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
     return subscription_models.SubscriptionMessage(

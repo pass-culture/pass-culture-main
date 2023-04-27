@@ -682,6 +682,22 @@ class StepperTest:
                 fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
                 ubble_models.UbbleRetryableActionHint.ID_CHECK_EXPIRED.value,
             ),
+            (
+                fraud_models.FraudReasonCode.BLURRY_VIDEO,
+                ubble_models.UbbleRetryableActionHint.BLURRY_VIDEO.value,
+            ),
+            (
+                fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
+                ubble_models.UbbleRetryableActionHint.NETWORK_CONNECTION_ISSUE.value,
+            ),
+            (
+                fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
+                ubble_models.UbbleRetryableActionHint.LACK_OF_LUMINOSITY.value,
+            ),
+            (
+                fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
+                ubble_models.UbbleRetryableActionHint.DOCUMENT_DAMAGED.value,
+            ),
         ],
     )
     def should_have_subtitle_for_id_check_when_ubble_retryable(self, client, error_code, expected_subtitle):

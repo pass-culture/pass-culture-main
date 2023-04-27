@@ -6,6 +6,7 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription.ubble import models as ubble_subsciption_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -24,12 +25,33 @@ def _ubble_readable_score(score: float | None) -> str:
     return ubble_fraud_models.UbbleScore(score).name if score is not None else "AUCUN"
 
 
-def _ubble_result_fraud_item(
-    user: users_models.User, content: ubble_fraud_models.UbbleContent
-) -> fraud_models.FraudItem:
+def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.UbbleContent) -> fraud_models.FraudItem:
     status = None
-    reason_code = None
+    reason_codes = set(content.reason_codes or [])
     detail = f"Ubble score {_ubble_readable_score(content.score)}: {content.comment}"
+    for reason_code in reason_codes:
+        match reason_code:
+            case fraud_models.FraudReasonCode.BLURRY_VIDEO:
+                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.BLURRY_VIDEO.value
+            case fraud_models.FraudReasonCode.DOCUMENT_DAMAGED:
+                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.DOCUMENT_DAMAGED.value
+            case fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE:
+                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.ID_CHECK_UNPROCESSABLE.value
+            case fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH:
+                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.ID_CHECK_DATA_MATCH.value
+            case fraud_models.FraudReasonCode.ID_CHECK_EXPIRED:
+                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.ID_CHECK_EXPIRED.value
+            case fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC:
+                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.ID_CHECK_NOT_AUTHENTIC.value
+            case fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED:
+                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.ID_CHECK_NOT_SUPPORTED.value
+            case fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY:
+                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.LACK_OF_LUMINOSITY.value
+            case fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE:
+                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.NETWORK_CONNECTION_ISSUE.value
+
+    if reason_codes:
+        status = fraud_models.FraudStatus.SUSPICIOUS
 
     # Decision from identification/score
     if content.score == ubble_fraud_models.UbbleScore.VALID.value:
@@ -41,60 +63,49 @@ def _ubble_result_fraud_item(
             assert birth_date and registration_datetime  # helps mypy next line
             age = users_utils.get_age_at_date(birth_date, registration_datetime)
             if age < min(users_constants.ELIGIBILITY_UNDERAGE_RANGE):
-                reason_code = fraud_models.FraudReasonCode.AGE_TOO_YOUNG
-                detail = f"L'utilisateur n'a pas encore l'âge requis ({age} ans)"
+                reason_codes.add(fraud_models.FraudReasonCode.AGE_TOO_YOUNG)
+                detail = ubble_subsciption_models.UbbleDetailMessage.AGE_TOO_YOUNG.value.format(age=age)
             elif age > users_constants.ELIGIBILITY_AGE_18:
-                reason_code = fraud_models.FraudReasonCode.AGE_TOO_OLD
-                detail = f"L'utilisateur a dépassé l'âge maximum ({age} ans)"
+                reason_codes.add(fraud_models.FraudReasonCode.AGE_TOO_OLD)
+                detail = ubble_subsciption_models.UbbleDetailMessage.AGE_TOO_OLD.value.format(age=age)
         else:
             status = fraud_models.FraudStatus.OK
     elif content.score == ubble_fraud_models.UbbleScore.INVALID.value:
+        status = fraud_models.FraudStatus.SUSPICIOUS
         # Decision from reference-data-check/score
         if content.reference_data_check_score == ubble_fraud_models.UbbleScore.INVALID.value:
-            status = fraud_models.FraudStatus.SUSPICIOUS
-            reason_code = fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH
-            detail += " | Les informations de la pièce d'identité ne correspondent pas"
-        else:
+            reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH)
+        elif content.supported == ubble_fraud_models.UbbleScore.INVALID.value:
             # Decision from documents-check/supported
-            if content.supported == ubble_fraud_models.UbbleScore.INVALID.value:
-                status = fraud_models.FraudStatus.SUSPICIOUS
-                reason_code = fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED
-                detail += " | Le document d'identité n'est pas supporté"
-            else:
-                # Decision from documents-check/expiry-date-score
-                if content.expiry_date_score == ubble_fraud_models.UbbleScore.INVALID.value:
-                    status = fraud_models.FraudStatus.SUSPICIOUS
-                    reason_code = fraud_models.FraudReasonCode.ID_CHECK_EXPIRED
-                    detail += " | Le document d'identité est expiré"
-                elif content.ove_score == ubble_fraud_models.UbbleScore.INVALID.value:
-                    status = fraud_models.FraudStatus.SUSPICIOUS
-                    reason_code = fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
-                    detail += " | Le document d'identité n'est pas authentique"
-                else:
-                    status = fraud_models.FraudStatus.KO
-                    reason_code = fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
-                    detail += (
-                        f" | reference-data-check score {_ubble_readable_score(content.reference_data_check_score)}"
-                        f" | document supported {_ubble_readable_score(content.supported)}"
-                        f" | expiry-date-score {_ubble_readable_score(content.expiry_date_score)}"
-                    )
+            reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED)
+        elif content.expiry_date_score == ubble_fraud_models.UbbleScore.INVALID.value:
+            # Decision from documents-check/expiry-date-score
+            reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_EXPIRED)
+        elif content.ove_score == ubble_fraud_models.UbbleScore.INVALID.value:
+            reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC)
+        elif not status:
+            status = fraud_models.FraudStatus.KO
+            reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER)
+            detail += (
+                f" | reference-data-check score {_ubble_readable_score(content.reference_data_check_score)}"
+                f" | document supported {_ubble_readable_score(content.supported)}"
+                f" | expiry-date-score {_ubble_readable_score(content.expiry_date_score)}"
+            )
     elif content.score == ubble_fraud_models.UbbleScore.UNDECIDABLE.value:
         status = fraud_models.FraudStatus.SUSPICIOUS
-        reason_code = fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
-        detail += " | Ubble n'a pas réussi à lire le document"
+        reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE)
+        detail += " | " + ubble_subsciption_models.UbbleDetailMessage.ID_CHECK_UNPROCESSABLE.value
 
     if status is None:
         # This should never happen
         logger.error("Unexpected case in _ubble_result_fraud_item", extra={"content": content, "score": content.score})
         status = fraud_models.FraudStatus.KO
-        reason_code = fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
+        reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER)
 
-    return fraud_models.FraudItem(status=status, detail=detail, reason_code=reason_code)
+    return fraud_models.FraudItem(status=status, detail=detail, reason_codes=list(reason_codes))
 
 
-def ubble_fraud_checks(
-    user: users_models.User, content: ubble_fraud_models.UbbleContent
-) -> list[fraud_models.FraudItem]:
+def ubble_fraud_checks(user: users_models.User, content: fraud_models.UbbleContent) -> list[fraud_models.FraudItem]:
     ubble_fraud_models_item = _ubble_result_fraud_item(user, content)
     fraud_items = [ubble_fraud_models_item]
 

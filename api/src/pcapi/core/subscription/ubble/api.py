@@ -41,7 +41,7 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
     if not settings.IS_PROD and ubble_fraud_api.does_match_ubble_test_email(fraud_check.user.email):
         content.birth_date = fraud_check.user.birth_date
 
-    fraud_check.resultContent = content
+    fraud_check.resultContent = content  # type: ignore
     pcapi_repository.repository.save(fraud_check)
 
     user: users_models.User = fraud_check.user
@@ -126,6 +126,18 @@ def get_most_relevant_ubble_error(
 
     if fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in reason_codes:
         return fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
+
+    if fraud_models.FraudReasonCode.BLURRY_VIDEO in reason_codes:
+        return fraud_models.FraudReasonCode.BLURRY_VIDEO
+
+    if fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE in reason_codes:
+        return fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE
+
+    if fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY in reason_codes:
+        return fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY
+
+    if fraud_models.FraudReasonCode.DOCUMENT_DAMAGED in reason_codes:
+        return fraud_models.FraudReasonCode.DOCUMENT_DAMAGED
 
     return None
 
