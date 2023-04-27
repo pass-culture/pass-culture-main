@@ -721,7 +721,9 @@ class StepperTest:
 class GetProfileTest:
     def test_get_profile(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
-        fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
+        )
 
         client.with_token(user.email)
         response = client.get("/native/v1/subscription/profile")
@@ -749,7 +751,9 @@ class GetProfileTest:
     def test_get_profile_with_obsolete_profile_info(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
         content = fraud_factories.ProfileCompletionContentFactory()
-        fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(resultContent=content, user=user)
+        fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(
+            resultContent=content, user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
+        )
         fraud_check.resultContent["activity"] = "NOT_AN_ACTIVITY"
 
         client.with_token(user.email)
@@ -770,9 +774,11 @@ class GetProfileTest:
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
         }
 
-        client.with_token(user.email)
-        client.post("/native/v1/subscription/profile", profile_data)
+        with freeze_time(datetime.datetime.utcnow() - datetime.timedelta(days=365)):
+            client.with_token(user.email)
+            client.post("/native/v1/subscription/profile", profile_data)
 
+        client.with_token(user.email)
         response = client.get("/native/v1/subscription/profile")
 
         assert response.status_code == 200
