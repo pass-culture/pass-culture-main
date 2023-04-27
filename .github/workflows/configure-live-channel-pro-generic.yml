@@ -1,0 +1,49 @@
+name: "[PRO] Deploy specific version on the live channel"
+
+
+on:  
+  workflow_call:
+    inputs:
+      ENV:
+        type: string
+        required: true
+      VERSION:
+        type: string
+        required: true
+    secrets:
+      GCP_SERVICE_ACCOUNT:
+        required: true
+      GCP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+
+jobs:  
+  deploy_on_firebase:
+    permissions: write-all
+    defaults:
+      run:
+        working-directory: pro
+    runs-on: [self-hosted, linux, x64]
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: openid-auth
+        name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+      - name: Get Secret
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v1'
+        with:
+          secrets: |-
+            FIREBASE_TOKEN:passculture-metier-ehp/pc_pro_${{ inputs.ENV }}_firebase_json
+      - name: Clone version to live channel
+        id: clone-version
+        env:
+          CREDENTIALS: ${{ steps.secrets.outputs.FIREBASE_TOKEN }}
+          GOOGLE_APPLICATION_CREDENTIALS: "credentials.json"
+        run: |
+          curl -sL https://firebase.tools | bash
+          echo $CREDENTIALS > credentials.json
+          firebase hosting:clone pc-pro-${{ inputs.ENV }}:${{ inputs.VERSION }} pc-pro-${{ inputs.ENV }}:live

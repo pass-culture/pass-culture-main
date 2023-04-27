@@ -39,6 +39,28 @@ jobs:
           NEXT_PATCH_NUMBER=$((CURRENT_PATCH_NUMBER + 1))
           echo "hotfixTagNumber=${MAJOR_NUMBER}.0.${NEXT_PATCH_NUMBER}" >> $GITHUB_OUTPUT
 
+  create-pro-staging-release:
+    needs: find-hotfix-tag-number
+    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    secrets:
+      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      ENV: staging
+      CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
+      EXPIRES: "30d"
+  
+  create-pro-production-release:
+    needs: find-hotfix-tag-number
+    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    secrets:
+      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      ENV: production
+      CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
+      EXPIRES: "30d"
+      
   build-and-tag-version:
     needs: find-hotfix-tag-number
     name: Build and tag version
