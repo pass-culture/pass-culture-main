@@ -30,7 +30,7 @@ class Returns200Test:
             publicName="Nom public D",
         )
         finance_factories.BankInformationFactory(venue=second_venue, status=BankInformationStatus.ACCEPTED)
-        offerers_factories.VenueFactory(siret=None, comment="Pas de SIRET", managingOfferer=offerer)
+        offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)
 
         client = client.with_session_auth("user.pro@example.com")
 
@@ -66,9 +66,7 @@ class Returns200Test:
         )
         offerer = user_offerer.offerer
         offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        _venue_without_siret_nor_bank_info = offerers_factories.VenueFactory(
-            siret=None, comment="Pas de SIRET", managingOfferer=offerer
-        )
+        _venue_without_siret_nor_bank_info = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)
         venue_with_pending_bank_info = offerers_factories.VenueFactory(managingOfferer=offerer)
         finance_factories.BankInformationFactory(venue=venue_with_pending_bank_info, status=BankInformationStatus.DRAFT)
 

@@ -24,7 +24,7 @@ class ButtonHelper:
 
     @property
     def unauthorized_user(self) -> users_models.User:
-        user = users_factories.UserFactory(isActive=True)
+        user = users_factories.UserFactory()
         user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
 
         query = perm_models.Role.query.options(sa.orm.joinedload(perm_models.Role.permissions))

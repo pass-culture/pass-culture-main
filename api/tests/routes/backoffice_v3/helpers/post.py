@@ -47,7 +47,7 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
         assert response.location == expected_url
 
     def test_missing_csrf_token(self, client):
-        user = users_factories.UserFactory(isActive=True)
+        user = users_factories.UserFactory()
 
         authenticated_client = client.with_bo_session_auth(user)
         client_method = getattr(authenticated_client, self.method)
@@ -73,7 +73,7 @@ class PostEndpointHelper(PostEndpointWithoutPermissionHelper, unauthorized.Unaut
         assert response.status_code == 403
 
     def test_no_backoffice_profile(self, client):
-        user = users_factories.UserFactory(isActive=True)
+        user = users_factories.UserFactory()
 
         self.fetch_csrf_token(client)
 

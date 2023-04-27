@@ -89,7 +89,7 @@ class Returns201Test:
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
     def test_when_add_allocine_stocks_provider_for_venue_without_siret(self, mock_synchronize_venue_provider, client):
         # Given
-        venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464", siret=None, comment="some comment")
+        venue = offerers_factories.VenueWithoutSiretFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
         providers_factories.AllocinePivotFactory(venue=venue)
         provider = providers_factories.AllocineProviderFactory()

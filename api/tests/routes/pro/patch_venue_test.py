@@ -316,7 +316,7 @@ class Returns400Test:
         ]
 
     def test_raises_if_comment_too_long(self, client) -> None:
-        venue = offerers_factories.VenueFactory(siret=None, comment="No SIRET")
+        venue = offerers_factories.VenueWithoutSiretFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
 
         venue_data = populate_missing_data_from_venue(

@@ -54,7 +54,7 @@ class VenueModelConstraintsTest:
         assert "check_is_virtual_xor_has_address" in str(err.value)
 
     def test_non_virtual_without_siret_must_have_full_address(self):
-        venue = factories.VenueFactory(siret=None, comment="no siret, it's ok")
+        venue = factories.VenueWithoutSiretFactory()
         venue.address = None
         venue.postal_code = None
         venue.city = None
@@ -64,7 +64,7 @@ class VenueModelConstraintsTest:
         assert "check_is_virtual_xor_has_address" in str(err.value)
 
     def test_non_virtual_without_siret_must_have_comment(self):
-        venue = factories.VenueFactory(siret=None, comment="no siret, it's ok")
+        venue = factories.VenueWithoutSiretFactory()
         with pytest.raises(IntegrityError) as err:
             venue.comment = None
             db.session.add(venue)
