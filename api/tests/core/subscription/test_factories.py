@@ -63,8 +63,11 @@ class UbbleReasonCodesFactory(factory.Factory):
 
     @factory.lazy_attribute
     def data(self):
-        return [UbbleReasonCodeFactory(id=str(error_code)) for error_code in self.error_codes if error_code in UBBLE_REASON_CODE_MAPPING]
-        # return [UbbleReasonCodeFactory(error_code=1310)]
+        return [
+            UbbleReasonCodeFactory(error_code=error_code)
+            for error_code in self.error_codes
+            if error_code in UBBLE_REASON_CODE_MAPPING
+        ]
 
 
 class UbbleIdentificationRelationshipsFactory(factory.Factory):
@@ -406,7 +409,7 @@ class UbbleIdentificationResponseFactory(factory.Factory):
     data = factory.SubFactory(
         UbbleIdentificationDataFactory,
         identification_state=factory.SelfAttribute("..identification_state"),
-        error_codes=factory.SelfAttribute("..error_codes")
+        error_codes=factory.SelfAttribute("..error_codes"),
     )
 
     @factory.lazy_attribute

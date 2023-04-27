@@ -12,6 +12,7 @@ import factory.fuzzy
 import pytz
 
 from pcapi.core import testing
+from pcapi.core.users import constants as user_constants
 from pcapi.core.users import models as users_models
 import pcapi.core.users.factories as users_factories
 
@@ -160,7 +161,7 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
     status = models.FraudCheckStatus.PENDING
     eligibilityType = factory.LazyAttribute(
         lambda o: users_models.EligibilityType.UNDERAGE
-        if o.user.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
+        if o.user.age in user_constants.ELIGIBILITY_UNDERAGE_RANGE
         else users_models.EligibilityType.AGE18
     )
 

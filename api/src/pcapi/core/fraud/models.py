@@ -68,7 +68,7 @@ class FraudReasonCode(enum.Enum):
     INVALID_ID_PIECE_NUMBER = "invalid_id_piece_number"
     LACK_OF_LUMINOSITY = "lack_of_luminosity"
     NETWORK_CONNECTION_ISSUE = "network_connection_issue"
-    
+
     # Our API errors
     AGE_TOO_OLD = "age_too_old"
     AGE_TOO_YOUNG = "age_too_young"

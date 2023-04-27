@@ -203,7 +203,7 @@ class CommonFraudCheckTest:
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
         fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
-        invalid_codes = filter_invalid_fraud_items_to_reason_code(fraud_items)
+        invalid_codes = filter_invalid_fraud_items_to_reason_codes(fraud_items)
         assert len(invalid_codes) == 1
         assert fraud_models.FraudReasonCode.EMAIL_NOT_VALIDATED in invalid_codes
 
@@ -217,7 +217,7 @@ class CommonFraudCheckTest:
         )
         fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
-        invalid_codes = filter_invalid_fraud_items_to_reason_code(fraud_items)
+        invalid_codes = filter_invalid_fraud_items_to_reason_codes(fraud_items)
         assert fraud_models.FraudReasonCode.EMAIL_NOT_VALIDATED in invalid_codes
 
 
