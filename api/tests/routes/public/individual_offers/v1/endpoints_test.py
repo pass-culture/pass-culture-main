@@ -723,10 +723,12 @@ class PostProductTest:
 @pytest.mark.usefixtures("db_session")
 class PostProductByEanTest:
     @freezegun.freeze_time("2022-01-01 12:00:00")
-    def test_valid_ean(self, client):
+    def test_valid_ean_with_stock(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
-        product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
+        )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
@@ -776,7 +778,13 @@ class PostProductByEanTest:
             "name": product.name,
             "status": "EXPIRED",
             "itemCollectionDetails": None,
-            "categoryRelatedFields": {"category": "CARTE_MUSEE"},
+            "categoryRelatedFields": {
+                "author": None,
+                "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                "ean": product.extraData["ean"],
+                "musicType": None,
+                "performer": None,
+            },
             "stock": {
                 "bookingLimitDatetime": "2022-01-01T12:00:00Z",
                 "bookedQuantity": 0,
@@ -790,7 +798,9 @@ class PostProductByEanTest:
     def test_valid_ean_without_task_autoflush(self, update_pro_task_mock, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
-        product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
+        )
         finance_factories.CustomReimbursementRuleFactory(offerer=api_key.offerer, rate=0.2, offer=None)
 
         # the update task autoflushes the SQLAlchemy session, but is not executed synchronously in cloud
@@ -826,7 +836,9 @@ class PostProductByEanTest:
             motorDisabilityCompliant=True,
             visualDisabilityCompliant=True,
         )
-        product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
+        )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
@@ -842,7 +854,9 @@ class PostProductByEanTest:
     def test_400_when_no_accessibility_and_virtual_venue(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         offerers_factories.VirtualVenueFactory(managingOfferer=api_key.offerer)
-        product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
+        )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
@@ -860,13 +874,6 @@ class PostProductByEanTest:
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
         product = offers_factories.ProductFactory(extraData={"ean": "123456789"})
 
-        client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products/ean",
-            json={
-                "ean": product.extraData["ean"],
-                "location": {"type": "physical", "venueId": venue.id},
-            },
-        )
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
@@ -879,10 +886,12 @@ class PostProductByEanTest:
         assert response.status_code == 400
         assert response.json == {"ean": ["ensure this value has at least 13 characters"]}
 
-    def test_400_when_ean_does_not_exist(self, client):
+    def test_400_when_ean_offer_already_exists(self, client):
         api_key = offerers_factories.ApiKeyFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
-        product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
+        )
 
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
@@ -910,6 +919,22 @@ class PostProductByEanTest:
             "/public/offers/v1/products/ean",
             json={
                 "ean": "1234567890123",
+                "location": {"type": "physical", "venueId": venue.id},
+            },
+        )
+
+        assert response.status_code == 404
+        assert response.json == {"ean": ["The product is not present in pass Culture's database"]}
+
+    def test_404_when_product_not_allowed(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        wrong_subcategory_product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "ean": wrong_subcategory_product.extraData["ean"],
                 "location": {"type": "physical", "venueId": venue.id},
             },
         )
