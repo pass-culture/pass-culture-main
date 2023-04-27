@@ -2,7 +2,6 @@ import datetime
 from unittest import mock
 
 from dateutil.relativedelta import relativedelta
-from flask import g
 from flask import url_for
 import pytest
 
@@ -49,11 +48,11 @@ from pcapi.routes.backoffice_v3.accounts import get_public_account_history
 from pcapi.routes.backoffice_v3.filters import format_date_time
 import pcapi.utils.email as email_utils
 
-from .helpers import accounts as accounts_helpers
 from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers import search as search_helpers
-from .helpers import unauthorized as unauthorized_helpers
+from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
@@ -124,13 +123,9 @@ def assert_user_equals(result_card_text: str, expected_user: users_models.User):
         )
 
 
-class SearchPublicAccountsUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
+class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     endpoint = "backoffice_v3_web.public_accounts.search_public_accounts"
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
-
-
-class SearchPublicAccountsTest(search_helpers.SearchHelper):
-    endpoint = "backoffice_v3_web.public_accounts.search_public_accounts"
 
     def test_search_result_page(self, authenticated_client, legit_user):
         url = url_for(self.endpoint, terms=legit_user.email, order_by="", page=1, per_page=20)
@@ -383,13 +378,10 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper):
         assert_user_equals(cards_text[0], event.user)
 
 
-class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
+class GetPublicAccountTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.public_accounts.get_public_account"
-
-    class GetPublicAccountUnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.public_accounts.get_public_account"
-        endpoint_kwargs = {"user_id": 1}
-        needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
     class SuspendButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.SUSPEND_USER
@@ -810,12 +802,10 @@ class GetPublicAccountTest(accounts_helpers.PageRendersHelper):
         assert history_rows[5]["Auteur"] == legit_user.full_name
 
 
-class UpdatePublicAccountTest:
-    class UnauthorizedTest(unauthorized_helpers.MissingCSRFHelper):
-        endpoint = "backoffice_v3_web.public_accounts.update_public_account"
-        endpoint_kwargs = {"user_id": 1}
-        method = "post"
-        form = {"first_name": "aaaaaaaaaaaaaaaaaaa"}
+class UpdatePublicAccountTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.public_accounts.update_public_account"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     def test_update_field(self, legit_user, authenticated_client):
         user_to_edit = users_factories.BeneficiaryGrant18Factory()
@@ -839,7 +829,7 @@ class UpdatePublicAccountTest:
             "city": expected_city,
         }
 
-        response = self.update_account(authenticated_client, user_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
         assert response.status_code == 303
 
         expected_url = url_for(
@@ -893,7 +883,7 @@ class UpdatePublicAccountTest:
             "city": "Port-Marly",
         }
 
-        response = self.update_account(authenticated_client, user_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
         assert response.status_code == 303
 
         expected_url = url_for(
@@ -941,7 +931,7 @@ class UpdatePublicAccountTest:
             "unknown": "field",
         }
 
-        response = self.update_account(authenticated_client, user_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
         assert response.status_code == 400
 
     def test_update_email_triggers_history_token_and_mail(self, authenticated_client):
@@ -949,7 +939,7 @@ class UpdatePublicAccountTest:
         user, _, _, _, _ = create_bunch_of_accounts()
 
         # when
-        response = self.update_account(authenticated_client, user, {"email": "Updated@example.com"})
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form={"email": "Updated@example.com"})
 
         # then
         assert response.status_code == 303
@@ -983,7 +973,7 @@ class UpdatePublicAccountTest:
         user, _, _, _, _ = create_bunch_of_accounts()
 
         # when
-        response = self.update_account(authenticated_client, user, {"email": "updated.example.com"})
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form={"email": "updated.example.com"})
 
         # then
         assert response.status_code == 400
@@ -999,7 +989,7 @@ class UpdatePublicAccountTest:
             "email": other_user.email,
         }
 
-        response = self.update_account(authenticated_client, user_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
         assert response.status_code == 400
         assert html_parser.extract_alert(response.data) == "L'email est déjà associé à un autre utilisateur"
 
@@ -1016,7 +1006,7 @@ class UpdatePublicAccountTest:
             "postal_code": "7500",
         }
 
-        response = self.update_account(authenticated_client, user_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
         assert response.status_code == 400
 
     def test_empty_id_piece_number(self, authenticated_client):
@@ -1029,7 +1019,7 @@ class UpdatePublicAccountTest:
             "id_piece_number": "",
         }
 
-        response = self.update_account(authenticated_client, user_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
         assert response.status_code == 303
 
         user_to_edit = users_models.User.query.get(user_to_edit.id)
@@ -1046,38 +1036,22 @@ class UpdatePublicAccountTest:
             "phone_number": "T3L3PH0N3",
         }
 
-        response = self.update_account(authenticated_client, user_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
         assert response.status_code == 400
 
         user_to_edit = users_models.User.query.get(user_to_edit.id)
         assert user_to_edit.phoneNumber == old_phone_number
         assert html_parser.extract_alert(response.data) == "Le numéro de téléphone est invalide"
 
-    def update_account(self, authenticated_client, user_to_edit, form):
-        # generate csrf token
-        public_account_url = url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_to_edit.id)
-        authenticated_client.get(public_account_url)
 
-        url = url_for("backoffice_v3_web.public_accounts.update_public_account", user_id=user_to_edit.id)
-
-        form["csrf_token"] = g.get("csrf_token", "")
-        return authenticated_client.post(url, form=form)
-
-
-class ResendValidationEmailTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        endpoint = "backoffice_v3_web.public_accounts.resend_validation_email"
-        endpoint_kwargs = {"user_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
-
-    class MissingCsrfTest(unauthorized_helpers.MissingCSRFHelper):
-        endpoint = "backoffice_v3_web.public_accounts.resend_validation_email"
-        endpoint_kwargs = {"user_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+class ResendValidationEmailTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.public_accounts.resend_validation_email"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     def test_resend_validation_email(self, authenticated_client):
         user = users_factories.UserFactory(isEmailValidated=False)
-        response = self.send_resend_validation_email_request(authenticated_client, user)
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
         assert response.status_code == 303
 
@@ -1098,39 +1072,23 @@ class ResendValidationEmailTest:
     @pytest.mark.parametrize("user_factory", [users_factories.AdminFactory, users_factories.ProFactory])
     def test_no_email_sent_if_admin_pro(self, authenticated_client, user_factory):
         user = user_factory()
-        response = self.send_resend_validation_email_request(authenticated_client, user)
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
         assert response.status_code == 303
         assert not mails_testing.outbox
 
     def test_no_email_sent_if_already_validated(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory(isEmailValidated=True)
-        response = self.send_resend_validation_email_request(authenticated_client, user)
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
         assert response.status_code == 303
         assert not mails_testing.outbox
 
-    def send_resend_validation_email_request(self, authenticated_client, user):
-        # generate csrf token
-        account_detail_url = url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user.id)
-        authenticated_client.get(account_detail_url)
 
-        url = url_for("backoffice_v3_web.public_accounts.resend_validation_email", user_id=user.id)
-        form = {"csrf_token": g.get("csrf_token", "")}
-
-        return authenticated_client.post(url, form=form)
-
-
-class ManualPhoneNumberValidationTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        endpoint = "backoffice_v3_web.public_accounts.manually_validate_phone_number"
-        endpoint_kwargs = {"user_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
-
-    class MissingCsrfTest(unauthorized_helpers.MissingCSRFHelper):
-        endpoint = "backoffice_v3_web.public_accounts.manually_validate_phone_number"
-        endpoint_kwargs = {"user_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+class ManualPhoneNumberValidationTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.public_accounts.manually_validate_phone_number"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     def test_manual_phone_number_validation(self, authenticated_client):
         user = users_factories.UserFactory(
@@ -1140,38 +1098,24 @@ class ManualPhoneNumberValidationTest:
         users_factories.TokenFactory(user=user, type=users_models.TokenType.RESET_PASSWORD)
         users_factories.TokenFactory(type=users_models.TokenType.PHONE_VALIDATION)
 
-        response = self.send_request(authenticated_client, user)
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
         assert user.is_phone_validated == True
         assert response.status_code == 303
         assert history_models.ActionHistory.query.filter(history_models.ActionHistory.user == user).count() == 1
         assert users_models.Token.query.count() == 2
 
-    def send_request(self, authenticated_client, user):
-        account_detail_url = url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user.id)
-        authenticated_client.get(account_detail_url)
-        url = url_for("backoffice_v3_web.public_accounts.manually_validate_phone_number", user_id=user.id)
-        form = {"csrf_token": g.get("csrf_token", "")}
 
-        return authenticated_client.post(url, form=form)
-
-
-class SendValidationCodeTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        endpoint = "backoffice_v3_web.public_accounts.send_validation_code"
-        endpoint_kwargs = {"user_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
-
-    class MissingCsrfTest(unauthorized_helpers.MissingCSRFHelper):
-        endpoint = "backoffice_v3_web.public_accounts.send_validation_code"
-        endpoint_kwargs = {"user_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+class SendValidationCodeTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.public_accounts.send_validation_code"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     def test_send_validation_code(self, authenticated_client):
         user = users_factories.UserFactory(
             phoneValidationStatus=None, phoneNumber="+33601020304", isEmailValidated=True
         )
-        response = self.send_request(authenticated_client, user)
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
         assert response.status_code == 303
 
@@ -1193,7 +1137,7 @@ class SendValidationCodeTest:
         # when
         with mock.patch("pcapi.core.fraud.phone_validation.sending_limit.is_SMS_sending_allowed") as limit_mock:
             limit_mock.return_value = False
-            response = self.send_request(authenticated_client, user)
+            response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
         # then
         assert limit_mock.call_count == 0
@@ -1222,32 +1166,16 @@ class SendValidationCodeTest:
         ]
 
         for idx, user in enumerate(users):
-            response = self.send_request(authenticated_client, user)
+            response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
             assert response.status_code == 303, f"[{idx}] found: {response.status_code}, expected: 303"
             assert not sms_testing.requests, f"[{idx}] {len(sms_testing.requests)} sms sent"
 
-    def send_request(self, authenticated_client, user):
-        # generate csrf token
-        account_detail_url = url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user.id)
-        authenticated_client.get(account_detail_url)
 
-        url = url_for("backoffice_v3_web.public_accounts.send_validation_code", user_id=user.id)
-        form = {"csrf_token": g.get("csrf_token", "")}
-
-        return authenticated_client.post(url, form=form)
-
-
-class UpdatePublicAccountReviewTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        endpoint = "backoffice_v3_web.public_accounts.review_public_account"
-        endpoint_kwargs = {"user_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
-
-    class MissingCsrfTest(unauthorized_helpers.MissingCSRFHelper):
-        endpoint = "backoffice_v3_web.public_accounts.review_public_account"
-        endpoint_kwargs = {"user_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+class UpdatePublicAccountReviewTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.public_accounts.review_public_account"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     def test_add_new_fraud_review_to_account(self, authenticated_client, legit_user):
         user = users_factories.UserFactory()
@@ -1258,7 +1186,7 @@ class UpdatePublicAccountReviewTest:
             "reason": "test",
         }
 
-        response = self.add_new_review(authenticated_client, user, base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user.id, _external=True)
@@ -1283,7 +1211,7 @@ class UpdatePublicAccountReviewTest:
             "reason": "test",
         }
 
-        response = self.add_new_review(authenticated_client, user, base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
 
         user = users_models.User.query.get(user.id)
@@ -1297,7 +1225,7 @@ class UpdatePublicAccountReviewTest:
             "eligibility": users_models.EligibilityType.AGE18.name,
         }
 
-        response = self.add_new_review(authenticated_client, user, base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user.id, _external=True)
@@ -1322,23 +1250,11 @@ class UpdatePublicAccountReviewTest:
             "reason": "test",
         }
 
-        response = self.add_new_review(authenticated_client, user, base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
 
         user = users_models.User.query.get(user.id)
         assert not user.deposits
-
-    def add_new_review(self, authenticated_client, user_to_edit, form):
-        # generate csrf token
-        public_account_url = url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_to_edit.id)
-        response = authenticated_client.get(public_account_url)
-
-        assert response.status_code == 200
-
-        url = url_for("backoffice_v3_web.public_accounts.review_public_account", user_id=user_to_edit.id)
-
-        form["csrf_token"] = g.get("csrf_token", "")
-        return authenticated_client.post(url, form=form)
 
 
 class GetPublicAccountHistoryTest:

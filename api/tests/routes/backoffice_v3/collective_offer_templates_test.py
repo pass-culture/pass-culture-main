@@ -1,6 +1,5 @@
 import datetime
 
-from flask import g
 from flask import url_for
 import pytest
 
@@ -16,7 +15,8 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 
 from .helpers import html_parser
-from .helpers import unauthorized as unauthorized_helpers
+from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
@@ -43,8 +43,9 @@ def collective_offer_templates_fixture() -> tuple:
     return collective_offer_template_1, collective_offer_template_2, collective_offer_template_3
 
 
-class ListCollectiveOfferTemplatesTest:
+class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.collective_offer_template.list_collective_offer_templates"
+    needed_permission = perm_models.Permissions.READ_OFFERS
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
@@ -52,10 +53,6 @@ class ListCollectiveOfferTemplatesTest:
     # - fetch user (1 query)
     # - fetch collective offer templates with joinedload including extra data (1 query)
     expected_num_queries = 3
-
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.collective_offer_template.list_collective_offer_templates"
-        needed_permission = perm_models.Permissions.READ_OFFERS
 
     def test_list_collective_offer_templates_without_filter(self, authenticated_client, collective_offer_templates):
         # when
@@ -219,21 +216,18 @@ class ListCollectiveOfferTemplatesTest:
         assert [row["Nom de l'offre"] for row in rows] == ["Offre 4", "Offre 3", "Offre 2", "Offre 1"]
 
 
-class ValidateCollectiveOfferTemplateTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.collective_offer_template.validate_collective_offer_template"
-        endpoint_kwargs = {"collective_offer_template_id": 1}
-        needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_offer_template.validate_collective_offer_template"
+    endpoint_kwargs = {"collective_offer_template_id": 1}
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
 
     def test_validate_collective_offer_template(self, legit_user, authenticated_client):
         collective_offer_template_to_validate = educational_factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.PENDING
         )
-        base_form = {}
 
-        response = self._validate_collective_offer(
-            authenticated_client, collective_offer_template_to_validate, base_form
+        response = self.post_to_endpoint(
+            authenticated_client, collective_offer_template_id=collective_offer_template_to_validate.id
         )
         assert response.status_code == 303
 
@@ -262,9 +256,10 @@ class ValidateCollectiveOfferTemplateTest:
         collective_offer_to_validate = educational_factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.REJECTED
         )
-        base_form = {}
 
-        response = self._validate_collective_offer(authenticated_client, collective_offer_to_validate, base_form)
+        response = self.post_to_endpoint(
+            authenticated_client, collective_offer_template_id=collective_offer_to_validate.id
+        )
         assert response.status_code == 303
 
         expected_url = url_for(
@@ -287,55 +282,34 @@ class ValidateCollectiveOfferTemplateTest:
         assert len(row) == 1
         assert row[0]["État"] == "Rejetée"
 
-    def _validate_collective_offer(self, authenticated_client, collective_offer_template, form):
-        edit_url = url_for("backoffice_v3_web.collective_offer_template.list_collective_offer_templates")
-        authenticated_client.get(edit_url)
 
-        url = url_for(
-            "backoffice_v3_web.collective_offer_template.validate_collective_offer_template",
-            collective_offer_template_id=collective_offer_template.id,
-        )
-        form["csrf_token"] = g.get("csrf_token", "")
-
-        return authenticated_client.post(url, form=form)
-
-
-class ValidateCollectiveOfferTemplateFormTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.collective_offer_template.get_validate_collective_offer_template_form"
-        endpoint_kwargs = {"collective_offer_template_id": 1}
-        needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+class ValidateCollectiveOfferTemplateFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_offer_template.get_validate_collective_offer_template_form"
+    endpoint_kwargs = {"collective_offer_template_id": 1}
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
 
     def test_get_validate_form_test(self, legit_user, authenticated_client):
         collective_offer_template = educational_factories.CollectiveOfferTemplateFactory()
 
-        form_url = url_for(
-            "backoffice_v3_web.collective_offer_template.get_validate_collective_offer_template_form",
-            collective_offer_template_id=collective_offer_template.id,
-            _external=True,
-        )
+        url = url_for(self.endpoint, collective_offer_template_id=collective_offer_template.id)
 
         with assert_num_queries(2):  # session + user
-            response = authenticated_client.get(form_url)
+            response = authenticated_client.get(url)
             assert response.status_code == 200
 
 
-class RejectCollectiveOfferTemplateTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.collective_offer_template.reject_collective_offer_template"
-        endpoint_kwargs = {"collective_offer_template_id": 1}
-        needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+class RejectCollectiveOfferTemplateTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_offer_template.reject_collective_offer_template"
+    endpoint_kwargs = {"collective_offer_template_id": 1}
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
 
     def test_reject_collective_offer_template(self, legit_user, authenticated_client):
         collective_offer_template_to_reject = educational_factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.PENDING
         )
-        base_form = {}
 
-        response = self._reject_collective_offer_template(
-            authenticated_client, collective_offer_template_to_reject, base_form
+        response = self.post_to_endpoint(
+            authenticated_client, collective_offer_template_id=collective_offer_template_to_reject.id
         )
         assert response.status_code == 303
 
@@ -364,10 +338,9 @@ class RejectCollectiveOfferTemplateTest:
         collective_offer_template_to_reject = educational_factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.APPROVED
         )
-        base_form = {}
 
-        response = self._reject_collective_offer_template(
-            authenticated_client, collective_offer_template_to_reject, base_form
+        response = self.post_to_endpoint(
+            authenticated_client, collective_offer_template_id=collective_offer_template_to_reject.id
         )
         assert response.status_code == 303
 
@@ -391,34 +364,16 @@ class RejectCollectiveOfferTemplateTest:
         assert len(row) == 1
         assert row[0]["État"] == "Validée"
 
-    def _reject_collective_offer_template(self, authenticated_client, collective_offer_template, form):
-        edit_url = url_for("backoffice_v3_web.collective_offer_template.list_collective_offer_templates")
-        authenticated_client.get(edit_url)
 
-        url = url_for(
-            "backoffice_v3_web.collective_offer_template.reject_collective_offer_template",
-            collective_offer_template_id=collective_offer_template.id,
-        )
-        form["csrf_token"] = g.get("csrf_token", "")
-
-        return authenticated_client.post(url, form=form)
-
-
-class RejectCollectiveOfferTemplateFormTest:
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.collective_offer_template.get_reject_collective_offer_template_form"
-        endpoint_kwargs = {"collective_offer_template_id": 1}
-        needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+class RejectCollectiveOfferTemplateFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_offer_template.get_reject_collective_offer_template_form"
+    endpoint_kwargs = {"collective_offer_template_id": 1}
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
 
     def test_get_reject_form_test(self, legit_user, authenticated_client):
         collective_offer_template = educational_factories.CollectiveOfferTemplateFactory()
 
-        form_url = url_for(
-            "backoffice_v3_web.collective_offer_template.get_reject_collective_offer_template_form",
-            collective_offer_template_id=collective_offer_template.id,
-            _external=True,
-        )
+        form_url = url_for(self.endpoint, collective_offer_template_id=collective_offer_template.id)
 
         with assert_num_queries(2):  # session + user
             response = authenticated_client.get(form_url)

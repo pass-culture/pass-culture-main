@@ -1,4 +1,3 @@
-from flask import g
 from flask import url_for
 import pytest
 
@@ -8,7 +7,8 @@ from pcapi.models import db
 from pcapi.models import feature as feature_models
 
 from .helpers import html_parser
-from .helpers import unauthorized as unauthorized_helpers
+from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
@@ -17,12 +17,9 @@ pytestmark = [
 ]
 
 
-class GetRolesTest:
+class GetRolesTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.get_roles"
-
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.get_roles"
-        needed_permission = perm_models.Permissions.MANAGE_PERMISSIONS
+    needed_permission = perm_models.Permissions.MANAGE_PERMISSIONS
 
     def test_can_list_roles_and_permissions(self, authenticated_client):
         # given
@@ -59,11 +56,10 @@ class GetRolesTest:
         assert "test_role_2" in roles
 
 
-class UpdateRoleTest:
-    class UnauthorizedTest(unauthorized_helpers.MissingCSRFHelper):
-        endpoint = "backoffice_v3_web.update_role"
-        endpoint_kwargs = {"role_id": 1}
-        method = "post"
+class UpdateRoleTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.update_role"
+    endpoint_kwargs = {"role_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PERMISSIONS
 
     def test_update_role(self, authenticated_client):
         perms = perm_factories.PermissionFactory.create_batch(4)
@@ -76,7 +72,7 @@ class UpdateRoleTest:
         for perm in perms:
             base_form[perm.name] = perm in new_perms
 
-        response = self.update_role(authenticated_client, role_to_edit, base_form)
+        response = self.post_to_endpoint(authenticated_client, role_id=role_to_edit.id, form=base_form)
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_v3_web.get_roles", _external=True)
@@ -91,31 +87,20 @@ class UpdateRoleTest:
     def test_update_role_with_empty_permissions(self, authenticated_client):
         role = perm_factories.RoleFactory(name="dummy_role", permissions=[perm_factories.PermissionFactory()])
 
-        response = self.update_role(
-            authenticated_client, role, {perm.name: False for perm in perm_models.Permission.query.all()}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            role_id=role.id,
+            form={perm.name: False for perm in perm_models.Permission.query.all()},
         )
         assert response.status_code == 303
 
         db.session.refresh(role)
         assert role.permissions == []
 
-    def update_role(self, authenticated_client, role_to_edit, form):
-        # generate csrf token
-        edit_url = url_for("backoffice_v3_web.get_roles")
-        authenticated_client.get(edit_url)
 
-        url = url_for("backoffice_v3_web.update_role", role_id=role_to_edit.id)
-
-        form["csrf_token"] = g.get("csrf_token", "")
-        return authenticated_client.post(url, form=form)
-
-
-class ListFeatureFlagsTest:
+class ListFeatureFlagsTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.list_feature_flags"
-
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.list_feature_flags"
-        needed_permission = perm_models.Permissions.FEATURE_FLIPPING
+    needed_permission = perm_models.Permissions.FEATURE_FLIPPING
 
     def test_list_feature_flags(self, authenticated_client):
         first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
@@ -139,55 +124,54 @@ class ListFeatureFlagsTest:
         assert rows[0]["Nom"] == first_feature_flag.name
         assert rows[0]["Description"] == first_feature_flag.description
 
+
+class EnableFeatureFlagTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.enable_feature_flag"
+    endpoint_kwargs = {"feature_flag_id": 1}
+    needed_permission = perm_models.Permissions.FEATURE_FLIPPING
+
     def test_enable_feature_flag(self, authenticated_client):
         first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
         first_feature_flag.isActive = False
 
-        response = self.toggle_feature_flag(authenticated_client, first_feature_flag, {}, set_to_active=True)
+        response = self.post_to_endpoint(authenticated_client, feature_flag_id=first_feature_flag.id)
         assert response.status_code == 303
 
         assert first_feature_flag.isActive == True
-        response = authenticated_client.get(url_for(self.endpoint))
+        response = authenticated_client.get(response.location)
         assert f"Le feature flag {first_feature_flag.name} a été activé" in response.data.decode("utf-8")
 
     def test_enable_already_active_feature_flag(self, authenticated_client):
         first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
         first_feature_flag.isActive = True
 
-        response = self.toggle_feature_flag(authenticated_client, first_feature_flag, {}, set_to_active=True)
+        response = self.post_to_endpoint(authenticated_client, feature_flag_id=first_feature_flag.id)
         assert response.status_code == 303
-        response = authenticated_client.get(url_for(self.endpoint))
+        response = authenticated_client.get(response.location)
         assert f"Le feature flag {first_feature_flag.name} est déjà activé" in response.data.decode("utf-8")
+
+
+class DisableFeatureFlagTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.disable_feature_flag"
+    endpoint_kwargs = {"feature_flag_id": 1}
+    needed_permission = perm_models.Permissions.FEATURE_FLIPPING
 
     def test_disable_feature_flag(self, authenticated_client):
         first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
         first_feature_flag.isActive = True
 
-        response = self.toggle_feature_flag(authenticated_client, first_feature_flag, {}, set_to_active=False)
+        response = self.post_to_endpoint(authenticated_client, feature_flag_id=first_feature_flag.id)
         assert response.status_code == 303
 
         assert first_feature_flag.isActive == False
-        response = authenticated_client.get(url_for(self.endpoint))
+        response = authenticated_client.get(response.location)
         assert f"Le feature flag {first_feature_flag.name} a été désactivé" in response.data.decode("utf-8")
 
     def test_disable_already_inactive_feature_flag(self, authenticated_client):
         first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
         first_feature_flag.isActive = False
 
-        response = self.toggle_feature_flag(authenticated_client, first_feature_flag, {}, set_to_active=False)
+        response = self.post_to_endpoint(authenticated_client, feature_flag_id=first_feature_flag.id)
         assert response.status_code == 303
-        response = authenticated_client.get(url_for(self.endpoint))
+        response = authenticated_client.get(response.location)
         assert f"Le feature flag {first_feature_flag.name} est déjà désactivé" in response.data.decode("utf-8")
-
-    def toggle_feature_flag(self, authenticated_client, feature_flag_to_toggle, form, set_to_active):
-        # generate csrf token
-        edit_url = url_for("backoffice_v3_web.list_feature_flags")
-        authenticated_client.get(edit_url)
-
-        if set_to_active:
-            url = url_for("backoffice_v3_web.enable_feature_flag", feature_flag_id=feature_flag_to_toggle.id)
-        else:
-            url = url_for("backoffice_v3_web.disable_feature_flag", feature_flag_id=feature_flag_to_toggle.id)
-
-        form["csrf_token"] = g.get("csrf_token", "")
-        return authenticated_client.post(url, form=form)

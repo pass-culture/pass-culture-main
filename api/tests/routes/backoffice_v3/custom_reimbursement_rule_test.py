@@ -11,7 +11,7 @@ import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_num_queries
 
 from .helpers import html_parser
-from .helpers import unauthorized as unauthorized_helpers
+from .helpers.get import GetEndpointHelper
 
 
 pytestmark = [
@@ -20,8 +20,9 @@ pytestmark = [
 ]
 
 
-class ListCustomReimbursementRulesTest:
+class ListCustomReimbursementRulesTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.reimbursement_rules.list_custom_reimbursement_rules"
+    needed_permission = perm_models.Permissions.READ_REIMBURSEMENT_RULES
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
@@ -29,10 +30,6 @@ class ListCustomReimbursementRulesTest:
     # - fetch user (1 query)
     # - fetch custom reimbursement rules with extra data (1 query)
     expected_num_queries = 3
-
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.reimbursement_rules.list_custom_reimbursement_rules"
-        needed_permission = perm_models.Permissions.READ_REIMBURSEMENT_RULES
 
     def test_list_custom_reimbursement_rules(self, authenticated_client):
         start = datetime.datetime.utcnow() - datetime.timedelta(days=365)

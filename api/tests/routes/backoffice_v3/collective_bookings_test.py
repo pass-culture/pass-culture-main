@@ -1,6 +1,5 @@
 import datetime
 
-from flask import g
 from flask import url_for
 import pytest
 
@@ -17,7 +16,8 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 
 from .helpers import html_parser
-from .helpers import unauthorized as unauthorized_helpers
+from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
@@ -79,8 +79,9 @@ def collective_bookings_fixture() -> tuple:
     return pending, confirmed, cancelled, used, reimbursed
 
 
-class ListCollectiveBookingsTest:
+class ListCollectiveBookingsTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.collective_bookings.list_collective_bookings"
+    needed_permission = perm_models.Permissions.READ_BOOKINGS
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
@@ -88,10 +89,6 @@ class ListCollectiveBookingsTest:
     # - fetch user (1 query)
     # - fetch collective bookings with extra data (1 query)
     expected_num_queries = 3
-
-    class UnauthorizedTest(unauthorized_helpers.UnauthorizedHelper):
-        endpoint = "backoffice_v3_web.collective_bookings.list_collective_bookings"
-        needed_permission = perm_models.Permissions.READ_BOOKINGS
 
     def test_list_bookings_without_filter(self, authenticated_client, collective_bookings):
         # when
@@ -432,31 +429,17 @@ class ListCollectiveBookingsTest:
         assert "Taux de remboursement : 100,0 %" in reimbursement_data
 
 
-def send_request(authenticated_client, url, form_data=None):
-    # generate and fetch (inside g) csrf token
-    booking_list_url = url_for("backoffice_v3_web.collective_bookings.list_collective_bookings")
-    authenticated_client.get(booking_list_url)
-
-    form_data = form_data if form_data else {}
-    form = {"csrf_token": g.get("csrf_token", ""), **form_data}
-
-    return authenticated_client.post(url, form=form)
-
-
-class MarkCollectiveBookingAsUsedTest:
-    class MarkCollectiveBookingAsUsedUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.collective_bookings.mark_booking_as_used"
-        endpoint_kwargs = {"collective_booking_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+class MarkCollectiveBookingAsUsedTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_bookings.mark_booking_as_used"
+    endpoint_kwargs = {"collective_booking_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
     def test_uncancel_and_mark_as_used(self, authenticated_client, collective_bookings):
         # give
         cancelled = collective_bookings[2]
 
         # when
-        url = url_for("backoffice_v3_web.collective_bookings.mark_booking_as_used", collective_booking_id=cancelled.id)
-        response = send_request(authenticated_client, url)
+        response = self.post_to_endpoint(authenticated_client, collective_booking_id=cancelled.id)
 
         # then
         assert response.status_code == 303
@@ -473,10 +456,7 @@ class MarkCollectiveBookingAsUsedTest:
         old_status = non_cancelled.status
 
         # when
-        url = url_for(
-            "backoffice_v3_web.collective_bookings.mark_booking_as_used", collective_booking_id=non_cancelled.id
-        )
-        response = send_request(authenticated_client, url)
+        response = self.post_to_endpoint(authenticated_client, collective_booking_id=non_cancelled.id)
 
         # then
         assert response.status_code == 303
@@ -490,22 +470,17 @@ class MarkCollectiveBookingAsUsedTest:
         )
 
 
-class CancelCollectiveBookingTest:
-    class CancelCollectiveBookingUnauthorizedTest(unauthorized_helpers.UnauthorizedHelperWithCsrf):
-        method = "post"
-        endpoint = "backoffice_v3_web.collective_bookings.mark_booking_as_cancelled"
-        endpoint_kwargs = {"collective_booking_id": 1}
-        needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+class CancelCollectiveBookingTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_bookings.mark_booking_as_cancelled"
+    endpoint_kwargs = {"collective_booking_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
     def test_cancel_booking(self, authenticated_client, collective_bookings):
         # give
         confirmed = collective_bookings[1]
 
         # when
-        url = url_for(
-            "backoffice_v3_web.collective_bookings.mark_booking_as_cancelled", collective_booking_id=confirmed.id
-        )
-        response = send_request(authenticated_client, url)
+        response = self.post_to_endpoint(authenticated_client, collective_booking_id=confirmed.id)
 
         # then
         assert response.status_code == 303
@@ -522,10 +497,7 @@ class CancelCollectiveBookingTest:
         old_status = reimbursed.status
 
         # when
-        url = url_for(
-            "backoffice_v3_web.collective_bookings.mark_booking_as_cancelled", collective_booking_id=reimbursed.id
-        )
-        response = send_request(authenticated_client, url)
+        response = self.post_to_endpoint(authenticated_client, collective_booking_id=reimbursed.id)
 
         # then
         assert response.status_code == 303
@@ -542,10 +514,7 @@ class CancelCollectiveBookingTest:
         old_status = cancelled.status
 
         # when
-        url = url_for(
-            "backoffice_v3_web.collective_bookings.mark_booking_as_cancelled", collective_booking_id=cancelled.id
-        )
-        response = send_request(authenticated_client, url)
+        response = self.post_to_endpoint(authenticated_client, collective_booking_id=cancelled.id)
 
         # then
         assert response.status_code == 303
