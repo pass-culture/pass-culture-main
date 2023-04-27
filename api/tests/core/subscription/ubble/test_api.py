@@ -17,8 +17,8 @@ from pcapi.core.fraud.factories import BeneficiaryFraudCheckFactory
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.fraud.models import FraudCheckStatus
 from pcapi.core.fraud.models import FraudCheckType
+from pcapi.core.fraud.models import UbbleContent
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
-from pcapi.core.fraud.ubble.models import UbbleContent
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
@@ -452,8 +452,8 @@ class UbbleWorkflowTest:
         assert amplitude_testing.requests[0]["event_name"] == amplitude_connector.AmplitudeEventType.UBBLE_ERROR.value
         assert amplitude_testing.requests[0]["event_properties"] == {
             "error_codes": [
-                fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH.value,
                 fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA.value,
+                fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH.value,
             ]
         }
 
@@ -794,6 +794,30 @@ class SubscriptionMessageTest:
                 ubble_models.UbbleRetryableMessageSummary.ID_CHECK_UNPROCESSABLE.value,
                 ubble_models.UbbleRetryableActionHint.ID_CHECK_UNPROCESSABLE.value,
             ),
+            (
+                [fraud_models.FraudReasonCode.BLURRY_VIDEO],
+                ubble_models.UbbleRetryableUserMessage.BLURRY_VIDEO.value,
+                ubble_models.UbbleRetryableMessageSummary.BLURRY_VIDEO.value,
+                ubble_models.UbbleRetryableActionHint.BLURRY_VIDEO.value,
+            ),
+            (
+                [fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE],
+                ubble_models.UbbleRetryableUserMessage.NETWORK_CONNECTION_ISSUE.value,
+                ubble_models.UbbleRetryableMessageSummary.NETWORK_CONNECTION_ISSUE.value,
+                ubble_models.UbbleRetryableActionHint.NETWORK_CONNECTION_ISSUE.value,
+            ),
+            (
+                [fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY],
+                ubble_models.UbbleRetryableUserMessage.LACK_OF_LUMINOSITY.value,
+                ubble_models.UbbleRetryableMessageSummary.LACK_OF_LUMINOSITY.value,
+                ubble_models.UbbleRetryableActionHint.LACK_OF_LUMINOSITY.value,
+            ),
+            (
+                [fraud_models.FraudReasonCode.DOCUMENT_DAMAGED],
+                ubble_models.UbbleRetryableUserMessage.DOCUMENT_DAMAGED.value,
+                ubble_models.UbbleRetryableMessageSummary.DOCUMENT_DAMAGED.value,
+                ubble_models.UbbleRetryableActionHint.DOCUMENT_DAMAGED.value,
+            ),
         ],
     )
     def test_retryable(self, reason_codes, expected_message, expected_message_summary, expected_action_hint):
@@ -845,11 +869,11 @@ class SubscriptionMessageTest:
         [
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER],
-                "Ton dossier a été refusé. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
+                ubble_models.UbbleNotRetryableUserMessage.ID_CHECK_BLOCKED_OTHER.value,
             ),
             (
                 None,
-                "Désolé, la vérification de ton identité n'a pas pu aboutir. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
+                ubble_models.UbbleNotRetryableUserMessage.DEFAULT.value,
             ),
         ],
     )
@@ -872,10 +896,44 @@ class SubscriptionMessageTest:
             updated_at=fraud_check.updatedAt,
         )
 
-    def test_not_retryable_third_time_go_dms(self):
-        reason_codes = [fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED]
-        expected_message = "Le document d'identité que tu as présenté n'est pas accepté. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
-
+    @pytest.mark.parametrize(
+        "reason_codes,expected_message",
+        [
+            (
+                [fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
+                ubble_models.UbbleNotRetryableUserMessage.ID_CHECK_EXPIRED.value,
+            ),
+            (
+                [fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC],
+                ubble_models.UbbleNotRetryableUserMessage.ID_CHECK_NOT_AUTHENTIC.value,
+            ),
+            (
+                [fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
+                ubble_models.UbbleNotRetryableUserMessage.ID_CHECK_NOT_SUPPORTED.value,
+            ),
+            (
+                [fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
+                ubble_models.UbbleNotRetryableUserMessage.ID_CHECK_UNPROCESSABLE.value,
+            ),
+            (
+                [fraud_models.FraudReasonCode.BLURRY_VIDEO],
+                ubble_models.UbbleNotRetryableUserMessage.BLURRY_VIDEO.value,
+            ),
+            (
+                [fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE],
+                ubble_models.UbbleNotRetryableUserMessage.NETWORK_CONNECTION_ISSUE.value,
+            ),
+            (
+                [fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY],
+                ubble_models.UbbleNotRetryableUserMessage.LACK_OF_LUMINOSITY.value,
+            ),
+            (
+                [fraud_models.FraudReasonCode.DOCUMENT_DAMAGED],
+                ubble_models.UbbleNotRetryableUserMessage.DOCUMENT_DAMAGED.value,
+            ),
+        ],
+    )
+    def test_not_retryable_third_time_go_dms(self, reason_codes, expected_message):
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,

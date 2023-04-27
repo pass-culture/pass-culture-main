@@ -27,7 +27,6 @@ from pcapi.repository.user_queries import matching
 from . import models
 from .common import models as common_models
 from .ubble import api as ubble_api
-from .ubble import models as ubble_models
 
 
 logger = logging.getLogger(__name__)
@@ -103,7 +102,7 @@ def on_identity_fraud_check_result(
     identity_content: common_models.IdentityCheckContent = beneficiary_fraud_check.source_data()
 
     if beneficiary_fraud_check.type == models.FraudCheckType.UBBLE:
-        assert isinstance(identity_content, ubble_models.UbbleContent)
+        assert isinstance(identity_content, models.UbbleContent)
         fraud_items += ubble_api.ubble_fraud_checks(user, identity_content)
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.DMS:
@@ -147,7 +146,7 @@ def validate_id_piece_number_format_fraud_item(id_piece_number: str | None) -> m
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS,
             detail="Le numéro de la pièce d'identité est vide",
-            reason_code=models.FraudReasonCode.EMPTY_ID_PIECE_NUMBER,
+            reason_codes=[models.FraudReasonCode.EMPTY_ID_PIECE_NUMBER],
         )
 
     # Outil de test de regex: https://regex101.com/ FTW
@@ -194,7 +193,7 @@ def validate_id_piece_number_format_fraud_item(id_piece_number: str | None) -> m
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS,
             detail="Le format du numéro de la pièce d'identité n'est pas valide",
-            reason_code=models.FraudReasonCode.INVALID_ID_PIECE_NUMBER,
+            reason_codes=[models.FraudReasonCode.INVALID_ID_PIECE_NUMBER],
         )
     return models.FraudItem(status=models.FraudStatus.OK, detail="Le numéro de pièce d'identité est valide")
 
@@ -212,7 +211,7 @@ def _duplicate_user_fraud_item(
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS,
             detail=f"Duplicat de l'utilisateur {duplicate_user.id}",
-            reason_code=models.FraudReasonCode.DUPLICATE_USER,
+            reason_codes=[models.FraudReasonCode.DUPLICATE_USER],
         )
 
     return models.FraudItem(status=models.FraudStatus.OK, detail="Utilisateur non dupliqué")
@@ -221,7 +220,7 @@ def _duplicate_user_fraud_item(
 def _missing_data_fraud_item() -> models.FraudItem:
     return models.FraudItem(
         status=models.FraudStatus.SUSPICIOUS,
-        reason_code=models.FraudReasonCode.MISSING_REQUIRED_DATA,
+        reason_codes=[models.FraudReasonCode.MISSING_REQUIRED_DATA],
         detail="Des informations obligatoires (prénom, nom ou date de naissance) sont absentes du dossier",
     )
 
@@ -263,7 +262,7 @@ def duplicate_id_piece_number_fraud_item(user: users_models.User, id_piece_numbe
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS,
             detail=f"La pièce d'identité n°{id_piece_number} est déjà prise par l'utilisateur {duplicate_user.id}",
-            reason_code=models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER,
+            reason_codes=[models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER],
         )
 
     return models.FraudItem(status=models.FraudStatus.OK, detail="La pièce d'identité n'est pas déjà utilisée")
@@ -290,7 +289,7 @@ def _duplicate_ine_hash_fraud_item(ine_hash: str, excluded_user_id: int) -> mode
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS,
             detail=f"L'INE {ine_hash} est déjà pris par l'utilisateur {duplicate_user.id}",
-            reason_code=models.FraudReasonCode.DUPLICATE_INE,
+            reason_codes=[models.FraudReasonCode.DUPLICATE_INE],
         )
 
     return models.FraudItem(status=models.FraudStatus.OK, detail="L'INE n'est pas déjà pris")
@@ -309,7 +308,7 @@ def _check_user_eligibility(
         return models.FraudItem(
             status=models.FraudStatus.KO,
             detail="L'âge indiqué dans le dossier indique que l'utilisateur n'est pas éligible",
-            reason_code=models.FraudReasonCode.NOT_ELIGIBLE,
+            reason_codes=[models.FraudReasonCode.NOT_ELIGIBLE],
         )
 
     return models.FraudItem(
@@ -347,7 +346,7 @@ def _check_user_names_valid(first_name: str | None, last_name: str | None) -> mo
         return models.FraudItem(
             status=models.FraudStatus.KO,
             detail=f"L'utilisateur a {incorrect_fields} avec des caractères invalides",
-            reason_code=models.FraudReasonCode.NAME_INCORRECT,
+            reason_codes=[models.FraudReasonCode.NAME_INCORRECT],
         )
     return models.FraudItem(
         status=models.FraudStatus.OK, detail="L'utilisateur a un nom et prénom avec des caractères valides"
@@ -359,7 +358,7 @@ def _check_user_email_is_validated(user: users_models.User) -> models.FraudItem:
         return models.FraudItem(
             status=models.FraudStatus.KO,
             detail="L'email de l'utilisateur n'est pas validé",
-            reason_code=models.FraudReasonCode.EMAIL_NOT_VALIDATED,
+            reason_codes=[models.FraudReasonCode.EMAIL_NOT_VALIDATED],
         )
     return models.FraudItem(status=models.FraudStatus.OK, detail="L'email est validé")
 
@@ -374,7 +373,7 @@ def _underage_user_fraud_item(birth_date: datetime.date) -> models.FraudItem:
     return models.FraudItem(
         status=models.FraudStatus.KO,
         detail=f"L'âge de l'utilisateur est invalide ({age} ans). Il devrait être parmi {constants.ELIGIBILITY_UNDERAGE_RANGE}",
-        reason_code=models.FraudReasonCode.AGE_NOT_VALID,
+        reason_codes=[models.FraudReasonCode.AGE_NOT_VALID],
     )
 
 
@@ -460,15 +459,16 @@ def validate_frauds(
     reason = f" {FRAUD_RESULT_REASON_SEPARATOR} ".join(
         fraud_item.detail for fraud_item in fraud_items if fraud_item.status != models.FraudStatus.OK
     )
-    reason_codes = [
-        fraud_item.reason_code
+    reason_codes = {
+        reason_code
         for fraud_item in fraud_items
-        if fraud_item.status != models.FraudStatus.OK and fraud_item.reason_code is not None
-    ]
+        if fraud_item.status != models.FraudStatus.OK and fraud_item.reason_codes
+        for reason_code in fraud_item.reason_codes
+    }
 
     fraud_check.status = fraud_check_status
     fraud_check.reason = reason
-    fraud_check.reasonCodes = reason_codes
+    fraud_check.reasonCodes = list(reason_codes)
     repository.save(fraud_check)
 
     return fraud_items

@@ -27,6 +27,7 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
+from pcapi.core.subscription.ubble import models as ubble_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import get_domains_credit
@@ -1087,7 +1088,7 @@ class UbbleWebhookTest:
         assert fraud_check.status is fraud_models.FraudCheckStatus.STARTED
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
-        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = fraud_models.UbbleContent(**fraud_check.resultContent)
         assert content.score is None
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment is None
@@ -1120,7 +1121,7 @@ class UbbleWebhookTest:
         assert fraud_check.status is fraud_models.FraudCheckStatus.CANCELED
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
-        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = fraud_models.UbbleContent(**fraud_check.resultContent)
         assert content.score is None
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment is None
@@ -1157,7 +1158,7 @@ class UbbleWebhookTest:
             subscription_api.get_identity_check_fraud_status(fraud_check.user, fraud_check.eligibilityType, fraud_check)
             == subscription_models.SubscriptionItemStatus.PENDING
         )
-        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
@@ -1200,7 +1201,7 @@ class UbbleWebhookTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["To"] == fraud_check.user.email
 
-        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
@@ -1248,7 +1249,7 @@ class UbbleWebhookTest:
 
         assert len(mails_testing.outbox) == 0
 
-        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
@@ -1293,7 +1294,7 @@ class UbbleWebhookTest:
 
         self._assert_email_sent(fraud_check.user, 304)
 
-        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
@@ -1918,10 +1919,7 @@ class UbbleWebhookTest:
         assert fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
-        assert (
-            message.user_message
-            == "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site demarches-simplifiees.fr. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité."
-        )
+        assert message.user_message == ubble_models.UbbleRetryableUserMessage.ID_CHECK_NOT_SUPPORTED.value
         assert message.call_to_action.link == "passculture://verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
@@ -1997,10 +1995,7 @@ class UbbleWebhookTest:
         assert fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
-        assert (
-            message.user_message
-            == "Ton document d'identité est expiré. Réessaye avec un passeport ou une carte d'identité française en cours de validité."
-        )
+        assert message.user_message == ubble_models.UbbleRetryableUserMessage.ID_CHECK_EXPIRED.value
         assert message.call_to_action.link == "passculture://verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
@@ -2068,16 +2063,68 @@ class UbbleWebhookTest:
         assert fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
-        assert (
-            message.user_message
-            == "Le document que tu as présenté n’est pas accepté car il s’agit d’une photo ou d’une copie de l’original. Réessaye avec un document original en cours de validité."
-        )
+        assert message.user_message == ubble_models.UbbleRetryableUserMessage.ID_CHECK_NOT_AUTHENTIC.value
         assert message.call_to_action.link == "passculture://verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 760
+
+    @pytest.mark.usefixtures("db_session")
+    @pytest.mark.parametrize(
+        "reason_code,retryable_message,code_number",
+        [
+            (
+                fraud_models.FraudReasonCode.BLURRY_VIDEO,
+                ubble_models.UbbleRetryableUserMessage.BLURRY_VIDEO.value,
+                1310,
+            ),
+            (
+                fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
+                ubble_models.UbbleRetryableUserMessage.DOCUMENT_DAMAGED.value,
+                2103,
+            ),
+            (
+                fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
+                ubble_models.UbbleRetryableUserMessage.LACK_OF_LUMINOSITY.value,
+                1320,
+            ),
+            (
+                fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
+                ubble_models.UbbleRetryableUserMessage.NETWORK_CONNECTION_ISSUE.value,
+                1201,
+            ),
+        ],
+    )
+    def test_decision_suspicious_codes(self, client, ubble_mocker, reason_code, retryable_message, code_number):
+        user, ubble_fraud_check, request_data = self._init_decision_test()
+        # Perform phone validation and profile completion
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.INVALID,
+            error_codes=[code_number],
+        )
+
+        self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
+
+        db.session.refresh(user)
+        db.session.refresh(ubble_fraud_check)
+
+        assert not user.has_beneficiary_role
+        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert reason_code in ubble_fraud_check.reasonCodes
+
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
+        assert message.user_message == retryable_message
+        assert message.call_to_action.link == "passculture://verification-identite"
+        assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
+        assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
     def test_decision_document_not_authentic_no_retry_left(self, client, ubble_mocker):
         user, ubble_fraud_check, request_data = self._init_decision_test()
@@ -2141,10 +2188,7 @@ class UbbleWebhookTest:
         assert fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
-        assert (
-            message.user_message
-            == "Ton dossier a été refusé car le document que tu as présenté n’est pas authentique. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
-        )
+        assert message.user_message == ubble_models.UbbleNotRetryableUserMessage.ID_CHECK_NOT_AUTHENTIC.value
         assert message.call_to_action.link == "passculture://verification-identite/demarches-simplifiees"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.EXTERNAL
         assert message.call_to_action.title == "Accéder au site Démarches-Simplifiées"
@@ -2218,10 +2262,7 @@ class UbbleWebhookTest:
         assert fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
-        assert (
-            message.user_message
-            == "Ton dossier a été refusé. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande."
-        )
+        assert message.user_message == ubble_models.UbbleNotRetryableUserMessage.ID_CHECK_BLOCKED_OTHER.value
         assert message.call_to_action.link == "passculture://verification-identite/demarches-simplifiees"
 
         assert len(mails_testing.outbox) == 0
@@ -2310,10 +2351,7 @@ class UbbleWebhookTest:
         assert fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
-        assert (
-            message.user_message
-            == "Nous n'arrivons pas à lire ton document. Réessaye avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé."
-        )
+        assert message.user_message == ubble_models.UbbleRetryableUserMessage.ID_CHECK_UNPROCESSABLE.value
         assert message.call_to_action.link == "passculture://verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"

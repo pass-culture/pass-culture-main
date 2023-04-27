@@ -11,7 +11,6 @@ from factory.declarations import LazyAttribute
 import factory.fuzzy
 
 from pcapi.core import testing
-import pcapi.core.fraud.ubble.models as ubble_fraud_models
 from pcapi.core.users import models as users_models
 import pcapi.core.users.factories as users_factories
 
@@ -89,7 +88,7 @@ class DMSContentFactory(factory.Factory):
 
 class UbbleContentFactory(factory.Factory):
     class Meta:
-        model = ubble_fraud_models.UbbleContent
+        model = models.UbbleContent
 
     status = None
     birth_date = (date.today() - relativedelta(years=18, months=4)).isoformat()
@@ -99,6 +98,7 @@ class UbbleContentFactory(factory.Factory):
     id_document_number = None
     score = None
     ove_score = None
+    reason_codes = None
     comment = None
     reference_data_check_score = None
     expiry_date_score = None

@@ -1,4 +1,5 @@
 import datetime
+import itertools
 
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
@@ -130,19 +131,16 @@ class CommonTest:
         }
 
 
-def filter_invalid_fraud_items_to_reason_code(
+def filter_invalid_fraud_items_to_reason_codes(
     fraud_items: list[fraud_models.FraudItem],
-) -> list[fraud_models.FraudItem]:
-    return [item.reason_code for item in fraud_items if item.status != fraud_models.FraudStatus.OK]
+) -> set[fraud_models.FraudReasonCode]:
+    return set(
+        itertools.chain(*[item.reason_codes for item in fraud_items if item.status != fraud_models.FraudStatus.OK])
+    )
 
 
 @pytest.mark.usefixtures("db_session")
 class CommonFraudCheckTest:
-    def filter_invalid_fraud_items_to_reason_code(
-        self, fraud_items: list[fraud_models.FraudItem]
-    ) -> list[fraud_models.FraudItem]:
-        return [item.reason_code for item in fraud_items if item.status != fraud_models.FraudStatus.OK]
-
     def test_duplicate_id_piece_number_ok(self):
         user = users_factories.UserFactory()
         fraud_item = fraud_api.duplicate_id_piece_number_fraud_item(user, "random_id")
@@ -410,9 +408,7 @@ class EduconnectFraudTest:
         result = fraud_api.educonnect_fraud_checks(user, fraud_check.source_data())
 
         age_check = next(
-            fraud_check
-            for fraud_check in result
-            if fraud_check.reason_code == fraud_models.FraudReasonCode.AGE_NOT_VALID
+            fraud_item for fraud_item in result if fraud_models.FraudReasonCode.AGE_NOT_VALID in fraud_item.reason_codes
         )
         assert age_check.status == fraud_models.FraudStatus.KO
         assert (
@@ -432,7 +428,7 @@ class EduconnectFraudTest:
             (
                 fraud_item
                 for fraud_item in result
-                if fraud_item.reason_code == fraud_models.FraudReasonCode.AGE_NOT_VALID
+                if fraud_item.reason_codes and fraud_models.FraudReasonCode.AGE_NOT_VALID in fraud_item.reason_codes
             ),
             None,
         )
@@ -455,7 +451,9 @@ class EduconnectFraudTest:
         fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
         invalid_item = [
-            item for item in fraud_items if item.reason_code == fraud_models.FraudReasonCode.DUPLICATE_USER
+            item
+            for item in fraud_items
+            if item.reason_codes and fraud_models.FraudReasonCode.DUPLICATE_USER in item.reason_codes
         ][0]
         assert f"Duplicat de l'utilisateur {already_existing_user.id}" in invalid_item.detail
         assert invalid_item.status == fraud_models.FraudStatus.SUSPICIOUS
@@ -475,7 +473,11 @@ class EduconnectFraudTest:
         )
         result = fraud_api.educonnect_fraud_checks(underage_user, fraud_check.source_data())
 
-        assert not any(fraud_item.reason_code == fraud_models.FraudReasonCode.DUPLICATE_USER for fraud_item in result)
+        assert not any(
+            fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_item.reason_codes
+            for fraud_item in result
+            if fraud_item.reason_codes
+        )
 
     def test_ine_duplicates_fraud_checks(self):
         same_ine_user = users_factories.UnderageBeneficiaryFactory(ineHash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
@@ -488,9 +490,9 @@ class EduconnectFraudTest:
         result = fraud_api.educonnect_fraud_checks(user_in_validation, fraud_check.source_data())
 
         duplicate_ine_check = next(
-            fraud_check
-            for fraud_check in result
-            if fraud_check.reason_code == fraud_models.FraudReasonCode.DUPLICATE_INE
+            fraud_item
+            for fraud_item in result
+            if fraud_item.reason_codes and fraud_models.FraudReasonCode.DUPLICATE_INE in fraud_item.reason_codes
         )
         assert duplicate_ine_check.status == fraud_models.FraudStatus.SUSPICIOUS
         assert (

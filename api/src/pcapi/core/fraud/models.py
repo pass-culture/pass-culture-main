@@ -7,6 +7,7 @@ import pydantic
 from pydantic.class_validators import validator
 import pydantic.datetime_parse
 import pydantic.errors
+import pytz
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
@@ -34,6 +35,62 @@ class FraudCheckType(enum.Enum):
 
 
 IDENTITY_CHECK_TYPES = [FraudCheckType.JOUVE, FraudCheckType.DMS, FraudCheckType.UBBLE, FraudCheckType.EDUCONNECT]
+
+
+class FraudReasonCode(enum.Enum):
+    # Common to all fraud checks
+    AGE_NOT_VALID = "age_is_not_valid"
+    DUPLICATE_USER = "duplicate_user"
+    EMAIL_NOT_VALIDATED = "email_not_validated"
+    MISSING_REQUIRED_DATA = "missing_required_data"
+    NAME_INCORRECT = "name_incorrect"  # The user's name contains unaccepted characters
+    NOT_ELIGIBLE = "not_eligible"
+
+    # Specific to DMS
+    EMPTY_ID_PIECE_NUMBER = "empty_id_piece_number"
+    ERROR_IN_DATA = "error_in_data"  # The user's data has not passed our API validation
+    REFUSED_BY_OPERATOR = "refused_by_operator"
+
+    # Specific to Ubble
+    # Ubble native errors
+    BLURRY_VIDEO = "blurry_video"
+    DOCUMENT_DAMAGED = "document_damaged"
+    ELIGIBILITY_CHANGED = "eligibility_changed"  # The user's eligibility detected by ubble is different from the eligibility declared by the user
+    ID_CHECK_BLOCKED_OTHER = (
+        "id_check_bocked_other"  # Default reason code when the user's ID check is blocked for an unhandled reason
+    )
+    ID_CHECK_DATA_MATCH = "id_check_data_match"  # Ubble check did not match the data declared in the app (profile step)
+    ID_CHECK_EXPIRED = "id_check_expired"
+    ID_CHECK_NOT_AUTHENTIC = "id_check_not_authentic"
+    ID_CHECK_NOT_SUPPORTED = "id_check_not_supported"
+    ID_CHECK_UNPROCESSABLE = "id_check_unprocessable"
+    INVALID_ID_PIECE_NUMBER = "invalid_id_piece_number"
+    LACK_OF_LUMINOSITY = "lack_of_luminosity"
+    NETWORK_CONNECTION_ISSUE = "network_connection_issue"
+    
+    # Our API errors
+    AGE_TOO_OLD = "age_too_old"
+    AGE_TOO_YOUNG = "age_too_young"
+    DUPLICATE_ID_PIECE_NUMBER = "duplicate_id_piece_number"
+
+    # Specific to Educonnect
+    DUPLICATE_INE = "duplicate_ine"
+
+    # Specific to Phone Validation
+    BLACKLISTED_PHONE_NUMBER = "blacklisted_phone_number"
+    INVALID_PHONE_COUNTRY_CODE = "invalid_phone_country_code"
+    PHONE_ALREADY_EXISTS = "phone_already_exists"
+    PHONE_UNVALIDATED_BY_PEER = "phone_unvalidated_by_peer"
+    PHONE_UNVALIDATION_FOR_PEER = "phone_unvalidation_for_peer"
+    PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED = "phone_validation_attempts_limit_reached"
+    SMS_SENDING_LIMIT_REACHED = "sms_sending_limit_reached"
+
+    # Deprecated, kept for backward compatibility
+    ALREADY_BENEFICIARY = "already_beneficiary"
+    ALREADY_HAS_ACTIVE_DEPOSIT = "already_has_active_deposit"
+    ID_CHECK_INVALID = "id_check_invalid"
+    INE_NOT_WHITELISTED = "ine_not_whitelisted"
+    PHONE_NOT_VALIDATED = "phone_not_validated"
 
 
 class FraudStatus(enum.Enum):
@@ -264,6 +321,71 @@ class DMSContent(common_models.IdentityCheckContent):
         return self.registration_datetime
 
 
+UBBLE_REASON_CODE_MAPPING = {
+    1201: FraudReasonCode.NETWORK_CONNECTION_ISSUE,  # applicant did not have a sufficient connection
+    1310: FraudReasonCode.BLURRY_VIDEO,  # applicant’s video of their face is too blurry
+    1320: FraudReasonCode.LACK_OF_LUMINOSITY,  # applicant performed their id verification under poor lighting conditions
+    2101: FraudReasonCode.ID_CHECK_EXPIRED,  # applicant presented an expired document
+    2102: FraudReasonCode.ID_CHECK_NOT_SUPPORTED,  # applicant presented a document which is not accepted
+    2103: FraudReasonCode.DOCUMENT_DAMAGED,  # applicant has submitted a damaged document
+    2201: FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,  # applicant presented a photocopy of the document
+    2202: FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,  # applicant presented the document on a screen
+    2301: FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,  # applicant has submitted a counterfeit or falsification
+}
+
+
+class UbbleContent(common_models.IdentityCheckContent):
+    birth_date: datetime.date | None
+    comment: str | None
+    document_type: str | None
+    expiry_date_score: float | None
+    first_name: str | None
+    gender: users_models.GenderEnum | None
+    id_document_number: str | None
+    identification_id: pydantic.UUID4 | None
+    identification_url: pydantic.HttpUrl | None
+    last_name: str | None
+    married_name: str | None
+    ove_score: float | None
+    reason_codes: list[FraudReasonCode] | None
+    reference_data_check_score: float | None
+    registration_datetime: datetime.datetime | None
+    processed_datetime: datetime.datetime | None
+    score: float | None
+    status: ubble_fraud_models.UbbleIdentificationStatus | None
+    status_updated_at: datetime.datetime | None
+    supported: float | None
+    signed_image_front_url: pydantic.HttpUrl | None
+    signed_image_back_url: pydantic.HttpUrl | None
+
+    _parse_birth_date = pydantic.validator("birth_date", pre=True, allow_reuse=True)(
+        lambda d: datetime.datetime.strptime(d, "%Y-%m-%d").date() if d is not None else None
+    )
+
+    def get_birth_date(self) -> datetime.date | None:
+        return self.birth_date
+
+    def get_registration_datetime(self) -> datetime.datetime | None:
+        return (
+            self.registration_datetime.astimezone(pytz.utc).replace(tzinfo=None) if self.registration_datetime else None
+        )
+
+    def get_first_name(self) -> str | None:
+        return self.first_name
+
+    def get_last_name(self) -> str | None:
+        return self.last_name
+
+    def get_civility(self) -> str | None:
+        return self.gender.value if self.gender else None
+
+    def get_married_name(self) -> str | None:
+        return self.married_name
+
+    def get_id_piece_number(self) -> str | None:
+        return self.id_document_number
+
+
 class HonorStatementContent(pydantic.BaseModel):
     pass
 
@@ -352,7 +474,7 @@ FRAUD_CHECK_CONTENT_MAPPING = {
     FraudCheckType.JOUVE: JouveContent,
     FraudCheckType.PHONE_VALIDATION: PhoneValidationFraudData,
     FraudCheckType.PROFILE_COMPLETION: ProfileCompletionContent,
-    FraudCheckType.UBBLE: ubble_fraud_models.UbbleContent,
+    FraudCheckType.UBBLE: UbbleContent,
     # Deprecated. We keep USER_PROFILING for backward compatibility.
     FraudCheckType.USER_PROFILING: UserProfilingFraudData,
 }
@@ -363,62 +485,11 @@ FraudCheckContent = typing.TypeVar(
     DMSContent,
     EduconnectContent,
     JouveContent,
-    ubble_fraud_models.UbbleContent,
+    UbbleContent,
     # Deprecated. We keep USER_PROFILING for backward compatibility.
     UserProfilingFraudData,
     ProfileCompletionContent,
 )
-
-
-class FraudReasonCode(enum.Enum):
-    # Common to all fraud checks
-    DUPLICATE_USER = "duplicate_user"
-    EMAIL_NOT_VALIDATED = "email_not_validated"
-    MISSING_REQUIRED_DATA = "missing_required_data"
-    NAME_INCORRECT = "name_incorrect"  # The user's name contains unaccepted characters
-    NOT_ELIGIBLE = "not_eligible"
-    AGE_NOT_VALID = "age_is_not_valid"
-
-    # Specific to DMS
-    EMPTY_ID_PIECE_NUMBER = "empty_id_piece_number"
-    ERROR_IN_DATA = "error_in_data"  # The user's data has not passed our API validation
-    REFUSED_BY_OPERATOR = "refused_by_operator"
-
-    # Specific to Ubble
-    # Ubble native errors
-    ID_CHECK_BLOCKED_OTHER = (
-        "id_check_bocked_other"  # Default reason code when the user's ID check is blocked for an unhandled reason
-    )
-    ID_CHECK_DATA_MATCH = "id_check_data_match"  # Ubble check did not match the data declared in the app (profile step)
-    ID_CHECK_EXPIRED = "id_check_expired"
-    ID_CHECK_NOT_AUTHENTIC = "id_check_not_authentic"
-    ID_CHECK_NOT_SUPPORTED = "id_check_not_supported"
-    ID_CHECK_UNPROCESSABLE = "id_check_unprocessable"
-    INVALID_ID_PIECE_NUMBER = "invalid_id_piece_number"
-    # Our API errors
-    AGE_TOO_OLD = "age_too_old"
-    AGE_TOO_YOUNG = "age_too_young"
-    DUPLICATE_ID_PIECE_NUMBER = "duplicate_id_piece_number"
-    ELIGIBILITY_CHANGED = "eligibility_changed"  # The user's eligibility detected by ubble is different from the eligibility declared by the user
-
-    # Specific to Educonnect
-    DUPLICATE_INE = "duplicate_ine"
-
-    # Specific to Phone Validation
-    BLACKLISTED_PHONE_NUMBER = "blacklisted_phone_number"
-    INVALID_PHONE_COUNTRY_CODE = "invalid_phone_country_code"
-    PHONE_ALREADY_EXISTS = "phone_already_exists"
-    PHONE_UNVALIDATED_BY_PEER = "phone_unvalidated_by_peer"
-    PHONE_UNVALIDATION_FOR_PEER = "phone_unvalidation_for_peer"
-    PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED = "phone_validation_attempts_limit_reached"
-    SMS_SENDING_LIMIT_REACHED = "sms_sending_limit_reached"
-
-    # Deprecated, kept for backward compatibility
-    ALREADY_BENEFICIARY = "already_beneficiary"
-    ALREADY_HAS_ACTIVE_DEPOSIT = "already_has_active_deposit"
-    ID_CHECK_INVALID = "id_check_invalid"
-    INE_NOT_WHITELISTED = "ine_not_whitelisted"
-    PHONE_NOT_VALIDATED = "phone_not_validated"
 
 
 # FIXME: ce status fait un peu doublon avec FraudStatus
@@ -533,7 +604,7 @@ class BeneficiaryFraudReview(PcObject, Base, Model):
 class FraudItem:
     detail: str
     status: FraudStatus
-    reason_code: FraudReasonCode | None = None
+    reason_codes: list[FraudReasonCode] | None = None
 
     def __bool__(self) -> bool:
         return self.status == FraudStatus.OK

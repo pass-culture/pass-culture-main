@@ -2,11 +2,6 @@ import datetime
 import enum
 
 import pydantic
-import pytz
-
-from pcapi.core.users import models as users_models
-
-from ..common.models import IdentityCheckContent
 
 
 class UbbleIdentificationStatus(enum.Enum):
@@ -22,57 +17,6 @@ class UbbleScore(enum.Enum):
     VALID = 1.0
     INVALID = 0.0
     UNDECIDABLE = -1.0
-
-
-class UbbleContent(IdentityCheckContent):
-    birth_date: datetime.date | None
-    comment: str | None
-    document_type: str | None
-    expiry_date_score: float | None
-    first_name: str | None
-    gender: users_models.GenderEnum | None
-    id_document_number: str | None
-    identification_id: pydantic.UUID4 | None
-    identification_url: pydantic.HttpUrl | None
-    last_name: str | None
-    married_name: str | None
-    ove_score: float | None
-    reference_data_check_score: float | None
-    registration_datetime: datetime.datetime | None
-    processed_datetime: datetime.datetime | None
-    score: float | None
-    status: UbbleIdentificationStatus | None
-    status_updated_at: datetime.datetime | None
-    supported: float | None
-    signed_image_front_url: pydantic.HttpUrl | None
-    signed_image_back_url: pydantic.HttpUrl | None
-
-    _parse_birth_date = pydantic.validator("birth_date", pre=True, allow_reuse=True)(
-        lambda d: datetime.datetime.strptime(d, "%Y-%m-%d").date() if d is not None else None
-    )
-
-    def get_birth_date(self) -> datetime.date | None:
-        return self.birth_date
-
-    def get_registration_datetime(self) -> datetime.datetime | None:
-        return (
-            self.registration_datetime.astimezone(pytz.utc).replace(tzinfo=None) if self.registration_datetime else None
-        )
-
-    def get_first_name(self) -> str | None:
-        return self.first_name
-
-    def get_last_name(self) -> str | None:
-        return self.last_name
-
-    def get_civility(self) -> str | None:
-        return self.gender.value if self.gender else None
-
-    def get_married_name(self) -> str | None:
-        return self.married_name
-
-    def get_id_piece_number(self) -> str | None:
-        return self.id_document_number
 
 
 class UbbleIdentificationObject(pydantic.BaseModel):
@@ -99,10 +43,24 @@ class UbbleIdentificationAttributes(UbbleIdentificationObject):
     webhook: str
 
 
+class UbbleReasonCode(UbbleIdentificationObject):
+    type: str = pydantic.Field(alias="type")
+    id: int = pydantic.Field(alias="id")
+
+
+class UbbleReasonCodes(UbbleIdentificationObject):
+    data: list[UbbleReasonCode]
+
+
+class UbbleIdentificationRelationships(UbbleIdentificationObject):
+    reason_codes: UbbleReasonCodes = pydantic.Field(alias="reason-codes")
+
+
 class UbbleIdentificationData(pydantic.BaseModel):
     type: str
     id: int
     attributes: UbbleIdentificationAttributes
+    relationships: UbbleIdentificationRelationships
 
 
 class UbbleIdentificationDocuments(UbbleIdentificationObject):

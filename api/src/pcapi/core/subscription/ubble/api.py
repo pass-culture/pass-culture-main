@@ -127,6 +127,18 @@ def get_most_relevant_ubble_error(
     if fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in reason_codes:
         return fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
 
+    if fraud_models.FraudReasonCode.BLURRY_VIDEO in reason_codes:
+        return fraud_models.FraudReasonCode.BLURRY_VIDEO
+
+    if fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE in reason_codes:
+        return fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE
+
+    if fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY in reason_codes:
+        return fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY
+
+    if fraud_models.FraudReasonCode.DOCUMENT_DAMAGED in reason_codes:
+        return fraud_models.FraudReasonCode.DOCUMENT_DAMAGED
+
     return None
 
 

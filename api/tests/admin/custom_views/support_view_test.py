@@ -10,7 +10,6 @@ from pcapi.admin.custom_views.support_view.api import BeneficiaryActivationStatu
 from pcapi.admin.custom_views.support_view.api import get_beneficiary_activation_status
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
-import pcapi.core.fraud.ubble.models as ubble_models
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -169,7 +168,7 @@ class BeneficiaryValidationViewTest:
         assert user.has_beneficiary_role
         assert len(user.deposits) == 1
 
-        ubble_content = fraud_models.ubble_fraud_models.UbbleContent(**check.resultContent)
+        ubble_content = fraud_models.UbbleContent(**check.resultContent)
         assert user.firstName == ubble_content.get_first_name()
         assert user.lastName == ubble_content.get_last_name()
         assert user.idPieceNumber == ubble_content.get_id_piece_number()
@@ -294,7 +293,7 @@ class BeneficiaryValidationViewTest:
         assert review.author == admin
         assert user.has_beneficiary_role is True
 
-        ubble_content = ubble_models.UbbleContent(**check.resultContent)
+        ubble_content = fraud_models.UbbleContent(**check.resultContent)
         assert user.firstName == ubble_content.get_first_name()
         assert user.lastName == ubble_content.get_last_name()
 
