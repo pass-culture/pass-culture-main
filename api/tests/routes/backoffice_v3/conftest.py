@@ -106,7 +106,7 @@ def roles_with_permissions_fixture():
 
 @pytest.fixture(scope="function", name="legit_user")
 def legit_user_fixture(roles_with_permissions: None) -> users_models.User:
-    user = users_factories.UserFactory(isActive=True)
+    user = users_factories.UserFactory()
 
     user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, list(perm_models.Roles))
@@ -271,13 +271,11 @@ def offerer_active_individual_offers_fixture(offerer, venue_with_accepted_bank_i
     approved_offers = offers_factories.OfferFactory.create_batch(
         2,
         venue=venue_with_accepted_bank_info,
-        isActive=True,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
 
     rejected_offer = offers_factories.OfferFactory(
         venue=venue_with_accepted_bank_info,
-        isActive=True,
         validation=offers_models.OfferValidationStatus.REJECTED.value,
     )
 
@@ -307,13 +305,11 @@ def offerer_active_collective_offers_fixture(offerer, venue_with_accepted_bank_i
     approved_offers = educational_factories.CollectiveOfferFactory.create_batch(
         4,
         venue=venue_with_accepted_bank_info,
-        isActive=True,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
 
     rejected_offer = educational_factories.CollectiveOfferFactory(
         venue=venue_with_accepted_bank_info,
-        isActive=True,
         validation=offers_models.OfferValidationStatus.REJECTED.value,
     )
 
@@ -454,7 +450,7 @@ def offerers_to_be_validated_fixture(offerer_tags):
 
     # Other statuses
     offerers_factories.OffererFactory(name="G")
-    offerers_factories.NotValidatedOffererFactory(name="H", validationStatus=ValidationStatus.REJECTED)
+    offerers_factories.RejectedOffererFactory(name="H")
 
     # DMS adage statuses
     educational_factories.CollectiveDmsApplicationFactory(venue__managingOfferer=no_tag, state="accepte")

@@ -135,6 +135,11 @@ class VirtualVenueFactory(VenueFactory):
     venueTypeCode = models.VenueTypeCode.DIGITAL
 
 
+class VenueWithoutSiretFactory(VenueFactory):
+    siret = None
+    comment = "No SIRET"
+
+
 class VenuePricingPointLinkFactory(BaseFactory):
     class Meta:
         model = models.VenuePricingPointLink
@@ -187,7 +192,7 @@ class UserNotValidatedOffererFactory(BaseFactory):
     class Meta:
         model = models.UserOfferer
 
-    user = factory.SubFactory(users_factories.UserFactory)
+    user = factory.SubFactory(users_factories.NonAttachedProFactory)
     offerer = factory.SubFactory(NotValidatedOffererFactory)
     validationStatus = ValidationStatus.VALIDATED
 

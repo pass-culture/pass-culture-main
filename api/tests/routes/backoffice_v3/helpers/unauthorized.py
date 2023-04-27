@@ -35,7 +35,7 @@ class UnauthorizedHelperBase(base.BaseHelper, metaclass=abc.ABCMeta):
         pass
 
     def setup_user(self) -> users_models.User:
-        user = users_factories.UserFactory(isActive=True)
+        user = users_factories.UserFactory()
 
         # Create a unique test role which has all permissions but the one required
         perms_in_db = {perm.name: perm for perm in perm_models.Permission.query.all()}

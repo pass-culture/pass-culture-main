@@ -52,7 +52,6 @@ def venue_fixture(offerer) -> offerers_models.Venue:
 def offer_fixture(venue) -> offers_models.Offer:
     return offers_factories.OfferFactory(
         venue=venue,
-        isActive=True,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
 
@@ -754,9 +753,9 @@ class GetOffererUsersTest(GetEndpointHelper):
         uo2 = offerers_factories.UserOffererFactory(
             offerer=offerer, user=users_factories.ProFactory(firstName="Jean", lastName="Bon")
         )
-        uo3 = offerers_factories.NotValidatedUserOffererFactory(offerer=offerer, user=users_factories.ProFactory())
+        uo3 = offerers_factories.NotValidatedUserOffererFactory(offerer=offerer)
 
-        offerers_factories.UserOffererFactory(user=users_factories.ProFactory())
+        offerers_factories.UserOffererFactory()
 
         # when
         url = url_for(self.endpoint, offerer_id=offerer.id)
@@ -1564,7 +1563,7 @@ class RejectOffererTest(PostEndpointHelper):
 
     def test_cannot_reject_offerer_already_rejected(self, authenticated_client):
         # given
-        offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.REJECTED)
+        offerer = offerers_factories.RejectedOffererFactory()
 
         # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)

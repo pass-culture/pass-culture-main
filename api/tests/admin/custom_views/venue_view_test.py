@@ -49,7 +49,7 @@ class EditVenueTest:
         self, mocked_async_index_offers_of_venue_ids, _mocked_validate_csrf_token, caplog, app
     ):
         AdminFactory(email="user@example.com")
-        venue = offerers_factories.VenueFactory(siret=None, comment="Pas de siret")
+        venue = offerers_factories.VenueWithoutSiretFactory()
         data = base_form_data(venue) | dict(siret="88888888888888", comment=None)
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -112,7 +112,7 @@ class EditVenueTest:
         self, _mocked_sirene_get_siret, mocked_async_index_offers_of_venue_ids, _mocked_validate_csrf_token, caplog, app
     ):
         AdminFactory(email="user@example.com")
-        venue = offerers_factories.VenueFactory(siret=None, comment="Pas de siret")
+        venue = offerers_factories.VenueWithoutSiretFactory()
         data = base_form_data(venue) | dict(siret="88888888888888", comment=None)
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -231,9 +231,7 @@ class EditVenueTest:
         AdminFactory(email="user@example.com")
         offerer = offerers_factories.OffererFactory()
         pricing_point = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=offerer, siret=None, comment="Pas de SIRET", pricing_point=pricing_point
-        )
+        venue = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer, pricing_point=pricing_point)
 
         data = base_form_data(venue) | dict(siret="22222222222222")
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -288,7 +286,7 @@ class EditVenueTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_update_venue_without_siret(self, mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
-        venue = offerers_factories.VenueFactory(siret=None, comment="comment to allow null siret")
+        venue = offerers_factories.VenueWithoutSiretFactory()
 
         data = dict(
             name=venue.name,

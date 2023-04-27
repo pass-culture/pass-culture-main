@@ -4,10 +4,8 @@ from pcapi.core.offerers import factories as offerer_factories
 
 class Returns200Test:
     def test_get_venues_from_name(self, client, db_session) -> None:
-        venue1 = offerer_factories.VenueFactory(
+        venue1 = offerer_factories.VenueWithoutSiretFactory(
             name="a beautiful name",
-            siret=None,
-            comment="no siret",
             publicName=None,
             isPermanent=True,
         )
@@ -35,10 +33,8 @@ class Returns200Test:
         assert {venue["id"] for venue in response_venues} == {venue1.id, venue2.id}
 
     def test_get_venues_from_name_case_incensitive(self, client, db_session) -> None:
-        venue = offerer_factories.VenueFactory(
+        venue = offerer_factories.VenueWithoutSiretFactory(
             name="a beautifUl name",
-            siret=None,
-            comment="no siret",
             publicName=None,
             isPermanent=True,
         )
@@ -64,10 +60,8 @@ class Returns200Test:
     def test_get_venues_from_name_serialization(self, client, db_session) -> None:
         domain1 = educational_factories.EducationalDomainFactory()
         domain2 = educational_factories.EducationalDomainFactory()
-        venue1 = offerer_factories.VenueFactory(
+        venue1 = offerer_factories.VenueWithoutSiretFactory(
             name="a beautiful name",
-            siret=None,
-            comment="no siret",
             collectiveDomains=[domain1, domain2],
             collectiveInterventionArea=["mainland"],
             collectiveNetwork=["1"],
@@ -113,10 +107,8 @@ class Returns200Test:
         }
 
     def test_get_venues_from_name_with_diacritic_in_name_in_db(self, client, db_session) -> None:
-        venue = offerer_factories.VenueFactory(
+        venue = offerer_factories.VenueWithoutSiretFactory(
             name="à ñÅmé wïth ç",
-            siret=None,
-            comment="no siret",
             publicName=None,
             isPermanent=True,
         )
@@ -140,10 +132,8 @@ class Returns200Test:
         assert response_venues[0]["id"] == venue.id
 
     def test_get_venues_from_name_with_diacritic_in_public_name_in_db(self, client, db_session) -> None:
-        venue = offerer_factories.VenueFactory(
+        venue = offerer_factories.VenueWithoutSiretFactory(
             name="pouet",
-            siret=None,
-            comment="no siret",
             publicName="à ñÅmé wïth ç",
             isPermanent=True,
         )
@@ -167,10 +157,8 @@ class Returns200Test:
         assert response_venues[0]["id"] == venue.id
 
     def test_get_venues_from_name_with_diacritic_in_name_in_request(self, client, db_session) -> None:
-        venue = offerer_factories.VenueFactory(
+        venue = offerer_factories.VenueWithoutSiretFactory(
             name="a name with c",
-            siret=None,
-            comment="no siret",
             publicName=None,
             isPermanent=True,
         )
@@ -194,10 +182,8 @@ class Returns200Test:
         assert response_venues[0]["id"] == venue.id
 
     def test_get_venues_from_name_with_diacritic_in_name_in_request_and_db(self, client, db_session) -> None:
-        venue = offerer_factories.VenueFactory(
+        venue = offerer_factories.VenueWithoutSiretFactory(
             name="à ñÅmé wïth ç",
-            siret=None,
-            comment="no siret",
             publicName=None,
             isPermanent=True,
         )
@@ -221,10 +207,8 @@ class Returns200Test:
         assert response_venues[0]["id"] == venue.id
 
     def test_get_venues_ignore_union_request(self, client, db_session) -> None:
-        venue = offerer_factories.VenueFactory(
+        venue = offerer_factories.VenueWithoutSiretFactory(
             name="a-composed-name",
-            siret=None,
-            comment="no siret",
             publicName=None,
             isPermanent=True,
         )
@@ -248,10 +232,8 @@ class Returns200Test:
         assert response_venues[0]["id"] == venue.id
 
     def test_get_venues_ignore_union_db(self, client, db_session) -> None:
-        venue = offerer_factories.VenueFactory(
+        venue = offerer_factories.VenueWithoutSiretFactory(
             name="a-composed-name",
-            siret=None,
-            comment="no siret",
             publicName=None,
             isPermanent=True,
         )

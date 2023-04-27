@@ -133,7 +133,7 @@ class SearchProUserTest:
     def test_can_search_pro_by_last_name(self, authenticated_client):
         # given
         self._create_accounts()
-        users_factories.UserFactory(firstName="Admin", lastName="Dubois", roles=[users_models.UserRole.ADMIN])
+        users_factories.AdminFactory(firstName="Admin", lastName="Dubois")
 
         # when
         response = authenticated_client.get(url_for(self.endpoint, terms="Dubois", pro_type="user"))

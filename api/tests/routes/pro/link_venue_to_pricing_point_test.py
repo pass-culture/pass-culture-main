@@ -9,7 +9,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class Returns201Test:
     def test_no_pre_existing_link(self, client):
-        venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
+        venue = offerers_factories.VenueWithoutSiretFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=venue.managingOfferer)
         pricing_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         data = {"pricingPointId": pricing_point.id}
@@ -25,7 +25,7 @@ class Returns201Test:
 
 class Returns400Test:
     def test_pricing_point_does_not_exist(self, client):
-        venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
+        venue = offerers_factories.VenueWithoutSiretFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=venue.managingOfferer)
         pricing_point_1 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=pricing_point_1)

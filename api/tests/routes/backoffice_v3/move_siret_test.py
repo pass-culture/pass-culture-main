@@ -36,7 +36,7 @@ class MoveSiretTestHelper(PostEndpointHelper):
     def test_move_siret_ok(self, authenticated_client, override_revenue_check):
         self.offerer = offerers_factories.OffererFactory(siren="123456789")
         self.venue1 = offerers_factories.VenueFactory(managingOfferer=self.offerer, siret="12345678900001")
-        self.venue2 = offerers_factories.VenueFactory(managingOfferer=self.offerer, siret=None, comment="No SIRET")
+        self.venue2 = offerers_factories.VenueWithoutSiretFactory(managingOfferer=self.offerer)
 
         if override_revenue_check:
             rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=100_000)
@@ -89,7 +89,7 @@ class MoveSiretTestHelper(PostEndpointHelper):
         # given
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678900001")
-        venue2 = offerers_factories.VirtualVenueFactory(managingOfferer=offerer, siret=None)
+        venue2 = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
         self._assert_error_400(
             authenticated_client,
@@ -102,7 +102,7 @@ class MoveSiretTestHelper(PostEndpointHelper):
     def test_move_siret_virtual_venue(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678900001")
-        venue2 = offerers_factories.VirtualVenueFactory(managingOfferer=offerer, siret=None)
+        venue2 = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
         self._assert_error_400(
             authenticated_client,
@@ -113,7 +113,7 @@ class MoveSiretTestHelper(PostEndpointHelper):
 
     def test_move_siret_different_offerer(self, authenticated_client):
         venue1 = offerers_factories.VenueFactory(siret="12345678900001")
-        venue2 = offerers_factories.VenueFactory(siret=None, comment="No SIRET")
+        venue2 = offerers_factories.VenueWithoutSiretFactory()
 
         self._assert_error_400(
             authenticated_client,
@@ -137,7 +137,7 @@ class MoveSiretTestHelper(PostEndpointHelper):
     def test_move_siret_high_revenue(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678900001")
-        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, siret=None, comment="No SIRET")
+        venue2 = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)
         rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=100_000)
         bookings_factories.ReimbursedBookingFactory(
             user=rich_beneficiary, stock__price=10200, stock__offer__venue=venue2

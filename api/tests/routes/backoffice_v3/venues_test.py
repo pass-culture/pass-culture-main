@@ -654,7 +654,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
     def test_update_venue_without_siret(self, authenticated_client, offerer):
         offerers_factories.VenueFactory(siret="", comment="other venue without siret")
-        venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
+        venue = offerers_factories.VenueWithoutSiretFactory()
 
         data = self._get_current_data(venue)
         data["phone_number"] = "+33203040506"
@@ -667,7 +667,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.contact.phone_number == "+33203040506"
 
     def test_update_venue_create_siret(self, authenticated_client, offerer):
-        venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
+        venue = offerers_factories.VenueWithoutSiretFactory()
 
         data = self._get_current_data(venue)
         data["siret"] = f"{venue.managingOfferer.siren}12345"

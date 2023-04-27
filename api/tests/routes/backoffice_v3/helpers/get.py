@@ -15,7 +15,7 @@ class GetEndpointHelper(UnauthorizedHelperBase):
         assert response.status_code == 403
 
     def test_no_backoffice_profile(self, client):
-        user = users_factories.UserFactory(isActive=True)
+        user = users_factories.UserFactory()
 
         authenticated_client = client.with_bo_session_auth(user)
         response = authenticated_client.get(self.path)

@@ -206,10 +206,7 @@ class EditVenueTest:
     def test_empty_siret_is_editable(self, app) -> None:
         # Given
         user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(
-            comment="Pas de siret",
-            siret=None,
-        )
+        venue = offerers_factories.VenueWithoutSiretFactory()
 
         venue_data = {
             "siret": venue.managingOfferer.siren + "11111",
@@ -1127,7 +1124,7 @@ class GetEligibleForSearchVenuesTest:
 
 class LinkVenueToPricingPointTest:
     def test_no_pre_existing_link(self):
-        venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
+        venue = offerers_factories.VenueWithoutSiretFactory()
         pricing_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         assert offerers_models.VenuePricingPointLink.query.count() == 0
 
@@ -1139,7 +1136,7 @@ class LinkVenueToPricingPointTest:
         assert new_link.timespan.upper is None
 
     def test_raises_if_pre_existing_link(self):
-        venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
+        venue = offerers_factories.VenueWithoutSiretFactory()
         pricing_point_1 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=pricing_point_1)
         pre_existing_link = offerers_models.VenuePricingPointLink.query.one()
