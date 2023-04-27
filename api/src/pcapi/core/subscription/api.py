@@ -339,10 +339,6 @@ def get_honor_statement_subscription_item(
     return models.SubscriptionItem(type=models.SubscriptionStep.HONOR_STATEMENT, status=status)
 
 
-def get_next_subscription_step(user: users_models.User) -> models.SubscriptionStep | None:
-    return get_user_subscription_state(user).next_step
-
-
 def get_user_subscription_state(user: users_models.User) -> subscription_models.UserSubscriptionState:
     # Step 1: email validation
     if not user.isEmailValidated:

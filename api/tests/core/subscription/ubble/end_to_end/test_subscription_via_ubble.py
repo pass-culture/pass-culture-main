@@ -58,7 +58,7 @@ class UbbleEndToEndTest:
         client.with_token(user.email)
 
         # Step 1:The user initializes a subscription with ubble
-        next_step = subscription_api.get_next_subscription_step(user)
+        next_step = subscription_api.get_user_subscription_state(user).next_step
         assert next_step == subscription_models.SubscriptionStep.IDENTITY_CHECK
 
         with requests_mock.Mocker() as requests_mocker:
@@ -129,7 +129,7 @@ class UbbleEndToEndTest:
         assert response.status_code == 200
         assert response.json == {"identificationUrl": f"https://id.ubble.ai/{requests_data.IDENTIFICATION_ID}"}
 
-        next_step = subscription_api.get_next_subscription_step(user)
+        next_step = subscription_api.get_user_subscription_state(user).next_step
         assert next_step == subscription_models.SubscriptionStep.IDENTITY_CHECK
 
         # Step 3: Ubble calls the webhook to inform that the identification has been completed by the user
@@ -159,7 +159,7 @@ class UbbleEndToEndTest:
         assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
         assert fraud_check.source_data().status == UbbleIdentificationStatus.PROCESSING
 
-        next_step = subscription_api.get_next_subscription_step(user)
+        next_step = subscription_api.get_user_subscription_state(user).next_step
         assert next_step == subscription_models.SubscriptionStep.HONOR_STATEMENT
 
         # Step 4: The user performs the HONOR_STATEMENT step
