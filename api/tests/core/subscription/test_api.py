@@ -2605,6 +2605,37 @@ class StepperTest:
             ),
         ]
 
+    def test_get_subscription_steps_to_display_for_18yo_with_15_17_profile(self):
+        user = users_factories.EligibleGrant18Factory()
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+
+        steps = subscription_api.get_subscription_steps_to_display(
+            user, subscription_api.get_user_subscription_state(user)
+        )
+
+        assert steps == [
+            self.get_step(
+                subscription_models.SubscriptionStep.PHONE_VALIDATION,
+                subscription_models.SubscriptionStepCompletionState.CURRENT,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.PROFILE_COMPLETION,
+                subscription_models.SubscriptionStepCompletionState.DISABLED,
+                subtitle=subscription_models.PROFILE_COMPLETION_STEP_EXISTING_DATA_SUBTITLE,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.IDENTITY_CHECK,
+                subscription_models.SubscriptionStepCompletionState.DISABLED,
+            ),
+            self.get_step(
+                subscription_models.SubscriptionStep.HONOR_STATEMENT,
+                subscription_models.SubscriptionStepCompletionState.DISABLED,
+            ),
+        ]
+
 
 class TestQueriesTest:
     @pytest.mark.usefixtures("db_session")

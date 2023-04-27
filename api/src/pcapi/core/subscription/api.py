@@ -810,7 +810,7 @@ def get_subscription_steps_to_display(
     the steps are ordered
     """
     ordered_steps = _get_ordered_steps(user)
-    return _get_steps_details(ordered_steps, user_subscription_state)
+    return _get_steps_details(user, ordered_steps, user_subscription_state)
 
 
 def _get_ordered_steps(user: users_models.User) -> list[models.SubscriptionStep]:
@@ -825,13 +825,15 @@ def _get_ordered_steps(user: users_models.User) -> list[models.SubscriptionStep]
 
 
 def _get_steps_details(
-    ordered_steps: list[models.SubscriptionStep], user_subscription_state: models.UserSubscriptionState
+    user: users_models.User,
+    ordered_steps: list[models.SubscriptionStep],
+    user_subscription_state: models.UserSubscriptionState,
 ) -> list[models.SubscriptionStepDetails]:
     steps: list[models.SubscriptionStepDetails] = []
     is_before_current_step = True
 
     for step in ordered_steps:
-        subtitle = _get_step_subtitle(user_subscription_state, step)
+        subtitle = _get_step_subtitle(user, user_subscription_state, step)
         if step == user_subscription_state.next_step:
             is_before_current_step = False
             completion_step = (
@@ -878,8 +880,19 @@ def requires_identity_check_step(user: users_models.User) -> bool:
     return True
 
 
+def _has_completed_profile_for_previous_eligibility(user: users_models.User) -> bool:
+    profile_completion_check = repository.get_latest_completed_profile_check(user)
+    if profile_completion_check is None:
+        return False
+    if profile_completion_check.status != fraud_models.FraudCheckStatus.OK:
+        return False
+    if profile_completion_check.eligibilityType == user.eligibility:
+        return False
+    return True
+
+
 def _get_step_subtitle(
-    user_subscription_state: models.UserSubscriptionState, step: models.SubscriptionStep
+    user: users_models.User, user_subscription_state: models.UserSubscriptionState, step: models.SubscriptionStep
 ) -> str | None:
     if step == models.SubscriptionStep.IDENTITY_CHECK and _has_subscription_issues(user_subscription_state):
         return (
@@ -887,6 +900,9 @@ def _get_step_subtitle(
             if user_subscription_state.subscription_message
             else None
         )
+
+    if step == models.SubscriptionStep.PROFILE_COMPLETION and _has_completed_profile_for_previous_eligibility(user):
+        return subscription_models.PROFILE_COMPLETION_STEP_EXISTING_DATA_SUBTITLE
 
     return None
 

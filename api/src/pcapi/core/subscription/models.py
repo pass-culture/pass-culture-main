@@ -20,6 +20,7 @@ VALID_IDENTITY_CHECK_TYPES_AFTER_UNDERAGE_DEPOSIT_EXPIRATION = [
 STEPPER_DEFAULT_TITLE = f"C'est très rapide{u_nbsp}!"
 STEPPER_DEFAULT_SUBTITLE = "Pour débloquer tes {}€ tu dois suivre les étapes suivantes\u00a0:"
 STEPPER_HAS_ISSUES_TITLE = "La vérification de ton identité a échoué"
+PROFILE_COMPLETION_STEP_EXISTING_DATA_SUBTITLE = "Confirme tes informations"
 
 
 class SubscriptionStep(enum.Enum):
