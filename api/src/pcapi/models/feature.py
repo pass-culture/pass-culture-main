@@ -118,6 +118,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_EAC_CANCEL_30_DAYS = "EAC délai annulation 30 Jours par defaut au lieu de 15"
     WIP_ENABLE_TRUSTED_DEVICE = "Active la fonctionnalité d'appareil de confiance"
     WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API = "Active la gestion des providers dans l'api publique EAC"
+    WIP_ENABLE_COLLECTIVE_REQUEST = "Active la demande de création d'offre collective de la part des utilisateurs adage"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -182,6 +183,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_EAC_CANCEL_30_DAYS,
     FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE,
     FeatureToggle.WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API,
+    FeatureToggle.WIP_ENABLE_COLLECTIVE_REQUEST,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
