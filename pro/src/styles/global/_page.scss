@@ -71,7 +71,7 @@ main {
 
   &.container {
     position: relative;
-    max-width: 874px;
+    max-width: rem.torem(874px);
     margin: rem.torem(-88px) auto 0 auto;
 
     .page-content {
