@@ -45,11 +45,38 @@
       {% if rows and rows.total > 0 %}
         <div class="d-flex justify-content-between">
           <p class="lead num-results">{{ rows.total }} résultat{{ "s" if rows.total > 1 else "" }}</p>
+          <div class="btn-group btn-group-sm"
+               data-toggle="pc-batch-confirm-btn-group"
+               data-toggle-id="table-container-offerer-validation-btn-group"
+               data-pc-table-multi-select-id="table-container-offerer-validation"
+               data-input-ids-name="object_ids">
+            <button disabled
+                    type="button"
+                    class="btn btn-outline-primary"
+                    data-url="{{ url_for("backoffice_v3_web.validation.batch_validate_offerer") }}"
+                    data-use-confirmation-modal="false">Valider</button>
+            <button disabled
+                    type="button"
+                    class="btn btn-outline-primary"
+                    data-use-confirmation-modal="true"
+                    data-modal-selector="#batch-pending-modal">Mettre en attente</button>
+            <button disabled
+                    type="button"
+                    class="btn btn-outline-primary"
+                    data-use-confirmation-modal="true"
+                    data-modal-selector="#batch-reject-modal">Rejeter</button>
+          </div>
           <div>{% include "components/search/pagination.html" %}</div>
         </div>
-        <table class="table mb-4">
+        <table class="table mb-4"
+               data-table-multi-select-id="table-container-offerer-validation">
           <thead>
             <tr>
+              <th scope="col">
+                <input class="form-check-input"
+                       type="checkbox"
+                       name="pc-table-multi-select-check-all" />
+              </th>
               <th scope="col"></th>
               <th scope="col">ID</th>
               <th scope="col">Nom de la structure</th>
@@ -75,6 +102,12 @@
             {% for item in rows.items %}
               {% set offerer = item.Offerer %}
               <tr>
+                <td>
+                  <input type="checkbox"
+                         class="form-check-input"
+                         name="pc-table-multi-select-check-{{ offerer.id }}"
+                         data-id="{{ offerer.id }}" />
+                </td>
                 <td>
                   <div class="d-flex">
                     <div class="dropdown">
@@ -111,7 +144,9 @@
                 </td>
                 <td>{{ offerer.id }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
-                <td>{{ build_offerer_status_badge(offerer) }}</td>
+                <td>
+                  {{ build_offerer_status_badge(offerer) }}
+                </td>
                 <td>
                   {% set top_actor_checked = "top-acteur" in item.tags | map(attribute="name") %}
                   <div class="form-check form-switch">
@@ -123,8 +158,12 @@
                     </form>
                   </div>
                 </td>
-                <td>{{ item.tags | map(attribute="label") | join(", ") | escape }}</td>
-                <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
+                <td>
+                  {{ item.tags | map(attribute="label") | join(", ") | escape }}
+                </td>
+                <td>
+                  {{ offerer.dateCreated | format_date("%d/%m/%Y") }}
+                </td>
                 <td>
                   {{ item.last_comment | empty_string_if_null | replace("\n", "
                   <br />
@@ -148,6 +187,8 @@
           url_for("backoffice_v3_web.validation.get_offerer_pending_form", offerer_id=offerer.id),
           "pending-modal-" + offerer.id|string) }}
         {% endfor %}
+        {{ build_lazy_modal(url_for("backoffice_v3_web.validation.get_batch_reject_offerer_form"), "batch-reject-modal", "true") }}
+        {{ build_lazy_modal(url_for("backoffice_v3_web.validation.get_batch_offerer_pending_form"), "batch-pending-modal", "true") }}
       {% else %}
         Aucune structure ne correspond à la requête
       {% endif %}
