@@ -27,19 +27,22 @@ pytestmark = [
 
 @pytest.fixture(scope="function", name="collective_offers")
 def collective_offers_fixture() -> tuple:
-    collective_offer_1 = educational_factories.CollectiveOfferFactory(
-        subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
-    )
-    collective_offer_2 = educational_factories.CollectiveOfferFactory(
-        name="A Very Specific Name",
-        subcategoryId=subcategories.EVENEMENT_CINE.id,
-    )
-    collective_offer_3 = educational_factories.CollectiveOfferFactory(
-        name="A Very Specific Name That Is Longer",
-        dateCreated=datetime.date.today() - datetime.timedelta(days=2),
-        validation=offers_models.OfferValidationStatus.REJECTED,
-        subcategoryId=subcategories.FESTIVAL_CINE.id,
-    )
+    collective_offer_1 = educational_factories.CollectiveStockFactory(
+        beginningDatetime=datetime.date.today(),
+        collectiveOffer__subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
+    ).collectiveOffer
+    collective_offer_2 = educational_factories.CollectiveStockFactory(
+        beginningDatetime=datetime.date.today(),
+        collectiveOffer__name="A Very Specific Name",
+        collectiveOffer__subcategoryId=subcategories.EVENEMENT_CINE.id,
+    ).collectiveOffer
+    collective_offer_3 = educational_factories.CollectiveStockFactory(
+        beginningDatetime=datetime.date.today(),
+        collectiveOffer__dateCreated=datetime.date.today() - datetime.timedelta(days=2),
+        collectiveOffer__name="A Very Specific Name That Is Longer",
+        collectiveOffer__subcategoryId=subcategories.FESTIVAL_CINE.id,
+        collectiveOffer__validation=offers_models.OfferValidationStatus.REJECTED,
+    ).collectiveOffer
     return collective_offer_1, collective_offer_2, collective_offer_3
 
 
@@ -79,6 +82,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Sous-catégorie"] == collective_offers[0].subcategory.pro_label
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
+        assert rows[0]["Date de l'événement"] == datetime.date.today().strftime("%d/%m/%Y")
         assert rows[0]["Structure"] == collective_offers[0].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offers[0].venue.name
 
@@ -98,6 +102,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Sous-catégorie"] == collective_offers[1].subcategory.pro_label
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
+        assert rows[0]["Date de l'événement"] == datetime.date.today().strftime("%d/%m/%Y")
         assert rows[0]["Structure"] == collective_offers[1].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offers[1].venue.name
 

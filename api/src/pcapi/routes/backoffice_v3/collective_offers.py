@@ -45,6 +45,9 @@ def _get_collective_offers(
             educational_models.CollectiveOffer.dateCreated,
             educational_models.CollectiveOffer.validation,
         ),
+        sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).load_only(
+            educational_models.CollectiveStock.beginningDatetime
+        ),
         sa.orm.joinedload(educational_models.CollectiveOffer.venue).load_only(
             offerers_models.Venue.managingOffererId, offerers_models.Venue.name
         )
