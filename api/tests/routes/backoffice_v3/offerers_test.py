@@ -380,7 +380,7 @@ class GetOffererStatsTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     def test_get_stats(self, authenticated_client, offerer, offer, booking):
-        url = url_for("backoffice_v3_web.offerer.get_stats", offerer_id=offerer.id)
+        url = url_for(self.endpoint, offerer_id=offerer.id)
 
         # get session (1 query)
         # get user with profile and permissions (1 query)
@@ -2178,24 +2178,6 @@ class RejectOffererAttachmentTest(PostEndpointHelper):
         assert response.status_code == 404
 
 
-class GetOffererAttachmentPendingFormTest(GetEndpointHelper):
-    endpoint = "backoffice_v3_web.validation.get_user_offerer_pending_form"
-    endpoint_kwargs = {"user_offerer_id": 1}
-    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
-
-    def test_get_offerer_attachment_pending_form(self, legit_user, authenticated_client):
-        # given
-        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
-
-        # when
-        url = url_for(self.endpoint, user_offerer_id=user_offerer.id)
-        response = authenticated_client.get(url)
-
-        # then
-        # Rendering is not checked, but at least the fetched frame does not crash
-        assert response.status_code == 200
-
-
 class SetOffererAttachmentPendingTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.validation.set_user_offerer_pending"
     endpoint_kwargs = {"user_offerer_id": 1}
@@ -2338,34 +2320,144 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
         assert html_parser.extract_alert(redirected_response.data) == "Les données envoyées comportent des erreurs"
 
 
-class SetBatchOffererAttachmentPendingTest(PostEndpointHelper):
-    endpoint = "backoffice_v3_web.validation.batch_set_user_offerer_pending"
+class BatchOffererValidateTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.validation.batch_validate_offerer"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-    def test_batch_set_offerer_attachment_pending(self, legit_user, authenticated_client):
-        user_offerers = offerers_factories.NotValidatedUserOffererFactory.create_batch(10)
-        parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
+    def test_batch_set_offerer_validate(self, legit_user, authenticated_client):
+        _offerers = offerers_factories.NotValidatedOffererFactory.create_batch(10)
+        parameter_ids = ",".join(str(offerer.id) for offerer in _offerers)
+
         response = self.post_to_endpoint(
-            authenticated_client,
-            form={"object_ids": parameter_ids, "comment": "test comment"},
+            authenticated_client, offerer_id=_offerers[0].id, form={"object_ids": parameter_ids}
         )
 
         assert response.status_code == 303
-        for user_offerer in user_offerers:
-            db.session.refresh(user_offerer)
-            assert not user_offerer.isValidated
-            assert user_offerer.validationStatus == ValidationStatus.PENDING
+        for offerer in _offerers:
+            db.session.refresh(offerer)
+            assert offerer.isValidated
             action = history_models.ActionHistory.query.filter(
-                history_models.ActionHistory.offererId == user_offerer.offererId,
-                history_models.ActionHistory.userId == user_offerer.userId,
+                history_models.ActionHistory.offererId == offerer.id,
             ).one()
-            assert action.actionType == history_models.ActionType.USER_OFFERER_PENDING
+            assert action.actionType == history_models.ActionType.OFFERER_VALIDATED
             assert action.actionDate is not None
             assert action.authorUserId == legit_user.id
-            assert action.userId == user_offerer.user.id
-            assert action.offererId == user_offerer.offerer.id
+            assert action.userId is None
+            assert action.offererId == offerer.id
             assert action.venueId is None
-            assert action.comment == "test comment"
+            assert action.comment is None
+
+
+class GetBatchOffererPendingFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.validation.get_batch_offerer_pending_form"
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+    def test_get_batch_offerer_pending_form(self, legit_user, authenticated_client):
+        # given
+        offerers_factories.NotValidatedOffererFactory()
+
+        # when
+        url = url_for(self.endpoint)
+        response = authenticated_client.get(url)
+
+        # then
+        # Rendering is not checked, but at least the fetched frame does not crash
+        assert response.status_code == 200
+
+
+class SetBatchOffererPendingTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.validation.batch_set_offerer_pending"
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+    def test_batch_set_offerer_pending(self, legit_user, authenticated_client, offerer_tags):
+        _offerers = offerers_factories.NotValidatedOffererFactory.create_batch(
+            # FIXME PC-21406 - disabled until tags are initialized in the form
+            # 10, tags=[offerer_tags[0], offerer_tags[1]]
+            10,
+            tags=[offerer_tags[0]],
+        )
+        parameter_ids = ",".join(str(offerer.id) for offerer in _offerers)
+        comment = "test pending comment"
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=_offerers[0].id,
+            form={"object_ids": parameter_ids, "comment": comment, "tags": [offerer_tags[0].id, offerer_tags[2].id]},
+        )
+
+        assert response.status_code == 303
+        for offerer in _offerers:
+            db.session.refresh(offerer)
+            assert not offerer.isValidated
+            assert offerer.validationStatus == ValidationStatus.PENDING
+            assert set(offerer.tags) == {offerer_tags[0], offerer_tags[2]}
+            action = history_models.ActionHistory.query.filter(
+                history_models.ActionHistory.offererId == offerer.id,
+            ).one()
+
+            assert action.actionType == history_models.ActionType.OFFERER_PENDING
+            assert action.actionDate is not None
+            assert action.authorUserId == legit_user.id
+            assert action.userId is None
+            assert action.offererId == offerer.id
+            assert action.venueId is None
+            assert action.comment == comment
+            assert action.extraData == {
+                "modified_info": {
+                    "tags": {
+                        "new_info": f"{offerer_tags[0].label}, {offerer_tags[2].label}",
+                        # FIXME PC-21406 - disabled until tags are initialized in the form
+                        # "old_info": offerer_tags[1].label,
+                        "old_info": "",
+                    },
+                }
+            }
+
+
+class GetBatchOffererRejectFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.validation.get_batch_reject_offerer_form"
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+    def test_get_offerer_attachment_pending_form(self, legit_user, authenticated_client):
+        # given
+        offerers_factories.NotValidatedOffererFactory()
+
+        # when
+        url = url_for(self.endpoint)
+        response = authenticated_client.get(url)
+
+        # then
+        # Rendering is not checked, but at least the fetched frame does not crash
+        assert response.status_code == 200
+
+
+class BatchOffererRejectTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.validation.batch_reject_offerer"
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+    def test_batch_set_offerer_reject(self, legit_user, authenticated_client):
+        _offerers = offerers_factories.NotValidatedOffererFactory.create_batch(10)
+        parameter_ids = ",".join(str(offerer.id) for offerer in _offerers)
+        comment = "test comment"
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=_offerers[0].id,
+            form={"object_ids": parameter_ids, "comment": comment},
+        )
+
+        assert response.status_code == 303
+
+        for offerer in _offerers:
+            action = history_models.ActionHistory.query.filter(
+                history_models.ActionHistory.offererId == offerer.id,
+            ).one()
+            assert action.actionType == history_models.ActionType.OFFERER_REJECTED
+            assert action.actionDate is not None
+            assert action.authorUserId == legit_user.id
+            assert action.userId is None
+            assert action.offererId == offerer.id
+            assert action.venueId is None
+            assert action.comment == comment
 
 
 class BatchOffererAttachmentValidateTest(PostEndpointHelper):
@@ -2407,6 +2499,73 @@ class BatchOffererAttachmentValidateTest(PostEndpointHelper):
                 mail.sent_data["template"]
                 == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value.__dict__
             )
+
+
+class GetOffererAttachmentPendingFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.validation.get_user_offerer_pending_form"
+    endpoint_kwargs = {"user_offerer_id": 1}
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+    def test_get_offerer_attachment_pending_form(self, legit_user, authenticated_client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+
+        # when
+        url = url_for(self.endpoint, user_offerer_id=user_offerer.id)
+        response = authenticated_client.get(url)
+
+        # then
+        # Rendering is not checked, but at least the fetched frame does not crash
+        assert response.status_code == 200
+
+
+class SetBatchOffererAttachmentPendingTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.validation.batch_set_user_offerer_pending"
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+    def test_batch_set_offerer_attachment_pending(self, legit_user, authenticated_client):
+        user_offerers = offerers_factories.NotValidatedUserOffererFactory.create_batch(10)
+        parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=user_offerers[0].offerer.id,
+            form={"object_ids": parameter_ids, "comment": "test comment"},
+        )
+
+        assert response.status_code == 303
+        for user_offerer in user_offerers:
+            db.session.refresh(user_offerer)
+            assert not user_offerer.isValidated
+            assert user_offerer.validationStatus == ValidationStatus.PENDING
+            action = history_models.ActionHistory.query.filter(
+                history_models.ActionHistory.offererId == user_offerer.offererId,
+                history_models.ActionHistory.userId == user_offerer.userId,
+            ).one()
+            assert action.actionType == history_models.ActionType.USER_OFFERER_PENDING
+            assert action.actionDate is not None
+            assert action.authorUserId == legit_user.id
+            assert action.userId == user_offerer.user.id
+            assert action.offererId == user_offerer.offerer.id
+            assert action.venueId is None
+            assert action.comment == "test comment"
+
+
+class GetOffererAttachmentRejectFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.validation.get_batch_reject_user_offerer_form"
+    endpoint_kwargs = {"user_offerer_id": 1}
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+    def test_get_batch_reject_user_offerer_form(self, legit_user, authenticated_client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+
+        # when
+        url = url_for(self.endpoint, user_offerer_id=user_offerer.id)
+        response = authenticated_client.get(url)
+
+        # then
+        # Rendering is not checked, but at least the fetched frame does not crash
+        assert response.status_code == 200
 
 
 class BatchOffererAttachmentRejectTest(PostEndpointHelper):
