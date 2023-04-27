@@ -2,7 +2,7 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-$offerers-gap: rem.torem(24px);
+$offerers-gap: rem.torem(16px);
 $medium-gap: rem.torem(16px);
 $small-gap: rem.torem(8px);
 
@@ -43,11 +43,7 @@ $small-gap: rem.torem(8px);
     }
 }
 
-.title-1 {
-    @include fonts.title1;
-}
-
-.title-4 {
+.title-4 {  
     @include fonts.title4;
 }
 

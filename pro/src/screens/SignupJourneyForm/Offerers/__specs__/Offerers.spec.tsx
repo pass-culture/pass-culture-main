@@ -121,7 +121,8 @@ describe('screens:SignupJourney::Offerers', () => {
 
     expect(
       await screen.findByText(
-        'Nous avons trouvé un espace déjà inscrit sur le pass Culture et incluant ce SIRET.'
+        'Nous avons trouvé un espace déjà inscrit comprenant le SIRET',
+        { exact: false }
       )
     ).toBeInTheDocument()
 
@@ -155,7 +156,7 @@ describe('screens:SignupJourney::Offerers', () => {
 
     expect(
       await screen.getByText(
-        'Vous souhaitez ajouter une nouvelle structure à cette liste ?'
+        'Vous souhaitez ajouter une nouvelle structure à cet espace ?'
       )
     ).toBeInTheDocument()
 
@@ -234,7 +235,8 @@ describe('screens:SignupJourney::Offerers', () => {
 
     expect(
       await screen.findByText(
-        'Nous avons trouvé un espace déjà inscrit sur le pass Culture et incluant ce SIRET.'
+        'Nous avons trouvé un espace déjà inscrit comprenant le SIRET',
+        { exact: false }
       )
     ).toBeInTheDocument()
 
@@ -252,7 +254,8 @@ describe('screens:SignupJourney::Offerers', () => {
 
     expect(
       await screen.findByText(
-        'Nous avons trouvé un espace déjà inscrit sur le pass Culture et incluant ce SIRET.'
+        'Nous avons trouvé un espace déjà inscrit comprenant le SIRET',
+        { exact: false }
       )
     ).toBeInTheDocument()
 

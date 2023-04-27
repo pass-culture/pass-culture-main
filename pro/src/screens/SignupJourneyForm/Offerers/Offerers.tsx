@@ -81,9 +81,9 @@ const Offerers = (): JSX.Element => {
   return (
     <div className={styles['existing-offerers-layout-wrapper']}>
       <div className={styles['existing-offerers-layout']}>
-        <div className={styles['title-1']}>
-          Nous avons trouvé un espace déjà inscrit sur le pass Culture et
-          incluant ce SIRET.
+        <div className={styles['title-4']}>
+          Nous avons trouvé un espace déjà inscrit comprenant le SIRET "
+          {offerer.siret}" :
         </div>
         <div className={styles['venues-layout']}>
           <div className={styles['offerer-name-accent']}>
@@ -129,7 +129,7 @@ const Offerers = (): JSX.Element => {
         </Button>
       </div>
       <div className={cn(styles['wrong-offerer-title'], styles['title-4'])}>
-        Vous souhaitez ajouter une nouvelle structure à cette liste ?
+        Vous souhaitez ajouter une nouvelle structure à cet espace ?
       </div>
       <Button
         className={styles['button-add-new-offerer']}
