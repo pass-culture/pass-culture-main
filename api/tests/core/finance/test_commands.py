@@ -86,7 +86,7 @@ def test_move_siret(app):
     siret = offerer.siren + "00001"
 
     src_venue_id = offerers_factories.VenueFactory(siret=siret, managingOfferer=offerer).id
-    dst_venue_id = offerers_factories.VenueFactory(siret=None, comment="no siret", managingOfferer=offerer).id
+    dst_venue_id = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer).id
 
     result = run_command(
         app,

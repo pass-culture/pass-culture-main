@@ -64,7 +64,7 @@ def test_cannot_connect_when_synchronization_is_not_allowed(can_be_synchronized)
 
 @pytest.mark.usefixtures("db_session")
 def test_cannot_connect_venue_when_venue_has_no_siret():
-    venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
+    venue = offerers_factories.VenueWithoutSiretFactory()
     provider = providers_factories.APIProviderFactory()
 
     with pytest.raises(NoSiretSpecified):

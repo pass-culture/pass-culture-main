@@ -624,12 +624,7 @@ class DeleteDependentPricingsTest:
         # FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS.
         pricing_point1 = offerers_factories.VenueFactory()
         offerer = pricing_point1.managingOfferer
-        venue = offerers_factories.VenueFactory(
-            siret=None,
-            comment="no SIRET",
-            managingOfferer=offerer,
-            pricing_point=pricing_point1,
-        )
+        venue = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer, pricing_point=pricing_point1)
         pricing_point2 = offerers_factories.VenueFactory(managingOfferer=offerer)
         offerers_api.link_venue_to_pricing_point(venue, pricing_point2.id, force_link=True)
 
@@ -650,10 +645,7 @@ class DeleteDependentPricingsTest:
         # 1. Booking B1 and B2 are used on 2022-12-15.
         # 2. Venue is linked to pricing point 2.
         # B2 should be priced after B1 (orderer by their id).
-        venue = offerers_factories.VenueFactory(
-            siret=None,
-            comment="no SIRET",
-        )
+        venue = offerers_factories.VenueWithoutSiretFactory()
         offerer = venue.managingOfferer
         ppoint1 = offerers_factories.VenueFactory(managingOfferer=offerer)
         offerers_api.link_venue_to_pricing_point(
