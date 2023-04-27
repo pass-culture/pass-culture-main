@@ -898,7 +898,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           ]
         }
 
-        expectedBody.withdrawalDelay = null
+        expectedBody.withdrawalDelay = 0
         expectedBody.withdrawalType = WithdrawalTypeEnum.ON_SITE
         expectedBody.shouldSendMail = true
 
@@ -942,6 +942,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           )
           await userEvent.click(withdrawalTypeField)
           expectedBody.withdrawalType = WithdrawalTypeEnum.BY_EMAIL
+          expectedBody.withdrawalDelay = 60 * 60 * 24
         }
 
         const submitButton = await screen.findByText(
