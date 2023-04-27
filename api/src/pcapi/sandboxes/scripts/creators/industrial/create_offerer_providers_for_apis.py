@@ -16,8 +16,8 @@ def create_offerer_provider(name: str, isActive: bool = True, enabledForPro: boo
         name=name, localClass=None, isActive=isActive, enabledForPro=enabledForPro
     )
     providers_factories.OffererProviderFactory(
-        offerer=offerer,
-        provider=provider,
+        offererId=offerer.id,
+        providerId=provider.id,
     )
     offerers_facotries.ApiKeyFactory(
         offerer=offerer, prefix=f"{settings.ENV}_{offerer.id}", secret=f"clearSecret{offerer.id}"
