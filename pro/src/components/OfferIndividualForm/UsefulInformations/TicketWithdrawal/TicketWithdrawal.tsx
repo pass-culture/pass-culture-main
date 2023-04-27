@@ -35,6 +35,7 @@ const TicketWithdrawal = ({
       return ticketWithdrawalHourOptions[0].value
     }
 
+    /* istanbul ignore next: already tested in InformationsScreen.edition.spec.tsx */
     return undefined
   }
 

@@ -814,15 +814,18 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         subcategoryId: 'SCID virtual',
         isEvent: true,
         withdrawalDelay: undefined,
-        withdrawalType: null,
+        withdrawalType: WithdrawalTypeEnum.NO_TICKET,
         stocks: [individualStock],
         isActive: false,
       }
+
       props = {
         venueId: virtualVenueId.toString(),
         offererId: offererId.toString(),
       }
       renderInformationsScreen(props, contextOverride, features)
+      expectedBody.withdrawalDelay = null
+      expectedBody.withdrawalType = WithdrawalTypeEnum.NO_TICKET
 
       const nameField = screen.getByLabelText('Titre de l’offre')
       await userEvent.clear(nameField)
@@ -856,6 +859,10 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       await waitFor(() => {
         expect(api.patchOffer).toHaveBeenCalledTimes(1)
       })
+      expect(api.patchOffer).toHaveBeenCalledWith(
+        offer.nonHumanizedId,
+        expectedBody
+      )
       expect(
         await screen.findByText('There is the summary route content')
       ).toBeInTheDocument()
