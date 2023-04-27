@@ -542,6 +542,111 @@ def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
     return _redirect_after_offerer_validation_action()
 
 
+def _offerer_batch_action(
+    api_function: typing.Callable,
+    success_message: str,
+    form_class: typing.Callable,
+) -> utils.BackofficeResponse:
+    try:
+        form = form_class()
+        offerer_ids = [int(id) for id in form.object_ids.data.split(",")]
+    except ValueError:
+        flash("Identifiant(s) invalide(s)")
+        return _redirect_after_offerer_validation_action(400)
+
+    offerers = offerers_models.Offerer.query.filter(offerers_models.Offerer.id.in_(offerer_ids)).all()
+
+    # FIXME PC-21406 - disabled until tags are initialized in the form
+    # if hasattr(form, "tags"):
+    #     tags = form.tags.data
+    #     previous_tags = list(reduce(set.intersection, [set(offerer.tags) for offerer in offerers]))  # type: ignore
+    #     deleted_tags = list(set(previous_tags).difference(list(set(tags))))
+
+    for offerer in offerers:
+        kwargs = {}
+        if hasattr(form, "tags"):
+            kwargs["tags_to_add"] = form.tags.data
+            # FIXME PC-21406 - disabled until tags are initialized in the form
+            # kwargs["tags_to_remove"] = deleted_tags
+        if hasattr(form, "comment"):
+            kwargs["comment"] = form.comment.data
+
+        api_function(offerer, current_user, **kwargs)
+
+    flash(success_message, "success")
+
+    return _redirect_after_offerer_validation_action()
+
+
+@validation_blueprint.route("/offerer/batch-validate", methods=["POST"])
+def batch_validate_offerer() -> utils.BackofficeResponse:
+    try:
+        return _offerer_batch_action(
+            offerers_api.validate_offerer,
+            "Les structures sélectionnées ont été validées avec succès",
+            offerer_forms.BatchEmptyForm,
+        )
+    except offerers_exceptions.OffererAlreadyValidatedException:
+        flash("Au moins une des structures a déjà été validée", "error")
+        return _redirect_after_offerer_validation_action(400)
+
+
+@validation_blueprint.route("/offerer/batch-pending", methods=["GET"])
+def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
+    form = offerer_forms.BatchCommentAndTagOffererForm()
+
+    # FIXME PC-21406 - common tags should be retrieved to initialize the form depending on checked ids
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.validation.batch_set_offerer_pending"),
+        div_id="batch-pending-modal",
+        title="Mettre en attente les structures",
+        button_text="Mettre en attente les structures",
+    )
+
+
+@validation_blueprint.route("/offerer/batch-pending", methods=["POST"])
+def batch_set_offerer_pending() -> utils.BackofficeResponse:
+    return _offerer_batch_action(
+        offerers_api.set_offerer_pending,
+        "Les structures ont été mises en attente avec succès",
+        offerer_forms.BatchCommentAndTagOffererForm,
+    )
+
+
+@validation_blueprint.route("/offerer/batch-reject", methods=["GET"])
+def get_batch_reject_offerer_form() -> utils.BackofficeResponse:
+    form = offerer_forms.BatchOptionalCommentForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.validation.batch_reject_offerer"),
+        div_id="batch-reject-modal",
+        title="Rejeter les structures",
+        button_text="Rejeter les structures",
+    )
+
+
+@validation_blueprint.route("/offerer/batch-reject", methods=["POST"])
+def batch_reject_offerer() -> utils.BackofficeResponse:
+    try:
+        return _offerer_batch_action(
+            offerers_api.reject_offerer,
+            "Les structures sélectionnées ont été rejetées avec succès",
+            offerer_forms.BatchOptionalCommentForm,
+        )
+    except offerers_exceptions.OffererAlreadyRejectedException:
+        flash("Une des structures a déjà été rejetée", "error")
+        return _redirect_after_offerer_validation_action(400)
+
+
+# #
+# USER OFFERER
+# #
+
+
 def _get_serialized_user_offerer_last_comment(
     offerer: offerers_models.Offerer, user_id: int | None = None
 ) -> str | None:
@@ -628,6 +733,13 @@ def _redirect_after_user_offerer_validation_action(offerer_id: int, code: int = 
             return redirect(request.referrer, code)
 
     return redirect(dst_url + "#offerer_details_frame", code=code)
+
+
+def _redirect_after_user_offerer_validation_action_list(code: int = 303) -> utils.BackofficeResponse:
+    if request.referrer:
+        return redirect(request.referrer, code)
+
+    return redirect(url_for("backoffice_v3_web.validation.list_offerers_attachments_to_validate"), code)
 
 
 user_offerer_blueprint = utils.child_backoffice_blueprint(
@@ -815,7 +927,7 @@ def _user_offerer_batch_action(
         user_offerer_ids = [int(id) for id in form.object_ids.data.split(",")]
     except ValueError:
         flash("Identifiant(s) invalide(s)")
-        return _redirect_after_offerer_validation_action(400)
+        return _redirect_after_user_offerer_validation_action_list(400)
 
     user_offerers = offerers_models.UserOfferer.query.filter(offerers_models.UserOfferer.id.in_(user_offerer_ids)).all()
 
@@ -823,7 +935,7 @@ def _user_offerer_batch_action(
         api_function(user_offerer, current_user, form.comment.data)
     flash(success_message, "success")
 
-    return _redirect_after_offerer_validation_action()
+    return _redirect_after_user_offerer_validation_action_list()
 
 
 @validation_blueprint.route("/user-offerer/batch-pending", methods=["POST"])
@@ -835,17 +947,29 @@ def batch_set_user_offerer_pending() -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/user-offerer/batch-reject", methods=["POST"])
 def batch_reject_user_offerer() -> utils.BackofficeResponse:
-    return _user_offerer_batch_action(
-        offerers_api.reject_offerer_attachment, "Les rattachements sélectionnés ont été rejetés avec succès"
-    )
+    try:
+        return _user_offerer_batch_action(
+            offerers_api.reject_offerer_attachment, "Les rattachements sélectionnés ont été rejetés avec succès"
+        )
+    except offerers_exceptions.UserOffererAlreadyValidatedException:
+        flash("Au moins un des rattachements est déjà rejeté", "error")
+        return _redirect_after_user_offerer_validation_action_list()
 
 
 @validation_blueprint.route("/user-offerer/batch-validate", methods=["POST"])
 def batch_validate_user_offerer() -> utils.BackofficeResponse:
-    return _user_offerer_batch_action(
-        offerers_api.validate_offerer_attachment, "Les rattachements sélectionnés ont été validés avec succès"
-    )
+    try:
+        return _user_offerer_batch_action(
+            offerers_api.validate_offerer_attachment, "Les rattachements sélectionnés ont été validés avec succès"
+        )
+    except offerers_exceptions.UserOffererAlreadyValidatedException:
+        flash("Au moins un des rattachements est déjà validé", "warning")
+        return _redirect_after_user_offerer_validation_action_list()
 
+
+# #
+# OFFERER TAG
+# #
 
 offerer_tag_blueprint = utils.child_backoffice_blueprint(
     "offerer_tag",

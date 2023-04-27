@@ -10,6 +10,7 @@ from pcapi.utils.regions import get_all_regions
 from . import fields
 from . import utils
 from ..filters import format_graphql_application_status
+from .empty import BatchEmptyForm
 
 
 TAG_NAME_REGEX = r"^[^\s]+$"
@@ -173,8 +174,8 @@ class OptionalCommentForm(FlaskForm):
     comment = fields.PCOptCommentField("Commentaire interne")
 
 
-class BatchOptionalCommentForm(OptionalCommentForm):
-    object_ids = wtforms.HiddenField("Identifiants à traiter")
+class BatchOptionalCommentForm(BatchEmptyForm, OptionalCommentForm):
+    pass
 
 
 class CommentAndTagOffererForm(OptionalCommentForm):
@@ -184,6 +185,10 @@ class CommentAndTagOffererForm(OptionalCommentForm):
         get_pk=lambda tag: tag.id,
         get_label=lambda tag: tag.label or tag.name,
     )
+
+
+class BatchCommentAndTagOffererForm(BatchEmptyForm, CommentAndTagOffererForm):
+    pass
 
 
 class TopActorForm(FlaskForm):
