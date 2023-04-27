@@ -117,7 +117,10 @@ class EduconnectFlowTest:
         assert user.city == "Uneville"
         assert user.activity == "Lycéen"
         assert subscription_api.has_completed_profile_for_given_eligibility(user, user.eligibility)
-        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.IDENTITY_CHECK
+        assert (
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.IDENTITY_CHECK
+        )
 
         # Get educonnect login form with saml protocol
         response = client.get("/saml/educonnect/login")
@@ -161,7 +164,10 @@ class EduconnectFlowTest:
         assert user.civility is None
 
         assert not user.is_beneficiary
-        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
+        assert (
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.HONOR_STATEMENT
+        )
 
         response = client.post("/native/v1/subscription/honor_statement")
 
@@ -183,26 +189,27 @@ class NextSubscriptionStepTest:
 
     def test_next_subscription_step_beneficiary(self):
         user = users_factories.BeneficiaryGrant18Factory()
-        assert subscription_api.get_next_subscription_step(user) is None
+        assert subscription_api.get_user_subscription_state(user).next_step is None
 
     def test_next_subscription_step_phone_validation(self):
         user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
         assert (
-            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PHONE_VALIDATION
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.PHONE_VALIDATION
         )
 
     def test_no_step_after_ko_admin_review(self):
         user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
         fraud_factories.BeneficiaryFraudReviewFactory(user=user, review=fraud_models.FraudReviewStatus.KO)
 
-        assert subscription_api.get_next_subscription_step(user) is None
+        assert subscription_api.get_user_subscription_state(user).next_step is None
 
     def test_next_subscription_step_phone_validation_skipped(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT,
         )
-        assert subscription_api.get_next_subscription_step(user) in (
+        assert subscription_api.get_user_subscription_state(user).next_step in (
             subscription_models.SubscriptionStep.PROFILE_COMPLETION,
             subscription_models.SubscriptionStep.IDENTITY_CHECK,
             subscription_models.SubscriptionStep.HONOR_STATEMENT,
@@ -215,7 +222,8 @@ class NextSubscriptionStepTest:
             city=None,
         )
         assert (
-            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.PROFILE_COMPLETION
         )
 
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
@@ -235,7 +243,10 @@ class NextSubscriptionStepTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
+        assert (
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.HONOR_STATEMENT
+        )
 
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_next_subscription_step_underage_finished(self):
@@ -261,7 +272,7 @@ class NextSubscriptionStepTest:
             status=fraud_models.FraudCheckStatus.PENDING,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        assert subscription_api.get_next_subscription_step(user) == None
+        assert subscription_api.get_user_subscription_state(user).next_step == None
 
     def test_next_subscription_step_profile_completion(self):
         user = users_factories.UserFactory(
@@ -271,7 +282,8 @@ class NextSubscriptionStepTest:
         )
 
         assert (
-            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.PROFILE_COMPLETION
         )
 
     def test_next_subscription_step_identity_check(self):
@@ -289,7 +301,10 @@ class NextSubscriptionStepTest:
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
-        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.IDENTITY_CHECK
+        assert (
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.IDENTITY_CHECK
+        )
 
     def test_underage_ubble_already_performed(self):
         user = users_factories.UserFactory(
@@ -306,7 +321,10 @@ class NextSubscriptionStepTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
+        assert (
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.HONOR_STATEMENT
+        )
 
     def test_underage_dms_alread_performed(self):
         user = users_factories.UserFactory(
@@ -323,7 +341,10 @@ class NextSubscriptionStepTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
+        assert (
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.HONOR_STATEMENT
+        )
 
     def test_next_subscription_step_honor_statement(self):
         user = users_factories.UserFactory(
@@ -340,7 +361,10 @@ class NextSubscriptionStepTest:
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
-        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
+        assert (
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.HONOR_STATEMENT
+        )
 
     def test_next_subscription_step_finished(self):
         user = users_factories.UserFactory(
@@ -363,7 +387,7 @@ class NextSubscriptionStepTest:
             status=fraud_models.FraudCheckStatus.OK,
         )
 
-        assert subscription_api.get_next_subscription_step(user) == None
+        assert subscription_api.get_user_subscription_state(user).next_step == None
 
     @pytest.mark.parametrize(
         "feature_flags,user_age,user_school_type,expected_result",
@@ -545,7 +569,8 @@ class NextSubscriptionStepTest:
                 user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.KO
             )
         assert (
-            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PHONE_VALIDATION
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.PHONE_VALIDATION
         )
 
     def test_user_with_pending_dms_application_should_not_fill_profile(self):
@@ -568,7 +593,7 @@ class NextSubscriptionStepTest:
             status=fraud_models.FraudCheckStatus.OK,
         )
 
-        assert subscription_api.get_next_subscription_step(user) is None
+        assert subscription_api.get_user_subscription_state(user).next_step is None
 
     def test_underage_user_with_pending_dms_application_should_not_fill_profile(self):
         user = users_factories.UserFactory(
@@ -590,7 +615,7 @@ class NextSubscriptionStepTest:
             resultContent=None,
         )
 
-        assert subscription_api.get_next_subscription_step(user) is None
+        assert subscription_api.get_user_subscription_state(user).next_step is None
 
 
 @pytest.mark.usefixtures("db_session")
@@ -939,7 +964,8 @@ class NeedsToPerformeIdentityCheckTest:
         )
 
         assert (
-            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PHONE_VALIDATION
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.PHONE_VALIDATION
         )
 
     def test_ubble_underage_eligible_18_does_not_need_to_redo(self):
@@ -978,7 +1004,10 @@ class NeedsToPerformeIdentityCheckTest:
             status=fraud_models.FraudCheckStatus.OK,
         )
 
-        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.IDENTITY_CHECK
+        assert (
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.IDENTITY_CHECK
+        )
 
     def test_dms_started(self):
         user = users_factories.UserFactory(dateOfBirth=self.AGE16_ELIGIBLE_BIRTH_DATE)
@@ -990,7 +1019,8 @@ class NeedsToPerformeIdentityCheckTest:
         )
 
         assert (
-            not subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.IDENTITY_CHECK
+            not subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.IDENTITY_CHECK
         )
 
     def test_educonnect_ok(self):
@@ -1003,7 +1033,8 @@ class NeedsToPerformeIdentityCheckTest:
         )
 
         assert (
-            not subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.IDENTITY_CHECK
+            not subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.IDENTITY_CHECK
         )
 
 
