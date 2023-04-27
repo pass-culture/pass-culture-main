@@ -24,6 +24,7 @@
               <th scope="col">Sous-catégorie</th>
               <th scope="col">État</th>
               <th scope="col">Date de création</th>
+              <th scope="col">Date de l'événement</th>
               <th scope="col">Structure</th>
               <th scope="col">Lieu</th>
             </tr>
@@ -60,7 +61,8 @@
                 <td>{{ collective_offer.category.pro_label }}</td>
                 <td>{{ collective_offer.subcategory.pro_label }}</td>
                 <td>{{ collective_offer.validation | format_offer_validation_status }}</td>
-                <td>{{ collective_offer.dateCreated | format_date("%d/%m/%Y") }}</td>
+                <td>{{ collective_offer.dateCreated | format_date }}</td>
+                <td>{{ collective_offer.collectiveStock.beginningDatetime | format_date }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}</td>
                 <td>{{ links.build_venue_name_to_details_link(collective_offer.venue) }}</td>
               </tr>
