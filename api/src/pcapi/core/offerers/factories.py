@@ -62,7 +62,7 @@ class VenueFactory(BaseFactory):
     contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
     bookingEmail = factory.Sequence("venue{}@example.net".format)
     dmsToken = factory.LazyFunction(api.generate_dms_token)
-    bannerUrl = None
+    _bannerUrl = None
 
     @factory.post_generation
     def pricing_point(  # pylint: disable=no-self-argument

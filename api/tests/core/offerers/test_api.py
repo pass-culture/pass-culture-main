@@ -1020,9 +1020,35 @@ class VenueBannerTest:
 
     @freeze_time("2020-10-15 00:00:00")
     @patch("pcapi.core.search.async_index_venue_ids")
-    def test_save_venue_banner(self, mock_search_async_index_venue_ids, tmpdir):
+    def test_save_venue_banner_when_no_default_available(self, mock_search_async_index_venue_ids, tmpdir):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
+        image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
+
+        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
+            offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
+
+            updated_venue = Venue.query.get(venue.id)
+            with open(updated_venue.bannerUrl, mode="rb") as f:
+                # test that image size has been reduced
+                assert len(f.read()) < len(image_content)
+
+            assert updated_venue.bannerMeta == {
+                "author_id": user.id,
+                "image_credit": "none",
+                "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
+                "crop_params": None,
+                "updated_at": "2020-10-15T00:00:00",
+            }
+
+            mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
+
+    @freeze_time("2020-10-15 00:00:00")
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_save_venue_banner_when_default_available(self, mock_search_async_index_venue_ids, tmpdir):
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.MOVIE)
         image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
