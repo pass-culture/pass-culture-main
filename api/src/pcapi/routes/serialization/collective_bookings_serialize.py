@@ -76,6 +76,7 @@ class BookingStatusHistoryResponseModel(BaseModel):
 class CollectiveBookingCollectiveStockResponseModel(BaseModel):
     offer_name: str
     offer_identifier: str
+    offer_id: int
     event_beginning_datetime: str
     offer_isbn: str | None
     offer_is_educational: bool
@@ -216,6 +217,7 @@ def serialize_collective_booking_stock(
     return CollectiveBookingCollectiveStockResponseModel(  # type: ignore [call-arg]
         offerName=collective_booking.collectiveStock.collectiveOffer.name,
         offerIdentifier=humanize(collective_booking.collectiveStock.collectiveOfferId),
+        offerId=collective_booking.collectiveStock.collectiveOfferId,
         eventBeginningDatetime=typing.cast(
             datetime,
             convert_real_booking_dates_utc_to_venue_timezone(

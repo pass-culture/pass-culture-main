@@ -125,9 +125,9 @@ class Returns200Test:
                 "stock": {
                     "offerName": booking.stock.offer.name,
                     "offerIdentifier": humanize(booking.stock.offer.id),
+                    "offerId": booking.stock.offer.id,
                     "offerIsEducational": False,
                     "eventBeginningDatetime": None,
-                    "offerNonHumanizedId": booking.stock.offer.id,
                     "offerIsbn": None,
                     "stockIdentifier": humanize(booking.stock.id),
                 },
