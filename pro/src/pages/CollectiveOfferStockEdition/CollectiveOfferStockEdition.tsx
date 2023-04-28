@@ -64,7 +64,7 @@ const CollectiveOfferStockEdition = ({
     reloadCollectiveOffer()
     navigate(
       `/offre/${computeURLCollectiveOfferId(
-        offer.id,
+        offer.nonHumanizedId,
         false
       )}/collectif/recapitulatif`
     )

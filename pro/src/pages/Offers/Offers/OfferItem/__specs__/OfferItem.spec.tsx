@@ -106,7 +106,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(stockLink).toBeInTheDocument()
         expect(stockLink).toHaveAttribute(
           'href',
-          `/offre/individuelle/${eventOffer.id}/stocks`
+          `/offre/individuelle/${eventOffer.nonHumanizedId}/stocks`
         )
       })
       describe('draft delete button', () => {
@@ -173,7 +173,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           const links = screen.getAllByRole('link')
           expect(links[links.length - 1]).toHaveAttribute(
             'href',
-            `/offre/individuelle/${eventOffer.id}/recapitulatif`
+            `/offre/individuelle/${eventOffer.nonHumanizedId}/recapitulatif`
           )
         })
 
@@ -187,7 +187,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           const links = screen.getAllByRole('link')
           expect(links[links.length - 1]).not.toHaveAttribute(
             'href',
-            `/offre/individuelle/${eventOffer.id}/edition`
+            `/offre/individuelle/${eventOffer.nonHumanizedId}/edition`
           )
         })
       })
@@ -205,7 +205,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(offerTitle).toBeInTheDocument()
         expect(offerTitle).toHaveAttribute(
           'href',
-          `/offre/individuelle/${props.offer.id}/recapitulatif`
+          `/offre/individuelle/${props.offer.nonHumanizedId}/recapitulatif`
         )
       })
     })
@@ -497,7 +497,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       const links = screen.getAllByRole('link')
       expect(links[links.length - 1]).toHaveAttribute(
         'href',
-        `/offre/individuelle/${eventOffer.id}/brouillon/informations`
+        `/offre/individuelle/${eventOffer.nonHumanizedId}/brouillon/informations`
       )
     })
 

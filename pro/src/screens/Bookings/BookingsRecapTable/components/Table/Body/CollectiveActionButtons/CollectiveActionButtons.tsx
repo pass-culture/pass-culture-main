@@ -28,6 +28,7 @@ const CollectiveActionButtons = ({
 
   const notify = useNotification()
   const offerId = bookingRecap.stock.offerIdentifier
+  const nonHumanizedOfferId = bookingRecap.stock.offerId
   const isValidatedSinceLessThan48h =
     bookingRecap.bookingStatus === BOOKING_STATUS.VALIDATED &&
     isBefore(
@@ -35,8 +36,8 @@ const CollectiveActionButtons = ({
       addDays(new Date(), 2)
     )
   const offerEditionUrl = !isValidatedSinceLessThan48h
-    ? useOfferEditionURL(true, offerId, false, false)
-    : `offre/${offerId}/collectif/stocks/edition`
+    ? useOfferEditionURL(true, nonHumanizedOfferId, false, false)
+    : `offre/${nonHumanizedOfferId}/collectif/stocks/edition`
 
   const cancelBooking = async () => {
     const response = await cancelCollectiveBookingAdapter({ offerId })

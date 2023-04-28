@@ -13,19 +13,20 @@ const renderCollectiveOfferBreadcrumb = (props: IOfferBreadcrumb) =>
 
 describe('src | components | CollectiveOfferBreadcrumb', () => {
   let props: IOfferBreadcrumb
+  const offerId = 1
 
   beforeEach(() => {
     props = {
       activeStep: CollectiveOfferBreadcrumbStep.DETAILS,
       isCreatingOffer: true,
-      offerId: 'A1',
+      offerId: offerId,
       isOfferEducational: true,
       isTemplate: false,
     }
   })
 
   it('should display breadcrumb for collective offer in creation', async () => {
-    props.offerId = ''
+    props.offerId = 0
     renderCollectiveOfferBreadcrumb(props)
 
     expect(screen.getByTestId('stepper')).toBeInTheDocument()
@@ -56,7 +57,7 @@ describe('src | components | CollectiveOfferBreadcrumb', () => {
     const links = await screen.queryAllByRole('link')
     expect(links).toHaveLength(1)
     expect(links[0].getAttribute('href')).toBe(
-      '/offre/collectif/vitrine/A1/creation'
+      `/offre/collectif/vitrine/${offerId}/creation`
     )
   })
 
@@ -65,8 +66,12 @@ describe('src | components | CollectiveOfferBreadcrumb', () => {
     renderCollectiveOfferBreadcrumb(props)
     const links = await screen.queryAllByRole('link')
     expect(links).toHaveLength(2)
-    expect(links[0].getAttribute('href')).toBe('/offre/collectif/A1/creation')
-    expect(links[1].getAttribute('href')).toBe('/offre/A1/collectif/stocks')
+    expect(links[0].getAttribute('href')).toBe(
+      `/offre/collectif/${offerId}/creation`
+    )
+    expect(links[1].getAttribute('href')).toBe(
+      `/offre/${offerId}/collectif/stocks`
+    )
   })
 
   it('should show links if visibility is the active step', async () => {
@@ -74,8 +79,12 @@ describe('src | components | CollectiveOfferBreadcrumb', () => {
     renderCollectiveOfferBreadcrumb(props)
     const links = await screen.queryAllByRole('link')
     expect(links).toHaveLength(2)
-    expect(links[0].getAttribute('href')).toBe('/offre/collectif/A1/creation')
-    expect(links[1].getAttribute('href')).toBe('/offre/A1/collectif/stocks')
+    expect(links[0].getAttribute('href')).toBe(
+      `/offre/collectif/${offerId}/creation`
+    )
+    expect(links[1].getAttribute('href')).toBe(
+      `/offre/${offerId}/collectif/stocks`
+    )
   })
 
   it('should show links if summary is the active step', async () => {
@@ -83,9 +92,15 @@ describe('src | components | CollectiveOfferBreadcrumb', () => {
     renderCollectiveOfferBreadcrumb(props)
     const links = await screen.queryAllByRole('link')
     expect(links).toHaveLength(3)
-    expect(links[0].getAttribute('href')).toBe('/offre/collectif/A1/creation')
-    expect(links[1].getAttribute('href')).toBe('/offre/A1/collectif/stocks')
-    expect(links[2].getAttribute('href')).toBe('/offre/A1/collectif/visibilite')
+    expect(links[0].getAttribute('href')).toBe(
+      `/offre/collectif/${offerId}/creation`
+    )
+    expect(links[1].getAttribute('href')).toBe(
+      `/offre/${offerId}/collectif/stocks`
+    )
+    expect(links[2].getAttribute('href')).toBe(
+      `/offre/${offerId}/collectif/visibilite`
+    )
   })
 
   it('should show links if summary is the active step', async () => {
@@ -93,11 +108,17 @@ describe('src | components | CollectiveOfferBreadcrumb', () => {
     renderCollectiveOfferBreadcrumb(props)
     const links = await screen.queryAllByRole('link')
     expect(links).toHaveLength(4)
-    expect(links[0].getAttribute('href')).toBe('/offre/collectif/A1/creation')
-    expect(links[1].getAttribute('href')).toBe('/offre/A1/collectif/stocks')
-    expect(links[2].getAttribute('href')).toBe('/offre/A1/collectif/visibilite')
+    expect(links[0].getAttribute('href')).toBe(
+      `/offre/collectif/${offerId}/creation`
+    )
+    expect(links[1].getAttribute('href')).toBe(
+      `/offre/${offerId}/collectif/stocks`
+    )
+    expect(links[2].getAttribute('href')).toBe(
+      `/offre/${offerId}/collectif/visibilite`
+    )
     expect(links[3].getAttribute('href')).toBe(
-      '/offre/A1/collectif/creation/recapitulatif'
+      `/offre/${offerId}/collectif/creation/recapitulatif`
     )
   })
 
@@ -111,13 +132,13 @@ describe('src | components | CollectiveOfferBreadcrumb', () => {
 
     expect(linkItems).toHaveLength(3)
     expect(linkItems[0].getAttribute('href')).toBe(
-      '/offre/A1/collectif/edition'
+      `/offre/${offerId}/collectif/edition`
     )
     expect(linkItems[1].getAttribute('href')).toBe(
-      '/offre/A1/collectif/stocks/edition'
+      `/offre/${offerId}/collectif/stocks/edition`
     )
     expect(linkItems[2].getAttribute('href')).toBe(
-      '/offre/A1/collectif/visibilite/edition'
+      `/offre/${offerId}/collectif/visibilite/edition`
     )
   })
 
@@ -128,10 +149,14 @@ describe('src | components | CollectiveOfferBreadcrumb', () => {
     const links = await screen.findAllByRole('link')
 
     expect(links).toHaveLength(3)
-    expect(links[0].getAttribute('href')).toBe('/offre/A1/collectif/stocks')
-    expect(links[1].getAttribute('href')).toBe('/offre/A1/collectif/visibilite')
+    expect(links[0].getAttribute('href')).toBe(
+      `/offre/${offerId}/collectif/stocks`
+    )
+    expect(links[1].getAttribute('href')).toBe(
+      `/offre/${offerId}/collectif/visibilite`
+    )
     expect(links[2].getAttribute('href')).toBe(
-      '/offre/A1/collectif/creation/recapitulatif'
+      `/offre/${offerId}/collectif/creation/recapitulatif`
     )
   })
 })

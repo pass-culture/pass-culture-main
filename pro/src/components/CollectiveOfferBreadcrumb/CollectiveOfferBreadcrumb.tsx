@@ -16,7 +16,7 @@ export interface IOfferBreadcrumb {
   activeStep: CollectiveOfferBreadcrumbStep
   isCreatingOffer: boolean
   isCompletingDraft?: boolean
-  offerId?: string
+  offerId?: number
   isOfferEducational?: boolean
   className?: string
   isTemplate: boolean
@@ -28,7 +28,7 @@ const CollectiveOfferBreadcrumb = ({
   isCreatingOffer,
   isTemplate = false,
   isCompletingDraft = false,
-  offerId = '',
+  offerId = 0,
   className,
   haveStock = false,
 }: IOfferBreadcrumb): JSX.Element => {

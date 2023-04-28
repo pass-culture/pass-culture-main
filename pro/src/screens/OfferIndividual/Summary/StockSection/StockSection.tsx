@@ -41,7 +41,7 @@ const StockSection = ({ offer }: IStockSection): JSX.Element => {
   }
 
   const editLink = getOfferIndividualUrl({
-    offerId: offer.id,
+    offerId: offer.nonHumanizedId,
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
     mode,
   })

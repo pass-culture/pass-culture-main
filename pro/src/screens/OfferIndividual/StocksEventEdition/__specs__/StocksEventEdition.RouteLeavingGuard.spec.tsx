@@ -111,10 +111,12 @@ describe('screens:StocksEventEdition', () => {
   let props: IStocksEventEditionProps
   let contextValue: IOfferIndividualContext
   let offer: Partial<IOfferIndividual>
+  const offerId = 1
 
   beforeEach(() => {
     offer = {
       id: 'OFFER_ID',
+      nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
       } as IOfferIndividualVenue,

@@ -209,7 +209,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
 
   const afterSubmitCallback = () => {
     const afterSubmitUrl = getOfferIndividualUrl({
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
       step:
         mode === OFFER_WIZARD_MODE.EDITION
           ? OFFER_WIZARD_STEP_IDS.SUMMARY
@@ -258,7 +258,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
     }
     navigate(
       getOfferIndividualUrl({
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         mode,
       })
@@ -287,7 +287,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
         } else {
           navigate(
             getOfferIndividualUrl({
-              offerId: offer.id,
+              offerId: offer.nonHumanizedId,
               step: OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode,
             })

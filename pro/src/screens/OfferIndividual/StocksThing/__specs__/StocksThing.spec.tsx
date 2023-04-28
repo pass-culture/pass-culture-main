@@ -96,7 +96,7 @@ const renderStockThingScreen = (
         getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.CREATION,
-          offerId: contextValue.offerId || undefined,
+          offerId: contextValue.offer?.nonHumanizedId || undefined,
         }),
       ],
     }

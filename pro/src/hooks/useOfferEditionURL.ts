@@ -5,7 +5,7 @@ import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 
 export const useOfferEditionURL = (
   isOfferEducational: boolean,
-  offerId: string,
+  offerId: number,
   isOfferFormV3: boolean,
   isShowcase?: boolean,
   status?: string
@@ -33,7 +33,7 @@ export const useOfferEditionURL = (
 
 export const useOfferStockEditionURL = (
   isOfferEducational: boolean,
-  offerId: string,
+  offerId: number,
   isOfferFormV3: boolean,
   isShowcase?: boolean
 ): string => {

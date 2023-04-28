@@ -59,7 +59,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
     getOfferIndividualUrl({
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
       step: OFFER_WIZARD_STEP_IDS.SUMMARY,
       mode,
     })
@@ -112,7 +112,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
           : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
       })
     } else {
       /* istanbul ignore next: DEBT, TO FIX */
@@ -163,7 +163,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
       }
 
       const nextStepUrl = getOfferIndividualUrl({
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         step: saveDraft
           ? OFFER_WIZARD_STEP_IDS.STOCKS
           : OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -220,7 +220,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     /* istanbul ignore next: DEBT, TO FIX */
     navigate(
       getOfferIndividualUrl({
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         mode,
       })
