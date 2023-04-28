@@ -16,7 +16,8 @@ from tests.conftest import TestClient
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def when_user_has_rights_on_managing_offerer(self, client, db_session):
+    @pytest.mark.parametrize("execution_number", range(50))
+    def when_user_has_rights_on_managing_offerer(self, client, db_session, execution_number):
         now = datetime.datetime.utcnow()
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
         venue = offerers_factories.CollectiveVenueFactory(
@@ -163,7 +164,8 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == expected_serialized_venue
 
-    def when_user_has_rights_on_managing_offerer_with_no_adage_id(self, client):
+    @pytest.mark.parametrize("execution_number", range(50))
+    def when_user_has_rights_on_managing_offerer_with_no_adage_id(self, client, execution_number):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
         venue = offerers_factories.CollectiveVenueFactory(
             name="L'encre et la plume",
