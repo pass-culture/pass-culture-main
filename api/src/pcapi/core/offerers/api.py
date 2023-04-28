@@ -778,7 +778,7 @@ def get_timestamp_from_url(image_url: str) -> str:
 
 
 def rm_previous_venue_thumbs(venue: models.Venue) -> None:
-    if not venue.bannerUrl:
+    if not venue._bannerUrl:  # bannerUrl (with no undescore) always returns an url (potentially a default one)
         return
 
     # handle old banner urls that did not have a timestamp
