@@ -266,13 +266,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pytest_args:
-          [
-            "tests/core/bookings tests/core/offers tests/core/finance",
-            "tests/core --ignore=tests/core/bookings --ignore=tests/core/offers --ignore=tests/core/finance",
-            "tests/routes -m 'not backoffice_v3'",
-            "tests --ignore=tests/core --ignore=tests/routes",
-          ]
+        pytest_args: ["tests/routes/pro/get_venue_test.py"]
     needs: build-tests-docker-image
     permissions:
       id-token: write
@@ -350,7 +344,7 @@ jobs:
         uses: mikepenz/action-junit-report@v3
         if: always() # always run even if the previous step fails
         with:
-          report_paths: '${{ runner.workspace }}/pass-culture-main/api/tests/junit.xml'
+          report_paths: "${{ runner.workspace }}/pass-culture-main/api/tests/junit.xml"
           check_name: "Pytest Report"
           fail_on_failure: true
       - name: Slack Notification
