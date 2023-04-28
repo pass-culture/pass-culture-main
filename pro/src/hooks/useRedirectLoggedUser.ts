@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 
@@ -8,15 +8,14 @@ import useCurrentUser from './useCurrentUser'
 
 const useRedirectLoggedUser = () => {
   const navigate = useNavigate()
-  const location = useLocation()
   const { currentUser } = useCurrentUser()
   const newOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
 
-  const redirecTotUrl = () => {
-    const queryParams = new URLSearchParams(location.search)
-    const redirectUrl = queryParams.has('de')
-      ? queryParams.get('de')
-      : `/accueil${location.search}`
+  const [searchParams] = useSearchParams()
+  const redirectTotUrl = () => {
+    const redirectUrl = searchParams.has('de')
+      ? searchParams.get('de')
+      : `/accueil?${searchParams}`
     redirectUrl && navigate(redirectUrl)
   }
 
@@ -26,7 +25,7 @@ const useRedirectLoggedUser = () => {
       if (listOfferer.offerersNames.length === 0) {
         navigate('/parcours-inscription')
       } else {
-        redirecTotUrl()
+        redirectTotUrl()
       }
     }
 
@@ -34,7 +33,7 @@ const useRedirectLoggedUser = () => {
       if (newOnboardingActive && !currentUser.isAdmin) {
         fetchOfferersNames()
       } else {
-        redirecTotUrl()
+        redirectTotUrl()
       }
     }
   }, [currentUser])
