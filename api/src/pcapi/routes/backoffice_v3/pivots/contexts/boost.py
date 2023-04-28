@@ -100,34 +100,6 @@ class BoostContext(PivotContext):
         ).one_or_none()
 
         if venue_provider:
-            flash("Ce lieu est toujours synchronisé avec CDS, Vous ne pouvez pas supprimer ce pivot Boost", "danger")
-            return False
-
-        db.session.delete(pivot)
-        db.session.delete(cinema_provider_pivot)
-        return True
-
-    @classmethod
-    def check_if_api_call_is_ok(cls, pivot: providers_models.BoostCinemaDetails) -> None:
-        try:
-            boost.login(pivot, ignore_device=True)
-            flash("Connexion à l'API OK.")
-            return
-        except boost_exceptions.BoostAPIException as exc:
-            logger.exception(
-                "Network error on checking Boost API information",
-                extra={"exc": exc, "username": pivot.username},
-            )
-        flash("Connexion à l'API KO.", "danger")
-        pivot = providers_models.BoostCinemaDetails.query.get_or_404(pivot_id)
-        cinema_provider_pivot = pivot.cinemaProviderPivot
-        assert cinema_provider_pivot  # helps mypy
-
-        venue_provider = providers_models.VenueProvider.query.filter_by(
-            venueId=cinema_provider_pivot.venueId, providerId=cinema_provider_pivot.providerId
-        ).one_or_none()
-
-        if venue_provider:
             flash("Ce lieu est toujours synchronisé avec Boost, vous ne pouvez pas supprimer ce pivot Boost", "danger")
             return False
 
