@@ -77,6 +77,10 @@ jobs:
         with:
           driver: docker
 
+      - name: Sleep
+        id: sleep
+        run: sleep 3600
+
       - id: openid-auth
         name: "OpenID Connect Authentication"
         uses: "google-github-actions/auth@v1"
