@@ -79,7 +79,7 @@ jobs:
 
       - name: Sleep
         id: sleep
-        run: sleep 3600
+        run: sleep 3600 && echo ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }} && echo ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
 
       - id: openid-auth
         name: "OpenID Connect Authentication"
@@ -87,8 +87,8 @@ jobs:
         with:
           create_credentials_file: false
           token_format: "access_token"
-          workload_identity_provider: sdfsdfsdfsqdfsqdfsqdjflksqjdfksqjdfmisqjfdklsqjdflksqjdmflkjsqdlfkjelkfjsqlifjdsqlijflksqdjfliqsjdflksqjdmlkjflkjsqmldkfjlksqjdf
-          service_account: lkjlsqdkfjlksjdflksjdqflksjdflksqjdflksjdqflkjdsqlkfjsdqlkfjsqlkdjflsqkdjfmlsqkdjflkdsqjflksjdflkrjlkjdifslqijfmliqsjdflijsqmldfij
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
 
       - id: docker-login
         uses: "docker/login-action@v1"
