@@ -13,6 +13,7 @@ from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
 from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.mutable import MutableDict
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BooleanClauseList
@@ -693,6 +694,69 @@ class OfferValidationConfig(PcObject, Base, Model):
     user: sa_orm.Mapped["User"] = sa.orm.relationship("User", backref="offer_validation_configs")
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"))
     specs: dict = sa.Column("specs", postgresql.JSONB, nullable=False)
+
+
+class OfferValidationRuleOperator(enum.Enum):
+    EQUALS = "=="
+    NOT_EQUALS = "!="
+    GREATER_THAN = ">"
+    GREATER_THAN_OR_EQUAL_TO = ">="
+    LESS_THAN = "<"
+    LESS_THAN_OR_EQUAL_TO = "<="
+    IN = "in"
+    NOT_IN = "not in"
+    CONTAINS = "contains"
+    CONTAINS_EXACTLY = "contains-exact"
+
+
+class OfferValidationModel(enum.Enum):
+    OFFER = "Offer"
+    COLLECTIVE_OFFER = "CollectiveOffer"
+    COLLECTIVE_OFFER_TEMPLATE = "CollectiveOfferTemplate"
+    STOCK = "Stock"
+    COLLECTIVE_STOCK = "CollectiveStock"
+    VENUE = "Venue"
+    OFFERER = "Offerer"
+
+
+class OfferValidationAttribute(enum.Enum):
+    CLASS_NAME = "class_name"
+    NAME = "name"
+    DESCRIPTION = "description"
+    SIREN = "siren"
+    CATEGORY = "category"
+    SUBCATEGORY_ID = "subcategoryId"
+    WITHDRAWAL_DETAILS = "withdrawalDetails"
+    MAX_PRICE = "max_price"
+    PRICE = "price"
+    PRICE_DETAIL = "priceDetail"
+    SHOW_SUB_TYPE = "showSubType"
+
+
+class OfferValidationSubRule(PcObject, Base, Model):
+    __tablename__ = "offer_validation_sub_rule"
+    validationRule: sa.orm.Mapped["OfferValidationRule"] = sa.orm.relationship(
+        "OfferValidationRule", backref="subRules"
+    )
+    validationRuleId = sa.Column(sa.BigInteger, sa.ForeignKey("offer_validation_rule.id"), index=True, nullable=False)
+    model: OfferValidationModel = sa.Column(sa.Enum(OfferValidationModel), nullable=True)
+    __table_args__ = (
+        sa.CheckConstraint(
+            "(model IS NULL AND attribute = 'CLASS_NAME') OR (model IS NOT NULL AND attribute != 'CLASS_NAME')",
+            name="check_not_model_and_attribute_class_or_vice_versa",
+        ),
+    )
+    attribute: OfferValidationAttribute = sa.Column(sa.Enum(OfferValidationAttribute), nullable=False)
+    operator: OfferValidationRuleOperator = sa.Column(sa.Enum(OfferValidationRuleOperator), nullable=False)
+    comparated: dict = sa.Column("comparated", MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
+
+
+class OfferValidationRule(PcObject, Base, Model):
+    __tablename__ = "offer_validation_rule"
+    name: str = sa.Column(sa.Text, nullable=False)
+    dateModified: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    latestAuthorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
+    latestAuthor: sa_orm.Mapped["User"] = sa.orm.relationship("User", foreign_keys=[latestAuthorId])
 
 
 @dataclass
