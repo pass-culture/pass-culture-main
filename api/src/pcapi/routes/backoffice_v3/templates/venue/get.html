@@ -155,12 +155,6 @@
                   {% endif %}
                 </span>
               </p>
-              {% if venue.dms_adage_status %}
-                <p class="mb-1">
-                  <span class="fw-bold">Statut du dossier DMS Adage :</span>
-                  {{ venue.dms_adage_status | format_dms_status }}
-                </p>
-              {% endif %}
               <p class="mb-1">
                 {% if venue.adageId %}
                   <span class="fw-bold">ID Adage :</span>
@@ -169,25 +163,25 @@
                   <span class="fw-bold">Pas de dossier DMS Adage</span>
                 {% endif %}
               </p>
-              {% if venue.dms_adage_status %}
+{#              {% if dms_stats.status %}#}
                 <p class="mb-1">
-                  {% if venue.dms_adage_status != "accepte" %}
-                    <span class="fw-bold">Date de dépôt DMS Adage :</span>
-                    {{ venue.dms_adage_date }}
-                    {% eif venue.dms_adage_status == "accepte" %}
+{#                  {% if dms_stats.status != "accepte" %}#}
+                    <span class="fw-bold">Date de dépôt DMS Adage :{{ dms_stats |tojson }}</span>
+                    {{ dms_stats.subscriptionDate | format_date }}
+{#                  {% elif dms_stats.status == "accepte" %}#}
                     <span class="fw-bold">Date de validation DMS Adage :</span>
-                    {{ venue.dms_adage_date }}
-                  {% endif %}
+                    {{ dms_stats.lastChangeDate | format_date }}
+{#                  {% endif %}#}
                 </p>
-              {% endif %}
-              {% if venue.dms_adage_status %}
+{#              {% endif %}#}
+{#              {% if dms_stats.status %}#}
                 <p class="mb-1">
-                  {% if venue.dms_adage_status != "accepte" %}
+{#                  {% if dms_stats.status != "accepte" %}#}
                     <span class="fw-bold">Statut du dossier DMS Adage :</span>
-                    {{ venue.dms_adage_status | format_dms_status }}
-                  {% endif %}
+                    {{ dms_stats.status | format_dms_status }}
+{#                  {% endif %}#}
                 </p>
-              {% endif %}
+{#              {% endif %}#}
               <p class="mb-1">
                 <span class="fw-bold">{{ "Activité principale" if is_feature_active("WIP_ENABLE_NEW_ONBOARDING") else "Type de lieu" }} :</span>
                 {{ venue.venueTypeCode.value }}
