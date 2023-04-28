@@ -7,7 +7,7 @@ import Venue from './Venue'
 
 interface IVenueListProps {
   physicalVenues: GetOffererVenueResponseModel[]
-  selectedOffererId: string
+  selectedOffererId: number
   virtualVenue: GetOffererVenueResponseModel | null
 }
 
@@ -20,8 +20,7 @@ const VenueList = ({
     <div className="h-venue-list">
       {virtualVenue && (
         <Venue
-          id={virtualVenue.id}
-          nonHumanizedId={virtualVenue.nonHumanizedId}
+          venueId={virtualVenue.nonHumanizedId}
           isVirtual
           name="Offres numériques"
           offererId={selectedOffererId}
@@ -39,8 +38,7 @@ const VenueList = ({
 
       {physicalVenues?.map(venue => (
         <Venue
-          id={venue.id}
-          nonHumanizedId={venue.nonHumanizedId}
+          venueId={venue.nonHumanizedId}
           key={selectedOffererId + '-' + venue.id}
           name={venue.name}
           offererId={selectedOffererId}

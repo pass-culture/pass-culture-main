@@ -133,7 +133,7 @@ const Homepage = (): JSX.Element => {
             <section className="step-section">
               <VenueOfferSteps
                 hasVenue={!hasNoVenueVisible}
-                offererId={selectedOffererId}
+                offererId={Number(selectedOffererId)}
               />
             </section>
           )}

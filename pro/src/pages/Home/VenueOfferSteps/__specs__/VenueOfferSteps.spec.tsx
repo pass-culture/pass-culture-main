@@ -30,7 +30,7 @@ const renderVenueOfferSteps = ({
   return renderWithProviders(
     <VenueOfferSteps
       hasVenue={hasVenue}
-      offererId="AB"
+      offererId={12}
       hasMissingReimbursementPoint={hasMissingReimbursementPoint}
       hasCreatedOffer={hasCreatedOffer}
       hasAdageId={hasAdageId}

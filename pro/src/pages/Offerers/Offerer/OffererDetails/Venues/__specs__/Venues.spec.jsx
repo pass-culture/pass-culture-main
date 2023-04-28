@@ -7,10 +7,11 @@ import Venues from '../Venues'
 
 describe('src | components | pages | OffererCreation | Venues', () => {
   let props
+  const offererId = 1
 
   beforeEach(() => {
     props = {
-      offererId: '5767Fdtre',
+      offererId: offererId,
       venues: [],
     }
   })
@@ -20,7 +21,11 @@ describe('src | components | pages | OffererCreation | Venues', () => {
   describe('render', () => {
     it('should render a title', () => {
       // given
-      renderReturnVenues()
+      renderReturnVenues({
+        features: {
+          list: [{ isActive: true, nameKey: 'API_SIRENE_AVAILABLE' }],
+        },
+      })
       // when
       const title = screen.getByRole('heading', { level: 2 })
 
@@ -43,7 +48,7 @@ describe('src | components | pages | OffererCreation | Venues', () => {
           // then
           expect(link).toHaveAttribute(
             'href',
-            '/structures/5767Fdtre/lieux/creation'
+            `/structures/${offererId}/lieux/creation`
           )
         })
       })
