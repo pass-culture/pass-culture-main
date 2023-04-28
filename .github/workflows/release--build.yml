@@ -42,18 +42,18 @@ jobs:
       base_ref: ${{ github.event.inputs.commitHash }}
       tag_number: ${{ github.event.inputs.releaseNumber }}.0.0
 
-  create-maintenance-branch:
-    name: Create maintenance branch
-    needs: build-and-tag-version
-    runs-on: [self-hosted, linux, x64]
-    env:
-      MAINTENANCE_BRANCH: maint/v${{ github.event.inputs.releaseNumber }}
-    steps:
-      - name: Checkout new tag
-        uses: actions/checkout@v3
-        with:
-          ref: v${{ github.event.inputs.releaseNumber }}.0.0
-      - name: Create maintenance branch
-        run: |
-          git checkout -b "$MAINTENANCE_BRANCH"
-          git push origin "$MAINTENANCE_BRANCH"
+        #create-maintenance-branch:
+        #  name: Create maintenance branch
+        #  needs: build-and-tag-version
+        #  runs-on: [self-hosted, linux, x64]
+        #  env:
+        #    MAINTENANCE_BRANCH: maint/v${{ github.event.inputs.releaseNumber }}
+        #  steps:
+        #    - name: Checkout new tag
+        #      uses: actions/checkout@v3
+        #      with:
+        #        ref: v${{ github.event.inputs.releaseNumber }}.0.0
+        #    - name: Create maintenance branch
+        #      run: |
+        #        git checkout -b "$MAINTENANCE_BRANCH"
+        #        git push origin "$MAINTENANCE_BRANCH"
