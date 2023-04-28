@@ -31,7 +31,6 @@ class EditAllocineForm(EditPivotForm):
     internal_id = fields.PCStringField("Identifiant interne Allociné")
 
 
-# TODO PC-21791
 class EditBoostForm(EditPivotForm):
     cinema_id = fields.PCStringField("Identifiant Cinéma (Boost)")
     username = fields.PCStringField("Nom de l'utilisateur (Boost)")
@@ -60,7 +59,6 @@ class EditBoostForm(EditPivotForm):
         return super().validate(extra_validators)
 
 
-# TODO PC-21790
 class EditCGRForm(EditPivotForm):
     cinema_id = fields.PCStringField("Identifiant Cinéma (CGR)")
     cinema_url = fields.PCStringField(
@@ -88,8 +86,22 @@ class EditCGRForm(EditPivotForm):
         return super().validate(extra_validators)
 
 
-# TODO PC-21792
 class EditCineOfficeForm(EditPivotForm):
     cinema_id = fields.PCStringField("Identifiant cinéma (CDS)")
     account_id = fields.PCStringField("Nom de compte (CDS)")
     api_token = fields.PCStringField("Clé API (CDS)")
+
+    def validate(self, extra_validators=None) -> bool:  # type: ignore [no-untyped-def]
+        # do not use this custom validation on DeleteForm
+        if not isinstance(self, EditCineOfficeForm):
+            return super().validate(extra_validators)
+
+        cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
+        pivot = providers_repository.get_pivot_for_id_at_provider(
+            id_at_provider=self.cinema_id.data, provider_id=cds_provider.id
+        )
+        if pivot and pivot.venueId != self.venue_id.data[0]:
+            flash("Cet identifiant cinéma existe déjà pour un autre lieu", "danger")
+            return False
+
+        return super().validate(extra_validators)

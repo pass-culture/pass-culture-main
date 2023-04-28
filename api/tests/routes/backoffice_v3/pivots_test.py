@@ -235,9 +235,57 @@ class ListPivotsTest(GetEndpointHelper):
         assert cineoffice_rows[0]["Nom de l'utilisateur (CDS)"] == cineoffice_pivot.accountId
         assert cineoffice_rows[0]["Clé API (CDS)"] == cineoffice_pivot.cinemaApiToken
 
-    @pytest.mark.skip(reason="TODO PC-21792")
+    @pytest.mark.parametrize(
+        "query_string,expected_venues",
+        [
+            ("10", {"Cinéma Edison"}),  # id
+            ("91", set()),
+            ("cinéma", {"Cinéma Edison", "Cinéma Lumière"}),  # beginning, accent
+            ("lumiere", {"Cinéma Lumière", "Chez les Frères Lumière"}),  # end, no accent
+            ("accountId1010", {"Cinéma Edison"}),  # full idAtProvider
+            ("accountId101", set()),  # part idAtProvider
+            ("http://cineoffice-cinema-", set()),  # not searchable
+        ],
+    )
     def test_filter_pivots_cineoffice(self, authenticated_client, query_string, expected_venues):
-        pass  # TODO PC-21792
+        # given
+        cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
+        providers_factories.CDSCinemaDetailsFactory(
+            cinemaProviderPivot=providers_factories.CinemaProviderPivotFactory(
+                venue=offerers_factories.VenueFactory(id=10, name="Cinéma Edison"),
+                provider=cds_provider,
+                idAtProvider="accountId1010",
+            ),
+            accountId="Super compte 1",
+            cinemaApiToken="azerty1",
+        )
+        providers_factories.CDSCinemaDetailsFactory(
+            cinemaProviderPivot=providers_factories.CinemaProviderPivotFactory(
+                venue=offerers_factories.VenueFactory(id=11, name="Cinéma Lumière"),
+                provider=cds_provider,
+                idAtProvider="accountId1111",
+            ),
+            accountId="admin account!",
+            cinemaApiToken="azerty13",
+        )
+        providers_factories.CDSCinemaDetailsFactory(
+            cinemaProviderPivot=providers_factories.CinemaProviderPivotFactory(
+                venue=offerers_factories.VenueFactory(id=12, name="Chez les Frères Lumière"),
+                provider=cds_provider,
+                idAtProvider="accountId1212",
+            ),
+            accountId="compte pro #54",
+            cinemaApiToken="azerty123",
+        )
+
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, name="cineoffice", q=query_string))
+            assert response.status_code == 200
+
+        # then
+        cgr_rows = html_parser.extract_table_rows(response.data)
+        assert {row["Lieu"] for row in cgr_rows} == expected_venues
 
 
 class GetCreatePivotFormTest(GetEndpointHelper):
@@ -329,9 +377,22 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.cinemaUrl == form["cinema_url"]
         assert created.password == form["password"]
 
-    @pytest.mark.skip(reason="TODO PC-21792")
     def test_create_pivot_cineoffice(self, authenticated_client):
-        pass  # TODO PC-21792
+        venue_id = offerers_factories.VenueFactory().id
+        form = {
+            "venue_id": venue_id,
+            "cinema_id": "cineoffice cinema 1",
+            "account_id": "cineoffice account 1",
+            "api_token": "====?azerty!123",
+        }
+
+        self.post_to_endpoint(authenticated_client, name="cineoffice", form=form)
+
+        created = providers_models.CDSCinemaDetails.query.one()
+        assert created.cinemaProviderPivot.venueId == venue_id
+        assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
+        assert created.accountId == form["account_id"]
+        assert created.cinemaApiToken == form["api_token"]
 
 
 class GetUpdatePivotFormTest(GetEndpointHelper):
@@ -395,9 +456,24 @@ class GetUpdatePivotFormTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, name="cgr", pivot_id=cgr_pivot.id))
             assert response.status_code == 200
 
-    @pytest.mark.skip(reason="TODO PC-21792")
     def test_get_update_pivot_form_cineoffice(self, authenticated_client):
-        pass  # TODO PC-21792
+        # given
+        # - fetch cineoffice cinema details (1 query)
+        # - fetch session (1 query)
+        # - fetch user (1 query)
+        # - fetch pivot (1 query)
+        # - fetch venue for form validate (1 query)
+        # - fetch venue to fill autocomplete (1 query)
+        expected_num_queries = 6
+
+        cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
+
+        db.session.expire(cineoffice_pivot)
+
+        # when
+        with assert_num_queries(expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, name="cineoffice", pivot_id=cineoffice_pivot.id))
+            assert response.status_code == 200
 
 
 class UpdatePivotTest(PostEndpointHelper):
@@ -459,9 +535,21 @@ class UpdatePivotTest(PostEndpointHelper):
         assert updated.cinemaUrl == form["cinema_url"]
         assert updated.password == form["password"]
 
-    @pytest.mark.skip(reason="TODO PC-21792")
     def test_update_pivot_cineoffice(self, authenticated_client):
-        pass  # TODO PC-21792
+        cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
+
+        form = {
+            "cinema_id": "boost 1",
+            "account_id": "account 1er",
+            "api_token": "==@/@414324rF!",
+        }
+
+        self.post_to_endpoint(authenticated_client, name="cineoffice", pivot_id=cineoffice_pivot.id, form=form)
+
+        updated = providers_models.CDSCinemaDetails.query.one()
+        assert updated.cinemaProviderPivot.idAtProvider == form["cinema_id"]
+        assert updated.accountId == form["account_id"]
+        assert updated.cinemaApiToken == form["api_token"]
 
 
 class DeleteProviderTest(PostEndpointHelper):
@@ -483,6 +571,9 @@ class DeleteProviderTest(PostEndpointHelper):
 
         assert not providers_models.CGRCinemaDetails.query.get(cgr_pivot.id)
 
-    @pytest.mark.skip(reason="TODO PC-21792")
     def test_delete_pivot_cineoffice(self, authenticated_client):
-        pass  # TODO PC-21792
+        cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
+
+        self.post_to_endpoint(authenticated_client, name="cineoffice", pivot_id=cineoffice_pivot.id)
+
+        assert not providers_models.CDSCinemaDetails.query.get(cineoffice_pivot.id)
