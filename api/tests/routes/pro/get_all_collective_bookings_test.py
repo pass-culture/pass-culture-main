@@ -67,6 +67,7 @@ class Returns200Test:
                 "stock": {
                     "offerName": "Le chant des cigales",
                     "offerIdentifier": humanize(collective_stock.collectiveOfferId),
+                    "offerId": collective_stock.collectiveOfferId,
                     "offerIsEducational": True,
                     "eventBeginningDatetime": "2022-05-15T12:15:00+02:00",
                     "offerIsbn": None,
@@ -417,6 +418,7 @@ class Returns200Test:
                 "stock": {
                     "offerName": "Le chant des cigales",
                     "offerIdentifier": humanize(collective_stock.collectiveOfferId),
+                    "offerId": collective_stock.collectiveOfferId,
                     "offerIsEducational": True,
                     "eventBeginningDatetime": "2022-05-15T12:15:00+02:00",
                     "offerIsbn": None,
@@ -506,6 +508,7 @@ class Returns200Test:
                 "stock": {
                     "offerName": "Le chant des cigales",
                     "offerIdentifier": humanize(collective_stock.collectiveOfferId),
+                    "offerId": collective_stock.collectiveOfferId,
                     "offerIsEducational": True,
                     "eventBeginningDatetime": "2022-05-15T12:15:00+02:00",
                     "offerIsbn": None,
@@ -597,6 +600,7 @@ class Returns200Test:
                 "stock": {
                     "offerName": "Le chant des cigales",
                     "offerIdentifier": humanize(collective_stock.collectiveOfferId),
+                    "offerId": collective_stock.collectiveOfferId,
                     "offerIsEducational": True,
                     "eventBeginningDatetime": "2022-03-10T11:15:00+01:00",
                     "offerIsbn": None,

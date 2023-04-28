@@ -6,6 +6,7 @@ export type CollectiveBookingCollectiveStockResponseModel = {
   bookingLimitDatetime?: string | null;
   eventBeginningDatetime: string;
   numberOfTickets: number;
+  offerId: number;
   offerIdentifier: string;
   offerIsEducational: boolean;
   offerIsbn?: string | null;
