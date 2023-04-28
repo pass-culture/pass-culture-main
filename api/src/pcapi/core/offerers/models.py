@@ -304,7 +304,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
     contact: sa_orm.Mapped["VenueContact | None"] = relationship("VenueContact", back_populates="venue", uselist=False)
 
-    # bannerUrl should provide a safe way to retrieve the banner,
+    # _bannerUrl should provide a safe way to retrieve the banner,
     # whereas bannerMeta should provide extra information that might be
     # helpful like image type, author, etc. that can change over time.
     _bannerUrl = Column(Text, nullable=True, name="bannerUrl")
