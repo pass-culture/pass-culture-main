@@ -1,7 +1,7 @@
 {% import "components/links.html" as links %}
 {% import "pivots/get/common.html" as common %}
 <turbo-frame id="cineoffice_frame">
-{{ common.build_pivot_bar("cineoffice", form, dst, true) }}
+{{ common.build_pivot_bar("cineoffice", form, dst) }}
 <table class="table table-hover my-4">
   <thead>
     <tr>
@@ -16,7 +16,7 @@
   <tbody>
     {% for pivot in rows %}
       <tr>
-        <th scope="row">{# common.build_pivot_row_menu("cineoffice", pivot, true, true) #}</th>
+        <th scope="row">{{ common.build_pivot_row_menu("cineoffice", pivot, true) }}</th>
         <td class="fw-bolder">{{ pivot.cinemaProviderPivot.venue.id }}</td>
         <td>{{ links.build_venue_name_to_details_link(pivot.cinemaProviderPivot.venue, text_attr="name") }}</td>
         <td>{{ pivot.cinemaProviderPivot.idAtProvider }}</td>

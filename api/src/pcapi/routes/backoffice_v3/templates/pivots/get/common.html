@@ -1,6 +1,5 @@
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{# TODO remove parameter: waiting_for_actions_implemented when all pivots implement create, update, delete #}
-{% macro build_pivot_bar(pivot_name, form, dst, actions_not_implemented) %}
+{% macro build_pivot_bar(pivot_name, form, dst) %}
   <div class="row">
     <form name="filter-{{ pivot_name }}"
           action="{{ dst }}"
@@ -16,17 +15,15 @@
                 class="btn btn-primary">Chercher</button>
       </div>
     </form>
-    {% if not actions_not_implemented %}
-      <div class="col-4 d-flex flex-row justify-content-end">
-        <div>
-          <button class="btn btn-outline-primary lead fw-bold"
-                  data-bs-toggle="modal"
-                  data-bs-target="#create-{{ pivot_name }}"
-                  type="button">Créer un pivot</button>
-        </div>
+    <div class="col-4 d-flex flex-row justify-content-end">
+      <div>
+        <button class="btn btn-outline-primary lead fw-bold"
+                data-bs-toggle="modal"
+                data-bs-target="#create-{{ pivot_name }}"
+                type="button">Créer un pivot</button>
       </div>
-      {{ build_lazy_modal(url_for("backoffice_v3_web.pivots.get_create_pivot_form", name=pivot_name), "create-" + pivot_name) }}
-    {% endif %}
+    </div>
+    {{ build_lazy_modal(url_for("backoffice_v3_web.pivots.get_create_pivot_form", name=pivot_name), "create-" + pivot_name) }}
   </div>
 {% endmacro %}
 {% macro build_pivot_row_menu(pivot_name, row, can_delete) %}
