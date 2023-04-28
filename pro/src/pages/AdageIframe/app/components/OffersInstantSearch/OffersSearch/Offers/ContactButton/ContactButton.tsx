@@ -1,12 +1,10 @@
 import React, { useState } from 'react'
 
 import { apiAdage } from 'apiClient/api'
-import Dialog from 'components/Dialog/Dialog'
-import { ReactComponent as MailOutlineIcon } from 'icons/ico-mail-outline.svg'
 import { logClickOnOffer } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit'
 
-import styles from './ContactButton.module.scss'
+import ContactDialog from './ContactDialog'
 
 export interface IContactButtonProps {
   className?: string
@@ -45,34 +43,11 @@ const ContactButton = ({
         </Button>
       </div>
       {isModalOpen && (
-        <Dialog
-          onCancel={closeModal}
-          title={'Contacter le partenaire culturel'}
-          extraClassNames={styles['contact-modal-dialog']}
-          icon={MailOutlineIcon}
-        >
-          <p className={styles['contact-modal-text']}>
-            Afin de personnaliser cette offre, nous vous invitons à entrer en
-            contact avec votre partenaire culturel :
-          </p>
-          <ul className={styles['contact-modal-list']}>
-            <li>
-              <a
-                className={styles['contact-modal-list-item-link']}
-                href={`mailto:${contactEmail}`}
-              >
-                {contactEmail}
-              </a>
-            </li>
-            <li>{contactPhone}</li>
-          </ul>
-          <Button
-            onClick={closeModal}
-            className={styles['contact-modal-button']}
-          >
-            Fermer
-          </Button>
-        </Dialog>
+        <ContactDialog
+          closeModal={closeModal}
+          contactEmail={contactEmail}
+          contactPhone={contactPhone}
+        />
       )}
     </>
   )
