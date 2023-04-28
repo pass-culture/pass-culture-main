@@ -29,7 +29,10 @@ jest.mock('apiClient/api', () => ({
 
 const mockLogEvent = jest.fn()
 
-const renderSignIn = (storeOverrides?: any) => {
+const renderSignIn = (
+  storeOverrides?: any,
+  initialRouterEntries = ['/connexion']
+) => {
   const store = {
     user: {},
     app: {},
@@ -59,12 +62,13 @@ const renderSignIn = (storeOverrides?: any) => {
           path="/parcours-inscription"
           element={<span>I'm the onboarding page</span>}
         />
+        <Route path="/offres" element={<span>I'm the offer page</span>} />
       </Routes>
       <Notification />
     </>,
     {
       storeOverrides: store,
-      initialRouterEntries: ['/connexion'],
+      initialRouterEntries: initialRouterEntries,
     }
   )
 }
@@ -391,6 +395,39 @@ describe('src | components | pages | SignIn', () => {
       expect(
         screen.getByText("I'm logged standard user redirect route")
       ).toBeInTheDocument()
+    })
+
+    it('should redirect user to offer page on signin with url parameter', async () => {
+      jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [
+          {
+            id: 'A1',
+            nonHumanizedId: 1,
+            name: 'Mon super cinéma',
+          },
+          {
+            id: 'B1',
+            nonHumanizedId: 1,
+            name: 'Ma super librairie',
+          },
+        ],
+      })
+
+      renderSignIn({ ...featureOverride }, ['/connexion?de=%2Foffres'])
+
+      const email = screen.getByLabelText('Adresse e-mail')
+      await userEvent.type(email, 'MonPetitEmail@exemple.com')
+
+      const password = screen.getByLabelText('Mot de passe')
+      await userEvent.type(password, 'MCSolar85')
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: 'Se connecter',
+        })
+      )
+
+      expect(screen.getByText("I'm the offer page")).toBeInTheDocument()
     })
   })
 })
