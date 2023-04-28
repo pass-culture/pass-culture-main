@@ -10,6 +10,7 @@ from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
@@ -71,13 +72,7 @@ def create_provider() -> utils.BackofficeResponse:
             enabledForPro=form.enabled_for_pro.data,
             isActive=form.is_active.data,
         )
-        offerer = offerers_models.Offerer(
-            name=form.name.data,
-            siren=form.siren.data,
-            city=form.city.data,
-            postalCode=form.postal_code.data,
-            validationStatus=ValidationStatus.VALIDATED,
-        )
+        offerer, is_offerer_new = _get_or_create_offerer(form)
         offerer_provider = offerers_models.OffererProvider(offerer=offerer, provider=provider)
         api_key, clear_secret = offerers_api.generate_provider_api_key(provider)
 
@@ -95,13 +90,27 @@ def create_provider() -> utils.BackofficeResponse:
         db.session.rollback()
         flash("Ce prestataire existe déjà", "warning")
     else:
-        zendesk_sell.create_offerer(offerer)
+        if is_offerer_new:
+            zendesk_sell.create_offerer(offerer)
         flash(
             f"Le prestataire {provider.name} a été créé. La Clé API ne peut être régénérée ni ré-affichée, veillez à la sauvegarder immédiatement : {clear_secret}",
             "success",
         )
 
     return redirect(url_for("backoffice_v3_web.providers.get_providers"), code=303)
+
+
+def _get_or_create_offerer(form: forms.CreateProviderForm) -> tuple[offerers_models.Offerer, bool]:
+    offerer = offerers_repository.find_offerer_by_siren(form.siren.data)
+    if is_offerer_new := offerer is None:
+        offerer = offerers_models.Offerer(
+            name=form.name.data,
+            siren=form.siren.data,
+            city=form.city.data,
+            postalCode=form.postal_code.data,
+            validationStatus=ValidationStatus.VALIDATED,
+        )
+    return offerer, is_offerer_new
 
 
 @providers_blueprint.route("/<int:provider_id>/update", methods=["GET"])
@@ -140,12 +149,6 @@ def update_provider(provider_id: int) -> utils.BackofficeResponse:
     provider.isActive = form.is_active.data
 
     try:
-        offerers_api.update_offerer(
-            provider.offererProvider.offerer,
-            name=form.name.data,
-            city=form.city.data,
-            postal_code=form.postal_code.data,
-        )
         db.session.add(provider)
         db.session.commit()
     except sa.exc.IntegrityError:
