@@ -68,7 +68,9 @@ const OfferType = (): JSX.Element => {
   const queryOffererId = queryParams.get('structure')
   const queryVenueId = queryParams.get('lieu')
   const [isLoadingEligibility, setIsLoadingEligibility] = useState(false)
+  const [isLoadingValidation, setIsLoadingValidation] = useState(false)
   const [isEligible, setIsEligible] = useState(false)
+  const [isValidated, setIsValidated] = useState(true)
 
   useEffect(() => {
     const getTemplateCollectiveOffers = async () => {
@@ -116,9 +118,18 @@ const OfferType = (): JSX.Element => {
       }
       setIsLoadingEligibility(false)
     }
+    const checkOffererValidation = async () => {
+      setIsLoadingValidation(true)
+      if (queryOffererId !== null) {
+        const response = await api.getOfferer(Number(queryOffererId))
+        setIsValidated(response.isValidated)
+      }
+      setIsLoadingValidation(false)
+    }
     const initializeStates = async () => {
       await getTemplateCollectiveOffers()
       await checkOffererEligibility()
+      await checkOffererValidation()
     }
     initializeStates()
   }, [queryOffererId, queryVenueId])
@@ -208,7 +219,8 @@ const OfferType = (): JSX.Element => {
               </FormLayout.Row>
             </FormLayout.Section>
 
-            {values.offerType === OFFER_TYPES.EDUCATIONAL &&
+            {isValidated &&
+              values.offerType === OFFER_TYPES.EDUCATIONAL &&
               (isEligible || !isDuplicateOfferSelectionActive) &&
               !isLoadingEligibility && (
                 <FormLayout.Section
@@ -368,7 +380,13 @@ const OfferType = (): JSX.Element => {
                 </FormLayout.Section>
               )}
 
-            {isLoadingEligibility && <Spinner />}
+            {(isLoadingEligibility || isLoadingValidation) && <Spinner />}
+            {values.offerType === OFFER_TYPES.EDUCATIONAL && !isValidated && (
+              <Banner>
+                Votre structure est en cours de validation par les équipes pass
+                Culture.
+              </Banner>
+            )}
             {values.offerType === OFFER_TYPES.EDUCATIONAL &&
               !isEligible &&
               !isLoadingEligibility &&
