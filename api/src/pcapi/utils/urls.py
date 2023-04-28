@@ -8,7 +8,6 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.users import models as users_models
-from pcapi.utils.human_ids import humanize
 
 
 def generate_firebase_dynamic_link(path: str, params: dict | None) -> str:
@@ -33,10 +32,10 @@ def booking_app_link(booking: Booking) -> str:
 
 def build_pc_pro_offer_link(offer: CollectiveOffer | CollectiveOfferTemplate | Offer) -> str:
     if isinstance(offer, CollectiveOffer):
-        return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/collectif/edition"
+        return f"{settings.PRO_URL}/offre/{offer.id}/collectif/edition"
 
     if isinstance(offer, CollectiveOfferTemplate):
-        return f"{settings.PRO_URL}/offre/T-{humanize(offer.id)}/collectif/edition"
+        return f"{settings.PRO_URL}/offre/T-{offer.id}/collectif/edition"
 
     return f"{settings.PRO_URL}/offre/individuelle/{offer.id}/recapitulatif"
 
