@@ -23,7 +23,6 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.svg'
@@ -50,9 +49,6 @@ const OfferType = (): JSX.Element => {
   const location = useLocation()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
-  const isDuplicateOfferSelectionActive = useActiveFeature(
-    'WIP_DUPLICATE_OFFER_SELECTION'
-  )
   const initialValues: OfferTypeFormValues = {
     offerType: OFFER_TYPES.INDIVIDUAL_OR_DUO,
     collectiveOfferSubtype: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
@@ -216,7 +212,7 @@ const OfferType = (): JSX.Element => {
 
             {isValidated &&
               values.offerType === OFFER_TYPES.EDUCATIONAL &&
-              (isEligible || !isDuplicateOfferSelectionActive) &&
+              isEligible &&
               !isLoadingEligibility && (
                 <FormLayout.Section
                   title="Quel est le type de l’offre ?"
@@ -246,13 +242,7 @@ const OfferType = (): JSX.Element => {
                         COLLECTIVE_OFFER_SUBTYPE.TEMPLATE
                       }
                       label="Une offre vitrine"
-                      description={`Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet 
-                      aux enseignants de vous contacter pour co-construire une offre adaptée.
-                      ${
-                        isDuplicateOfferSelectionActive
-                          ? ' Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.'
-                          : ''
-                      }`}
+                      description="Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé."
                       onChange={handleChange}
                       value={COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
                     />
@@ -334,8 +324,7 @@ const OfferType = (): JSX.Element => {
               </FormLayout.Section>
             )}
 
-            {isDuplicateOfferSelectionActive &&
-              isEligible &&
+            {isEligible &&
               values.offerType === OFFER_TYPES.EDUCATIONAL &&
               values.collectiveOfferSubtype ===
                 COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
@@ -384,8 +373,7 @@ const OfferType = (): JSX.Element => {
             )}
             {values.offerType === OFFER_TYPES.EDUCATIONAL &&
               !isEligible &&
-              !isLoadingEligibility &&
-              isDuplicateOfferSelectionActive && (
+              !isLoadingEligibility && (
                 <Banner
                   links={[
                     {
@@ -406,9 +394,7 @@ const OfferType = (): JSX.Element => {
               )}
             <ActionsBar
               disableNextButton={
-                values.offerType === OFFER_TYPES.EDUCATIONAL &&
-                !isEligible &&
-                isDuplicateOfferSelectionActive
+                values.offerType === OFFER_TYPES.EDUCATIONAL && !isEligible
               }
             />
           </FormLayout>

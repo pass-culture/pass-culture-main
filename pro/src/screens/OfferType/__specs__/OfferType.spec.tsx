@@ -84,15 +84,6 @@ describe('screens:OfferIndividual::OfferType', () => {
           email: 'email@example.com',
         },
       },
-      features: {
-        list: [
-          {
-            nameKey: 'WIP_DUPLICATE_OFFER_SELECTION',
-            isActive: true,
-          },
-        ],
-        initialized: true,
-      },
     }
 
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
