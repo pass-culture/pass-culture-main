@@ -44,6 +44,21 @@ class EditBoostForm(EditPivotForm):
         ),
     )
 
+    def validate(self, extra_validators=None) -> bool:  # type: ignore [no-untyped-def]
+        # do not use this custom validation on DeleteForm
+        if not isinstance(self, EditBoostForm):
+            return super().validate(extra_validators)
+
+        boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
+        pivot = providers_repository.get_pivot_for_id_at_provider(
+            id_at_provider=self.cinema_id.data, provider_id=boost_provider.id
+        )
+        if pivot and pivot.venueId != self.venue_id.data[0]:
+            flash("Cet identifiant cinéma existe déjà pour un autre lieu", "danger")
+            return False
+
+        return super().validate(extra_validators)
+
 
 # TODO PC-21790
 class EditCGRForm(EditPivotForm):
@@ -66,7 +81,7 @@ class EditCGRForm(EditPivotForm):
         pivot = providers_repository.get_pivot_for_id_at_provider(
             id_at_provider=self.cinema_id.data, provider_id=cgr_provider.id
         )
-        if pivot and pivot.venueId != self.venue_id.data:
+        if pivot and pivot.venueId != self.venue_id.data[0]:
             flash("Cet identifiant cinéma existe déjà pour un autre lieu", "danger")
             return False
 
