@@ -40,7 +40,6 @@ import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapt
 import { Banner } from 'ui-kit'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { dehumanizeId } from 'utils/dehumanize'
 
 import ActionsBar from './ActionsBar/ActionsBar'
 import styles from './OfferType.module.scss'
@@ -77,12 +76,8 @@ const OfferType = (): JSX.Element => {
       const apiFilters = {
         ...DEFAULT_SEARCH_FILTERS,
         collectiveOfferType: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE.toLowerCase(),
-        offererId: queryOffererId
-          ? dehumanizeId(queryOffererId)?.toString() || 'all'
-          : 'all',
-        venueId: queryVenueId
-          ? dehumanizeId(queryVenueId)?.toString() || 'all'
-          : 'all',
+        offererId: queryOffererId ? queryOffererId : 'all',
+        venueId: queryVenueId ? queryVenueId : 'all',
       }
       const { isOk, message, payload } =
         await getFilteredCollectiveOffersAdapter(apiFilters)
