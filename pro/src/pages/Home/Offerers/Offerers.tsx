@@ -191,7 +191,7 @@ const Offerers = ({
           {!isOffererSoftDeleted && (
             <VenueList
               physicalVenues={venues.physicalVenues}
-              selectedOffererId={selectedOfferer.id}
+              selectedOffererId={selectedOfferer.nonHumanizedId}
               virtualVenue={
                 selectedOfferer.hasDigitalVenueAtLeastOneOffer
                   ? venues.virtualVenue
@@ -215,7 +215,7 @@ const Offerers = ({
           }
           offererId={
             /* istanbul ignore next: DEBT, TO FIX */ selectedOfferer
-              ? selectedOfferer.id
+              ? selectedOfferer.nonHumanizedId
               : null
           }
         />

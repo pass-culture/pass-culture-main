@@ -20,11 +20,12 @@ const buildLinkIdFromVenue = ({ publicName, name }) => {
   return nameToFormat ? nameToFormat.toLowerCase().replace(/\s/g, '-') : ''
 }
 
-const VenueItem = ({ venue }) => {
-  const { address, city, id, managingOffererId, name, postalCode, publicName } =
+const VenueItem = ({ venue, offererId }) => {
+  const { address, city, name, postalCode, publicName, nonHumanizedId } =
     venue || {}
+
   const { logEvent } = useAnalytics()
-  const showPath = `/structures/${managingOffererId}/lieux/${id}`
+  const showPath = `/structures/${offererId}/lieux/${nonHumanizedId}`
 
   return (
     <li>
@@ -50,7 +51,7 @@ const VenueItem = ({ venue }) => {
             <ButtonLink
               className={styles['create-offer-button']}
               link={{
-                to: `/offre/creation?lieu=${id}&structure=${managingOffererId}`,
+                to: `/offre/creation?lieu=${nonHumanizedId}&structure=${offererId}`,
                 isExternal: false,
               }}
               onClick={() =>
@@ -78,6 +79,7 @@ VenueItem.defaultProps = {
 
 VenueItem.propTypes = {
   venue: PropTypes.shape(),
+  offererId: PropTypes.number,
 }
 
 export default VenueItem

@@ -47,7 +47,7 @@ const EACInformation = ({ venue, isCreatingVenue }: IEACInformation) => {
       <FormLayout.Row>
         <ButtonLink
           link={{
-            to: `/structures/${offererId}/lieux/${venue?.id}/eac`,
+            to: `/structures/${offererId}/lieux/${venue?.nonHumanizedId}/eac`,
             isExternal: false,
           }}
           Icon={collectiveDataIsNotEmpty ? EditIcon : undefined}

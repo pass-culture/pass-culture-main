@@ -40,14 +40,15 @@ const trackerForVenue = [
 
 describe('venue create offer link', () => {
   let props: IVenueProps
+  const venueId = 1
+  const offererId = 12
 
   beforeEach(() => {
     props = {
-      id: 'VENUE01',
-      nonHumanizedId: 1,
+      venueId: venueId,
       isVirtual: false,
       name: 'My venue',
-      offererId: 'OFFERER01',
+      offererId: offererId,
       dmsInformations: null,
     }
     loadFakeApiVenueStats({
@@ -130,7 +131,7 @@ describe('venue create offer link', () => {
     expect(mockLogEvent).toHaveBeenCalledWith(
       VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK,
       {
-        venue_id: props.id,
+        venue_id: props.venueId,
       }
     )
   })
@@ -150,7 +151,7 @@ describe('venue create offer link', () => {
       VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
       {
         from: '/',
-        venue_id: props.id,
+        venue_id: props.venueId,
       }
     )
   })
@@ -169,7 +170,7 @@ describe('venue create offer link', () => {
       screen.getByRole('link', { name: 'Éditer le lieu' })
     ).toHaveAttribute(
       'href',
-      '/structures/OFFERER01/lieux/VENUE01?modification'
+      `/structures/${offererId}/lieux/${venueId}?modification`
     )
   })
 
@@ -185,7 +186,7 @@ describe('venue create offer link', () => {
       expect(mockLogEvent).toHaveBeenCalledWith(
         VenueEvents.CLICKED_VENUE_ACCORDION_BUTTON,
         {
-          venue_id: props.id,
+          venue_id: props.venueId,
         }
       )
       const stats = screen.getAllByTestId('venue-stat')
@@ -194,7 +195,7 @@ describe('venue create offer link', () => {
       )
       expect(mockLogEvent).toHaveBeenCalledTimes(2)
       expect(mockLogEvent).toHaveBeenNthCalledWith(2, event, {
-        venue_id: props.id,
+        venue_id: props.venueId,
       })
     }
   )

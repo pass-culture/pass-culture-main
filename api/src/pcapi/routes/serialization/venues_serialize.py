@@ -135,6 +135,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     demarchesSimplifieesApplicationId: str | None
     fieldsUpdated: list[str]
     id: str
+    nonHumanizedId: int
     idAtProviders: str | None
     isValidated: bool
     lastProviderId: str | None

@@ -106,7 +106,7 @@ const OffererDetails = () => {
         reloadOfferer={loadOfferer}
         savedApiKeys={offerer.apiKey.savedApiKeys}
       />
-      <Venues offererId={offerer.id} venues={physicalVenues} />
+      <Venues offererId={offerer.nonHumanizedId} venues={physicalVenues} />
     </div>
   ) : (
     <></>

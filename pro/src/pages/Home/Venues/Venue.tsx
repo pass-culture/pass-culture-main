@@ -33,11 +33,10 @@ import VenueStat from './VenueStat'
 
 export interface IVenueProps {
   hasMissingReimbursementPoint?: boolean
-  id: string
-  nonHumanizedId: number
+  venueId: number
   isVirtual?: boolean
   name: string
-  offererId: string
+  offererId: number
   publicName?: string | null
   hasCreatedOffer?: boolean
   dmsInformations?: DMSApplicationForEAC | null
@@ -47,8 +46,7 @@ export interface IVenueProps {
 
 const Venue = ({
   hasMissingReimbursementPoint = false,
-  id,
-  nonHumanizedId,
+  venueId,
   isVirtual = false,
   name,
   offererId,
@@ -101,7 +99,7 @@ const Venue = ({
   const { logEvent } = useAnalytics()
 
   const venueIdTrackParam = {
-    venue_id: id,
+    venue_id: venueId,
   }
 
   const venueStatData = [
@@ -109,7 +107,7 @@ const Venue = ({
       count: stats.activeOffersCount,
       label: 'Offres publiées',
       link: {
-        pathname: `/offres?lieu=${id}&statut=active`,
+        pathname: `/offres?lieu=${venueId}&statut=active`,
       },
       onClick: () => {
         logEvent?.(
@@ -122,9 +120,9 @@ const Venue = ({
       count: stats.activeBookingsQuantity,
       label: 'Réservations en cours',
       link: {
-        pathname: `/reservations?page=1&offerVenueId=${id}`,
+        pathname: `/reservations?page=1&offerVenueId=${venueId}`,
         state: {
-          venueId: id,
+          venueId: venueId,
           statuses: [
             BOOKING_STATUS.CANCELLED,
             BOOKING_STATUS.CONFIRMED,
@@ -144,9 +142,8 @@ const Venue = ({
       count: stats.validatedBookingsQuantity,
       label: 'Réservations validées',
       link: {
-        pathname: `/reservations?page=1&bookingStatusFilter=validated&offerVenueId=${id}`,
+        pathname: `/reservations?page=1&bookingStatusFilter=validated&offerVenueId=${venueId}`,
         state: {
-          venueId: id,
           statuses: [BOOKING_STATUS.BOOKED, BOOKING_STATUS.CANCELLED],
         },
       },
@@ -161,7 +158,7 @@ const Venue = ({
       count: stats.soldOutOffersCount,
       label: 'Offres stocks épuisés',
       link: {
-        pathname: `/offres?lieu=${id}&statut=epuisee`,
+        pathname: `/offres?lieu=${venueId}&statut=epuisee`,
       },
       onClick: () => {
         logEvent?.(
@@ -188,7 +185,7 @@ const Venue = ({
 
   useEffect(() => {
     async function updateStats() {
-      const stats = await api.getVenueStats(nonHumanizedId)
+      const stats = await api.getVenueStats(venueId)
       setStats({
         activeBookingsQuantity: stats.activeBookingsQuantity.toString(),
         activeOffersCount: stats.activeOffersCount.toString(),
@@ -200,10 +197,10 @@ const Venue = ({
     if (isStatOpen && !isStatLoaded) {
       updateStats()
     }
-  }, [id, isStatOpen, isStatLoaded, initialOpenState])
+  }, [venueId, isStatOpen, isStatLoaded, initialOpenState])
 
-  const editVenueLink = `/structures/${offererId}/lieux/${id}?modification`
-  const reimbursementSectionLink = `/structures/${offererId}/lieux/${id}?modification#remboursement`
+  const editVenueLink = `/structures/${offererId}/lieux/${venueId}?modification`
+  const reimbursementSectionLink = `/structures/${offererId}/lieux/${venueId}?modification#remboursement`
   return (
     <div
       className="h-section-row nested offerer-venue"
@@ -321,7 +318,7 @@ const Venue = ({
                 <>
                   {hasNewOfferCreationJourney && (
                     <VenueOfferSteps
-                      venueId={id}
+                      venueId={venueId}
                       hasVenue={true}
                       offererId={offererId}
                       hasCreatedOffer={hasCreatedOffer}
@@ -355,7 +352,7 @@ const Venue = ({
                                 variant={ButtonVariant.BOX}
                                 Icon={CircleArrowIcon}
                                 link={{
-                                  to: `/structures/${offererId}/lieux/${id}#venue-collective-data`,
+                                  to: `/structures/${offererId}/lieux/${venueId}#venue-collective-data`,
                                   isExternal: false,
                                 }}
                                 onClick={() => {
@@ -381,7 +378,11 @@ const Venue = ({
                       <ButtonLink
                         variant={ButtonVariant.TERNARY}
                         link={{
-                          to: venueCreateOfferLink(offererId, id, isVirtual),
+                          to: venueCreateOfferLink(
+                            offererId,
+                            venueId,
+                            isVirtual
+                          ),
                           isExternal: false,
                         }}
                         Icon={IcoPlus}

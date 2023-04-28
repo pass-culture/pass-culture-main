@@ -37,14 +37,15 @@ const renderVenue = (
 
 describe('venues', () => {
   let props: IVenueProps
+  const offererId = 12
+  const venueId = 1
 
   beforeEach(() => {
     props = {
-      id: 'VENUE01',
-      nonHumanizedId: 1,
+      venueId: venueId,
       isVirtual: false,
       name: 'My venue',
-      offererId: 'OFFERER01',
+      offererId: offererId,
       dmsInformations: null,
     }
     loadFakeApiVenueStats({
@@ -64,7 +65,7 @@ describe('venues', () => {
     )
 
     // Then
-    expect(api.getVenueStats).toHaveBeenCalledWith(props.nonHumanizedId)
+    expect(api.getVenueStats).toHaveBeenCalledWith(props.venueId)
 
     const [
       activeOffersStat,
@@ -126,20 +127,20 @@ describe('venues', () => {
 
     expect(
       within(activeOffersStat).getByRole('link', { name: 'Voir' })
-    ).toHaveAttribute('href', '/offres?lieu=VENUE01&statut=active')
+    ).toHaveAttribute('href', `/offres?lieu=${venueId}&statut=active`)
     const byRole = within(validatedBookingsStat).getByRole('link', {
       name: 'Voir',
     })
     expect(byRole).toHaveAttribute(
       'href',
-      '/reservations?page=1&bookingStatusFilter=validated&offerVenueId=VENUE01'
+      `/reservations?page=1&bookingStatusFilter=validated&offerVenueId=${venueId}`
     )
     expect(
       within(activeBookingsStat).getByRole('link', { name: 'Voir' })
-    ).toHaveAttribute('href', '/reservations?page=1&offerVenueId=VENUE01')
+    ).toHaveAttribute('href', `/reservations?page=1&offerVenueId=${venueId}`)
     expect(
       within(outOfStockOffersStat).getByRole('link', { name: 'Voir' })
-    ).toHaveAttribute('href', '/offres?lieu=VENUE01&statut=epuisee')
+    ).toHaveAttribute('href', `/offres?lieu=${venueId}&statut=epuisee`)
   })
 
   describe('virtual venue section', () => {
@@ -196,7 +197,7 @@ describe('venues', () => {
       // Then
       expect(screen.getByRole('link', { name: 'Modifier' })).toHaveAttribute(
         'href',
-        '/structures/OFFERER01/lieux/VENUE01?modification'
+        `/structures/${offererId}/lieux/${venueId}?modification`
       )
     })
 
@@ -215,7 +216,7 @@ describe('venues', () => {
         screen.getByRole('link', { name: 'Éditer le lieu' })
       ).toHaveAttribute(
         'href',
-        '/structures/OFFERER01/lieux/VENUE01?modification'
+        `/structures/${offererId}/lieux/${venueId}?modification`
       )
     })
 
@@ -232,7 +233,7 @@ describe('venues', () => {
         screen.getByRole('link', { name: 'Ajouter un RIB' })
       ).toHaveAttribute(
         'href',
-        '/structures/OFFERER01/lieux/VENUE01?modification#remboursement'
+        `/structures/${offererId}/lieux/${venueId}?modification#remboursement`
       )
     })
   })
@@ -295,7 +296,7 @@ describe('venues', () => {
         })
       ).toHaveAttribute(
         'href',
-        '/structures/OFFERER01/lieux/VENUE01#venue-collective-data'
+        `/structures/${offererId}/lieux/${venueId}#venue-collective-data`
       )
     })
     it('should not display dms timeline link if venue has adageId for more than 30days', async () => {

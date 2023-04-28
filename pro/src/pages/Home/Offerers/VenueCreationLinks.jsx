@@ -94,7 +94,7 @@ const VenueCreationLinks = ({
 VenueCreationLinks.propTypes = {
   hasPhysicalVenue: PropTypes.bool.isRequired,
   hasVirtualOffers: PropTypes.bool.isRequired,
-  offererId: PropTypes.string,
+  offererId: PropTypes.number,
 }
 
 export default VenueCreationLinks

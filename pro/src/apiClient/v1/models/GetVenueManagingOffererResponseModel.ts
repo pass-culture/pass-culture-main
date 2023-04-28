@@ -14,6 +14,7 @@ export type GetVenueManagingOffererResponseModel = {
   isValidated: boolean;
   lastProviderId?: string | null;
   name: string;
+  nonHumanizedId: number;
   postalCode: string;
   siren?: string | null;
 };
