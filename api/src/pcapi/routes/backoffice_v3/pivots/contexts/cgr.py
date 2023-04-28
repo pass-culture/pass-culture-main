@@ -117,7 +117,5 @@ class CGRContext(PivotContext):
         # it could be an unexpected XML parsing error
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception("Error while checking CGR API information", extra={"exc": exc})
-        flash(
-            "Connexion à l'API CGR KO.", "danger"
-        )  # ajout à valider : permet d'alerter l'utilisateur de problème de connexion CGR
+        flash("Connexion à l'API KO.", "danger")
         return None
