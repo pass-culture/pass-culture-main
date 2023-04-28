@@ -156,11 +156,12 @@ class Returns200Test:
             "hasAdageId": True,
             "adageInscriptionDate": format_into_utc_date(venue.adageInscriptionDate),
         }
-        auth_request = client.with_session_auth(email=user_offerer.user.email)
-        db_session.commit()  # clear SQLA cached objects
+        db.session.expire_all()
 
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
         with testing.assert_no_duplicated_queries():
             response = auth_request.get("/venues/%s" % venue_id)
+
         assert response.status_code == 200
         assert response.json == expected_serialized_venue
 
@@ -174,12 +175,12 @@ class Returns200Test:
             adageInscriptionDate=None,
         )
         venue_id = venue.id
+        db.session.expire_all()
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        db.session.commit()  # clear SQLA cached objects
-
         with testing.assert_no_duplicated_queries():
             response = auth_request.get("/venues/%s" % venue_id)
+
         assert response.status_code == 200
         assert response.json["adageInscriptionDate"] == None
         assert response.json["hasAdageId"] == False
