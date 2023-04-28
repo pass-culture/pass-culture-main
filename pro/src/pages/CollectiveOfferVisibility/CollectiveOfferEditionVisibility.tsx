@@ -51,7 +51,7 @@ const CollectiveOfferVisibility = ({
     reloadCollectiveOffer()
     navigate(
       `/offre/${computeURLCollectiveOfferId(
-        payload.id,
+        payload.nonHumanizedId,
         false
       )}/collectif/recapitulatif`
     )

@@ -48,7 +48,7 @@ const BookingOfferCell = ({
 
   const editionUrl = useOfferEditionURL(
     offer.offerIsEducational,
-    offer.offerIdentifier,
+    offer.offerId,
     true
   )
   const eventBeginningDatetime = offer.eventBeginningDatetime

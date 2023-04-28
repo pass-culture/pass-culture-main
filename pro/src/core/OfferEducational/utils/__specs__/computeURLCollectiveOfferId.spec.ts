@@ -2,10 +2,10 @@ import { computeURLCollectiveOfferId } from '../computeURLCollectiveOfferId'
 
 describe('computeURLCollectiveOfferId', () => {
   it('when offer is template', () => {
-    expect(computeURLCollectiveOfferId('A1', true)).toStrictEqual('T-A1')
+    expect(computeURLCollectiveOfferId(1, true)).toStrictEqual('T-1')
   })
 
   it('when offer is not template', () => {
-    expect(computeURLCollectiveOfferId('A1', false)).toStrictEqual('A1')
+    expect(computeURLCollectiveOfferId(1, false)).toStrictEqual('1')
   })
 })

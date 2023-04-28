@@ -4,5 +4,6 @@
 
 export type CollectiveOfferTemplateResponseIdModel = {
   id: string;
+  nonHumanizedId: number;
 };
 

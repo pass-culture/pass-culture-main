@@ -75,7 +75,7 @@ const renderStockThingScreen = (
         getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.DRAFT,
-          offerId: contextValue.offerId || undefined,
+          offerId: contextValue.offer?.nonHumanizedId || undefined,
         }),
       ],
     }
@@ -99,6 +99,7 @@ describe('screens:StocksThing::draft', () => {
     }
     offer = {
       id: 'OFFER_ID',
+      nonHumanizedId: 1,
       lastProvider: null,
       venue: {
         departmentCode: '75',

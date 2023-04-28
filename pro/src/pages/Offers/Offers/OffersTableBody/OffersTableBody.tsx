@@ -30,7 +30,7 @@ const OffersTableBody = ({
   <tbody className="offers-list">
     {offers.map(offer => {
       const offerId = computeURLCollectiveOfferId(
-        offer.id,
+        offer.nonHumanizedId,
         Boolean(offer.isShowcase)
       )
 

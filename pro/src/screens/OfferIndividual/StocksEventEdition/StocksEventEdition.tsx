@@ -118,7 +118,7 @@ const StocksEventEdition = ({
   const mode = useOfferWizardMode()
   const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
     getOfferIndividualUrl({
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
       step: OFFER_WIZARD_STEP_IDS.SUMMARY,
       mode,
     })
@@ -312,7 +312,7 @@ const StocksEventEdition = ({
       }
 
       const nextStepUrl = getOfferIndividualUrl({
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         step: saveDraft
           ? OFFER_WIZARD_STEP_IDS.STOCKS
           : OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -379,7 +379,7 @@ const StocksEventEdition = ({
     /* istanbul ignore next: DEBT, TO FIX */
     navigate(
       getOfferIndividualUrl({
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         step: isPriceCategoriesActive
           ? OFFER_WIZARD_STEP_IDS.TARIFS
           : OFFER_WIZARD_STEP_IDS.INFORMATIONS,

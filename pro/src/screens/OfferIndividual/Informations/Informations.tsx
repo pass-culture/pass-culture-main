@@ -222,7 +222,7 @@ const Informations = ({
       navigate(
         getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          offerId: payload.nonHumanizedId.toString(),
+          offerId: payload.nonHumanizedId,
           mode,
         }),
         { replace: true }
@@ -230,7 +230,7 @@ const Informations = ({
 
       navigate(
         getOfferIndividualUrl({
-          offerId: payload.nonHumanizedId.toString(),
+          offerId: payload.nonHumanizedId,
           step: nextStep,
           mode,
         })
