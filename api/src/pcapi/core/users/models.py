@@ -687,6 +687,7 @@ class EmailHistoryEventTypeEnum(enum.Enum):
     VALIDATION = "VALIDATION"
     ADMIN_VALIDATION = "ADMIN_VALIDATION"
     ADMIN_UPDATE_REQUEST = "ADMIN_UPDATE_REQUEST"
+    ADMIN_UPDATE = "ADMIN_UPDATE"
 
 
 class UserEmailHistory(PcObject, Base, Model):
@@ -734,6 +735,10 @@ class UserEmailHistory(PcObject, Base, Model):
         if by_admin:
             return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_VALIDATION)
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.VALIDATION)
+
+    @classmethod
+    def build_admin_update(cls, user: User, new_email: str) -> "UserEmailHistory":
+        return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_UPDATE)
 
     @hybrid_property
     def oldEmail(self) -> str:

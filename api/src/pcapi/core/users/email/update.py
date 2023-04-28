@@ -88,6 +88,22 @@ def request_email_update_from_admin(user: models.User, email: str) -> None:
     api.request_email_confirmation(user)
 
 
+def full_email_update_by_admin(user: models.User, email: str) -> None:
+    """
+    Runs the whole email update process at once, without sending any
+    confirmation email: log update history, update user's email and
+    mark it as validated.
+    """
+    check_email_address_does_not_exist(email)
+
+    admin_update_event = models.UserEmailHistory.build_admin_update(user=user, new_email=email)
+
+    user.email = email
+    user.isEmailValidated = True
+
+    repository.save(user, admin_update_event)
+
+
 def get_no_active_token_key(user: models.User) -> str:
     return f"update_email_active_tokens_{user.id}"
 
