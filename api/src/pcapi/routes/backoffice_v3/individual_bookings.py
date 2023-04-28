@@ -204,9 +204,9 @@ def list_individual_bookings() -> utils.BackofficeResponse:
 
 def _redirect_after_individual_booking_action() -> utils.BackofficeResponse:
     if request.referrer:
-        return redirect(request.referrer, code=303)
+        return redirect(request.referrer)
 
-    return redirect(url_for("backoffice_v3_web.individual_bookings.list_individual_bookings"), code=303)
+    return redirect(url_for("backoffice_v3_web.individual_bookings.list_individual_bookings"))
 
 
 @individual_bookings_blueprint.route("/<int:booking_id>/mark-as-used", methods=["POST"])
@@ -245,5 +245,81 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
         flash(f"Une erreur s'est produite : {str(exc)}", "warning")
     else:
         flash(f"La réservation {booking.token} a été annulée", "success")
+
+    return _redirect_after_individual_booking_action()
+
+
+@individual_bookings_blueprint.route("/batch-validate", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def get_batch_validate_individual_bookings_form() -> utils.BackofficeResponse:
+    form = empty_forms.EmptyForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.individual_bookings.batch_validate_individual_bookings"),
+        div_id="batch-validate-booking-modal",
+        title="Voulez-vous vraiment valider les réservations ?",
+        button_text="Valider les réservations",
+    )
+
+
+@individual_bookings_blueprint.route("/batch-validate", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def batch_validate_individual_bookings() -> utils.BackofficeResponse:
+    return _batch_individual_bookings_action(
+        success_message="Les réservations ont été validées avec succès", validate=True
+    )
+
+
+@individual_bookings_blueprint.route("/batch-cancel", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def get_batch_cancel_individual_bookings_form() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.individual_bookings.batch_cancel_individual_bookings"),
+        div_id="batch-cancel-booking-modal",
+        title="Annuler les réservations",
+        button_text="Annuler les réservations",
+    )
+
+
+@individual_bookings_blueprint.route("/batch-cancel", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def batch_cancel_individual_bookings() -> utils.BackofficeResponse:
+    return _batch_individual_bookings_action(
+        success_message="Les réservations ont été annulées avec succès", validate=False
+    )
+
+
+def _batch_individual_bookings_action(success_message: str, validate: bool = False) -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _redirect_after_individual_booking_action()
+
+    bookings = bookings_models.Booking.query.filter(bookings_models.Booking.id.in_(form.object_ids_list)).all()
+    api_function = bookings_api.mark_as_cancelled
+    if validate:
+        api_function = bookings_api.mark_as_used
+
+    for booking in bookings:
+        try:
+            api_function(booking)
+        except bookings_exceptions.BookingIsAlreadyCancelled:
+            if validate:
+                bookings_api.mark_as_used_with_uncancelling(booking)
+            else:
+                flash("Au moins une des réservations a déjà été annulée", "error")
+                return _redirect_after_individual_booking_action()
+        except bookings_exceptions.BookingIsAlreadyUsed:
+            flash("Au moins une des réservations a déjà été validée", "error")
+            return _redirect_after_individual_booking_action()
+        except bookings_exceptions.BookingIsAlreadyRefunded:
+            flash("Au moins une des réservations a déjà été remboursée", "error")
+            return _redirect_after_individual_booking_action()
+
+    flash(success_message, "success")
 
     return _redirect_after_individual_booking_action()
