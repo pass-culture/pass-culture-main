@@ -3,7 +3,6 @@ import typing
 import sqlalchemy as sa
 
 from pcapi.core.bookings.models import Booking
-import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
@@ -19,7 +18,10 @@ class ProcessedBooking(Exception):
 
 
 def move_bookings_and_theirs_offers(
-    booking_ids: IDS, venue_id_src: int, venue_id_dst: int, dry_run: bool = True
+    venue_id_src: int,
+    venue_id_dst: int,
+    provider_id: int,
+    dry_run: bool = True,
 ) -> tuple[IDS, IDS]:
     """
     Move USED BUT NOT REIMBURSED bookings from a venue to another one.
@@ -33,7 +35,9 @@ def move_bookings_and_theirs_offers(
 
     # step 1: update bookings (venue and offerer)
     bookings = (
-        Booking.query.filter(Booking.id.in_(booking_ids))
+        Booking.query.join(Stock)
+        .filter(Booking.venueId == venue_id_src)
+        .filter(Stock.lastProviderId == provider_id)
         .options(sa.orm.joinedload(Booking.stock).joinedload(Stock.offer))
         .options(sa.orm.joinedload(Booking.venue).joinedload(Venue.pricing_point_links))
         .options(sa.orm.joinedload(Booking.pricings))
@@ -54,29 +58,61 @@ def move_bookings_and_theirs_offers(
         booking.venueId = venue_id_dst
         booking.offererId = offerer_id_dst
 
-        finance_api.cancel_pricing(booking, finance_models.PricingLogReason.PRICING_POINT_CHANGED)
-        finance_api.price_booking(booking)
-
         if not dry_run:
             db.session.add(booking)
 
-    # step 2: update their offers (venue only - offers are not linked to
-    # and offerer directly)
-    offer_ids = {booking.stock.offerId for booking in bookings}
-    offers = Offer.query.filter(Offer.id.in_(offer_ids)).all()
+    # step 4: delete pricings and recompute new pricings
+    booking_ids = [booking.id for booking in bookings]
+    pricings_to_delete = finance_models.Pricing.query.filter(
+        finance_models.Pricing.bookingId.in_(booking_ids),
+        finance_models.Pricing.status == finance_models.PricingStatus.VALIDATED,
+    ).all()
+
+    pricing_ids = [pricing.id for pricing in pricings_to_delete]
+    print(f"{len(pricing_ids)} pricings to delete")
+
+    pricing_lines = finance_models.PricingLine.query.filter(
+        finance_models.PricingLine.pricingId.in_(pricing_ids),
+    ).all()
+
+    print(f"{len(pricing_lines)} pricing lines to delete")
+
+    if not dry_run:
+        finance_models.PricingLine.query.filter(
+            finance_models.PricingLine.pricingId.in_(pricing_ids),
+        ).delete(synchronize_session=False)
+
+        finance_models.Pricing.query.filter(
+            finance_models.Pricing.bookingId.in_(booking_ids),
+            finance_models.Pricing.status == finance_models.PricingStatus.VALIDATED,
+        ).delete(synchronize_session=False)
+
+    # step 3: update their offers (venue and idAtProvider)
+    offers = Offer.query.filter(Offer.venueId == venue_id_src).filter(Offer.lastProviderId == provider_id).all()
+    stocks = (
+        Stock.query.join(Offer).filter(Offer.venueId == venue_id_src).filter(Offer.lastProviderId == provider_id).all()
+    )
 
     for offer in offers:
         offer.venueId = venue_id_dst
+        offer.idAtProvider = offer.idAtProvider.replace(f"%{venue_id_src}%", f"%{venue_id_dst}%")
 
         if not dry_run:
             db.session.add(offer)
+
+    # step 4: update their stocks (only idAtProviders)
+    for stock in stocks:
+        stock.idAtProviders = stock.idAtProviders.replace(f"%{venue_id_src}%", f"%{venue_id_dst}%")
+
+        if not dry_run:
+            db.session.add(stock)
 
     if dry_run:
         db.session.rollback()
 
         print(
             (
-                f"{len(bookings)} bookings and {len(offers)} offers would have been moved from venue '{src_venue.name}'"
+                f"{len(bookings)} bookings, {len(stocks)} stocks and {len(offers)} offers would have been moved from venue '{src_venue.name}'"
                 f"({venue_id_src} - attached to offerer {src_venue.managingOffererId}) "
                 f"to venue '{dst_venue.name}' ({venue_id_dst} - attached to offerer {dst_venue.managingOffererId})."
             )
@@ -86,11 +122,15 @@ def move_bookings_and_theirs_offers(
 
         print(
             (
-                f"{len(bookings)} bookings and {len(offers)} offers have been moved from venue '{src_venue.name}'"
+                f"{len(bookings)} bookings, {len(stocks)} stocks and {len(offers)} offers have been moved from venue '{src_venue.name}'"
                 f"({venue_id_src} - attached to offerer {src_venue.managingOffererId}) "
                 f"to venue '{dst_venue.name}' ({venue_id_dst} - attached to offerer {dst_venue.managingOffererId})."
             )
         )
 
     booking_ids = {booking.id for booking in bookings}
+    offer_ids = {offer.id for offer in offers}
     return booking_ids, offer_ids
+
+
+move_bookings_and_theirs_offers(36944, 15497, 1073, True)
