@@ -23,6 +23,7 @@ const TimePicker = ({
   hideFooter = false,
   clearButtonProps,
   filterVariant,
+  isOptional = false,
 }: TimePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'text' })
   const showError = meta.touched && !!meta.error
@@ -41,6 +42,7 @@ const TimePicker = ({
       classNameFooter={classNameFooter}
       hideFooter={hideFooter}
       clearButtonProps={clearButtonProps}
+      isOptional={isOptional}
     >
       <BaseTimePicker
         {...field}
