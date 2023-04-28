@@ -1,0 +1,43 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+
+.dialog-container {
+  max-width: rem.torem(600px);
+}
+
+.subtitle {
+  @include fonts.title4;
+}
+
+.contact-info-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: rem.torem(32px);
+  border: rem.torem(2px) dashed colors.$grey-medium;
+  border-radius: rem.torem(3px);
+  width: 100%;
+  padding: rem.torem(32px) 0;
+
+  @include fonts.body-important;
+}
+
+.form {
+  &-description {
+    @include fonts.body;
+
+    text-align: justify;
+    margin-top: rem.torem(32px);
+  }
+
+  &-container {
+    width: 100%;
+    margin-top: rem.torem(32px);
+  }
+}
+
+.buttons-container {
+  display: flex;
+  margin-top: rem.torem(32px);
+  justify-content: space-around;
+}
