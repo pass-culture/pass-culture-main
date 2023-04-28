@@ -17,7 +17,7 @@ import { VenueOfferSteps } from '../index'
 const mockLogEvent = jest.fn()
 
 const renderVenueOfferSteps = (
-  venueId: string | null = null,
+  venueId: number | null = null,
   hasMissingReimbursementPoint = true,
   shouldDisplayEacSection = false
 ) => {
@@ -35,7 +35,7 @@ const renderVenueOfferSteps = (
     <VenueOfferSteps
       hasVenue={venueId != null}
       venueId={venueId}
-      offererId="AB"
+      offererId={12}
       hasMissingReimbursementPoint={hasMissingReimbursementPoint}
       shouldDisplayEACInformationSection={shouldDisplayEacSection}
     />,
@@ -44,6 +44,7 @@ const renderVenueOfferSteps = (
 }
 
 describe('VenueOfferSteps', () => {
+  const venueId = 1
   beforeEach(() => {
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -67,7 +68,7 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should track creation offer', async () => {
-    renderVenueOfferSteps('venueId')
+    renderVenueOfferSteps(venueId)
 
     await userEvent.click(screen.getByText(/Créer une offre/))
 
@@ -84,7 +85,7 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should track ReimbursementPoint', async () => {
-    renderVenueOfferSteps('venueId')
+    renderVenueOfferSteps(venueId)
 
     await userEvent.click(
       screen.getByText(/Renseigner des coordonnées bancaires/)
@@ -94,7 +95,7 @@ describe('VenueOfferSteps', () => {
     expect(mockLogEvent).toHaveBeenCalledWith(
       VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
       {
-        venue_id: 'venueId',
+        venue_id: venueId,
         from: 'Home',
       }
     )
@@ -116,7 +117,7 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should track click on dms timeline link', async () => {
-    renderVenueOfferSteps('V1', true, true)
+    renderVenueOfferSteps(venueId, true, true)
 
     await userEvent.click(
       screen.getByText('Suivre ma demande de référencement ADAGE')

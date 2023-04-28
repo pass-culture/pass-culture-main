@@ -22,7 +22,11 @@ const Venues = ({ venues, offererId }) => {
       <h2 className="main-list-title">Lieux</h2>
       <ul className="main-list venues-list">
         {venues.map(venue => (
-          <VenueItem key={venue.id} venue={venue} />
+          <VenueItem
+            key={venue.nonHumanizedId}
+            venue={venue}
+            offererId={offererId}
+          />
         ))}
       </ul>
       <div className="has-text-centered">
@@ -45,7 +49,7 @@ const Venues = ({ venues, offererId }) => {
   )
 }
 Venues.propTypes = {
-  offererId: PropTypes.string.isRequired,
+  offererId: PropTypes.number.isRequired,
   venues: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 

@@ -21,8 +21,8 @@ import styles from './VenueOfferSteps.module.scss'
 interface IVenueOfferStepsProps {
   hasVenue: boolean
   hasMissingReimbursementPoint?: boolean
-  offererId: string
-  venueId?: string | null
+  offererId: number
+  venueId?: number | null
   hasCreatedOffer?: boolean
   hasAdageId?: boolean
   shouldDisplayEACInformationSection?: boolean

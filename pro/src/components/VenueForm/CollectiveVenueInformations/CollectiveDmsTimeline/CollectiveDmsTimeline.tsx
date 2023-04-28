@@ -27,7 +27,7 @@ const CollectiveDmsTimeline = ({
   hasAdageId: boolean
   hasAdageIdForMoreThan30Days: boolean
   adageInscriptionDate: string | null
-  offererId: string
+  offererId: number
 }) => {
   const collectiveDmsApplicationLink = `https://www.demarches-simplifiees.fr/dossiers/${collectiveDmsApplication.application}/messagerie`
   const collectiveVenueInformationsLink = `/structures/${offererId}/lieux/${collectiveDmsApplication.venueId}/eac`

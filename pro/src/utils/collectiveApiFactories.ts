@@ -369,6 +369,7 @@ export const defaultIVenue: IVenue = {
     demarchesSimplifieesApplicationId: undefined,
     fieldsUpdated: [],
     id: '',
+    nonHumanizedId: 0,
     idAtProviders: undefined,
     isValidated: false,
     lastProviderId: undefined,
