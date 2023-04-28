@@ -691,7 +691,7 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
         snapshot.set("email", old=user.email, new=form.email.data)
         try:
-            email_update.request_email_update_from_admin(user, form.email.data)
+            email_update.full_email_update_by_admin(user, form.email.data)
         except users_exceptions.EmailExistsError:
             form.email.errors.append("L'email est déjà associé à un autre utilisateur")
             snapshot.log_update(save=True)
