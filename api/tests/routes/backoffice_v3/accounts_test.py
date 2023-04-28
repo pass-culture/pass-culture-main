@@ -947,26 +947,17 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         # check that email has been changed immediately after admin request
         db.session.refresh(user)
         assert user.email == "updated@example.com"
-        assert not user.isEmailValidated
+        assert user.isEmailValidated
 
-        # check that a line has been added in email history
+        # check email history
         email_history: list[users_models.UserEmailHistory] = users_models.UserEmailHistory.query.filter(
             users_models.UserEmailHistory.userId == user.id
         ).all()
         assert len(email_history) == 1
-        assert email_history[0].eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST
+
+        assert email_history[0].eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
         assert email_history[0].oldEmail == "gg@example.net"
         assert email_history[0].newEmail == "updated@example.com"
-
-        # check that a new token has been generated
-        token: users_models.Token = users_models.Token.query.filter(users_models.Token.userId == user.id).one()
-        assert token.type == users_models.TokenType.EMAIL_VALIDATION
-
-        # check that email is sent
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == "updated@example.com"
-        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.EMAIL_CONFIRMATION.value.__dict__
-        assert token.value in mails_testing.outbox[0].sent_data["params"]["CONFIRMATION_LINK"]
 
     def test_update_invalid_email(self, authenticated_client):
         # given
