@@ -14,6 +14,26 @@ on:
         type: string
 
 jobs:
+  create-pro-staging-release:
+    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    secrets:
+      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      ENV: staging
+      CHANNEL: "${{ github.event.inputs.releaseNumber }}.0.0"
+      EXPIRES: "100d"
+  
+  create-pro-production-release:
+    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    secrets:
+      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      ENV: production
+      CHANNEL: "${{ github.event.inputs.releaseNumber }}.0.0"
+      EXPIRES: "100d"
+      
   build-and-tag-version:
     name: Build and tag version
     uses: ./.github/workflows/reusable--build-and-tag.yml
