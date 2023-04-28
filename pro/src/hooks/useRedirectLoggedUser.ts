@@ -12,28 +12,30 @@ const useRedirectLoggedUser = () => {
   const { currentUser } = useCurrentUser()
   const newOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
 
+  const redirecTotUrl = () => {
+    const queryParams = new URLSearchParams(location.search)
+    const redirectUrl = queryParams.has('de')
+      ? queryParams.get('de')
+      : `/accueil${location.search}`
+    redirectUrl && navigate(redirectUrl)
+  }
+
   useEffect(() => {
     async function fetchOfferersNames() {
       const listOfferer = await api.listOfferersNames()
       if (listOfferer.offerersNames.length === 0) {
         navigate('/parcours-inscription')
+      } else {
+        redirecTotUrl()
       }
     }
 
     if (currentUser) {
-      let redirectUrl = null
-
       if (newOnboardingActive && !currentUser.isAdmin) {
         fetchOfferersNames()
-      }
-
-      const queryParams = new URLSearchParams(location.search)
-      if (queryParams.has('de')) {
-        redirectUrl = queryParams.get('de')
       } else {
-        redirectUrl = `/accueil${location.search}`
+        redirecTotUrl()
       }
-      redirectUrl && navigate(redirectUrl)
     }
   }, [currentUser])
 }
