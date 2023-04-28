@@ -229,3 +229,23 @@ class OfferValidationConfigFactory(BaseFactory):
 
     user = factory.SubFactory(users_factories.UserFactory)
     specs = factory.LazyAttribute(lambda config: {"minimum_score": 0.1, "rules": []})
+
+
+class OfferValidationRuleFactory(BaseFactory):
+    class Meta:
+        model = models.OfferValidationRule
+
+    name = factory.Sequence("Offer validation rule {}".format)
+    dateModified = datetime.datetime.utcnow()
+    latestAuthor = factory.SubFactory(users_factories.UserFactory)
+
+
+class OfferValidationSubRuleFactory(BaseFactory):
+    class Meta:
+        model = models.OfferValidationSubRule
+
+    validationRule = factory.SubFactory(OfferValidationRuleFactory)
+    model = models.OfferValidationModel.OFFER
+    attribute = models.OfferValidationAttribute.NAME
+    operator = models.OfferValidationRuleOperator.CONTAINS
+    comparated = {"comparated": ["suspicious, verboten"]}

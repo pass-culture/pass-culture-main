@@ -112,6 +112,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_LIKE_IN_ADAGE = "Active la possibilité de liker une offre sur adage"
     WIP_RECURRENCE = "Active l'ajout de dates récurrentes pour événements sur les offres individuelles"
     WIP_ENABLE_NEW_ONBOARDING = "Active le nouvel onboarding sans SIREN"
+    WIP_ENABLE_NEW_FRAUD_RULES = "Active la nouvelle gestion des règles de validation d'offre"
     WIP_ENABLE_COLLECTIVE_DMS_TRACKING = "Active le suivi du référencement DMS pour les acteurs EAC"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
     WIP_ENABLE_EAC_CANCEL_30_DAYS = "EAC délai annulation 30 Jours par defaut au lieu de 15"
@@ -177,6 +178,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_LIKE_IN_ADAGE,
     FeatureToggle.WIP_RECURRENCE,
     FeatureToggle.WIP_ENABLE_NEW_ONBOARDING,
+    FeatureToggle.WIP_ENABLE_NEW_FRAUD_RULES,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_DMS_TRACKING,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_EAC_CANCEL_30_DAYS,

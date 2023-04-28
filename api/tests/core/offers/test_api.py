@@ -15,6 +15,7 @@ import pcapi.core.bookings.models as bookings_models
 from pcapi.core.categories import subcategories
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
+import pcapi.core.educational.factories as educational_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
@@ -1711,6 +1712,236 @@ class ComputeOfferValidationScoreTest:
 
         score = offer_validation.compute_offer_validation_score([validation_rule])
         assert score == 0.3
+
+
+@pytest.mark.usefixtures("db_session")
+class ResolveOfferValidationRuleTest:
+    def test_offer_validation_with_one_rule_with_in(self):
+        offer = factories.OfferFactory(name="REJECTED")
+        factories.OfferValidationSubRuleFactory(
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.NAME,
+            operator=models.OfferValidationRuleOperator.IN,
+            comparated={"comparated": ["REJECTED"]},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.PENDING
+
+    @pytest.mark.parametrize(
+        "price, expected_status",
+        [
+            (8, models.OfferValidationStatus.APPROVED),
+            (10, models.OfferValidationStatus.APPROVED),
+            (12, models.OfferValidationStatus.PENDING),
+        ],
+    )
+    def test_offer_validation_with_one_rule_with_greater_than(self, price, expected_status):
+        offer = factories.OfferFactory()
+        factories.StockFactory(offer=offer, price=price)
+        factories.OfferValidationSubRuleFactory(
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.MAX_PRICE,
+            operator=models.OfferValidationRuleOperator.GREATER_THAN,
+            comparated={"comparated": 10},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == expected_status
+
+    @pytest.mark.parametrize(
+        "price, expected_status",
+        [
+            (8, models.OfferValidationStatus.PENDING),
+            (10, models.OfferValidationStatus.APPROVED),
+            (12, models.OfferValidationStatus.APPROVED),
+        ],
+    )
+    def test_offer_validation_with_one_rule_with_less_than(self, price, expected_status):
+        offer = factories.OfferFactory()
+        factories.StockFactory(offer=offer, price=price)
+        factories.OfferValidationSubRuleFactory(
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.MAX_PRICE,
+            operator=models.OfferValidationRuleOperator.LESS_THAN,
+            comparated={"comparated": 10},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == expected_status
+
+    @pytest.mark.parametrize(
+        "price, expected_status",
+        [
+            (8, models.OfferValidationStatus.APPROVED),
+            (10, models.OfferValidationStatus.PENDING),
+            (12, models.OfferValidationStatus.PENDING),
+        ],
+    )
+    def test_offer_validation_with_one_rule_with_greater_than_or_equal_to(self, price, expected_status):
+        offer = factories.OfferFactory()
+        factories.StockFactory(offer=offer, price=price)
+        factories.OfferValidationSubRuleFactory(
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.MAX_PRICE,
+            operator=models.OfferValidationRuleOperator.GREATER_THAN_OR_EQUAL_TO,
+            comparated={"comparated": 10},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == expected_status
+
+    @pytest.mark.parametrize(
+        "price, expected_status",
+        [
+            (8, models.OfferValidationStatus.PENDING),
+            (10, models.OfferValidationStatus.PENDING),
+            (12, models.OfferValidationStatus.APPROVED),
+        ],
+    )
+    def test_offer_validation_with_one_rule_with_less_than_or_equal_to(self, price, expected_status):
+        offer = factories.OfferFactory()
+        factories.StockFactory(offer=offer, price=price)
+        factories.OfferValidationSubRuleFactory(
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.MAX_PRICE,
+            operator=models.OfferValidationRuleOperator.LESS_THAN_OR_EQUAL_TO,
+            comparated={"comparated": 10},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == expected_status
+
+    @pytest.mark.parametrize(
+        "subcategoryId, expected_status",
+        [
+            (subcategories.ESCAPE_GAME.id, models.OfferValidationStatus.PENDING),
+            (subcategories.SUPPORT_PHYSIQUE_FILM.id, models.OfferValidationStatus.APPROVED),
+        ],
+    )
+    def test_offer_validation_with_one_rule_with_equals(self, subcategoryId, expected_status):
+        offer = factories.OfferFactory(subcategoryId=subcategoryId)
+
+        factories.OfferValidationSubRuleFactory(
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.SUBCATEGORY_ID,
+            operator=models.OfferValidationRuleOperator.EQUALS,
+            comparated={"comparated": "ESCAPE_GAME"},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == expected_status
+
+    def test_offer_validation_with_one_rule_with_not_in(self):
+        offer = factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id)
+        factories.OfferValidationSubRuleFactory(
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.CATEGORY,
+            operator=models.OfferValidationRuleOperator.NOT_IN,
+            comparated={"comparated": ["MUSEE", "LIVRE", "CINEMA"]},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.PENDING
+
+    def test_offer_validation_with_contains_exact_rule(self):
+        offer_to_approve = factories.OfferFactory(name="La blanquette est bonne")
+        offer_to_flag = factories.OfferFactory(name="Sapristi, un bon d'achat")
+        offer_name_rule = factories.OfferValidationRuleFactory(name="Règle sur le nom des offres")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_name_rule,
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.NAME,
+            operator=models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
+            comparated={"comparated": ["bon", "lot"]},
+        )
+
+        assert (
+            api.set_offer_status_based_on_fraud_criteria_v2(offer_to_approve) == models.OfferValidationStatus.APPROVED
+        )
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer_to_flag) == models.OfferValidationStatus.PENDING
+
+    def test_offer_validation_with_contains_rule(self):
+        offer_to_flag = factories.OfferFactory(name="Saprisit, un lot interdit")
+        offer_to_flag_too = factories.OfferFactory(name="Les complots de la théorie")
+        offer_name_rule = factories.OfferValidationRuleFactory(name="Règle sur le nom des offres")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_name_rule,
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.NAME,
+            operator=models.OfferValidationRuleOperator.CONTAINS,
+            comparated={"comparated": ["bon", "lot"]},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer_to_flag) == models.OfferValidationStatus.PENDING
+        assert (
+            api.set_offer_status_based_on_fraud_criteria_v2(offer_to_flag_too) == models.OfferValidationStatus.PENDING
+        )
+
+    def test_offer_validation_rule_with_offer_type(self):
+        offer = factories.OfferFactory()
+        collective_offer = educational_factories.CollectiveOfferFactory()
+        offer_validation_rule = factories.OfferValidationRuleFactory(name="Règle sur les types d'offres")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_validation_rule,
+            model=None,
+            attribute=models.OfferValidationAttribute.CLASS_NAME,
+            operator=models.OfferValidationRuleOperator.EQUALS,
+            comparated={"comparated": "CollectiveOffer"},
+        )
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.APPROVED
+        assert api.set_offer_status_based_on_fraud_criteria_v2(collective_offer) == models.OfferValidationStatus.PENDING
+
+    def test_offer_validation_with_multiple_rules(self):
+        offer = factories.OfferFactory(name="offer with a verboten name")
+        factories.StockFactory(offer=offer, price=15)
+        offer_name_rule = factories.OfferValidationRuleFactory(name="Règle sur le nom des offres")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_name_rule,
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.NAME,
+            operator=models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
+            comparated={"comparated": ["interdit", "forbidden", "verboten"]},
+        )
+        offer_price_rule = factories.OfferValidationRuleFactory(name="Règle sur le prix des offres")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_price_rule,
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.MAX_PRICE,
+            operator=models.OfferValidationRuleOperator.GREATER_THAN,
+            comparated={"comparated": 100},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.PENDING
+
+    def test_offer_validation_rule_with_multiple_sub_rules(self):
+        offer_to_approve = factories.OfferFactory(name="offer with a verboten name")
+        factories.StockFactory(offer=offer_to_approve, price=15)
+        offer_to_flag = factories.OfferFactory(name="offer with a verboten name")
+        factories.StockFactory(offer=offer_to_flag, price=150)
+        offer_name_and_price_rule = factories.OfferValidationRuleFactory(name="Règle sur le nom des offres")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_name_and_price_rule,
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.NAME,
+            operator=models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
+            comparated={"comparated": ["interdit", "forbidden", "verboten"]},
+        )
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_name_and_price_rule,
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.MAX_PRICE,
+            operator=models.OfferValidationRuleOperator.GREATER_THAN,
+            comparated={"comparated": 100},
+        )
+        assert (
+            api.set_offer_status_based_on_fraud_criteria_v2(offer_to_approve) == models.OfferValidationStatus.APPROVED
+        )
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer_to_flag) == models.OfferValidationStatus.PENDING
+
+    def test_offer_validation_with_description_rule_and_offer_without_description(self):
+        offer = factories.OfferFactory(description=None)
+        factories.OfferValidationSubRuleFactory(
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.DESCRIPTION,
+            operator=models.OfferValidationRuleOperator.IN,
+            comparated={"comparated": ["forbidden", "words"]},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.APPROVED
 
 
 @pytest.mark.usefixtures("db_session")
