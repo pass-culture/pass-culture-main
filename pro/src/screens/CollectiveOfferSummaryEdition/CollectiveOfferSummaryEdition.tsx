@@ -41,16 +41,16 @@ const CollectiveOfferSummaryEdition = ({
   const navigate = useNavigate()
 
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
-    offer.id,
+    offer.nonHumanizedId,
     offer.isTemplate
   )}/collectif/edition`
 
   const stockEditLink = `/offre/${computeURLCollectiveOfferId(
-    offer.id,
+    offer.nonHumanizedId,
     offer.isTemplate
   )}/collectif/stocks/edition`
 
-  const visibilityEditLink = `/offre/${offer.id}/collectif/visibilite/edition`
+  const visibilityEditLink = `/offre/${offer.nonHumanizedId}/collectif/visibilite/edition`
 
   const { logEvent } = useAnalytics()
 

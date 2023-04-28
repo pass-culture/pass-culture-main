@@ -37,7 +37,7 @@ const OfferSummary = ({
   )
 
   const editLink = getOfferIndividualUrl({
-    offerId: offerData.id,
+    offerId: offerData.nonHumanizedId,
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
     mode,
   })

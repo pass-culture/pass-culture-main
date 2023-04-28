@@ -50,7 +50,7 @@ const CollectiveOfferLayout = ({
     ? undefined
     : {
         activeStep: getActiveStep(location.pathname),
-        offerId: offerIdFromParams,
+        offerId: Number(offerIdFromParams),
         isCreatingOffer: isCreation,
       }
   return (

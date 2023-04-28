@@ -30,17 +30,17 @@ const OfferItem = ({
   audience,
   refreshOffers,
 }: OfferItemProps) => {
-  const { venue, id, isEducational, isShowcase, status } = offer
+  const { venue, isEducational, isShowcase, status, nonHumanizedId } = offer
   const editionOfferLink = useOfferEditionURL(
     isEducational,
-    id,
+    nonHumanizedId,
     true,
     !!isShowcase,
     status
   )
   const editionStockLink = useOfferStockEditionURL(
     isEducational,
-    id,
+    nonHumanizedId,
     true,
     !!isShowcase
   )

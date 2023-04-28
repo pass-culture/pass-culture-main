@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
-import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { legacyComputeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
 import { Offer, TSearchFilters } from 'core/Offers/types'
 import { hasSearchFilters, isOfferDisabled } from 'core/Offers/utils'
@@ -103,7 +103,7 @@ const Offers = ({
     (offerId: string, selected: boolean, isTemplate: boolean) => {
       setSelectedOfferIds(currentSelectedIds => {
         const newSelectedOfferIds = [...currentSelectedIds]
-        const id = computeURLCollectiveOfferId(offerId, isTemplate)
+        const id = legacyComputeURLCollectiveOfferId(offerId, isTemplate)
         if (selected) {
           newSelectedOfferIds.push(id)
         } else {

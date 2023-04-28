@@ -25,7 +25,7 @@ export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
   const mode = useOfferWizardMode()
 
   const editLink = getOfferIndividualUrl({
-    offerId: offer.id,
+    offerId: offer.nonHumanizedId,
     step: OFFER_WIZARD_STEP_IDS.TARIFS,
     mode,
   })

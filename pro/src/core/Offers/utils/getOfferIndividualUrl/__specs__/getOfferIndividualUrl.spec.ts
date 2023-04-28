@@ -4,6 +4,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import getOfferIndividualUrl from '../getOfferIndividualUrl'
 
 describe('getOfferIndividualUrl', () => {
+  const offerId = 42
   const propsAndExpectedV3 = [
     // when no offer (mode is no relevant)
     {
@@ -18,7 +19,7 @@ describe('getOfferIndividualUrl', () => {
     // when creation mode
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         isV2: false,
@@ -27,7 +28,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         isV2: false,
@@ -36,7 +37,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
         step: OFFER_WIZARD_STEP_IDS.SUMMARY,
         isV2: false,
@@ -45,7 +46,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
         step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
         isV2: false,
@@ -54,7 +55,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
         step: OFFER_WIZARD_STEP_IDS.TARIFS,
         isV2: false,
@@ -64,7 +65,7 @@ describe('getOfferIndividualUrl', () => {
     // when brouillon mode
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.DRAFT,
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         isV2: false,
@@ -73,7 +74,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.DRAFT,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         isV2: false,
@@ -82,7 +83,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.DRAFT,
         step: OFFER_WIZARD_STEP_IDS.SUMMARY,
         isV2: false,
@@ -91,7 +92,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.DRAFT,
         step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
         isV2: false,
@@ -101,7 +102,7 @@ describe('getOfferIndividualUrl', () => {
 
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.DRAFT,
         step: OFFER_WIZARD_STEP_IDS.TARIFS,
         isV2: false,
@@ -111,7 +112,7 @@ describe('getOfferIndividualUrl', () => {
     // when edition mode
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         isV2: false,
@@ -120,7 +121,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         isV2: false,
@@ -129,7 +130,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
         step: OFFER_WIZARD_STEP_IDS.SUMMARY,
         isV2: false,
@@ -138,7 +139,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
         step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
         isV2: false,
@@ -147,7 +148,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
         step: OFFER_WIZARD_STEP_IDS.TARIFS,
         isV2: false,
@@ -178,7 +179,7 @@ describe('getOfferIndividualUrl', () => {
     // when creation mode
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         isV2: true,
@@ -187,7 +188,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         isV2: true,
@@ -196,7 +197,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
         step: OFFER_WIZARD_STEP_IDS.SUMMARY,
         isV2: true,
@@ -205,7 +206,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
         step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
         isV2: true,
@@ -214,7 +215,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
         step: OFFER_WIZARD_STEP_IDS.TARIFS,
         isV2: true,
@@ -224,7 +225,7 @@ describe('getOfferIndividualUrl', () => {
     // when brouillon mode
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.DRAFT,
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         isV2: true,
@@ -233,7 +234,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.DRAFT,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         isV2: true,
@@ -242,7 +243,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.DRAFT,
         step: OFFER_WIZARD_STEP_IDS.SUMMARY,
         isV2: true,
@@ -251,7 +252,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.DRAFT,
         step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
         isV2: true,
@@ -260,7 +261,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.DRAFT,
         step: OFFER_WIZARD_STEP_IDS.TARIFS,
         isV2: true,
@@ -270,7 +271,7 @@ describe('getOfferIndividualUrl', () => {
     // when edition mode
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         isV2: true,
@@ -279,7 +280,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         isV2: true,
@@ -288,7 +289,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
         step: OFFER_WIZARD_STEP_IDS.SUMMARY,
         isV2: true,
@@ -297,7 +298,7 @@ describe('getOfferIndividualUrl', () => {
     },
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
         step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
         isV2: true,
@@ -307,7 +308,7 @@ describe('getOfferIndividualUrl', () => {
 
     {
       props: {
-        offerId: '42',
+        offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
         step: OFFER_WIZARD_STEP_IDS.TARIFS,
         isV2: true,

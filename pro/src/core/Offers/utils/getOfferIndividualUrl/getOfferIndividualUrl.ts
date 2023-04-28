@@ -63,7 +63,7 @@ export const getOfferIndividualPath = ({
 }
 
 interface IGetOfferIndividualUrlArgs {
-  offerId?: string
+  offerId?: number
   mode: OFFER_WIZARD_MODE
   step: OFFER_WIZARD_STEP_IDS
   isV2?: boolean

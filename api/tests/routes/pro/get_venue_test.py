@@ -95,6 +95,7 @@ class Returns200Test:
                 "demarchesSimplifieesApplicationId": venue.managingOfferer.demarchesSimplifieesApplicationId,
                 "fieldsUpdated": venue.managingOfferer.fieldsUpdated,
                 "id": humanize(venue.managingOfferer.id),
+                "nonHumanizedId": venue.managingOfferer.id,
                 "idAtProviders": venue.managingOfferer.idAtProviders,
                 "isValidated": venue.managingOfferer.isValidated,
                 "lastProviderId": venue.managingOfferer.lastProviderId,

@@ -86,7 +86,7 @@ const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
         getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.EDITION,
-          offerId: 'BQ',
+          offerId: 12,
         }),
       ],
     }
