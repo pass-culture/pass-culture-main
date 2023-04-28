@@ -979,8 +979,10 @@ def _filter_user_accounts(
 
     # email
     sanitized_term = email_utils.sanitize_email(search_term)
+
     if email_utils.is_valid_email(sanitized_term):
         if include_email_history:
+            email_user, email_domain = sanitized_term.split("@")
             accounts = accounts.outerjoin(models.UserEmailHistory)
 
             # including old emails: look for validated email updates
@@ -988,8 +990,11 @@ def _filter_user_accounts(
             term_filters.append(
                 sa.or_(
                     models.User.email == sanitized_term,
-                    sa.and_(  # type: ignore
-                        models.UserEmailHistory.oldEmail == sanitized_term,
+                    sa.and_(
+                        # TODO(jeremieb): use hybrid_property comparator instead
+                        # eg models.UserEmailHistory.oldEmail == sanitized_term
+                        models.UserEmailHistory.oldUserEmail == email_user,
+                        models.UserEmailHistory.oldDomainEmail == email_domain,
                         models.UserEmailHistory.eventType.in_(
                             {
                                 models.EmailHistoryEventTypeEnum.VALIDATION,
