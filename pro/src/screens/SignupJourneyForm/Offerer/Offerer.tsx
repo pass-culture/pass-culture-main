@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import FormLayout from 'components/FormLayout'
@@ -57,12 +57,17 @@ const Offerer = (): JSX.Element => {
       longitude: response.payload.values.longitude,
       postalCode: response.payload.values.postalCode,
     })
-    if (siretResponse.payload.venues.length === 0) {
-      navigate('/parcours-inscription/authentification')
-    } else {
+
+    if (siretResponse.payload.venues.length > 0) {
       navigate('/parcours-inscription/structure/rattachement')
     }
   }
+
+  useEffect(() => {
+    if (offerer?.siret && offerer?.siret !== '') {
+      navigate('/parcours-inscription/authentification')
+    }
+  }, [offerer])
 
   const formik = useFormik({
     initialValues,
