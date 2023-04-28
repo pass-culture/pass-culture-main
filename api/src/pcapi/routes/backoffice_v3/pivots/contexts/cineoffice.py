@@ -52,9 +52,6 @@ class CineofficeContext(PivotContext):
         api_token = form.api_token.data
 
         venue = offerers_models.Venue.query.get(venue_id)
-        if not venue:
-            flash(f"Lieu id={venue_id} n'existe pas", "danger")
-            return False
         pivot = providers_models.CinemaProviderPivot.query.filter_by(venueId=venue_id).one_or_none()
         if pivot:
             flash(f"Des identifiants cinéma existent déjà pour ce lieu id={venue_id}", "danger")

@@ -51,9 +51,6 @@ class CGRContext(PivotContext):
         cinema_password = form.password.data
 
         venue = offerers_models.Venue.query.get(venue_id)
-        if not venue:
-            flash(f"Lieu id={venue_id} n'existe pas", "danger")
-            return False
         pivot = providers_models.CinemaProviderPivot.query.filter_by(venueId=venue.id).one_or_none()
         if pivot:
             flash(f"Des identifiants cinéma existent déjà pour ce lieu id={venue.id}", "danger")
