@@ -77,10 +77,6 @@ jobs:
         with:
           driver: docker
 
-      - name: Sleep
-        id: sleep
-        run: sleep 3600 && echo ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }} && echo ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-
       - id: openid-auth
         name: "OpenID Connect Authentication"
         uses: "google-github-actions/auth@v1"
