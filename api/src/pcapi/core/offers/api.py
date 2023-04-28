@@ -45,6 +45,7 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils import image_conversion
 import pcapi.utils.cinema_providers as cinema_providers_utils
+from pcapi.utils.custom_logic import OPERATIONS
 from pcapi.workers import push_notification_job
 
 from . import exceptions
@@ -56,8 +57,16 @@ from . import validation
 
 logger = logging.getLogger(__name__)
 
+AnyOffer = educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | models.Offer
 
 OFFERS_RECAP_LIMIT = 501
+
+
+OFFER_LIKE_MODELS = {
+    "Offer",
+    "CollectiveOffer",
+    "CollectiveOfferTemplate",
+}
 
 
 class T_UNCHANGED(enum.Enum):
@@ -356,10 +365,7 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
     search.async_index_collective_offer_template_ids([offer_to_update.id])
 
 
-def _update_collective_offer(
-    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
-    new_values: dict,
-) -> list[str]:
+def _update_collective_offer(offer: AnyOffer, new_values: dict) -> list[str]:
     validation.check_validation_status(offer)
     # This variable is meant for Adage mailing
     updated_fields = []
@@ -666,13 +672,13 @@ def publish_offer(offer: models.Offer, user: users_models.User | None) -> models
     return offer
 
 
-def update_offer_fraud_information(
-    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | models.Offer,
-    user: users_models.User | None,
-) -> None:
+def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | None) -> None:
     venue_already_has_validated_offer = offers_repository.venue_already_has_validated_offer(offer)
 
-    offer.validation = set_offer_status_based_on_fraud_criteria(offer)
+    if feature.FeatureToggle.WIP_ENABLE_NEW_FRAUD_RULES.is_active():
+        offer.validation = set_offer_status_based_on_fraud_criteria_v2(offer)
+    else:
+        offer.validation = set_offer_status_based_on_fraud_criteria(offer)
     if user is not None:
         offer.author = user
     offer.lastValidationDate = datetime.datetime.utcnow()
@@ -973,9 +979,7 @@ def deactivate_permanently_unavailable_products(isbn: str) -> bool:
     return True
 
 
-def set_offer_status_based_on_fraud_criteria(
-    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | models.Offer,
-) -> models.OfferValidationStatus:
+def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferValidationStatus:
     current_config = offers_repository.get_current_offer_validation_config()
     if not current_config:
         return models.OfferValidationStatus.APPROVED
@@ -989,6 +993,48 @@ def set_offer_status_based_on_fraud_criteria(
         status = models.OfferValidationStatus.APPROVED
 
     logger.info("Computed offer validation", extra={"offer": offer.id, "score": score, "status": status.value})
+    return status
+
+
+def resolve_offer_validation_sub_rule(sub_rule: models.OfferValidationSubRule, offer: AnyOffer) -> bool:
+    if sub_rule.model:
+        if sub_rule.model.value in OFFER_LIKE_MODELS and type(offer).__name__ == sub_rule.model.value:
+            object_to_compare = offer
+        elif sub_rule.model.value == "CollectiveStock" and isinstance(offer, educational_models.CollectiveOffer):
+            object_to_compare = offer.collectiveStock
+        elif sub_rule.model.value == "Venue":
+            object_to_compare = offer.venue
+        elif sub_rule.model.value == "Offerer":
+            object_to_compare = offer.venue.managingOfferer
+        else:
+            raise exceptions.UnapplicableModel()
+
+        target_attribute = getattr(object_to_compare, sub_rule.attribute.value)
+    else:
+        target_attribute = type(offer).__name__
+
+    return OPERATIONS[sub_rule.operator.value](target_attribute, sub_rule.comparated["comparated"])  # type: ignore[operator]
+
+
+def rule_flags_offer(rule: models.OfferValidationRule, offer: AnyOffer) -> bool:
+    is_offer_flagged = all(resolve_offer_validation_sub_rule(sub_rule, offer) for sub_rule in rule.subRules)
+    return is_offer_flagged
+
+
+def set_offer_status_based_on_fraud_criteria_v2(offer: AnyOffer) -> models.OfferValidationStatus:
+    offer_validation_rules = models.OfferValidationRule.query.all()
+
+    flagging_rules = dict()
+    for rule in offer_validation_rules:
+        if rule_flags_offer(rule, offer):
+            flagging_rules[rule.id] = rule.name
+
+    if flagging_rules:
+        status = models.OfferValidationStatus.PENDING
+    else:
+        status = models.OfferValidationStatus.APPROVED
+
+    logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value})
     return status
 
 

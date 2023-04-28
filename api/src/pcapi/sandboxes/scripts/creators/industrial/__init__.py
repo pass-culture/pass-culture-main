@@ -17,6 +17,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_stocks 
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_config import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_tags import create_industrial_offerer_tags
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_custom_reimbursement_rule import (
     create_industrial_offerer_with_custom_reimbursement_rule,
@@ -137,3 +138,5 @@ def save_industrial_sandbox() -> None:
     create_offerer_providers_for_apis()
 
     create_offers_with_isbn()
+
+    create_industrial_offer_validation_rules()
