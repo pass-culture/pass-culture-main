@@ -6,7 +6,7 @@ import { Button } from 'ui-kit'
 
 import styles from './ContactDialog.module.scss'
 
-interface IContactDialogProps {
+interface ContactDialogProps {
   closeModal: () => void
   contactEmail?: string
   contactPhone?: string | null
@@ -16,11 +16,11 @@ const ContactDialog = ({
   closeModal,
   contactEmail,
   contactPhone,
-}: IContactDialogProps): JSX.Element => {
+}: ContactDialogProps): JSX.Element => {
   return (
     <Dialog
       onCancel={closeModal}
-      title={'Contacter le partenaire culturel'}
+      title="Contacter le partenaire culturel"
       extraClassNames={styles['contact-modal-dialog']}
       icon={MailOutlineIcon}
     >
