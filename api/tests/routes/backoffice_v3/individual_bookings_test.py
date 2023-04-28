@@ -399,7 +399,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, booking_id=cancelled.id)
 
         # then
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         db.session.refresh(cancelled)
         assert cancelled.status is bookings_models.BookingStatus.USED
@@ -416,7 +416,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, booking_id=non_cancelled.id)
 
         # then
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         db.session.refresh(non_cancelled)
         assert non_cancelled.status == old_status
@@ -437,7 +437,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, booking_id=cancelled_booking.id)
 
         # then
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         db.session.refresh(cancelled_booking)
         assert cancelled_booking.status == bookings_models.BookingStatus.CANCELLED
@@ -454,7 +454,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, booking_id=cancelled_booking.id)
 
         # then
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         db.session.refresh(cancelled_booking)
         assert cancelled_booking.status == bookings_models.BookingStatus.CANCELLED
@@ -478,7 +478,7 @@ class CancelBookingTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, booking_id=confirmed.id)
 
         # then
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         db.session.refresh(confirmed)
         assert confirmed.status is bookings_models.BookingStatus.CANCELLED
@@ -494,7 +494,7 @@ class CancelBookingTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, booking_id=pricing.bookingId)
 
         # then
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         db.session.refresh(pricing)
         assert pricing.booking.status == bookings_models.BookingStatus.USED
@@ -524,7 +524,7 @@ class CancelBookingTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, booking_id=reimbursed.id)
 
         # then
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         db.session.refresh(reimbursed)
         assert reimbursed.status == old_status
@@ -541,7 +541,7 @@ class CancelBookingTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, booking_id=cancelled.id)
 
         # then
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         db.session.refresh(cancelled)
         assert cancelled.status == old_status
@@ -550,3 +550,74 @@ class CancelBookingTest(PostEndpointHelper):
         assert (
             html_parser.extract_alert(redirected_response.data) == "Impossible d'annuler une réservation déjà annulée"
         )
+
+
+class GetBatchMarkAsUsedIndividualBookingsFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.individual_bookings.get_batch_validate_individual_bookings_form"
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+    def test_get_batch_mark_as_used_booking_form(self, legit_user, authenticated_client):
+        # given
+        bookings_factories.BookingFactory()
+        with assert_num_queries(2):  # session + tested_query
+            # when
+            response = authenticated_client.get(url_for(self.endpoint))
+            # then
+            # Rendering is not checked, but at least the fetched frame does not crash
+            assert response.status_code == 200
+
+
+class BatchMarkBookingAsUsedTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.individual_bookings.batch_validate_individual_bookings"
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+    def test_batch_mark_as_used_bookings(self, legit_user, authenticated_client):
+        bookings = bookings_factories.BookingFactory.create_batch(3)
+        parameter_ids = ",".join(str(booking.id) for booking in bookings)
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+
+        assert response.status_code == 302
+        for booking in bookings:
+            db.session.refresh(booking)
+            assert booking.status is bookings_models.BookingStatus.USED
+
+    def test_batch_mark_as_used_cancelled_bookings(self, legit_user, authenticated_client):
+        bookings = bookings_factories.BookingFactory.create_batch(3, status=bookings_models.BookingStatus.CANCELLED)
+        parameter_ids = ",".join(str(booking.id) for booking in bookings)
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+
+        assert response.status_code == 302
+        for booking in bookings:
+            db.session.refresh(booking)
+            assert booking.status is bookings_models.BookingStatus.USED
+
+
+class GetBatchCancelIndividualBookingsFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.individual_bookings.get_batch_cancel_individual_bookings_form"
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+    def test_get_batch_cancel_booking_form(self, legit_user, authenticated_client):
+        # given
+        bookings_factories.BookingFactory()
+        with assert_num_queries(2):  # session + tested_query
+            # when
+            url = url_for(self.endpoint)
+            response = authenticated_client.get(url)
+            # then
+            # Rendering is not checked, but at least the fetched frame does not crash
+            assert response.status_code == 200
+
+
+class BatchOfferCancelTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.individual_bookings.batch_cancel_individual_bookings"
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+    def test_batch_cancel_bookings(self, legit_user, authenticated_client):
+        bookings = bookings_factories.BookingFactory.create_batch(3)
+        parameter_ids = ",".join(str(booking.id) for booking in bookings)
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+
+        assert response.status_code == 302
+        for booking in bookings:
+            db.session.refresh(booking)
+            assert booking.status is bookings_models.BookingStatus.CANCELLED
