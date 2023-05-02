@@ -25,13 +25,13 @@ const CollectiveBookingDetails = ({
   return (
     <>
       <div className={styles.container}>
-        <div className={styles['details-column']}>
+        <div className={styles['details-timeline']}>
           <CollectiveTimeLine
             bookingRecap={bookingRecap}
             bookingDetails={bookingDetails}
           />
         </div>
-        <div className={styles['details-column']}>
+        <div>
           <div className={styles['contact-details']}>
             <div className={styles['contact-details-title']}>
               Contact de l’établissement scolaire
