@@ -853,7 +853,7 @@ class PostProductByEanTest:
 
     def test_400_when_no_accessibility_and_virtual_venue(self, client):
         api_key = offerers_factories.ApiKeyFactory()
-        offerers_factories.VirtualVenueFactory(managingOfferer=api_key.offerer)
+        virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=api_key.offerer)
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
         )
@@ -862,7 +862,7 @@ class PostProductByEanTest:
             "/public/offers/v1/products/ean",
             json={
                 "ean": product.extraData["ean"],
-                "location": {"type": "digital", "url": "https://example.com"},
+                "location": {"type": "digital", "url": "https://example.com", "venueId": virtual_venue.id},
             },
         )
 
