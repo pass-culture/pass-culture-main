@@ -53,6 +53,7 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
             sa.orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
             sa.orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
                 educational_models.CollectiveDmsApplication.state,
+                educational_models.CollectiveDmsApplication.depositDate,
                 educational_models.CollectiveDmsApplication.lastChangeDate,
             ),
         )
