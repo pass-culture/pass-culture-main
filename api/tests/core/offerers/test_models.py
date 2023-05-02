@@ -378,6 +378,8 @@ class VenueDmsAdageStatusTest:
         )
 
         assert venue.dms_adage_status == latest.state
+        last_collective_dms_application = venue.last_collective_dms_application
 
         # hybrid property: also check SQL expression
         assert db.session.query(models.Venue.dms_adage_status).filter_by(id=venue.id).scalar() == latest.state
+        assert last_collective_dms_application is latest
