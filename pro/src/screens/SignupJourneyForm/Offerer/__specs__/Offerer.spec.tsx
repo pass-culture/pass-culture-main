@@ -181,7 +181,7 @@ describe('screens:SignupJourney::Offerer', () => {
     jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValueOnce({
       venues: [],
     })
-    await renderOffererScreen(contextValue)
+    renderOffererScreen(contextValue)
 
     expect(
       await screen.findByText('Renseignez le SIRET de votre structure')
@@ -190,11 +190,9 @@ describe('screens:SignupJourney::Offerer', () => {
       screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
       '12345678933333'
     )
-    await userEvent.click(
-      await screen.getByRole('button', { name: 'Continuer' })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
-    await expect(screen.queryByText('Offerers screen')).not.toBeInTheDocument()
+    expect(screen.queryByText('Offerers screen')).not.toBeInTheDocument()
   })
 
   it('should redirect to offerers screen if venue exist', async () => {
@@ -204,7 +202,7 @@ describe('screens:SignupJourney::Offerer', () => {
         { id: '2', name: 'Second Venue' },
       ],
     })
-    await renderOffererScreen(contextValue)
+    renderOffererScreen(contextValue)
 
     await userEvent.type(
       screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
@@ -227,7 +225,7 @@ describe('screens:SignupJourney::Offerer', () => {
         ''
       )
     )
-    await renderOffererScreen(contextValue)
+    renderOffererScreen(contextValue)
 
     await userEvent.type(
       screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
