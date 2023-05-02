@@ -12,7 +12,7 @@ const useRedirectLoggedUser = () => {
   const newOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
 
   const [searchParams] = useSearchParams()
-  const redirectTotUrl = () => {
+  const redirectToUrl = () => {
     const redirectUrl = searchParams.has('de')
       ? searchParams.get('de')
       : `/accueil?${searchParams}`
@@ -25,7 +25,7 @@ const useRedirectLoggedUser = () => {
       if (listOfferer.offerersNames.length === 0) {
         navigate('/parcours-inscription')
       } else {
-        redirectTotUrl()
+        redirectToUrl()
       }
     }
 
@@ -33,7 +33,7 @@ const useRedirectLoggedUser = () => {
       if (newOnboardingActive && !currentUser.isAdmin) {
         fetchOfferersNames()
       } else {
-        redirectTotUrl()
+        redirectToUrl()
       }
     }
   }, [currentUser])
