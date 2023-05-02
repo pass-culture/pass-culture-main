@@ -363,7 +363,7 @@ describe('screen Offers', () => {
           // Then
           expect(screen.getByText('Statut')).toBeInTheDocument()
           expect(
-            screen.queryByText('Afficher les statuts')
+            screen.queryByText('Afficher les offres')
           ).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Tous')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Publiée')).not.toBeInTheDocument()
@@ -377,7 +377,7 @@ describe('screen Offers', () => {
           expect(screen.queryByLabelText('Refusée')).not.toBeInTheDocument()
         })
 
-        it('should display status filters with "Tous" as default value when clicking on "Statut" filter icon', async () => {
+        it('should display status filters with "Toutes" as default value when clicking on "Statut" filter icon', async () => {
           // Given
           renderOffers(props, store)
           // When
@@ -385,8 +385,8 @@ describe('screen Offers', () => {
             screen.getByAltText('Afficher ou masquer le filtre par statut')
           )
           // Then
-          expect(screen.queryByText('Afficher les statuts')).toBeInTheDocument()
-          expect(screen.getByLabelText('Tous')).toBeChecked()
+          expect(screen.queryByText('Afficher les offres')).toBeInTheDocument()
+          expect(screen.getByLabelText('Toutes')).toBeChecked()
           expect(screen.getByLabelText('Publiée')).not.toBeChecked()
           expect(screen.getByLabelText('Désactivée')).not.toBeChecked()
           expect(screen.getByLabelText('Épuisée')).not.toBeChecked()
@@ -416,7 +416,7 @@ describe('screen Offers', () => {
           )
           // Then
           expect(
-            screen.queryByText('Afficher les statuts')
+            screen.queryByText('Afficher les offres')
           ).not.toBeInTheDocument()
         })
 
