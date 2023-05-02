@@ -27,16 +27,16 @@ const TicketWithdrawal = ({
   } = useFormikContext<IOfferIndividualFormValues>()
 
   const getFirstWithdrawalTypeEnumValue = () => {
-    if (withdrawalType === WithdrawalTypeEnum.BY_EMAIL) {
-      return ticketSentDateOptions[0].value
-    }
+    switch (withdrawalType) {
+      case WithdrawalTypeEnum.BY_EMAIL:
+        return ticketSentDateOptions[0].value
 
-    if (withdrawalType === WithdrawalTypeEnum.ON_SITE) {
-      return ticketWithdrawalHourOptions[0].value
-    }
+      case WithdrawalTypeEnum.ON_SITE:
+        return ticketWithdrawalHourOptions[0].value
 
-    /* istanbul ignore next: already tested in InformationsScreen.edition.spec.tsx */
-    return undefined
+      default:
+        return undefined
+    }
   }
 
   useEffect(
