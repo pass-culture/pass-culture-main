@@ -23,6 +23,10 @@
     color: colors.$grey-dark;
   }
 
+  &-step-decription-with-link {
+    margin-bottom: rem.torem(8px);
+  }
+
   &-infobox {
     border-radius: rem.torem(5px);
     padding: rem.torem(16px);
