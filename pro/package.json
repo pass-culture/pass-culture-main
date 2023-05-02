@@ -116,7 +116,7 @@
     "@types/react-avatar-editor": "^13.0.0",
     "@types/react-datepicker": "^4.3.2",
     "@types/react-dom": "^18.2.1",
-    "@types/react-redux": "^7.1.18",
+    "@types/react-redux": "^7.1.25",
     "@types/react-router-dom": "^5.1.8",
     "@types/react-table": "^7.7.14",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
