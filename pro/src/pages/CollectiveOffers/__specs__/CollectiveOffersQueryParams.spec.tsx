@@ -312,7 +312,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(
         screen.getByAltText('Afficher ou masquer le filtre par statut')
       )
-      await userEvent.click(screen.getByLabelText('Tous'))
+      await userEvent.click(screen.getByLabelText('Toutes'))
       // When
       await userEvent.click(screen.getByText('Appliquer'))
       // Then

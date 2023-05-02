@@ -127,7 +127,7 @@ const FilterByBookingStatus = <
       <span className="bs-filter">
         {isToolTipVisible && (
           <div className="bs-filter-tooltip">
-            <div className="bs-filter-label">Afficher les statuts</div>
+            <div className="bs-filter-label">Afficher les offres</div>
             {filteredBookingStatuses.map(bookingStatus => (
               <label key={bookingStatus.value}>
                 <input

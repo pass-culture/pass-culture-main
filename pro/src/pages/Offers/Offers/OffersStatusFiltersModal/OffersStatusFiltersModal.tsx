@@ -69,7 +69,7 @@ export const OffersStatusFiltersModal = ({
   const filters =
     audience === Audience.INDIVIDUAL
       ? [
-          { label: 'Tous', value: ALL_STATUS },
+          { label: 'Toutes', value: ALL_STATUS },
           ...(audience === Audience.INDIVIDUAL
             ? [{ label: 'Brouillon', value: OfferStatus.DRAFT }]
             : []),
@@ -81,7 +81,7 @@ export const OffersStatusFiltersModal = ({
           { label: 'Refusée', value: OfferStatus.REJECTED },
         ]
       : [
-          { label: 'Tous', value: ALL_STATUS },
+          { label: 'Toutes', value: ALL_STATUS },
           { label: 'Désactivée', value: CollectiveOfferStatus.INACTIVE },
           { label: 'Expirée', value: CollectiveOfferStatus.EXPIRED },
           { label: 'Préréservée', value: CollectiveOfferStatus.PREBOOKED },
@@ -102,7 +102,7 @@ export const OffersStatusFiltersModal = ({
         ]
   return (
     <div className="offers-status-filters" ref={modalRef}>
-      <div className="osf-title">Afficher les statuts</div>
+      <div className="osf-title">Afficher les offres</div>
       <>
         {filters.map(({ label, value }) => (
           <RadioInput
