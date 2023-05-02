@@ -16,6 +16,10 @@ header.menu-v2 {
       align-items: center;
       justify-self: end;
       margin-right: size.$nav-brand-margin-right;
+
+      img {
+        height: rem.torem(40px);
+      }
     }
 
     .nav-menu {
