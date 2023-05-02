@@ -205,6 +205,16 @@ class ProfileCompletionFraudCheckFactory(BeneficiaryFraudCheckFactory):
     status = models.FraudCheckStatus.OK
 
 
+class PhoneValidationFraudCheckFactory(BeneficiaryFraudCheckFactory):
+    type = models.FraudCheckType.PHONE_VALIDATION
+    status = models.FraudCheckStatus.OK
+
+
+class HonorStatementFraudCheckFactory(BeneficiaryFraudCheckFactory):
+    type = models.FraudCheckType.HONOR_STATEMENT
+    status = models.FraudCheckStatus.OK
+
+
 class UbbleRetryFraudCheckFactory(BeneficiaryFraudCheckFactory):
     type = models.FraudCheckType.UBBLE
     resultContent = factory.SubFactory(UbbleContentFactory)
