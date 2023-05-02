@@ -116,9 +116,7 @@ describe('src | StocksProviderForm', () => {
 
       // then
       expect(
-        screen.getByText(
-          'Certains ouvrages seront exclus de la synchronisation automatique.'
-        )
+        screen.getByText('Certaines offres ne seront pas synchronisées')
       ).toBeInTheDocument()
 
       const confirmImportButton = screen.getByRole('button', {
@@ -156,9 +154,7 @@ describe('src | StocksProviderForm', () => {
 
       // then
       expect(
-        screen.getByText(
-          'Certains ouvrages seront exclus de la synchronisation automatique.'
-        )
+        screen.getByText('Certaines offres ne seront pas synchronisées')
       ).toBeInTheDocument()
 
       const confirmImportButton = screen.getByRole('button', {
@@ -189,9 +185,7 @@ describe('src | StocksProviderForm', () => {
 
       // then
       expect(
-        screen.getByText(
-          'Certains ouvrages seront exclus de la synchronisation automatique.'
-        )
+        screen.getByText('Certaines offres ne seront pas synchronisées')
       ).toBeInTheDocument()
 
       const confirmImportButton = screen.getByRole('button', {
