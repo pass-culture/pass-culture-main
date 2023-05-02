@@ -23,6 +23,7 @@ import pcapi.core.offerers.exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -445,6 +446,18 @@ class ApiKeyTest:
         found_api_key = offerers_api.find_api_key(generated_key)
 
         assert found_api_key.offerer == offerer
+
+    def test_get_provider_from_api_key(self):
+        value = "a very secret legacy key"
+        offerer = offerers_factories.OffererFactory()
+        provider = providers_factories.ProviderFactory(localClass=None, name="RiotRecords")
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+        offerers_factories.ApiKeyFactory(
+            offerer=offerer, provider=provider, prefix="development_a very s", secret="ecret legacy key"
+        )
+        with assert_num_queries(1):
+            found_api_key = offerers_api.find_api_key(value)
+            assert found_api_key.provider == provider
 
     def test_legacy_api_key(self):
         value = "a very secret legacy key"
