@@ -86,7 +86,12 @@ def format_timespan(timespan: psycopg2.extras.DateTimeRange) -> str:
         return ""
     start = pytz.utc.localize(timespan.lower).astimezone(finance_utils.ACCOUNTING_TIMEZONE).strftime("%d/%m/%Y")
     if timespan.upper:
-        end = pytz.utc.localize(timespan.upper).astimezone(finance_utils.ACCOUNTING_TIMEZONE).strftime("%d/%m/%Y")
+        # upper bound is exclusive, and we want to show the last day included in the date range
+        end = (
+            pytz.utc.localize(timespan.upper - datetime.timedelta(microseconds=1))
+            .astimezone(finance_utils.ACCOUNTING_TIMEZONE)
+            .strftime("%d/%m/%Y")
+        )
     else:
         end = "∞"
     return f"{start} → {end}"
