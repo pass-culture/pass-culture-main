@@ -316,7 +316,9 @@ class DmsWebhookApplicationTest:
         assert content.postal_code == "06000"
         assert content.procedure_number == 45678
         assert content.state == "accepte"
-        assert content.registration_datetime == datetime.datetime(2022, 3, 17, 11, 19, 37)
+        assert content.registration_datetime == datetime.datetime(
+            2022, 3, 17, 12, 19, 37, tzinfo=datetime.timezone(datetime.timedelta(seconds=3600))
+        )
 
         db.session.refresh(user)
 

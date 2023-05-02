@@ -9,6 +9,7 @@ import uuid
 from dateutil.relativedelta import relativedelta
 from factory.declarations import LazyAttribute
 import factory.fuzzy
+import pytz
 
 from pcapi.core import testing
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
@@ -84,7 +85,9 @@ class DMSContentFactory(factory.Factory):
     phone = factory.Sequence("+33612{:06}".format)
     postal_code = "75008"
     procedure_number = factory.Faker("pyint")
-    registration_datetime = LazyAttribute(lambda _: datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S%z"))
+    registration_datetime = LazyAttribute(
+        lambda _: datetime.utcnow().replace(tzinfo=pytz.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+    )
 
 
 class UbbleContentFactory(factory.Factory):
