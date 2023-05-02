@@ -39,7 +39,6 @@ class AllocineTheaterFactory(BaseFactory):
 class ProviderFactory(BaseFactory):
     class Meta:
         model = models.Provider
-        sqlalchemy_get_or_create = ["localClass", "apiUrl"]
 
     name = factory.Sequence("Provider {}".format)
     localClass = factory.Sequence("{}Stocks".format)
@@ -137,6 +136,17 @@ class AllocineProviderFactory(BaseFactory):
 
     name = factory.Sequence("Allociné Provider {}".format)
     localClass = "AllocineStocks"
+    enabledForPro = True
+    isActive = True
+
+
+class TiteLiveThingsProviderFactory(BaseFactory):
+    class Meta:
+        model = models.Provider
+        sqlalchemy_get_or_create = ["localClass"]
+
+    name = factory.Sequence("TiteLiveThings {}".format)
+    localClass = "TiteLiveThings"
     enabledForPro = True
     isActive = True
 
