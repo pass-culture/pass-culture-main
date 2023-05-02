@@ -1411,7 +1411,7 @@ class GetFilteredCollectiveOffersTest:
 @pytest.mark.usefixtures("db_session")
 class ExcludeOffersFromInactiveVenueProviderTest:
     def test_exclude_offers_from_inactive_venue_provider(self):
-        stock_api_provider = providers_factories.ProviderFactory(
+        stock_api_provider = providers_factories.AllocineProviderFactory(
             localClass=providers_constants.PASS_CULTURE_STOCKS_FAKE_CLASS_NAME
         )
         active_venue_provider = providers_factories.VenueProviderFactory(isActive=True)

@@ -79,7 +79,7 @@ class TiteliveThingsTest:
         data_line = "~".join(BASE_DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        providers_factories.TiteLiveThingsProviderFactory()
         titelive_things = TiteLiveThings()
 
         # When
@@ -107,7 +107,7 @@ class TiteliveThingsTest:
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        providers_factories.TiteLiveThingsProviderFactory()
         titelive_things = TiteLiveThings()
 
         # When
@@ -152,7 +152,7 @@ class TiteliveThingsTest:
         # Given
         get_files_to_process_from_titelive_ftp.return_value = []
 
-        providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        providers_factories.TiteLiveThingsProviderFactory()
         titelive_things = TiteLiveThings()
 
         # When
@@ -173,7 +173,7 @@ class TiteliveThingsTest:
         data_line = "9782895026310"
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        providers_factories.TiteLiveThingsProviderFactory()
         titelive_things = TiteLiveThings()
 
         # When
@@ -199,7 +199,7 @@ class TiteliveThingsTest:
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        providers_factories.TiteLiveThingsProviderFactory()
         titelive_things = TiteLiveThings()
 
         # When
@@ -225,7 +225,7 @@ class TiteliveThingsTest:
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        providers_factories.TiteLiveThingsProviderFactory()
         titelive_things = TiteLiveThings()
 
         # When
@@ -251,7 +251,7 @@ class TiteliveThingsTest:
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        titelive_provider = providers_factories.TiteLiveThingsProviderFactory()
         offers_factories.ProductFactory(
             idAtProviders="9782895026310",
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
@@ -285,7 +285,7 @@ class TiteliveThingsTest:
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        titelive_provider = providers_factories.TiteLiveThingsProviderFactory()
         offers_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             idAtProviders="9782895026310",
@@ -318,7 +318,7 @@ class TiteliveThingsTest:
         data_line = "~".join(data_line_parts)
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        provider = providers_factories.TiteLiveThingsProviderFactory()
         bookings_factories.BookingFactory(
             stock__offer__product__dateModifiedAtLastProvider=datetime(2001, 1, 1),
             stock__offer__product__idAtProviders="9782895026310",
@@ -356,7 +356,7 @@ class TiteliveThingsTest:
         data_line_2 = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line_1, data_line_2])
 
-        providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        providers_factories.TiteLiveThingsProviderFactory()
         titelive_things = TiteLiveThings()
 
         # When
@@ -383,7 +383,7 @@ class TiteliveThingsTest:
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        titelive_provider = providers_factories.TiteLiveThingsProviderFactory()
         offers_factories.ProductFactory(
             idAtProviders="9782895026310",
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
@@ -414,7 +414,7 @@ class TiteliveThingsTest:
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        titelive_provider = providers_factories.TiteLiveThingsProviderFactory()
 
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -453,7 +453,7 @@ class TiteliveThingsTest:
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        providers_factories.TiteLiveThingsProviderFactory()
         titelive_things = TiteLiveThings()
 
         # When
@@ -479,7 +479,7 @@ class TiteliveThingsTest:
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        titelive_provider = providers_factories.TiteLiveThingsProviderFactory()
         titelive_things = TiteLiveThings()
 
         offerer = offerers_factories.OffererFactory(siren="123456789")

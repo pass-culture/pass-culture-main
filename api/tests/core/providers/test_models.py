@@ -40,7 +40,7 @@ def test_raise_errors_if_venue_provider_already_exists_with_same_information():
 
 
 def test_isFromAllocineProvider():
-    allocine = factories.ProviderFactory(localClass="AllocineStocks")
+    allocine = factories.AllocineProviderFactory()
     allocine_venue_provider = factories.VenueProviderFactory(provider=allocine)
     assert allocine_venue_provider.isFromAllocineProvider
 
