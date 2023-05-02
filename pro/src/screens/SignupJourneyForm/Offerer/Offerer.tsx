@@ -63,6 +63,7 @@ const Offerer = (): JSX.Element => {
     }
   }
 
+  // Need to wait for offerer to be updated in the context to redirect user
   useEffect(() => {
     if (offerer?.siret && offerer?.siret !== '') {
       navigate('/parcours-inscription/authentification')
