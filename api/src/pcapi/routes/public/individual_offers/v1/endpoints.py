@@ -85,8 +85,10 @@ def _retrieve_venue_from_location(
 
 
 def _retrieve_offer_tied_to_user_query() -> sqla_orm.Query:
-    return offers_models.Offer.query.join(offerers_models.Venue).filter(
-        offerers_models.Venue.managingOffererId == current_api_key.offererId  # type: ignore[attr-defined]
+    return (
+        offers_models.Offer.query.join(offerers_models.Venue)
+        .join(offerers_models.Venue.venueProviders, providers_models.VenueProvider.provider)
+        .filter(providers_models.VenueProvider.provider == current_api_key.provider)  # type: ignore[attr-defined]
     )
 
 
@@ -416,10 +418,7 @@ def post_event_price_categories(
     api=blueprint.v1_schema, tags=[EVENT_OFFER_DATES_TAG], response_model=serialization.PostDatesResponse
 )
 @api_key_required
-@public_utils.individual_offers_api_provider
-def post_event_dates(
-    individual_offers_provider: providers_models.Provider, event_id: int, body: serialization.DatesCreation
-) -> serialization.PostDatesResponse:
+def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
     """
     Add dates to an event offer.
     Each date is attached to a price category so if there are several prices categories, several dates must be added.
@@ -450,7 +449,7 @@ def post_event_dates(
                         quantity=serialization.deserialize_quantity(date.quantity),
                         beginning_datetime=date.beginning_datetime,
                         booking_limit_datetime=date.booking_limit_datetime,
-                        creating_provider=individual_offers_provider,
+                        creating_provider=current_api_key.provider,  # type: ignore[attr-defined]
                     )
                 )
     except offers_exceptions.OfferCreationBaseException as error:
@@ -747,10 +746,7 @@ def edit_product(
     api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
 )
 @api_key_required
-@public_utils.individual_offers_api_provider
-def edit_product_by_ean(
-    individual_offers_provider: providers_models.Provider, ean: str, body: serialization.ProductOfferByEanEdition
-) -> serialization.ProductOfferResponse:
+def edit_product_by_ean(ean: str, body: serialization.ProductOfferByEanEdition) -> serialization.ProductOfferResponse:
     """
     Edit a product by accessing it through its European Article Number (EAN-13).
 
@@ -769,7 +765,7 @@ def edit_product_by_ean(
 
     try:
         with repository.transaction():
-            _upsert_product_stock(offer, body.stock, individual_offers_provider)
+            _upsert_product_stock(offer, body.stock, current_api_key.provider)  # type: ignore[attr-defined]
     except offers_exceptions.OfferCreationBaseException as e:
         raise api_errors.ApiErrors(e.errors, status_code=400)
 
@@ -893,9 +889,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     api=blueprint.v1_schema, tags=[EVENT_OFFER_PRICES_TAG], response_model=serialization.PriceCategoryResponse
 )
 @api_key_required
-@public_utils.individual_offers_api_provider
 def patch_event_price_categories(
-    individual_offers_provider: providers_models.Provider,
     event_id: int,
     price_category_id: int,
     body: serialization.PriceCategoryEdition,
@@ -934,7 +928,7 @@ def patch_event_price_categories(
             price=finance_utils.to_euros(eurocent_price)
             if eurocent_price != offers_api.UNCHANGED
             else offers_api.UNCHANGED,
-            editing_provider=individual_offers_provider,
+            editing_provider=current_api_key.provider,  # type: ignore[attr-defined]
         )
 
     return serialization.PriceCategoryResponse.from_orm(price_category_to_edit)
@@ -943,9 +937,7 @@ def patch_event_price_categories(
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["PATCH"])
 @spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFER_DATES_TAG], response_model=serialization.DateResponse)
 @api_key_required
-@public_utils.individual_offers_api_provider
 def patch_event_date(
-    individual_offers_provider: providers_models.Provider,
     event_id: int,
     date_id: int,
     body: serialization.DateEdition,
@@ -953,6 +945,7 @@ def patch_event_date(
     """
     Patch an event date.
     """
+    print("current_api_key.provider", current_api_key.provider)  # type: ignore[attr-defined]
     offer: offers_models.Offer | None = (
         _retrieve_offer_relations_query(_retrieve_offer_query(event_id))
         .filter(offers_models.Offer.isEvent == True)
@@ -986,7 +979,7 @@ def patch_event_date(
                 price_category=price_category,
                 booking_limit_datetime=update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
                 beginning_datetime=update_body.get("beginning_datetime", offers_api.UNCHANGED),
-                editing_provider=individual_offers_provider,
+                editing_provider=current_api_key.provider,  # type: ignore[attr-defined]
             )
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
