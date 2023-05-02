@@ -428,13 +428,17 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
         return self.bankInformation.applicationId
 
-    @hybrid_property
-    def dms_adage_status(self) -> str | None:
+    @property
+    def last_collective_dms_application(self) -> educational_models.CollectiveDmsApplication | None:
         if self.collectiveDmsApplications:
             return sorted(
-                self.collectiveDmsApplications, key=lambda application: application.lastChangeDate, reverse=True
-            )[0].state
+                self.collectiveDmsApplications, key=lambda application: application.lastChangeDate, reverse=True  # type: ignore [return-value, arg-type]
+            )[0]
         return None
+
+    @hybrid_property
+    def dms_adage_status(self) -> str | None:
+        return self.last_collective_dms_application.state if self.last_collective_dms_application else None
 
     @dms_adage_status.expression  # type: ignore [no-redef]
     def dms_adage_status(cls) -> str | None:  # pylint: disable=no-self-argument

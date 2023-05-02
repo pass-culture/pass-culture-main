@@ -21,6 +21,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.models import db
 from pcapi.routes.backoffice_v3 import venues
+from pcapi.routes.backoffice_v3.filters import format_dms_status
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -79,7 +80,7 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Code postal : {venue.postalCode} " in response_text
         assert f"E-mail : {venue.bookingEmail} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
-        assert "Référencement Adage : Non" in response_text
+        assert "Peut créer une offre EAC : Non" in response_text
         assert "Statut dossier DMS Adage :" not in response_text
         assert "ID Adage" not in response_text
         assert f"Site web : {venue.contact.website}" in response_text
@@ -109,7 +110,7 @@ class GetVenueTest(GetEndpointHelper):
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert "Référencement Adage : Oui" in response_text
+        assert "Peut créer une offre EAC : Oui" in response_text
         assert "ID Adage : 7122022" in response_text
 
     def test_get_venue_with_no_contact(self, authenticated_client, venue_with_no_contact):
@@ -202,15 +203,35 @@ class GetVenueTest(GetEndpointHelper):
         assert response.status_code == 200
         assert "Pas de dossier DMS CB" in html_parser.content_as_text(response.data)
 
-    def test_get_venue_with_dms_adage_status(self, authenticated_client, random_venue):
-        educational_factories.CollectiveDmsApplicationFactory(venue=random_venue, state="en_construction")
+    def test_get_venue_with_no_dms_adage_application(self, authenticated_client, random_venue):
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=random_venue.id))
+
+        # then
+        assert response.status_code == 200
+        content = html_parser.content_as_text(response.data)
+        assert "Pas de dossier DMS Adage" in content
+
+    @pytest.mark.parametrize(
+        "state,dateKey,label",
+        [
+            ("en_construction", "depositDate", "Date de dépôt DMS Adage"),
+            ("accepte", "lastChangeDate", "Date de validation DMS Adage"),
+        ],
+    )
+    def test_get_venue_with_dms_adage_application(self, authenticated_client, random_venue, state, dateKey, label):
+        collectiveDmsApplication = educational_factories.CollectiveDmsApplicationFactory(
+            venue=random_venue, state=state
+        )
 
         # when
         response = authenticated_client.get(url_for(self.endpoint, venue_id=random_venue.id))
 
         # then
         assert response.status_code == 200
-        assert "Statut du dossier DMS Adage : En construction" in html_parser.content_as_text(response.data)
+        content = html_parser.content_as_text(response.data)
+        assert f"Statut du dossier DMS Adage : {format_dms_status(state)}" in content
+        assert f"{label} : " + (getattr(collectiveDmsApplication, dateKey)).strftime("%d/%m/%Y") in content
 
 
 class GetVenueStatsDataTest:
