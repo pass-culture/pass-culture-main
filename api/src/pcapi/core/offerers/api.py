@@ -360,6 +360,7 @@ def find_api_key(key: str) -> models.ApiKey | None:
         .options(
             sa_orm.joinedload(models.ApiKey.offerer),
         )
+        .options(sa_orm.joinedload(models.ApiKey.provider))
         .one_or_none()
     )
 
