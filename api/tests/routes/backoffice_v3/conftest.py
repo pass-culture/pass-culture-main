@@ -69,6 +69,10 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "daf": [
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
     ],
+    "responsable-daf": [
+        perm_models.Permissions.READ_REIMBURSEMENT_RULES,
+        perm_models.Permissions.CREATE_REIMBURSEMENT_RULES,
+    ],
     "bizdev": [],
     "programmation": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,

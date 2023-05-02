@@ -52,6 +52,7 @@ class Permissions(enum.Enum):
     MANAGE_OFFERS_AND_VENUES_TAGS = "gérer les tags offres et lieux"
 
     READ_REIMBURSEMENT_RULES = "visualiser les tarifs dérogatoires"
+    CREATE_REIMBURSEMENT_RULES = "créer un tarif dérogatoire"
 
     @classmethod
     def exists(cls, name: str) -> bool:
@@ -126,6 +127,7 @@ class Roles(enum.Enum):
     SUPPORT_PRO = "support-PRO"
     SUPPORT_PRO_N2 = "support-PRO-N2"
     FRAUDE_CONFORMITE = "fraude-conformite"
+    DAF_MANAGEMENT = "responsable-daf"
     DAF = "daf"
     BIZDEV = "bizdev"
     PROGRAMMATION = "programmation"
