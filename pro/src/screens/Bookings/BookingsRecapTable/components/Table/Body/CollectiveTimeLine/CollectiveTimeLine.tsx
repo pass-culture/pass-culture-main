@@ -64,6 +64,13 @@ const CollectiveTimeLine = ({
   const eventDate = getDateToFrenchText(
     bookingRecap.stock.eventBeginningDatetime
   )
+  const eventDatePlusTwoDays = getDateToFrenchText(
+    addDays(new Date(bookingRecap.stock.eventBeginningDatetime), 2).toString()
+  )
+  const eventHasPassed = isBefore(
+    new Date(bookingRecap.stock.eventBeginningDatetime),
+    new Date()
+  )
   const lastHistoryDate = getDateToFrenchText(
     bookingRecap.bookingStatusHistory[
       bookingRecap.bookingStatusHistory.length - 1
@@ -101,7 +108,7 @@ const CollectiveTimeLine = ({
       </>
     ),
   }
-  const confirmedStep = {
+  const passedConfirmedStep = {
     type: TimelineStepType.SUCCESS,
     content: (
       <>
@@ -111,7 +118,74 @@ const CollectiveTimeLine = ({
         <div>
           {cancellationLimitDate}
           <br />
-          La réservation n’est plus annulable par l’établissement scolaire.
+          La réservation n’est plus annulable par l’établissement scolaire
+        </div>
+      </>
+    ),
+  }
+  const activeConfirmedStep = {
+    type: TimelineStepType.SUCCESS,
+    content: (
+      <>
+        <div className={styles['timeline-step-title-passed']}>
+          Réservation confirmée
+        </div>
+        <div>
+          {cancellationLimitDate}
+          <br />
+          <br />
+          {!eventHasPassed ? (
+            <>
+              <div className={styles['timeline-step-decription-with-link']}>
+                La réservation n’est plus annulable par l’établissement
+                scolaire. Cependant, vous pouvez encore modifier le prix et le
+                nombre de participants si nécessaire.
+              </div>
+              <ButtonLink
+                variant={ButtonVariant.TERNARY}
+                link={{
+                  to: `/offre/${bookingRecap.stock.offerIdentifier}/collectif/stocks/edition`,
+                  isExternal: false,
+                }}
+                Icon={PenIcon}
+                onClick={logModifyBookingLimitDateClick}
+              >
+                Modifier le prix ou le nombre d’élèves
+              </ButtonLink>
+            </>
+          ) : (
+            <>
+              La réservation n’est plus annulable par l’établissement scolaire.
+              <div className={styles['timeline-infobox']}>
+                <div className={styles['timeline-infobox-text']}>
+                  Votre événement a eu lieu le {eventDate}. Vous avez jusqu’au{' '}
+                  {eventDatePlusTwoDays} pour modifier le prix et le nombre de
+                  participants si nécessaire.
+                </div>
+                <ButtonLink
+                  variant={ButtonVariant.TERNARY}
+                  link={{
+                    to: `/offre/${bookingRecap.stock.offerIdentifier}/collectif/stocks/edition`,
+                    isExternal: false,
+                  }}
+                  Icon={PenIcon}
+                  onClick={logModifyBookingLimitDateClick}
+                >
+                  Modifier le prix ou le nombre d’élèves
+                </ButtonLink>
+                <ButtonLink
+                  variant={ButtonVariant.TERNARY}
+                  link={{
+                    to: 'https://aide.passculture.app/hc/fr/articles/4405297381788--Acteurs-Culturels-Que-faire-si-le-groupe-scolaire-n-est-pas-au-complet-ou-doit-annuler-sa-participation-',
+                    isExternal: true,
+                  }}
+                  Icon={ExternalLinkIcon}
+                >
+                  Je rencontre un problème à cette étape
+                </ButtonLink>
+              </div>
+            </>
+          )}
         </div>
       </>
     ),
@@ -186,18 +260,13 @@ const CollectiveTimeLine = ({
     content: (
       <>
         <div className={styles['timeline-step-title-passed']}>
-          Jour J : réservation terminée
+          Réservation terminée
         </div>
         <div>
           {eventDate}
           <br />
           <br />
-          Nous espérons que votre évènement s’est bien déroulé.{' '}
-          {isBefore(
-            new Date(bookingRecap.stock.eventBeginningDatetime),
-            addDays(new Date(), 2)
-          ) &&
-            "De votre côté, vous avez 48h après la date de l'événement pour annuler ou modifier le prix et le nombre de participants."}
+          Nous espérons que votre évènement s’est bien déroulé.
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
@@ -215,16 +284,14 @@ const CollectiveTimeLine = ({
   const waitingEndedStep = {
     type: TimelineStepType.WAITING,
     content: (
-      <div className={styles['timeline-step-title']}>
-        Jour J : réservation terminée
-      </div>
+      <div className={styles['timeline-step-title']}>Réservation terminée</div>
     ),
   }
   const disabledEndedStep = {
     type: TimelineStepType.DISABLED,
     content: (
       <div className={styles['timeline-step-title-disabled']}>
-        Jour J : réservation terminée
+        Réservation terminée
       </div>
     ),
   }
@@ -233,7 +300,7 @@ const CollectiveTimeLine = ({
     content: (
       <>
         <div className={styles['timeline-step-title-passed']}>
-          Jour J : réservation terminée
+          Réservation terminée
         </div>
         <div>{eventDate}</div>
       </>
@@ -377,7 +444,7 @@ const CollectiveTimeLine = ({
         case BOOKING_STATUS.BOOKED:
           return confirmationStep
         case BOOKING_STATUS.CONFIRMED:
-          return confirmedStep
+          return activeConfirmedStep
         case BOOKING_STATUS.VALIDATED:
           return passedEndedStep
         case BOOKING_STATUS.REIMBURSED:
@@ -434,7 +501,7 @@ const CollectiveTimeLine = ({
           steps={[
             pendingStep,
             confirmationStep,
-            confirmedStep,
+            activeConfirmedStep,
             waitingEndedStep,
             disabledReimbursedStep,
           ]}
@@ -446,7 +513,7 @@ const CollectiveTimeLine = ({
           steps={[
             pendingStep,
             confirmationStep,
-            confirmedStep,
+            passedConfirmedStep,
             endedStep,
             lastValidatedStep,
           ]}
@@ -458,7 +525,7 @@ const CollectiveTimeLine = ({
           steps={[
             pendingStep,
             confirmationStep,
-            confirmedStep,
+            passedConfirmedStep,
             passedEndedStep,
             reimbursedStep,
           ]}

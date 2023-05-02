@@ -15,6 +15,7 @@ import * as useAnalytics from 'hooks/useAnalytics'
 import {
   collectiveBookingDetailsFactory,
   collectiveBookingRecapFactory,
+  defaultCollectiveBookingStock,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -213,27 +214,7 @@ describe('collective timeline', () => {
         '/structures/O1/lieux/V1?modification#reimbursement-section'
       )
     })
-    it('should render message to modify offer is event date is not past for more than 48 hours', () => {
-      const bookingRecap = collectiveBookingRecapFactory({
-        bookingStatus: BOOKING_STATUS.VALIDATED,
-        stock: {
-          bookingLimitDatetime: new Date().toISOString(),
-          eventBeginningDatetime: addDays(new Date(), -1).toISOString(),
-          numberOfTickets: 1,
-          offerIdentifier: '1',
-          offerId: 1,
-          offerIsEducational: true,
-          offerIsbn: null,
-          offerName: 'ma super offre collective',
-        },
-      })
-      renderCollectiveTimeLine(bookingRecap, bookingDetails)
-      expect(
-        screen.getByText(
-          /Nous espérons que votre évènement s’est bien déroulé. De votre côté, vous avez 48h après la date de l'événement pour annuler ou modifier le prix et le nombre de participants./
-        )
-      ).toBeInTheDocument()
-    })
+
     it('should display special message for pending booking if clg 6e 5e ff is active', () => {
       const storeOverrides = {
         features: {
@@ -262,6 +243,49 @@ describe('collective timeline', () => {
           /Si votre offre concerne les classes de 6eme et 5eme, le chef d'établissement pourra confirmer la réservation/
         )
       )
+    })
+  })
+
+  describe('confirmed booking', () => {
+    it('should render steps for confirmed booking when event is not passed yet', () => {
+      const bookingRecap = collectiveBookingRecapFactory({
+        bookingStatus: BOOKING_STATUS.CONFIRMED,
+        stock: {
+          ...defaultCollectiveBookingStock,
+          eventBeginningDatetime: addDays(new Date(), 1).toISOString(),
+        },
+      })
+      renderCollectiveTimeLine(bookingRecap, bookingDetails)
+      expect(
+        screen.getByText(
+          'La réservation n’est plus annulable par l’établissement scolaire. Cependant, vous pouvez encore modifier le prix et le nombre de participants si nécessaire.'
+        )
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', {
+          name: 'Modifier le prix ou le nombre d’élèves',
+        })
+      ).toBeInTheDocument()
+    })
+    it('should render steps for confirmed booking when event is passed', () => {
+      const bookingRecap = collectiveBookingRecapFactory({
+        bookingStatus: BOOKING_STATUS.CONFIRMED,
+        stock: {
+          ...defaultCollectiveBookingStock,
+          eventBeginningDatetime: addDays(new Date(), -2).toISOString(),
+        },
+      })
+      renderCollectiveTimeLine(bookingRecap, bookingDetails)
+      expect(
+        screen.getByRole('link', {
+          name: 'Modifier le prix ou le nombre d’élèves',
+        })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', {
+          name: 'Je rencontre un problème à cette étape',
+        })
+      ).toBeInTheDocument()
     })
   })
 })
