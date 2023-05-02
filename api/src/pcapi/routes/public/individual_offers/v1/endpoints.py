@@ -5,7 +5,6 @@ import flask
 from sqlalchemy import orm as sqla_orm
 
 from pcapi import repository
-from pcapi import settings
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external.attributes import api as attributes_api
 from pcapi.core.finance import utils as finance_utils
@@ -70,31 +69,18 @@ def get_offerer_venues() -> serialization.GetOffererVenuesResponse:
 def _retrieve_venue_from_location(
     location: serialization.DigitalLocation | serialization.PhysicalLocation,
 ) -> offerers_models.Venue:
-    offerer_id = current_api_key.offererId  # type: ignore[attr-defined]
-    if isinstance(location, serialization.PhysicalLocation):
-        venue = offerers_models.Venue.query.filter(
+    venue = (
+        offerers_models.Venue.query.join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
+        .filter(
             offerers_models.Venue.id == location.venue_id,
-            offerers_models.Venue.managingOffererId == offerer_id,
-        ).one_or_none()
-        if not venue:
-            raise api_errors.ApiErrors(
-                {"venueId": ["There is no venue with this id associated to your API key"]}, status_code=404
-            )
-
-    else:
-        venue = offerers_models.Venue.query.filter(
-            offerers_models.Venue.managingOffererId == offerer_id, offerers_models.Venue.isVirtual
-        ).one_or_none()
-        if not venue:
-            logger.error("No digital venue found for offerer %s", offerer_id)
-            raise api_errors.ApiErrors(
-                {
-                    "global": [
-                        f"The digital venue associated to your API key could not be automatically determined. Please contact support at {settings.SUPPORT_PRO_EMAIL_ADDRESS}."
-                    ]
-                },
-                status_code=400,
-            )
+            providers_models.VenueProvider.provider == current_api_key.provider,  # type: ignore[attr-defined]
+        )
+        .one_or_none()
+    )
+    if not venue:
+        raise api_errors.ApiErrors(
+            {"venueId": ["There is no venue with this id associated to your API key"]}, status_code=404
+        )
     return venue
 
 
@@ -223,7 +209,7 @@ def post_product_offer(
                 mental_disability_compliant=body.accessibility.mental_disability_compliant,
                 motor_disability_compliant=body.accessibility.motor_disability_compliant,
                 name=body.name,
-                provider=individual_offers_provider,
+                provider=current_api_key.provider,  # type: ignore[attr-defined]
                 subcategory_id=body.category_related_fields.subcategory_id,
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                 venue=venue,
@@ -231,13 +217,14 @@ def post_product_offer(
                 withdrawal_details=body.withdrawal_details,
             )
 
+            db.session.add(created_offer)
             if body.stock:
                 offers_api.create_stock(
                     offer=created_offer,
                     price=finance_utils.to_euros(body.stock.price),
                     quantity=serialization.deserialize_quantity(body.stock.quantity),
                     booking_limit_datetime=body.stock.booking_limit_datetime,
-                    creating_provider=individual_offers_provider,
+                    creating_provider=current_api_key.provider,  # type: ignore[attr-defined]
                 )
             if body.image:
                 _save_image(body.image, created_offer)
@@ -255,10 +242,7 @@ def post_product_offer(
     api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
 )
 @api_key_required
-@public_utils.individual_offers_api_provider
-def post_product_offer_by_ean(
-    individual_offers_provider: providers_models.Provider, body: serialization.ProductOfferByEanCreation
-) -> serialization.ProductOfferResponse:
+def post_product_offer_by_ean(body: serialization.ProductOfferByEanCreation) -> serialization.ProductOfferResponse:
     """
     Create a product offer using its European Article Number (EAN-13).
     """
@@ -274,7 +258,11 @@ def post_product_offer_by_ean(
     try:
         with repository.transaction():
             created_offer = _create_offer_from_product(
-                venue, product, body.id_at_provider, individual_offers_provider.id, body.accessibility
+                venue,
+                product,
+                body.id_at_provider,
+                current_api_key.provider.id,  # type: ignore[attr-defined]
+                body.accessibility,
             )
 
             if body.stock:
@@ -283,7 +271,7 @@ def post_product_offer_by_ean(
                     price=finance_utils.to_euros(body.stock.price),
                     quantity=serialization.deserialize_quantity(body.stock.quantity),
                     booking_limit_datetime=body.stock.booking_limit_datetime,
-                    creating_provider=individual_offers_provider,
+                    creating_provider=current_api_key.provider,  # type: ignore[attr-defined]
                 )
 
             offers_api.publish_offer(created_offer, user=None)
@@ -352,10 +340,7 @@ def _deserialize_ticket_collection(
     api=blueprint.v1_schema, tags=[EVENT_OFFER_INFO_TAG], response_model=serialization.EventOfferResponse
 )
 @api_key_required
-@public_utils.individual_offers_api_provider
-def post_event_offer(
-    individual_offers_provider: providers_models.Provider, body: serialization.EventOfferCreation
-) -> serialization.EventOfferResponse:
+def post_event_offer(body: serialization.EventOfferCreation) -> serialization.EventOfferResponse:
     """
     Post an event offer.
     """
@@ -376,7 +361,7 @@ def post_event_offer(
                 mental_disability_compliant=body.accessibility.mental_disability_compliant,
                 motor_disability_compliant=body.accessibility.motor_disability_compliant,
                 name=body.name,
-                provider=individual_offers_provider,
+                provider=current_api_key.provider,  # type: ignore[attr-defined]
                 subcategory_id=body.category_related_fields.subcategory_id,
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                 venue=venue,

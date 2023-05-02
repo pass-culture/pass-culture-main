@@ -17,6 +17,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers import factories as providers_factories
 from pcapi.models import offer_mixin
 from pcapi.utils import human_ids
 
@@ -31,6 +32,27 @@ ACCESSIBILITY_FIELDS = {
     "motorDisabilityCompliant": True,
     "visualDisabilityCompliant": True,
 }
+
+
+def create_offerer_provider_linked_to_venue(venue_params=None, is_virtual=False):
+    offerer = offerers_factories.OffererFactory(name="Technical provider")
+    provider = providers_factories.ProviderFactory(
+        name="Technical provider", localClass=None, isActive=True, enabledForPro=True
+    )
+    api_key = offerers_factories.ApiKeyFactory(
+        offerer=offerer,
+        provider=provider,
+    )
+    providers_factories.OffererProviderFactory(
+        offerer=offerer,
+        provider=provider,
+    )
+    if is_virtual:
+        venue = offerers_factories.VirtualVenueFactory(**venue_params)
+    else:
+        venue = offerers_factories.VenueFactory(**venue_params)
+    providers_factories.VenueProviderFactory(venue=venue, provider=provider, venueIdAtOfferProvider="Test")
+    return venue, api_key
 
 
 @pytest.mark.usefixtures("db_session")
@@ -131,8 +153,7 @@ class GetOffererVenuesTest:
 class PostProductTest:
     @pytest.mark.usefixtures("db_session")
     def test_physical_product_minimal_body(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -154,7 +175,7 @@ class PostProductTest:
         assert created_offer.venue == venue
         assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE"
         assert created_offer.audioDisabilityCompliant is True
-        assert created_offer.lastProvider.name == "Individual Offers public API"
+        assert created_offer.lastProvider.name == "Technical provider"
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is True
         assert created_offer.visualDisabilityCompliant is True
@@ -195,8 +216,7 @@ class PostProductTest:
     @pytest.mark.usefixtures("db_session")
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_product_creation_with_full_body(self, client, clear_tests_assets_bucket):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -240,7 +260,7 @@ class PostProductTest:
         assert created_offer.venue == venue
         assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE"
         assert created_offer.audioDisabilityCompliant is True
-        assert created_offer.lastProvider.name == "Individual Offers public API"
+        assert created_offer.lastProvider.name == "Technical provider"
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is False
         assert created_offer.visualDisabilityCompliant is False
@@ -310,8 +330,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_unlimited_quantity(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -422,8 +441,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_is_duo_not_applicable(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -465,8 +483,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_extra_data_deserialization(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -506,8 +523,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_physical_product_attached_to_digital_venue(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue(is_virtual=True)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -573,8 +589,7 @@ class PostProductTest:
     @mock.patch("pcapi.core.offers.api.create_thumb", side_effect=Exception)
     # this test needs "clean_database" instead of "db_session" fixture because with the latter, the mediation would still be present in databse
     def test_no_objects_saved_on_image_error(self, create_thumb_mock, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -600,8 +615,7 @@ class PostProductTest:
 
     @conftest.clean_database
     def test_image_too_small(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -627,8 +641,7 @@ class PostProductTest:
 
     @conftest.clean_database
     def test_bad_image_ratio(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         image_bytes = (pathlib.Path(tests.__path__[0]) / "files" / "mouette_square.jpg").read_bytes()
         encoded_bytes = base64.b64encode(image_bytes)
@@ -724,8 +737,7 @@ class PostProductTest:
 class PostProductByEanTest:
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_valid_ean_with_stock(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
         )
@@ -752,7 +764,7 @@ class PostProductByEanTest:
         assert created_offer.description == product.description
         assert created_offer.extraData == product.extraData
         assert created_offer.idAtProvider == "id"
-        assert created_offer.lastProvider.name == "Individual Offers public API"
+        assert created_offer.lastProvider.name == "Technical provider"
         assert created_offer.name == product.name
         assert created_offer.product == product
         assert created_offer.venue == venue
@@ -796,8 +808,7 @@ class PostProductByEanTest:
     @mock.patch("pcapi.tasks.sendinblue_tasks.update_pro_attributes_task")
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_valid_ean_without_task_autoflush(self, update_pro_task_mock, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, api_key = create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
         )
@@ -828,14 +839,14 @@ class PostProductByEanTest:
         assert offers_models.Stock.query.count() == 1
 
     def test_venue_accessibility_as_default(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=api_key.offerer,
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-        )
+        venue_data = {
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": True,
+        }
+        venue, _ = create_offerer_provider_linked_to_venue(venue_data)
+
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
         )
@@ -852,8 +863,7 @@ class PostProductByEanTest:
         assert response.json["accessibility"] == ACCESSIBILITY_FIELDS
 
     def test_400_when_no_accessibility_and_virtual_venue(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue(is_virtual=True)
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
         )
@@ -862,7 +872,7 @@ class PostProductByEanTest:
             "/public/offers/v1/products/ean",
             json={
                 "ean": product.extraData["ean"],
-                "location": {"type": "digital", "url": "https://example.com", "venueId": virtual_venue.id},
+                "location": {"type": "digital", "url": "https://example.com", "venueId": venue.id},
             },
         )
 
@@ -887,8 +897,7 @@ class PostProductByEanTest:
         assert response.json == {"ean": ["ensure this value has at least 13 characters"]}
 
     def test_400_when_ean_offer_already_exists(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
         )
@@ -946,8 +955,7 @@ class PostProductByEanTest:
 @pytest.mark.usefixtures("db_session")
 class PostEventTest:
     def test_event_minimal_body(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
@@ -965,7 +973,7 @@ class PostEventTest:
         assert created_offer.venue == venue
         assert created_offer.subcategoryId == "RENCONTRE"
         assert created_offer.audioDisabilityCompliant is True
-        assert created_offer.lastProvider.name == "Individual Offers public API"
+        assert created_offer.lastProvider.name == "Technical provider"
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is True
         assert created_offer.visualDisabilityCompliant is True
@@ -980,8 +988,7 @@ class PostEventTest:
 
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
@@ -1018,7 +1025,7 @@ class PostEventTest:
 
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
-        assert created_offer.lastProvider.name == "Individual Offers public API"
+        assert created_offer.lastProvider.name == "Technical provider"
         assert created_offer.name == "Nicolas Jaar dans ton salon"
         assert created_offer.venue == venue
         assert created_offer.subcategoryId == "CONCERT"
@@ -1087,8 +1094,7 @@ class PostEventTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_other_music_type_serialization(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
@@ -1112,8 +1118,7 @@ class PostEventTest:
         }
 
     def test_event_without_ticket(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
@@ -1131,8 +1136,7 @@ class PostEventTest:
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET
 
     def test_event_with_on_site_ticket(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
@@ -1151,8 +1155,7 @@ class PostEventTest:
         assert created_offer.withdrawalDelay == 30 * 60
 
     def test_event_with_email_ticket(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
@@ -1171,8 +1174,7 @@ class PostEventTest:
         assert created_offer.withdrawalDelay == 3 * 24 * 3600
 
     def test_error_when_ticket_specified_but_not_applicable(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
