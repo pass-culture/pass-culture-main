@@ -132,7 +132,6 @@ class DmsApplicationResponse(pydantic.BaseModel):
     profile: Profile = pydantic.Field(alias="usager")
     state: GraphQLApplicationStates
 
-    _format_draft_date = pydantic.validator("draft_date", allow_reuse=True)(parse_dms_datetime)
     _format_processed_datetime = pydantic.validator("processed_datetime", allow_reuse=True)(parse_dms_datetime)
     _format_filing_date = pydantic.validator("filing_date", allow_reuse=True)(parse_dms_datetime)
     _format_latest_modification_datetime = pydantic.validator("latest_modification_datetime", allow_reuse=True)(
