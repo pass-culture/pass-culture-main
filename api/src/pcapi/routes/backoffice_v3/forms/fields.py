@@ -240,3 +240,7 @@ class PcPostalAddressAutocomplete(wtforms.StringField):
         self.has_reset = has_reset
         self.has_manual_editing = has_manual_editing
         self.limit = limit
+
+
+class PCDecimalField(wtforms.DecimalField):
+    widget = partial(widget, template="components/forms/string_field.html")
