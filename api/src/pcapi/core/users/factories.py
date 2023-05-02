@@ -16,6 +16,7 @@ import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.testing import BaseFactory
+from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 import pcapi.core.users.constants as users_constants
 from pcapi.models import db
@@ -29,24 +30,171 @@ from . import constants
 from . import models
 
 
-class BeneficiaryImportStatusFactory(BaseFactory):
+# This file is experiencing a renaissance. It's a good thing.
+# Below are the factories that have been deemed correct.
+# You will find the legacy ones at the bottom of the file, waiting to be improved or ruthlessly deleted.
+
+
+class BaseUserFactory(BaseFactory):
+    """
+    Generates a user as if it were created by the account creation form.
+    The user was asked for
+    - email
+    - password
+    - date of birth
+    """
+
     class Meta:
-        model = BeneficiaryImportStatus
+        model = models.User
 
-    status = ImportStatus.CREATED.value
-    date = factory.Faker("date_time_between", start_date="-30d", end_date="-1d")
-    detail = factory.Faker("sentence", nb_words=3)
-    beneficiaryImport = factory.SubFactory("pcapi.core.users.factories.BeneficiaryImportFactory")
-    author = factory.SubFactory("pcapi.core.users.factories.UserFactory")
+    class Params:
+        age = 40
+
+    email = factory.Faker("email")
+    dateOfBirth = LazyAttribute(lambda o: date.today() - relativedelta(years=o.age))
+    isEmailValidated = False
+
+    @classmethod
+    def _create(
+        cls,
+        model_class: typing.Type[models.User],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.User:
+        password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
+        kwargs["password"] = crypto.hash_password(password)
+        instance = super()._create(model_class, *args, **kwargs)
+        instance.clearTextPassword = password
+        return instance
+
+    @classmethod
+    def _build(
+        cls,
+        model_class: typing.Type[models.User],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.User:
+        password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
+        kwargs["password"] = crypto.hash_password(password)
+        instance = super()._build(model_class, *args, **kwargs)
+        instance.clearTextPassword = password
+        return instance
 
 
-class BeneficiaryImportFactory(BaseFactory):
+class BeneficiaryFactory(BaseUserFactory):
+    """
+    Generates a beneficiary as if it had finished the deposit activation process.
+    On top of the base user form, the user went through
+    - email validation
+    - phone number validation
+    - profile completion
+    - identity validation
+    - honor statement
+    - deposit activation (automatic after all the above)
+    """
+
     class Meta:
-        model = BeneficiaryImport
+        model = models.User
 
-    applicationId = factory.Sequence(lambda n: n)
-    beneficiary = factory.SubFactory("pcapi.core.users.factories.UserFactory")
-    source = BeneficiaryImportSources.ubble.value
+    class Params:
+        age = 18
+
+    # Email validation
+    isEmailValidated = True
+    # Miscellaneous flags
+    hasSeenProTutorials = True
+    hasSeenProRgs = False
+
+    # Phone number validation
+    phoneNumber = factory.Sequence("060606060{}".format)
+    phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+
+    # Profile completion
+    address = factory.Sequence("{} rue des machines".format)
+    city = factory.Faker("city")
+    firstName = factory.Faker("first_name")
+    lastName = factory.Faker("last_name")
+    postalCode = factory.Faker("postcode")
+
+    # Identity validation : see below with beneficiaryFraudChecks function
+    validatedBirthDate = LazyAttribute(lambda o: date.today() - relativedelta(years=o.age))
+    idPieceNumber = factory.Faker("ssn", locale="fr_FR")
+
+    # Honor statement : see below with beneficiaryFraudChecks function
+
+    # Deposit activation : see below with deposit function
+    roles = factory.LazyAttribute(
+        lambda o: [models.UserRole.UNDERAGE_BENEFICIARY]
+        if o.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
+        else [models.UserRole.BENEFICIARY]
+    )
+
+    @classmethod
+    def _create(
+        cls,
+        model_class: typing.Type[models.User],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.User:
+        return super()._create(model_class, *args, **kwargs)
+
+    @factory.post_generation
+    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        **kwargs: typing.Any,
+    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+        import pcapi.core.fraud.factories as fraud_factories
+
+        if not create:
+            return []
+
+        # Phone number validation
+        phone_validation_fraud_check = fraud_factories.PhoneValidationFraudCheckFactory(user=obj)
+
+        # Profile completion
+        profile_completion_fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(user=obj)
+
+        # Identity validation
+        identity_check_type = kwargs.get("type", fraud_models.FraudCheckType.UBBLE)
+        identity_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=obj,
+            type=identity_check_type,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+
+        # Honor statement
+        honor_statement_fraud_check = fraud_factories.HonorStatementFraudCheckFactory(user=obj)
+
+        fraud_checks = [
+            phone_validation_fraud_check,
+            profile_completion_fraud_check,
+            identity_fraud_check,
+            honor_statement_fraud_check,
+        ]
+
+        return fraud_checks
+
+    @factory.post_generation
+    def deposit(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: finance_models.Deposit | None,
+        **kwargs: typing.Any,
+    ) -> finance_models.Deposit | None:
+        if not create:
+            return None
+
+        if "dateCreated" not in kwargs:
+            kwargs["dateCreated"] = obj.dateCreated
+
+        return DepositGrantFactory(user=obj, **kwargs)
+
+
+####################################
+# The legacy factories are below. #
+####################################
 
 
 class UserFactory(BaseFactory):
@@ -92,6 +240,26 @@ class UserFactory(BaseFactory):
         instance = super()._build(model_class, *args, **kwargs)
         instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
         return instance
+
+
+class BeneficiaryImportStatusFactory(BaseFactory):
+    class Meta:
+        model = BeneficiaryImportStatus
+
+    status = ImportStatus.CREATED.value
+    date = factory.Faker("date_time_between", start_date="-30d", end_date="-1d")
+    detail = factory.Faker("sentence", nb_words=3)
+    beneficiaryImport = factory.SubFactory("pcapi.core.users.factories.BeneficiaryImportFactory")
+    author = factory.SubFactory("pcapi.core.users.factories.UserFactory")
+
+
+class BeneficiaryImportFactory(BaseFactory):
+    class Meta:
+        model = BeneficiaryImport
+
+    applicationId = factory.Sequence(lambda n: n)
+    beneficiary = factory.SubFactory("pcapi.core.users.factories.UserFactory")
+    source = BeneficiaryImportSources.ubble.value
 
 
 class AdminFactory(BaseFactory):
@@ -542,7 +710,7 @@ class DepositGrantFactory(BaseFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> finance_models.Deposit:
-        age = users_utils.get_age_from_birth_date(kwargs["user"].dateOfBirth)
+        age = users_utils.get_age_from_birth_date(kwargs["user"].birth_date)
         eligibility = (
             models.EligibilityType.UNDERAGE
             if age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
