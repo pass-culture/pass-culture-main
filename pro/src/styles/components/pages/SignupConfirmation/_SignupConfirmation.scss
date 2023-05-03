@@ -5,7 +5,7 @@
 @use "styles/variables/_forms.scss" as forms;
 
 .sign-up-confirmation-page {
-  min-height: rem.torem(600px);
+  height: 100%;
   position: relative;
   left: forms.$sign-form-space-left;
   width: 100%;
