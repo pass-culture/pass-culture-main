@@ -12,27 +12,20 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory(siren=siren)
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com", offerer=offerer)
 
-        first_permanent_venue = offerers_factories.VenueFactory(
-            name="Permanent",
+        first_venue = offerers_factories.VenueFactory(
+            name="Venue",
             managingOfferer=user_offerer.offerer,
             siret=f"{siren}12321",
             isPermanent=True,
-            publicName="0 - Permanent",
+            publicName="0 - Venue",
         )
 
-        second_permanent_venue = offerers_factories.VenueFactory(
-            name="Permanent 1",
+        second_venue = offerers_factories.VenueFactory(
+            name="Venue 1",
             managingOfferer=user_offerer.offerer,
             siret=f"{siren}12323",
-            isPermanent=True,
-            publicName="1 - Permanent",
-        )
-
-        offerers_factories.VenueFactory(
-            name="Not Permanent",
-            managingOfferer=user_offerer.offerer,
             isPermanent=False,
-            siret=f"{siren}12324",
+            publicName="1 - Venue",
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
@@ -42,30 +35,32 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert len(response.json["venues"]) == 2
-        assert response.json["venues"][0]["name"] == first_permanent_venue.name
+        assert response.json["venues"][0]["name"] == first_venue.name
+        assert response.json["venues"][0]["isPermanent"] == first_venue.isPermanent
         assert response.json["offererName"] == offerer.name
         assert response.json["offererSiren"] == offerer.siren
-        assert response.json["venues"][1]["name"] == second_permanent_venue.name
+        assert response.json["venues"][1]["name"] == second_venue.name
+        assert response.json["venues"][1]["isPermanent"] == second_venue.isPermanent
 
     def test_get_venues_of_offerer_from_siret_match_should_be_first(self, client):
         siren = "123123123"
         offerer = offerers_factories.OffererFactory(siren=siren)
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com", offerer=offerer)
 
-        first_permanent_venue = offerers_factories.VenueFactory(
-            name="Permanent",
+        first_venue = offerers_factories.VenueFactory(
+            name="Venue",
             managingOfferer=user_offerer.offerer,
             siret=f"{siren}12321",
             isPermanent=True,
-            publicName="0 - Permanent",
+            publicName="0 - Venue",
         )
 
-        matching_permanent_venue = offerers_factories.VenueFactory(
-            name="Permanent 1",
+        matching_venue = offerers_factories.VenueFactory(
+            name="Venue 1",
             managingOfferer=user_offerer.offerer,
             siret=f"{siren}12332",
             isPermanent=True,
-            publicName="1 - Permanent",
+            publicName="1 - Venue",
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
@@ -75,8 +70,8 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert len(response.json["venues"]) == 2
-        assert response.json["venues"][0]["name"] == matching_permanent_venue.name
-        assert response.json["venues"][1]["name"] == first_permanent_venue.name
+        assert response.json["venues"][0]["name"] == matching_venue.name
+        assert response.json["venues"][1]["name"] == first_venue.name
 
     def test_get_venues_of_offerer_from_siret_no_venue_one_offerer(self, client):
         siren = "123123123"
