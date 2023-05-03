@@ -23,7 +23,7 @@ pytestmark = [
 
 class SearchProUnauthorizedTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.search_pro"
-    needed_permission = perm_models.Permissions.SEARCH_PRO_ACCOUNT
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
 
 class SearchProTest(search_helpers.SearchHelper):
