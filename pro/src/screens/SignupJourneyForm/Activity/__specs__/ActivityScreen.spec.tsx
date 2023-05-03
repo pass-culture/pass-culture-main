@@ -37,7 +37,7 @@ const renderActivityScreen = (contextValue: ISignupJourneyContext) => {
       <SignupJourneyContext.Provider value={contextValue}>
         <Routes>
           <Route
-            path="/parcours-inscription/authentification"
+            path="/parcours-inscription/identification"
             element={<div>Authentication screen</div>}
           />
           <Route path="/parcours-inscription/activite" element={<Activity />} />

@@ -66,7 +66,7 @@ const Offerers = (): JSX.Element => {
       used: OnboardingFormNavigationAction.NewOfferer,
     })
     setOfferer(newOfferer)
-    navigate('/parcours-inscription/authentification')
+    navigate('/parcours-inscription/identification')
   }
 
   const doLinkAccount = async () => {
