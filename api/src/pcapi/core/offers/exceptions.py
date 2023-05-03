@@ -174,7 +174,9 @@ class ExtraDataValueNotAllowed(OfferCreationBaseException):
 
 class OfferAlreadyExists(OfferCreationBaseException):
     def __init__(self, field: str) -> None:
-        super().__init__(field, f"Une offre avec cet {field} existe déjà")
+        super().__init__(
+            field, f"Une offre avec cet {field.upper()} existe déjà. Vous pouvez la retrouver dans l’onglet Offres."
+        )
 
 
 class EanFormatException(OfferCreationBaseException):

@@ -488,7 +488,9 @@ class CheckOfferExtraDataTest:
         with pytest.raises(ApiErrors) as error:
             validation.check_offer_extra_data(subcategories.LIVRE_PAPIER.id, {"isbn": "1234567891234"}, offer.venue)
 
-        assert error.value.errors["isbn"] == ["Une offre avec cet isbn existe déjà"]
+        assert error.value.errors["isbn"] == [
+            "Une offre avec cet ISBN existe déjà. Vous pouvez la retrouver dans l’onglet Offres."
+        ]
 
     def test_ean_already_exists(self):
         offer = offers_factories.OfferFactory(extraData={"ean": "1234567891234"})
@@ -498,7 +500,9 @@ class CheckOfferExtraDataTest:
                 subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, {"ean": "1234567891234"}, offer.venue
             )
 
-        assert error.value.errors["ean"] == ["Une offre avec cet ean existe déjà"]
+        assert error.value.errors["ean"] == [
+            "Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l’onglet Offres."
+        ]
 
     def test_allow_creation_with_inactive_isbn(self):
         offer = offers_factories.OfferFactory(extraData={"ean": "1234567891234"}, isActive=False)

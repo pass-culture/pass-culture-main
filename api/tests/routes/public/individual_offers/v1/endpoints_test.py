@@ -909,7 +909,9 @@ class PostProductByEanTest:
         )
 
         assert response.status_code == 400
-        assert response.json == {"ean": ["Une offre avec cet ean existe déjà"]}
+        assert response.json == {
+            "ean": ["Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l’onglet Offres."]
+        }
 
     def test_404_when_ean_not_found(self, client):
         api_key = offerers_factories.ApiKeyFactory()
