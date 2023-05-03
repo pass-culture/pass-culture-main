@@ -4,7 +4,7 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import CollectiveOfferBreadcrumb from 'components/CollectiveOfferBreadcrumb'
 import HelpLink from 'components/HelpLink'
-import { getActiveStep } from 'pages/CollectiveOfferRoutes/utils/getActiveStep'
+import { getActiveStep } from 'deprecatedPages/CollectiveOfferRoutes/utils/getActiveStep'
 import { Tag, Title } from 'ui-kit'
 
 import styles from './CollectiveOfferLayout.module.scss'

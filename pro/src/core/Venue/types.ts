@@ -7,7 +7,7 @@ import {
   StudentLevels,
 } from 'apiClient/v1'
 import { IAccessibiltyFormValues } from 'core/shared'
-import { IVenueBannerMetaProps } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
+import { IVenueBannerMetaProps } from 'deprecatedPages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
 
 export type TOfferIndividualVenue = {
   id: string

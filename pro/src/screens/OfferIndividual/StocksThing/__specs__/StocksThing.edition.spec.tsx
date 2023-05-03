@@ -20,7 +20,7 @@ import {
   getOfferIndividualPath,
   getOfferIndividualUrl,
 } from 'core/Offers/utils/getOfferIndividualUrl'
-import Stocks from 'pages/OfferIndividualWizard/Stocks/Stocks'
+import Stocks from 'deprecatedPages/OfferIndividualWizard/Stocks/Stocks'
 import { RootState } from 'store/reducers'
 import { renderWithProviders } from 'utils/renderWithProviders'
 

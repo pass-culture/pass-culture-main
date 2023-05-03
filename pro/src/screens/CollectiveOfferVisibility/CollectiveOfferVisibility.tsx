@@ -18,7 +18,7 @@ import {
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import useNotification from 'hooks/useNotification'
 import { TrashFilledIcon } from 'icons'
-import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
+import { PatchEducationalInstitutionAdapter } from 'deprecatedPages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import {
   Banner,
   Button,

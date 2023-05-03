@@ -13,7 +13,7 @@ import {
   useScrollToFirstErrorAfterSubmit,
 } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
-import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
+import ReimbursementFields from 'deprecatedPages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { venueSubmitRedirectUrl } from 'screens/VenueForm/utils/venueSubmitRedirectUrl'
 
 import useCurrentUser from '../../hooks/useCurrentUser'

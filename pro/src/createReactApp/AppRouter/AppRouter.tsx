@@ -12,7 +12,7 @@ import App from 'createReactApp/App/App'
 import AppLayout from 'createReactApp/AppLayout'
 import { IRoute } from 'createReactApp/AppRouter/routesMap'
 import useCurrentUser from 'hooks/useCurrentUser'
-import NotFound from 'pages/Errors/NotFound/NotFound'
+import NotFound from 'deprecatedPages/Errors/NotFound/NotFound'
 import { selectActiveFeatures } from 'store/features/selectors'
 import { dehumanizedRoute } from 'utils/dehumanize'
 

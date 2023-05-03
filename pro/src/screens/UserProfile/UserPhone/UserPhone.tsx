@@ -1,8 +1,8 @@
 import { UserPhoneBodyModel } from 'apiClient/v1'
 import { BoxFormLayout } from 'components/BoxFormLayout'
 import { UserPhoneForm } from 'components/UserPhoneForm'
-import { formatPhoneNumber } from 'pages/Home/ProfileAndSupport/ProfileAndSupport'
-import patchPhoneAdapter from 'pages/User/adapters/patchPhoneAdapter'
+import { formatPhoneNumber } from 'deprecatedPages/Home/ProfileAndSupport/ProfileAndSupport'
+import patchPhoneAdapter from 'deprecatedPages/User/adapters/patchPhoneAdapter'
 import { BoxRounded } from 'ui-kit/BoxRounded'
 
 import { Forms } from '../constants'

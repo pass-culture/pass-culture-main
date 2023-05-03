@@ -5,7 +5,7 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { IVenue } from 'core/Venue'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
-import { getInterventionAreaLabels } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/EACInformation/utils/getInterventionAreaLabels'
+import { getInterventionAreaLabels } from 'deprecatedPages/Offerers/Offerer/VenueV1/VenueEdition/EACInformation/utils/getInterventionAreaLabels'
 
 import styles from './CollectiveData.module.scss'
 

@@ -22,7 +22,7 @@ import {
   getOfferIndividualPath,
   getOfferIndividualUrl,
 } from 'core/Offers/utils/getOfferIndividualUrl'
-import { Stocks } from 'pages/OfferIndividualWizard/Stocks'
+import { Stocks } from 'deprecatedPages/OfferIndividualWizard/Stocks'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 jest.mock('utils/date', () => ({

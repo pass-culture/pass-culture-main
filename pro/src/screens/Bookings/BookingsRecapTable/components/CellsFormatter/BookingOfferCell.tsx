@@ -23,7 +23,7 @@ import {
   getDate,
   getRemainingTime,
   shouldDisplayWarning,
-} from 'pages/Offers/Offers/OfferItem/Cells/OfferNameCell/utils'
+} from 'deprecatedPages/Offers/Offers/OfferItem/Cells/OfferNameCell/utils'
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
 

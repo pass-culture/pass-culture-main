@@ -1,7 +1,7 @@
 import { BoxFormLayout } from 'components/BoxFormLayout'
 import { UserIdentityForm } from 'components/UserIdentityForm'
 import { IUserIdentityFormValues } from 'components/UserIdentityForm/types'
-import patchIdentityAdapter from 'pages/User/adapters/patchIdentityAdapter'
+import patchIdentityAdapter from 'deprecatedPages/User/adapters/patchIdentityAdapter'
 import { BoxRounded } from 'ui-kit/BoxRounded'
 
 import { Forms } from '../constants'

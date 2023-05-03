@@ -4,7 +4,7 @@ import React from 'react'
 import { BoxFormLayout } from 'components/BoxFormLayout'
 import FormLayout from 'components/FormLayout'
 import useCurrentUser from 'hooks/useCurrentUser'
-import { PostEmailAdapter } from 'pages/User/adapters/postEmailAdapter'
+import { PostEmailAdapter } from 'deprecatedPages/User/adapters/postEmailAdapter'
 import { TextInput, Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

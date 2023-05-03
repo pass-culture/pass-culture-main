@@ -8,7 +8,7 @@ import { api } from 'apiClient/api'
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { Offer } from 'core/Offers/types'
 import * as useNotification from 'hooks/useNotification'
-import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
+import { collectiveOfferFactory } from 'deprecatedPages/CollectiveOffers/utils/collectiveOffersFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferSelectionDuplication from '../CollectiveOfferSelectionDuplicationScreen'

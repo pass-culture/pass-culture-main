@@ -8,7 +8,7 @@ import { IUploadImageValues } from 'components/ImageUploader/ButtonImageEdit'
 import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import useNotification from 'hooks/useNotification'
-import { IVenueBannerMetaProps } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
+import { IVenueBannerMetaProps } from 'deprecatedPages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
 
 import { IVenueFormValues } from '../types'

@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
-import * as csvService from 'pages/CsvTable/adapters/getCsvData'
+import * as csvService from 'deprecatedPages/CsvTable/adapters/getCsvData'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CsvTable, { ICsvTableProps } from '../CsvTable'
