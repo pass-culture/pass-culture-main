@@ -88,7 +88,7 @@ const renderOffererAuthentiationScreen = (
             element={<div>Offerer siret screen</div>}
           />
           <Route
-            path="/parcours-inscription/authentification"
+            path="/parcours-inscription/identification"
             element={<OffererAuthentication />}
           />
           <Route
@@ -101,7 +101,7 @@ const renderOffererAuthentiationScreen = (
     </>,
     {
       storeOverrides,
-      initialRouterEntries: ['/parcours-inscription/authentification'],
+      initialRouterEntries: ['/parcours-inscription/identification'],
     }
   )
 }

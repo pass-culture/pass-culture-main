@@ -94,7 +94,7 @@ const Activity = (): JSX.Element => {
   })
 
   const handlePreviousStep = () => {
-    navigate('/parcours-inscription/authentification')
+    navigate('/parcours-inscription/identification')
   }
 
   if (isLoadingVenueTypes) {

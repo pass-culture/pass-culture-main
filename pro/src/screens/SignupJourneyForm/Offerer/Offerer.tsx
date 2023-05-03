@@ -81,7 +81,7 @@ const Offerer = (): JSX.Element => {
         to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
         used: OnboardingFormNavigationAction.ActionBar,
       })
-      navigate('/parcours-inscription/authentification')
+      navigate('/parcours-inscription/identification')
     }
   }, [offerer])
 

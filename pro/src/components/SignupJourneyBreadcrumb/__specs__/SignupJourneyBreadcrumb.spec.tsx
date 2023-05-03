@@ -17,7 +17,7 @@ import SignupBreadcrumb from '../SignupJourneyBreadcrumb'
 
 const renderSignupBreadcrumb = (
   contextValue: ISignupJourneyContext,
-  url = '/parcours-inscription/authentification'
+  url = '/parcours-inscription/identification'
 ) => {
   const storeOverrides = {
     user: {
@@ -33,7 +33,7 @@ const renderSignupBreadcrumb = (
       <SignupBreadcrumb />
       <Routes>
         <Route
-          path="/parcours-inscription/authentification"
+          path={'/parcours-inscription/identification'}
           element={<div>Authentication screen</div>}
         />
         <Route

@@ -51,7 +51,7 @@ const renderValidationScreen = (contextValue: ISignupJourneyContext) => {
       <SignupJourneyContext.Provider value={contextValue}>
         <Routes>
           <Route
-            path="/parcours-inscription/authentification"
+            path="/parcours-inscription/identification"
             element={<div>Authentication</div>}
           />
           <Route
@@ -98,7 +98,7 @@ describe('screens:SignupJourney::Validation', () => {
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/parcours-inscription/authentification'
+        '/parcours-inscription/identification'
       )
     })
 

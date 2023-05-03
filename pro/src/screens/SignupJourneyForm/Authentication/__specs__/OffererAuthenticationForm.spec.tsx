@@ -103,7 +103,7 @@ const renderOffererAuthenticationForm = ({
     </SignupJourneyContext.Provider>,
     {
       storeOverrides,
-      initialRouterEntries: ['/parcours-inscription/authentification'],
+      initialRouterEntries: ['/parcours-inscription/identification'],
     }
   )
 }

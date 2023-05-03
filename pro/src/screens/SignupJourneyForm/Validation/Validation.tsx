@@ -50,7 +50,7 @@ const Validation = (): JSX.Element => {
   }
 
   if (offerer === null || offerer == DEFAULT_OFFERER_FORM_VALUES) {
-    navigate('/parcours-inscription/authentification')
+    navigate('/parcours-inscription/identification')
     return <></>
   }
   if (activity === null || activity == DEFAULT_ACTIVITY_VALUES) {
@@ -98,7 +98,7 @@ const Validation = (): JSX.Element => {
           Identification
           <ButtonLink
             link={{
-              to: '/parcours-inscription/authentification',
+              to: '/parcours-inscription/identification',
               isExternal: false,
             }}
             onClick={() => {
