@@ -184,8 +184,8 @@ describe('screens:SignupJourney::Offerer', () => {
   it('should redirect to offerers screen if venue exist', async () => {
     jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValueOnce({
       venues: [
-        { id: '1', name: 'First Venue' },
-        { id: '2', name: 'Second Venue' },
+        { id: '1', name: 'First Venue', isPermanent: true },
+        { id: '2', name: 'Second Venue', isPermanent: true },
       ],
     })
     await renderOffererScreen(contextValue)
