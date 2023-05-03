@@ -694,13 +694,14 @@ def duplicate_offer_and_stock(original_offer: educational_models.CollectiveOffer
         template=original_offer.template,
         lastValidationDate=original_offer.lastValidationDate,
         lastValidationType=original_offer.lastValidationType,
-        validation=original_offer.validation,
+        validation=offer_mixin.OfferValidationStatus.DRAFT,
         audioDisabilityCompliant=original_offer.audioDisabilityCompliant,
         mentalDisabilityCompliant=original_offer.mentalDisabilityCompliant,
         motorDisabilityCompliant=original_offer.motorDisabilityCompliant,
         visualDisabilityCompliant=original_offer.visualDisabilityCompliant,
         imageCredit=original_offer.imageCredit,
         imageHasOriginal=original_offer.imageHasOriginal,
+        institutionId=original_offer.institutionId,
     )
     educational_models.CollectiveStock(
         beginningDatetime=original_offer.collectiveStock.beginningDatetime,
@@ -727,5 +728,4 @@ def duplicate_offer_and_stock(original_offer: educational_models.CollectiveOffer
         )
 
         db.session.commit()
-
     return offer
