@@ -71,18 +71,10 @@ def authorize() -> utils.BackofficeResponse:
         return werkzeug.exceptions.Forbidden()
 
     if settings.IS_TESTING or settings.IS_DEV or settings.IS_INTEGRATION:
-        if not user:
-            user = create_local_admin_user(
-                email=google_user["email"],
-                first_name=google_user["name"],
-                last_name=google_user["family_name"],
-                given_name=google_user["given_name"],
-            )
-
-        backoffice_api.upsert_roles(user, list(perm_models.Roles))
-        db.session.commit()
+        roles = list(perm_models.Roles)
     else:
-        if not user:
+        roles = fetch_user_roles_from_google_workspace(google_email)
+        if not user and len(roles) == 0:
             logger.info(
                 "Failed authentication attempt",
                 extra={"identifier": google_email, "user": "not found", "avoid_current_user": True, "success": False},
@@ -91,14 +83,21 @@ def authorize() -> utils.BackofficeResponse:
             session["google_email"] = google_email
             return redirect(url_for(".user_not_found"))
 
-        logger.info(
-            "Successful authentication attempt",
-            extra={"identifier": google_email, "user": user.id, "avoid_current_user": True, "success": True},
-            technical_message_id="backoffice_v3.authorize",
+    if not user:
+        user = create_local_admin_user(
+            email=google_user["email"],
+            first_name=google_user["given_name"],
+            last_name=google_user["family_name"],
         )
-        roles = fetch_user_roles_from_google_workspace(user)
-        backoffice_api.upsert_roles(user, roles)
-        db.session.commit()
+
+    backoffice_api.upsert_roles(user, roles)
+    db.session.commit()
+
+    logger.info(
+        "Successful authentication attempt",
+        extra={"identifier": google_email, "user": user.id, "avoid_current_user": True, "success": True},
+        technical_message_id="backoffice_v3.authorize",
+    )
 
     login_user(user, remember=True)
     login_manager.stamp_session(user)
@@ -117,15 +116,13 @@ def user_not_found() -> utils.BackofficeResponse:
     return render_template("auth/user_not_found.html")
 
 
-def fetch_user_roles_from_google_workspace(user: users_models.User) -> list[perm_models.Roles]:
-    groups = auth_api.get_groups_from_google_workspace(user.email)
+def fetch_user_roles_from_google_workspace(user_email: str) -> list[perm_models.Roles]:
+    groups = auth_api.get_groups_from_google_workspace(user_email)
     role_names = auth_api.extract_roles_from_google_workspace_groups(groups)
     return [perm_models.Roles(name) for name in role_names]
 
 
-def create_local_admin_user(
-    email: str, first_name: str, last_name: str, given_name: str | None = None
-) -> users_models.User:
+def create_local_admin_user(email: str, first_name: str, last_name: str) -> users_models.User:
     local_admin = users_api.create_account(
         email=email,
         # generate a random password as the user won't login to anything else.
