@@ -53,7 +53,7 @@ def get_collective_offers_public(
     Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées."""
 
     offers = educational_api_offer.list_public_collective_offers(
-        offerer_id=current_api_key.offererId,  # type: ignore [attr-defined]
+        offerer_id=current_api_key.offererId,
         venue_id=query.venue_id,
         status=query.status,
         period_beginning_date=query.period_beginning_date,
@@ -105,7 +105,7 @@ def get_collective_offer_public(
             },
             status_code=404,
         )
-    if offer.venue.managingOffererId != current_api_key.offerer.id:  # type: ignore [attr-defined]
+    if offer.venue.managingOffererId != current_api_key.offerer.id:
         raise ApiErrors(
             errors={
                 "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."],
@@ -185,7 +185,7 @@ def post_collective_offer_public(
 
     try:
         offer = educational_api_offer.create_collective_offer_public(
-            offerer_id=current_api_key.offererId,  # type: ignore [attr-defined]
+            offerer_id=current_api_key.offererId,
             body=body,
         )
     except educational_exceptions.CulturalPartnerNotFoundException:
@@ -348,7 +348,7 @@ def patch_collective_offer_public(
             },
             status_code=404,
         )
-    if offer.venue.managingOffererId != current_api_key.offerer.id:  # type: ignore [attr-defined]
+    if offer.venue.managingOffererId != current_api_key.offerer.id:
         raise ApiErrors(
             errors={
                 "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette offre collective."],
@@ -358,7 +358,7 @@ def patch_collective_offer_public(
 
     if new_values.get("venueId"):
         venue = offerers_repository.find_venue_by_id(new_values["venueId"])
-        if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):  # type: ignore [attr-defined]
+        if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):
             raise ApiErrors(
                 errors={
                     "venueId": ["Ce lieu n'a pas été trouvé."],
@@ -369,7 +369,7 @@ def patch_collective_offer_public(
     if new_values.get("offerVenue"):
         if new_values["offerVenue"] == collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value:
             venue = offerers_repository.find_venue_by_id(new_values["offerVenue"]["venuId"])
-            if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):  # type: ignore [attr-defined]
+            if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):
                 raise ApiErrors(
                     errors={
                         "offerVenue.venueId": ["Ce lieu n'a pas été trouvé."],
@@ -446,7 +446,7 @@ def patch_collective_offer_public(
     # real edition
     try:
         offer = educational_api_offer.edit_collective_offer_public(
-            offerer_id=current_api_key.offererId,  # type: ignore [attr-defined]
+            offerer_id=current_api_key.offererId,
             new_values=new_values,
             offer=offer,
         )
