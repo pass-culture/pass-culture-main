@@ -51,9 +51,7 @@ def get_offerer_venues() -> serialization.GetOffererVenuesResponse:
     Get offerer attached the API key used and its venues.
     """
     offerer = (
-        offerers_models.Offerer.query.filter(
-            offerers_models.Offerer.id == current_api_key.offererId  # type: ignore[attr-defined]
-        )
+        offerers_models.Offerer.query.filter(offerers_models.Offerer.id == current_api_key.offererId)
         .options(sqla_orm.joinedload(offerers_models.Offerer.managedVenues))
         .one()
     )
@@ -73,7 +71,7 @@ def _retrieve_venue_from_location(
         offerers_models.Venue.query.join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
         .filter(
             offerers_models.Venue.id == location.venue_id,
-            providers_models.VenueProvider.provider == current_api_key.provider,  # type: ignore[attr-defined]
+            providers_models.VenueProvider.provider == current_api_key.provider,
         )
         .one_or_none()
     )
@@ -88,7 +86,7 @@ def _retrieve_offer_tied_to_user_query() -> sqla_orm.Query:
     return (
         offers_models.Offer.query.join(offerers_models.Venue)
         .join(offerers_models.Venue.venueProviders, providers_models.VenueProvider.provider)
-        .filter(providers_models.VenueProvider.provider == current_api_key.provider)  # type: ignore[attr-defined]
+        .filter(providers_models.VenueProvider.provider == current_api_key.provider)
     )
 
 
@@ -127,7 +125,7 @@ def _check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
 
     is_venue_tied_to_api_key = db.session.query(
         offerers_models.Venue.query.filter(
-            offerers_models.Venue.managingOffererId == current_api_key.offererId, offerers_models.Venue.id == venue_id  # type: ignore [attr-defined]
+            offerers_models.Venue.managingOffererId == current_api_key.offererId, offerers_models.Venue.id == venue_id
         ).exists()
     ).scalar()
     if not is_venue_tied_to_api_key:
@@ -137,7 +135,7 @@ def _check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
 def _retrieve_offer_ids(is_event: bool, filtered_venue_id: int | None) -> list[int]:
     offer_ids_query = (
         offers_models.Offer.query.join(offerers_models.Venue)
-        .filter(offerers_models.Venue.managingOffererId == current_api_key.offererId)  # type: ignore [attr-defined]
+        .filter(offerers_models.Venue.managingOffererId == current_api_key.offererId)
         .filter(offers_models.Offer.isEvent == is_event)
         .with_entities(offers_models.Offer.id)
         .order_by(offers_models.Offer.id)
@@ -211,7 +209,7 @@ def post_product_offer(
                 mental_disability_compliant=body.accessibility.mental_disability_compliant,
                 motor_disability_compliant=body.accessibility.motor_disability_compliant,
                 name=body.name,
-                provider=current_api_key.provider,  # type: ignore[attr-defined]
+                provider=current_api_key.provider,
                 subcategory_id=body.category_related_fields.subcategory_id,
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                 venue=venue,
@@ -226,7 +224,7 @@ def post_product_offer(
                     price=finance_utils.to_euros(body.stock.price),
                     quantity=serialization.deserialize_quantity(body.stock.quantity),
                     booking_limit_datetime=body.stock.booking_limit_datetime,
-                    creating_provider=current_api_key.provider,  # type: ignore[attr-defined]
+                    creating_provider=current_api_key.provider,
                 )
             if body.image:
                 _save_image(body.image, created_offer)
@@ -263,7 +261,7 @@ def post_product_offer_by_ean(body: serialization.ProductOfferByEanCreation) -> 
                 venue,
                 product,
                 body.id_at_provider,
-                current_api_key.provider.id,  # type: ignore[attr-defined]
+                current_api_key.provider.id,
                 body.accessibility,
             )
 
@@ -273,7 +271,7 @@ def post_product_offer_by_ean(body: serialization.ProductOfferByEanCreation) -> 
                     price=finance_utils.to_euros(body.stock.price),
                     quantity=serialization.deserialize_quantity(body.stock.quantity),
                     booking_limit_datetime=body.stock.booking_limit_datetime,
-                    creating_provider=current_api_key.provider,  # type: ignore[attr-defined]
+                    creating_provider=current_api_key.provider,
                 )
 
             offers_api.publish_offer(created_offer, user=None)
@@ -363,7 +361,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                 mental_disability_compliant=body.accessibility.mental_disability_compliant,
                 motor_disability_compliant=body.accessibility.motor_disability_compliant,
                 name=body.name,
-                provider=current_api_key.provider,  # type: ignore[attr-defined]
+                provider=current_api_key.provider,
                 subcategory_id=body.category_related_fields.subcategory_id,
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                 venue=venue,
@@ -449,7 +447,7 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
                         quantity=serialization.deserialize_quantity(date.quantity),
                         beginning_datetime=date.beginning_datetime,
                         booking_limit_datetime=date.booking_limit_datetime,
-                        creating_provider=current_api_key.provider,  # type: ignore[attr-defined]
+                        creating_provider=current_api_key.provider,
                     )
                 )
     except offers_exceptions.OfferCreationBaseException as error:
@@ -765,7 +763,7 @@ def edit_product_by_ean(ean: str, body: serialization.ProductOfferByEanEdition) 
 
     try:
         with repository.transaction():
-            _upsert_product_stock(offer, body.stock, current_api_key.provider)  # type: ignore[attr-defined]
+            _upsert_product_stock(offer, body.stock, current_api_key.provider)
     except offers_exceptions.OfferCreationBaseException as e:
         raise api_errors.ApiErrors(e.errors, status_code=400)
 
@@ -928,7 +926,7 @@ def patch_event_price_categories(
             price=finance_utils.to_euros(eurocent_price)
             if eurocent_price != offers_api.UNCHANGED
             else offers_api.UNCHANGED,
-            editing_provider=current_api_key.provider,  # type: ignore[attr-defined]
+            editing_provider=current_api_key.provider,
         )
 
     return serialization.PriceCategoryResponse.from_orm(price_category_to_edit)
@@ -945,7 +943,6 @@ def patch_event_date(
     """
     Patch an event date.
     """
-    print("current_api_key.provider", current_api_key.provider)  # type: ignore[attr-defined]
     offer: offers_models.Offer | None = (
         _retrieve_offer_relations_query(_retrieve_offer_query(event_id))
         .filter(offers_models.Offer.isEvent == True)
@@ -979,7 +976,7 @@ def patch_event_date(
                 price_category=price_category,
                 booking_limit_datetime=update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
                 beginning_datetime=update_body.get("beginning_datetime", offers_api.UNCHANGED),
-                editing_provider=current_api_key.provider,  # type: ignore[attr-defined]
+                editing_provider=current_api_key.provider,
             )
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
