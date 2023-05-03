@@ -29,6 +29,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
         'price',
         'activationCodes',
         'activationCodesExpirationDatetime',
+        'isDuo',
       ])
     }
   )
@@ -47,6 +48,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
       'price',
       'activationCodes',
       'activationCodesExpirationDatetime',
+      'isDuo',
     ])
   })
 

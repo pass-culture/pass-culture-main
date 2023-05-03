@@ -97,6 +97,9 @@ describe('screens:StocksThing', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+    jest
+      .spyOn(api, 'patchOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
   })
 
   it('should track when clicking on "Sauvegarder le brouillon" on creation', async () => {
