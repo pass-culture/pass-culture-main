@@ -163,7 +163,7 @@ const Summary = () => {
             <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
           )}
 
-          <StockSection offer={offer} />
+          <StockSection offer={offer} canBeDuo={canBeDuo} />
 
           <ActionBar
             onClickNext={publishOffer}

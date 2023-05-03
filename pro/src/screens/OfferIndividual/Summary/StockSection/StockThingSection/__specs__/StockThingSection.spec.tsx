@@ -28,4 +28,17 @@ describe('StockThingSection', () => {
 
     expect(screen.queryByText(/Prix/)).not.toBeInTheDocument()
   })
+
+  it('should render duo informations', () => {
+    const offer = individualOfferFactory({
+      isEvent: false,
+      stocks: [individualStockFactory()],
+    })
+
+    renderWithProviders(<StockThingSection offer={offer} canBeDuo={true} />)
+
+    expect(
+      screen.getByText(/Accepter les réservations "Duo"/)
+    ).toBeInTheDocument()
+  })
 })

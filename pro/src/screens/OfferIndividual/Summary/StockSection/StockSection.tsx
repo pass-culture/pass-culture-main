@@ -21,9 +21,10 @@ import { StockThingSection } from './StockThingSection'
 
 export interface IStockSection {
   offer: IOfferIndividual
+  canBeDuo?: boolean
 }
 
-const StockSection = ({ offer }: IStockSection): JSX.Element => {
+const StockSection = ({ offer, canBeDuo }: IStockSection): JSX.Element => {
   const mode = useOfferWizardMode()
   const { logEvent } = useAnalytics()
   const isRecurrenceActive = useActiveFeature('WIP_RECURRENCE')
@@ -78,7 +79,7 @@ const StockSection = ({ offer }: IStockSection): JSX.Element => {
             <StockEventSection offer={offer} />
           )
         ) : (
-          <StockThingSection offer={offer} />
+          <StockThingSection offer={offer} canBeDuo={canBeDuo} />
         )}
       </SummaryLayout.Section>
     </>
