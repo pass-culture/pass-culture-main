@@ -2,6 +2,7 @@
 @use "styles/variables/_colors.scss" as colors;
 
 $body-line-height: rem.torem(20px);
+$body-font-size: rem.torem(15px);
 $caption-line-height: rem.torem(16px);
 
 /* stylelint-disable pass-culture/no-font-properties */
@@ -50,7 +51,7 @@ $caption-line-height: rem.torem(16px);
 }
 
 @mixin body() {
-  font-size: rem.torem(15px);
+  font-size: $body-font-size;
   font-weight: 400;
   line-height: $body-line-height;
 }
