@@ -1,5 +1,5 @@
 import { useField } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import { EyeCloseIcon, EyeOpenIcon } from 'icons'
 
@@ -23,15 +23,7 @@ const PasswordInput = ({
 }: IPasswordInputProps): JSX.Element => {
   const [isPasswordHidden, setPasswordHidden] = useState(true)
   const [field] = useField({ name })
-  const [displayLocalErrors, setDisplayLocalErrors] = useState(false)
-
-  useEffect(() => {
-    if (withErrorPreview) {
-      // We only handle locally the password requirements.
-      // The other errors are handled by the FieldLayout.
-      setDisplayLocalErrors(field.value.length > 0)
-    }
-  }, [withErrorPreview, field.value])
+  const displayLocalErrors = withErrorPreview && field.value.length > 0
 
   const handleToggleHidden = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
