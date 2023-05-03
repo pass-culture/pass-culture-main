@@ -62,7 +62,7 @@ def get_booking_by_token_v2(token: str) -> serialization.GetBookingResponse:
         check_user_can_validate_bookings_v2(current_user, booking.offererId)
     elif current_api_key:
         check_api_key_allows_to_validate_booking(
-            current_api_key,  # type: ignore[arg-type]
+            current_api_key,
             booking.offererId,
         )
     else:
@@ -102,7 +102,7 @@ def patch_booking_use_by_token(token: str) -> None:
         check_user_can_validate_bookings_v2(current_user, booking.offererId)
     elif current_api_key:
         check_api_key_allows_to_validate_booking(
-            current_api_key,  # type: ignore[arg-type]
+            current_api_key,
             booking.offererId,
         )
     else:
@@ -148,7 +148,7 @@ def patch_cancel_booking_by_token(token: str) -> None:
         check_user_has_access_to_offerer(current_user, booking.offererId)
     elif current_api_key:
         check_api_key_allows_to_cancel_booking(
-            current_api_key,  # type: ignore[arg-type]
+            current_api_key,
             booking.offererId,
         )
     else:
@@ -193,7 +193,7 @@ def patch_booking_keep_by_token(token: str) -> None:
         check_user_can_validate_bookings_v2(current_user, booking.offererId)
     elif current_api_key:
         check_api_key_allows_to_validate_booking(
-            current_api_key,  # type: ignore[arg-type]
+            current_api_key,
             booking.offererId,
         )
     else:
