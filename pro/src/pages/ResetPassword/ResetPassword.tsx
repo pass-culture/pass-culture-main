@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import AppLayout from 'app/AppLayout'
+import AppLayout from 'createReactApp/AppLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Hero from 'ui-kit/Hero'

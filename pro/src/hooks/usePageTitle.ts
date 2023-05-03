@@ -2,10 +2,10 @@ import type { LocationListener } from 'history'
 import { useEffect } from 'react'
 import { matchPath, useLocation } from 'react-router-dom'
 
-import routes, { IRoute } from 'app/AppRouter/routesMap'
-import routesOfferIndividualWizardDefinitions from 'app/AppRouter/subroutesOfferIndividualWizardMap'
-import routesSignupJourneyDefinitions from 'app/AppRouter/subroutesSignupJourneyMap'
-import routesSignupDefinitions from 'app/AppRouter/subroutesSignupMap'
+import routes, { IRoute } from 'createReactApp/AppRouter/routesMap'
+import routesOfferIndividualWizardDefinitions from 'createReactApp/AppRouter/subroutesOfferIndividualWizardMap'
+import routesSignupJourneyDefinitions from 'createReactApp/AppRouter/subroutesSignupJourneyMap'
+import routesSignupDefinitions from 'createReactApp/AppRouter/subroutesSignupMap'
 
 const usePageTitle = (): LocationListener | void => {
   const location = useLocation()

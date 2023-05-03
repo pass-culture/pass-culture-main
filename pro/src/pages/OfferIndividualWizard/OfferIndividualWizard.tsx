@@ -1,8 +1,8 @@
 import React from 'react'
 import { useLocation, Route, Routes, useParams } from 'react-router-dom'
 
-import { IRoute } from 'app/AppRouter/routesMap'
-import { routesOfferIndividualWizard } from 'app/AppRouter/subroutesOfferIndividualWizardMap'
+import { IRoute } from 'createReactApp/AppRouter/routesMap'
+import { routesOfferIndividualWizard } from 'createReactApp/AppRouter/subroutesOfferIndividualWizardMap'
 import { OfferIndividualContextProvider } from 'context/OfferIndividualContext'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { parse } from 'utils/query-string'

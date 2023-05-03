@@ -1,9 +1,9 @@
 import React from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
-import AppLayout from 'app/AppLayout'
-import { IRoute } from 'app/AppRouter/routesMap'
-import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
+import AppLayout from 'createReactApp/AppLayout'
+import { IRoute } from 'createReactApp/AppRouter/routesMap'
+import { routesSignupJourney } from 'createReactApp/AppRouter/subroutesSignupJourneyMap'
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
 import SkipLinks from 'components/SkipLinks'
 import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
