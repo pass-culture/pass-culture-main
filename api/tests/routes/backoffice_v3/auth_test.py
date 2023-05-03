@@ -32,7 +32,6 @@ class AuthorizePageTest:
     def test_authorize(self, mock_authorize_access_token, mock_parse_id_token, client):
         mock_parse_id_token.return_value = {
             "email": "email@example.com",
-            "name": "Name",
             "family_name": "FamilyName",
             "given_name": "GivenName",
         }
@@ -63,7 +62,6 @@ class AuthorizePageTest:
 
         mock_parse_id_token.return_value = {
             "email": user.email,
-            "name": "Name",
             "family_name": "FamilyName",
             "given_name": "GivenName",
         }
@@ -87,17 +85,51 @@ class AuthorizePageTest:
     @override_settings(IS_DEV=False)
     @override_settings(GOOGLE_CLIENT_ID="some client id")
     @override_settings(GOOGLE_CLIENT_SECRET="some client secret")
+    @patch("pcapi.routes.backoffice_v3.auth.fetch_user_roles_from_google_workspace")
     @patch("pcapi.routes.backoffice_v3.auth.oauth.google.parse_id_token")
     @patch("pcapi.routes.backoffice_v3.auth.oauth.google.authorize_access_token")
-    def test_user_not_found_with_google_credentials(
-        self, mock_authorize_access_token, mock_parse_id_token, client, caplog
+    def test_user_not_found_with_google_credentials_with_roles(
+        self, mock_authorize_access_token, mock_parse_id_token, mock_fetch_user_roles, client, caplog
     ):
+        email = "email@example.com"
+        user = users_models.User.query.filter(users_models.User.email == email).first()
+        assert user is None
+        expected_roles = [perm_models.Roles.ADMIN]
+
         mock_parse_id_token.return_value = {
-            "email": "email@example.com",
-            "name": "Name",
+            "email": email,
             "family_name": "FamilyName",
             "given_name": "GivenName",
         }
+        mock_fetch_user_roles.return_value = expected_roles
+
+        with caplog.at_level(logging.INFO):
+            response = client.get(url_for("backoffice_v3_web.authorize"))
+
+        user = users_models.User.query.filter(users_models.User.email == email).first()
+        assert user is not None
+        assert response.status_code == 302
+        assert response.location == url_for("backoffice_v3_web.home", _external=True)
+        assert "Successful authentication attempt" in caplog.messages
+
+    @override_settings(IS_TESTING=False)
+    @override_settings(IS_DEV=False)
+    @override_settings(GOOGLE_CLIENT_ID="some client id")
+    @override_settings(GOOGLE_CLIENT_SECRET="some client secret")
+    @patch("pcapi.routes.backoffice_v3.auth.fetch_user_roles_from_google_workspace")
+    @patch("pcapi.routes.backoffice_v3.auth.oauth.google.parse_id_token")
+    @patch("pcapi.routes.backoffice_v3.auth.oauth.google.authorize_access_token")
+    def test_user_not_found_with_google_credentials_without_roles(
+        self, mock_authorize_access_token, mock_parse_id_token, mock_fetch_user_roles, client, caplog
+    ):
+        expected_roles = []
+
+        mock_parse_id_token.return_value = {
+            "email": "email@example.com",
+            "family_name": "FamilyName",
+            "given_name": "GivenName",
+        }
+        mock_fetch_user_roles.return_value = expected_roles
 
         with caplog.at_level(logging.INFO):
             response = client.get(url_for("backoffice_v3_web.authorize"))
