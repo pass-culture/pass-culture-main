@@ -37,7 +37,8 @@ const Offerers = (): JSX.Element => {
   )
 
   const displayToggleVenueList =
-    venuesOfOfferer && venuesOfOfferer?.venues.length > 5
+    venuesOfOfferer &&
+    venuesOfOfferer?.venues.filter(venue => venue.isPermanent).length > 5
 
   useEffect(() => {
     if (venuesOfOffererError || (!isLoadingVenues && !venuesOfOfferer)) {
@@ -90,16 +91,18 @@ const Offerers = (): JSX.Element => {
             {venuesOfOfferer?.offererName}
           </div>
           <ul className={styles['venue-list']}>
-            {venuesOfOfferer?.venues.map((venue, index) => (
-              <li
-                key={venue.id}
-                hidden={
-                  displayToggleVenueList && !isVenueListOpen && index >= 4
-                }
-              >
-                {venue.publicName ?? venue.name}
-              </li>
-            ))}
+            {venuesOfOfferer?.venues
+              .filter(venue => venue.isPermanent)
+              .map((venue, index) => (
+                <li
+                  key={venue.id}
+                  hidden={
+                    displayToggleVenueList && !isVenueListOpen && index >= 4
+                  }
+                >
+                  {venue.publicName ?? venue.name}
+                </li>
+              ))}
           </ul>
           {displayToggleVenueList && (
             <Button
