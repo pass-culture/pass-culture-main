@@ -605,6 +605,7 @@ class VenueOfOffererFromSiretResponseModel(BaseModel):
     name: str
     publicName: str | None
     siret: str | None
+    isPermanent: bool
 
     _humanize_id = humanize_field("id")
 
