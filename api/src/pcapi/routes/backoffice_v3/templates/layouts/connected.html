@@ -67,7 +67,7 @@
             <nav class="me-3 shadow bg-white rounded-1 rounded-start-0 rounded-top-0">
               <div class="nav nav-pills flex-column">
                 {% call menu_section("Jeunes et grand public") %}
-                  {% if has_permission("SEARCH_PUBLIC_ACCOUNT") %}
+                  {% if has_permission("READ_PUBLIC_ACCOUNT") %}
                     {{ menu_section_item("Jeunes bénéficiaires ou à venir", "backoffice_v3_web.public_accounts.search_public_accounts") }}
                   {% endif %}
                 {% endcall %}

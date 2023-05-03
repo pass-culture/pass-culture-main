@@ -70,7 +70,7 @@ def render_search_template(form: search_forms.ProSearchForm | None = None) -> st
 
 
 @blueprint.backoffice_v3_web.route("/pro/search", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.SEARCH_PRO_ACCOUNT)
+@utils.permission_required(perm_models.Permissions.READ_PRO_ENTITY)
 def search_pro() -> utils.BackofficeResponse:
     """
     Renders two search pages: first the one with the search form, then
