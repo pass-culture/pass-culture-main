@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { addMinutes } from 'date-fns'
 import React from 'react'
 
 import { StudentLevels } from 'apiClient/adage'
@@ -27,7 +28,7 @@ const defaultProps: IOfferEducationalStockProps = {
 const initialValuesNotEmpty = {
   ...DEFAULT_EAC_STOCK_FORM_VALUES,
   eventDate: new Date(),
-  eventTime: new Date(),
+  eventTime: addMinutes(new Date(), 15),
   bookingLimitDatetime: new Date('2023-03-30'),
   numberOfPlaces: 10,
   totalPrice: 100,
@@ -277,6 +278,33 @@ describe('OfferEducationalStock', () => {
         Events.EAC_WRONG_STUDENTS_MODAL_OPEN,
         { from: '/', hasOnly6eAnd5eStudents: false }
       )
+    })
+
+    it('should render for offer with a stock', async () => {
+      const offer = collectiveOfferFactory()
+
+      const testProps: IOfferEducationalStockProps = {
+        ...defaultProps,
+        offer,
+        initialValues: {
+          ...DEFAULT_EAC_STOCK_FORM_VALUES,
+          eventDate: new Date(),
+          eventTime: new Date(),
+          bookingLimitDatetime: new Date('2023-03-30'),
+          numberOfPlaces: 10,
+          totalPrice: 100,
+        },
+      }
+
+      renderWithProviders(<OfferEducationalStock {...testProps} />)
+
+      const submitButton = screen.getByRole('button', {
+        name: 'Étape suivante',
+      })
+
+      await userEvent.click(submitButton)
+
+      screen.getByText("L'heure doit être postérieure à l'heure actuelle")
     })
   })
 })

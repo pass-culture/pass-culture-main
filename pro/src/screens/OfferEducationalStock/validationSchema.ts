@@ -1,3 +1,4 @@
+import { isBefore, isSameDay } from 'date-fns'
 import * as yup from 'yup'
 
 import { MAX_DETAILS_LENGTH } from 'core/OfferEducational'
@@ -55,7 +56,20 @@ export const generateValidationSchema = (
             "La date de l’évènement doit être supérieure à aujourd'hui"
           ),
       }),
-    eventTime: yup.string().nullable().required('Champ requis'),
+    eventTime: yup
+      .string()
+      .nullable()
+      .required('Champ requis')
+      .when('eventDate', {
+        is: (eventDate: string) => isSameDay(new Date(eventDate), new Date()),
+        then: schema =>
+          schema.test({
+            name: 'is-before-current-time',
+            test: (eventTime: string) =>
+              isBefore(new Date(), new Date(eventTime)),
+            message: "L'heure doit être postérieure à l'heure actuelle",
+          }),
+      }),
     numberOfPlaces: yup
       .number()
       .nullable()
