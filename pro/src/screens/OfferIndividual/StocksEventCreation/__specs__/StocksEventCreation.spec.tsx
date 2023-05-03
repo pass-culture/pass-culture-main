@@ -213,7 +213,7 @@ describe('StocksEventCreation', () => {
     await userEvent.click(screen.getByText('12:15'))
     await userEvent.click(screen.getByText('Ajouter un créneau'))
     await userEvent.click(screen.getByLabelText('Horaire 2'))
-    await userEvent.click(screen.getByText('12:15'))
+    await userEvent.click(screen.getByText('12:30'))
     await userEvent.click(screen.getByText('Valider'))
 
     expect(

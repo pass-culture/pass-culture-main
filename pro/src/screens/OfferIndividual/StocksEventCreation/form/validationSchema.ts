@@ -31,7 +31,34 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       }),
     beginningTimes: yup
       .array()
-      .of(yup.string().nullable().required('Veuillez renseigner un horaire')),
+      .of(yup.string().nullable().required('Veuillez renseigner un horaire'))
+      .test('arebeginningTimesUnique', function (list) {
+        if (!list) return
+        const beginningTimesMap = [...list]
+        const duplicateIndex = beginningTimesMap.reduce<yup.ValidationError[]>(
+          (accumulator, currentValue, index) => {
+            if (
+              beginningTimesMap.indexOf(currentValue) !==
+              beginningTimesMap.lastIndexOf(currentValue)
+            ) {
+              accumulator.push(
+                new yup.ValidationError(
+                  'Veuillez renseigner des horaires différents',
+                  null,
+                  `beginningTimes[${index}]`
+                )
+              )
+            }
+            return accumulator
+          },
+          []
+        )
+
+        if (duplicateIndex) {
+          return new yup.ValidationError(duplicateIndex)
+        }
+        return true
+      }),
     quantityPerPriceCategories: yup
       .array()
       .of(
