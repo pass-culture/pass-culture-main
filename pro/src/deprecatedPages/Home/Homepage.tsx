@@ -9,10 +9,10 @@ import { Newsletter } from 'components/Newsletter'
 import PageTitle from 'components/PageTitle/PageTitle'
 import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
+import { INITIAL_OFFERER_VENUES } from 'deprecatedPages/Home/OffererVenues'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useRemoteConfig from 'hooks/useRemoteConfig'
-import { INITIAL_OFFERER_VENUES } from 'deprecatedPages/Home/OffererVenues'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
 import useNewOfferCreationJourney from '../../hooks/useNewOfferCreationJourney'
@@ -144,9 +144,7 @@ const Homepage = (): JSX.Element => {
         )}
         <section className="h-section" ref={profileRef}>
           <ProfileAndSupport />
-          <div className="newsletter">
-            <Newsletter />
-          </div>
+          <div className="newsletter"></div>
         </section>
       </div>
       <TutorialDialog />

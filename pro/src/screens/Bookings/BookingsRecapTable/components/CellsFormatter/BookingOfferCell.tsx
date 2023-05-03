@@ -16,14 +16,14 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_PENDING } from 'core/Offers'
-import useAnalytics from 'hooks/useAnalytics'
-import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
-import { AlertFilledIcon } from 'icons'
 import {
   getDate,
   getRemainingTime,
   shouldDisplayWarning,
 } from 'deprecatedPages/Offers/Offers/OfferItem/Cells/OfferNameCell/utils'
+import useAnalytics from 'hooks/useAnalytics'
+import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
+import { AlertFilledIcon } from 'icons'
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
 

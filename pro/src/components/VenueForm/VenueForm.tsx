@@ -8,12 +8,12 @@ import FormLayout from 'components/FormLayout'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
+import ReimbursementFields from 'deprecatedPages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import {
   useNewOfferCreationJourney,
   useScrollToFirstErrorAfterSubmit,
 } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
-import ReimbursementFields from 'deprecatedPages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { venueSubmitRedirectUrl } from 'screens/VenueForm/utils/venueSubmitRedirectUrl'
 
 import useCurrentUser from '../../hooks/useCurrentUser'

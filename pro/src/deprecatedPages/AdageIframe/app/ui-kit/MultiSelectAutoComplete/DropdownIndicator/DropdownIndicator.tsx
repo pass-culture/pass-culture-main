@@ -3,10 +3,8 @@ import React from 'react'
 import { components } from 'react-select'
 import type { DropdownIndicatorProps } from 'react-select'
 
-import { ReactComponent as ChevronIconAdage } from 'icons/ico-chevron-adage.svg'
 import { Option } from 'deprecatedPages/AdageIframe/app/types'
-
-import './DropdownIndicator.scss'
+import { ReactComponent as ChevronIconAdage } from 'icons/ico-chevron-adage.svg'
 
 const DropdownIndicator = <T,>(
   props: DropdownIndicatorProps<Option<T>>

@@ -1,18 +1,16 @@
-import './OfferSummary.scss'
-
 import React from 'react'
 
 import { OfferAddressType } from 'apiClient/adage'
+import {
+  HydratedCollectiveOffer,
+  HydratedCollectiveOfferTemplate,
+} from 'deprecatedPages/AdageIframe/app/types/offers'
 import { ReactComponent as BuildingIcon } from 'icons/building.svg'
 import { ReactComponent as DateIcon } from 'icons/ico-date.svg'
 import { ReactComponent as EuroIcon } from 'icons/ico-euro.svg'
 import { ReactComponent as SubcategoryIcon } from 'icons/ico-subcategory.svg'
 import { ReactComponent as LocationIcon } from 'icons/location.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
-import {
-  HydratedCollectiveOffer,
-  HydratedCollectiveOfferTemplate,
-} from 'deprecatedPages/AdageIframe/app/types/offers'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 import { formatLocalTimeDateString } from 'utils/timezone'
 

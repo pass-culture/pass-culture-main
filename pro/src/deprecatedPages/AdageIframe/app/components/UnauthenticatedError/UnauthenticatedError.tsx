@@ -1,4 +1,3 @@
-import './UnauthenticatedError.scss'
 import * as React from 'react'
 
 export const UnauthenticatedError = (): JSX.Element => {

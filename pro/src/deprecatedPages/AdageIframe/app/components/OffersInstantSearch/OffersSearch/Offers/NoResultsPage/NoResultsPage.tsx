@@ -1,13 +1,11 @@
-import './NoResultsPage.scss'
-
 import React, { useContext } from 'react'
 
-import { ReactComponent as SearchGrayIcon } from 'icons/ico-search-gray.svg'
-import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import {
   AlgoliaQueryContext,
   FacetFiltersContext,
 } from 'deprecatedPages/AdageIframe/app/providers'
+import { ReactComponent as SearchGrayIcon } from 'icons/ico-search-gray.svg'
+import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

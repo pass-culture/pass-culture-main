@@ -1,5 +1,3 @@
-import './styles/index.scss'
-
 import { init as SentryInit } from '@sentry/browser'
 import { Integrations as TracingIntegrations } from '@sentry/tracing'
 import React from 'react'

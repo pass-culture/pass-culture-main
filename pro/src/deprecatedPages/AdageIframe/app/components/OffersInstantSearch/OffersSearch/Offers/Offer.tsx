@@ -3,17 +3,17 @@ import React, { useState } from 'react'
 
 import { apiAdage } from 'apiClient/api'
 import DialogBox from 'components/DialogBox/DialogBox'
+import {
+  HydratedCollectiveOffer,
+  HydratedCollectiveOfferTemplate,
+  isCollectiveOffer,
+} from 'deprecatedPages/AdageIframe/app/types/offers'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as ChevronIconAdage } from 'icons/ico-chevron-adage.svg'
 import { ReactComponent as LikeIcon } from 'icons/ico-like.svg'
 import { ReactComponent as LikedIcon } from 'icons/ico-liked.svg'
 import { ReactComponent as Logo } from 'icons/ico-passculture.svg'
 import { ReactComponent as ImagePlaceholder } from 'icons/ico-placeholder-offer-image.svg'
-import {
-  HydratedCollectiveOffer,
-  HydratedCollectiveOfferTemplate,
-  isCollectiveOffer,
-} from 'deprecatedPages/AdageIframe/app/types/offers'
 import { Button, Tag } from 'ui-kit'
 import { LOGS_DATA } from 'utils/config'
 

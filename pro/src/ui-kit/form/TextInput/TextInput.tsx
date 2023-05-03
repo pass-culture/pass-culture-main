@@ -91,7 +91,6 @@ const TextInput = ({
           step={step}
           type={type}
           rightButton={rightButton}
-          ref={refForInput}
           rightIcon={rightIcon}
           onKeyPress={event => {
             if (type === 'number') {

@@ -1,11 +1,11 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 
+import PageTitle from 'components/PageTitle/PageTitle'
+import SkipLinks from 'components/SkipLinks'
 import AppLayout from 'createReactApp/AppLayout'
 import { IRoute } from 'createReactApp/AppRouter/routesMap'
 import { routesSignup } from 'createReactApp/AppRouter/subroutesSignupMap'
-import PageTitle from 'components/PageTitle/PageTitle'
-import SkipLinks from 'components/SkipLinks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import Logo from 'ui-kit/Logo/Logo'
 

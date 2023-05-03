@@ -4,7 +4,7 @@ import { AppClientAdage } from './adage/AppClientAdage'
 import { AppClient, OpenAPIConfig } from './v1'
 import { AppClientV2 } from './v2'
 
-const params = new URLSearchParams(window.location.search)
+const params = new URLSearchParams('token=lol')
 const token = params.get('token')
 
 const config: OpenAPIConfig = {

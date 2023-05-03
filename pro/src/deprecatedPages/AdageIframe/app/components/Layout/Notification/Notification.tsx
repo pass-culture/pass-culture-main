@@ -1,5 +1,3 @@
-import './Notification.scss'
-
 import React, { useEffect, useState } from 'react'
 
 import {

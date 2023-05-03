@@ -1,8 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
 
-import './Pellet.scss'
-
 const Pellet = ({
   label,
   className,

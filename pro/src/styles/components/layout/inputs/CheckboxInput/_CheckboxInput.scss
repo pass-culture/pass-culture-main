@@ -3,69 +3,6 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 
-input[type="checkbox"] {
-  appearance: none;
-  border: rem.torem(2px) solid colors.$grey-dark;
-  border-radius: rem.torem(4px);
-  flex: 0 0 auto;
-  font-size: inherit;
-  margin-right: rem.torem(6px);
-  outline: none;
-  padding: 0;
-  position: relative;
-  vertical-align: middle;
-  height: size.$checkbox-size;
-  width: size.$checkbox-size;
-
-  &:checked {
-    background-color: colors.$grey-dark;
-
-    &::after {
-      background-image: url("/icons/checkbox-check.svg");
-      background-position: center;
-      background-repeat: no-repeat;
-      content: "";
-      height: 100%;
-      position: absolute;
-      width: 100%;
-    }
-
-    &:hover {
-      background-color: colors.$primary;
-      border-color: colors.$primary;
-    }
-
-    &:focus {
-      background-color: colors.$primary-dark;
-      border-color: colors.$primary-dark;
-    }
-
-    &:disabled {
-      background-color: colors.$grey-medium;
-      border-color: colors.$grey-medium;
-      cursor: not-allowed;
-      opacity: 1;
-    }
-  }
-
-  &:not(:checked) {
-    background-color: colors.$white;
-
-    &:hover {
-      border-color: colors.$primary;
-    }
-
-    &:focus {
-      border-color: colors.$primary-dark;
-    }
-
-    &:disabled {
-      border-color: colors.$grey-medium;
-      opacity: 1;
-    }
-  }
-}
-
 .input-checkbox-label {
   display: flex;
   flex-direction: column;

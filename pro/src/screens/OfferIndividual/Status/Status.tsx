@@ -39,7 +39,7 @@ const Status = ({
         <div className={styles['separator']} />
       </>
     )}
-    <StatusLabel status={status} />
+    <StatusLabel />
   </div>
 )
 

@@ -23,14 +23,6 @@ export const REACT_APP_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4 =
 export const RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_SITE_KEY
 export const WEBAPP_URL = process.env.REACT_APP_WEBAPP_URL
 
-if (
-  process.env.NODE_ENV !== 'test' &&
-  !process.env.REACT_APP_URL_FOR_MAINTENANCE
-) {
-  throw new Error(
-    'La variable d’environnement REACT_APP_URL_FOR_MAINTENANCE doit être définie'
-  )
-}
 export const URL_FOR_MAINTENANCE =
   process.env.REACT_APP_URL_FOR_MAINTENANCE || ''
 

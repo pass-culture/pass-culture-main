@@ -11,8 +11,8 @@ import {
 import App from 'createReactApp/App/App'
 import AppLayout from 'createReactApp/AppLayout'
 import { IRoute } from 'createReactApp/AppRouter/routesMap'
-import useCurrentUser from 'hooks/useCurrentUser'
 import NotFound from 'deprecatedPages/Errors/NotFound/NotFound'
+import useCurrentUser from 'hooks/useCurrentUser'
 import { selectActiveFeatures } from 'store/features/selectors'
 import { dehumanizedRoute } from 'utils/dehumanize'
 

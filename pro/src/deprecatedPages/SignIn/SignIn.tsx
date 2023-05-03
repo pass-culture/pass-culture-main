@@ -1,8 +1,8 @@
 import React from 'react'
 
-import AppLayout from 'createReactApp/AppLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
 import SkipLinks from 'components/SkipLinks'
+import AppLayout from 'createReactApp/AppLayout'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Logo from 'ui-kit/Logo/Logo'
 

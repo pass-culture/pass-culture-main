@@ -78,75 +78,7 @@ const SigninForm = (): JSX.Element => {
     submitting(false)
   }
 
-  return (
-    <>
-      <Formik
-        initialValues={SIGNIN_FORM_DEFAULT_VALUES}
-        onSubmit={(values, { setSubmitting }) =>
-          onSubmit(values, setSubmitting)
-        }
-        validationSchema={validationSchema}
-        validateOnChange
-      >
-        {({ dirty, isValid, isSubmitting }) => (
-          <Form>
-            <FormLayout>
-              <div className={styles['signin-form']}>
-                <FormLayout.Row>
-                  <TextInput
-                    label="Adresse e-mail"
-                    name="email"
-                    placeholder="email@exemple.com"
-                  />
-                </FormLayout.Row>
-                <FormLayout.Row>
-                  <PasswordInput
-                    name="password"
-                    label="Mot de passe"
-                    placeholder="Votre mot de passe"
-                  />
-                </FormLayout.Row>
-              </div>
-              <Link
-                className="tertiary-link"
-                id="lostPasswordLink"
-                onClick={() =>
-                  logEvent?.(Events.CLICKED_FORGOTTEN_PASSWORD, {
-                    from: location.pathname,
-                  })
-                }
-                to="/demande-mot-de-passe"
-              >
-                <KeyIcon className="ico-key" />
-                Mot de passe oublié ?
-              </Link>
-              <div className={styles['buttons-field']}>
-                <Link
-                  className="secondary-link"
-                  onClick={() =>
-                    logEvent?.(Events.CLICKED_CREATE_ACCOUNT, {
-                      from: location.pathname,
-                    })
-                  }
-                  to={accountCreationUrl}
-                >
-                  Créer un compte
-                </Link>
-                <SubmitButton
-                  className="primary-button"
-                  isLoading={isSubmitting}
-                  disabled={!dirty || !isValid}
-                >
-                  Se connecter
-                </SubmitButton>
-              </div>
-              <BannerRGS />
-            </FormLayout>
-          </Form>
-        )}
-      </Formik>
-    </>
-  )
+  return <></>
 }
 
 export default SigninForm

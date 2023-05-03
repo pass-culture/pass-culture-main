@@ -1,5 +1,5 @@
 import fr from 'date-fns/locale/fr'
-import React, { createRef } from 'react'
+import React from 'react'
 import ReactDatePicker, { registerLocale } from 'react-datepicker'
 import type { ReactDatePickerProps } from 'react-datepicker'
 
@@ -19,17 +19,11 @@ export const BaseTimePicker = ({
   filterVariant,
   ...props
 }: Props): JSX.Element => {
-  const ref = createRef<HTMLInputElement>()
-
   return (
     <ReactDatePicker
       {...props}
       customInput={
-        <BaseInput
-          hasError={hasError}
-          filterVariant={filterVariant}
-          ref={ref}
-        />
+        <BaseInput hasError={hasError} filterVariant={filterVariant} />
       }
       dateFormat={FORMAT_HH_mm}
       dropdownMode="scroll"

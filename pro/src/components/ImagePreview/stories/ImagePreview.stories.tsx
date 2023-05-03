@@ -21,24 +21,32 @@ interface Props {
 const Template: Story<Props> = props => (
   <ImagePreviewsWrapper>
     <ImagePreview {...props}>
-      <img alt="" className={style['home-screen-shell']} src={offerHomeShell} />
+      <img
+        alt=""
+        className={style['home-screen-shell']}
+        src={offerHomeShell.src}
+      />
       <img
         alt=""
         className={style['preview-on-home-screen']}
-        src={offerPreview}
+        src={offerPreview.src}
       />
     </ImagePreview>
     <ImagePreview title="Détails de l’offre">
       <img
         alt=""
         className={style['blurred-preview-on-offer-screen']}
-        src={offerPreview}
+        src={offerPreview.src}
       />
-      <img alt="" className={style['offer-screen-shell']} src={offerShell} />
+      <img
+        alt=""
+        className={style['offer-screen-shell']}
+        src={offerShell.src}
+      />
       <img
         alt=""
         className={style['preview-on-offer-screen']}
-        src={offerPreview}
+        src={offerPreview.src}
       />
     </ImagePreview>
   </ImagePreviewsWrapper>

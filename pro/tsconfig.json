@@ -1,15 +1,29 @@
 {
   "compilerOptions": {
-    "typeRoots": ["./node_modules/@types", "./src/custom_types"],
-    "plugins": [{ "name": "typescript-plugin-css-modules" }],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/custom_types"
+    ],
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules"
+      },
+      {
+        "name": "next"
+      }
+    ],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "src",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "jsx": "preserve",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
@@ -19,8 +33,12 @@
     "noImplicitThis": true,
     "outDir": "./built",
     "paths": {
-      "*": ["*"],
-      "@ui-kit/*": ["ui-kit/*"]
+      "*": [
+        "*"
+      ],
+      "@ui-kit/*": [
+        "ui-kit/*"
+      ]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
@@ -31,14 +49,17 @@
       "cypress"
       // TODO Albéric: can be re-added when this issue is solved: https://github.com/testing-library/cypress-testing-library/issues/252
       // "@testing-library/cypress"
-    ]
+    ],
+    "incremental": true
   },
   "include": [
+    "next-env.d.ts",
     "./src/**/*.ts",
     "./src/**/*.tsx",
     "./cypress/**/*.ts",
     "cypress.config.ts",
-    "jest.setup.ts"
+    "jest.setup.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

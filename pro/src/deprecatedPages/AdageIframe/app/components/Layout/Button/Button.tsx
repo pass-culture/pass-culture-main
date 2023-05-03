@@ -1,4 +1,3 @@
-import './Button.scss'
 import React, { useCallback, useState } from 'react'
 
 import { Spinner } from '../Spinner/Spinner'

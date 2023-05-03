@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import './NoBookingsForPreFiltersMessage.scss'
 import Icon from 'ui-kit/Icon/Icon'
 
 const NoBookingsForPreFiltersMessage = ({ resetPreFilters }) => (

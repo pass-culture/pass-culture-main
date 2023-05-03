@@ -6,10 +6,10 @@ import { BannerInvisibleSiren, BannerRGS } from 'components/Banner'
 import FormLayout from 'components/FormLayout'
 import LegalInfos from 'components/LegalInfos/LegalInfos'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
+import MaybeAppUserDialog from 'deprecatedPages/Signup/SignupContainer/MaybeAppUserDialog'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { useModal } from 'hooks/useModal'
-import MaybeAppUserDialog from 'deprecatedPages/Signup/SignupContainer/MaybeAppUserDialog'
 import {
   Button,
   Checkbox,

@@ -1,5 +1,5 @@
 import fr from 'date-fns/locale/fr'
-import React, { createRef } from 'react'
+import React from 'react'
 import ReactDatePicker, { registerLocale } from 'react-datepicker'
 import type { ReactDatePickerProps } from 'react-datepicker'
 
@@ -20,8 +20,6 @@ export const BaseDatePicker = ({
   filterVariant,
   ...props
 }: Props): JSX.Element => {
-  const ref = createRef<HTMLInputElement>()
-
   return (
     <ReactDatePicker
       {...props}
@@ -30,7 +28,6 @@ export const BaseDatePicker = ({
           rightIcon={() => <CalendarIcon />}
           hasError={hasError}
           filterVariant={filterVariant}
-          ref={ref}
         />
       }
       dateFormat={FORMAT_DD_MM_YYYY}

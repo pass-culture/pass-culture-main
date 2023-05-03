@@ -1,7 +1,5 @@
 import React from 'react'
 
-import './OfferDetails.scss'
-
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,

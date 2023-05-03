@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom'
 
 import FormLayout from 'components/FormLayout'
 import { IVenue } from 'core/Venue'
-import { ReactComponent as EditIcon } from 'icons/ico-pen-black.svg'
 import { venueHasCollectiveInformation } from 'deprecatedPages/Offerers/Offerer/VenueV1/VenueEdition/EACInformation/utils/venueHasCollectiveInformation'
+import { ReactComponent as EditIcon } from 'icons/ico-pen-black.svg'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Banner, ButtonLink, Title } from 'ui-kit/index'
 

@@ -16,8 +16,8 @@ import {
 } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import useNotification from 'hooks/useNotification'
 import patchCollectiveStockAdapter from 'deprecatedPages/CollectiveOfferStockEdition/adapters/patchCollectiveStockAdapter'
+import useNotification from 'hooks/useNotification'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,

@@ -3,14 +3,13 @@ import React, { useCallback, useState } from 'react'
 
 import { OfferStockResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { ReactComponent as HourGlassIcon } from 'icons/ico-hourglass.svg'
 import {
   Notification,
   NotificationComponent,
   NotificationType,
 } from 'deprecatedPages/AdageIframe/app/components/Layout/Notification/Notification'
-import './PrebookingButton.scss'
 import { logOfferConversion } from 'deprecatedPages/AdageIframe/libs/initAlgoliaAnalytics'
+import { ReactComponent as HourGlassIcon } from 'icons/ico-hourglass.svg'
 import { Button } from 'ui-kit'
 import { LOGS_DATA } from 'utils/config'
 

@@ -1,5 +1,3 @@
-import './AppLayout.scss'
-
 import * as React from 'react'
 
 import { AuthenticatedResponse, VenueResponse } from 'apiClient/adage'

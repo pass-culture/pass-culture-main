@@ -1,5 +1,3 @@
-import './AddVenueProviderButton.scss'
-
 import PropTypes from 'prop-types'
 import React, { useCallback, useMemo, useState } from 'react'
 

@@ -1,5 +1,3 @@
-import './CinemaProviderFormDialog.scss'
-
 import React from 'react'
 
 import DialogBox from 'components/DialogBox'

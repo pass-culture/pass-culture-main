@@ -13,12 +13,12 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import { OffererVenues } from 'deprecatedPages/Home/OffererVenues'
+import { VenueList } from 'deprecatedPages/Home/Venues'
 import { useNewOfferCreationJourney } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as StatusPendingFullIcon } from 'icons/ico-status-pending-full.svg'
 import { ReactComponent as SuccessIcon } from 'icons/ico-success.svg'
-import { OffererVenues } from 'deprecatedPages/Home/OffererVenues'
-import { VenueList } from 'deprecatedPages/Home/Venues'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByDisplayName } from 'utils/strings'
 

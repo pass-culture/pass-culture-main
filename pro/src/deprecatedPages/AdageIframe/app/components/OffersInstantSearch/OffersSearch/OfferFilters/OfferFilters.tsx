@@ -5,7 +5,6 @@ import {
   AuthenticatedResponse,
   VenueResponse,
 } from 'apiClient/adage'
-import './OfferFilters.scss'
 import { getEducationalCategoriesOptionsAdapter } from 'deprecatedPages/AdageIframe/app/adapters/getEducationalCategoriesOptionsAdapter'
 import { getEducationalDomainsOptionsAdapter } from 'deprecatedPages/AdageIframe/app/adapters/getEducationalDomainsOptionsAdapter'
 import { departmentOptions } from 'deprecatedPages/AdageIframe/app/constants/departmentOptions'

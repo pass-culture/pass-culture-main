@@ -18,7 +18,7 @@ const AppPreviewOffer = ({ imageUrl }: IAppPreviewOfferProps): JSX.Element => (
       <img
         alt=""
         className={homeStyle['image-preview-shell']}
-        src={homeShell}
+        src={homeShell.src}
       />
       <img
         data-testid="app-preview-offer-img-home"
@@ -36,7 +36,7 @@ const AppPreviewOffer = ({ imageUrl }: IAppPreviewOfferProps): JSX.Element => (
       <img
         alt=""
         className={offerStyle['image-preview-shell']}
-        src={offerShell}
+        src={offerShell.src}
       />
       <img
         data-testid="app-preview-offer-img"

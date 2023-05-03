@@ -1,5 +1,3 @@
-import './MaybeAppUserDialog.scss'
-
 import React from 'react'
 
 import RedirectDialog from 'components/Dialog/RedirectDialog'

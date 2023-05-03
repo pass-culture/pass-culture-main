@@ -1,4 +1,3 @@
-import './Offers.scss'
 import { captureException } from '@sentry/react'
 import isEqual from 'lodash/isEqual'
 import React, { memo, useContext, useEffect, useState } from 'react'

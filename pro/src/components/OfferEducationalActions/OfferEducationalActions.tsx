@@ -11,10 +11,10 @@ import {
   patchIsCollectiveOfferActiveAdapter,
   patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
+import { getCollectiveStatusLabel } from 'deprecatedPages/Offers/Offers/OfferItem/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { CircleArrowIcon } from 'icons'
-import { getCollectiveStatusLabel } from 'deprecatedPages/Offers/Offers/OfferItem/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import {

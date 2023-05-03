@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
 import { apiAdage } from 'apiClient/api'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { logClickOnOffer } from 'deprecatedPages/AdageIframe/libs/initAlgoliaAnalytics'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { Button } from 'ui-kit'
 
 import ContactDialog from './ContactDialog'

@@ -29,7 +29,6 @@ const AppLayout = ({ children, layoutConfig, className }: AppLayoutProps) => {
       {!fullscreen && (
         <>
           <SkipLinks />
-          <Header />
         </>
       )}
 

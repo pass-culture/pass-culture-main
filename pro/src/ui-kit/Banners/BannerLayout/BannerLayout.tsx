@@ -1,10 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as CloseIcon } from 'icons/close-dialog.svg'
-import { ReactComponent as AttentionIcon } from 'icons/ico-attention.svg'
-import { ReactComponent as BulbIcon } from 'icons/ico-bulb.svg'
-import { ReactComponent as IcoClearIcon } from 'icons/ico-clear.svg'
 import Icon from 'ui-kit/Icon/Icon'
 
 import oldStyles from './BannerLayout.module.scss'
@@ -46,34 +42,8 @@ const BannerLayout = ({
         className
       )}
     >
-      {type === 'notification-info' && showTitle && (
-        <BulbIcon className={styles['icon']} />
-      )}
-      {type === 'attention' && showTitle && (
-        <AttentionIcon className={styles['icon']} />
-      )}
       <span className={styles['border-cut']}>
-        {closable && (
-          <button onClick={handleOnClick} type="button">
-            {
-              /* istanbul ignore next: graphic variation */
-              isNewStyles &&
-              type != 'new' &&
-              type != 'light' &&
-              type != 'image' ? (
-                <IcoClearIcon
-                  title="Masquer le bandeau"
-                  className={cn(styles['close-icon-banner'])}
-                />
-              ) : (
-                <CloseIcon
-                  title="Masquer le bandeau"
-                  className={styles['close-icon']}
-                />
-              )
-            }
-          </button>
-        )}
+        {closable && <button onClick={handleOnClick} type="button"></button>}
 
         <div className={styles['content']}>
           {

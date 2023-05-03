@@ -81,7 +81,7 @@ const IndividualOfferItem = ({
       />
       <OfferVenueCell venue={venue} />
       <OfferRemainingStockCell stocks={offer.stocks} />
-      <OfferStatusCell status={offer.status} />
+      <OfferStatusCell />
       <IndividualActionsCells
         offer={offer}
         isOfferEditable={isOfferEditable}

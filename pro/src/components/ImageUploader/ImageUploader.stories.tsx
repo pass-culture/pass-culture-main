@@ -21,8 +21,8 @@ const Template: Story<IImageUploaderProps> = props => (
 
 const props: IImageUploaderProps = {
   initialValues: {
-    originalImageUrl: sampleImagePortrait,
-    imageUrl: sampleImagePortrait,
+    originalImageUrl: sampleImagePortrait.src,
+    imageUrl: sampleImagePortrait.src,
     credit: 'John Do',
     cropParams: {
       xCropPercent: 0,
@@ -49,8 +49,8 @@ export const WithImageVenue = Template.bind({})
 WithImageVenue.args = {
   ...props,
   initialValues: {
-    imageUrl: sampleImageLandscape,
-    originalImageUrl: sampleImageLandscape,
+    imageUrl: sampleImageLandscape.src,
+    originalImageUrl: sampleImageLandscape.src,
   },
   mode: UploaderModeEnum.VENUE,
 }

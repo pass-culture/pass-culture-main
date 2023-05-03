@@ -16,9 +16,9 @@ import {
   VisibilityFormValues,
 } from 'core/OfferEducational'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
+import { PatchEducationalInstitutionAdapter } from 'deprecatedPages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import useNotification from 'hooks/useNotification'
 import { TrashFilledIcon } from 'icons'
-import { PatchEducationalInstitutionAdapter } from 'deprecatedPages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import {
   Banner,
   Button,

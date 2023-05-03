@@ -8,7 +8,6 @@ import 'react-tooltip/dist/react-tooltip.css'
 import NumberField from 'ui-kit/form_rff/fields/NumberField'
 import Icon from 'ui-kit/Icon/Icon'
 import { getCanSubmit } from 'utils/react-final-form'
-import './AllocineProviderForm.scss'
 
 const AllocineProviderForm = ({
   saveVenueProvider,

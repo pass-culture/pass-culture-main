@@ -1,4 +1,3 @@
-import './Spinner.scss'
 import React, { useEffect, useState } from 'react'
 
 import { ReactComponent as LogoImage } from 'icons/ico-passculture.svg'

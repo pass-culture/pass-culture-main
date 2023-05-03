@@ -8,7 +8,6 @@ import CustomControl from './Control'
 import CustomOption from './CustomOption'
 import CustomDropdownIndicator from './DropdownIndicator'
 import CustomPlaceholder from './Placeholder'
-import './MultiSelectAutocomplete.scss'
 
 interface MultiSelectAutocompleteProps<T = string> {
   options: Option<T>[]

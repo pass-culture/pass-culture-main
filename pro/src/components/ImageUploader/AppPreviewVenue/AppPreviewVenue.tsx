@@ -26,7 +26,7 @@ const AppPreviewVenue = ({ imageUrl }: IAppPreviewVenueProps): JSX.Element => {
         <img
           alt=""
           className={homeStyle['image-preview-shell']}
-          src={homeShell}
+          src={homeShell.src}
         />
         <img
           data-testid="app-preview-venue-img-home"
@@ -45,7 +45,7 @@ const AppPreviewVenue = ({ imageUrl }: IAppPreviewVenueProps): JSX.Element => {
         <img
           alt=""
           className={venueStyle['image-preview-shell']}
-          src={venueShell}
+          src={venueShell.src}
         />
         <img
           data-testid="app-preview-venue-img"

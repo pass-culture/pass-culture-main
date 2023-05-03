@@ -3,7 +3,6 @@ import { components } from 'react-select'
 import type { OptionProps } from 'react-select'
 
 import { Option } from 'deprecatedPages/AdageIframe/app/types'
-import './Option.scss'
 import { BaseCheckbox } from 'ui-kit/form/shared'
 
 const CustomOption = <T,>({

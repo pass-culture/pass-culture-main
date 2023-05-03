@@ -5,7 +5,6 @@ import type { ControlProps } from 'react-select'
 
 import { Option } from 'deprecatedPages/AdageIframe/app/types'
 
-import './Control.scss'
 import { Pellet } from '../..'
 
 const Control = <T,>({

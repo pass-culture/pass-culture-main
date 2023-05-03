@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import AppLayout from 'createReactApp/AppLayout'
 import PageTitle from 'components/PageTitle/PageTitle'
 import SkipLinks from 'components/SkipLinks'
+import AppLayout from 'createReactApp/AppLayout'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Hero from 'ui-kit/Hero'

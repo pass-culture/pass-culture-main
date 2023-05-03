@@ -1,8 +1,8 @@
 import React from 'react'
 
+import { AnalyticsContextProvider } from 'context/analyticsContext'
 import { AppRouter } from 'createReactApp'
 import routes from 'createReactApp/AppRouter/routesMap'
-import { AnalyticsContextProvider } from 'context/analyticsContext'
 import StoreProvider from 'store/StoreProvider/StoreProvider'
 
 import { RemoteContextProvider } from './context/remoteConfigContext'
