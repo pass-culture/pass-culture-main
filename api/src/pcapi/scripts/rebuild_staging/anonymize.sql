@@ -108,6 +108,7 @@ SET
     "firstName" = pg_temp.fake_first_name(id),
     "lastName" = pg_temp.fake_last_name(id),
     "dateOfBirth" = '01/01/2001',
+    "validatedBirthDate" = case when "validatedBirthDate" is null then null else '2001-01-01'::timestamp end,
     "phoneNumber" = pg_temp.fake_phone_number_from_id(id),
     "validationToken" = NULL
 WHERE email NOT LIKE '%@passculture.app';
@@ -117,6 +118,7 @@ UPDATE "user"
 SET
     "password" = 'fake-hashed-password'::bytea,
     "dateOfBirth" = '01/01/2001',
+    "validatedBirthDate" = case when "validatedBirthDate" is null then null else '2001-01-01'::timestamp end,
     "phoneNumber" = pg_temp.fake_phone_number_from_id(id),
     "validationToken" = NULL
 WHERE email LIKE '%@passculture.app';
@@ -130,8 +132,56 @@ SET
     "newDomainEmail" = 'anonymized.email'
 ;
 
+UPDATE action_history
+SET "jsonData" = '{}'
+;
+
+-- FIXME (dbaty, 2023-05-04): we should anonymize `offer.bookingEmail`
+-- but that would take a very long time.
+--   UPDATE offer
+--   SET
+--     "bookingEmail" = 'offer-' || id || '-booking-email@anonymized.email'
+--   ;
+
+UPDATE collective_offer
+SET
+  "bookingEmails" = '{}',
+  "contactEmail" = 'offer-' || id || '-contact-email@anonymized.email',
+  "contactPhone" = pg_temp.fake_phone_number_from_id(id)
+;
+
+UPDATE collective_offer_template
+SET
+  "bookingEmails" = '{}',
+  "contactEmail" = 'template-' || id || '-contact-email@anonymized.email',
+  "contactPhone" = pg_temp.fake_phone_number_from_id(id)
+;
+
 UPDATE venue
-SET "dmsToken" = 'dms-token-' || id
+SET
+  "dmsToken" = 'dms-token-' || id,
+  "bookingEmail" = 'venue-' || id || '-booking-email@anonymized.email',
+  "collectiveEmail" = 'venue-' || id || '-collective-email@anonymized.email',
+  "collectivePhone" = pg_temp.fake_phone_number_from_id(id)
+;
+
+UPDATE venue_contact
+SET
+  "email" = 'venue-' || id || '-contact-email@anonymized.email',
+  phone_number = pg_temp.fake_phone_number_from_id(id)
+;
+
+UPDATE educational_institution
+SET
+  email = 'institution-' || id || '@anonymized.email',
+  "phoneNumber" = pg_temp.fake_phone_number_from_id(id)
+;
+
+UPDATE educational_redactor
+SET
+  email = 'redactor-' || id || '@anonymized.email',
+  "firstName" = pg_temp.fake_first_name(id),
+  "lastName" = pg_temp.fake_last_name(id)
 ;
 
 -- Anonymize beneficiary_fraud_check table content
@@ -189,6 +239,10 @@ WHERE "type" not in (
     'HONOR_STATEMENT',
     'USER_PROFILING'
   )
+;
+
+UPDATE orphan_dms_application
+SET email = "id" || '@anonymized.email'
 ;
 
 -- Anonymize beneficiary_fraud_review table content
