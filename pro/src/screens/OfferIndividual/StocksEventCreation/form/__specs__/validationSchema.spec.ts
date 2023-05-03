@@ -72,6 +72,22 @@ describe('validationSchema', () => {
       },
       expectedErrors: ['Veuillez renseigner une date de fin'],
     },
+    {
+      description: 'duplicate hours',
+      formValues: {
+        ...baseValidForm,
+        recurrenceType: RecurrenceType.DAILY,
+        endingDate: new Date('2020-01-01T10:00:00'),
+        beginningTimes: [
+          new Date('2020-01-01T10:00:00'),
+          new Date('2020-01-01T10:00:00'),
+        ],
+      },
+      expectedErrors: [
+        'Veuillez renseigner des horaires différents',
+        'Veuillez renseigner des horaires différents',
+      ],
+    },
   ]
 
   cases.forEach(({ description, formValues, expectedErrors }) => {
