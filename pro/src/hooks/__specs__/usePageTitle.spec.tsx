@@ -13,38 +13,67 @@ const PageTitle = (): null => {
   return null
 }
 
+const renderusePageTitleRoutes = (url = '/accueil') => {
+  renderWithProviders(
+    <Routes>
+      <Route
+        path="/accueil"
+        element={
+          <>
+            <PageTitle />
+            <span>Main page</span>
+            <Link to="/guichet">Guichet</Link>
+          </>
+        }
+      />
+      <Route
+        path="/guichet"
+        element={
+          <>
+            <PageTitle />
+            <span>Guichet page</span>
+          </>
+        }
+      />
+      <Route
+        path="/parcours-inscription"
+        element={
+          <>
+            <PageTitle />
+            <span>Welcome signupJourney page</span>
+          </>
+        }
+      />
+      <Route
+        path="/parcours-inscription/structure"
+        element={
+          <>
+            <PageTitle />
+            <span>Structure page</span>
+          </>
+        }
+      />
+    </Routes>,
+    { initialRouterEntries: [url] }
+  )
+}
+
 describe('usePageTitle', () => {
-  beforeEach(() => {
-    renderWithProviders(
-      <Routes>
-        <Route
-          path="/accueil"
-          element={
-            <>
-              <PageTitle />
-              <span>Main page</span>
-              <Link to="/guichet">Guichet</Link>
-            </>
-          }
-        />
-        <Route
-          path="/guichet"
-          element={
-            <>
-              <PageTitle />
-              <span>Guichet page</span>
-            </>
-          }
-        />
-      </Routes>,
-      { initialRouterEntries: ['/accueil'] }
-    )
-  })
   it('should set initial page title', async () => {
+    renderusePageTitleRoutes()
     expect(document.title).toEqual('Accueil - pass Culture Pro')
   })
   it('should update page title when user navigates to another page', async () => {
+    renderusePageTitleRoutes()
     await userEvent.click(screen.getByRole('link', { name: 'Guichet' }))
     expect(document.title).toEqual('Guichet - pass Culture Pro')
+  })
+  it('should set initial root page title for signupJourney', async () => {
+    renderusePageTitleRoutes('/parcours-inscription')
+    expect(document.title).toEqual("Parcours d'inscription")
+  })
+  it('should set initial page title for signupJourney step', async () => {
+    renderusePageTitleRoutes('/parcours-inscription/structure')
+    expect(document.title).toEqual("Structure - parcours d'inscription")
   })
 })
