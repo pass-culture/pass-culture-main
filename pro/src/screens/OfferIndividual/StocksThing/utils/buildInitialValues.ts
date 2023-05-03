@@ -26,6 +26,7 @@ export const buildInitialValues = (
     activationCodesExpirationDatetime:
       offer.stocks[0].activationCodesExpirationDatetime,
     activationCodes: offer.stocks[0].activationCodes,
+    isDuo: offer.isDuo,
   }
 }
 export default buildInitialValues

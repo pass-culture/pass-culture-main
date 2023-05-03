@@ -9,4 +9,5 @@ export const STOCK_THING_FORM_DEFAULT_VALUES: IStockThingFormValues = {
   price: '',
   activationCodes: [],
   activationCodesExpirationDatetime: null,
+  isDuo: undefined,
 }

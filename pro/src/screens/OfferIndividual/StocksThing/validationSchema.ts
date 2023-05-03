@@ -18,6 +18,7 @@ export const getValidationSchema = (
       .typeError('Doit être un nombre')
       .min(0, 'Doit être positif'),
     activationCodes: yup.array(),
+    isDuo: yup.boolean(),
   }
   if (minQuantity !== null) {
     validationSchema.quantity = validationSchema.quantity.min(

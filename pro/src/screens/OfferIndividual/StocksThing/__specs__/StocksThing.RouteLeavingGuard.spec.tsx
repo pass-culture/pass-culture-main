@@ -136,6 +136,9 @@ describe('screens:StocksThing', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+    jest
+      .spyOn(api, 'patchOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
   })
 
   it('should not block when going outside and form is not touched', async () => {

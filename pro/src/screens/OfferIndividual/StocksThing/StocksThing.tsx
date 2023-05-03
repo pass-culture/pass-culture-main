@@ -15,7 +15,11 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { getOfferIndividualAdapter } from 'core/Offers/adapters'
+import {
+  getOfferIndividualAdapter,
+  updateIndividualOffer,
+} from 'core/Offers/adapters'
+import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
 import {
   LIVRE_PAPIER_SUBCATEGORY_ID,
   OFFER_WIZARD_MODE,
@@ -28,7 +32,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { EuroIcon, TicketPlusFullIcon, TrashFilledIcon } from 'icons'
-import { DatePicker, TextInput } from 'ui-kit'
+import { Checkbox, DatePicker, InfoBox, TextInput } from 'ui-kit'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
@@ -70,7 +74,13 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
   const notify = useNotification()
-  const { setOffer, shouldTrack, setShouldTrack } = useOfferIndividualContext()
+  const { setOffer, shouldTrack, setShouldTrack, subCategories } =
+    useOfferIndividualContext()
+
+  const canBeDuo = subCategories.find(
+    subCategory => subCategory.id === offer.subcategoryId
+  )?.canBeDuo
+
   const {
     visible: activationCodeFormVisible,
     showModal: activationCodeFormShow,
@@ -86,6 +96,19 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
   const providerName = offer?.lastProviderName
 
   const onSubmit = async (formValues: IStockThingFormValues) => {
+    const serializedOffer = serializePatchOffer({
+      offer: offer,
+      formValues: { isDuo: formValues.isDuo },
+    })
+    const { isOk: isOfferOk, message: offerMessage } =
+      await updateIndividualOffer({
+        offerId: offer.nonHumanizedId,
+        serializedOffer: serializedOffer,
+      })
+    if (!isOfferOk) {
+      throw new Error(offerMessage)
+    }
+
     const { isOk, payload, message } = await upsertStocksThingAdapter({
       offerId: offer.nonHumanizedId,
       formValues,
@@ -481,6 +504,30 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
           </form>
         </div>
       </FormLayout>
+      {canBeDuo && (
+        <FormLayout small>
+          <FormLayout.Section
+            className={styles['duo-section']}
+            title="Réservations “Duo”"
+          >
+            <FormLayout.Row
+              sideComponent={
+                <InfoBox
+                  type="info"
+                  text="Cette option permet au bénéficiaire de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."
+                />
+              }
+            >
+              <Checkbox
+                label="Accepter les réservations “Duo“"
+                name="isDuo"
+                disabled={isDisabled}
+                withBorder
+              />
+            </FormLayout.Row>
+          </FormLayout.Section>
+        </FormLayout>
+      )}
       <RouteLeavingGuardOfferIndividual
         when={formik.dirty && !isClickingFromActionBar}
         tracking={nextLocation =>
