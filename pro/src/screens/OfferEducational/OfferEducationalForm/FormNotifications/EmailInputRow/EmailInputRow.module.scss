@@ -13,14 +13,7 @@
 }
 
 .trash {
-  // "Center" with input
-  // We are using margin-top and not flex center because when there is an error the
-  // input field grows at the bottom and we don't want the icon to move
-  // stylelint-disable scss/operator-no-newline-after
-  margin-top: calc(
-    #{fonts.$body-line-height} + #{forms.$label-space-before-input} +
-      (#{size.$input-min-height} - #{size.$button-icon-size}) / 2
-  );
+  @include size.input-center-with-top-margin(size.$button-icon-size);
 
   &:hover {
     svg {
