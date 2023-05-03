@@ -45,11 +45,11 @@ const SignupJourneyBreadcrumb = () => {
     {
       id: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
       label: 'Identification',
-      url: '/parcours-inscription/authentification',
+      url: '/parcours-inscription/identification',
       onClick: () =>
         logBreadcrumbClick(
           SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-          '/parcours-inscription/authentification'
+          '/parcours-inscription/identification'
         ),
     },
     {

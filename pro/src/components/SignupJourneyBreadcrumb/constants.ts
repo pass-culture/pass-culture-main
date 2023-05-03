@@ -3,7 +3,7 @@ export enum SIGNUP_JOURNEY_STEP_IDS {
   OFFERER = 'structure',
   OFFERERS = 'strutures',
   OFFERERS_CONFIRMED_ATTACHMENT = 'confirmation',
-  AUTHENTICATION = 'authentification',
+  AUTHENTICATION = 'identification',
   ACTIVITY = 'activite',
   VALIDATION = 'validation',
   COMPLETED = 'completed',
