@@ -1408,6 +1408,14 @@ class CreateFromOnboardingDataTest:
             == "https://www.example.com, https://instagram.com/example, https://mastodon.social/@example"
         )
 
+    def assert_venue_registration_attrs(self, venue: Venue) -> None:
+        assert offerers_models.VenueRegistration.query.all() == [venue.registration]
+        assert venue.registration.target == offerers_models.Target.INDIVIDUAL
+        assert (
+            venue.registration.webPresence
+            == "https://www.example.com, https://instagram.com/example, https://mastodon.social/@example"
+        )
+
     def assert_only_welcome_email_to_pro_was_sent(self) -> None:
         assert len(mails_testing.outbox) == 1
         assert (
@@ -1472,6 +1480,8 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
         self.assert_only_welcome_email_to_pro_was_sent()
+        # Venue Registration
+        self.assert_venue_registration_attrs(created_venue)
 
     @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_existing_siren_new_siret(self):
@@ -1507,6 +1517,8 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
         self.assert_only_welcome_email_to_pro_was_sent()
+        # Venue Registration
+        self.assert_venue_registration_attrs(created_venue)
 
     @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_existing_siren_new_venue_without_siret(self):
@@ -1543,6 +1555,8 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
         self.assert_only_welcome_email_to_pro_was_sent()
+        # Venue Registration
+        self.assert_venue_registration_attrs(created_venue)
 
     @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_existing_siren_existing_siret(self):
@@ -1574,3 +1588,5 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
         self.assert_only_welcome_email_to_pro_was_sent()
+        # Venue Registration
+        assert offerers_models.VenueRegistration.query.count() == 0
