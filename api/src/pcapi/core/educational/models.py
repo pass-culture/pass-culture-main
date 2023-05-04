@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 import decimal
 from decimal import Decimal
@@ -37,6 +38,7 @@ from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.image_conversion import ImageRatio
 from pcapi.utils.image_conversion import process_original_image
 from pcapi.utils.image_conversion import standardize_image
+from pcapi.utils.phone_number import ParsedPhoneNumber
 
 
 if typing.TYPE_CHECKING:
@@ -543,6 +545,10 @@ class CollectiveOfferTemplate(
         "Provider", foreign_keys=providerId, back_populates="collectiveOfferTemplates"
     )
 
+    collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = relationship(
+        "CollectiveOfferRequest", back_populates="collectiveOfferTemplate"
+    )
+
     @property
     def isEducational(self) -> bool:
         # FIXME (rpaoloni, 2022-05-09): Remove legacy support layer
@@ -763,6 +769,10 @@ class EducationalInstitution(PcObject, Base, Model):
 
     isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
 
+    collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = relationship(
+        "CollectiveOfferRequest", back_populates="educationalInstitution"
+    )
+
 
 class EducationalYear(PcObject, Base, Model):
     __tablename__ = "educational_year"
@@ -835,6 +845,7 @@ class EducationalRedactor(PcObject, Base, Model):
     collectiveBookings: list["CollectiveBooking"] = relationship(
         "CollectiveBooking", back_populates="educationalRedactor"
     )
+
     collectiveOffers: list["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="teacher")
 
 
@@ -1175,3 +1186,46 @@ sa.event.listen(
     "after_create",
     sa.DDL(CollectiveBooking.trig_update_cancellationDate_on_isCancelled_ddl),
 )
+
+
+class CollectiveOfferRequest(PcObject, Base, Model):
+    _phoneNumber: str | None = sa.Column(sa.String(30), nullable=True, name="phoneNumber")
+
+    requestedDate: date | None = sa.Column(sa.Date, nullable=True)
+
+    totalStudents: int | None = sa.Column(sa.Integer, nullable=True)
+
+    totalTeachers: int | None = sa.Column(sa.Integer, nullable=True)
+
+    comment: str = sa.Column(sa.Text, nullable=False)
+
+    collectiveOfferTemplateId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=False
+    )
+
+    collectiveOfferTemplate: sa_orm.Mapped["CollectiveOfferTemplate"] = relationship(
+        "CollectiveOfferTemplate", foreign_keys=collectiveOfferTemplateId, back_populates="collectiveOfferRequest"
+    )
+
+    educationalInstitutionId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False
+    )
+
+    educationalInstitution: sa_orm.Mapped["EducationalInstitution"] = relationship(
+        "EducationalInstitution", foreign_keys=educationalInstitutionId, back_populates="collectiveOfferRequest"
+    )
+
+    @hybrid_property
+    def phoneNumber(self) -> str | None:
+        return self._phoneNumber
+
+    @phoneNumber.setter  # type: ignore [no-redef]
+    def phoneNumber(self, value: str | None) -> None:
+        if not value:
+            self._phoneNumber = None
+        else:
+            self._phoneNumber = ParsedPhoneNumber(value).phone_number
+
+    @phoneNumber.expression  # type: ignore [no-redef]
+    def phoneNumber(cls) -> str | None:  # pylint: disable=no-self-argument
+        return cls._phoneNumber

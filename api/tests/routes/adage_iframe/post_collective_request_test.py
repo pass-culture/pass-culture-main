@@ -1,0 +1,86 @@
+from datetime import datetime
+
+import pytest
+
+from pcapi.core.educational import factories as educational_factories
+
+
+pytestmark = pytest.mark.usefixtures("db_session")
+
+stock_date = datetime(2021, 5, 15)
+educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
+
+
+class Returns200Test:
+    def test_post_collective_request(self, client):
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_redactor = educational_factories.EducationalRedactorFactory()
+        offer = educational_factories.CollectiveOfferTemplateFactory()
+        offer_id = offer.id
+
+        body = {
+            "phoneNumber": "0139980101",
+            "totalStudents": 30,
+            "totalTeachers": 2,
+            "comment": "Un commentaire sublime que nous avons là",
+        }
+
+        # When
+        test_client = client.with_adage_token(
+            email=educational_redactor.email, uai=educational_institution.institutionId
+        )
+        response = test_client.post(f"/adage-iframe/collective/offers-template/{offer_id}/request", json=body)
+
+        # Then
+        assert response.status_code == 200
+        assert response.json["email"] == educational_redactor.email
+        assert response.json["phoneNumber"] == "+33139980101"
+        assert response.json["requestedDate"] == None
+        assert response.json["totalStudents"] == 30
+        assert response.json["totalTeachers"] == 2
+        assert response.json["comment"] == "Un commentaire sublime que nous avons là"
+
+
+class Returns404Test:
+    def test_post_collective_request_no_offer_template(self, client):
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="JamesHolden@rocinante.com")
+
+        body = {
+            "email": "JamesHolden@rocinante.com",
+            "phoneNumber": "0139980101",
+            "totalStudents": 30,
+            "totalTeachers": 2,
+            "comment": "Un commentaire sublime que nous avons là",
+        }
+
+        # When
+        test_client = client.with_adage_token(
+            email=educational_redactor.email, uai=educational_institution.institutionId
+        )
+        response = test_client.post("/adage-iframe/collective/offers-template/0/request", json=body)
+
+        # Then
+        assert response.status_code == 404
+        assert response.json == {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}
+
+    def test_post_collective_request_no_institution_found(self, client):
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="JamesHolden@rocinante.com")
+        offer = educational_factories.CollectiveOfferTemplateFactory()
+        offer_id = offer.id
+
+        body = {
+            "email": "JamesHolden@rocinante.com",
+            "phoneNumber": "0139980101",
+            "totalStudents": 30,
+            "totalTeachers": 2,
+            "comment": "Un commentaire sublime que nous avons là",
+        }
+
+        # When
+        test_client = client.with_adage_token(email=educational_redactor.email, uai="oh no, oh no, nonono")
+        response = test_client.post(f"/adage-iframe/collective/offers-template/{offer_id}/request", json=body)
+
+        # Then
+        assert response.status_code == 404
+        assert response.json == {"code": "INSTITUTION_NOT_FOUND"}
