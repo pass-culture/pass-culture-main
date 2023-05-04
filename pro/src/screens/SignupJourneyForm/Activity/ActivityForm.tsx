@@ -3,9 +3,9 @@ import { FieldArray, useFormikContext } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { PlusCircleIcon, TrashFilledIcon, TrashIcon } from 'icons'
+import { PlusCircleIcon, TrashFilledIcon } from 'icons'
 import { Button, CheckboxGroup, Select, TextInput } from 'ui-kit'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import ListIconButton from 'ui-kit/ListIconButton'
 
 import styles from './ActivityForm.module.scss'
