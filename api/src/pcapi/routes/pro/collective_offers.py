@@ -119,7 +119,7 @@ def create_collective_offer(
     if body.offerer_id is not None:
         logger.error("offerer_id sent in body", extra={"offerer_id": body.offerer_id})
     try:
-        body.offer_venue.venueId = humanize(body.offer_venue.venueId)  # type: ignore [assignment, arg-type]
+        body.offer_venue.venueId = humanize(body.offer_venue.venueId)  # type: ignore [arg-type]
         offer = educational_api_offer.create_collective_offer(offer_data=body, user=current_user)
     except offerers_exceptions.CannotFindOffererSiren:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
