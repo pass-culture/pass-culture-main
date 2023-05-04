@@ -36,7 +36,10 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       .array()
       .of(
         yup.object().shape({
-          quantity: yup.number(),
+          quantity: yup
+            .number()
+            .nullable()
+            .min(1, 'Veuillez indiquer un nombre supérieur à 0'),
           priceCategory: oneOfSelectOption(
             yup.string().required('Veuillez renseigner un tarif'),
             priceCategoriesOptions
