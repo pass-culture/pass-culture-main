@@ -21,7 +21,7 @@ REQUEST_BODY = {
     "siret": "85331845900031",
     "target": "INDIVIDUAL",
     "venueTypeCode": "MOVIE",
-    "webPresence": "www.example.com, instagram.com/example, @example@mastodon.example",
+    "webPresence": "https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
 }
 
 
