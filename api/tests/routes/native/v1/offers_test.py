@@ -11,13 +11,7 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.offers.factories import EventStockFactory
-from pcapi.core.offers.factories import MediationFactory
-from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import OfferReportFactory
-from pcapi.core.offers.factories import ProductFactory
-from pcapi.core.offers.factories import StockWithActivationCodesFactory
-from pcapi.core.offers.factories import ThingStockFactory
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferReport
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -54,7 +48,7 @@ class OffersTest:
             "speaker": "intervenant",
             "visa": "vasi",
         }
-        offer = OfferFactory(
+        offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             isDuo=True,
             description="desk cryption",
@@ -66,27 +60,27 @@ class OffersTest:
             externalTicketOfficeUrl="https://url.com",
             venue__name="il est venu le temps des names",
         )
-        MediationFactory(id=111, offer=offer, thumbCount=1, credit="street credit")
+        offers_factories.MediationFactory(id=111, offer=offer, thumbCount=1, credit="street credit")
 
-        bookable_stock = EventStockFactory(
+        bookable_stock = offers_factories.EventStockFactory(
             offer=offer,
             price=12.34,
             quantity=2,
             priceCategory__priceCategoryLabel__label="bookable",
         )
-        another_bookable_stock = EventStockFactory(
+        another_bookable_stock = offers_factories.EventStockFactory(
             offer=offer,
             price=12.34,
             quantity=3,
             priceCategory=bookable_stock.priceCategory,
         )
-        expired_stock = EventStockFactory(
+        expired_stock = offers_factories.EventStockFactory(
             offer=offer,
             price=45.67,
             beginningDatetime=datetime.utcnow() - timedelta(days=1),
             priceCategory__priceCategoryLabel__label="expired",
         )
-        exhausted_stock = EventStockFactory(
+        exhausted_stock = offers_factories.EventStockFactory(
             offer=offer,
             price=89.00,
             quantity=1,
@@ -216,9 +210,9 @@ class OffersTest:
         assert response.json["withdrawalDetails"] == "modalité de retrait"
 
     def test_get_offer_with_unlimited_stock(self, client):
-        product = ProductFactory(thumbCount=1, subcategoryId=subcategories.ABO_MUSEE.id)
-        offer = OfferFactory(product=product, venue__isPermanent=True)
-        ThingStockFactory(offer=offer, price=12.34, quantity=None)
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.ABO_MUSEE.id)
+        offer = offers_factories.OfferFactory(product=product, venue__isPermanent=True)
+        offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
         with assert_no_duplicated_queries():
             response = client.get(f"/native/v1/offer/{offer.id}")
@@ -227,9 +221,9 @@ class OffersTest:
         assert response.json["stocks"][0]["remainingQuantity"] is None
 
     def test_get_thing_offer(self, app):
-        product = ProductFactory(thumbCount=1, subcategoryId=subcategories.ABO_MUSEE.id)
-        offer = OfferFactory(product=product, venue__isPermanent=True)
-        ThingStockFactory(offer=offer, price=12.34)
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.ABO_MUSEE.id)
+        offer = offers_factories.OfferFactory(product=product, venue__isPermanent=True)
+        offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
         with assert_no_duplicated_queries():
@@ -247,7 +241,7 @@ class OffersTest:
 
     def test_get_digital_offer_with_available_activation_and_no_expiration_date(self, app):
         # given
-        stock = StockWithActivationCodesFactory()
+        stock = offers_factories.StockWithActivationCodesFactory()
         offer_id = stock.offer.id
 
         # when
@@ -260,7 +254,7 @@ class OffersTest:
 
     def test_get_digital_offer_with_available_activation_code_and_expiration_date(self, app):
         # given
-        stock = StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2050, 1, 1))
+        stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2050, 1, 1))
         offer_id = stock.offer.id
 
         # when
@@ -273,7 +267,7 @@ class OffersTest:
 
     def test_get_digital_offer_without_available_activation_code(self, app):
         # given
-        stock = StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2000, 1, 1))
+        stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2000, 1, 1))
         offer_id = stock.offer.id
 
         # when
@@ -286,7 +280,7 @@ class OffersTest:
 
     @freeze_time("2020-01-01")
     def test_get_expired_offer(self, app):
-        stock = EventStockFactory(beginningDatetime=datetime.utcnow() - timedelta(days=1))
+        stock = offers_factories.EventStockFactory(beginningDatetime=datetime.utcnow() - timedelta(days=1))
 
         offer_id = stock.offer.id
         with assert_no_duplicated_queries():
@@ -316,13 +310,13 @@ class OffersTest:
         providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
 
         offer_id_at_provider = f"{movie_id}%{venue_provider.venue.siret}"
-        offer = OfferFactory(
+        offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             idAtProvider=offer_id_at_provider,
             lastProviderId=venue_provider.providerId,
             venue=venue_provider.venue,
         )
-        stock = EventStockFactory(
+        stock = offers_factories.EventStockFactory(
             offer=offer,
             idAtProviders=f"{offer_id_at_provider}#{show_id}/2022-12-03",
         )
@@ -357,16 +351,16 @@ class OffersTest:
             cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/"
         )
         offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%Boost"
-        offer = OfferFactory(
+        offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             idAtProvider=offer_id_at_provider,
             lastProviderId=venue_provider.providerId,
             venue=venue_provider.venue,
         )
-        first_show_stock = EventStockFactory(
+        first_show_stock = offers_factories.EventStockFactory(
             offer=offer, idAtProviders=f"{offer_id_at_provider}#{first_show_id}", quantity=96
         )
-        second_show_stock = EventStockFactory(
+        second_show_stock = offers_factories.EventStockFactory(
             offer=offer, idAtProviders=f"{offer_id_at_provider}#{second_show_id}", quantity=96
         )
 
@@ -400,16 +394,16 @@ class OffersTest:
             cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
         )
         offer_id_at_provider = f"{allocine_movie_id}%{venue_provider.venueId}%CGR"
-        offer = OfferFactory(
+        offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             idAtProvider=offer_id_at_provider,
             lastProviderId=venue_provider.providerId,
             venue=venue_provider.venue,
         )
-        first_show_stock = EventStockFactory(
+        first_show_stock = offers_factories.EventStockFactory(
             offer=offer, idAtProviders=f"{offer_id_at_provider}#{first_show_id}", quantity=95
         )
-        second_show_stock = EventStockFactory(
+        second_show_stock = offers_factories.EventStockFactory(
             offer=offer, idAtProviders=f"{offer_id_at_provider}#{second_show_id}", quantity=95
         )
 
@@ -429,13 +423,13 @@ class OffersTest:
             idAtProvider=venue_provider.venueIdAtOfferProvider,
         )
         providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-        offer = OfferFactory(
+        offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             idAtProvider="toto",
             lastProviderId=venue_provider.providerId,
             venue=venue_provider.venue,
         )
-        EventStockFactory(offer=offer, idAtProviders="toto")
+        offers_factories.EventStockFactory(offer=offer, idAtProviders="toto")
 
         response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
 
@@ -470,7 +464,7 @@ class SendOfferWebAppLinkTest:
         assert not mails_testing.outbox
 
     def send_request(self, client):
-        offer_id = OfferFactory().id
+        offer_id = offers_factories.OfferFactory().id
         user = users_factories.BeneficiaryGrant18Factory()
         test_client = client.with_token(user.email)
 
@@ -494,7 +488,7 @@ class SendOfferLinkNotificationTest:
         """
         # offer.id must be used before the assert_num_queries context manager
         # because it triggers a SQL query.
-        offer = OfferFactory()
+        offer = offers_factories.OfferFactory()
         offer_id = offer.id
 
         user, test_client = create_user_and_test_client(app)
@@ -524,7 +518,7 @@ class SendOfferLinkNotificationTest:
 class ReportOfferTest:
     def test_report_offer(self, app):
         user, test_client = create_user_and_test_client(app)
-        offer = OfferFactory()
+        offer = offers_factories.OfferFactory()
 
         # expected queries:
         #   * select offer
@@ -553,7 +547,7 @@ class ReportOfferTest:
 
     def test_report_offer_with_custom_reason(self, app):
         user, test_client = create_user_and_test_client(app)
-        offer = OfferFactory()
+        offer = offers_factories.OfferFactory()
 
         # expected queries:
         #   * select offer
@@ -585,9 +579,9 @@ class ReportOfferTest:
 
     def test_report_offer_twice(self, app):
         user, test_client = create_user_and_test_client(app)
-        offer = OfferFactory()
+        offer = offers_factories.OfferFactory()
 
-        OfferReportFactory(user=user, offer=offer)
+        offers_factories.OfferReportFactory(user=user, offer=offer)
 
         with assert_no_duplicated_queries():
             response = test_client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "PRICE_TOO_HIGH"})
@@ -599,7 +593,7 @@ class ReportOfferTest:
 
     def test_report_offer_malformed(self, app, client):
         user = UserFactory()
-        offer = OfferFactory()
+        offer = offers_factories.OfferFactory()
 
         # user.email triggers an SQL request, same for offer.id
         # therefore, these attributes should be read outside of the
@@ -617,7 +611,7 @@ class ReportOfferTest:
         assert not mails_testing.outbox
 
     def test_report_offer_custom_reason_too_long(self, app, client):
-        offer = OfferFactory()
+        offer = offers_factories.OfferFactory()
         offer_id = offer.id
 
         with assert_num_queries(0):
@@ -630,7 +624,7 @@ class ReportOfferTest:
         assert not mails_testing.outbox
 
     def test_report_offer_unknown_reason(self, app, client):
-        offer = OfferFactory()
+        offer = offers_factories.OfferFactory()
         offer_id = offer.id
 
         with assert_num_queries(0):
@@ -668,15 +662,15 @@ class OfferReportReasonsTest:
 class ReportedOffersTest:
     def test_get_user_reported_offers(self, client):
         user = UserFactory()
-        offers = OfferFactory.create_batch(3)
+        offers = offers_factories.OfferFactory.create_batch(3)
         reports = [
-            OfferReportFactory(user=user, offer=offers[0]),
-            OfferReportFactory(user=user, offer=offers[1]),
+            offers_factories.OfferReportFactory(user=user, offer=offers[0]),
+            offers_factories.OfferReportFactory(user=user, offer=offers[1]),
         ]
 
         # offers reported by this user should not be returned
         another_user = UserFactory()
-        OfferReportFactory(user=another_user, offer=offers[2])
+        offers_factories.OfferReportFactory(user=another_user, offer=offers[2])
 
         client.with_token(user.email)
         response = client.get("/native/v1/offers/reports")
@@ -699,7 +693,7 @@ class ReportedOffersTest:
 
     def test_get_no_reported_offers(self, client):
         user = UserFactory()
-        OfferFactory()
+        offers_factories.OfferFactory()
 
         client.with_token(user.email)
         response = client.get("/native/v1/offers/reports")
