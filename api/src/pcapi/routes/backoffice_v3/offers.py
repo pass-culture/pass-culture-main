@@ -237,6 +237,64 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     )
 
 
+@list_offers_blueprint.route("/batch/validate", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+def get_batch_validate_offers_form() -> utils.BackofficeResponse:
+    form = offer_forms.BatchEmptyOfferForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.offer.batch_validate_offer"),
+        div_id="batch-validate-offer-modal",
+        title="Voulez-vous valider les offres sélectionnées ?",
+        button_text="Valider",
+    )
+
+
+@list_offers_blueprint.route("/batch-validate", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+def batch_validate_offers() -> utils.BackofficeResponse:
+    form = offer_forms.BatchEmptyOfferForm()
+    try:
+        offer_ids = [int(id) for id in form.object_ids.data.split(",")]
+    except ValueError:
+        flash("L'un des identifiants sélectionnés est invalide", "danger")
+        return redirect(request.referrer, 400)
+
+    _batch_validate_offers(offer_ids)
+    flash("Les offres ont été validées avec succès", "success")
+    return redirect(request.referrer or url_for("backoffice_v3_web.offer.list_offers"), 303)
+
+
+@list_offers_blueprint.route("/batch/reject", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+def get_batch_reject_offers_form() -> utils.BackofficeResponse:
+    form = offer_forms.BatchEmptyOfferForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.offer.batch_reject_offer"),
+        div_id="batch-reject-offer-modal",
+        title="Voulez-vous rejeter les offres sélectionnées ?",
+        button_text="Rejeter",
+    )
+
+
+@list_offers_blueprint.route("/batch-reject", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+def batch_reject_offers() -> utils.BackofficeResponse:
+    form = offer_forms.BatchEmptyOfferForm()
+    try:
+        offer_ids = [int(id) for id in form.object_ids.data.split(",")]
+    except ValueError:
+        flash("L'un des identifiants sélectionnés est invalide", "danger")
+        return redirect(request.referrer, 400)
+
+    _batch_reject_offers(offer_ids)
+    flash("Les offres ont été rejetées avec succès", "success")
+    return redirect(request.referrer or url_for("backoffice_v3_web.offer.list_offers"), 303)
+
+
 @list_offers_blueprint.route("/batch/edit", methods=["GET", "POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_batch_edit_offer_form() -> utils.BackofficeResponse:
@@ -356,26 +414,8 @@ def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def validate_offer(offer_id: int) -> utils.BackofficeResponse:
-    offer = offers_models.Offer.query.get_or_404(offer_id)
-
-    new_validation = offers_models.OfferValidationStatus.APPROVED
-    if offer.validation != new_validation:
-        offer.validation = new_validation
-        offer.lastValidationDate = datetime.datetime.utcnow()
-        offer.lastValidationType = OfferValidationType.MANUAL
-        offer.isActive = True
-
-        repository.save(offer)
-
-        recipients = (
-            [offer.venue.bookingEmail]
-            if offer.venue.bookingEmail
-            else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
-        )
-        transactional_mails.send_offer_validation_status_update_email(offer, new_validation, recipients)
-        flash("L'offre a été validée avec succès", "success")
-        search.async_index_offer_ids([offer.id])
-
+    _batch_validate_offers([offer_id])
+    flash("L'offre a été validée avec succès", "success")
     return redirect(request.referrer or url_for("backoffice_v3_web.offer.list_offers"), 303)
 
 
@@ -402,31 +442,61 @@ def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def reject_offer(offer_id: int) -> utils.BackofficeResponse:
-    offer = offers_models.Offer.query.get_or_404(offer_id)
-
-    new_validation = offers_models.OfferValidationStatus.REJECTED
-    if offer.validation != new_validation:
-        offer.validation = new_validation
-        offer.lastValidationDate = datetime.datetime.utcnow()
-        offer.lastValidationType = OfferValidationType.MANUAL
-        offer.isActive = False
-        # cancel_bookings_from_rejected_offer can raise handled exceptions that drop the
-        # modifications of the offer; we save them here first
-        repository.save(offer)
-
-        cancelled_bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
-        if cancelled_bookings:
-            push_notification_job.send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
-
-        repository.save(offer)
-
-        recipients = (
-            [offer.venue.bookingEmail]
-            if offer.venue.bookingEmail
-            else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
-        )
-        transactional_mails.send_offer_validation_status_update_email(offer, new_validation, recipients)
-        flash("L'offre a été rejetée avec succès", "success")
-        search.async_index_offer_ids([offer.id])
-
+    _batch_reject_offers([offer_id])
+    flash("L'offre a été rejetée avec succès", "success")
     return redirect(request.referrer or url_for("backoffice_v3_web.offer.list_offers"), 303)
+
+
+def _batch_validate_offers(offer_ids: list[int]) -> None:
+    new_validation = offers_models.OfferValidationStatus.APPROVED
+    offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids)).all()
+
+    for offer in offers:
+        if offer.validation != new_validation:
+            offer.validation = new_validation
+            offer.lastValidationDate = datetime.datetime.utcnow()
+            offer.lastValidationType = OfferValidationType.MANUAL
+            offer.isActive = True
+
+            repository.save(offer)
+
+            recipients = (
+                [offer.venue.bookingEmail]
+                if offer.venue.bookingEmail
+                else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
+            )
+            transactional_mails.send_offer_validation_status_update_email(offer, new_validation, recipients)
+
+    search.async_index_offer_ids(offer_ids)
+
+
+def _batch_reject_offers(offer_ids: list[int]) -> None:
+    new_validation = offers_models.OfferValidationStatus.REJECTED
+    offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids)).all()
+
+    for offer in offers:
+        if offer.validation != new_validation:
+            offer.validation = new_validation
+            offer.lastValidationDate = datetime.datetime.utcnow()
+            offer.lastValidationType = OfferValidationType.MANUAL
+            offer.isActive = False
+            # cancel_bookings_from_rejected_offer can raise handled exceptions that drop the
+            # modifications of the offer; we save them here first
+            repository.save(offer)
+
+            cancelled_bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
+            if cancelled_bookings:
+                push_notification_job.send_cancel_booking_notification.delay(
+                    [booking.id for booking in cancelled_bookings]
+                )
+
+            repository.save(offer)
+
+            recipients = (
+                [offer.venue.bookingEmail]
+                if offer.venue.bookingEmail
+                else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
+            )
+            transactional_mails.send_offer_validation_status_update_email(offer, new_validation, recipients)
+
+    search.async_index_offer_ids(offer_ids)
