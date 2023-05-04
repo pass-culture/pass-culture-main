@@ -436,6 +436,14 @@ class OffersTest:
         assert response.json["isReleased"] is False
         assert offer.isActive is False
 
+    def should_have_metadata_describing_the_offer(self, client):
+        offer = offers_factories.ThingOfferFactory()
+
+        response = client.get(f"/native/v1/offer/{offer.id}")
+
+        assert isinstance(response.json["metadata"], dict)
+        assert response.json["metadata"]["@type"] == "Product"
+
 
 class SendOfferWebAppLinkTest:
     def test_sendinblue_send_offer_webapp_link_by_email(self, client):

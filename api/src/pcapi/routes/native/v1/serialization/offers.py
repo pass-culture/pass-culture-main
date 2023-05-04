@@ -9,6 +9,7 @@ from pcapi.core.bookings.api import compute_booking_cancellation_limit_date
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import offer_metadata
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import Offer
@@ -183,6 +184,7 @@ class OfferResponse(BaseModel):
         }
         offer.expense_domains = get_expense_domains(offer)
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
+        offer.metadata = offer_metadata.get_metadata_from_offer(offer)
 
         result = super().from_orm(offer)
 
@@ -206,6 +208,7 @@ class OfferResponse(BaseModel):
     isDigital: bool
     isDuo: bool
     isEducational: bool
+    metadata: offer_metadata.Metadata
     name: str
     stocks: list[OfferStockResponse]
     subcategoryId: subcategories.SubcategoryIdEnum
