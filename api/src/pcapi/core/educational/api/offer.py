@@ -28,6 +28,7 @@ from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.routes.adage.v1.serialization import prebooking
+from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
@@ -728,3 +729,25 @@ def duplicate_offer_and_stock(original_offer: educational_models.CollectiveOffer
 
         db.session.commit()
     return offer
+
+
+def create_offer_request(
+    body: PostCollectiveRequestBodyModel,
+    offer: educational_models.CollectiveOfferTemplate,
+    institution: educational_models.EducationalInstitution,
+    email_redactor: str,
+) -> educational_models.CollectiveOfferRequest:
+    request = educational_models.CollectiveOfferRequest(
+        phoneNumber=body.phone_number,  # type: ignore [call-arg]
+        requestedDate=body.requested_date,
+        totalStudents=body.total_students,
+        totalTeachers=body.total_teachers,
+        comment=body.comment,
+        collectiveOfferTemplateId=offer.id,
+        educationalInstitutionId=institution.id,
+    )
+
+    db.session.add(request)
+    db.session.commit()
+    request.email = email_redactor
+    return request

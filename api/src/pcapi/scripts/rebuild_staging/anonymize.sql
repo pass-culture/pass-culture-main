@@ -254,3 +254,8 @@ WHERE reason is not null
 TRUNCATE TABLE activity;
 TRUNCATE TABLE user_session;
 UPDATE venue_provider SET "isActive" = false;
+
+-- Anonymize redactor for table CollectiveOfferRequest
+UPDATE collective_offer_request
+SET
+    "phoneNumber" =  pg_temp.fake_phone_number_from_id(id);
