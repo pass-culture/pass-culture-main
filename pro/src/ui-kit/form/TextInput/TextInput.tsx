@@ -101,6 +101,14 @@ const TextInput = ({
               testInput && event.preventDefault()
             }
           }}
+          // Disable changing input value on scroll over a number input
+          onWheel={event => {
+            if (type === 'number') {
+              // We blur so that the input loses focus and the scroll still happens on the page
+              // otherwise the user can't scroll the page if the cursor is over the input
+              event.currentTarget.blur()
+            }
+          }}
           {...field}
           {...props}
         />
