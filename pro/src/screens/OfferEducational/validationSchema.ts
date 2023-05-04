@@ -54,10 +54,13 @@ export const validationSchema = yup.object().shape({
       is: OfferAddressType.OTHER,
       then: schema => schema.required('Veuillez renseigner une adresse'),
     }),
-    venueId: yup.string().when('addressType', {
-      is: OfferAddressType.OFFERER_VENUE,
-      then: schema => schema.required('Veuillez sélectionner un lieu'),
-    }),
+    venueId: yup
+      .string()
+      .nullable()
+      .when('addressType', {
+        is: OfferAddressType.OFFERER_VENUE,
+        then: schema => schema.required('Veuillez sélectionner un lieu'),
+      }),
   }),
   participants: yup.object().test({
     name: 'is-one-true',
