@@ -890,6 +890,7 @@ def test_public_api(client):
                         "isForbiddenToUnderage": {"title": "Isforbiddentounderage", "type": "boolean"},
                         "isReleased": {"title": "Isreleased", "type": "boolean"},
                         "isSoldOut": {"title": "Issoldout", "type": "boolean"},
+                        "metadata": {"title": "Metadata", "type": "object"},
                         "name": {"title": "Name", "type": "string"},
                         "stocks": {
                             "items": {"$ref": "#/components/schemas/OfferStockResponse"},
@@ -911,6 +912,7 @@ def test_public_api(client):
                         "isDigital",
                         "isDuo",
                         "isEducational",
+                        "metadata",
                         "name",
                         "stocks",
                         "subcategoryId",
