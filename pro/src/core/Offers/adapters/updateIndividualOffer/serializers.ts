@@ -1,4 +1,4 @@
-import { PatchOfferBodyModel } from 'apiClient/v1'
+import { PatchOfferBodyModel, WithdrawalTypeEnum } from 'apiClient/v1'
 import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers'
 import { IOfferExtraData, IOfferIndividual } from 'core/Offers/types'
@@ -88,11 +88,11 @@ export const serializePatchOffer = ({
     name: sentValues.name,
     withdrawalDelay:
       sentValues.withdrawalDelay === undefined
-        ? sentValues.withdrawalType
+        ? sentValues.withdrawalType === WithdrawalTypeEnum.NO_TICKET
           ? null
           : undefined
         : Number(sentValues.withdrawalDelay),
-    withdrawalDetails: sentValues.withdrawalDetails || undefined,
+    withdrawalDetails: sentValues.withdrawalDetails ?? undefined,
     visualDisabilityCompliant:
       sentValues.accessibility &&
       sentValues.accessibility[AccessiblityEnum.VISUAL],
