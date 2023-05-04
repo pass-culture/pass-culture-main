@@ -72,7 +72,7 @@ main {
   &.container {
     position: relative;
     max-width: rem.torem(874px);
-    margin: rem.torem(-88px) auto 0 auto;
+    margin: rem.torem(-88px) auto calc(size.$action-bar-sticky-height + rem.torem(16px)) auto;
 
     .page-content {
       background: colors.$white;
