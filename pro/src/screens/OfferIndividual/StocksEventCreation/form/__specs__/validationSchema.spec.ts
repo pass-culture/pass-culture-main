@@ -58,6 +58,7 @@ describe('validationSchema', () => {
         'Veuillez renseigner une date de début',
         'Veuillez renseigner un horaire',
         '"666 " n’est pas une valeur valide de la liste',
+        'Veuillez indiquer un nombre supérieur à 0',
         'quantityPerPriceCategories[1].quantity must be a `number` type, but the final value was: `NaN` (cast from the value `""`).',
         'Veuillez renseigner un tarif',
         'bookingLimitDateInterval must be a `number` type, but the final value was: `NaN` (cast from the value `""`).',
