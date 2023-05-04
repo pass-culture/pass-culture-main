@@ -91,7 +91,8 @@ const OfferType = (): JSX.Element => {
       setIsLoadingEligibility(true)
       const offererNames = await api.listOfferersNames()
 
-      const offererId = queryOffererId ?? offererNames.offerersNames[0].id
+      const offererId =
+        queryOffererId ?? offererNames.offerersNames[0].nonHumanizedId
       if (offererNames.offerersNames.length > 1 && !queryOffererId) {
         setIsEligible(true)
         setIsLoadingEligibility(false)
@@ -364,7 +365,8 @@ const OfferType = (): JSX.Element => {
                 </FormLayout.Section>
               )}
 
-            {(isLoadingEligibility || isLoadingValidation) && <Spinner />}
+            {values.offerType === OFFER_TYPES.EDUCATIONAL &&
+              (isLoadingEligibility || isLoadingValidation) && <Spinner />}
             {values.offerType === OFFER_TYPES.EDUCATIONAL && !isValidated && (
               <Banner>
                 Votre structure est en cours de validation par les équipes pass
