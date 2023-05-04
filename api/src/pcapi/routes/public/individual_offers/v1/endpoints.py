@@ -1,4 +1,5 @@
 import copy
+import itertools
 import logging
 
 import flask
@@ -43,25 +44,30 @@ ASPECT_RATIO = image_conversion.ImageRatio.PORTRAIT
 
 @blueprint.v1_blueprint.route("/offerer_venues", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[OFFERER_VENUES_TAG], response_model=serialization.GetOffererVenuesResponse
+    api=blueprint.v1_schema, tags=[OFFERER_VENUES_TAG], response_model=serialization.GetOfferersVenuesResponse
 )
 @api_key_required
-def get_offerer_venues() -> serialization.GetOffererVenuesResponse:
+def get_offerer_venues() -> serialization.GetOfferersVenuesResponse:
     """
     Get offerer attached the API key used and its venues.
     """
-    offerer = (
-        offerers_models.Offerer.query.filter(offerers_models.Offerer.id == current_api_key.offererId)
-        .options(sqla_orm.joinedload(offerers_models.Offerer.managedVenues))
-        .one()
+    query = (
+        db.session.query(offerers_models.Offerer, offerers_models.Venue)
+        .join(offerers_models.Venue, offerers_models.Offerer.managedVenues)
+        .join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
+        .filter(providers_models.VenueProvider.provider == current_api_key.provider)
+        .order_by(offerers_models.Offerer.id, offerers_models.Venue.id)
     )
-    return serialization.GetOffererVenuesResponse(
-        offerer=offerer,
-        venues=[
-            serialization.VenueResponse.build_model(venue)
-            for venue in sorted(offerer.managedVenues, key=lambda venue: venue.id)
-        ],
-    )
+
+    accessible_venues_and_offerer = []
+    for offerer, group in itertools.groupby(query, lambda row: row.Offerer):
+        accessible_venues_and_offerer.append(
+            {
+                "offerer": offerer,
+                "venues": [serialization.VenueResponse.build_model(row.Venue) for row in group],
+            }
+        )
+    return serialization.GetOfferersVenuesResponse(__root__=accessible_venues_and_offerer)  # type: ignore [arg-type]
 
 
 def _retrieve_venue_from_location(

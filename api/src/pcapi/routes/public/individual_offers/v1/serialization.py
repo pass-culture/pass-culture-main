@@ -927,5 +927,9 @@ class GetOffererVenuesResponse(serialization.ConfiguredBaseModel):
     )
     venues: typing.List[VenueResponse]
 
+
+class GetOfferersVenuesResponse(serialization.BaseModel):
+    __root__: typing.List[GetOffererVenuesResponse]
+
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
