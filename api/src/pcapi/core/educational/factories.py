@@ -285,3 +285,13 @@ class CollectiveDmsApplicationFactory(BaseFactory):
     depositDate = datetime.datetime.utcnow() - datetime.timedelta(days=10)
     expirationDate = datetime.datetime.utcnow() + datetime.timedelta(days=365)
     buildDate = factory.SelfAttribute("lastChangeDate")
+
+
+class CollectiveOfferRequest(BaseFactory):
+    class Meta:
+        model = models.CollectiveOfferRequest
+
+    comment = "Un commentaire sublime"
+    educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
+    educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
+    collectiveOfferTemplate = factory.SubFactory(CollectiveOfferTemplateFactory)

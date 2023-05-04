@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 import enum
 import logging
@@ -245,3 +246,28 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
         allow_population_by_field_name = True
         json_encoders = {datetime: format_into_utc_date}
         use_enum_values = True
+
+
+class CollectiveRequestResponseModel(BaseModel):
+    email: str
+    phone_number: str | None
+    requested_date: date | None
+    total_students: int | None
+    total_teachers: int | None
+    comment: str
+
+    class Config:
+        alias_generator = to_camel
+        orm_mode = True
+        json_encoders = {datetime: format_into_utc_date}
+
+
+class PostCollectiveRequestBodyModel(BaseModel):
+    phone_number: str | None
+    requested_date: date | None
+    total_students: int | None
+    total_teachers: int | None
+    comment: str
+
+    class Config:
+        alias_generator = to_camel

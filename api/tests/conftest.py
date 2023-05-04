@@ -43,6 +43,7 @@ from pcapi.repository.clean_database import clean_all_database
 from pcapi.routes.backoffice_v3 import install_routes
 from pcapi.utils.module_loading import import_string
 
+from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 from tests.serialization.serialization_decorator_test import test_blueprint
 
 
@@ -430,6 +431,16 @@ class TestClient:
     def with_explicit_token(self, token: str) -> "TestClient":
         self.auth_header = {
             "Authorization": f"Bearer {token}",
+        }
+        return self
+
+    def with_adage_token(self, email: str, uai: str) -> "TestClient":
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
+            email=email,
+            uai=uai,
+        )
+        self.auth_header = {
+            "Authorization": f"Bearer {adage_jwt_fake_valid_token}",
         }
         return self
 
