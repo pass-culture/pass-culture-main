@@ -28,6 +28,16 @@ from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.email import sanitize_email
 
 
+class TrustedDevice(BaseModel):
+    device_id: str
+    os: str | None
+    source: str | None
+
+    class Config:
+        alias_generator = to_camel
+        anystr_strip_whitespace = True
+
+
 class AccountRequest(BaseModel):
     email: str
     password: str
@@ -36,6 +46,7 @@ class AccountRequest(BaseModel):
     token: str
     apps_flyer_user_id: str | None = None
     apps_flyer_platform: str | None = None
+    trusted_device: TrustedDevice | None = None
 
     class Config:
         alias_generator = to_camel
