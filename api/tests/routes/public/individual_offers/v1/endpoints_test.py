@@ -34,8 +34,7 @@ ACCESSIBILITY_FIELDS = {
 }
 
 
-def create_offerer_provider_linked_to_venue(venue_params=None, is_virtual=False):
-    venue_params = venue_params if venue_params else {}
+def create_offerer_provider():
     offerer = offerers_factories.OffererFactory(name="Technical provider")
     provider = providers_factories.ProviderFactory(
         name="Technical provider", localClass=None, isActive=True, enabledForPro=True
@@ -48,6 +47,12 @@ def create_offerer_provider_linked_to_venue(venue_params=None, is_virtual=False)
         offerer=offerer,
         provider=provider,
     )
+    return provider, api_key
+
+
+def create_offerer_provider_linked_to_venue(venue_params=None, is_virtual=False):
+    venue_params = venue_params if venue_params else {}
+    provider, api_key = create_offerer_provider()
     if is_virtual:
         venue = offerers_factories.VirtualVenueFactory(**venue_params)
     else:
@@ -59,96 +64,135 @@ def create_offerer_provider_linked_to_venue(venue_params=None, is_virtual=False)
 @pytest.mark.usefixtures("db_session")
 class GetOffererVenuesTest:
     def test_get_offerer_venues(self, client):
-        offerer = offerers_factories.OffererFactory(
+        provider, _ = create_offerer_provider()
+        offerer_with_two_venues = offerers_factories.OffererFactory(
             name="Offreur de fleurs", dateCreated=datetime.datetime(2022, 2, 22, 22, 22, 22), siren="123456789"
         )
-        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         digital_venue = offerers_factories.VirtualVenueFactory(
-            managingOfferer=api_key.offerer,
+            managingOfferer=offerer_with_two_venues,
             dateCreated=datetime.datetime(2023, 1, 16),
             name="Do you diji",
             publicName="Diji",
             venueTypeCode=offerers_models.VenueTypeCode.ARTISTIC_COURSE,
         )
+        providers_factories.VenueProviderFactory(venue=digital_venue, provider=provider, venueIdAtOfferProvider="Test")
         physical_venue = offerers_factories.VenueFactory(
-            managingOfferer=api_key.offerer,
+            managingOfferer=offerer_with_two_venues,
             dateCreated=datetime.datetime(2023, 1, 16, 1, 1, 1),
             name="Coiffeur Librairie",
             publicName="Tiff tuff",
             siret="12345678912345",
             venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
         )
+        providers_factories.VenueProviderFactory(venue=physical_venue, provider=provider, venueIdAtOfferProvider="Test")
+
+        offerer_with_one_venue = offerers_factories.OffererFactory(
+            name="Offreur de prune", dateCreated=datetime.datetime(2022, 2, 22, 22, 22, 22), siren="123456781"
+        )
+        other_physical_venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer_with_one_venue,
+            dateCreated=datetime.datetime(2023, 1, 16, 1, 1, 1),
+            name="Toiletteur Librairie",
+            publicName="wiff wuff",
+            siret="12345678112345",
+            venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
+        )
+        providers_factories.VenueProviderFactory(
+            venue=other_physical_venue, provider=provider, venueIdAtOfferProvider="Test"
+        )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
             "/public/offers/v1/offerer_venues",
         )
-
         assert response.status_code == 200
-        assert response.json["offerer"] == {
-            "createdDatetime": "2022-02-22T22:22:22Z",
-            "id": offerer.id,
-            "name": "Offreur de fleurs",
-            "siren": "123456789",
+        assert len(response.json) == 2
+        assert response.json[0] == {
+            "offerer": {
+                "createdDatetime": "2022-02-22T22:22:22Z",
+                "id": offerer_with_two_venues.id,
+                "name": "Offreur de fleurs",
+                "siren": "123456789",
+            },
+            "venues": [
+                {
+                    "accessibility": {
+                        "audioDisabilityCompliant": None,
+                        "mentalDisabilityCompliant": None,
+                        "motorDisabilityCompliant": None,
+                        "visualDisabilityCompliant": None,
+                    },
+                    "activityDomain": "ARTISTIC_COURSE",
+                    "createdDatetime": "2023-01-16T00:00:00Z",
+                    "id": digital_venue.id,
+                    "legalName": "Do you diji",
+                    "location": {"type": "digital"},
+                    "publicName": "Diji",
+                    "siret": None,
+                    "siretComment": None,
+                },
+                {
+                    "accessibility": {
+                        "audioDisabilityCompliant": False,
+                        "mentalDisabilityCompliant": False,
+                        "motorDisabilityCompliant": False,
+                        "visualDisabilityCompliant": False,
+                    },
+                    "activityDomain": "BOOKSTORE",
+                    "createdDatetime": "2023-01-16T01:01:01Z",
+                    "id": physical_venue.id,
+                    "legalName": "Coiffeur Librairie",
+                    "location": {
+                        "address": "1 boulevard Poissonnière",
+                        "city": "Paris",
+                        "postalCode": "75000",
+                        "type": "physical",
+                    },
+                    "publicName": "Tiff tuff",
+                    "siret": "12345678912345",
+                    "siretComment": None,
+                },
+            ],
         }
-        assert response.json["venues"] == [
-            {
-                "activityDomain": "ARTISTIC_COURSE",
-                "createdDatetime": "2023-01-16T00:00:00Z",
-                "publicName": "Diji",
-                "id": digital_venue.id,
-                "legalName": "Do you diji",
-                "location": {"type": "digital"},
-                "accessibility": {
-                    "audioDisabilityCompliant": None,
-                    "mentalDisabilityCompliant": None,
-                    "motorDisabilityCompliant": None,
-                    "visualDisabilityCompliant": None,
-                },
-                "siret": None,
-                "siretComment": None,
+        assert response.json[1] == {
+            "offerer": {
+                "createdDatetime": "2022-02-22T22:22:22Z",
+                "id": offerer_with_one_venue.id,
+                "name": "Offreur de prune",
+                "siren": "123456781",
             },
-            {
-                "activityDomain": "BOOKSTORE",
-                "createdDatetime": "2023-01-16T01:01:01Z",
-                "publicName": "Tiff tuff",
-                "id": physical_venue.id,
-                "legalName": "Coiffeur Librairie",
-                "accessibility": {
-                    "audioDisabilityCompliant": False,
-                    "mentalDisabilityCompliant": False,
-                    "motorDisabilityCompliant": False,
-                    "visualDisabilityCompliant": False,
-                },
-                "location": {
-                    "address": "1 boulevard Poissonnière",
-                    "city": "Paris",
-                    "postalCode": "75000",
-                    "type": "physical",
-                },
-                "siret": "12345678912345",
-                "siretComment": None,
-            },
-        ]
+            "venues": [
+                {
+                    "accessibility": {
+                        "audioDisabilityCompliant": False,
+                        "mentalDisabilityCompliant": False,
+                        "motorDisabilityCompliant": False,
+                        "visualDisabilityCompliant": False,
+                    },
+                    "activityDomain": "BOOKSTORE",
+                    "createdDatetime": "2023-01-16T01:01:01Z",
+                    "id": other_physical_venue.id,
+                    "legalName": "Toiletteur Librairie",
+                    "location": {
+                        "address": "1 boulevard Poissonnière",
+                        "city": "Paris",
+                        "postalCode": "75000",
+                        "type": "physical",
+                    },
+                    "publicName": "wiff wuff",
+                    "siret": "12345678112345",
+                    "siretComment": None,
+                }
+            ],
+        }
 
     def test_when_no_venues(self, client):
-        offerer = offerers_factories.OffererFactory(
-            name="Offreur sans fleurs", dateCreated=datetime.datetime(2022, 2, 22, 22, 22, 22), siren="123456789"
-        )
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        create_offerer_provider()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
             "/public/offers/v1/offerer_venues",
         )
         assert response == 200
-        assert response.json == {
-            "offerer": {
-                "createdDatetime": "2022-02-22T22:22:22Z",
-                "id": offerer.id,
-                "name": "Offreur sans fleurs",
-                "siren": "123456789",
-            },
-            "venues": [],
-        }
+        assert response.json == []
 
 
 class PostProductTest:
