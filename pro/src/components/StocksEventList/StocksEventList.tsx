@@ -34,7 +34,7 @@ interface IStocksEventListProps {
   stocks: IStocksEvent[]
   priceCategories: PriceCategoryResponseModel[]
   className?: string
-  departmentCode?: string
+  departmentCode: string
   offerId: string
   setStocks: (stocks: IStocksEvent[]) => void
 }
