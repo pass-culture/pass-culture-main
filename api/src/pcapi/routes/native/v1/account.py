@@ -22,6 +22,7 @@ from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import api_errors
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
@@ -143,7 +144,7 @@ def create_account(body: serializers.AccountRequest) -> None:
             raise ApiErrors({"token": "The given token is not valid"})
 
     try:
-        api.create_account(
+        created_user = api.create_account(
             email=body.email,
             password=body.password,
             birthdate=body.birthdate,
@@ -152,6 +153,14 @@ def create_account(body: serializers.AccountRequest) -> None:
             apps_flyer_user_id=body.apps_flyer_user_id,
             apps_flyer_platform=body.apps_flyer_platform,
         )
+
+        device_info = body.trusted_device
+        if device_info and device_info.device_id:
+            trusted_device = users_models.TrustedDevice(
+                deviceId=device_info.device_id, os=device_info.os, source=device_info.source, user=created_user
+            )
+            repository.save(trusted_device)
+
     except exceptions.UserAlreadyExistsException:
         user = find_user_by_email(body.email)
         try:

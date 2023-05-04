@@ -18,6 +18,11 @@ def test_public_api(client):
                         },
                         "password": {"title": "Password", "type": "string"},
                         "token": {"title": "Token", "type": "string"},
+                        "trustedDevice": {
+                            "anyOf": [{"$ref": "#/components/schemas/TrustedDevice"}],
+                            "nullable": True,
+                            "title": "TrustedDevice",
+                        },
                     },
                     "required": ["email", "password", "birthdate", "token"],
                     "title": "AccountRequest",
@@ -1595,6 +1600,16 @@ def test_public_api(client):
                     },
                     "required": ["subscriptionStepsToDisplay", "allowedIdentityCheckMethods", "title"],
                     "title": "SubscriptionStepperResponse",
+                    "type": "object",
+                },
+                "TrustedDevice": {
+                    "properties": {
+                        "deviceId": {"title": "Deviceid", "type": "string"},
+                        "os": {"nullable": True, "title": "Os", "type": "string"},
+                        "source": {"nullable": True, "title": "Source", "type": "string"},
+                    },
+                    "required": ["deviceId"],
+                    "title": "TrustedDevice",
                     "type": "object",
                 },
                 "UpdateEmailTokenExpiration": {
