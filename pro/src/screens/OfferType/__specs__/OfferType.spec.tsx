@@ -392,6 +392,10 @@ describe('screens:OfferIndividual::OfferType', () => {
 
     renderOfferTypes(store, '123')
 
+    await userEvent.click(
+      screen.getByRole('radio', { name: 'À un groupe scolaire' })
+    )
+
     expect(await screen.findByText('Chargement en cours')).toBeInTheDocument()
   })
 })
