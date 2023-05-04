@@ -130,8 +130,9 @@ def _check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
         return
 
     is_venue_tied_to_api_key = db.session.query(
-        offerers_models.Venue.query.filter(
-            offerers_models.Venue.managingOffererId == current_api_key.offererId, offerers_models.Venue.id == venue_id
+        providers_models.VenueProvider.query.filter(
+            providers_models.VenueProvider.provider == current_api_key.provider,
+            providers_models.VenueProvider.venueId == venue_id,
         ).exists()
     ).scalar()
     if not is_venue_tied_to_api_key:
@@ -141,7 +142,8 @@ def _check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
 def _retrieve_offer_ids(is_event: bool, filtered_venue_id: int | None) -> list[int]:
     offer_ids_query = (
         offers_models.Offer.query.join(offerers_models.Venue)
-        .filter(offerers_models.Venue.managingOffererId == current_api_key.offererId)
+        .join(providers_models.VenueProvider)
+        .filter(providers_models.VenueProvider.provider == current_api_key.provider)
         .filter(offers_models.Offer.isEvent == is_event)
         .with_entities(offers_models.Offer.id)
         .order_by(offers_models.Offer.id)

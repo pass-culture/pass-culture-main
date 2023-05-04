@@ -763,7 +763,7 @@ class PaginationQueryParams(serialization.ConfiguredBaseModel):
 
 
 class GetOffersQueryParams(PaginationQueryParams):
-    venue_id: int | None = pydantic.Field(None, description="Venue id to filter offers on. Optional.")
+    venue_id: int = pydantic.Field(..., description="Venue id to filter offers on. Optional.")
 
 
 class GetDatesQueryParams(PaginationQueryParams):
