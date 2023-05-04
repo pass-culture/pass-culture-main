@@ -223,6 +223,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         server_default="{}",
     )
     schoolType = sa.Column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
+    trusted_devices: list["TrustedDevice"] = orm.relationship("TrustedDevice", back_populates="user")
     validatedBirthDate = sa.Column(sa.Date, nullable=True)  # validated by an Identity Provider
     backoffice_profile = orm.relationship("BackOfficeUserProfile", uselist=False, back_populates="user")  # type: ignore [misc]
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
@@ -769,3 +770,16 @@ class UserProFlags(PcObject, Base, Model):
         nullable=False,
     )
     user: User = orm.relationship(User, foreign_keys=[userId], back_populates="pro_flags", uselist=False)
+
+
+class TrustedDevice(PcObject, Base, Model):
+    __tablename__ = "trusted_device"
+
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
+    user: User = orm.relationship(User, foreign_keys=[userId], back_populates="trusted_devices")
+
+    deviceId: str = sa.Column(sa.Text, nullable=False, index=True)
+
+    source = sa.Column(sa.Text, nullable=True)
+    os = sa.Column(sa.Text, nullable=True)
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
