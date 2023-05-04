@@ -198,6 +198,9 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         ),
     )
 
+    venue: sa_orm.Mapped["Venue"] = sa.orm.relationship("Venue", backref="stocks")
+    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
+
     @property
     def isBookable(self) -> bool:
         return self._bookable and self.offer.isReleased

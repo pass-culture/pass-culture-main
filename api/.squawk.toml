@@ -2,7 +2,6 @@ pg_version = "15.5"
 excluded_rules = [
   # backward compatibility is not needed because we are the only ones using our database
   "adding-required-field",
-  "ban-drop-column",
   "ban-drop-not-null",
   "renaming-table",
   "renaming-column",
