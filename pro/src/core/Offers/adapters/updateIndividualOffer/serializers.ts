@@ -88,7 +88,9 @@ export const serializePatchOffer = ({
     name: sentValues.name,
     withdrawalDelay:
       sentValues.withdrawalDelay === undefined
-        ? null
+        ? sentValues.withdrawalDetails
+          ? null
+          : undefined
         : Number(sentValues.withdrawalDelay),
     withdrawalDetails: sentValues.withdrawalDetails || undefined,
     visualDisabilityCompliant:
