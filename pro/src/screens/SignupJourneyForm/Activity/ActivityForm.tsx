@@ -3,9 +3,10 @@ import { FieldArray, useFormikContext } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { PlusCircleIcon, TrashFilledIcon } from 'icons'
+import { PlusCircleIcon, TrashFilledIcon, TrashIcon } from 'icons'
 import { Button, CheckboxGroup, Select, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import ListIconButton from 'ui-kit/ListIconButton'
 
 import styles from './ActivityForm.module.scss'
 import { activityTargetCustomerCheckboxGroup } from './constants'
@@ -70,17 +71,15 @@ const ActivityForm = ({ venueTypes }: IActivityFormProps): JSX.Element => {
                     [styles['first-row']]: index === 0,
                   })}
                 >
-                  <Button
-                    variant={ButtonVariant.TERNARY}
-                    Icon={TrashFilledIcon}
-                    iconPosition={IconPositionEnum.CENTER}
-                    disabled={values.socialUrls.length <= 1}
-                    onClick={() => arrayHelpers.remove(index)}
-                    className={styles['delete-button']}
+                  <ListIconButton
                     hasTooltip
+                    Icon={TrashFilledIcon}
+                    onClick={() => arrayHelpers.remove(index)}
+                    disabled={values.socialUrls.length <= 1}
+                    className={styles['delete-button']}
                   >
                     Supprimer l'url
-                  </Button>
+                  </ListIconButton>
                 </div>
               </FormLayout.Row>
             ))}

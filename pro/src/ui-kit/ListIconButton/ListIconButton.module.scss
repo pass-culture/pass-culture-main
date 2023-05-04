@@ -28,8 +28,8 @@
     background-color: transparent;
   }
 
-  &:hover {
-    background-color: #ede3ff;
+  &:hover:not(:disabled) {
+    background-color: hsl(261, 100%, 95%);
     outline: 0;
 
     .button-icon {
@@ -46,6 +46,14 @@
 
     &:active {
       fill: colors.$tertiary;
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+
+    .button-icon {
+      fill: colors.$grey-semi-dark;
     }
   }
 }

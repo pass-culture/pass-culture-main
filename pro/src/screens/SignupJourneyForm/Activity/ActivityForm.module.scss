@@ -12,12 +12,12 @@
 }
 
 .form-row-actions {
-  margin-top: rem.torem(8px);
+  margin-top: rem.torem(4px);
 }
 
 .first-row {
   margin-top: calc(
-    #{forms.$label-space-before-input} + #{forms.$input-space-before-error} + #{fonts.$caption-line-height} + #{forms.$input-border-width-focus * 2}
+    #{forms.$label-space-before-input} + #{forms.$input-space-before-error} + #{fonts.$caption-line-height}
   );
 }
 
