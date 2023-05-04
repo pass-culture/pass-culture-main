@@ -14,7 +14,7 @@ class Returns204Test:
         user = users_factories.UserFactory()
 
         client = client.with_session_auth(user.email)
-        response = client.post(ROUTE_PATH, json={"firebase": {"BETTER_OFFER_CREATION": True}})
+        response = client.post(ROUTE_PATH, json={"firebase": {"BETTER_OFFER_CREATION": "true"}})
 
         assert response.status_code == 204
 
@@ -23,7 +23,7 @@ class Returns204Test:
         user = flags.user
 
         client = client.with_session_auth(user.email)
-        response = client.post(ROUTE_PATH, json={"firebase": {"BETTER_OFFER_CREATION": True}})
+        response = client.post(ROUTE_PATH, json={"firebase": {"BETTER_OFFER_CREATION": "true"}})
 
         assert response.status_code == 204
 
@@ -32,7 +32,7 @@ class Returns204Test:
         user = flags.user
 
         client = client.with_session_auth(user.email)
-        response = client.post(ROUTE_PATH, json={"firebase": {"BETTER_OFFER_CREATION": False}})
+        response = client.post(ROUTE_PATH, json={"firebase": {"BETTER_OFFER_CREATION": "false"}})
 
         assert response.status_code == 204
 
@@ -46,4 +46,4 @@ class Returns400Test:
         response = client.post(ROUTE_PATH, json={"unknwown": {"toto": 10}})
 
         assert response.status_code == 400
-        assert user.pro_flags.firebase == {"BETTER_OFFER_CREATION": True}
+        assert user.pro_flags.firebase == {"BETTER_OFFER_CREATION": "true"}
