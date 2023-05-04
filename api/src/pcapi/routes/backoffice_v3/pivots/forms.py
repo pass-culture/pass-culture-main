@@ -52,7 +52,7 @@ class EditBoostForm(EditPivotForm):
         pivot = providers_repository.get_pivot_for_id_at_provider(
             id_at_provider=self.cinema_id.data, provider_id=boost_provider.id
         )
-        if pivot and pivot.venueId != self.venue_id.data[0]:
+        if pivot and len(self.venue_id.data) > 0 and pivot.venueId != self.venue_id.data[0]:
             flash("Cet identifiant cinéma existe déjà pour un autre lieu", "danger")
             return False
 
@@ -79,7 +79,7 @@ class EditCGRForm(EditPivotForm):
         pivot = providers_repository.get_pivot_for_id_at_provider(
             id_at_provider=self.cinema_id.data, provider_id=cgr_provider.id
         )
-        if pivot and pivot.venueId != self.venue_id.data[0]:
+        if pivot and len(self.venue_id.data) > 0 and pivot.venueId != self.venue_id.data[0]:
             flash("Cet identifiant cinéma existe déjà pour un autre lieu", "danger")
             return False
 
@@ -100,7 +100,7 @@ class EditCineOfficeForm(EditPivotForm):
         pivot = providers_repository.get_pivot_for_id_at_provider(
             id_at_provider=self.cinema_id.data, provider_id=cds_provider.id
         )
-        if pivot and pivot.venueId != self.venue_id.data[0]:
+        if pivot and len(self.venue_id.data) > 0 and pivot.venueId != self.venue_id.data[0]:
             flash("Cet identifiant cinéma existe déjà pour un autre lieu", "danger")
             return False
 
