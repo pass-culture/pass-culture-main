@@ -1131,13 +1131,14 @@ def validate_pro_user_email(user: users_models.User, author_user: users_models.U
 
 
 def save_firebase_flags(user: models.User, firebase_value: dict) -> None:
-    if user.pro_flags:
+    user_pro_flags = users_models.UserProFlags.query.filter(users_models.UserProFlags.user == user).one_or_none()
+    if user_pro_flags:
         if user.pro_flags.firebase and user.pro_flags.firebase != firebase_value:
             logger.warning("%s now has different Firebase flags than before", user)
         user.pro_flags.firebase = firebase_value
     else:
-        user.pro_flags = users_models.UserProFlags(user=user, firebase=firebase_value)
-    db.session.commit()
+        user_pro_flags = users_models.UserProFlags(user=user, firebase=firebase_value)
+    repository.save(user_pro_flags)
 
 
 def save_flags(user: models.User, flags: dict) -> None:
