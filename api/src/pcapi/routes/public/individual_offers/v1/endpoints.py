@@ -188,10 +188,7 @@ def _save_image(image_body: serialization.ImageBody, offer: offers_models.Offer)
     api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
 )
 @api_key_required
-@public_utils.individual_offers_api_provider
-def post_product_offer(
-    individual_offers_provider: providers_models.Provider, body: serialization.ProductOfferCreation
-) -> serialization.ProductOfferResponse:
+def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse:
     """
     Create a CD or vinyl product.
     """
@@ -217,7 +214,8 @@ def post_product_offer(
                 withdrawal_details=body.withdrawal_details,
             )
 
-            db.session.add(created_offer)
+            # To create the stock, the offer needs to have an id
+            db.session.flush()
             if body.stock:
                 offers_api.create_stock(
                     offer=created_offer,
@@ -370,6 +368,8 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                 withdrawal_details=body.withdrawal_details,
                 withdrawal_type=withdrawal_type,
             )
+            # To create the priceCategories, the offer needs to have an id
+            db.session.flush()
 
             price_categories = body.price_categories or []
             for price_category in price_categories:
