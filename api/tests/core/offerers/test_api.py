@@ -1403,7 +1403,10 @@ class CreateFromOnboardingDataTest:
     def assert_common_action_history_extra_data(self, action: history_models.ActionHistory) -> None:
         assert action.extraData["target"] == offerers_models.Target.INDIVIDUAL.name
         assert action.extraData["venue_type_code"] == offerers_models.VenueTypeCode.MOVIE.name
-        assert action.extraData["web_presence"] == "www.example.com, instagram.com/example, @example@mastodon.example"
+        assert (
+            action.extraData["web_presence"]
+            == "https://www.example.com, https://instagram.com/example, https://mastodon.social/@example"
+        )
 
     def assert_only_welcome_email_to_pro_was_sent(self) -> None:
         assert len(mails_testing.outbox) == 1
@@ -1425,7 +1428,7 @@ class CreateFromOnboardingDataTest:
             siret="85331845900031",
             target=offerers_models.Target.INDIVIDUAL,
             venueTypeCode=offerers_models.VenueTypeCode.MOVIE.name,
-            webPresence="www.example.com, instagram.com/example, @example@mastodon.example",
+            webPresence="https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
         )
 
     @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
