@@ -102,12 +102,6 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
 """
 
 
-class Target(enum.Enum):
-    EDUCATIONAL = "EDUCATIONAL"
-    INDIVIDUAL_AND_EDUCATIONAL = "INDIVIDUAL_AND_EDUCATIONAL"
-    INDIVIDUAL = "INDIVIDUAL"
-
-
 class VenueTypeCode(enum.Enum):
     ADMINISTRATIVE = "Lieu administratif"
     ARTISTIC_COURSE = "Cours et pratique artistiques"
@@ -376,6 +370,10 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     )
 
     collectiveSubCategoryId = sa.Column(sa.Text, nullable=True)
+
+    registration: sa_orm.Mapped["VenueRegistration | None"] = relationship(
+        "VenueRegistration", back_populates="venue", uselist=False
+    )
 
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
@@ -709,6 +707,26 @@ class VenueEducationalStatus(Base, Model):
     id: int = Column(BigInteger, primary_key=True, autoincrement=False, nullable=False)
     name: str = Column(String(256), nullable=False)
     venues = relationship(Venue, back_populates="venueEducationalStatus", uselist=True)
+
+
+class Target(enum.Enum):
+    EDUCATIONAL = "EDUCATIONAL"
+    INDIVIDUAL_AND_EDUCATIONAL = "INDIVIDUAL_AND_EDUCATIONAL"
+    INDIVIDUAL = "INDIVIDUAL"
+
+
+class VenueRegistration(PcObject, Base, Model):
+    __tablename__ = "venue_registration"
+
+    venueId: int = Column(
+        BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
+    )
+
+    venue: sa_orm.Mapped[Venue] = relationship("Venue", foreign_keys=[venueId], back_populates="registration")
+
+    target: Target = Column(db_utils.MagicEnum(Target), nullable=False)
+
+    webPresence: str | None = sa.Column(sa.Text, nullable=True)
 
 
 class Offerer(
