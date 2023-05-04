@@ -157,7 +157,7 @@ describe('updateIndividualOffer', () => {
       name: undefined,
       url: undefined,
       visualDisabilityCompliant: true,
-      withdrawalDelay: null,
+      withdrawalDelay: undefined,
       withdrawalDetails: undefined,
       withdrawalType: undefined,
       shouldSendMail: false,
