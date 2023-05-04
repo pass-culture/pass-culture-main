@@ -104,3 +104,7 @@ class EditOfferForm(FlaskForm):
 
 class BatchEditOfferForm(EditOfferForm):
     object_ids = wtforms.HiddenField("Identifiants à traiter")
+
+
+class BatchEmptyOfferForm(FlaskForm):
+    object_ids = wtforms.HiddenField("Identifiants à traiter")
