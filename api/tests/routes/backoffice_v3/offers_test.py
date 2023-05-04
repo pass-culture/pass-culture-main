@@ -5,6 +5,8 @@ from flask import g
 from flask import url_for
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import factories as criteria_factories
@@ -14,6 +16,8 @@ from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
+import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice_v3.forms import offer as offer_forms
 
@@ -519,7 +523,7 @@ class BatchEditOfferTest(PostEndpointHelper):
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_batch_edit_offer(self, mock_async_index, legit_user, authenticated_client, criteria):
-        offers = offers_factories.OfferFactory.create_batch(10)
+        offers = offers_factories.OfferFactory.create_batch(3)
         parameter_ids = ",".join(str(offer.id) for offer in offers)
         chosen_ranking_weight = 2
         base_form = {
@@ -622,3 +626,47 @@ class GetRejectOfferFormTest(GetEndpointHelper):
         with assert_num_queries(3):  # session + user + tested_query
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
+
+
+class BatchOfferValidateTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.offer.batch_validate_offers"
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+
+    def test_batch_validate_offers(self, legit_user, authenticated_client):
+        offers = offers_factories.OfferFactory.create_batch(3, validation=offers_models.OfferValidationStatus.DRAFT)
+        parameter_ids = ",".join(str(offer.id) for offer in offers)
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+
+        assert response.status_code == 303
+        for offer in offers:
+            db.session.refresh(offer)
+            assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
+            assert offer.isActive is True
+            assert offer.lastValidationType is OfferValidationType.MANUAL
+            assert offer.validation is offers_models.OfferValidationStatus.APPROVED
+
+
+class BatchOfferRejectTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.offer.batch_reject_offers"
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+
+    def test_batch_reject_offers(self, legit_user, authenticated_client):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        offers = offers_factories.OfferFactory.create_batch(3, validation=offers_models.OfferValidationStatus.DRAFT)
+        confirmed_booking = bookings_factories.BookingFactory(
+            user=beneficiary, stock__offer=offers[0], status=BookingStatus.CONFIRMED
+        )
+        parameter_ids = ",".join(str(offer.id) for offer in offers)
+
+        assert confirmed_booking.status == BookingStatus.CONFIRMED
+
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+
+        assert confirmed_booking.status == BookingStatus.CANCELLED
+        assert response.status_code == 303
+        for offer in offers:
+            db.session.refresh(offer)
+            assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
+            assert offer.isActive is False
+            assert offer.lastValidationType is OfferValidationType.MANUAL
+            assert offer.validation is offers_models.OfferValidationStatus.REJECTED

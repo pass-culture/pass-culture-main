@@ -13,6 +13,24 @@
             {{ rows | length }}{{ "+" if rows | length > 100 else "" }}
             résultat{{ "s" if rows | length > 1 else "" }}
           </p>
+          {% if has_permission("FRAUD_ACTIONS") %}
+            <div class="btn-group btn-group-sm"
+                 data-toggle="pc-batch-confirm-btn-group"
+                 data-toggle-id="table-container-individual-offer-fraud-btn-group"
+                 data-pc-table-multi-select-id="table-individual-offers-multiselect"
+                 data-input-ids-name="object_ids">
+              <button disabled
+                      type="button"
+                      class="btn btn-outline-primary"
+                      data-use-confirmation-modal="true"
+                      data-modal-selector="#batch-validate-offer-modal">Valider</button>
+              <button disabled
+                      type="button"
+                      class="btn btn-outline-primary"
+                      data-use-confirmation-modal="true"
+                      data-modal-selector="#batch-reject-offer-modal">Rejeter</button>
+            </div>
+          {% endif %}
           <div class="btn-group btn-group-sm"
                data-toggle="pc-batch-confirm-btn-group"
                data-toggle-id="table-container-individual-offer-edit-btn-group"
@@ -116,6 +134,8 @@
           {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_validate_offer_form', offer_id=offer.id), "validate-offer-modal-" + offer.id|string) }}
           {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_reject_offer_form', offer_id=offer.id), "reject-offer-modal-" + offer.id|string) }}
         {% endfor %}
+        {{ build_lazy_modal(url_for("backoffice_v3_web.offer.get_batch_validate_offers_form"), "batch-validate-offer-modal", "true") }}
+        {{ build_lazy_modal(url_for("backoffice_v3_web.offer.get_batch_reject_offers_form"), "batch-reject-offer-modal", "true") }}
         {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_batch_edit_offer_form'), "batch-edit-offer-modal", "true") }}
       {% endif %}
     </div>
