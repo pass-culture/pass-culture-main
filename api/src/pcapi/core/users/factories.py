@@ -780,4 +780,4 @@ class UserProFlagsFactory(BaseFactory):
         model = models.UserProFlags
 
     user = factory.SubFactory(ProFactory)
-    firebase = {"BETTER_OFFER_CREATION": True}
+    firebase = {"BETTER_OFFER_CREATION": "true"}

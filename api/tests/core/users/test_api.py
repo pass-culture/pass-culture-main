@@ -1143,26 +1143,25 @@ class SaveFlagsTest:
     def test_new_firebase_flags(self):
         user = users_factories.UserFactory()
 
-        users_api.save_flags(user, {"firebase": {"BETTER_OFFER_CREATION": True}})
+        users_api.save_flags(user, {"firebase": {"BETTER_OFFER_CREATION": "true"}})
 
-        assert user.pro_flags.firebase == {"BETTER_OFFER_CREATION": True}
+        assert user.pro_flags.firebase == {"BETTER_OFFER_CREATION": "true"}
 
     def test_same_pre_existing_firebase_flags(self, caplog):
         flags = users_factories.UserProFlagsFactory()
         user = flags.user
 
-        users_api.save_flags(user, {"firebase": {"BETTER_OFFER_CREATION": True}})
-
-        assert user.pro_flags.firebase == {"BETTER_OFFER_CREATION": True}
+        users_api.save_flags(user, {"firebase": {"BETTER_OFFER_CREATION": "true"}})
+        assert user.pro_flags.firebase == {"BETTER_OFFER_CREATION": "true"}
         assert not caplog.messages
 
     def test_different_pre_existing_firebase_flags(self, caplog):
         flags = users_factories.UserProFlagsFactory()
         user = flags.user
 
-        users_api.save_flags(user, {"firebase": {"BETTER_OFFER_CREATION": False}})
+        users_api.save_flags(user, {"firebase": {"BETTER_OFFER_CREATION": "false"}})
 
-        assert user.pro_flags.firebase == {"BETTER_OFFER_CREATION": False}
+        assert user.pro_flags.firebase == {"BETTER_OFFER_CREATION": "false"}
         assert caplog.messages == [f"{user} now has different Firebase flags than before"]
 
     def test_unknown_flags(self):
