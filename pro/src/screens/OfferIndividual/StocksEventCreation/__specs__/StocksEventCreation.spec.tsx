@@ -220,6 +220,44 @@ describe('StocksEventCreation', () => {
       screen.getByText('2 nouvelles occurrences ont été ajoutées')
     ).toBeInTheDocument()
   })
+
+  it('should deduplicate stocks', async () => {
+    renderStockEventCreation({
+      offer: individualOfferFactory({
+        stocks: [],
+      }),
+    })
+
+    await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
+    await userEvent.click(
+      screen.getByLabelText('Date de l’évènement', { exact: true })
+    )
+    // There is a case where multiple dates can be displayed by the datepicker,
+    // for instance the 27th of the previous month and the 27th of the current month.
+    // We always choose the last one so that we are sure it's in the future
+    const dates = screen.queryAllByText(new Date().getDate())
+    await userEvent.click(dates[dates.length - 1])
+    await userEvent.click(screen.getByLabelText('Horaire 1'))
+    await userEvent.click(screen.getByText('12:15'))
+    await userEvent.click(screen.getByText('Valider'))
+
+    expect(
+      screen.getByText('1 nouvelle occurrence a été ajoutée')
+    ).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
+    await userEvent.click(
+      screen.getByLabelText('Date de l’évènement', { exact: true })
+    )
+    await userEvent.click(dates[dates.length - 1])
+    await userEvent.click(screen.getByLabelText('Horaire 1'))
+    await userEvent.click(screen.getAllByText('12:15')[1])
+    await userEvent.click(screen.getByText('Valider'))
+
+    expect(
+      screen.getByText('1 nouvelle occurrence a été ajoutée')
+    ).toBeInTheDocument()
+  })
 })
 
 const mockLogEvent = jest.fn()

@@ -79,7 +79,23 @@ export const StocksEventCreation = ({
   const onConfirm = (newStocks: IStocksEvent[]) => {
     setIsRecurrenceModalOpen(false)
     setDisplayBanner(true)
-    setStocks([...stocks, ...newStocks])
+    const rawStocksToAdd = [...stocks, ...newStocks]
+    // deduplicate stocks in th whole list
+    const stocksToAdd = rawStocksToAdd.filter((stock1, index) => {
+      return (
+        rawStocksToAdd.findIndex(
+          stock2 =>
+            stock1.beginningDatetime === stock2.beginningDatetime &&
+            stock1.priceCategoryId === stock2.priceCategoryId
+        ) === index
+      )
+    })
+    if (stocksToAdd.length < rawStocksToAdd.length) {
+      notify.information(
+        'Certaines occurences n’ont pas été ajoutées car elles existaient déjà'
+      )
+    }
+    setStocks([...stocksToAdd])
   }
 
   const handlePreviousStep = () => {
