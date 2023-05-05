@@ -2,30 +2,27 @@ import { useNavigate } from 'react-router-dom'
 
 import useNotification from 'hooks/useNotification'
 
+import getCollectiveOfferAdapter from '../adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferFormDataApdater from '../adapters/getCollectiveOfferFormDataAdapter'
-import getCollectiveOfferTemplateAdapter from '../adapters/getCollectiveOfferTemplateAdapter'
-import postCollectiveOfferAdapter from '../adapters/postCollectiveOfferAdapter'
+import postCollectiveDuplicateOfferAdapter from '../adapters/postCollectiveDuplicateOfferAdapter'
 
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
 import { postCollectiveOfferImage } from './postCollectiveOfferImage'
 
-export const createOfferFromTemplate = async (
+export const createOfferFromBookableOffer = async (
   navigate: ReturnType<typeof useNavigate>,
   notify: ReturnType<typeof useNotification>,
-  templateOfferId: number
+  offerId: number
 ) => {
-  const offerTemplateResponse = await getCollectiveOfferTemplateAdapter(
-    templateOfferId
-  )
+  const offerResponse = await getCollectiveOfferAdapter(offerId)
 
-  if (!offerTemplateResponse.isOk) {
-    return notify.error(offerTemplateResponse.message)
+  if (!offerResponse.isOk) {
+    return notify.error(offerResponse.message)
   }
-  const offererId =
-    offerTemplateResponse.payload.venue.managingOfferer.nonHumanizedId
+  const offererId = offerResponse.payload.venue.managingOfferer.nonHumanizedId
   const result = await getCollectiveOfferFormDataApdater({
     offererId: offererId.toString(),
-    offer: offerTemplateResponse.payload,
+    offer: offerResponse.payload,
   })
 
   if (!result.isOk) {
@@ -37,12 +34,11 @@ export const createOfferFromTemplate = async (
   const initialValues = computeInitialValuesFromOffer(
     categories,
     offerers,
-    offerTemplateResponse.payload
+    offerResponse.payload
   )
 
-  const { isOk, message, payload } = await postCollectiveOfferAdapter({
-    offer: initialValues,
-    offerTemplateId: templateOfferId,
+  const { isOk, message, payload } = await postCollectiveDuplicateOfferAdapter({
+    offerId,
   })
 
   if (!isOk) {
