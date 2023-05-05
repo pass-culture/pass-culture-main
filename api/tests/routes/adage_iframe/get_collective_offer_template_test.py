@@ -7,7 +7,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
-from pcapi.utils.human_ids import humanize
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
@@ -91,7 +90,7 @@ class Returns200Test:
             priceDetail="détail du prix",
             students=[StudentLevels.GENERAL2],
             offerVenue={
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
@@ -140,7 +139,7 @@ class Returns200Test:
                 "otherAddress": "",
                 "postalCode": venue.postalCode,
                 "publicName": venue.publicName,
-                "venueId": humanize(venue.id),
+                "venueId": venue.id,
             },
             "students": ["Lycée - Seconde"],
             "offerId": None,

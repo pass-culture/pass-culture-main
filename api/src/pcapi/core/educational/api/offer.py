@@ -37,7 +37,6 @@ from pcapi.utils import image_conversion
 from pcapi.utils import rest
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import dehumanize_or_raise
-from pcapi.utils.human_ids import humanize
 
 
 logger = logging.getLogger(__name__)
@@ -462,7 +461,7 @@ def create_collective_offer_public(
             raise offerers_exceptions.VenueNotFoundException()
 
     offer_venue = {
-        "venueId": humanize(body.offer_venue.venueId) or "",
+        "venueId": body.offer_venue.venueId or "",
         "addressType": body.offer_venue.addressType,
         "otherAddress": body.offer_venue.otherAddress or "",
     }
@@ -572,7 +571,7 @@ def edit_collective_offer_public(
                     raise exceptions.EducationalInstitutionIsNotActive()
             offer.institution = institution
         elif key == "offerVenue":
-            offer.offerVenue["venueId"] = humanize(value["venueId"]) or ""
+            offer.offerVenue["venueId"] = value["venueId"] or None
             offer.offerVenue["addressType"] = value["addressType"].value
             offer.offerVenue["otherAddress"] = value["otherAddress"] or ""
         elif key == "bookingLimitDatetime" and value is None:

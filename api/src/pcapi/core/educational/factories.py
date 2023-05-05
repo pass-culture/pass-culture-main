@@ -42,7 +42,7 @@ class CollectiveOfferFactory(BaseFactory):
     offerVenue = {
         "addressType": "other",
         "otherAddress": "1 rue des polissons, Paris 75017",
-        "venueId": "",
+        "venueId": None,
     }
     interventionArea = ["93", "94", "95"]
 
@@ -97,7 +97,7 @@ class CollectiveOfferTemplateFactory(BaseFactory):
     offerVenue = {
         "addressType": "other",
         "otherAddress": "1 rue des polissons, Paris 75017",
-        "venueId": "",
+        "venueId": None,
     }
     interventionArea = ["2A", "2B"]
 
