@@ -205,7 +205,6 @@ describe('screens:StocksThing', () => {
         motorDisabilityCompliant: false,
         visualDisabilityCompliant: false,
       },
-      venueId: 'DY',
       withdrawalDetails: null,
       status: OfferStatus.EXPIRED,
       withdrawalType: null,

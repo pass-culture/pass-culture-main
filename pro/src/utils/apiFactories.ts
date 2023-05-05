@@ -84,7 +84,6 @@ export const GetIndividualOfferFactory = (
     mediaUrls: [],
     mediations: [],
     subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
-    venueId: 'AA',
     ...customOffer,
   }
 }

@@ -415,6 +415,7 @@ describe('serializer', () => {
       subcategoryId: 'SEANCE_CINE',
       url: '',
       venue: {
+        id: 'VENUE1',
         accessibility: {
           audio: false,
           mental: false,
@@ -425,7 +426,6 @@ describe('serializer', () => {
         address: 'Ma Rue',
         city: 'Ma Ville',
         departmentCode: '973',
-        id: 'VENUE1',
         isVirtual: false,
         name: 'Le nom du lieu 1',
         offerer: {
@@ -436,7 +436,7 @@ describe('serializer', () => {
         postalCode: '11100',
         publicName: 'Mon Lieu',
       },
-      venueId: 'AA',
+      venueId: 'VENUE1',
       visa: '',
       withdrawalDelay: null,
       withdrawalDetails: '',

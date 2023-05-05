@@ -45,7 +45,6 @@ export type GetIndividualOfferResponseModel = {
   thumbUrl?: string | null;
   url?: string | null;
   venue: GetOfferVenueResponseModel;
-  venueId: string;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDelay?: number | null;
   withdrawalDetails?: string | null;
