@@ -1,8 +1,8 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
 import * as router from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel, Target } from 'apiClient/v1'
@@ -15,6 +15,7 @@ import {
 } from 'context/SignupJourneyContext'
 import { Validation } from 'screens/SignupJourneyForm/Validation/index'
 import { renderWithProviders } from 'utils/renderWithProviders'
+
 jest.mock('apiClient/api', () => ({
   api: {
     getVenueTypes: jest.fn(),
@@ -111,6 +112,7 @@ describe('screens:SignupJourney::Validation', () => {
           name: 'toto',
           publicName: 'tata',
           siret: '123123123',
+          hasVenues: false,
           ...addressInformations,
         },
       })
@@ -133,6 +135,7 @@ describe('screens:SignupJourney::Validation', () => {
         name: 'nom',
         publicName: 'nom public',
         siret: '123123123',
+        hasVenues: false,
         ...addressInformations,
       },
     })
@@ -158,6 +161,7 @@ describe('screens:SignupJourney::Validation', () => {
           name: 'nom',
           publicName: 'nom public',
           siret: '123123123',
+          hasVenues: false,
           ...addressInformations,
         },
         setActivity: () => {},
@@ -232,6 +236,7 @@ describe('screens:SignupJourney::Validation', () => {
         offerer: {
           name: 'nom',
           siret: '123123123',
+          hasVenues: false,
           ...addressInformations,
           longitude: null,
           latitude: null,
@@ -283,6 +288,7 @@ describe('screens:SignupJourney::Validation', () => {
           name: 'nom',
           publicName: 'nom public',
           siret: '123123123',
+          hasVenues: false,
           ...addressInformations,
         },
         setActivity: () => {},

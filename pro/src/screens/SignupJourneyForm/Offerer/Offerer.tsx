@@ -61,27 +61,26 @@ const Offerer = (): JSX.Element => {
       latitude: response.payload.values.latitude,
       longitude: response.payload.values.longitude,
       postalCode: response.payload.values.postalCode,
+      hasVenues: siretResponse.payload.venues.length > 0,
     })
-
-    if (siretResponse.payload.venues.length > 0) {
-      logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-        from: location.pathname,
-        to: SIGNUP_JOURNEY_STEP_IDS.OFFERERS,
-        used: OnboardingFormNavigationAction.ActionBar,
-      })
-      navigate('/parcours-inscription/structure/rattachement')
-    }
   }
 
   // Need to wait for offerer to be updated in the context to redirect user
   useEffect(() => {
     if (offerer?.siret && offerer?.siret !== '') {
+      let to
+      if (offerer.hasVenues) {
+        to = SIGNUP_JOURNEY_STEP_IDS.OFFERERS
+        navigate('/parcours-inscription/structure/rattachement')
+      } else {
+        to = SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION
+        navigate('/parcours-inscription/identification')
+      }
       logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
         from: location.pathname,
-        to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
+        to,
         used: OnboardingFormNavigationAction.ActionBar,
       })
-      navigate('/parcours-inscription/identification')
     }
   }, [offerer])
 

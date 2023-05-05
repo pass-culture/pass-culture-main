@@ -92,6 +92,7 @@ describe('test SignupBreadcrumb', () => {
     contextValue.offerer = {
       name: 'test name',
       siret: '1234567893333',
+      hasVenues: false,
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
     const { tabAuthentication, tabValidation } = renderSignupBreadcrumb(
@@ -112,6 +113,7 @@ describe('test SignupBreadcrumb', () => {
     contextValue.offerer = {
       name: 'test name',
       siret: '1234567893333',
+      hasVenues: false,
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
     contextValue.activity = {
