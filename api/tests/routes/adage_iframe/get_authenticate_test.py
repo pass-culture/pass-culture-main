@@ -48,10 +48,11 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "role": "redactor",
-            "uai": self.valid_user.get("uai"),
-            "institutionName": "COLLEGE BELLEVUE",
+            "uai": "EAU123",
             "departmentCode": "30",
+            "institutionName": "COLLEGE BELLEVUE",
             "institutionCity": "Ales",
+            "email": "sabine.laprof@example.com",
         }
 
     def test_should_return_readonly_role_when_token_has_no_uai_code(self, app) -> None:
@@ -69,9 +70,10 @@ class Returns200Test:
         assert response.json == {
             "role": "readonly",
             "uai": None,
-            "institutionName": None,
             "departmentCode": None,
+            "institutionName": None,
             "institutionCity": None,
+            "email": None,
         }
 
 

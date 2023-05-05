@@ -19,7 +19,7 @@ class AuthenticatedInformation(BaseModel):
     civility: str | None
     lastname: str | None
     firstname: str | None
-    email: str
+    email: str | None
     uai: str | None
 
 
@@ -29,6 +29,7 @@ class AuthenticatedResponse(BaseModel):
     departmentCode: str | None
     institutionName: str | None
     institutionCity: str | None
+    email: str | None
 
     class Config:
         use_enum_values = True
