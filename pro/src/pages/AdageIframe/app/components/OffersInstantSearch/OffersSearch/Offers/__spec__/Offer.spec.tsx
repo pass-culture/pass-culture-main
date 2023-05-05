@@ -84,7 +84,7 @@ describe('offer', () => {
         },
       },
       offerVenue: {
-        venueId: 'VENUE_ID',
+        venueId: 1,
         otherAddress: '',
         addressType: OfferAddressType.OFFERER_VENUE,
       },
@@ -134,7 +134,7 @@ describe('offer', () => {
         },
       },
       offerVenue: {
-        venueId: '',
+        venueId: null,
         otherAddress: 'A la mairie',
         addressType: OfferAddressType.OTHER,
       },

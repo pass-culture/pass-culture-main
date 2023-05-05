@@ -131,7 +131,7 @@ describe('offers', () => {
       contactPhone: '',
       domains: [],
       offerVenue: {
-        venueId: 'VENUE_ID',
+        venueId: 1,
         otherAddress: '',
         addressType: OfferAddressType.OFFERER_VENUE,
       },
@@ -176,7 +176,7 @@ describe('offers', () => {
       contactPhone: '',
       domains: [],
       offerVenue: {
-        venueId: 'VENUE_ID',
+        venueId: 1,
         otherAddress: '',
         addressType: OfferAddressType.OFFERER_VENUE,
       },
@@ -221,7 +221,7 @@ describe('offers', () => {
       contactPhone: '',
       domains: [],
       offerVenue: {
-        venueId: 'VENUE_ID',
+        venueId: 1,
         otherAddress: '',
         addressType: OfferAddressType.OFFERER_VENUE,
       },
