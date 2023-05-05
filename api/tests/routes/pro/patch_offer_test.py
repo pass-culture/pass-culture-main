@@ -39,7 +39,8 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert response.json["id"] == humanize(offer.id)
-        assert response.json["venueId"] == humanize(offer.venue.id)
+        assert response.json["venue"]["id"] == humanize(offer.venue.id)
+
         updated_offer = Offer.query.get(offer.id)
         assert updated_offer.name == "New name"
         assert updated_offer.externalTicketOfficeUrl == "http://example.net"

@@ -436,14 +436,12 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     externalTicketOfficeUrl: str | None
     url: str | None
     venue: GetOfferVenueResponseModel
-    venueId: str
     withdrawalDelay: int | None
     withdrawalDetails: str | None
     withdrawalType: offers_models.WithdrawalTypeEnum | None
     status: OfferStatus
 
     _humanize_id = humanize_field("id")
-    _humanize_venue_id = humanize_field("venueId")
     _humanize_last_provider_id = humanize_field("lastProviderId")
 
     class Config:
