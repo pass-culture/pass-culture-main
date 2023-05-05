@@ -17,7 +17,7 @@ export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseMode
     isSoldOut: false,
     name: 'Mon offre vitrine',
     offerVenue: {
-      venueId: 'VENUE_ID',
+      venueId: 1,
       otherAddress: '',
       addressType: OfferAddressType.OFFERER_VENUE,
     },

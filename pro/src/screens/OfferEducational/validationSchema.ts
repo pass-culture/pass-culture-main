@@ -55,7 +55,7 @@ export const validationSchema = yup.object().shape({
       then: schema => schema.required('Veuillez renseigner une adresse'),
     }),
     venueId: yup
-      .string()
+      .number()
       .nullable()
       .when('addressType', {
         is: OfferAddressType.OFFERER_VENUE,

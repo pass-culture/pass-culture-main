@@ -13,7 +13,7 @@ const renderOfferVenue = (offerVenue: CollectiveOfferOfferVenue) => {
 describe('OfferVenue', () => {
   const defaultOfferVenue = {
     addressType: OfferAddressType.OFFERER_VENUE,
-    venueId: 'VENUE_ID',
+    venueId: 1,
     name: 'Nom juridique',
     publicName: 'Mon petit cinema',
     otherAddress: '',
