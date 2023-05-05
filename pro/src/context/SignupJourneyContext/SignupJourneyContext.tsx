@@ -12,6 +12,7 @@ export interface IOfferer extends IOffererFormValues, IAddress {
   name: string
   publicName?: string
   createVenueWithoutSiret?: boolean
+  hasVenues: boolean
 }
 
 export interface IActivity extends Omit<IActivityFormValues, 'targetCustomer'> {

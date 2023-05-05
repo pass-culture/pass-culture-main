@@ -137,6 +137,7 @@ describe('screens:SignupJourney::Offerer', () => {
     contextValue.offerer = {
       siret: '12345678933333',
       name: 'Test',
+      hasVenues: false,
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
 
@@ -195,7 +196,7 @@ describe('screens:SignupJourney::Offerer', () => {
     expect(screen.queryByText('Offerers screen')).not.toBeInTheDocument()
   })
 
-  it('should redirect to offerers screen if venue exist', async () => {
+  it('should submit the form when clicking the continue button', async () => {
     jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValueOnce({
       venues: [
         { id: '1', name: 'First Venue', isPermanent: true },
@@ -209,12 +210,24 @@ describe('screens:SignupJourney::Offerer', () => {
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+    expect(api.getVenuesOfOffererFromSiret).toHaveBeenCalled()
+  })
+
+  it('should redirect to offerers page if the offerer has venues', async () => {
+    contextValue.offerer = {
+      name: 'name',
+      siret: '12345678933333',
+      hasVenues: true,
+      ...DEFAULT_ADDRESS_FORM_VALUES,
+    }
+    renderOffererScreen(contextValue)
+
     await waitFor(() => {
       expect(screen.getByText('Offerers screen')).toBeInTheDocument()
     })
   })
 
-  it('should redirect to offerers screen if venue exist', async () => {
+  it('should display errors on api failure', async () => {
     jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
