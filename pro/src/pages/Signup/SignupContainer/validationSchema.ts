@@ -1,15 +1,6 @@
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
-import { isPasswordValid } from 'core/shared/utils/validation'
-
-const passwordErrorMessage = `Votre mot de passe doit contenir au moins :
-      - 12 caractères
-      - Un chiffre
-      - Une majuscule et une minuscule
-      - Un caractère spécial
-`
-
 export const validationSchema = (newOnboardingActive: boolean) =>
   yup.object().shape({
     email: yup
@@ -17,10 +8,7 @@ export const validationSchema = (newOnboardingActive: boolean) =>
       .max(120)
       .email('Veuillez renseigner un e-mail valide')
       .required('Veuillez renseigner une adresse e-mail'),
-    password: yup
-      .string()
-      .required('Veuillez renseigner un mot de passe')
-      .test('isPasswordValid', passwordErrorMessage, isPasswordValid),
+    password: yup.string().required('Veuillez renseigner un mot de passe'),
     lastName: yup.string().max(128).required('Veuillez renseigner votre nom'),
     firstName: yup
       .string()

@@ -15,11 +15,13 @@ interface ValidationMessageListProps {
 }
 
 const ValidationMessageList = ({ name }: ValidationMessageListProps) => {
-  const [field] = useField({ name })
+  const [field, , helpers] = useField({ name })
   const [errors, setErrors] = useState<{ [key: string]: boolean }>({})
 
   useEffect(() => {
     setErrors(passwordValidationStatus(field.value))
+    // hide base error message and display only localErrors
+    helpers.setError('')
   }, [field.value])
 
   return (
