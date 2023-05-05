@@ -49,6 +49,27 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
     return serializers.OfferResponse.from_orm(offer)
 
 
+@blueprint.native_v1.route("/offer/<int:offer_id>/nearest_venues", methods=["GET"])
+@spectree_serialize(api=blueprint.api, response_model=serializers.OfferNearestVenuesResponse)
+@authenticated_and_active_user_required
+def list_nearest_venues_for_offer(
+    user: User, offer_id: int, query: serializers.OfferNearestVenuesParam
+) -> serializers.OfferNearestVenuesResponse:
+    offer = Offer.query.get_or_404(offer_id)
+    latitude = float(query.latitude) if query.latitude is not None else None
+    longitude = float(query.latitude) if query.latitude is not None else None
+    venues = api.get_nearest_venues_for_offer(
+        offer,
+        latitude=latitude,
+        longitude=longitude,
+        page=query.page,
+        per_page=query.per_page,
+    )
+    return serializers.OfferNearestVenuesResponse(
+        venues=[serializers.OfferVenueResponse.from_orm(venue) for venue in venues]
+    )
+
+
 @blueprint.native_v1.route("/offer/<int:offer_id>/report", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required

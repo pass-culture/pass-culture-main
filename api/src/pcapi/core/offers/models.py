@@ -180,14 +180,14 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
 
     @property
     def isBookable(self) -> bool:
-        return self._bookable and self.offer.isReleased
+        return self.bookable and self.offer.isReleased
 
     @hybrid_property
-    def _bookable(self) -> bool:
+    def bookable(self) -> bool:
         return not self.isExpired and not self.isSoldOut
 
-    @_bookable.expression  # type: ignore [no-redef]
-    def _bookable(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    @bookable.expression  # type: ignore [no-redef]
+    def bookable(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(sa.not_(cls.isExpired), sa.not_(cls.isSoldOut))
 
     @property
@@ -468,14 +468,14 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     @property
     def isReleased(self) -> bool:
         offerer = self.venue.managingOfferer
-        return self._released and offerer.isActive and offerer.isValidated
+        return self.released and offerer.isActive and offerer.isValidated
 
     @hybrid_property
-    def _released(self) -> bool:
+    def released(self) -> bool:
         return self.isActive and self.validation == OfferValidationStatus.APPROVED
 
-    @_released.expression  # type: ignore [no-redef]
-    def _released(cls) -> bool:  # pylint: disable=no-self-argument
+    @released.expression  # type: ignore [no-redef]
+    def released(cls) -> bool:  # pylint: disable=no-self-argument
         return sa.and_(cls.isActive, cls.validation == OfferValidationStatus.APPROVED)
 
     @hybrid_property
@@ -538,7 +538,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @is_eligible_for_search.expression  # type: ignore [no-redef]
     def is_eligible_for_search(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
-        return sa.and_(cls._released, Stock._bookable)
+        return sa.and_(cls.released, Stock.bookable)
 
     @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:

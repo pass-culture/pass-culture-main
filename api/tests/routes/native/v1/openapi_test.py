@@ -840,6 +840,28 @@ def test_public_api(client):
                     "title": "OfferImageResponse",
                     "type": "object",
                 },
+                "OfferNearestVenuesParam": {
+                    "properties": {
+                        "latitude": {"nullable": True, "title": "Latitude", "type": "number"},
+                        "longitude": {"nullable": True, "title": "Longitude", "type": "number"},
+                        "page": {"default": 1, "title": "Page", "type": "integer"},
+                        "per_page": {"default": 10, "title": "Per Page", "type": "integer"},
+                    },
+                    "title": "OfferNearestVenuesParam",
+                    "type": "object",
+                },
+                "OfferNearestVenuesResponse": {
+                    "properties": {
+                        "venues": {
+                            "items": {"$ref": "#/components/schemas/OfferVenueResponse"},
+                            "title": "Venues",
+                            "type": "array",
+                        }
+                    },
+                    "required": ["venues"],
+                    "title": "OfferNearestVenuesResponse",
+                    "type": "object",
+                },
                 "OfferOffererResponse": {
                     "properties": {"name": {"title": "Name", "type": "string"}},
                     "required": ["name"],
@@ -2519,6 +2541,69 @@ def test_public_api(client):
                         },
                     },
                     "summary": "get_offer <GET>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/offer/{offer_id}/nearest_venues": {
+                "get": {
+                    "description": "",
+                    "operationId": "get_/native/v1/offer/{offer_id}/nearest_venues",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "offer_id",
+                            "required": True,
+                            "schema": {"format": "int32", "type": "integer"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "latitude",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "Latitude", "type": "number"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "longitude",
+                            "required": False,
+                            "schema": {"nullable": True, "title": "Longitude", "type": "number"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "page",
+                            "required": False,
+                            "schema": {"default": 1, "title": "Page", "type": "integer"},
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "per_page",
+                            "required": False,
+                            "schema": {"default": 10, "title": "Per Page", "type": "integer"},
+                        },
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/OfferNearestVenuesResponse"}
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "list_nearest_venues_for_offer <GET>",
                     "tags": [],
                 }
             },

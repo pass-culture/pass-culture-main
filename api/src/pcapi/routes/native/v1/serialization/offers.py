@@ -118,6 +118,19 @@ class OfferVenueResponse(BaseModel):
         allow_population_by_field_name = True
 
 
+class OfferNearestVenuesParam(Coordinates):
+    page: int = 1
+    per_page: int = 10
+
+
+class OfferNearestVenuesResponse(BaseModel):
+    venues: list[OfferVenueResponse]
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+
+
 def get_id_converter(labels_by_id: dict, field_name: str) -> Callable[[str | None], str | None]:
     def convert_id_into_label(value_id: str | None) -> str | None:
         try:

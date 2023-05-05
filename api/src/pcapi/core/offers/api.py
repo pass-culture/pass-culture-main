@@ -8,7 +8,9 @@ from flask_sqlalchemy import BaseQuery
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
 import sentry_sdk
+from sqlalchemy import func
 import sqlalchemy.exc as sqla_exc
+from sqlalchemy.orm import contains_eager
 from werkzeug.exceptions import BadRequest
 import yaml
 from yaml.scanner import ScannerError
@@ -1342,3 +1344,35 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
     validation.check_price_categories_deletable(offer)
     db.session.delete(price_category)
     db.session.commit()
+
+
+def get_nearest_venues_for_offer(
+    offer: models.Offer,
+    latitude: float | None = None,
+    longitude: float | None = None,
+    page: int = 1,
+    per_page: int = 10,
+) -> list[offerers_models.Venue]:
+    if latitude is not None and longitude is not None:
+        center = func.ST_MakePoint(longitude, latitude)
+    else:
+        center = func.ST_MakePoint(offer.venue.longitude, offer.venue.latitude)
+    venues = (
+        offerers_models.Venue.query.join(offerers_models.Venue.offers)
+        .join(offerers_models.Venue.managingOfferer)
+        .options(contains_eager(offerers_models.Venue.managingOfferer))
+        .filter(models.Offer.id != offer.id)
+        .filter(offerers_models.Offerer.isActive)
+        .filter(offerers_models.Offerer.isValidated)
+        .filter(models.Offer.released)
+        .filter(~models.Offer.isSoldOut)  # type: ignore [operator] # pylint: disable=invalid-unary-operand-type
+        .filter(models.Offer.extraData["isbn"].astext == offer.extraData["isbn"])  # type: ignore [index]
+        .order_by(
+            func.ST_Distance(
+                func.Geometry(func.ST_MakePoint(offerers_models.Venue.longitude, offerers_models.Venue.latitude)),
+                func.Geometry(center),
+            )
+        )
+        .paginate(page=page, per_page=per_page)
+    )
+    return venues.items

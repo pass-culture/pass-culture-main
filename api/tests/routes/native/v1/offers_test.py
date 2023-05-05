@@ -783,3 +783,112 @@ class SubcategoriesTest:
         found_genre_types = {x["name"] for x in response.json["genreTypes"]}
         expected_genre_types = {x.name for x in subcategories_v2.GenreType}
         assert found_genre_types == expected_genre_types
+
+
+class OfferNearestVenuesTest:
+    def test_can_list_venues_from_coordinates(self, client):
+        user = UserFactory()
+        source_offer = offers_factories.OfferFactory(extraData={"isbn": "9876543234"})
+        other_offers = [
+            offers_factories.OfferFactory(
+                extraData={"isbn": source_offer.extraData["isbn"]},
+                venue__latitude=source_offer.venue.latitude,
+                venue__longitude=float(source_offer.venue.longitude) + offset / 10,
+            )
+            for offset in range(1, 4)
+        ]
+        _stocks = [offers_factories.ThingStockFactory(offer=offer) for offer in other_offers]
+        from_latitude = source_offer.venue.latitude
+        from_longitude = other_offers[-1].venue.longitude
+
+        with assert_no_duplicated_queries():
+            response = client.with_token(user.email).get(
+                f"/native/v1/offer/{source_offer.id}/nearest_venues",
+                params={"latitude": from_latitude, "longitude": from_longitude},
+            )
+
+        assert [venue["id"] for venue in response.json["venues"]] == [
+            offer.venue.id for offer in reversed(other_offers)
+        ]
+
+    def test_offer_venue_coordinates_are_used_when_no_coordinates_are_provided(self, client):
+        user = UserFactory()
+        source_offer = offers_factories.OfferFactory(extraData={"isbn": "9876543234"})
+        other_offers = [
+            offers_factories.OfferFactory(
+                extraData={"isbn": source_offer.extraData["isbn"]},
+                venue__latitude=source_offer.venue.latitude,
+                venue__longitude=float(source_offer.venue.longitude) + offset / 10,
+            )
+            for offset in range(1, 4)
+        ]
+        _stocks = [offers_factories.ThingStockFactory(offer=offer) for offer in other_offers]
+
+        with assert_no_duplicated_queries():
+            response = client.with_token(user.email).get(
+                f"/native/v1/offer/{source_offer.id}/nearest_venues",
+            )
+
+        assert [venue["id"] for venue in response.json["venues"]] == [offer.venue.id for offer in other_offers]
+
+    def test_return_404_when_offer_is_not_found(self, client):
+        user = UserFactory()
+
+        with assert_no_duplicated_queries():
+            response = client.with_token(user.email).get("/native/v1/offer/7777777/nearest_venues")
+
+        assert response.status_code == 404
+
+    def test_venues_without_stock_for_the_offer_are_not_listed(self, client):
+        user = UserFactory()
+        source_offer = offers_factories.OfferFactory(extraData={"isbn": "9876543234"})
+        other_offers = [
+            offers_factories.OfferFactory(
+                extraData={"isbn": source_offer.extraData["isbn"]},
+                venue__latitude=source_offer.venue.latitude,
+                venue__longitude=float(source_offer.venue.longitude) + offset / 10,
+            )
+            for offset in range(1, 4)
+        ]
+        _stocks = [offers_factories.ThingStockFactory(offer=offer) for offer in other_offers]
+        other_offers_without_stock = [
+            offers_factories.OfferFactory(
+                extraData={"isbn": source_offer.extraData["isbn"]},
+                venue__latitude=float(source_offer.venue.latitude) + 0.1,
+                venue__longitude=float(source_offer.venue.longitude) + offset / 10,
+            )
+            for offset in range(1, 4)
+        ]
+        from_latitude = source_offer.venue.latitude
+        from_longitude = other_offers_without_stock[-1].venue.longitude
+
+        with assert_no_duplicated_queries():
+            response = client.with_token(user.email).get(
+                f"/native/v1/offer/{source_offer.id}/nearest_venues",
+                params={"latitude": from_latitude, "longitude": from_longitude},
+            )
+
+        assert [venue["id"] for venue in response.json["venues"]] == [
+            offer.venue.id for offer in reversed(other_offers)
+        ]
+
+    def test_can_paginate(self, client):
+        user = UserFactory()
+        source_offer = offers_factories.OfferFactory(extraData={"isbn": "9876543234"})
+        other_offers = [
+            offers_factories.OfferFactory(
+                extraData={"isbn": source_offer.extraData["isbn"]},
+                venue__latitude=source_offer.venue.latitude,
+                venue__longitude=float(source_offer.venue.longitude) + offset / 10,
+            )
+            for offset in range(1, 20)
+        ]
+        _stocks = [offers_factories.ThingStockFactory(offer=offer) for offer in other_offers]
+
+        with assert_no_duplicated_queries():
+            response = client.with_token(user.email).get(
+                f"/native/v1/offer/{source_offer.id}/nearest_venues",
+                params={"page": 2, "per_page": 5},
+            )
+
+        assert [venue["id"] for venue in response.json["venues"]] == [offer.venue.id for offer in other_offers[5:10]]
