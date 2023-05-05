@@ -4,7 +4,6 @@
 
 import type { GetOfferLastProviderResponseModel } from './GetOfferLastProviderResponseModel';
 import type { GetOfferMediationResponseModel } from './GetOfferMediationResponseModel';
-import type { GetOfferProductResponseModel } from './GetOfferProductResponseModel';
 import type { GetOfferStockResponseModel } from './GetOfferStockResponseModel';
 import type { GetOfferVenueResponseModel } from './GetOfferVenueResponseModel';
 import type { OfferStatus } from './OfferStatus';
@@ -14,22 +13,16 @@ import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 
 export type GetIndividualOfferResponseModel = {
   activeMediation?: GetOfferMediationResponseModel | null;
-  ageMax?: number | null;
-  ageMin?: number | null;
   audioDisabilityCompliant?: boolean | null;
   bookingEmail?: string | null;
-  conditions?: string | null;
   dateCreated: string;
-  dateModifiedAtLastProvider?: string | null;
   description?: string | null;
   durationMinutes?: number | null;
   externalTicketOfficeUrl?: string | null;
   extraData?: any;
-  fieldsUpdated: Array<string>;
   hasBookingLimitDatetimesPassed: boolean;
   id: string;
   isActive: boolean;
-  isBookable: boolean;
   isDigital: boolean;
   isDuo: boolean;
   isEditable: boolean;
@@ -46,8 +39,6 @@ export type GetIndividualOfferResponseModel = {
   name: string;
   nonHumanizedId: number;
   priceCategories?: Array<PriceCategoryResponseModel> | null;
-  product: GetOfferProductResponseModel;
-  productId: string;
   status: OfferStatus;
   stocks: Array<GetOfferStockResponseModel>;
   subcategoryId: SubcategoryIdEnum;
