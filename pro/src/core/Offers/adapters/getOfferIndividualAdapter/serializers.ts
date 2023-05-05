@@ -161,7 +161,7 @@ export const serializeOfferApi = (
     subcategoryId: apiOffer.subcategoryId,
     url: apiOffer.url || '',
     externalTicketOfficeUrl: apiOffer.externalTicketOfficeUrl || '',
-    venueId: apiOffer.venueId,
+    venueId: apiOffer.venue.id,
     venue: serializeVenueApi(apiOffer),
     withdrawalDetails: apiOffer.withdrawalDetails || '',
     withdrawalDelay:
