@@ -36,7 +36,7 @@ class BoostContext(PivotContext):
             username=pivot.username,
             password=pivot.password,
         )
-        form.venue_id.disabled = True
+        form.venue_id.readonly = True
         return form
 
     @classmethod

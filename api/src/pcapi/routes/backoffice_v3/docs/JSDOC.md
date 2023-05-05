@@ -755,6 +755,8 @@ This element will hide/show depending on search result.
 This edits the  default `submit` event on forms.
 It internally runs `form.checkValidity()` first and aborts in case of invalid form.
 
+The add on also include a fix for tom select js to support `readonly` attribute.
+
 > There is no markup necessary as this selects all `<form />`
 
 ## PcOverrideCustomTextareaEnter
