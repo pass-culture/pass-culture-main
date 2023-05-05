@@ -5,12 +5,12 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import {
-  CategoriesResponseModel,
+  ApiError,
   CollectiveOfferResponseIdModel,
-  EducationalDomainsResponseModel,
-  GetEducationalOfferersResponseModel,
   GetVenueResponseModel,
 } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
@@ -21,7 +21,9 @@ import {
   EducationalCategories,
   Mode,
 } from 'core/OfferEducational'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
+import * as useNotification from 'hooks/useNotification'
 import {
   categoriesFactory,
   subCategoriesFactory,
@@ -66,6 +68,7 @@ describe('CollectiveOfferSummary', () => {
   let offer: CollectiveOfferTemplate | CollectiveOffer
   let categories: EducationalCategories
   const mockLogEvent = jest.fn()
+  const notifyError = jest.fn()
 
   beforeEach(() => {
     offer = collectiveOfferTemplateFactory({ isTemplate: true })
@@ -75,21 +78,30 @@ describe('CollectiveOfferSummary', () => {
         { categoryId: 'CAT_1', id: 'SUBCAT_1' },
       ]),
     }
+
+    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      ...jest.requireActual('hooks/useNotification'),
+      error: notifyError,
+    }))
+
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+
     jest.spyOn(api, 'getVenue').mockResolvedValue({} as GetVenueResponseModel)
+
     jest.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
+
     jest
       .spyOn(api, 'getCategories')
-      .mockResolvedValue({} as CategoriesResponseModel)
+      .mockResolvedValue({ categories: [], subcategories: [] })
+
     jest
       .spyOn(api, 'listEducationalOfferers')
-      .mockResolvedValue({} as GetEducationalOfferersResponseModel)
-    jest
-      .spyOn(api, 'listEducationalDomains')
-      .mockResolvedValue({} as EducationalDomainsResponseModel)
+      .mockResolvedValue({ educationalOfferers: [] })
+
+    jest.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
 
     jest
       .spyOn(api, 'createCollectiveOffer')
@@ -126,5 +138,99 @@ describe('CollectiveOfferSummary', () => {
         from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
       }
     )
+  })
+
+  it('should return an error when the collective offer could not be retrieved', async () => {
+    jest.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce('')
+
+    renderCollectiveOfferSummaryEdition(offer, categories)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const duplicateOffer = screen.getByRole('button', {
+      name: 'Créer une offre réservable pour un établissement scolaire',
+    })
+    await userEvent.click(duplicateOffer)
+
+    expect(notifyError).toHaveBeenCalledWith(
+      'Une erreur est survenue lors de la récupération de votre offre'
+    )
+  })
+
+  it('should return an error when the categorie call failed', async () => {
+    jest.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(offer)
+
+    jest.spyOn(api, 'getCategories').mockRejectedValueOnce('')
+
+    renderCollectiveOfferSummaryEdition(offer, categories)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const duplicateOffer = screen.getByRole('button', {
+      name: 'Créer une offre réservable pour un établissement scolaire',
+    })
+    await userEvent.click(duplicateOffer)
+
+    expect(notifyError).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
+  })
+
+  it('should return an error when the duplication failed', async () => {
+    jest.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(offer)
+    jest
+      .spyOn(api, 'createCollectiveOffer')
+      .mockRejectedValueOnce(
+        new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
+      )
+
+    renderCollectiveOfferSummaryEdition(offer, categories)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const duplicateOffer = screen.getByRole('button', {
+      name: 'Créer une offre réservable pour un établissement scolaire',
+    })
+
+    await userEvent.click(duplicateOffer)
+
+    expect(notifyError).toHaveBeenCalledWith(
+      'Une ou plusieurs erreurs sont présentes dans le formulaire'
+    )
+  })
+
+  it('should return an error when trying to get offerer image', async () => {
+    fetchMock.mockResponse('Service Unavailable', { status: 503 })
+
+    renderCollectiveOfferSummaryEdition(offer, categories)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const duplicateOffer = screen.getByRole('button', {
+      name: 'Créer une offre réservable pour un établissement scolaire',
+    })
+
+    await userEvent.click(duplicateOffer)
+
+    expect(notifyError).toHaveBeenCalledWith("Impossible de dupliquer l'image")
+  })
+
+  it('should return an error when trying to get offerer image blob', async () => {
+    const mockResponse = new Response()
+    jest
+      .spyOn(mockResponse, 'blob')
+      .mockResolvedValue(Promise.resolve(undefined) as unknown as Blob)
+
+    jest.spyOn(global, 'fetch').mockResolvedValue(mockResponse)
+
+    renderCollectiveOfferSummaryEdition(offer, categories)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const duplicateOffer = screen.getByRole('button', {
+      name: 'Créer une offre réservable pour un établissement scolaire',
+    })
+
+    await userEvent.click(duplicateOffer)
+
+    expect(notifyError).toHaveBeenCalledWith("Impossible de dupliquer l'image")
   })
 })

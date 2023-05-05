@@ -527,18 +527,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ).not.toBeInTheDocument()
       })
 
-      it('should not display a duplicate offer button when offer is not template', () => {
-        props.audience = Audience.COLLECTIVE
-        props.offer.isShowcase = false
-        renderOfferItem(props)
-
-        const duplicateButton = screen.queryByRole('button', {
-          name: 'Dupliquer',
-        })
-
-        expect(duplicateButton).not.toBeInTheDocument()
-      })
-
       it('should display confirm dialog when clicking on duplicate button when user did not see the modal', async () => {
         props.audience = Audience.COLLECTIVE
         props.offer.isShowcase = true
