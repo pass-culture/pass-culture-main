@@ -1,0 +1,92 @@
+{% from "components/generic_modal.html" import build_modal_form with context %}
+{% from "components/search/result_form.html" import build_result_page_form %}
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Opérations sur plusieurs offres</h2>
+    {{ build_result_page_form(form, dst) }}
+    <div class="row mt-4">
+      <div class="col-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Informations concernant les produits</h5>
+            <h6 class="card-subtitle my-4 text-muted"></h6>
+            <div class="row pt3">
+              <p>
+                <b>Titre du produit :</b> {{ name }}
+              </p>
+              <p>
+                <b>Catégorie :</b> {{ category.pro_label }}
+              </p>
+              <p>
+                <b>Nombre d'offres associées :</b> {{ offers_count }}
+              </p>
+              <p>
+                <b>Approuvées actives :</b> {{ approved_active_offers_count }}
+              </p>
+              <p>
+                <b>Approuvées inactives :</b> {{ approved_inactive_offers_count }}
+              </p>
+              <p>
+                <b>En attente :</b> {{ pending_offers_count }}
+              </p>
+              <p>
+                <b>Rejetées :</b> {{ rejected_offers_count }}
+              </p>
+              <p>
+                <b>compatible avec les CGU :</b>
+                {% if product_compatibility == 'compatible_products' %}
+                  <span class="mx-2 pb-1 badge rounded-pill text-bg-success">
+                    <i class="bi bi-check-circle"></i> Oui
+                  </span>
+                {% elif product_compatibility == 'incompatible_products' %}
+                  <span class="mx-2 pb-1 badge rounded-pill text-bg-dark">
+                    <i class="bi bi-x-circle"></i> Non
+                  </span>
+                {% else %}
+                  <span class="mx-2 pb-1 badge rounded-pill text-bg-warning">
+                    <i class="bi bi-radioactive"></i> Partiellement
+                  </span>
+                {% endif %}
+              </p>
+              <p>
+                <b>ISBN :</b> {{ isbn }}
+              </p>
+              {% if product_compatibility != 'incompatible_products' or active_offers_count + inactive_offers_count + pending_offers_count > 0 %}
+                <div>
+                  {{ build_modal_form("set-gcu-incompatible", url_for('.set_product_gcu_incompatible'), incompatibility_form,
+                  "Rendre le livre et les offres associées incompatibles avec les CGU", "Confirmer",
+                  "⚠️ Êtes-vous sûr de vouloir rendre le produit incompatible et rejeter les offres associées ?") }}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% if active_offers_count > 0 %}
+        <div class="col-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Tags déjà présents sur les offres actives</h5>
+              <h6 class="card-subtitle my-4 text-muted"></h6>
+              <div class="row pt3">
+                {% if current_criteria_on_offers.items()|length > 0 %}
+                  <div>
+                    {% for criterion, count in current_criteria_on_offers.items() %}
+                      <p>{{ count }}/{{ active_offers_count }} offres actives ont déjà le tag {{ [criterion] | format_criteria | safe }}</p>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+              <div>
+                {{ build_modal_form("add-criteria", url_for('.add_criteria_to_offers'), offer_criteria_form,
+                "Tag des offres", "Enregistrer",
+                "⚠️ " + active_offers_count|string + " offres actives associées à cet ISBN seront affectées") }}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock page %}

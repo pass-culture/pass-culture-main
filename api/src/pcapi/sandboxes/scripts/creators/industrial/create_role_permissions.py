@@ -41,6 +41,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.MANAGE_OFFERS,
         perm_models.Permissions.READ_OFFERS,
+        perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
     ],
     "daf": [
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
@@ -53,6 +54,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.VALIDATE_OFFERER,
         perm_models.Permissions.MANAGE_OFFERS,
         perm_models.Permissions.READ_OFFERS,
+        perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
     ],
     "homologation": [],
     "product-management": [

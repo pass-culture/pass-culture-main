@@ -26,6 +26,7 @@ def install_routes(app: Flask) -> None:
     from . import tags
     from . import users
     from . import venues
+    from .multiple_offers import blueprint as multiple_offers_blueprint
     from .pivots import blueprint as pivots_blueprint
     from .providers import blueprint as providers_blueprint
 

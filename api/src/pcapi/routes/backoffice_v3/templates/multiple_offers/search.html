@@ -1,0 +1,9 @@
+{% from "components/search/base.html" import build_base_search with context %}
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="pt-3 px-5">
+    {% call build_base_search() %}
+      Opérations sur plusieurs offres
+    {% endcall %}
+  </div>
+{% endblock page %}
