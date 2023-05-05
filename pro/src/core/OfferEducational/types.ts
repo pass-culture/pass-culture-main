@@ -37,7 +37,7 @@ export type IOfferEducationalFormValues = {
   eventAddress: {
     addressType: OfferAddressType
     otherAddress: string
-    venueId: number | string | null
+    venueId: number | null
   }
   interventionArea: string[]
   participants: Record<StudentLevels | 'all', boolean>

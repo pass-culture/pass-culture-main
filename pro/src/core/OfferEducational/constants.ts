@@ -19,7 +19,7 @@ export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   eventAddress: {
     addressType: OfferAddressType.OFFERER_VENUE,
     otherAddress: '',
-    venueId: '',
+    venueId: 0,
   },
   interventionArea: [],
   participants: {

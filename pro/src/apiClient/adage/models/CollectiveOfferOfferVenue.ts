@@ -12,6 +12,6 @@ export type CollectiveOfferOfferVenue = {
   otherAddress: string;
   postalCode?: string | null;
   publicName?: string | null;
-  venueId: string;
+  venueId?: number | null;
 };
 
