@@ -69,7 +69,7 @@ class Returns200Test:
         assert offer.contactPhone == "01 99 00 25 68"
         assert offer.offerVenue == {
             "addressType": "school",
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "otherAddress": "17 rue aléatoire",
         }
         assert offer.interventionArea == ["75", "92", "93"]
@@ -136,7 +136,7 @@ class Returns200Test:
         assert offer.contactPhone == "01 99 00 25 68"
         assert offer.offerVenue == {
             "addressType": "school",
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "otherAddress": "17 rue aléatoire",
         }
         assert offer.interventionArea == ["75", "92", "93"]
@@ -282,7 +282,7 @@ class Returns200Test:
         assert offer.contactPhone == "01 99 00 25 68"
         assert offer.offerVenue == {
             "addressType": "school",
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "otherAddress": "17 rue aléatoire",
         }
         assert offer.interventionArea == ["75", "92", "93"]
@@ -396,7 +396,7 @@ class Returns400Test:
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(125),
+                "venueId": 125,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -433,7 +433,7 @@ class Returns400Test:
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(125),
+                "venueId": 125,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -470,7 +470,7 @@ class Returns400Test:
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(125),
+                "venueId": 125,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -508,7 +508,7 @@ class Returns400Test:
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
                 "addressType": "school",
-                "venueId": humanize(125),
+                "venueId": 125,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
