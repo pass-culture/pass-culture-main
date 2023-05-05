@@ -22,7 +22,6 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { PlusCircleIcon } from 'icons'
 import { Button } from 'ui-kit'
-import Banner from 'ui-kit/Banners/Banner/'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { ActionBar } from '../ActionBar'
@@ -71,14 +70,12 @@ export const StocksEventCreation = ({
   const mode = useOfferWizardMode()
   const { setOffer } = useOfferIndividualContext()
   const notify = useNotification()
-  const [displayBanner, setDisplayBanner] = useState(false)
 
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
 
   const onCancel = () => setIsRecurrenceModalOpen(false)
   const onConfirm = (newStocks: IStocksEvent[]) => {
     setIsRecurrenceModalOpen(false)
-    setDisplayBanner(true)
     const rawStocksToAdd = [...stocks, ...newStocks]
     // deduplicate stocks in th whole list
     const stocksToAdd = rawStocksToAdd.filter((stock1, index) => {
@@ -93,6 +90,12 @@ export const StocksEventCreation = ({
     if (stocksToAdd.length < rawStocksToAdd.length) {
       notify.information(
         'Certaines occurences n’ont pas été ajoutées car elles existaient déjà'
+      )
+    } else {
+      notify.success(
+        newStocks.length === 1
+          ? '1 nouvelle occurrence a été ajoutée'
+          : `${newStocks.length} nouvelles occurrences ont été ajoutées`
       )
     }
     setStocks([...stocksToAdd])
@@ -203,21 +206,7 @@ export const StocksEventCreation = ({
       >
         Ajouter une ou plusieurs dates
       </Button>
-      {displayBanner && (
-        <Banner
-          type="light"
-          className={styles['light-banner']}
-          handleOnClick={() => setDisplayBanner(false)}
-          closable
-        >
-          <strong>
-            {stocks.length}
-            {stocks.length === 1
-              ? ' nouvelle occurrence a été ajoutée'
-              : ' nouvelles occurrences ont été ajoutées'}
-          </strong>
-        </Banner>
-      )}
+
       {stocks.length !== 0 && offer?.priceCategories && (
         <StocksEventList
           className={styles['stock-section']}
@@ -243,6 +232,7 @@ export const StocksEventCreation = ({
           />
         </DialogBox>
       )}
+
       <ActionBar
         isDisabled={isOfferDisabled(offer.status)}
         onClickNext={handleNextStep()}

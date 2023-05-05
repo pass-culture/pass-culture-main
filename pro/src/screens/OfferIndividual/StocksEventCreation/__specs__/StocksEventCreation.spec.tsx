@@ -254,9 +254,8 @@ describe('StocksEventCreation', () => {
     await userEvent.click(screen.getAllByText('12:15')[1])
     await userEvent.click(screen.getByText('Valider'))
 
-    expect(
-      screen.getByText('1 nouvelle occurrence a été ajoutée')
-    ).toBeInTheDocument()
+    // Only one line was created
+    expect(screen.queryAllByText('Illimité')).toHaveLength(1)
   })
 })
 
