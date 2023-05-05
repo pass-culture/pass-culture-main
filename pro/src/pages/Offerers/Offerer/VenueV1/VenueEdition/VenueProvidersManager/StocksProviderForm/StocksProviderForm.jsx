@@ -71,14 +71,16 @@ const StocksProviderForm = ({
           confirmText="Continuer"
           onCancel={handleCloseConfirmDialog}
           onConfirm={handleFormSubmit}
-          title="Certains ouvrages seront exclus de la synchronisation automatique."
+          title="Certaines offres ne seront pas synchronisées"
         >
           <p>
-            Vous pouvez retrouver la liste des catégories de livres qui sont
-            exclus de la synchronisation automatique en suivant le lien
+            Le pass Culture ne permet l’import automatique que des offres dans
+            les catégories support audio et livres à l’heure actuelle. Certains
+            rayons ne seront en outre pas synchronisés. Notre FAQ vous décriera
+            les règles précisément.
             <a
               className="tertiary-link"
-              href="https://aide.passculture.app/hc/fr/articles/4412007214225"
+              href="https://aide.passculture.app/hc/fr/articles/4411999024401--Acteurs-Culturels-Quels-sont-les-livres-%C3%A9ligibles-au-pass-Culture-"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -86,7 +88,6 @@ const StocksProviderForm = ({
                 alt="lien externe, nouvel onglet"
                 svg="ico-external-site-red"
               />
-              FAQ
             </a>
           </p>
         </ConfirmDialog>

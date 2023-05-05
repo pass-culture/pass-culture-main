@@ -57,7 +57,7 @@ const CollectiveVenueInformations = ({
           hasAdageId={venue.hasAdageId}
           hasAdageIdForMoreThan30Days={hasAdageIdForMoreThan30Days}
           adageInscriptionDate={venue.adageInscriptionDate}
-          offererId={venue.managingOffererId}
+          offererId={venue.managingOfferer.nonHumanizedId}
         />
       )}
       {shouldEACInformationSection && (

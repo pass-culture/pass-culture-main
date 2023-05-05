@@ -23,7 +23,6 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.svg'
@@ -40,7 +39,6 @@ import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapt
 import { Banner } from 'ui-kit'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { dehumanizeId } from 'utils/dehumanize'
 
 import ActionsBar from './ActionsBar/ActionsBar'
 import styles from './OfferType.module.scss'
@@ -51,9 +49,6 @@ const OfferType = (): JSX.Element => {
   const location = useLocation()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
-  const isDuplicateOfferSelectionActive = useActiveFeature(
-    'WIP_DUPLICATE_OFFER_SELECTION'
-  )
   const initialValues: OfferTypeFormValues = {
     offerType: OFFER_TYPES.INDIVIDUAL_OR_DUO,
     collectiveOfferSubtype: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
@@ -68,19 +63,17 @@ const OfferType = (): JSX.Element => {
   const queryOffererId = queryParams.get('structure')
   const queryVenueId = queryParams.get('lieu')
   const [isLoadingEligibility, setIsLoadingEligibility] = useState(false)
+  const [isLoadingValidation, setIsLoadingValidation] = useState(false)
   const [isEligible, setIsEligible] = useState(false)
+  const [isValidated, setIsValidated] = useState(true)
 
   useEffect(() => {
     const getTemplateCollectiveOffers = async () => {
       const apiFilters = {
         ...DEFAULT_SEARCH_FILTERS,
         collectiveOfferType: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE.toLowerCase(),
-        offererId: queryOffererId
-          ? dehumanizeId(queryOffererId)?.toString() || 'all'
-          : 'all',
-        venueId: queryVenueId
-          ? dehumanizeId(queryVenueId)?.toString() || 'all'
-          : 'all',
+        offererId: queryOffererId ? queryOffererId : 'all',
+        venueId: queryVenueId ? queryVenueId : 'all',
       }
       const { isOk, message, payload } =
         await getFilteredCollectiveOffersAdapter(apiFilters)
@@ -98,7 +91,8 @@ const OfferType = (): JSX.Element => {
       setIsLoadingEligibility(true)
       const offererNames = await api.listOfferersNames()
 
-      const offererId = queryOffererId ?? offererNames.offerersNames[0].id
+      const offererId =
+        queryOffererId ?? offererNames.offerersNames[0].nonHumanizedId
       if (offererNames.offerersNames.length > 1 && !queryOffererId) {
         setIsEligible(true)
         setIsLoadingEligibility(false)
@@ -116,9 +110,18 @@ const OfferType = (): JSX.Element => {
       }
       setIsLoadingEligibility(false)
     }
+    const checkOffererValidation = async () => {
+      setIsLoadingValidation(true)
+      if (queryOffererId !== null) {
+        const response = await api.getOfferer(Number(queryOffererId))
+        setIsValidated(response.isValidated)
+      }
+      setIsLoadingValidation(false)
+    }
     const initializeStates = async () => {
       await getTemplateCollectiveOffers()
       await checkOffererEligibility()
+      await checkOffererValidation()
     }
     initializeStates()
   }, [queryOffererId, queryVenueId])
@@ -208,8 +211,9 @@ const OfferType = (): JSX.Element => {
               </FormLayout.Row>
             </FormLayout.Section>
 
-            {values.offerType === OFFER_TYPES.EDUCATIONAL &&
-              (isEligible || !isDuplicateOfferSelectionActive) &&
+            {isValidated &&
+              values.offerType === OFFER_TYPES.EDUCATIONAL &&
+              isEligible &&
               !isLoadingEligibility && (
                 <FormLayout.Section
                   title="Quel est le type de l’offre ?"
@@ -239,13 +243,7 @@ const OfferType = (): JSX.Element => {
                         COLLECTIVE_OFFER_SUBTYPE.TEMPLATE
                       }
                       label="Une offre vitrine"
-                      description={`Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet 
-                      aux enseignants de vous contacter pour co-construire une offre adaptée.
-                      ${
-                        isDuplicateOfferSelectionActive
-                          ? ' Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.'
-                          : ''
-                      }`}
+                      description="Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé."
                       onChange={handleChange}
                       value={COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
                     />
@@ -327,8 +325,7 @@ const OfferType = (): JSX.Element => {
               </FormLayout.Section>
             )}
 
-            {isDuplicateOfferSelectionActive &&
-              isEligible &&
+            {isEligible &&
               values.offerType === OFFER_TYPES.EDUCATIONAL &&
               values.collectiveOfferSubtype ===
                 COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
@@ -368,11 +365,17 @@ const OfferType = (): JSX.Element => {
                 </FormLayout.Section>
               )}
 
-            {isLoadingEligibility && <Spinner />}
+            {values.offerType === OFFER_TYPES.EDUCATIONAL &&
+              (isLoadingEligibility || isLoadingValidation) && <Spinner />}
+            {values.offerType === OFFER_TYPES.EDUCATIONAL && !isValidated && (
+              <Banner>
+                Votre structure est en cours de validation par les équipes pass
+                Culture.
+              </Banner>
+            )}
             {values.offerType === OFFER_TYPES.EDUCATIONAL &&
               !isEligible &&
-              !isLoadingEligibility &&
-              isDuplicateOfferSelectionActive && (
+              !isLoadingEligibility && (
                 <Banner
                   links={[
                     {
@@ -393,9 +396,7 @@ const OfferType = (): JSX.Element => {
               )}
             <ActionsBar
               disableNextButton={
-                values.offerType === OFFER_TYPES.EDUCATIONAL &&
-                !isEligible &&
-                isDuplicateOfferSelectionActive
+                values.offerType === OFFER_TYPES.EDUCATIONAL && !isEligible
               }
             />
           </FormLayout>

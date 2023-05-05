@@ -71,7 +71,7 @@ export const CollectiveOfferStockCreation = ({
   ) => {
     let isOk: boolean
     let message: string | null
-    let createdOfferTemplateId: string | null = null
+    let createdOfferTemplateId: number | null = null
     const isTemplate =
       values.educationalOfferType === EducationalOfferType.SHOWCASE
     if (isTemplate) {
@@ -81,7 +81,9 @@ export const CollectiveOfferStockCreation = ({
       })
       isOk = response.isOk
       message = response.message
-      createdOfferTemplateId = response.payload ? response.payload.id : null
+      createdOfferTemplateId = response.payload
+        ? response.payload.nonHumanizedId
+        : null
     } else {
       const response = offer.collectiveStock
         ? await patchCollectiveStockAdapter({
@@ -117,7 +119,7 @@ export const CollectiveOfferStockCreation = ({
     let url = `/offre/${computeURLCollectiveOfferId(
       isTemplate && createdOfferTemplateId != null
         ? createdOfferTemplateId
-        : offer.id,
+        : offer.nonHumanizedId,
       isTemplate
     )}/collectif`
 

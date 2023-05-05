@@ -63,11 +63,14 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue,
+            institution=institution,
         )
         offer_id = offer.id
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+
         # When
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 
@@ -145,13 +148,13 @@ class Returns200Test:
                 "venueLabelId": None,
             },
             "venueId": humanize(offer.venueId),
-            "status": "ACTIVE",
+            "status": "DRAFT",
             "domains": [],
             "interventionArea": ["93", "94", "95"],
             "isCancellable": False,
             "imageCredit": None,
             "imageUrl": None,
-            "isBookable": True,
+            "isBookable": False,
             "collectiveStock": {
                 "id": humanize(duplicate.collectiveStock.id),
                 "nonHumanizedId": duplicate.collectiveStock.id,
@@ -164,7 +167,15 @@ class Returns200Test:
                 "educationalPriceDetail": None,
                 "isEducationalStockEditable": True,
             },
-            "institution": None,
+            "institution": {
+                "id": duplicate.institution.id,
+                "name": duplicate.institution.name,
+                "institutionType": duplicate.institution.institutionType,
+                "postalCode": duplicate.institution.postalCode,
+                "city": duplicate.institution.city,
+                "phoneNumber": duplicate.institution.phoneNumber,
+                "institutionId": duplicate.institution.institutionId,
+            },
             "isVisibilityEditable": True,
             "templateId": None,
             "lastBookingStatus": None,

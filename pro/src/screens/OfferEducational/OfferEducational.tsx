@@ -129,7 +129,7 @@ const OfferEducational = ({
     if (mode === Mode.EDITION && offer !== undefined) {
       return navigate(
         `/offre/${computeURLCollectiveOfferId(
-          offer.id,
+          offer.nonHumanizedId,
           offer.isTemplate
         )}/collectif/recapitulatif`
       )

@@ -133,7 +133,7 @@ describe('screens:SignupJourney::Offerer', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display authentication signup journey step on submit', async () => {
+  it('should display authentication signup journey if offerer is set', async () => {
     contextValue.offerer = {
       siret: '12345678933333',
       name: 'Test',
@@ -141,10 +141,6 @@ describe('screens:SignupJourney::Offerer', () => {
     }
 
     renderOffererScreen(contextValue)
-    expect(
-      await screen.findByText('Renseignez le SIRET de votre structure')
-    ).toBeInTheDocument()
-    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
     expect(screen.getByText('Authentication screen')).toBeInTheDocument()
   })
 
@@ -181,14 +177,32 @@ describe('screens:SignupJourney::Offerer', () => {
     ).toBeInTheDocument()
   })
 
+  it('should not render offerers screen on submit if venuesList is empty', async () => {
+    jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValueOnce({
+      venues: [],
+    })
+    renderOffererScreen(contextValue)
+
+    expect(
+      await screen.findByText('Renseignez le SIRET de votre structure')
+    ).toBeInTheDocument()
+    await userEvent.type(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      '12345678933333'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    expect(screen.queryByText('Offerers screen')).not.toBeInTheDocument()
+  })
+
   it('should redirect to offerers screen if venue exist', async () => {
     jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValueOnce({
       venues: [
-        { id: '1', name: 'First Venue' },
-        { id: '2', name: 'Second Venue' },
+        { id: '1', name: 'First Venue', isPermanent: true },
+        { id: '2', name: 'Second Venue', isPermanent: true },
       ],
     })
-    await renderOffererScreen(contextValue)
+    renderOffererScreen(contextValue)
 
     await userEvent.type(
       screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
@@ -211,7 +225,7 @@ describe('screens:SignupJourney::Offerer', () => {
         ''
       )
     )
-    await renderOffererScreen(contextValue)
+    renderOffererScreen(contextValue)
 
     await userEvent.type(
       screen.getByLabelText('Numéro de SIRET à 14 chiffres'),

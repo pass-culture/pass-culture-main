@@ -42,6 +42,8 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
+const offerId = 12
+
 const renderStockThingScreen = (
   props: IStocksThingProps,
   contextValue: IOfferIndividualContext,
@@ -50,7 +52,7 @@ const renderStockThingScreen = (
       step: OFFER_WIZARD_STEP_IDS.STOCKS,
       mode: OFFER_WIZARD_MODE.CREATION,
     }),
-    { offerId: 'AA' }
+    { offerId: offerId }
   )
 ) =>
   renderWithProviders(
@@ -106,6 +108,7 @@ describe('screens:StocksThing', () => {
   beforeEach(() => {
     offer = {
       id: 'OFFER_ID',
+      nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
       } as IOfferIndividualVenue,
@@ -133,6 +136,9 @@ describe('screens:StocksThing', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+    jest
+      .spyOn(api, 'patchOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
   })
 
   it('should not block when going outside and form is not touched', async () => {
@@ -234,6 +240,7 @@ describe('screens:StocksThing', () => {
 
     offer = {
       id: 'OFFER_ID',
+      nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
       } as IOfferIndividualVenue,

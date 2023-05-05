@@ -143,7 +143,7 @@
             </div>
             <div class="col-4">
               <p class="mb-1">
-                <span class="fw-bold">Référencement Adage :
+                <span class="fw-bold">Peut créer une offre EAC :
                   {% if venue.adageId %}
                     <span class="mx-2 pb-1 badge rounded-pill text-bg-success">
                       <i class="bi bi-check-circle"></i> Oui
@@ -155,16 +155,32 @@
                   {% endif %}
                 </span>
               </p>
-              {% if venue.dms_adage_status %}
+              {% if not venue.dms_adage_status %}
                 <p class="mb-1">
-                  <span class="fw-bold">Statut du dossier DMS Adage :</span>
-                  {{ venue.dms_adage_status | format_dms_status }}
+                  <span class="fw-bold">Pas de dossier DMS Adage</span>
                 </p>
               {% endif %}
               {% if venue.adageId %}
                 <p class="mb-1">
                   <span class="fw-bold">ID Adage :</span>
                   {{ venue.adageId }}
+                </p>
+              {% endif %}
+              {% if venue.dms_adage_status %}
+                {% if venue.dms_adage_status == 'accepte' %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Date de validation DMS Adage :</span>
+                    {{ venue.last_collective_dms_application.lastChangeDate | format_date }}
+                  </p>
+                {% elif venue.dms_adage_status != 'accepte' %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Date de dépôt DMS Adage :</span>
+                    {{ venue.last_collective_dms_application.depositDate | format_date }}
+                  </p>
+                {% endif %}
+                <p class="mb-1">
+                  <span class="fw-bold">Statut du dossier DMS Adage :</span>
+                  {{ venue.dms_adage_status | format_dms_status }}
                 </p>
               {% endif %}
               <p class="mb-1">

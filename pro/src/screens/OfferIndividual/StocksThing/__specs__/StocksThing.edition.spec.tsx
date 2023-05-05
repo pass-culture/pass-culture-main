@@ -86,7 +86,7 @@ const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
         getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.EDITION,
-          offerId: 'BQ',
+          offerId: 12,
         }),
       ],
     }
@@ -287,6 +287,9 @@ describe('screens:StocksThing', () => {
         venueId: 'venueid',
       },
     ])
+    jest
+      .spyOn(api, 'patchOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
   })
 

@@ -23,10 +23,10 @@ export const createOfferFromTemplate = async (
   if (!offerTemplateResponse.isOk) {
     return notify.error(offerTemplateResponse.message)
   }
-  const offererId = offerTemplateResponse.payload.venue.managingOffererId
-
+  const offererId =
+    offerTemplateResponse.payload.venue.managingOfferer.nonHumanizedId
   const result = await getCollectiveOfferFormDataApdater({
-    offererId: offererId,
+    offererId: offererId.toString(),
     offer: offerTemplateResponse.payload,
   })
 

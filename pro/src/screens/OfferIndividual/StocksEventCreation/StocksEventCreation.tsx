@@ -96,7 +96,7 @@ export const StocksEventCreation = ({
     /* istanbul ignore next: DEBT, TO FIX */
     navigate(
       getOfferIndividualUrl({
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         step: OFFER_WIZARD_STEP_IDS.TARIFS,
         mode,
       })
@@ -141,7 +141,7 @@ export const StocksEventCreation = ({
         }
         navigate(
           getOfferIndividualUrl({
-            offerId: offer.id,
+            offerId: offer.nonHumanizedId,
             step: saveDraft
               ? OFFER_WIZARD_STEP_IDS.STOCKS
               : OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -208,7 +208,7 @@ export const StocksEventCreation = ({
           stocks={stocks}
           setStocks={setStocks}
           priceCategories={offer.priceCategories}
-          departmentCode="75"
+          departmentCode={offer.venue.departmentCode}
           offerId={offer.id}
         />
       )}

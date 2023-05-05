@@ -12,7 +12,7 @@ def test_venue_has_known_allocine_id(client):
     venue = offerers_factories.VenueFactory()
     providers_factories.AllocineTheaterFactory(siret=venue.siret)
 
-    allocine_provider = providers_factories.ProviderFactory(localClass="AllocineStocks")
+    allocine_provider = providers_factories.AllocineProviderFactory()
     other_provider = providers_factories.ProviderFactory(localClass="B provider")
 
     # When
@@ -45,7 +45,7 @@ def test_venue_has_no_allocine_id(client):
     user = users_factories.UserFactory(email="user@example.com")
     venue = offerers_factories.VenueFactory()
 
-    allocine_provider = providers_factories.ProviderFactory(localClass="AllocineStocks")
+    allocine_provider = providers_factories.AllocineProviderFactory()
     other_provider = providers_factories.ProviderFactory(localClass="B provider")
 
     # When

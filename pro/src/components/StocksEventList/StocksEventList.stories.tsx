@@ -50,6 +50,7 @@ const Template: ComponentStory<typeof StocksEventList> = () => (
       ]}
       setStocks={() => {}}
       offerId="AA"
+      departmentCode="75"
     />
   </div>
 )

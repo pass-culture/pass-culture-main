@@ -77,35 +77,47 @@ describe('screens:SignupJourney::Offerers', () => {
 
     venues = [
       {
+        id: '0',
+        siret: '12345678913333',
+        name: 'venue 0',
+        isPermanent: false,
+      },
+      {
         id: '1',
         siret: '12345678913333',
         name: 'venue 1',
+        isPermanent: true,
       },
       {
         id: '2',
         siret: '12345678923333',
         name: 'venue 2',
+        isPermanent: true,
       },
       {
         id: '3',
         siret: '12345678933333',
         name: 'venue 3',
+        isPermanent: true,
       },
       {
         id: '4',
         siret: '12345678943333',
         name: 'venue 4',
+        isPermanent: true,
       },
       {
         id: '5',
         siret: '12345678953333',
         name: 'venue 5',
+        isPermanent: true,
       },
       {
         id: '6',
         siret: '12345678963333',
         name: 'venue 6',
         publicName: 'public venue 6',
+        isPermanent: true,
       },
     ]
 
@@ -121,7 +133,8 @@ describe('screens:SignupJourney::Offerers', () => {
 
     expect(
       await screen.findByText(
-        'Nous avons trouvé un espace déjà inscrit sur le pass Culture et incluant ce SIRET.'
+        'Nous avons trouvé un espace déjà inscrit comprenant le SIRET',
+        { exact: false }
       )
     ).toBeInTheDocument()
 
@@ -155,7 +168,7 @@ describe('screens:SignupJourney::Offerers', () => {
 
     expect(
       await screen.getByText(
-        'Vous souhaitez ajouter une nouvelle structure à cette liste ?'
+        'Vous souhaitez ajouter une nouvelle structure à cet espace ?'
       )
     ).toBeInTheDocument()
 
@@ -164,6 +177,18 @@ describe('screens:SignupJourney::Offerers', () => {
         name: 'Retour',
       })
     ).toBeInTheDocument()
+  })
+
+  it('should not display non permanent venues', async () => {
+    renderOfferersScreen(contextValue)
+    expect(
+      await screen.findByText(
+        'Nous avons trouvé un espace déjà inscrit comprenant le SIRET',
+        { exact: false }
+      )
+    ).toBeInTheDocument()
+    expect(screen.queryByText('venue 0')).not.toBeInTheDocument()
+    expect(screen.queryByText('public venue 0')).not.toBeInTheDocument()
   })
 
   it('should not display venueListToggle', async () => {
@@ -234,7 +259,8 @@ describe('screens:SignupJourney::Offerers', () => {
 
     expect(
       await screen.findByText(
-        'Nous avons trouvé un espace déjà inscrit sur le pass Culture et incluant ce SIRET.'
+        'Nous avons trouvé un espace déjà inscrit comprenant le SIRET',
+        { exact: false }
       )
     ).toBeInTheDocument()
 
@@ -252,7 +278,8 @@ describe('screens:SignupJourney::Offerers', () => {
 
     expect(
       await screen.findByText(
-        'Nous avons trouvé un espace déjà inscrit sur le pass Culture et incluant ce SIRET.'
+        'Nous avons trouvé un espace déjà inscrit comprenant le SIRET',
+        { exact: false }
       )
     ).toBeInTheDocument()
 

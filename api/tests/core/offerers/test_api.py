@@ -23,6 +23,7 @@ import pcapi.core.offerers.exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -445,6 +446,18 @@ class ApiKeyTest:
         found_api_key = offerers_api.find_api_key(generated_key)
 
         assert found_api_key.offerer == offerer
+
+    def test_get_provider_from_api_key(self):
+        value = "a very secret legacy key"
+        offerer = offerers_factories.OffererFactory()
+        provider = providers_factories.ProviderFactory(localClass=None, name="RiotRecords")
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+        offerers_factories.ApiKeyFactory(
+            offerer=offerer, provider=provider, prefix="development_a very s", secret="ecret legacy key"
+        )
+        with assert_num_queries(1):
+            found_api_key = offerers_api.find_api_key(value)
+            assert found_api_key.provider == provider
 
     def test_legacy_api_key(self):
         value = "a very secret legacy key"
@@ -1020,9 +1033,35 @@ class VenueBannerTest:
 
     @freeze_time("2020-10-15 00:00:00")
     @patch("pcapi.core.search.async_index_venue_ids")
-    def test_save_venue_banner(self, mock_search_async_index_venue_ids, tmpdir):
+    def test_save_venue_banner_when_no_default_available(self, mock_search_async_index_venue_ids, tmpdir):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
+        image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
+
+        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
+            offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
+
+            updated_venue = Venue.query.get(venue.id)
+            with open(updated_venue.bannerUrl, mode="rb") as f:
+                # test that image size has been reduced
+                assert len(f.read()) < len(image_content)
+
+            assert updated_venue.bannerMeta == {
+                "author_id": user.id,
+                "image_credit": "none",
+                "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
+                "crop_params": None,
+                "updated_at": "2020-10-15T00:00:00",
+            }
+
+            mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
+
+    @freeze_time("2020-10-15 00:00:00")
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_save_venue_banner_when_default_available(self, mock_search_async_index_venue_ids, tmpdir):
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.MOVIE)
         image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
@@ -1364,7 +1403,18 @@ class CreateFromOnboardingDataTest:
     def assert_common_action_history_extra_data(self, action: history_models.ActionHistory) -> None:
         assert action.extraData["target"] == offerers_models.Target.INDIVIDUAL.name
         assert action.extraData["venue_type_code"] == offerers_models.VenueTypeCode.MOVIE.name
-        assert action.extraData["web_presence"] == "www.example.com, instagram.com/example, @example@mastodon.example"
+        assert (
+            action.extraData["web_presence"]
+            == "https://www.example.com, https://instagram.com/example, https://mastodon.social/@example"
+        )
+
+    def assert_venue_registration_attrs(self, venue: Venue) -> None:
+        assert offerers_models.VenueRegistration.query.all() == [venue.registration]
+        assert venue.registration.target == offerers_models.Target.INDIVIDUAL
+        assert (
+            venue.registration.webPresence
+            == "https://www.example.com, https://instagram.com/example, https://mastodon.social/@example"
+        )
 
     def assert_only_welcome_email_to_pro_was_sent(self) -> None:
         assert len(mails_testing.outbox) == 1
@@ -1386,7 +1436,7 @@ class CreateFromOnboardingDataTest:
             siret="85331845900031",
             target=offerers_models.Target.INDIVIDUAL,
             venueTypeCode=offerers_models.VenueTypeCode.MOVIE.name,
-            webPresence="www.example.com, instagram.com/example, @example@mastodon.example",
+            webPresence="https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
         )
 
     @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
@@ -1430,6 +1480,8 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
         self.assert_only_welcome_email_to_pro_was_sent()
+        # Venue Registration
+        self.assert_venue_registration_attrs(created_venue)
 
     @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_existing_siren_new_siret(self):
@@ -1465,6 +1517,8 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
         self.assert_only_welcome_email_to_pro_was_sent()
+        # Venue Registration
+        self.assert_venue_registration_attrs(created_venue)
 
     @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_existing_siren_new_venue_without_siret(self):
@@ -1501,6 +1555,8 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
         self.assert_only_welcome_email_to_pro_was_sent()
+        # Venue Registration
+        self.assert_venue_registration_attrs(created_venue)
 
     @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_existing_siren_existing_siret(self):
@@ -1532,3 +1588,5 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
         self.assert_only_welcome_email_to_pro_was_sent()
+        # Venue Registration
+        assert offerers_models.VenueRegistration.query.count() == 0

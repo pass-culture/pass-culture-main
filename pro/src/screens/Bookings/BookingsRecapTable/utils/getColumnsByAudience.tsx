@@ -22,6 +22,7 @@ import {
 import BookingIdCell from '../components/CellsFormatter/BookingIdCell'
 import { BookingsFilters } from '../types'
 
+import styles from './Column.module.scss'
 import {
   sortByBeneficiaryName,
   sortByBookingDate,
@@ -51,7 +52,7 @@ export const getColumnsByAudience = <
     accessor: 'bookingId',
     Cell: ({ value }) => <BookingIdCell id={value} />,
     Header: 'Réservation',
-    className: 'column-booking-id',
+    className: styles['column-booking-id'],
   }
 
   const offerColumn: IndividualColumnType = {
@@ -69,8 +70,8 @@ export const getColumnsByAudience = <
     sortType: sortByOfferName,
     className:
       audience === Audience.INDIVIDUAL
-        ? 'column-offer-name'
-        : 'column-collective-offer-name',
+        ? styles['column-offer-name']
+        : styles['column-collective-offer-name'],
   }
 
   const beneficiaryColumn: IndividualColumnType = {
@@ -80,7 +81,7 @@ export const getColumnsByAudience = <
     Cell: ({ value }) => <BeneficiaryCell beneficiaryInfos={value} />,
     defaultCanSort: true,
     sortType: sortByBeneficiaryName,
-    className: 'column-beneficiary',
+    className: styles['column-beneficiary'],
   }
 
   const institutionColumn: Column<CollectiveBookingResponseModel> & {
@@ -92,7 +93,7 @@ export const getColumnsByAudience = <
     Cell: ({ value }) => <InstitutionCell institution={value} />,
     defaultCanSort: true,
     sortType: sortByInstitutionName,
-    className: 'column-institution',
+    className: styles['column-institution'],
   }
 
   const isDuoColumn: IndividualColumnType = {
@@ -101,7 +102,7 @@ export const getColumnsByAudience = <
     Header: '',
     Cell: ({ value }) => <BookingIsDuoCell isDuo={value} />,
     disableSortBy: true,
-    className: 'column-booking-duo',
+    className: styles['column-booking-duo'],
   }
 
   const bookingDateColumn: IndividualColumnType = {
@@ -111,7 +112,7 @@ export const getColumnsByAudience = <
     Cell: ({ value }) => <BookingDateCell bookingDateTimeIsoString={value} />,
     defaultCanSort: true,
     sortType: sortByBookingDate,
-    className: 'column-booking-date',
+    className: styles['column-booking-date'],
   }
 
   const bookingTokenColumn: IndividualColumnType = {
@@ -120,7 +121,7 @@ export const getColumnsByAudience = <
     accessor: 'bookingToken',
     Cell: ({ value }) => <BookingTokenCell bookingToken={value} />,
     disableSortBy: true,
-    className: 'column-booking-token',
+    className: styles['column-booking-token'],
   }
   const bookingStatusColumn: IndividualColumnType = {
     id: 'bookingStatus',
@@ -142,7 +143,7 @@ export const getColumnsByAudience = <
         audience={audience}
       />
     ),
-    className: 'column-booking-status',
+    className: styles['column-booking-status'],
   }
 
   const numberOfTicketsAndPriceColumn: CollectiveColumnType = {
@@ -151,7 +152,7 @@ export const getColumnsByAudience = <
     Cell: ({ row }) => <NumberOfTicketsAndPriceCell bookingRecapInfo={row} />,
     Header: 'Places et prix',
     disableSortBy: true,
-    className: 'column-price-and-price',
+    className: styles['column-price-and-price'],
   }
 
   const detailsColumn: CollectiveColumnType = {

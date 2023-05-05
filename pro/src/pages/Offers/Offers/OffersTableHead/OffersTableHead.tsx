@@ -77,8 +77,7 @@ const OffersTableHead = ({
             audience={audience}
           />
         </th>
-        <th />
-        <th />
+        <th className="th-actions">Actions</th>
       </tr>
     </thead>
   )

@@ -410,7 +410,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       url: 'http://offer.example.com',
       visualDisabilityCompliant: true,
       withdrawalDetails: 'Offer withdrawalDetails',
-      withdrawalDelay: null,
+      withdrawalDelay: undefined,
       withdrawalType: undefined,
       shouldSendMail: false,
     })
@@ -565,7 +565,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         url: 'http://offer.example.com',
         visualDisabilityCompliant: true,
         withdrawalDetails: 'Offer withdrawalDetails',
-        withdrawalDelay: null,
+        withdrawalDelay: undefined,
         withdrawalType: undefined,
         shouldSendMail: false,
       }
@@ -814,15 +814,18 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         subcategoryId: 'SCID virtual',
         isEvent: true,
         withdrawalDelay: undefined,
-        withdrawalType: null,
+        withdrawalType: WithdrawalTypeEnum.NO_TICKET,
         stocks: [individualStock],
         isActive: false,
       }
+
       props = {
         venueId: virtualVenueId.toString(),
         offererId: offererId.toString(),
       }
       renderInformationsScreen(props, contextOverride, features)
+      expectedBody.withdrawalDelay = null
+      expectedBody.withdrawalType = WithdrawalTypeEnum.NO_TICKET
 
       const nameField = screen.getByLabelText('Titre de l’offre')
       await userEvent.clear(nameField)
@@ -856,6 +859,10 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       await waitFor(() => {
         expect(api.patchOffer).toHaveBeenCalledTimes(1)
       })
+      expect(api.patchOffer).toHaveBeenCalledWith(
+        offer.nonHumanizedId,
+        expectedBody
+      )
       expect(
         await screen.findByText('There is the summary route content')
       ).toBeInTheDocument()
@@ -898,7 +905,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           ]
         }
 
-        expectedBody.withdrawalDelay = null
+        expectedBody.withdrawalDelay = 0
         expectedBody.withdrawalType = WithdrawalTypeEnum.ON_SITE
         expectedBody.shouldSendMail = true
 
@@ -942,6 +949,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           )
           await userEvent.click(withdrawalTypeField)
           expectedBody.withdrawalType = WithdrawalTypeEnum.BY_EMAIL
+          expectedBody.withdrawalDelay = 60 * 60 * 24
         }
 
         const submitButton = await screen.findByText(

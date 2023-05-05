@@ -1,12 +1,9 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Signup from '../Signup'
-
-jest.mock('tracking/mediaCampaignsTracking')
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -37,7 +34,6 @@ describe('src | components | pages | Signup', () => {
       storeOverrides,
       initialRouterEntries: ['/'], // /inscription
     })
-    await waitFor(() => expect(campaignTracker.signUp).toHaveBeenCalled())
 
     // then
     expect(
@@ -51,7 +47,6 @@ describe('src | components | pages | Signup', () => {
       storeOverrides,
       initialRouterEntries: ['/confirmation'], // /inscription/confirmation
     })
-    await waitFor(() => expect(campaignTracker.signUp).toHaveBeenCalled())
 
     // then
     expect(
@@ -72,32 +67,10 @@ describe('src | components | pages | Signup', () => {
       storeOverrides,
       initialRouterEntries: ['/inscription'],
     })
-    await waitFor(() => expect(campaignTracker.signUp).toHaveBeenCalled())
 
     // then
     expect(
       screen.getByRole('heading', { name: /Inscription indisponible/ })
     ).toBeInTheDocument()
-  })
-
-  it('should call media campaign tracker on mount only', async () => {
-    // given
-    const storeOverrides = {
-      features: {
-        list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
-      },
-    }
-
-    // when
-    const { rerender } = renderWithProviders(<Signup />, {
-      storeOverrides,
-      initialRouterEntries: ['/inscription'],
-    })
-
-    // when rerender
-    rerender(<Signup />)
-
-    // then
-    expect(campaignTracker.signUp).toHaveBeenCalledTimes(1)
   })
 })

@@ -64,6 +64,10 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
       await screen.findByText('Retrait sur place (guichet, comptoir...)')
     )
     expect(await screen.findByText('Heure de retrait')).toBeInTheDocument()
+
+    await userEvent.click(await screen.findByText('Évènement sans billet'))
+    expect(await screen.queryByText('Date d’envoi')).not.toBeInTheDocument()
+    expect(await screen.queryByText('Heure de retrait')).not.toBeInTheDocument()
   })
 
   it('should display an error when withdrawalType is empty', async () => {

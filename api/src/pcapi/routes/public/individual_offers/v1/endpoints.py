@@ -5,7 +5,6 @@ import flask
 from sqlalchemy import orm as sqla_orm
 
 from pcapi import repository
-from pcapi import settings
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external.attributes import api as attributes_api
 from pcapi.core.finance import utils as finance_utils
@@ -52,9 +51,7 @@ def get_offerer_venues() -> serialization.GetOffererVenuesResponse:
     Get offerer attached the API key used and its venues.
     """
     offerer = (
-        offerers_models.Offerer.query.filter(
-            offerers_models.Offerer.id == current_api_key.offererId  # type: ignore[attr-defined]
-        )
+        offerers_models.Offerer.query.filter(offerers_models.Offerer.id == current_api_key.offererId)
         .options(sqla_orm.joinedload(offerers_models.Offerer.managedVenues))
         .one()
     )
@@ -70,37 +67,26 @@ def get_offerer_venues() -> serialization.GetOffererVenuesResponse:
 def _retrieve_venue_from_location(
     location: serialization.DigitalLocation | serialization.PhysicalLocation,
 ) -> offerers_models.Venue:
-    offerer_id = current_api_key.offererId  # type: ignore[attr-defined]
-    if isinstance(location, serialization.PhysicalLocation):
-        venue = offerers_models.Venue.query.filter(
+    venue = (
+        offerers_models.Venue.query.join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
+        .filter(
             offerers_models.Venue.id == location.venue_id,
-            offerers_models.Venue.managingOffererId == offerer_id,
-        ).one_or_none()
-        if not venue:
-            raise api_errors.ApiErrors(
-                {"venueId": ["There is no venue with this id associated to your API key"]}, status_code=404
-            )
-
-    else:
-        venue = offerers_models.Venue.query.filter(
-            offerers_models.Venue.managingOffererId == offerer_id, offerers_models.Venue.isVirtual
-        ).one_or_none()
-        if not venue:
-            logger.error("No digital venue found for offerer %s", offerer_id)
-            raise api_errors.ApiErrors(
-                {
-                    "global": [
-                        f"The digital venue associated to your API key could not be automatically determined. Please contact support at {settings.SUPPORT_PRO_EMAIL_ADDRESS}."
-                    ]
-                },
-                status_code=400,
-            )
+            providers_models.VenueProvider.provider == current_api_key.provider,
+        )
+        .one_or_none()
+    )
+    if not venue:
+        raise api_errors.ApiErrors(
+            {"venueId": ["There is no venue with this id associated to your API key"]}, status_code=404
+        )
     return venue
 
 
 def _retrieve_offer_tied_to_user_query() -> sqla_orm.Query:
-    return offers_models.Offer.query.join(offerers_models.Venue).filter(
-        offerers_models.Venue.managingOffererId == current_api_key.offererId  # type: ignore[attr-defined]
+    return (
+        offers_models.Offer.query.join(offerers_models.Venue)
+        .join(offerers_models.Venue.venueProviders, providers_models.VenueProvider.provider)
+        .filter(providers_models.VenueProvider.provider == current_api_key.provider)
     )
 
 
@@ -139,7 +125,7 @@ def _check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
 
     is_venue_tied_to_api_key = db.session.query(
         offerers_models.Venue.query.filter(
-            offerers_models.Venue.managingOffererId == current_api_key.offererId, offerers_models.Venue.id == venue_id  # type: ignore [attr-defined]
+            offerers_models.Venue.managingOffererId == current_api_key.offererId, offerers_models.Venue.id == venue_id
         ).exists()
     ).scalar()
     if not is_venue_tied_to_api_key:
@@ -149,7 +135,7 @@ def _check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
 def _retrieve_offer_ids(is_event: bool, filtered_venue_id: int | None) -> list[int]:
     offer_ids_query = (
         offers_models.Offer.query.join(offerers_models.Venue)
-        .filter(offerers_models.Venue.managingOffererId == current_api_key.offererId)  # type: ignore [attr-defined]
+        .filter(offerers_models.Venue.managingOffererId == current_api_key.offererId)
         .filter(offers_models.Offer.isEvent == is_event)
         .with_entities(offers_models.Offer.id)
         .order_by(offers_models.Offer.id)
@@ -223,7 +209,7 @@ def post_product_offer(
                 mental_disability_compliant=body.accessibility.mental_disability_compliant,
                 motor_disability_compliant=body.accessibility.motor_disability_compliant,
                 name=body.name,
-                provider=individual_offers_provider,
+                provider=current_api_key.provider,
                 subcategory_id=body.category_related_fields.subcategory_id,
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                 venue=venue,
@@ -231,13 +217,14 @@ def post_product_offer(
                 withdrawal_details=body.withdrawal_details,
             )
 
+            db.session.add(created_offer)
             if body.stock:
                 offers_api.create_stock(
                     offer=created_offer,
                     price=finance_utils.to_euros(body.stock.price),
                     quantity=serialization.deserialize_quantity(body.stock.quantity),
                     booking_limit_datetime=body.stock.booking_limit_datetime,
-                    creating_provider=individual_offers_provider,
+                    creating_provider=current_api_key.provider,
                 )
             if body.image:
                 _save_image(body.image, created_offer)
@@ -255,15 +242,14 @@ def post_product_offer(
     api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
 )
 @api_key_required
-@public_utils.individual_offers_api_provider
-def post_product_offer_by_ean(
-    individual_offers_provider: providers_models.Provider, body: serialization.ProductOfferByEanCreation
-) -> serialization.ProductOfferResponse:
+def post_product_offer_by_ean(body: serialization.ProductOfferByEanCreation) -> serialization.ProductOfferResponse:
     """
     Create a product offer using its European Article Number (EAN-13).
     """
+    allowed_product_subcategories = [subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, subcategories.LIVRE_PAPIER.id]
     product = offers_models.Product.query.filter(
-        offers_models.Product.extraData["ean"].astext == body.ean
+        offers_models.Product.extraData["ean"].astext == body.ean,
+        offers_models.Product.subcategoryId.in_(allowed_product_subcategories),
     ).one_or_none()
     if not product:
         raise api_errors.ApiErrors({"ean": ["The product is not present in pass Culture's database"]}, status_code=404)
@@ -272,7 +258,11 @@ def post_product_offer_by_ean(
     try:
         with repository.transaction():
             created_offer = _create_offer_from_product(
-                venue, product, body.id_at_provider, individual_offers_provider.id, body.accessibility
+                venue,
+                product,
+                body.id_at_provider,
+                current_api_key.provider.id,
+                body.accessibility,
             )
 
             if body.stock:
@@ -281,7 +271,7 @@ def post_product_offer_by_ean(
                     price=finance_utils.to_euros(body.stock.price),
                     quantity=serialization.deserialize_quantity(body.stock.quantity),
                     booking_limit_datetime=body.stock.booking_limit_datetime,
-                    creating_provider=individual_offers_provider,
+                    creating_provider=current_api_key.provider,
                 )
 
             offers_api.publish_offer(created_offer, user=None)
@@ -350,10 +340,7 @@ def _deserialize_ticket_collection(
     api=blueprint.v1_schema, tags=[EVENT_OFFER_INFO_TAG], response_model=serialization.EventOfferResponse
 )
 @api_key_required
-@public_utils.individual_offers_api_provider
-def post_event_offer(
-    individual_offers_provider: providers_models.Provider, body: serialization.EventOfferCreation
-) -> serialization.EventOfferResponse:
+def post_event_offer(body: serialization.EventOfferCreation) -> serialization.EventOfferResponse:
     """
     Post an event offer.
     """
@@ -374,7 +361,7 @@ def post_event_offer(
                 mental_disability_compliant=body.accessibility.mental_disability_compliant,
                 motor_disability_compliant=body.accessibility.motor_disability_compliant,
                 name=body.name,
-                provider=individual_offers_provider,
+                provider=current_api_key.provider,
                 subcategory_id=body.category_related_fields.subcategory_id,
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                 venue=venue,
@@ -429,10 +416,7 @@ def post_event_price_categories(
     api=blueprint.v1_schema, tags=[EVENT_OFFER_DATES_TAG], response_model=serialization.PostDatesResponse
 )
 @api_key_required
-@public_utils.individual_offers_api_provider
-def post_event_dates(
-    individual_offers_provider: providers_models.Provider, event_id: int, body: serialization.DatesCreation
-) -> serialization.PostDatesResponse:
+def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
     """
     Add dates to an event offer.
     Each date is attached to a price category so if there are several prices categories, several dates must be added.
@@ -463,7 +447,7 @@ def post_event_dates(
                         quantity=serialization.deserialize_quantity(date.quantity),
                         beginning_datetime=date.beginning_datetime,
                         booking_limit_datetime=date.booking_limit_datetime,
-                        creating_provider=individual_offers_provider,
+                        creating_provider=current_api_key.provider,
                     )
                 )
     except offers_exceptions.OfferCreationBaseException as error:
@@ -760,10 +744,7 @@ def edit_product(
     api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
 )
 @api_key_required
-@public_utils.individual_offers_api_provider
-def edit_product_by_ean(
-    individual_offers_provider: providers_models.Provider, ean: str, body: serialization.ProductOfferByEanEdition
-) -> serialization.ProductOfferResponse:
+def edit_product_by_ean(ean: str, body: serialization.ProductOfferByEanEdition) -> serialization.ProductOfferResponse:
     """
     Edit a product by accessing it through its European Article Number (EAN-13).
 
@@ -782,7 +763,7 @@ def edit_product_by_ean(
 
     try:
         with repository.transaction():
-            _upsert_product_stock(offer, body.stock, individual_offers_provider)
+            _upsert_product_stock(offer, body.stock, current_api_key.provider)
     except offers_exceptions.OfferCreationBaseException as e:
         raise api_errors.ApiErrors(e.errors, status_code=400)
 
@@ -906,9 +887,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     api=blueprint.v1_schema, tags=[EVENT_OFFER_PRICES_TAG], response_model=serialization.PriceCategoryResponse
 )
 @api_key_required
-@public_utils.individual_offers_api_provider
 def patch_event_price_categories(
-    individual_offers_provider: providers_models.Provider,
     event_id: int,
     price_category_id: int,
     body: serialization.PriceCategoryEdition,
@@ -947,7 +926,7 @@ def patch_event_price_categories(
             price=finance_utils.to_euros(eurocent_price)
             if eurocent_price != offers_api.UNCHANGED
             else offers_api.UNCHANGED,
-            editing_provider=individual_offers_provider,
+            editing_provider=current_api_key.provider,
         )
 
     return serialization.PriceCategoryResponse.from_orm(price_category_to_edit)
@@ -956,9 +935,7 @@ def patch_event_price_categories(
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["PATCH"])
 @spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFER_DATES_TAG], response_model=serialization.DateResponse)
 @api_key_required
-@public_utils.individual_offers_api_provider
 def patch_event_date(
-    individual_offers_provider: providers_models.Provider,
     event_id: int,
     date_id: int,
     body: serialization.DateEdition,
@@ -999,7 +976,7 @@ def patch_event_date(
                 price_category=price_category,
                 booking_limit_datetime=update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
                 beginning_datetime=update_body.get("beginning_datetime", offers_api.UNCHANGED),
-                editing_provider=individual_offers_provider,
+                editing_provider=current_api_key.provider,
             )
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)

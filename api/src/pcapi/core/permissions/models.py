@@ -24,15 +24,12 @@ class Permissions(enum.Enum):
 
     FRAUD_ACTIONS = "actions exclusives à l'équipe Fraude et Conformité"
 
-    SEARCH_PUBLIC_ACCOUNT = "rechercher un compte bénéficiaire/grand public"
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
-    REVIEW_PUBLIC_ACCOUNT = "faire une revue manuelle d'un compte bénéficiaire/grand public"
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"
 
     SUSPEND_USER = "suspendre un compte utilisateur"
     UNSUSPEND_USER = "réactiver un compte utilisateur"
 
-    SEARCH_PRO_ACCOUNT = "rechercher un acteur culturel"
     READ_PRO_ENTITY = "visualiser une structure, un lieu ou un compte pro"
     MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"
     DELETE_PRO_ENTITY = "supprimer une structure ou un lieu"
@@ -41,7 +38,6 @@ class Permissions(enum.Enum):
     MANAGE_PROVIDERS = "support pro avancé : accéder aux pivots"
 
     MANAGE_BOOKINGS = "gérer les réservations"
-    SEARCH_BOOKINGS = "rechercher les réservations"
     READ_BOOKINGS = "visualiser les réservations"
 
     READ_OFFERS = "visualiser les offres"

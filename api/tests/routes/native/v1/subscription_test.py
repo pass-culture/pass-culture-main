@@ -733,11 +733,61 @@ class StepperTest:
         response = client.get("/native/v1/subscription/stepper")
         assert "educonnect" in response.json["allowedIdentityCheckMethods"]
 
+    def should_have_subtitle_for_profile_when_autocompleted(self, client):
+        # A user was activated at 17 yo and is now 18 yo
+        a_year_ago = datetime.datetime.utcnow() - relativedelta(years=1, months=1)
+        with freeze_time(a_year_ago):
+            user = users_factories.BeneficiaryFactory(age=17)
+
+        assert user.age == 18
+
+        # The user has completed the phone validation step
+        fraud_factories.PhoneValidationFraudCheckFactory(user=user)
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/stepper")
+
+        assert response.json["subscriptionStepsToDisplay"] == [
+            self.get_step("phone_validation_step", SubscriptionStepCompletionState.COMPLETED.value),
+            {
+                "completionState": SubscriptionStepCompletionState.CURRENT.value,
+                "name": "profile-completion",
+                "title": "Profil",
+                "subtitle": "Confirme tes informations",
+            },
+            self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
+        ]
+
+    def should_not_have_subtitle_for_profile_when_done(self, client):
+        # A user was activated at 17 yo and is now 18 yo
+        a_year_ago = datetime.datetime.utcnow() - relativedelta(years=1, months=1)
+        with freeze_time(a_year_ago):
+            user = users_factories.BeneficiaryFactory(age=17)
+
+        # The user has completed the phone validation step
+        fraud_factories.PhoneValidationFraudCheckFactory(user=user)
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+
+        # The user has completed the profile completion step
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/stepper")
+
+        assert response.json["subscriptionStepsToDisplay"] == [
+            self.get_step("phone_validation_step", SubscriptionStepCompletionState.COMPLETED.value),
+            self.get_step("profile_completion_step", SubscriptionStepCompletionState.COMPLETED.value),
+            self.get_step("honor_statement_step", SubscriptionStepCompletionState.CURRENT.value),
+        ]
+
 
 class GetProfileTest:
     def test_get_profile(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
-        fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
+        )
 
         client.with_token(user.email)
         response = client.get("/native/v1/subscription/profile")
@@ -765,7 +815,9 @@ class GetProfileTest:
     def test_get_profile_with_obsolete_profile_info(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
         content = fraud_factories.ProfileCompletionContentFactory()
-        fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(resultContent=content, user=user)
+        fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(
+            resultContent=content, user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
+        )
         fraud_check.resultContent["activity"] = "NOT_AN_ACTIVITY"
 
         client.with_token(user.email)
@@ -786,9 +838,11 @@ class GetProfileTest:
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
         }
 
-        client.with_token(user.email)
-        client.post("/native/v1/subscription/profile", profile_data)
+        with freeze_time(datetime.datetime.utcnow() - datetime.timedelta(days=365)):
+            client.with_token(user.email)
+            client.post("/native/v1/subscription/profile", profile_data)
 
+        client.with_token(user.email)
         response = client.get("/native/v1/subscription/profile")
 
         assert response.status_code == 200

@@ -1,4 +1,3 @@
-import { addDays, isBefore } from 'date-fns'
 import React, { useState } from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
@@ -28,15 +27,13 @@ const CollectiveActionButtons = ({
 
   const notify = useNotification()
   const offerId = bookingRecap.stock.offerIdentifier
-  const isValidatedSinceLessThan48h =
-    bookingRecap.bookingStatus === BOOKING_STATUS.VALIDATED &&
-    isBefore(
-      new Date(bookingRecap.stock.eventBeginningDatetime),
-      addDays(new Date(), 2)
-    )
-  const offerEditionUrl = !isValidatedSinceLessThan48h
-    ? useOfferEditionURL(true, offerId, false, false)
-    : `offre/${offerId}/collectif/stocks/edition`
+  const nonHumanizedOfferId = bookingRecap.stock.offerId
+  const offerEditionUrl = useOfferEditionURL(
+    true,
+    nonHumanizedOfferId,
+    false,
+    false
+  )
 
   const cancelBooking = async () => {
     const response = await cancelCollectiveBookingAdapter({ offerId })
@@ -65,8 +62,7 @@ const CollectiveActionButtons = ({
               : 'réservation'}
           </Button>
         )}
-        {(bookingRecap.bookingStatus === BOOKING_STATUS.PENDING ||
-          isValidatedSinceLessThan48h) && (
+        {bookingRecap.bookingStatus === BOOKING_STATUS.PENDING && (
           <ButtonLink
             link={{ isExternal: false, to: offerEditionUrl }}
             variant={ButtonVariant.PRIMARY}

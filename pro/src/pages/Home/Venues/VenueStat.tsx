@@ -10,7 +10,6 @@ interface IVenueStatProps {
   link: {
     pathname: string
     state?: {
-      venueId: string
       statuses: string[]
     }
   }

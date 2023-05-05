@@ -270,3 +270,18 @@
     width: rem.torem(20px);
   }
 }
+
+.table-head-label {
+  @include fonts.caption;
+
+  color: colors.$black;
+  line-height: rem.torem(20px);
+  min-height: rem.torem(60px);
+  padding: rem.torem(14px);
+  vertical-align: middle;
+  text-align: left;
+
+  .status-filter {
+    padding-left: 0;
+  }
+}

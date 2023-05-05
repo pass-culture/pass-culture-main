@@ -201,7 +201,7 @@ def get_profile_completion_subscription_item(
 
 
 def get_profile_data(user: users_models.User) -> fraud_models.ProfileCompletionContent | None:
-    profile_completion_check = repository.get_completed_profile_check(user, user.eligibility)
+    profile_completion_check = repository.get_latest_completed_profile_check(user)
     if profile_completion_check and profile_completion_check.resultContent:
         return typing.cast(fraud_models.ProfileCompletionContent, profile_completion_check.source_data())
 
@@ -337,10 +337,6 @@ def get_honor_statement_subscription_item(
             status = models.SubscriptionItemStatus.VOID
 
     return models.SubscriptionItem(type=models.SubscriptionStep.HONOR_STATEMENT, status=status)
-
-
-def get_next_subscription_step(user: users_models.User) -> models.SubscriptionStep | None:
-    return get_user_subscription_state(user).next_step
 
 
 def get_user_subscription_state(user: users_models.User) -> subscription_models.UserSubscriptionState:
@@ -814,7 +810,7 @@ def get_subscription_steps_to_display(
     the steps are ordered
     """
     ordered_steps = _get_ordered_steps(user)
-    return _get_steps_details(ordered_steps, user_subscription_state)
+    return _get_steps_details(user, ordered_steps, user_subscription_state)
 
 
 def _get_ordered_steps(user: users_models.User) -> list[models.SubscriptionStep]:
@@ -829,13 +825,15 @@ def _get_ordered_steps(user: users_models.User) -> list[models.SubscriptionStep]
 
 
 def _get_steps_details(
-    ordered_steps: list[models.SubscriptionStep], user_subscription_state: models.UserSubscriptionState
+    user: users_models.User,
+    ordered_steps: list[models.SubscriptionStep],
+    user_subscription_state: models.UserSubscriptionState,
 ) -> list[models.SubscriptionStepDetails]:
     steps: list[models.SubscriptionStepDetails] = []
     is_before_current_step = True
 
     for step in ordered_steps:
-        subtitle = _get_step_subtitle(user_subscription_state, step)
+        subtitle = _get_step_subtitle(user, user_subscription_state, step)
         if step == user_subscription_state.next_step:
             is_before_current_step = False
             completion_step = (
@@ -882,8 +880,17 @@ def requires_identity_check_step(user: users_models.User) -> bool:
     return True
 
 
+def _has_completed_profile_for_previous_eligibility_only(user: users_models.User) -> bool:
+    if user.eligibility == users_models.EligibilityType.AGE18:
+        return has_completed_profile_for_given_eligibility(
+            user, users_models.EligibilityType.UNDERAGE
+        ) and not has_completed_profile_for_given_eligibility(user, users_models.EligibilityType.AGE18)
+
+    return False
+
+
 def _get_step_subtitle(
-    user_subscription_state: models.UserSubscriptionState, step: models.SubscriptionStep
+    user: users_models.User, user_subscription_state: models.UserSubscriptionState, step: models.SubscriptionStep
 ) -> str | None:
     if step == models.SubscriptionStep.IDENTITY_CHECK and _has_subscription_issues(user_subscription_state):
         return (
@@ -891,6 +898,11 @@ def _get_step_subtitle(
             if user_subscription_state.subscription_message
             else None
         )
+
+    if step == models.SubscriptionStep.PROFILE_COMPLETION and _has_completed_profile_for_previous_eligibility_only(
+        user
+    ):
+        return subscription_models.PROFILE_COMPLETION_STEP_EXISTING_DATA_SUBTITLE
 
     return None
 

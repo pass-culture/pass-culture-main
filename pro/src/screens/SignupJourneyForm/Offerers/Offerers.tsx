@@ -5,10 +5,14 @@ import { useNavigate } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { CreateOffererQueryModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
+import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { IOfferer, useSignupJourneyContext } from 'context/SignupJourneyContext'
+import { Events } from 'core/FirebaseEvents/constants'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter'
 import { useAdapter } from 'hooks'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { AddUserIcon, ArrowUpBIcon } from 'icons'
 import { Button } from 'ui-kit'
@@ -20,6 +24,7 @@ import { ActionBar } from '../ActionBar'
 import styles from './Offerers.module.scss'
 
 const Offerers = (): JSX.Element => {
+  const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
   const [isVenueListOpen, setIsVenueListOpen] = useState<boolean>(false)
@@ -37,7 +42,8 @@ const Offerers = (): JSX.Element => {
   )
 
   const displayToggleVenueList =
-    venuesOfOfferer && venuesOfOfferer?.venues.length > 5
+    venuesOfOfferer &&
+    venuesOfOfferer?.venues.filter(venue => venue.isPermanent).length > 5
 
   useEffect(() => {
     if (venuesOfOffererError || (!isLoadingVenues && !venuesOfOfferer)) {
@@ -54,11 +60,21 @@ const Offerers = (): JSX.Element => {
       ...offerer,
       createVenueWithoutSiret: true,
     }
+    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+      from: location.pathname,
+      to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
+      used: OnboardingFormNavigationAction.NewOfferer,
+    })
     setOfferer(newOfferer)
     navigate('/parcours-inscription/authentification')
   }
 
   const doLinkAccount = async () => {
+    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+      from: location.pathname,
+      to: '/parcours-inscription/structure/rattachement/confirmation',
+      used: OnboardingFormNavigationAction.JoinModal,
+    })
     /* istanbul ignore next: venuesOfOfferer will always be defined here or else,
      the user would have been redirected */
     try {
@@ -81,25 +97,27 @@ const Offerers = (): JSX.Element => {
   return (
     <div className={styles['existing-offerers-layout-wrapper']}>
       <div className={styles['existing-offerers-layout']}>
-        <div className={styles['title-1']}>
-          Nous avons trouvé un espace déjà inscrit sur le pass Culture et
-          incluant ce SIRET.
+        <div className={styles['title-4']}>
+          Nous avons trouvé un espace déjà inscrit comprenant le SIRET "
+          {offerer.siret}" :
         </div>
         <div className={styles['venues-layout']}>
           <div className={styles['offerer-name-accent']}>
             {venuesOfOfferer?.offererName}
           </div>
           <ul className={styles['venue-list']}>
-            {venuesOfOfferer?.venues.map((venue, index) => (
-              <li
-                key={venue.id}
-                hidden={
-                  displayToggleVenueList && !isVenueListOpen && index >= 4
-                }
-              >
-                {venue.publicName ?? venue.name}
-              </li>
-            ))}
+            {venuesOfOfferer?.venues
+              .filter(venue => venue.isPermanent)
+              .map((venue, index) => (
+                <li
+                  key={venue.id}
+                  hidden={
+                    displayToggleVenueList && !isVenueListOpen && index >= 4
+                  }
+                >
+                  {venue.publicName ?? venue.name}
+                </li>
+              ))}
           </ul>
           {displayToggleVenueList && (
             <Button
@@ -129,7 +147,7 @@ const Offerers = (): JSX.Element => {
         </Button>
       </div>
       <div className={cn(styles['wrong-offerer-title'], styles['title-4'])}>
-        Vous souhaitez ajouter une nouvelle structure à cette liste ?
+        Vous souhaitez ajouter une nouvelle structure à cet espace ?
       </div>
       <Button
         className={styles['button-add-new-offerer']}
@@ -142,7 +160,9 @@ const Offerers = (): JSX.Element => {
         previousStepTitle="Retour"
         hideRightButton
         onClickPrevious={() => navigate('/parcours-inscription/structure')}
+        previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
         isDisabled={false}
+        logEvent={logEvent}
       />
       {showLinkDialog && (
         <ConfirmDialog

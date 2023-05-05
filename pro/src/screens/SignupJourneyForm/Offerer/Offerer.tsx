@@ -1,12 +1,16 @@
 import { FormikProvider, useFormik } from 'formik'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import FormLayout from 'components/FormLayout'
+import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
+import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
+import { Events } from 'core/FirebaseEvents/constants'
 import { FORM_ERROR_MESSAGE } from 'core/shared'
 import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
 import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { Banner } from 'ui-kit'
 
@@ -18,6 +22,7 @@ import OffererForm, { IOffererFormValues } from './OffererForm'
 import { validationSchema } from './validationSchema'
 
 const Offerer = (): JSX.Element => {
+  const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
   const { offerer, setOfferer } = useSignupJourneyContext()
@@ -57,12 +62,28 @@ const Offerer = (): JSX.Element => {
       longitude: response.payload.values.longitude,
       postalCode: response.payload.values.postalCode,
     })
-    if (siretResponse.payload.venues.length === 0) {
-      navigate('/parcours-inscription/authentification')
-    } else {
+
+    if (siretResponse.payload.venues.length > 0) {
+      logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+        from: location.pathname,
+        to: SIGNUP_JOURNEY_STEP_IDS.OFFERERS,
+        used: OnboardingFormNavigationAction.ActionBar,
+      })
       navigate('/parcours-inscription/structure/rattachement')
     }
   }
+
+  // Need to wait for offerer to be updated in the context to redirect user
+  useEffect(() => {
+    if (offerer?.siret && offerer?.siret !== '') {
+      logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+        from: location.pathname,
+        to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
+        used: OnboardingFormNavigationAction.ActionBar,
+      })
+      navigate('/parcours-inscription/authentification')
+    }
+  }, [offerer])
 
   const formik = useFormik({
     initialValues,
@@ -98,6 +119,7 @@ const Offerer = (): JSX.Element => {
             onClickNext={handleNextStep()}
             isDisabled={formik.isSubmitting}
             nextStepTitle="Continuer"
+            logEvent={logEvent}
           />
         </form>
       </FormikProvider>

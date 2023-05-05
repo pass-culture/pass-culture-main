@@ -163,7 +163,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
         url: '',
         subcategoryId: 'CONCERT',
         venueId: venueList[0].nonHumanizedId.toString(),
-        withdrawalDelay: '0',
+        withdrawalDelay: (60 * 60 * 24).toString(),
         withdrawalDetails: '',
         withdrawalType: 'by_email',
       }),

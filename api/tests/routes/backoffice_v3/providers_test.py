@@ -59,7 +59,7 @@ class CreateProviderTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.providers.create_provider"
     needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
 
-    def test_create_provider(self, authenticated_client):
+    def test_create_provider_and_offerer(self, authenticated_client):
         form_data = {
             "name": "Individual Offer API consumer",
             "city": "Paris",
@@ -95,6 +95,42 @@ class CreateProviderTest(PostEndpointHelper):
         created_api_key = created_provider.apiKeys[0]
         assert created_api_key.offerer == created_offerer
 
+    def test_create_provider(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+
+        form_data = {
+            "name": "Individual Offer API consumer",
+            "city": "Grenoble",
+            "postal_code": "38000",
+            "siren": offerer.siren,
+            "logo_url": "https://example.org/image.png",
+            "enabled_for_pro": False,
+            "is_active": True,
+        }
+        response = self.post_to_endpoint(authenticated_client, form_data)
+        assert response.status_code == 303
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        created_provider_alert = html_parser.extract_alert(redirected_response.data)
+        assert re.search(
+            rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", created_provider_alert
+        ), "clear api key secret not found"
+
+        created_provider = providers_models.Provider.query.order_by(providers_models.Provider.id.desc()).first()
+        assert created_provider.name == form_data["name"]
+        assert created_provider.logoUrl == form_data["logo_url"]
+        assert created_provider.enabledForPro == form_data["enabled_for_pro"]
+        assert created_provider.isActive == form_data["is_active"]
+
+        assert offerers_models.Offerer.query.count() == 1
+        assert created_provider.offererProvider.offerer == offerer
+        assert offerer.name != form_data["name"]
+        assert offerer.city != form_data["city"]
+        assert offerer.postalCode != form_data["postal_code"]
+
+        created_api_key = created_provider.apiKeys[0]
+        assert created_api_key.offerer == offerer
+
 
 class UpdateProviderTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.providers.update_provider"
@@ -108,8 +144,6 @@ class UpdateProviderTest(PostEndpointHelper):
 
         form_data = {
             "name": "Individual Offer API consumer",
-            "city": "Paris",
-            "postal_code": "75008",
             "logo_url": "https://example.org/image.png",
             "enabled_for_pro": False,
             "is_active": True,
@@ -128,7 +162,4 @@ class UpdateProviderTest(PostEndpointHelper):
         assert updated_provider.isActive == form_data["is_active"]
         assert not updated_provider.apiKeys
 
-        updated_offerer = offerers_models.Offerer.query.get(offerer.id)
-        assert updated_offerer.name == form_data["name"]
-        assert updated_offerer.city == form_data["city"]
-        assert updated_offerer.postalCode == form_data["postal_code"]
+        assert offerer.name != form_data["name"]

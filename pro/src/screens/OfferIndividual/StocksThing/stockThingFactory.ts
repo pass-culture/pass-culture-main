@@ -12,5 +12,6 @@ export const stockThingFactory = (
   price: 66.6,
   activationCodes: [],
   activationCodesExpirationDatetime: null,
+  isDuo: undefined,
   ...customStockThing,
 })

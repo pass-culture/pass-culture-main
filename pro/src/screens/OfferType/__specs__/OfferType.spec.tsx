@@ -4,6 +4,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
@@ -19,10 +20,11 @@ jest.mock('apiClient/api', () => ({
     listOfferersNames: jest.fn(),
     canOffererCreateEducationalOffer: jest.fn(),
     getCollectiveOffers: jest.fn(),
+    getOfferer: jest.fn(),
   },
 }))
 
-const renderOfferTypes = async (storeOverrides: any) => {
+const renderOfferTypes = async (storeOverrides: any, structureId?: string) => {
   renderWithProviders(
     <Routes>
       <Route path="/creation" element={<OfferType />} />
@@ -45,7 +47,9 @@ const renderOfferTypes = async (storeOverrides: any) => {
     </Routes>,
     {
       storeOverrides,
-      initialRouterEntries: ['/creation'],
+      initialRouterEntries: [
+        `/creation${structureId ? `?structure=${structureId}` : ''}`,
+      ],
     }
   )
 
@@ -79,15 +83,6 @@ describe('screens:OfferIndividual::OfferType', () => {
           isAdmin: false,
           email: 'email@example.com',
         },
-      },
-      features: {
-        list: [
-          {
-            nameKey: 'WIP_DUPLICATE_OFFER_SELECTION',
-            isActive: true,
-          },
-        ],
-        initialized: true,
       },
     }
 
@@ -361,5 +356,46 @@ describe('screens:OfferIndividual::OfferType', () => {
       1,
       Events.CLICKED_CANCEL_OFFER_CREATION
     )
+  })
+
+  it('should display validation banner if structure not validated for collective offer ', async () => {
+    jest.spyOn(api, 'getOfferer').mockResolvedValue({
+      isValidated: false,
+    } as GetOffererResponseModel)
+    renderOfferTypes(store, '123')
+
+    expect(
+      await screen.queryByText(
+        'Votre structure est en cours de validation par les équipes pass Culture.'
+      )
+    ).not.toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByRole('radio', { name: 'À un groupe scolaire' })
+    )
+
+    expect(
+      await screen.findByText(
+        'Votre structure est en cours de validation par les équipes pass Culture.'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should render loader while fetching data', async () => {
+    jest
+      .spyOn(api, 'getOfferer')
+      .mockResolvedValueOnce(
+        new CancelablePromise(resolve =>
+          setTimeout(() => resolve({} as GetOffererResponseModel), 500)
+        )
+      )
+
+    renderOfferTypes(store, '123')
+
+    await userEvent.click(
+      screen.getByRole('radio', { name: 'À un groupe scolaire' })
+    )
+
+    expect(await screen.findByText('Chargement en cours')).toBeInTheDocument()
   })
 })

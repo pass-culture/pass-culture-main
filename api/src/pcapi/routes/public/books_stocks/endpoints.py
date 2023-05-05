@@ -36,7 +36,7 @@ def update_stocks(venue_id: int, body: serialization.UpdateVenueStocksBodyModel)
 
     Le paramètre {venue_id} correspond à un lieu qui doit être attaché à la structure à laquelle la clé d'API utilisée est reliée.
     """
-    offerer_id = current_api_key.offererId  # type: ignore [attr-defined]
+    offerer_id = current_api_key.offererId
     venue = Venue.query.join(Offerer).filter(Venue.id == venue_id, Offerer.id == offerer_id).first_or_404()
 
     stock_details = _build_stock_details_from_body(body.stocks, venue.id)

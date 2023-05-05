@@ -36,6 +36,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
         postalCode: '75000',
         city: 'Paris',
         id: 'AA',
+        nonHumanizedId: 1,
       },
     ],
   })

@@ -1,0 +1,49 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.column-booking-id {
+  width: rem.torem(110px);
+  display: flex;
+  align-items: center;
+}
+
+.column-offer-name {
+  width: rem.torem(160px);
+}
+
+.column-collective-offer-name {
+  width: rem.torem(180px);
+}
+
+.column-booking-duo {
+  align-items: center;
+  display: flex;
+  padding: rem.torem(10px) 0;
+  width: rem.torem(35px);
+}
+
+.column-beneficiary {
+  width: rem.torem(225px);
+  word-break: break-word;
+}
+
+.column-institution {
+  width: rem.torem(160px);
+  word-break: break-word;
+}
+
+.column-price-and-price {
+  width: rem.torem(112px);
+}
+
+.column-booking-date {
+  width: rem.torem(135px);
+}
+
+.column-booking-token {
+  width: rem.torem(120px);
+  word-break: break-word;
+}
+
+.column-booking-status {
+  width: rem.torem(140px);
+}

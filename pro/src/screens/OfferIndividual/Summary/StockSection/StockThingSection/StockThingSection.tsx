@@ -8,9 +8,10 @@ import { formatPrice } from 'utils/formatPrice'
 
 interface IStockThingSectionProps {
   offer: IOfferIndividual
+  canBeDuo?: boolean
 }
 
-const StockThingSection = ({ offer }: IStockThingSectionProps) => {
+const StockThingSection = ({ offer, canBeDuo }: IStockThingSectionProps) => {
   if (offer.isEvent || offer.stocks.length === 0) {
     return null
   }
@@ -35,6 +36,13 @@ const StockThingSection = ({ offer }: IStockThingSectionProps) => {
         title="Quantité"
         description={stock.quantity ?? 'Illimité'}
       />
+
+      {canBeDuo && (
+        <SummaryLayout.Row
+          title='Accepter les réservations "Duo"'
+          description={offer.isDuo ? 'Oui' : 'Non'}
+        />
+      )}
     </>
   )
 }

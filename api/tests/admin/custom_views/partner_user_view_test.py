@@ -153,7 +153,8 @@ class PartnerUserViewTest:
 
         # next step was IDENTITY_CHECK before update action clears profile
         assert (
-            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.PROFILE_COMPLETION
         )
 
     @clean_database

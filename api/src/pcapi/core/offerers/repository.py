@@ -468,7 +468,7 @@ def find_venues_of_offerer_from_siret(siret: str) -> tuple[models.Offerer | None
         return None, []
     venues = (
         models.Venue.query.join(models.Offerer)
-        .filter(models.Offerer.siren == siren, models.Venue.isPermanent.is_(True))
+        .filter(models.Offerer.siren == siren)
         .order_by(models.Venue.common_name)
         .all()
     )

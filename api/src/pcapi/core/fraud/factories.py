@@ -9,6 +9,7 @@ import uuid
 from dateutil.relativedelta import relativedelta
 from factory.declarations import LazyAttribute
 import factory.fuzzy
+import pytz
 
 from pcapi.core import testing
 from pcapi.core.users import models as users_models
@@ -83,7 +84,9 @@ class DMSContentFactory(factory.Factory):
     phone = factory.Sequence("+33612{:06}".format)
     postal_code = "75008"
     procedure_number = factory.Faker("pyint")
-    registration_datetime = LazyAttribute(lambda _: datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S%z"))
+    registration_datetime = LazyAttribute(
+        lambda _: datetime.utcnow().replace(tzinfo=pytz.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+    )
 
 
 class UbbleContentFactory(factory.Factory):
@@ -155,7 +158,11 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
     type = models.FraudCheckType.UBBLE
     thirdPartyId = factory.LazyFunction(lambda: str(uuid.uuid4()))
     status = models.FraudCheckStatus.PENDING
-    eligibilityType = users_models.EligibilityType.AGE18
+    eligibilityType = factory.LazyAttribute(
+        lambda o: users_models.EligibilityType.UNDERAGE
+        if o.user.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
+        else users_models.EligibilityType.AGE18
+    )
 
     @classmethod
     def _create(
@@ -202,6 +209,16 @@ class OrphanDmsApplicationFactory(testing.BaseFactory):
 class ProfileCompletionFraudCheckFactory(BeneficiaryFraudCheckFactory):
     type = models.FraudCheckType.PROFILE_COMPLETION
     resultContent = factory.SubFactory(ProfileCompletionContentFactory)
+    status = models.FraudCheckStatus.OK
+
+
+class PhoneValidationFraudCheckFactory(BeneficiaryFraudCheckFactory):
+    type = models.FraudCheckType.PHONE_VALIDATION
+    status = models.FraudCheckStatus.OK
+
+
+class HonorStatementFraudCheckFactory(BeneficiaryFraudCheckFactory):
+    type = models.FraudCheckType.HONOR_STATEMENT
     status = models.FraudCheckStatus.OK
 
 

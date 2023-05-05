@@ -85,7 +85,7 @@ const renderStockEventScreen = () => {
         getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.EDITION,
-          offerId: 'BQ',
+          offerId: 12,
         }),
       ],
     }
@@ -331,7 +331,9 @@ describe('screens:StocksEventEdition', () => {
     expect(
       await screen.findByText('Voulez-vous supprimer cette occurrence ?')
     ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
+    await userEvent.click(
+      screen.getByText('Confirmer la suppression', { selector: 'button' })
+    )
 
     expect(
       await screen.findByText('Le stock a été supprimé.')
@@ -415,7 +417,9 @@ describe('screens:StocksEventEdition', () => {
     expect(
       screen.getByText('Voulez-vous supprimer cette occurrence ?')
     ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
+    await userEvent.click(
+      screen.getByText('Confirmer la suppression', { selector: 'button' })
+    )
 
     expect(
       await screen.findByText('Le stock a été supprimé.')
@@ -480,7 +484,9 @@ describe('screens:StocksEventEdition', () => {
     expect(
       screen.getByText('Voulez-vous supprimer cette occurrence ?')
     ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
+    await userEvent.click(
+      screen.getByText('Confirmer la suppression', { selector: 'button' })
+    )
 
     expect(
       await screen.findByText('Le stock a été supprimé.')
@@ -547,7 +553,9 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.dblClick(await screen.findByText('Supprimer le stock'))
 
     await userEvent.click(
-      await screen.findByText('Supprimer', { selector: 'button' })
+      await screen.findByText('Confirmer la suppression', {
+        selector: 'button',
+      })
     )
     expect(
       screen.getByText(

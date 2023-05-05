@@ -22,6 +22,7 @@ import {
   IOfferIndividual,
   IOfferIndividualStock,
   IOfferIndividualVenue,
+  IOfferSubCategory,
 } from 'core/Offers/types'
 import {
   getOfferIndividualPath,
@@ -96,7 +97,7 @@ const renderStockThingScreen = (
         getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.CREATION,
-          offerId: contextValue.offerId || undefined,
+          offerId: contextValue.offer?.nonHumanizedId || undefined,
         }),
       ],
     }
@@ -116,6 +117,7 @@ describe('screens:StocksThing', () => {
       } as IOfferIndividualVenue,
       stocks: [],
       lastProviderName: 'Ciné Office',
+      subcategoryId: 'CANBEDUO',
     }
     props = {
       offer: offer as IOfferIndividual,
@@ -126,7 +128,7 @@ describe('screens:StocksThing', () => {
       venueList: [],
       offererNames: [],
       categories: [],
-      subCategories: [],
+      subCategories: [{ id: 'CANBEDUO', canBeDuo: true } as IOfferSubCategory],
       setOffer: () => {},
       setShouldTrack: () => {},
       shouldTrack: true,
@@ -134,6 +136,9 @@ describe('screens:StocksThing', () => {
     }
     jest
       .spyOn(api, 'getOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    jest
+      .spyOn(api, 'patchOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
   })
 
@@ -225,36 +230,60 @@ describe('screens:StocksThing', () => {
       )
     ).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith(offer.nonHumanizedId)
-  })
+  }) <
+    it('should submit stock form when click on "Étape suivante"', async () => {
+      jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+        stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      })
+      renderStockThingScreen(props, contextValue)
+      const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
+      const draftButton = screen.getByRole('button', {
+        name: 'Sauvegarder le brouillon',
+      })
+      await userEvent.type(screen.getByLabelText('Prix'), '20')
+      await userEvent.click(nextButton)
+      expect(draftButton).toBeDisabled()
 
-  it('should submit stock form when click on "Étape suivante"', async () => {
+      await waitFor(() => {
+        expect(
+          screen.getByText('Brouillon sauvegardé dans la liste des offres')
+        ).toBeInTheDocument()
+      })
+      expect(api.upsertStocks).toHaveBeenCalledWith({
+        offerId: offer.nonHumanizedId,
+        stocks: [
+          {
+            bookingLimitDatetime: null,
+            price: 20,
+            quantity: null,
+          },
+        ],
+      })
+      expect(screen.getByText('Next page')).toBeInTheDocument()
+      expect(api.getOffer).toHaveBeenCalledWith(offer.nonHumanizedId)
+    })
+
+  it('should submit stock form with duo informations when clicking on on "Étape suivante"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
     renderStockThingScreen(props, contextValue)
     const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
-    const draftButton = screen.getByRole('button', {
-      name: 'Sauvegarder le brouillon',
-    })
     await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.click(
+      screen.getByLabelText('Accepter les réservations “Duo“')
+    )
     await userEvent.click(nextButton)
-    expect(draftButton).toBeDisabled()
 
     await waitFor(() => {
       expect(
         screen.getByText('Brouillon sauvegardé dans la liste des offres')
       ).toBeInTheDocument()
     })
-    expect(api.upsertStocks).toHaveBeenCalledWith({
-      offerId: offer.nonHumanizedId,
-      stocks: [
-        {
-          bookingLimitDatetime: null,
-          price: 20,
-          quantity: null,
-        },
-      ],
-    })
+    expect(api.patchOffer).toHaveBeenCalledWith(
+      offer.nonHumanizedId,
+      expect.objectContaining({ isDuo: true })
+    )
     expect(screen.getByText('Next page')).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith(offer.nonHumanizedId)
   })

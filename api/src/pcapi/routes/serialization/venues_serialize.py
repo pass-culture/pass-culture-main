@@ -135,6 +135,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     demarchesSimplifieesApplicationId: str | None
     fieldsUpdated: list[str]
     id: str
+    nonHumanizedId: int
     idAtProviders: str | None
     isValidated: bool
     lastProviderId: str | None
@@ -605,6 +606,7 @@ class VenueOfOffererFromSiretResponseModel(BaseModel):
     name: str
     publicName: str | None
     siret: str | None
+    isPermanent: bool
 
     _humanize_id = humanize_field("id")
 

@@ -1,14 +1,11 @@
 import React from 'react'
 
-import { OfferStatus } from 'apiClient/v1'
 import { Offer, Venue } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 
-import BookingLinkCell from './Cells/BookingLinkCell'
 import CheckboxCell from './Cells/CheckboxCell'
+import CollectiveActionsCells from './Cells/CollectiveActionsCells'
 import CollectiveOfferStatusCell from './Cells/CollectiveOfferStatusCell'
-import DuplicateOfferCell from './Cells/DuplicateOfferCell'
-import EditOfferCell from './Cells/EditOfferCell'
 import OfferInstitutionCell from './Cells/OfferInstitutionCell'
 import OfferNameCell from './Cells/OfferNameCell'
 import OfferVenueCell from './Cells/OfferVenueCell'
@@ -57,27 +54,11 @@ const CollectiveOfferItem = ({
       />
 
       <CollectiveOfferStatusCell offer={offer} />
-
-      {Boolean(offer.isShowcase) && (
-        <DuplicateOfferCell templateOfferId={offer.id} />
-      )}
-
-      {(offer.status == OfferStatus.SOLD_OUT ||
-        offer.status == OfferStatus.EXPIRED) &&
-        offer.educationalBooking && (
-          <BookingLinkCell
-            bookingId={offer.educationalBooking?.id}
-            bookingStatus={offer.educationalBooking.booking_status}
-            offerEventDate={offer.stocks[0].beginningDatetime}
-          />
-        )}
-      {offer.isEditable && !offer.isPublicApi && (
-        <EditOfferCell
-          offer={offer}
-          isOfferEditable={isOfferEditable}
-          editionOfferLink={editionOfferLink}
-        />
-      )}
+      <CollectiveActionsCells
+        offer={offer}
+        isOfferEditable={isOfferEditable}
+        editionOfferLink={editionOfferLink}
+      />
     </>
   )
 }

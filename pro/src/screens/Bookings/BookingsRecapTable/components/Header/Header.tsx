@@ -5,6 +5,8 @@ import { Button } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { pluralize } from 'utils/pluralize'
 
+import styles from './Header.module.scss'
+
 export interface HeaderProps {
   bookingsRecapFilteredLength: number
   isLoading: boolean
@@ -20,15 +22,15 @@ const Header = ({
 }: HeaderProps) => {
   if (isLoading) {
     return (
-      <div className="bookings-header-loading">
+      <div className={styles['bookings-header-loading']}>
         Chargement des réservations...
       </div>
     )
   } else {
     return (
-      <div className="bookings-header">
+      <div className={styles['bookings-header']}>
         {!queryBookingId ? (
-          <span className="bookings-header-number">
+          <span className={styles['bookings-header-number']}>
             {pluralize(bookingsRecapFilteredLength, 'réservation')}
           </span>
         ) : (

@@ -4,6 +4,7 @@ import React from 'react'
 
 import { OfferAddressType, StudentLevels } from 'apiClient/adage'
 import { HydratedCollectiveOffer } from 'pages/AdageIframe/app/types/offers'
+import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offer, { OfferProps } from '../Offer'
@@ -13,8 +14,10 @@ jest.mock('apiClient/api', () => ({
     logOfferDetailsButtonClick: jest.fn(),
     logOfferTemplateDetailsButtonClick: jest.fn(),
     logFavOfferButtonClick: jest.fn(),
+    logContactModalButtonClick: jest.fn(),
   },
 }))
+jest.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
 
 jest.mock('react-instantsearch-dom', () => {
   return {
@@ -32,16 +35,14 @@ jest.mock('react-instantsearch-dom', () => {
   }
 })
 
-const renderOffers = (props: OfferProps) => {
+const renderOffers = (
+  props: OfferProps,
+  featuresOverride?: { nameKey: string; isActive: boolean }[]
+) => {
   renderWithProviders(<Offer {...props} />, {
     storeOverrides: {
       features: {
-        list: [
-          {
-            nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE',
-            isActive: true,
-          },
-        ],
+        list: featuresOverride,
         initialized: true,
       },
     },
@@ -299,10 +300,13 @@ describe('offer', () => {
     })
 
     it('should display modal when clicking like button', async () => {
-      renderOffers({
-        ...offerProps,
-        offer: { ...offerInParis, domains: [{ id: 1, name: 'CINEMA' }] },
-      })
+      renderOffers(
+        {
+          ...offerProps,
+          offer: { ...offerInParis, domains: [{ id: 1, name: 'CINEMA' }] },
+        },
+        [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
+      )
 
       const likeButton = await screen.getByTitle("bouton j'aime")
       await userEvent.click(likeButton)
@@ -313,8 +317,11 @@ describe('offer', () => {
         )
       ).toBeInTheDocument()
     })
+
     it('should close modal when clicking close button', async () => {
-      renderOffers(offerProps)
+      renderOffers(offerProps, [
+        { nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true },
+      ])
 
       const likeButton = await screen.getByTitle("bouton j'aime")
       await userEvent.click(likeButton)
@@ -327,6 +334,47 @@ describe('offer', () => {
           /Lʼéquipe du pass Culture a bien noté votre intérêt pour cette fonctionnalité. Elle arrivera bientôt !/
         )
       ).not.toBeInTheDocument()
+    })
+
+    it('should display request form modal with venue public name', async () => {
+      renderOffers(
+        {
+          ...offerProps,
+          offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
+        },
+        [{ nameKey: 'WIP_ENABLE_COLLECTIVE_REQUEST', isActive: true }]
+      )
+
+      const contactButton = screen.getByRole('button', {
+        name: 'Contacter',
+      })
+      await userEvent.click(contactButton)
+
+      expect(screen.getByText('Mon lieu nom publique - Ma super structure'))
+    })
+
+    it('should display request form modal with venue name if venue has no public name', async () => {
+      renderOffers(
+        {
+          ...offerProps,
+          offer: {
+            ...defaultCollectiveTemplateOffer,
+            venue: {
+              ...defaultCollectiveTemplateOffer.venue,
+              publicName: '',
+            },
+            isTemplate: true,
+          },
+        },
+        [{ nameKey: 'WIP_ENABLE_COLLECTIVE_REQUEST', isActive: true }]
+      )
+
+      const contactButton = screen.getByRole('button', {
+        name: 'Contacter',
+      })
+      await userEvent.click(contactButton)
+
+      expect(screen.getByText('Mon lieu - Ma super structure'))
     })
   })
 })

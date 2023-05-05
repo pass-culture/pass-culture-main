@@ -210,7 +210,7 @@ export const bookingRecapFactory = (
     bookingToken: `TOKEN${bookingId++}`,
     stock: {
       offerIdentifier: offer.id,
-      offerNonHumanizedId: offer.nonHumanizedId,
+      offerId: offer.nonHumanizedId,
       offerName: offer.name,
       offerIsEducational: false,
       stockIdentifier: offer.stocks[0].id,

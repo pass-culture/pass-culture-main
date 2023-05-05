@@ -33,15 +33,15 @@ const renderSignupBreadcrumb = (
       <SignupBreadcrumb />
       <Routes>
         <Route
-          path={'/parcours-inscription/authentification'}
+          path="/parcours-inscription/authentification"
           element={<div>Authentication screen</div>}
         />
         <Route
-          path={'/parcours-inscription/activite'}
+          path="/parcours-inscription/activite"
           element={<div>Activity screen</div>}
         />
         <Route
-          path={'/parcours-inscription/validation'}
+          path="/parcours-inscription/validation"
           element={<div>Validation screen</div>}
         />
       </Routes>

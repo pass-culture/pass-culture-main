@@ -19,26 +19,6 @@ const renderCollectiveActionButtons = (
 }
 
 describe('CollectiveActionButtons', () => {
-  it('should display modify offer button for validated booking for less than 2 days', () => {
-    const bookingRecap = collectiveBookingRecapFactory({
-      bookingStatus: BOOKING_STATUS.VALIDATED,
-      stock: {
-        ...defaultCollectiveBookingStock,
-        eventBeginningDatetime: addDays(new Date(), 2).toISOString(),
-      },
-    })
-    renderCollectiveActionButtons({
-      bookingRecap,
-      reloadBookings: jest.fn(),
-      isCancellable: false,
-    })
-    const modifyLink = screen.getByRole('link', { name: 'Modifier l’offre' })
-    expect(modifyLink).toBeInTheDocument()
-    expect(modifyLink).toHaveAttribute(
-      'href',
-      '/offre/1/collectif/stocks/edition'
-    )
-  })
   it('should display modify offer button for pending booking', () => {
     const bookingRecap = collectiveBookingRecapFactory({
       bookingStatus: BOOKING_STATUS.PENDING,

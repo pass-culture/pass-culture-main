@@ -64,7 +64,7 @@ const Summary = () => {
   )?.canBeDuo
 
   const offerConfirmationStepUrl = getOfferIndividualUrl({
-    offerId: offer.id,
+    offerId: offer.nonHumanizedId,
     step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
     mode,
   })
@@ -117,7 +117,7 @@ const Summary = () => {
 
     navigate(
       getOfferIndividualUrl({
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         mode,
       })
@@ -163,7 +163,7 @@ const Summary = () => {
             <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
           )}
 
-          <StockSection offer={offer} />
+          <StockSection offer={offer} canBeDuo={canBeDuo} />
 
           <ActionBar
             onClickNext={publishOffer}

@@ -7,4 +7,5 @@ export interface IStockThingFormValues {
   price: number | ''
   activationCodes: string[]
   activationCodesExpirationDatetime: Date | null
+  isDuo: boolean | undefined
 }

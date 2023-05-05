@@ -360,6 +360,7 @@ def find_api_key(key: str) -> models.ApiKey | None:
         .options(
             sa_orm.joinedload(models.ApiKey.offerer),
         )
+        .options(sa_orm.joinedload(models.ApiKey.provider))
         .one_or_none()
     )
 
@@ -426,7 +427,7 @@ def auto_tag_new_offerer(
 
 @dataclasses.dataclass
 class NewOnboardingInfo:
-    target: models.Target | None
+    target: models.Target
     venueTypeCode: str
     webPresence: str | None
 
@@ -788,7 +789,7 @@ def get_timestamp_from_url(image_url: str) -> str:
 
 
 def rm_previous_venue_thumbs(venue: models.Venue) -> None:
-    if not venue.bannerUrl:
+    if not venue._bannerUrl:  # bannerUrl (with no undescore) always returns an url (potentially a default one)
         return
 
     # handle old banner urls that did not have a timestamp
@@ -1656,6 +1657,11 @@ def get_metabase_stats_iframe_url(
     return f"{settings.METABASE_SITE_URL}/embed/dashboard/{token}#bordered=false&titled=false"
 
 
+def create_venue_registration(venue_id: int, target: offerers_models.Target, web_presence: str | None) -> None:
+    venue_registration = offerers_models.VenueRegistration(venueId=venue_id, target=target, webPresence=web_presence)
+    repository.save(venue_registration)
+
+
 def create_from_onboarding_data(
     user: users_models.User,
     onboarding_data: offerers_serialize.SaveNewOnboardingDataQueryModel,
@@ -1715,7 +1721,8 @@ def create_from_onboarding_data(
             )
         venue_kwargs = common_kwargs | comment_and_siret
         venue_creation_info = venues_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore [arg-type]
-        create_venue(venue_creation_info, strict_accessibility_compliance=False)
+        venue = create_venue(venue_creation_info, strict_accessibility_compliance=False)
+        create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
     if not transactional_mails.send_welcome_to_pro_email(user):
         logger.warning(

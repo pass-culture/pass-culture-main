@@ -16,6 +16,7 @@ describe('screens::StockThing::serializers:serializeStockThingList', () => {
       price: 10,
       activationCodesExpirationDatetime: null,
       activationCodes: [],
+      isDuo: undefined,
     }
     departementCode = '75'
   })

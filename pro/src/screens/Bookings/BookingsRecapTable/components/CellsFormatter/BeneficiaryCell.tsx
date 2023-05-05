@@ -2,6 +2,8 @@ import React from 'react'
 
 import { BookingRecapResponseBeneficiaryModel } from 'apiClient/v1'
 
+import styles from './BeneficiaryCell.module.scss'
+
 const BeneficiaryCell = ({
   beneficiaryInfos,
 }: {
@@ -22,10 +24,12 @@ const BeneficiaryCell = ({
           <br />
         </div>
       )}
-      <span className="beneficiary-subtitle">{beneficiaryInfos.email}</span>
+      <span className={styles['beneficiary-subtitle']}>
+        {beneficiaryInfos.email}
+      </span>
       <br />
       {beneficiaryInfos.phonenumber && (
-        <span className="beneficiary-subtitle">
+        <span className={styles['beneficiary-subtitle']}>
           {beneficiaryInfos.phonenumber}
         </span>
       )}

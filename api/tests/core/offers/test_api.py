@@ -204,9 +204,7 @@ class CreateStockTest:
 
     def test_does_not_allow_creation_on_a_synchronized_offer(self):
         # Given
-        offer = factories.ThingOfferFactory(
-            lastProvider=providers_factories.AllocineProviderFactory(localClass="TiteLiveStocks")
-        )
+        offer = factories.ThingOfferFactory(lastProvider=providers_factories.TiteLiveThingsProviderFactory())
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -298,7 +296,7 @@ class EditStockTest:
         assert update_info is False
 
     def test_update_fields_updated_on_allocine_stocks(self):
-        allocine_provider = providers_factories.ProviderFactory(localClass="AllocineStocks")
+        allocine_provider = providers_factories.AllocineProviderFactory()
         stock = factories.StockFactory(
             fieldsUpdated=["price"],  # suppose we already customized the price
             quantity=5,
@@ -593,7 +591,7 @@ class DeleteStockTest:
         }
 
     def test_can_delete_if_stock_from_provider(self):
-        provider = providers_factories.AllocineProviderFactory(localClass="TiteLiveStocks")
+        provider = providers_factories.TiteLiveThingsProviderFactory()
         offer = factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = factories.StockFactory(offer=offer)
 

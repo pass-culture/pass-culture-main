@@ -395,7 +395,7 @@ class CollectiveOfferResponseIdModel(BaseModel):
 class CollectiveOfferVenueBodyModel(BaseModel):
     addressType: OfferAddressType
     otherAddress: str
-    venueId: int | str
+    venueId: int | str | None
 
     class Config:
         alias_generator = to_camel
@@ -523,6 +523,7 @@ class CollectiveOfferTemplateBodyModel(BaseModel):
 
 class CollectiveOfferTemplateResponseIdModel(BaseModel):
     id: str
+    nonHumanizedId: int
 
     _humanize_id = humanize_field("id")
 

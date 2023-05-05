@@ -274,7 +274,8 @@ class RunIntegrationTest:
         assert not user.is_beneficiary
         assert not user.deposit
         assert (
-            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PHONE_VALIDATION
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.PHONE_VALIDATION
         )
 
         assert len(mails_testing.outbox) == 1
@@ -567,7 +568,8 @@ class RunIntegrationTest:
         import_all_updated_dms_applications(6712558)
 
         assert (
-            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
+            subscription_api.get_user_subscription_state(user).next_step
+            == subscription_models.SubscriptionStep.PROFILE_COMPLETION
         )
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")

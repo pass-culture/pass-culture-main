@@ -37,7 +37,7 @@ def list_venues() -> venues_serialization.CollectiveOffersListVenuesResponseMode
 
     Tous les lieux enregistrés, sont listés ici avec leurs coordonnées.
     """
-    offerer_id = current_api_key.offererId  # type: ignore [attr-defined]
+    offerer_id = current_api_key.offererId
     venues = offerers_repository.get_all_venues_by_offerer_id(offerer_id)
 
     return venues_serialization.CollectiveOffersListVenuesResponseModel(

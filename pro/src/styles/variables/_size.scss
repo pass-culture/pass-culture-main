@@ -1,4 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 $main-content-width: rem.torem(874px);
 $main-content-padding: rem.torem(24px);
@@ -17,3 +19,20 @@ $header-grid-template-columns: [col-start] 1fr [col-main]
   minmax(rem.torem(874px), auto) 1fr;
 $header-nav-item-padding: rem.torem(16px);
 $nav-brand-margin-right: 5%;
+
+// Mixin used to "center" with input
+// We are using margin-top and not flex center because when there is an error the
+// input field grows at the bottom and we don't want the aligned content to move with it
+// stylelint-disable scss/operator-no-newline-after
+@mixin input-center-with-top-margin($content-height, $no-label: false) {
+  @if $no-label {
+    margin-top: calc((#{$input-min-height} - #{$content-height}) / 2);
+  } @else {
+    margin-top: calc(
+      #{fonts.$body-line-height} +
+        #{forms.$label-space-before-input} +
+        (#{$input-min-height} - #{$content-height}) /
+        2
+    );
+  }
+}

@@ -33,9 +33,9 @@ const CollectiveOfferSummaryCreation = ({
 
   const publishOffer = async () => {
     const confirmationUrl = offer.isTemplate
-      ? `/offre/${offer.id}/collectif/vitrine/confirmation`
+      ? `/offre/${offer.nonHumanizedId}/collectif/vitrine/confirmation`
       : `/offre/${computeURLCollectiveOfferId(
-          offer.id,
+          offer.nonHumanizedId,
           offer.isTemplate
         )}/collectif/confirmation`
 
@@ -58,8 +58,8 @@ const CollectiveOfferSummaryCreation = ({
     return navigate(confirmationUrl)
   }
   const backRedirectionUrl = offer.isTemplate
-    ? `/offre/collectif/vitrine/${offer.id}/creation`
-    : `/offre/${offer.id}/collectif/visibilite`
+    ? `/offre/collectif/vitrine/${offer.nonHumanizedId}/creation`
+    : `/offre/${offer.nonHumanizedId}/collectif/visibilite`
 
   return (
     <div className={styles['summary']}>
@@ -73,8 +73,8 @@ const CollectiveOfferSummaryCreation = ({
         offerEditLink={`/offre/collectif${offer.isTemplate ? '/vitrine' : ''}/${
           offer.id
         }/creation`}
-        stockEditLink={`/offre/${offer.id}/collectif/stocks`}
-        visibilityEditLink={`/offre/${offer.id}/collectif/visibilite`}
+        stockEditLink={`/offre/${offer.nonHumanizedId}/collectif/stocks`}
+        visibilityEditLink={`/offre/${offer.nonHumanizedId}/collectif/visibilite`}
       />
       <ActionsBarSticky>
         <ActionsBarSticky.Left>

@@ -302,7 +302,9 @@ export const RecurrenceForm = ({
                 className={styles['booking-date-limit-input']}
               />
 
-              <div>jours avant le début de l’évènement</div>
+              <div className={styles['booking-date-limit-text']}>
+                jours avant le début de l’évènement
+              </div>
             </div>
           </div>
         </FormLayout.Section>

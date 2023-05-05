@@ -1,0 +1,121 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
+
+.api-key {
+  .title {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-top: rem.torem(32px);
+
+    .text {
+      @include fonts.title3;
+    }
+
+    .counter {
+      @include fonts.title4;
+
+      &--error {
+        color: colors.$red-error;
+      }
+    }
+  }
+
+  .info {
+    color: colors.$grey-dark;
+    margin-top: rem.torem(16px);
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    margin-top: rem.torem(16px);
+
+    .item {
+      align-items: center;
+      background-color: colors.$grey-light;
+      border-radius: rem.torem(4px);
+      display: flex;
+      justify-content: space-between;
+      padding: rem.torem(12px) rem.torem(16px);
+      width: 100%;
+
+      &:not(:first-child) {
+        margin-top: rem.torem(8px);
+      }
+
+      .text {
+        color: colors.$grey-dark;
+        word-break: break-all;
+
+        &--new-key {
+          color: colors.$primary;
+
+          @include fonts.button;
+        }
+      }
+
+      .action {
+        margin-left: rem.torem(16px);
+      }
+    }
+  }
+
+  .generate {
+    margin-top: rem.torem(16px);
+    min-width: rem.torem(180px);
+  }
+}
+
+.api-key-dialog {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: rem.torem(532px);
+  text-align: center;
+
+  .title {
+    @include fonts.gabarit;
+
+    margin-top: rem.torem(24px);
+  }
+
+  .actions {
+    display: flex;
+    margin-top: rem.torem(80px);
+
+    .confirm {
+      margin-left: rem.torem(24px);
+    }
+  }
+}
+
+.section {
+  margin-bottom: rem.torem(48px);
+  padding-bottom: 0;
+  padding-top: 0;
+
+  .main-list-title {
+    @include fonts.title4;
+
+    border-bottom: thin solid colors.$grey-medium;
+    margin: rem.torem(12px) 0;
+    padding-bottom: rem.torem(8px);
+
+    .main-list-title-text {
+      @include fonts.title4;
+    }
+
+    span {
+      margin-top: rem.torem(3.5px);
+    }
+  }
+
+  .title-actions-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}

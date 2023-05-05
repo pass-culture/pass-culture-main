@@ -9,7 +9,6 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import type { IUseCurrentUserReturn } from 'hooks/useCurrentUser'
 import * as useCurrentUser from 'hooks/useCurrentUser'
 import * as useNotification from 'hooks/useNotification'
-import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SignUpValidation from '../SignUpValidation'
@@ -17,7 +16,6 @@ import SignUpValidation from '../SignUpValidation'
 jest.mock('repository/pcapi/pcapi')
 jest.mock('hooks/useCurrentUser')
 jest.mock('hooks/useNotification')
-jest.mock('tracking/mediaCampaignsTracking')
 
 const renderSignupValidation = (url: string) =>
   renderWithProviders(
@@ -78,15 +76,6 @@ describe('src | components | pages | Signup | validation', () => {
     await waitFor(() => {
       expect(screen.getByText('Connexion')).toBeInTheDocument()
     })
-  })
-
-  it('should call media campaign tracker once', async () => {
-    jest.spyOn(api, 'validateUser').mockResolvedValue()
-    // when the user lands on signup validation page
-    renderSignupValidation('/validation/AAA')
-    await waitFor(() => expect(api.validateUser).toHaveBeenCalledTimes(1))
-    // then the media campaign tracker should be called once
-    expect(campaignTracker.signUpValidation).toHaveBeenCalledTimes(1)
   })
 
   it('should display a success message when token verification is successful', async () => {

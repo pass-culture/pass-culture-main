@@ -7,6 +7,8 @@ import VenueItem from '../VenueItem'
 
 describe('src | components | pages | OffererCreation | VenueItem', () => {
   let props
+  const venueId = 1
+  const offererId = 1
 
   const renderVenueItem = () => renderWithProviders(<VenueItem {...props} />)
 
@@ -14,10 +16,12 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
     props = {
       venue: {
         id: 'AAA',
+        nonHumanizedId: venueId,
         managingOffererId: 'ABC',
         name: 'fake name',
         publicName: null,
       },
+      offererId: offererId,
     }
   })
 
@@ -30,7 +34,10 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
 
         // then
         expect(navLink).toHaveTextContent('fake name')
-        expect(navLink).toHaveAttribute('href', '/structures/ABC/lieux/AAA')
+        expect(navLink).toHaveAttribute(
+          'href',
+          `/structures/${offererId}/lieux/${venueId}`
+        )
       })
 
       it('should render link to see venue details with venue public name when public name provided', () => {
@@ -55,7 +62,7 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
         expect(navLink).toHaveTextContent('Créer une offre')
         expect(navLink).toHaveAttribute(
           'href',
-          '/offre/creation?lieu=AAA&structure=ABC'
+          `/offre/creation?lieu=${venueId}&structure=${offererId}`
         )
       })
     })

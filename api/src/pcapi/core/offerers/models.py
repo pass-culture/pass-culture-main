@@ -102,12 +102,6 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
 """
 
 
-class Target(enum.Enum):
-    EDUCATIONAL = "EDUCATIONAL"
-    INDIVIDUAL_AND_EDUCATIONAL = "INDIVIDUAL_AND_EDUCATIONAL"
-    INDIVIDUAL = "INDIVIDUAL"
-
-
 class VenueTypeCode(enum.Enum):
     ADMINISTRATIVE = "Lieu administratif"
     ARTISTIC_COURSE = "Cours et pratique artistiques"
@@ -304,7 +298,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
     contact: sa_orm.Mapped["VenueContact | None"] = relationship("VenueContact", back_populates="venue", uselist=False)
 
-    # bannerUrl should provide a safe way to retrieve the banner,
+    # _bannerUrl should provide a safe way to retrieve the banner,
     # whereas bannerMeta should provide extra information that might be
     # helpful like image type, author, etc. that can change over time.
     _bannerUrl = Column(Text, nullable=True, name="bannerUrl")
@@ -377,6 +371,10 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
     collectiveSubCategoryId = sa.Column(sa.Text, nullable=True)
 
+    registration: sa_orm.Mapped["VenueRegistration | None"] = relationship(
+        "VenueRegistration", back_populates="venue", uselist=False
+    )
+
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
         try:
@@ -428,13 +426,17 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
         return self.bankInformation.applicationId
 
-    @hybrid_property
-    def dms_adage_status(self) -> str | None:
+    @property
+    def last_collective_dms_application(self) -> educational_models.CollectiveDmsApplication | None:
         if self.collectiveDmsApplications:
             return sorted(
-                self.collectiveDmsApplications, key=lambda application: application.lastChangeDate, reverse=True
-            )[0].state
+                self.collectiveDmsApplications, key=lambda application: application.lastChangeDate, reverse=True  # type: ignore [return-value, arg-type]
+            )[0]
         return None
+
+    @hybrid_property
+    def dms_adage_status(self) -> str | None:
+        return self.last_collective_dms_application.state if self.last_collective_dms_application else None
 
     @dms_adage_status.expression  # type: ignore [no-redef]
     def dms_adage_status(cls) -> str | None:  # pylint: disable=no-self-argument
@@ -705,6 +707,26 @@ class VenueEducationalStatus(Base, Model):
     id: int = Column(BigInteger, primary_key=True, autoincrement=False, nullable=False)
     name: str = Column(String(256), nullable=False)
     venues = relationship(Venue, back_populates="venueEducationalStatus", uselist=True)
+
+
+class Target(enum.Enum):
+    EDUCATIONAL = "EDUCATIONAL"
+    INDIVIDUAL_AND_EDUCATIONAL = "INDIVIDUAL_AND_EDUCATIONAL"
+    INDIVIDUAL = "INDIVIDUAL"
+
+
+class VenueRegistration(PcObject, Base, Model):
+    __tablename__ = "venue_registration"
+
+    venueId: int = Column(
+        BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
+    )
+
+    venue: sa_orm.Mapped[Venue] = relationship("Venue", foreign_keys=[venueId], back_populates="registration")
+
+    target: Target = Column(db_utils.MagicEnum(Target), nullable=False)
+
+    webPresence: str | None = sa.Column(sa.Text, nullable=True)
 
 
 class Offerer(

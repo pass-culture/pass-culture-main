@@ -64,10 +64,12 @@ describe('screens:StocksThing', () => {
   let props: IStocksThingProps
   let contextValue: IOfferIndividualContext
   let offer: Partial<IOfferIndividual>
+  const offerId = 1
 
   beforeEach(() => {
     offer = {
       id: 'OFFER_ID',
+      nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
       } as IOfferIndividualVenue,
@@ -95,6 +97,9 @@ describe('screens:StocksThing', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+    jest
+      .spyOn(api, 'patchOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
   })
 
   it('should track when clicking on "Sauvegarder le brouillon" on creation', async () => {
@@ -114,7 +119,7 @@ describe('screens:StocksThing', () => {
         from: 'stocks',
         isDraft: true,
         isEdition: false,
-        offerId: 'OFFER_ID',
+        offerId: offerId,
         to: 'stocks',
         used: 'DraftButtons',
       }
@@ -138,7 +143,7 @@ describe('screens:StocksThing', () => {
         from: 'stocks',
         isDraft: true,
         isEdition: true,
-        offerId: 'OFFER_ID',
+        offerId: offerId,
         to: 'stocks',
         used: 'DraftButtons',
       }
@@ -162,7 +167,7 @@ describe('screens:StocksThing', () => {
         from: 'stocks',
         isDraft: true,
         isEdition: false,
-        offerId: 'OFFER_ID',
+        offerId: offerId,
         to: 'recapitulatif',
         used: 'StickyButtons',
       }
@@ -186,7 +191,7 @@ describe('screens:StocksThing', () => {
         from: 'stocks',
         isDraft: true,
         isEdition: true,
-        offerId: 'OFFER_ID',
+        offerId: offerId,
         to: 'recapitulatif',
         used: 'StickyButtons',
       }
@@ -210,7 +215,7 @@ describe('screens:StocksThing', () => {
         from: 'stocks',
         isDraft: false,
         isEdition: true,
-        offerId: 'OFFER_ID',
+        offerId: offerId,
         to: 'recapitulatif',
         used: 'StickyButtons',
       }

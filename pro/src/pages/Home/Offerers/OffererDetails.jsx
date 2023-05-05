@@ -131,7 +131,7 @@ const OffererDetails = ({
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
-              to: `/structures/${selectedOfferer.id}`,
+              to: `/structures/${selectedOfferer.nonHumanizedId}`,
               isExternal: false,
             }}
             Icon={PenIcon}
@@ -290,7 +290,7 @@ const OffererDetails = ({
                 <VenueCreationLinks
                   hasPhysicalVenue={hasAtLeastOnePhysicalVenue}
                   hasVirtualOffers={hasAtLeastOneVirtualVenue}
-                  offererId={selectedOfferer.id}
+                  offererId={selectedOfferer.nonHumanizedId}
                 />
               )}
           </>

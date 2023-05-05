@@ -1,4 +1,5 @@
 import datetime
+from functools import lru_cache
 import math
 from operator import attrgetter
 
@@ -35,7 +36,12 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
     def get_film_showtimes_stocks(self, film_id: int) -> dict[int, int]:  # type: ignore [empty-body]
         pass
 
+    @lru_cache
     def get_internet_sale_gauge_active(self) -> bool:
+        """
+        lru_cache is a feature in Python that can significantly improve the performance of functions
+        by caching their results based on their input arguments, thus avoiding costly recomputations.
+        """
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.CINEMAS)
         cinemas = parse_obj_as(list[cds_serializers.CinemaCDS], data)
         for cinema in cinemas:
@@ -93,6 +99,7 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
             f" & url={self.api_url}"
         )
 
+    @lru_cache
     def get_pc_voucher_types(self) -> list[cds_serializers.VoucherTypeCDS]:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.VOUCHER_TYPE)
         voucher_types = parse_obj_as(list[cds_serializers.VoucherTypeCDS], data)

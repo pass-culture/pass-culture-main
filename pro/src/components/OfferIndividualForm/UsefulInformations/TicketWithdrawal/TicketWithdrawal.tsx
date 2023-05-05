@@ -26,13 +26,23 @@ const TicketWithdrawal = ({
     dirty,
   } = useFormikContext<IOfferIndividualFormValues>()
 
+  const getFirstWithdrawalTypeEnumValue = () => {
+    switch (withdrawalType) {
+      case WithdrawalTypeEnum.BY_EMAIL:
+        return ticketSentDateOptions[0].value
+
+      case WithdrawalTypeEnum.ON_SITE:
+        return ticketWithdrawalHourOptions[0].value
+
+      default:
+        return undefined
+    }
+  }
+
   useEffect(
     function onWithdrawalTypeChange() {
       if (dirty) {
-        setFieldValue(
-          'withdrawalDelay',
-          withdrawalType === WithdrawalTypeEnum.NO_TICKET ? undefined : '0'
-        )
+        setFieldValue('withdrawalDelay', getFirstWithdrawalTypeEnumValue())
       }
     },
     [withdrawalType]
