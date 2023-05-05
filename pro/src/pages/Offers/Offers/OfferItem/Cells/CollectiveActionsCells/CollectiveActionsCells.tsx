@@ -22,9 +22,10 @@ const CollectiveActionsCells = ({
   return (
     <td className={styles['actions-column']}>
       <div className={styles['actions-column-container']}>
-        {Boolean(offer.isShowcase) && (
-          <DuplicateOfferCell templateOfferId={offer.nonHumanizedId} />
-        )}
+        <DuplicateOfferCell
+          offerId={offer.nonHumanizedId}
+          isShowcase={offer.isShowcase}
+        />
         {(offer.status == OfferStatus.SOLD_OUT ||
           offer.status == OfferStatus.EXPIRED) &&
           offer.educationalBooking && (

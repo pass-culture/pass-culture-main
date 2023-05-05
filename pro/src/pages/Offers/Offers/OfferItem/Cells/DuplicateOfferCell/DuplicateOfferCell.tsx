@@ -6,8 +6,10 @@ import {
   OFFER_FROM_TEMPLATE_ENTRIES,
 } from 'core/FirebaseEvents/constants'
 import { createOfferFromTemplate } from 'core/OfferEducational'
+import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/createOfferFromBookableOffer'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
+import { CopyIcon } from 'icons'
 import { ReactComponent as PlusIcon } from 'icons/ico-plus.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
@@ -16,9 +18,11 @@ import DuplicateOfferDialog from './DuplicateOfferDialog'
 export const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
 
 const DuplicateOfferCell = ({
-  templateOfferId,
+  offerId,
+  isShowcase,
 }: {
-  templateOfferId: number
+  offerId: number
+  isShowcase?: boolean | null
 }) => {
   const navigate = useNavigate()
   const notify = useNotification()
@@ -35,25 +39,29 @@ const DuplicateOfferCell = ({
     if (shouldNotDisplayModalAgain) {
       localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
     }
-    createOfferFromTemplate(navigate, notify, templateOfferId)
+    createOfferFromTemplate(navigate, notify, offerId)
   }
 
   const handleCreateOfferClick = () => {
-    if (!shouldDisplayModal) {
-      logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
-        from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS,
-      })
-      createOfferFromTemplate(navigate, notify, templateOfferId)
+    if (isShowcase) {
+      if (!shouldDisplayModal) {
+        logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
+          from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS,
+        })
+        createOfferFromTemplate(navigate, notify, offerId)
+      }
+      buttonRef.current?.blur()
+      setIsModalOpen(true)
+    } else {
+      createOfferFromBookableOffer(navigate, notify, offerId)
     }
-    buttonRef.current?.blur()
-    setIsModalOpen(true)
   }
 
   return (
     <>
       <ListIconButton
         onClick={handleCreateOfferClick}
-        Icon={PlusIcon}
+        Icon={isShowcase ? PlusIcon : CopyIcon}
         innerRef={buttonRef}
         hasTooltip
       >
