@@ -692,6 +692,14 @@ class UpdateUserInfoTest:
             "lastName": {"new_info": "Bonisseur de la Bath", "old_info": "Flantier"},
         }
 
+    def test_update_user_info_also_updates_underage_deposit_expiration_date(self):
+        # Given a user with an underage deposit
+        with freeze_time("2020-05-01"):
+            user = users_factories.BeneficiaryFactory(age=17)
+            users_api.update_user_info(user, author=user, validated_birth_date=datetime.date(2003, 1, 1))
+
+        assert user.deposits[0].expirationDate == datetime.datetime(2021, 1, 1)
+
 
 @pytest.mark.usefixtures("db_session")
 class DomainsCreditTest:
