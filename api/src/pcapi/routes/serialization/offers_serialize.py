@@ -243,35 +243,6 @@ class ListOffersQueryModel(BaseModel):
         arbitrary_types_allowed = True
 
 
-class GetOfferProductResponseModel(BaseModel):
-    ageMax: int | None
-    ageMin: int | None
-    conditions: str | None
-    dateModifiedAtLastProvider: datetime | None
-    description: str | None
-    durationMinutes: int | None
-    extraData: Any
-    fieldsUpdated: list[str]
-    id: str
-    idAtProviders: str | None
-    isGcuCompatible: bool
-    isNational: bool
-    lastProviderId: str | None
-    mediaUrls: list[str]
-    name: str
-    owningOffererId: str | None
-    thumbCount: int
-    url: str | None
-
-    _humanize_id = humanize_field("id")
-    _humanize_last_provider_id = humanize_field("lastProviderId")
-    _humanize_owning_offerer_id = humanize_field("owningOffererId")
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
-
-
 class GetOfferStockResponseModel(BaseModel):
     activationCodesExpirationDatetime: datetime | None
     beginningDatetime: datetime | None
@@ -437,20 +408,14 @@ class PriceCategoryResponseModel(BaseModel):
 
 class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     activeMediation: GetOfferMediationResponseModel | None
-    ageMax: int | None
-    ageMin: int | None
     bookingEmail: str | None
-    conditions: str | None
     dateCreated: datetime
-    dateModifiedAtLastProvider: datetime | None
     description: str | None
     durationMinutes: int | None
     extraData: Any
-    fieldsUpdated: list[str]
     hasBookingLimitDatetimesPassed: bool
     id: str
     isActive: bool
-    isBookable: bool
     isDigital: bool
     isDuo: bool
     isEditable: bool
@@ -465,8 +430,6 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     mediations: list[GetOfferMediationResponseModel]
     name: str
     priceCategories: list[PriceCategoryResponseModel] | None
-    product: GetOfferProductResponseModel
-    productId: str
     stocks: list[GetOfferStockResponseModel]
     subcategoryId: SubcategoryIdEnum
     thumbUrl: str | None
@@ -480,7 +443,6 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     status: OfferStatus
 
     _humanize_id = humanize_field("id")
-    _humanize_product_id = humanize_field("productId")
     _humanize_venue_id = humanize_field("venueId")
     _humanize_last_provider_id = humanize_field("lastProviderId")
 
