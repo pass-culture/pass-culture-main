@@ -11,6 +11,7 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
+import useNotification from 'hooks/useNotification'
 import { TrashFilledIcon } from 'icons'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -54,6 +55,7 @@ const StocksEventList = ({
   setStocks,
 }: IStocksEventListProps): JSX.Element => {
   const mode = useOfferWizardMode()
+  const notify = useNotification()
   const { logEvent } = useAnalytics()
   const [isCheckedArray, setIsCheckedArray] = useState<boolean[]>(
     Array(stocks.length).fill(false)
@@ -101,6 +103,7 @@ const StocksEventList = ({
     if (stocks.length % STOCKS_PER_PAGE === 0 && page === pageCount) {
       previousPage()
     }
+    notify.success('1 occurrence a été supprimée')
   }
 
   const onBulkDelete = () => {
@@ -125,6 +128,11 @@ const StocksEventList = ({
     ) {
       setPage(newLastPage)
     }
+    notify.success(
+      deletedStocksCount === 1
+        ? '1 occurrence a été supprimée'
+        : `${deletedStocksCount} occurrences ont été supprimées`
+    )
   }
 
   const onCancelClick = () => {
