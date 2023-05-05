@@ -743,6 +743,28 @@ class StepperTest:
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
 
+    def should_not_have_subtitle_for_profile_when_done(self, client):
+        # A user was activated at 17 yo and is now 18 yo
+        a_year_ago = datetime.datetime.utcnow() - relativedelta(years=1, months=1)
+        with freeze_time(a_year_ago):
+            user = users_factories.BeneficiaryFactory(age=17)
+
+        # The user has completed the phone validation step
+        fraud_factories.PhoneValidationFraudCheckFactory(user=user)
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+
+        # The user has completed the profile completion step
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/stepper")
+
+        assert response.json["subscriptionStepsToDisplay"] == [
+            self.get_step("phone_validation_step", SubscriptionStepCompletionState.COMPLETED.value),
+            self.get_step("profile_completion_step", SubscriptionStepCompletionState.COMPLETED.value),
+            self.get_step("honor_statement_step", SubscriptionStepCompletionState.CURRENT.value),
+        ]
+
 
 class GetProfileTest:
     def test_get_profile(self, client):
