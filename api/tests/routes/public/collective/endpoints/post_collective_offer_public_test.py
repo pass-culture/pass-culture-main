@@ -10,7 +10,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import override_features
-from pcapi.utils.human_ids import humanize
 
 import tests
 from tests.routes import image_data
@@ -91,7 +90,7 @@ class CollectiveOffersPublicPostOfferTest:
         assert offer.institutionId == educational_institution.id
         assert offer.interventionArea == []
         assert offer.offerVenue == {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "addressType": "offererVenue",
             "otherAddress": "",
         }
@@ -211,7 +210,7 @@ class CollectiveOffersPublicPostOfferTest:
         assert offer.institutionId == educational_institution.id
         assert offer.interventionArea == []
         assert offer.offerVenue == {
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
             "addressType": "offererVenue",
             "otherAddress": "",
         }

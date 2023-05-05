@@ -99,7 +99,7 @@ class OfferAddressType(enum.Enum):
 class CollectiveOfferOfferVenue(BaseModel):
     addressType: OfferAddressType
     otherAddress: str
-    venueId: str
+    venueId: int | None
     name: str | None
     publicName: str | None
     address: str | None

@@ -11,7 +11,6 @@ from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import offers as serializers
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.human_ids import dehumanize_or_raise
 
 
 logger = logging.getLogger(__name__)
@@ -49,7 +48,7 @@ def get_collective_offer(
 
     offer_venue_id = offer.offerVenue.get("venueId", None)
     if offer_venue_id:
-        offer_venue = get_venue_by_id(dehumanize_or_raise(offer_venue_id))
+        offer_venue = get_venue_by_id(offer_venue_id)
     else:
         offer_venue = None
 
@@ -75,7 +74,7 @@ def get_collective_offer_template(
 
     offer_venue_id = offer.offerVenue.get("venueId", None)
     if offer_venue_id:
-        offer_venue = get_venue_by_id(dehumanize_or_raise(offer_venue_id))
+        offer_venue = get_venue_by_id(offer_venue_id)
     else:
         offer_venue = None
 

@@ -395,17 +395,11 @@ class CollectiveOfferResponseIdModel(BaseModel):
 class CollectiveOfferVenueBodyModel(BaseModel):
     addressType: OfferAddressType
     otherAddress: str
-    venueId: int | str | None
+    venueId: int | None
 
     class Config:
         alias_generator = to_camel
         extra = "forbid"
-
-    @validator("venueId", pre=True)
-    def validate_venueId(cls, venue_id: str | int) -> int | None:
-        if isinstance(venue_id, str):
-            return None
-        return venue_id
 
 
 def is_intervention_area_valid(

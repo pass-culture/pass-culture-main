@@ -11,7 +11,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import override_features
-from pcapi.utils.human_ids import humanize
 
 import tests
 from tests.routes import image_data
@@ -103,7 +102,7 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.durationMinutes == 183
         assert offer.students == [educational_models.StudentLevels.COLLEGE4]
         assert offer.offerVenue == {
-            "venueId": "",
+            "venueId": None,
             "addressType": "school",
             "otherAddress": "",
         }
@@ -191,7 +190,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         assert offer.venueId == venue2.id
         assert offer.offerVenue == {
-            "venueId": humanize(venue2.id),
+            "venueId": venue2.id,
             "addressType": "offererVenue",
             "otherAddress": "",
         }
