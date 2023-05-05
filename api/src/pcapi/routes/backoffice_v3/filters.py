@@ -18,6 +18,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -287,6 +288,90 @@ def format_modified_info_value(value: typing.Any) -> str:
     return str(value)
 
 
+def format_offer_validation_sub_rule(sub_rule: offers_models.OfferValidationSubRule) -> str:
+    if not sub_rule.model:
+        return "L'offre est du type"
+    match sub_rule.attribute:
+        case offers_models.OfferValidationAttribute.NAME:
+            sub_rule_text = "Le nom "
+        case offers_models.OfferValidationAttribute.DESCRIPTION:
+            sub_rule_text = "La description "
+        case offers_models.OfferValidationAttribute.SIREN:
+            sub_rule_text = "Le SIREN "
+        case offers_models.OfferValidationAttribute.CATEGORY:
+            sub_rule_text = "La catégorie "
+        case offers_models.OfferValidationAttribute.SUBCATEGORY_ID:
+            sub_rule_text = "La sous-catégorie "
+        case offers_models.OfferValidationAttribute.WITHDRAWAL_DETAILS:
+            sub_rule_text = "La modalité de retrait "
+        case offers_models.OfferValidationAttribute.MAX_PRICE:
+            sub_rule_text = "Le prix maximum "
+        case offers_models.OfferValidationAttribute.PRICE:
+            sub_rule_text = "Le prix "
+        case offers_models.OfferValidationAttribute.PRICE_DETAIL:
+            sub_rule_text = "Les détails du prix "
+        case offers_models.OfferValidationAttribute.SHOW_SUB_TYPE:
+            sub_rule_text = "Le sous-type de spectacle "
+        case _:
+            sub_rule_text = sub_rule.attribute.value
+
+    match sub_rule.model:
+        case offers_models.OfferValidationModel.OFFER:
+            sub_rule_text += "de l'offre individuelle "
+        case offers_models.OfferValidationModel.COLLECTIVE_OFFER:
+            sub_rule_text += "de l'offre collective "
+        case offers_models.OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE:
+            sub_rule_text += "de l'offre collective vitrine "
+        case offers_models.OfferValidationModel.STOCK:
+            sub_rule_text += "du stock de l'offre "
+        case offers_models.OfferValidationModel.COLLECTIVE_STOCK:
+            sub_rule_text += "du stock de l'offre collective "
+        case offers_models.OfferValidationModel.VENUE:
+            sub_rule_text += "du lieu de l'offre "
+        case offers_models.OfferValidationModel.OFFERER:
+            sub_rule_text += "de la structure de l'offre "
+        case _:
+            sub_rule_text += sub_rule.model.value
+
+    sub_rule_text += format_offer_validation_operator(sub_rule.operator)
+    return sub_rule_text
+
+
+def format_offer_validation_operator(operator: offers_models.OfferValidationRuleOperator) -> str:
+    match operator:
+        case offers_models.OfferValidationRuleOperator.EQUALS:
+            return "est égal à"
+        case offers_models.OfferValidationRuleOperator.NOT_EQUALS:
+            return "est différent de"
+        case offers_models.OfferValidationRuleOperator.GREATER_THAN:
+            return "est supérieur à"
+        case offers_models.OfferValidationRuleOperator.GREATER_THAN_OR_EQUAL_TO:
+            return "est supérieur ou égal à"
+        case offers_models.OfferValidationRuleOperator.LESS_THAN:
+            return "est inférieur à"
+        case offers_models.OfferValidationRuleOperator.LESS_THAN_OR_EQUAL_TO:
+            return "est inférieur ou égal à"
+        case offers_models.OfferValidationRuleOperator.IN:
+            return "est parmi"
+        case offers_models.OfferValidationRuleOperator.NOT_IN:
+            return "n'est pas parmi"
+        case offers_models.OfferValidationRuleOperator.CONTAINS:
+            return "contient"
+        case offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY:
+            return "contient exactement"
+        case _:
+            return operator.value
+
+
+def format_offer_types(data: list[str]) -> str:
+    types = {
+        "Offer": "Offre individuelle",
+        "CollectiveOffer": "Offre collective",
+        "CollectiveOfferTemplate": "Offre collective vitrine",
+    }
+    return " ou ".join([types[type_name] for type_name in data])
+
+
 def parse_referrer(url: str) -> str:
     """
     Ensure that a relative path is used, which will be understood.
@@ -341,6 +426,9 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_reason_label"] = format_reason_label
     app.jinja_env.filters["format_adage_referred"] = format_adage_referred
     app.jinja_env.filters["format_modified_info_value"] = format_modified_info_value
+    app.jinja_env.filters["format_offer_validation_sub_rule"] = format_offer_validation_sub_rule
+    app.jinja_env.filters["format_offer_validation_operator"] = format_offer_validation_operator
+    app.jinja_env.filters["format_offer_types"] = format_offer_types
     app.jinja_env.filters["parse_referrer"] = parse_referrer
     app.jinja_env.filters["action_to_name"] = action_to_name
     app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link
