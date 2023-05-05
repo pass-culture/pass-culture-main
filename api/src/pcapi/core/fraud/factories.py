@@ -13,6 +13,7 @@ import pytz
 
 from pcapi.core import testing
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 import pcapi.core.users.factories as users_factories
 
@@ -158,7 +159,11 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
     type = models.FraudCheckType.UBBLE
     thirdPartyId = factory.LazyFunction(lambda: str(uuid.uuid4()))
     status = models.FraudCheckStatus.PENDING
-    eligibilityType = users_models.EligibilityType.AGE18
+    eligibilityType = factory.LazyAttribute(
+        lambda o: users_models.EligibilityType.UNDERAGE
+        if o.user.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
+        else users_models.EligibilityType.AGE18
+    )
 
     @classmethod
     def _create(
