@@ -1,11 +1,12 @@
 <div class="form-floating {{ field.name }}-container">
   {% set tom_select_field_id = random_hash() %}
   <select {% if field.multiple %}multiple{% endif %}
-          {% if field.disabled %}disabled{% endif %}
+          {% if field.disabled or field.readonly %}disabled{% endif %}
           data-tomselect-autocomplete-url="{{ field.tomselect_autocomplete_url }}"
           data-tomselect-options="{{ field.tomselect_options }}"
           data-tomselect-items="{{ field.tomselect_items }}"
           class="form-select pc-tom-select-field pc-tom-select-autocomplete-field"
+          {% if field.readonly %}data-tom-select-readonly{% endif %}
           id="{{ select_multiple_field_autocomplete_id }}"
           name="{{ field.name }}"
           size="2"></select>

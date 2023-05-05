@@ -37,7 +37,7 @@ class CineofficeContext(PivotContext):
             account_id=pivot.accountId,
             api_token=pivot.cinemaApiToken,
         )
-        form.venue_id.disabled = True
+        form.venue_id.readonly = True
         return form
 
     @classmethod

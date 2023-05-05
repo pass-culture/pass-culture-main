@@ -35,7 +35,7 @@ class CGRContext(PivotContext):
             cinema_url=pivot.cinemaUrl,
             password=pivot.password,
         )
-        form.venue_id.disabled = True
+        form.venue_id.readonly = True
         return form
 
     @classmethod
