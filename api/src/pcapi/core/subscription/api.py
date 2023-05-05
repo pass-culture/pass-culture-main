@@ -880,15 +880,13 @@ def requires_identity_check_step(user: users_models.User) -> bool:
     return True
 
 
-def _has_completed_profile_for_previous_eligibility(user: users_models.User) -> bool:
-    profile_completion_check = repository.get_latest_completed_profile_check(user)
-    if profile_completion_check is None:
-        return False
-    if profile_completion_check.status != fraud_models.FraudCheckStatus.OK:
-        return False
-    if profile_completion_check.eligibilityType == user.eligibility:
-        return False
-    return True
+def _has_completed_profile_for_previous_eligibility_only(user: users_models.User) -> bool:
+    if user.eligibility == users_models.EligibilityType.AGE18:
+        return has_completed_profile_for_given_eligibility(
+            user, users_models.EligibilityType.UNDERAGE
+        ) and not has_completed_profile_for_given_eligibility(user, users_models.EligibilityType.AGE18)
+
+    return False
 
 
 def _get_step_subtitle(
@@ -901,7 +899,9 @@ def _get_step_subtitle(
             else None
         )
 
-    if step == models.SubscriptionStep.PROFILE_COMPLETION and _has_completed_profile_for_previous_eligibility(user):
+    if step == models.SubscriptionStep.PROFILE_COMPLETION and _has_completed_profile_for_previous_eligibility_only(
+        user
+    ):
         return subscription_models.PROFILE_COMPLETION_STEP_EXISTING_DATA_SUBTITLE
 
     return None
