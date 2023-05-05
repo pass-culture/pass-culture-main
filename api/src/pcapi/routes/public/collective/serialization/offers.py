@@ -17,7 +17,6 @@ from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number
-from pcapi.utils.human_ids import dehumanize
 from pcapi.validation.routes.offers import check_collective_offer_name_length_is_valid
 
 
@@ -318,7 +317,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             educationalInstitution=offer.institution.institutionId if offer.institutionId else None,
             educationalInstitutionId=offer.institution.id if offer.institutionId else None,
             offerVenue={  # type: ignore [arg-type]
-                "venueId": dehumanize(offer.offerVenue.get("venueId")) or None,
+                "venueId": offer.offerVenue.get("venueId"),
                 "addressType": offer.offerVenue["addressType"],
                 "otherAddress": offer.offerVenue["otherAddress"] or None,
             },
