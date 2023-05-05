@@ -439,6 +439,7 @@ class AccountCreationTest:
         )
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def test_should_not_save_trusted_device_when_no_info_provided(self, mocked_check_recaptcha_token_is_valid, client):
         data = {
             "email": "John.doe@example.com",
@@ -454,6 +455,7 @@ class AccountCreationTest:
         assert users_models.TrustedDevice.query.first() is None
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def test_should_not_save_trusted_device_when_no_device_id_provided(
         self, mocked_check_recaptcha_token_is_valid, client
     ):
@@ -475,6 +477,7 @@ class AccountCreationTest:
         assert users_models.TrustedDevice.query.first() is None
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def test_can_save_trusted_device(self, mocked_check_recaptcha_token_is_valid, client):
         data = {
             "email": "John.doe@example.com",
@@ -500,6 +503,7 @@ class AccountCreationTest:
         assert trusted_device.os == "iOS"
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def test_can_access_trusted_devices_from_user(self, mocked_check_recaptcha_token_is_valid, client):
         data = {
             "email": "John.doe@example.com",
@@ -523,6 +527,29 @@ class AccountCreationTest:
         assert user is not None
         assert trusted_device is not None
         assert user.trusted_devices == [trusted_device]
+
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
+    def test_should_not_save_trusted_device_when_feature_flag_is_disabled(
+        self, mocked_check_recaptcha_token_is_valid, client
+    ):
+        data = {
+            "email": "John.doe@example.com",
+            "password": "Aazflrifaoi6@",
+            "birthdate": "1960-12-31",
+            "notifications": True,
+            "token": "gnagna",
+            "marketingEmailSubscription": True,
+            "trustedDevice": {
+                "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
+                "source": "iPhone 13",
+                "os": "iOS",
+            },
+        }
+
+        client.post("/native/v1/account", json=data)
+
+        assert users_models.TrustedDevice.query.first() is None
 
 
 class AccountCreationEmailExistsTest:

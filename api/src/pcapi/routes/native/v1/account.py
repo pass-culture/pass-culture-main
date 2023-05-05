@@ -154,12 +154,13 @@ def create_account(body: serializers.AccountRequest) -> None:
             apps_flyer_platform=body.apps_flyer_platform,
         )
 
-        device_info = body.trusted_device
-        if device_info and device_info.device_id:
-            trusted_device = users_models.TrustedDevice(
-                deviceId=device_info.device_id, os=device_info.os, source=device_info.source, user=created_user
-            )
-            repository.save(trusted_device)
+        if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active():
+            device_info = body.trusted_device
+            if device_info and device_info.device_id:
+                trusted_device = users_models.TrustedDevice(
+                    deviceId=device_info.device_id, os=device_info.os, source=device_info.source, user=created_user
+                )
+                repository.save(trusted_device)
 
     except exceptions.UserAlreadyExistsException:
         user = find_user_by_email(body.email)
