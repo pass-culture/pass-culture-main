@@ -88,7 +88,6 @@ export type { GetOffererVenueResponseModel } from './models/GetOffererVenueRespo
 export type { GetOfferLastProviderResponseModel } from './models/GetOfferLastProviderResponseModel';
 export type { GetOfferManagingOffererResponseModel } from './models/GetOfferManagingOffererResponseModel';
 export type { GetOfferMediationResponseModel } from './models/GetOfferMediationResponseModel';
-export type { GetOfferProductResponseModel } from './models/GetOfferProductResponseModel';
 export type { GetOfferStockResponseModel } from './models/GetOfferStockResponseModel';
 export type { GetOfferVenueResponseModel } from './models/GetOfferVenueResponseModel';
 export type { GetVenueDomainResponseModel } from './models/GetVenueDomainResponseModel';
