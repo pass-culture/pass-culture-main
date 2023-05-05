@@ -3,5 +3,6 @@
 .password-footer {
   @include forms.field-layout-footer;
 
+  margin-top: 0;
   flex-direction: column;
 }
