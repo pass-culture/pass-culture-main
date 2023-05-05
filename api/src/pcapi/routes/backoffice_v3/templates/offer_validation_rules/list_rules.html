@@ -1,0 +1,35 @@
+{% from "offer_validation_rules/sub_rules_extra_row.html" import build_offer_validation_sub_rules_toggle_extra_row_button with context %}
+{% from "offer_validation_rules/sub_rules_extra_row.html" import build_offer_validation_sub_rules_extra_row with context %}
+{% from "components/forms.html" import build_filters_form with context %}
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Règles de validation d'offres</h2>
+    {{ build_filters_form(form, dst) }}
+    <div>
+      <table class="table mb-4">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">ID</th>
+            <th scope="col">Nom</th>
+            <th scope="col">Dernier auteur</th>
+            <th scope="col">Date de dernière modification</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rule in rows %}
+            <tr>
+              <td>{{ build_offer_validation_sub_rules_toggle_extra_row_button(rule.id) }}</td>
+              <td>{{ rule.id }}</td>
+              <td>{{ rule.name }}</td>
+              <td>{{ rule.latestAuthor.full_name }}</td>
+              <td>{{ rule.dateModified | format_date_time }}</td>
+            </tr>
+            {{ build_offer_validation_sub_rules_extra_row(rule) }}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
