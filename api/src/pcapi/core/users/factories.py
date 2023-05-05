@@ -106,14 +106,14 @@ class BeneficiaryFactory(BaseUserFactory):
     hasSeenProRgs = False
 
     # Phone number validation
-    phoneNumber = factory.Sequence("060606060{}".format)
+    phoneNumber = factory.Faker("phone_number", locale="fr_FR")
     phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
 
     # Profile completion
-    address = factory.Sequence("{} rue des machines".format)
-    city = factory.Faker("city")
-    firstName = factory.Faker("first_name")
-    lastName = factory.Faker("last_name")
+    address = factory.Faker("street_address", locale="fr_FR")
+    city = factory.Faker("city", locale="fr_FR")
+    firstName = factory.Faker("first_name", locale="fr_FR")
+    lastName = factory.Faker("last_name", locale="fr_FR")
     postalCode = factory.Faker("postcode")
 
     # Identity validation : see below with beneficiaryFraudChecks function
