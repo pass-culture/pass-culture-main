@@ -85,6 +85,9 @@ const CollectiveTimeLine = ({
   }
 
   const isCLG6Active = useActiveFeature('WIP_ADD_CLG_6_5_COLLECTIVE_OFFER')
+  const isNewCancellationDelayActive = useActiveFeature(
+    'WIP_ENABLE_EAC_CANCEL_30_DAYS'
+  )
 
   const pendingStep = {
     type: TimelineStepType.SUCCESS,
@@ -240,9 +243,10 @@ const CollectiveTimeLine = ({
           À partir du {cancellationLimitDate.toString()}, la réservation ne sera
           plus annulable par l’établissement scolaire. <br />
           <br />
-          15 jours avant la date de l’évènement, l’établissement scolaire ne
-          peut plus annuler. De votre côté, vous pouvez annuler la réservation
-          jusqu’à 48 heures après la date de l’évènement.
+          {isNewCancellationDelayActive ? '30' : '15'} jours avant la date de
+          l’évènement, l’établissement scolaire ne peut plus annuler. De votre
+          côté, vous pouvez annuler la réservation jusqu’à 48 heures après la
+          date de l’évènement.
         </div>
       </>
     ),
