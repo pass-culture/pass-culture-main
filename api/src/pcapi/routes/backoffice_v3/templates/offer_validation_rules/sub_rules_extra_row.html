@@ -1,0 +1,36 @@
+{% macro build_offer_validation_sub_rules_toggle_extra_row_button(rule_id) %}
+  <button class="btn btn-sm btn-outline-primary pc-btn-chevron-toggle"
+          data-bs-toggle="collapse"
+          data-bs-target=".pc-rule-{{ rule_id }}">
+    <i class="bi bi-chevron-right"></i>
+  </button>
+{% endmacro %}
+{% macro build_offer_validation_sub_rules_extra_row(rule) %}
+  <tr class="collapse accordion-collapse pc-rule-{{ rule.id }}">
+    <td colspan="100%">
+      <div class="row">
+        <div>
+          <div class="card shadow-sm p-4 mx-2">
+            {% for sub_rule in rule.subRules %}
+              <ul>
+                {% if sub_rule.comparated["comparated"].__class__.__name__ == "list" %}
+                  {% if not sub_rule.model %}
+                    <li>{{ sub_rule | format_offer_validation_sub_rule }} {{ sub_rule.comparated["comparated"] | format_offer_types }}</li>
+                  {% else %}
+                    <li>{{ sub_rule | format_offer_validation_sub_rule }}</li>
+                    <ul class="list-unstyled card-columns"
+                        style="column-count: 5">
+                      {% for word in sub_rule.comparated["comparated"] %}<li>- {{ word }}</li>{% endfor %}
+                    </ul>
+                  {% endif %}
+                {% else %}
+                  <li>{{ sub_rule | format_offer_validation_sub_rule }} {{ sub_rule.comparated["comparated"] }}</li>
+                {% endif %}
+              </ul>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </td>
+  </tr>
+{% endmacro %}
