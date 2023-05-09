@@ -23,7 +23,7 @@ export type IndividualOfferItemProps = {
   disabled: boolean
   isSelected: boolean
   offer: Offer
-  selectOffer: (offerId: string, selected: boolean, isTemplate: boolean) => void
+  selectOffer: (offerId: number, selected: boolean, isTemplate: boolean) => void
   editionOfferLink: string
   editionStockLink: string
   venue: Venue
@@ -62,7 +62,7 @@ const IndividualOfferItem = ({
   return (
     <>
       <CheckboxCell
-        offerId={offer.id}
+        offerId={offer.nonHumanizedId}
         status={offer.status}
         disabled={disabled}
         isSelected={isSelected}

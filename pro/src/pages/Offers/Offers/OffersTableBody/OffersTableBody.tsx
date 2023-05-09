@@ -10,7 +10,7 @@ type OffersTableBodyProps = {
   areAllOffersSelected: boolean
   offers: Offer[]
   selectOffer: (
-    offerId: string,
+    offerId: number,
     isSelected: boolean,
     isTemplate: boolean
   ) => void
