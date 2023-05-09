@@ -123,9 +123,7 @@
                                             class="btn btn-outline-primary"
                                             data-bs-dismiss="modal">Annuler</button>
                                     <button type="submit"
-                                            class="btn btn-primary">
-                                      Confirmer
-                                    </button>
+                                            class="btn btn-primary">Confirmer</button>
                                   </div>
                                 </form>
                               </div>
@@ -136,40 +134,20 @@
                     </div>
                   </div>
                 </th>
-                <td>
-                  {{ collective_booking.id }}
-                </td>
+                <td>{{ collective_booking.id }}</td>
                 <td>
                   {{ collective_booking.educationalInstitution.name | escape }}
                   ({{ collective_booking.educationalInstitution.id }})
                 </td>
-                <td>
-                  {{ collective_booking.educationalRedactor.firstName }} {{ collective_booking.educationalRedactor.lastName }}
-                </td>
-                <td>
-                  {{ links.build_offer_name_to_pc_pro_link(collective_offer) }}
-                </td>
-                <td>
-                  {{ collective_offer.id }}
-                </td>
-                <td>
-                  {{ collective_booking.total_amount | format_amount }}
-                </td>
-                <td>
-                  {{ collective_booking.status | format_booking_status(with_badge=True) | safe }}
-                </td>
-                <td>
-                  {{ collective_booking.dateCreated | format_date_time }}
-                </td>
-                <td>
-                  {{ collective_booking.collectiveStock.beginningDatetime | format_date_time }}
-                </td>
-                <td>
-                  {{ links.build_offerer_name_to_details_link(collective_booking.offerer) }}
-                </td>
-                <td>
-                  {{ links.build_venue_name_to_details_link(collective_booking.venue) }}
-                </td>
+                <td>{{ collective_booking.educationalRedactor.firstName }} {{ collective_booking.educationalRedactor.lastName }}</td>
+                <td>{{ links.build_offer_name_to_pc_pro_link(collective_offer) }}</td>
+                <td>{{ collective_offer.id }}</td>
+                <td>{{ collective_booking.total_amount | format_amount }}</td>
+                <td>{{ collective_booking.status | format_booking_status(with_badge=True) | safe }}</td>
+                <td>{{ collective_booking.dateCreated | format_date_time }}</td>
+                <td>{{ collective_booking.collectiveStock.beginningDatetime | format_date_time }}</td>
+                <td>{{ links.build_offerer_name_to_details_link(collective_booking.offerer) }}</td>
+                <td>{{ links.build_venue_name_to_details_link(collective_booking.venue) }}</td>
               </tr>
               {{ build_booking_extra_row(collective_booking, collective_booking.collectiveStock, collective_offer) }}
             {% endfor %}

@@ -128,9 +128,7 @@
               <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end"
                       data-bs-toggle="modal"
                       data-bs-target="#review-public-account-modal"
-                      type="button">
-                Revue manuelle
-              </button>
+                      type="button">Revue manuelle</button>
               <div class="modal modal-lg fade"
                    id="review-public-account-modal"
                    tabindex="-1"
@@ -142,25 +140,17 @@
                           name="{{ url_for(".review_public_account", user_id=user.id) | action_to_name }}"
                           method="post">
                       <div class="modal-header">
-                        <h5 class="modal-title">
-                          Revue manuelle
-                        </h5>
+                        <h5 class="modal-title">Revue manuelle</h5>
                       </div>
                       <div class="modal-body">
-                        <div class="form-floating my-3">
-                          {{ build_form_fields_group(manual_review_form) }}
-                        </div>
+                        <div class="form-floating my-3">{{ build_form_fields_group(manual_review_form) }}</div>
                       </div>
                       <div class="modal-footer">
                         <button type="button"
                                 class="btn btn-outline-primary"
-                                data-bs-dismiss="modal">
-                          Annuler
-                        </button>
+                                data-bs-dismiss="modal">Annuler</button>
                         <button type="submit"
-                                class="btn btn-primary">
-                          Enregistrer
-                        </button>
+                                class="btn btn-primary">Enregistrer</button>
                       </div>
                     </form>
                   </div>

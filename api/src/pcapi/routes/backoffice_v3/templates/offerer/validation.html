@@ -130,18 +130,10 @@
                   <br />
                   "|safe) }}
                 </td>
-                <td>
-                  {{ links.build_siren_to_external_link(offerer) }}
-                </td>
-                <td>
-                  {{ (item.creator_email) | empty_string_if_null }}
-                </td>
-                <td>
-                  {{ links.build_pro_user_name_to_details_link(item.creator_id, item.creator_name) }}
-                </td>
-                <td>
-                  {{ offerer.city | empty_string_if_null }}
-                </td>
+                <td>{{ links.build_siren_to_external_link(offerer) }}</td>
+                <td>{{ (item.creator_email) | empty_string_if_null }}</td>
+                <td>{{ links.build_pro_user_name_to_details_link(item.creator_id, item.creator_name) }}</td>
+                <td>{{ offerer.city | empty_string_if_null }}</td>
               </tr>
               {{ build_offerer_validation_extra_row(offerer.id, item.dms_venues) }}
             {% endfor %}

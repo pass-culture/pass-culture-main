@@ -86,7 +86,7 @@ Flask-WTF==1.0.1
 zeep==4.1.0
 libsass==0.22.0
 boussole==2.1.0
-djlint==1.23.0
+djlint==1.25.1
 # FIXME (kopax-polyconseil, 2023-04-18): do not use 67.3.0 that has a new
 # deprecation warning for which we're not ready
 # https://setuptools.pypa.io/en/stable/history.html#v67-3-0

@@ -112,9 +112,7 @@
                                             class="btn btn-outline-primary"
                                             data-bs-dismiss="modal">Annuler</button>
                                     <button type="submit"
-                                            class="btn btn-primary">
-                                      Confirmer
-                                    </button>
+                                            class="btn btn-primary">Confirmer</button>
                                   </div>
                                 </form>
                               </div>
@@ -125,45 +123,19 @@
                     </div>
                   </div>
                 </th>
-                <td>
-                  {{ booking.id }}
-                </td>
-                <td>
-                  {{ booking.token }}
-                </td>
-                <td>
-                  {{ links.build_public_user_name_to_details_link(booking.user) }}
-                </td>
-                <td>
-                  {{ links.build_offer_name_to_pc_pro_link(offer) }}
-                </td>
-                <td>
-                  {{ links.build_offer_name_to_details_link(offer, text_attr="id") }}
-                </td>
-                <td>
-                  {{ (offer.isDuo and booking.quantity == 2) | format_bool }}
-                </td>
-                <td>
-                  {{ booking.stock.quantity }}
-                </td>
-                <td>
-                  {{ booking.total_amount | format_amount }}
-                </td>
-                <td>
-                  {{ booking.status | format_booking_status(with_badge=True) | safe }}
-                </td>
-                <td>
-                  {{ booking.dateCreated | format_date_time }}
-                </td>
-                <td>
-                  {{ booking.stock.beginningDatetime | format_date_time }}
-                </td>
-                <td>
-                  {{ links.build_offerer_name_to_details_link(booking.offerer) }}
-                </td>
-                <td>
-                  {{ links.build_venue_name_to_details_link(booking.venue) }}
-                </td>
+                <td>{{ booking.id }}</td>
+                <td>{{ booking.token }}</td>
+                <td>{{ links.build_public_user_name_to_details_link(booking.user) }}</td>
+                <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
+                <td>{{ links.build_offer_name_to_details_link(offer, text_attr="id") }}</td>
+                <td>{{ (offer.isDuo and booking.quantity == 2) | format_bool }}</td>
+                <td>{{ booking.stock.quantity }}</td>
+                <td>{{ booking.total_amount | format_amount }}</td>
+                <td>{{ booking.status | format_booking_status(with_badge=True) | safe }}</td>
+                <td>{{ booking.dateCreated | format_date_time }}</td>
+                <td>{{ booking.stock.beginningDatetime | format_date_time }}</td>
+                <td>{{ links.build_offerer_name_to_details_link(booking.offerer) }}</td>
+                <td>{{ links.build_venue_name_to_details_link(booking.venue) }}</td>
               </tr>
               {{ build_booking_extra_row(booking, booking.stock, offer) }}
             {% endfor %}
