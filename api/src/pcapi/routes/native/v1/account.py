@@ -22,7 +22,6 @@ from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import api_errors
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
@@ -155,15 +154,7 @@ def create_account(body: serializers.AccountRequest) -> None:
         )
 
         if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active():
-            try:
-                device_info = body.trusted_device
-                if device_info and device_info.device_id:
-                    trusted_device = users_models.TrustedDevice(
-                        deviceId=device_info.device_id, os=device_info.os, source=device_info.source, user=created_user
-                    )
-                    repository.save(trusted_device)
-            except Exception as error:  # pylint: disable=broad-except
-                logger.warning("Failed to save trusted device: %s", error)
+            api.save_trusted_device(device_info=body.trusted_device, user=created_user)
 
     except exceptions.UserAlreadyExistsException:
         user = find_user_by_email(body.email)

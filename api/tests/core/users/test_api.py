@@ -30,6 +30,7 @@ from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.models import db
 from pcapi.notifications.push import testing as batch_testing
+from pcapi.routes.native.v1.serialization import account as account_serialization
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 
 from tests.test_utils import gen_offerer_tags
@@ -1213,3 +1214,54 @@ class SearchPublicAccountTest:
     def test_unknown_email(self):
         query = users_api.search_public_account("no@user.com")
         assert not query.all()
+
+
+class SaveTrustedDeviceTest:
+    def test_should_not_save_trusted_device_when_no_info_provided(self):
+        user = users_factories.UserFactory(email="py@test.com")
+
+        users_api.save_trusted_device(device_info=None, user=user)
+
+        assert users_models.TrustedDevice.query.count() == 0
+
+    def test_should_not_save_trusted_device_when_no_device_id_provided(self):
+        user = users_factories.UserFactory(email="py@test.com")
+        device_info = account_serialization.TrustedDevice(
+            deviceId="",
+            source="iPhone 13",
+            os="iOS",
+        )
+
+        users_api.save_trusted_device(device_info=device_info, user=user)
+
+        assert users_models.TrustedDevice.query.count() == 0
+
+    def test_can_save_trusted_device(self):
+        user = users_factories.UserFactory(email="py@test.com")
+        device_info = account_serialization.TrustedDevice(
+            deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
+            source="iPhone 13",
+            os="iOS",
+        )
+
+        users_api.save_trusted_device(device_info=device_info, user=user)
+
+        trusted_device = users_models.TrustedDevice.query.one()
+
+        assert trusted_device.deviceId == device_info.device_id
+        assert trusted_device.source == "iPhone 13"
+        assert trusted_device.os == "iOS"
+
+    def test_can_access_trusted_devices_from_user(self):
+        user = users_factories.UserFactory(email="py@test.com")
+        device_info = account_serialization.TrustedDevice(
+            deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
+            source="iPhone 13",
+            os="iOS",
+        )
+
+        users_api.save_trusted_device(device_info=device_info, user=user)
+
+        trusted_device = users_models.TrustedDevice.query.one()
+
+        assert user.trusted_devices == [trusted_device]

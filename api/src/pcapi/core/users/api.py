@@ -1190,3 +1190,14 @@ def save_flags(user: models.User, flags: dict) -> None:
                 save_firebase_flags(user, value)
             case _:
                 raise ValueError()
+
+
+def save_trusted_device(device_info: "account_serialization.TrustedDevice | None", user: models.User) -> None:
+    try:
+        if device_info and device_info.device_id:
+            trusted_device = users_models.TrustedDevice(
+                deviceId=device_info.device_id, os=device_info.os, source=device_info.source, user=user
+            )
+            repository.save(trusted_device)
+    except Exception as error:  # pylint: disable=broad-except
+        logger.warning("Failed to save trusted device: %s", error)
