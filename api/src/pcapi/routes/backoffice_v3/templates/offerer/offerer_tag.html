@@ -139,9 +139,7 @@
               <td>{{ offerer_tag.name }}</td>
               <td>{{ offerer_tag.label }}</td>
               <td>{{ offerer_tag.description | empty_string_if_null }}</td>
-              <td>
-                {{ offerer_tag.categories | format_tag_object_list }}
-              </td>
+              <td>{{ offerer_tag.categories | format_tag_object_list }}</td>
             </tr>
           {% endfor %}
         </tbody>

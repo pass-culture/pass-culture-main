@@ -99,30 +99,14 @@
                 <td>{{ offer.subcategory_v2.pro_label }}</td>
                 <td>{{ get_initial_stock(offer) }}</td>
                 <td>{{ get_remaining_stock(offer) }}</td>
-                <td>
-                  {{ offer.criteria | format_criteria | safe }}
-                </td>
-                <td>
-                  {{ offer.rankingWeight | empty_string_if_null }}
-                </td>
-                <td>
-                  {{ offer.validation | format_offer_validation_status }}
-                </td>
-                <td>
-                  {{ offer.dateCreated | format_date("%d/%m/%Y") }}
-                </td>
-                <td>
-                  {{ offer.lastValidationDate | format_date("%d/%m/%Y") }}
-                </td>
-                <td>
-                  {{ offer.venue.departementCode | empty_string_if_null }}
-                </td>
-                <td>
-                  {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
-                </td>
-                <td>
-                  {{ links.build_venue_name_to_details_link(offer.venue) }}
-                </td>
+                <td>{{ offer.criteria | format_criteria | safe }}</td>
+                <td>{{ offer.rankingWeight | empty_string_if_null }}</td>
+                <td>{{ offer.validation | format_offer_validation_status }}</td>
+                <td>{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
+                <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
+                <td>{{ offer.venue.departementCode | empty_string_if_null }}</td>
+                <td>{{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}</td>
+                <td>{{ links.build_venue_name_to_details_link(offer.venue) }}</td>
               </tr>
             {% endfor %}
           </tbody>

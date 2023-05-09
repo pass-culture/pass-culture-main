@@ -125,32 +125,18 @@
                 <td>{{ user_offerer.user.id }}</td>
                 <td>{{ user_offerer.user.email | empty_string_if_null }}</td>
                 <td>{{ links.build_pro_user_name_to_details_link(user_offerer.user.id, user_offerer.user.full_name) }}</td>
-                <td>
-                  {{ build_user_offerer_status_badge(user_offerer) }}
-                </td>
-                <td>
-                  {{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}
-                </td>
+                <td>{{ build_user_offerer_status_badge(user_offerer) }}</td>
+                <td>{{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>
                   {{ get_last_comment_func(offerer, user_offerer.userId) | empty_string_if_null | replace("\n", "
                   <br />
                   "|safe) }}
                 </td>
-                <td>
-                  {{ user_offerer.user.phoneNumber | empty_string_if_null }}
-                </td>
-                <td>
-                  {{ links.build_offerer_name_to_details_link(user_offerer.offerer) }}
-                </td>
-                <td>
-                  {{ offerer.dateCreated | format_date("%d/%m/%Y") }}
-                </td>
-                <td>
-                  {{ (owner and owner.email) | empty_string_if_null }}
-                </td>
-                <td>
-                  {{ links.build_siren_to_external_link(offerer) }}
-                </td>
+                <td>{{ user_offerer.user.phoneNumber | empty_string_if_null }}</td>
+                <td>{{ links.build_offerer_name_to_details_link(user_offerer.offerer) }}</td>
+                <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
+                <td>{{ (owner and owner.email) | empty_string_if_null }}</td>
+                <td>{{ links.build_siren_to_external_link(offerer) }}</td>
               </tr>
             {% endfor %}
           </tbody>
