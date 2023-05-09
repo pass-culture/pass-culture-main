@@ -1193,8 +1193,24 @@ def save_flags(user: models.User, flags: dict) -> None:
 
 
 def save_trusted_device(device_info: "account_serialization.TrustedDevice | None", user: models.User) -> None:
-    if device_info and device_info.device_id:
-        trusted_device = users_models.TrustedDevice(
-            deviceId=device_info.device_id, os=device_info.os, source=device_info.source, user=user
+    if device_info is None:
+        return
+
+    if not device_info.device_id:
+        logger.exception(
+            "Invalid deviceId was provided for trusted device",
+            extra={
+                "deviceId": device_info.device_id,
+                "os": device_info.os,
+                "source": device_info.source,
+            },
         )
-        repository.save(trusted_device)
+        return
+
+    trusted_device = users_models.TrustedDevice(
+        deviceId=device_info.device_id,
+        os=device_info.os,
+        source=device_info.source,
+        user=user,
+    )
+    repository.save(trusted_device)
