@@ -1090,7 +1090,7 @@ class UbbleWebhookTest:
         assert fraud_check.status is fraud_models.FraudCheckStatus.STARTED
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
-        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = fraud_models.UbbleContent(**fraud_check.resultContent)
         assert content.score is None
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment is None
@@ -1123,7 +1123,7 @@ class UbbleWebhookTest:
         assert fraud_check.status is fraud_models.FraudCheckStatus.CANCELED
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
-        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = fraud_models.UbbleContent(**fraud_check.resultContent)
         assert content.score is None
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment is None
@@ -1160,7 +1160,7 @@ class UbbleWebhookTest:
             subscription_api.get_identity_check_fraud_status(fraud_check.user, fraud_check.eligibilityType, fraud_check)
             == subscription_models.SubscriptionItemStatus.PENDING
         )
-        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
@@ -1203,7 +1203,7 @@ class UbbleWebhookTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["To"] == fraud_check.user.email
 
-        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
@@ -1251,7 +1251,7 @@ class UbbleWebhookTest:
 
         assert len(mails_testing.outbox) == 0
 
-        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
@@ -1296,7 +1296,7 @@ class UbbleWebhookTest:
 
         self._assert_email_sent(fraud_check.user, 304)
 
-        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes

@@ -8,6 +8,7 @@ from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
 from pcapi.core import logging as core_logging
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.users import models as users_models
 from pcapi.utils import requests
@@ -51,6 +52,28 @@ def _get_data_attribute(response: dict, name: str) -> typing.Any:
     return response["data"]["attributes"].get(name)
 
 
+def _get_data_relationships(response: dict, name: str) -> typing.Any:
+    return response["data"]["relationships"].get(name)
+
+
+def _parse_reason_codes(response: dict) -> list[fraud_models.FraudReasonCode]:
+    """
+    Format to parse
+    reason-codes: {
+        "meta": {"count": 2},
+        "data": [
+            {"type": "reason-codes", "id": 1304},
+            {"type": "reason-codes", "id": 1310}
+        ]
+    }
+    """
+    default = fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
+    reason_codes_data = _get_data_relationships(response, "reason-codes")
+    reason_codes_numbers = [int(item["id"]) for item in reason_codes_data["data"] if item["type"] == "reason-codes"]
+    reason_codes = [fraud_models.UBBLE_REASON_CODE_MAPPING.get(number, default) for number in reason_codes_numbers]
+    return reason_codes
+
+
 def _parse_ubble_gender(ubble_gender: str | None) -> users_models.GenderEnum | None:
     if not ubble_gender:
         return None
@@ -61,7 +84,7 @@ def _parse_ubble_gender(ubble_gender: str | None) -> users_models.GenderEnum | N
 
 def _extract_useful_content_from_response(
     response: dict,
-) -> ubble_fraud_models.UbbleContent:
+) -> fraud_models.UbbleContent:
     documents = typing.cast(
         ubble_fraud_models.UbbleIdentificationDocuments, _get_included_attributes(response, "documents")
     )
@@ -82,7 +105,7 @@ def _extract_useful_content_from_response(
     status = _get_data_attribute(response, "status")
     status_updated_at = _get_data_attribute(response, "status-updated-at")
 
-    content = ubble_fraud_models.UbbleContent(
+    content = fraud_models.UbbleContent(
         birth_date=getattr(documents, "birth_date", None),
         comment=comment,
         document_type=getattr(documents, "document_type", None),
@@ -95,6 +118,7 @@ def _extract_useful_content_from_response(
         last_name=getattr(documents, "last_name", None),
         married_name=getattr(documents, "married_name", None),
         ove_score=getattr(document_checks, "ove_score", None),
+        reason_codes=_parse_reason_codes(response),
         reference_data_check_score=getattr(reference_data_checks, "score", None),
         registration_datetime=registered_at,
         processed_datetime=processed_at,
@@ -114,7 +138,7 @@ def start_identification(
     last_name: str,
     webhook_url: str,
     redirect_url: str,
-) -> ubble_fraud_models.UbbleContent:
+) -> fraud_models.UbbleContent:
     session = configure_session()
 
     data = {
@@ -203,7 +227,7 @@ def start_identification(
     return content
 
 
-def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
+def get_content(identification_id: str) -> fraud_models.UbbleContent:
     session = configure_session()
     base_extra_log = {"request_type": "get-content", "identification_id": identification_id}
 

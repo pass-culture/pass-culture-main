@@ -4,7 +4,7 @@ import logging
 import pytest
 
 from pcapi.connectors.beneficiaries import ubble
-from pcapi.core.fraud.ubble import models as ubble_fraud_models
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users.models import GenderEnum
 from pcapi.utils import requests as requests_utils
 
@@ -23,7 +23,7 @@ class StartIdentificationTest:
                 redirect_url="http://redirect/url",
             )
 
-        assert isinstance(response, ubble_fraud_models.UbbleContent)
+        assert isinstance(response, fraud_models.UbbleContent)
         assert ubble_mock.call_count == 1
 
         attributes = ubble_mock.last_request.json()["data"]["attributes"]

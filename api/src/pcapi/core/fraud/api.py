@@ -28,7 +28,6 @@ from pcapi.repository.user_queries import matching
 from . import models
 from .common import models as common_models
 from .ubble import api as ubble_api
-from .ubble import models as ubble_models
 
 
 logger = logging.getLogger(__name__)
@@ -104,7 +103,7 @@ def on_identity_fraud_check_result(
     identity_content: common_models.IdentityCheckContent = beneficiary_fraud_check.source_data()
 
     if beneficiary_fraud_check.type == models.FraudCheckType.UBBLE:
-        assert isinstance(identity_content, ubble_models.UbbleContent)
+        assert isinstance(identity_content, models.UbbleContent)
         fraud_items += ubble_api.ubble_fraud_checks(user, identity_content)
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.DMS:
