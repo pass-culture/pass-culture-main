@@ -2073,6 +2073,61 @@ class UbbleWebhookTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 760
 
+    @pytest.mark.usefixtures("db_session")
+    @pytest.mark.parametrize(
+        "reason_code,retryable_message,code_number",
+        [
+            (
+                fraud_models.FraudReasonCode.BLURRY_VIDEO,
+                ubble_models.UbbleRetryableUserMessage.BLURRY_VIDEO.value,
+                1310,
+            ),
+            (
+                fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
+                ubble_models.UbbleRetryableUserMessage.DOCUMENT_DAMAGED.value,
+                2103,
+            ),
+            (
+                fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
+                ubble_models.UbbleRetryableUserMessage.LACK_OF_LUMINOSITY.value,
+                1320,
+            ),
+            (
+                fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
+                ubble_models.UbbleRetryableUserMessage.NETWORK_CONNECTION_ISSUE.value,
+                1201,
+            ),
+        ],
+    )
+    def test_decision_suspicious_codes(self, client, ubble_mocker, reason_code, retryable_message, code_number):
+        user, ubble_fraud_check, request_data = self._init_decision_test()
+        # Perform phone validation and profile completion
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.INVALID,
+            error_codes=[code_number],
+        )
+
+        self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
+
+        db.session.refresh(user)
+        db.session.refresh(ubble_fraud_check)
+
+        assert not user.has_beneficiary_role
+        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert reason_code in ubble_fraud_check.reasonCodes
+
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
+        assert message.user_message == retryable_message
+        assert message.call_to_action.link == "passculture://verification-identite"
+        assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
+        assert message.call_to_action.title == "Réessayer la vérification de mon identité"
+
     def test_decision_document_not_authentic_no_retry_left(self, client, ubble_mocker):
         user, ubble_fraud_check, request_data = self._init_decision_test()
         fraud_factories.BeneficiaryFraudCheckFactory.create_batch(

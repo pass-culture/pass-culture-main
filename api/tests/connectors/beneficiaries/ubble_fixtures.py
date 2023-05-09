@@ -33,6 +33,13 @@ UBBLE_IDENTIFICATION_RESPONSE = {
                 "data": {"type": "reference-data", "id": "119617"},
                 "links": {"related": "https://api.example.com/api/identifications/3191295/reference_data"},
             },
+            "reason-codes": {
+                "meta": {"count": 2},
+                "data": [
+                    {"type": "reason-codes", "id": "1304"},
+                    {"type": "reason-codes", "id": "1310"},
+                ],
+            },
         },
     },
     "included": [

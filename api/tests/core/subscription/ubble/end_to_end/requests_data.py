@@ -27,6 +27,7 @@ START_IDENTIFICATION_RESPONSE = {
                 "links": {"related": "https://api.default.svc.cluster.local/api/identifications/5033001/identity"},
                 "data": {"type": "identities", "id": "4875620"},
             },
+            "reason-codes": {"meta": {"count": 0}, "data": []},
             "reference-data": {
                 "links": {
                     "related": "https://api.default.svc.cluster.local/api/identifications/5033001/reference_data"
@@ -76,6 +77,7 @@ INITIATED_IDENTIFICATION_RESPONSE = {
                 "links": {"related": "https://api.default.svc.cluster.local/api/identifications/5033001/identity"},
                 "data": {"type": "identities", "id": "4875620"},
             },
+            "reason-codes": {"meta": {"count": 0}, "data": []},
             "reference-data": {
                 "links": {
                     "related": "https://api.default.svc.cluster.local/api/identifications/5033001/reference_data"
@@ -125,6 +127,7 @@ PROCESSING_IDENTIFICATION_RESPONSE = {
                 "links": {"related": "https://api.default.svc.cluster.local/api/identifications/5033001/identity"},
                 "data": {"type": "identities", "id": "4875620"},
             },
+            "reason-codes": {"meta": {"count": 0}, "data": []},
             "reference-data": {
                 "links": {
                     "related": "https://api.default.svc.cluster.local/api/identifications/5033001/reference_data"
@@ -236,6 +239,7 @@ WRONG_REFERENCE_DATA_RESPONSE = {
                 "links": {"related": "https://api.default.svc.cluster.local/api/identifications/5033001/identity"},
                 "data": {"type": "identities", "id": "4875620"},
             },
+            "reason-codes": {"meta": {"count": 0}, "data": []},
             "reference-data": {
                 "links": {
                     "related": "https://api.default.svc.cluster.local/api/identifications/5033001/reference_data"
@@ -459,6 +463,7 @@ PROCESSED_IDENTIFICATION_RESPONSE = {
                 "links": {"related": "https://api.default.svc.cluster.local/api/identifications/5045236/identity"},
                 "data": {"type": "identities", "id": "4887091"},
             },
+            "reason-codes": {"meta": {"count": 0}, "data": []},
             "reference-data": {
                 "links": {
                     "related": "https://api.default.svc.cluster.local/api/identifications/5045236/reference_data"
