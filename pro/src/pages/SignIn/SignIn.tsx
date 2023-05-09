@@ -1,7 +1,6 @@
 import React from 'react'
 
 import AppLayout from 'app/AppLayout'
-import PageTitle from 'components/PageTitle/PageTitle'
 import SkipLinks from 'components/SkipLinks'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Logo from 'ui-kit/Logo/Logo'
