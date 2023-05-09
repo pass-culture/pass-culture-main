@@ -1265,3 +1265,20 @@ class SaveTrustedDeviceTest:
         trusted_device = users_models.TrustedDevice.query.one()
 
         assert user.trusted_devices == [trusted_device]
+
+    def test_should_log_warning_when_no_device_id(self, caplog):
+        user = users_factories.UserFactory(email="py@test.com")
+        device_info = account_serialization.TrustedDevice(
+            deviceId="",
+            source="iPhone 13",
+            os="iOS",
+        )
+
+        users_api.save_trusted_device(device_info=device_info, user=user)
+
+        assert caplog.messages == ["Invalid deviceId was provided for trusted device"]
+        assert caplog.records[0].extra == {
+            "deviceId": "",
+            "os": "iOS",
+            "source": "iPhone 13",
+        }
