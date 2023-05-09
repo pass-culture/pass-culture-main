@@ -19,6 +19,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
+from pcapi.utils.regions import get_all_regions
 
 from . import blueprint
 
@@ -156,3 +157,7 @@ def is_feature_active(feature_name: str) -> bool:
 
 def get_setting(setting_name: str) -> typing.Any:
     return getattr(settings, setting_name)
+
+
+def get_regions_choices() -> list[tuple]:
+    return [(key, key) for key in get_all_regions()]
