@@ -155,7 +155,7 @@ export const serializeOfferApi = (
     isEducational: apiOffer.isEducational,
     isNational: apiOffer.isNational,
     name: apiOffer.name,
-    offererId: apiOffer.venue.managingOffererId,
+    offererId: apiOffer.venue.managingOfferer.id,
     offererName: apiOffer.venue.managingOfferer.name,
     priceCategories: apiOffer.priceCategories,
     subcategoryId: apiOffer.subcategoryId,
