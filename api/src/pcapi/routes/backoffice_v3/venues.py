@@ -25,8 +25,10 @@ from pcapi.models.api_errors import ApiErrors
 import pcapi.routes.serialization.base as serialize_base
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 import pcapi.utils.regions as regions_utils
+from pcapi.utils.regions import get_department_codes_for_region
 from pcapi.utils.string import to_camelcase
 
+from . import autocomplete
 from . import utils
 from .forms import empty as empty_forms
 from .forms import venue as forms
@@ -37,9 +39,48 @@ from .serialization import venues as serialization
 venue_blueprint = utils.child_backoffice_blueprint(
     "venue",
     __name__,
-    url_prefix="/pro/venue/<int:venue_id>",
+    url_prefix="/pro/venue",
     permission=perm_models.Permissions.READ_PRO_ENTITY,
 )
+
+
+def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
+    base_query = offerers_models.Venue.query.options(
+        sa.orm.load_only(
+            offerers_models.Venue.id,
+            offerers_models.Venue.name,
+            offerers_models.Venue.dateCreated,
+            offerers_models.Venue.postalCode,
+            offerers_models.Venue.departementCode,
+            offerers_models.Venue.isPermanent,
+        ),
+        sa.orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.name),
+        sa.orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
+        sa.orm.joinedload(offerers_models.Venue.venueLabel).load_only(offerers_models.VenueLabel.label),
+    )
+
+    if form.venue_label.data:
+        base_query = base_query.filter(offerers_models.Venue.venueLabelId.in_(form.venue_label.raw_data))
+
+    if form.department.data:
+        base_query = base_query.filter(offerers_models.Venue.departementCode.in_(form.department.data))
+
+    if form.regions.data:
+        department_codes: list[str] = []
+        for region in form.regions.data:
+            department_codes += get_department_codes_for_region(region)
+        base_query = base_query.filter(offerers_models.Venue.departementCode.in_(department_codes))
+
+    if form.type.data:
+        base_query = base_query.filter(offerers_models.Venue.venueTypeCode.in_(form.type.data))
+
+    if form.criteria.data:
+        base_query = base_query.outerjoin(offerers_models.Venue.criteria).filter(
+            criteria_models.Criterion.id.in_(form.criteria.data)
+        )
+
+    # +1 to check if there are more results than requested
+    return base_query.limit(form.limit.data + 1).all()
 
 
 def get_venue(venue_id: int) -> offerers_models.Venue:
@@ -151,6 +192,35 @@ def render_venue_details(
 
 
 @venue_blueprint.route("", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def list_venues() -> utils.BackofficeResponse:
+    form = forms.GetVenuesListForm(formdata=utils.get_query_params())
+    if not form.validate():
+        return render_template("venue/list.html", rows=[], form=form), 400
+
+    if form.is_empty():
+        return render_template("venue/list.html", rows=[], form=form)
+
+    venues = _get_venues(form)
+
+    if len(venues) > form.limit.data:
+        flash(
+            f"Il y a plus de {form.limit.data} résultats dans la base de données, la liste ci-dessous n'en donne donc "
+            "qu'une partie. Veuillez affiner les filtres de recherche.",
+            "info",
+        )
+        venues = venues[: form.limit.data]
+
+    autocomplete.prefill_criteria_choices(form.criteria)
+
+    return render_template(
+        "venue/list.html",
+        rows=venues,
+        form=form,
+    )
+
+
+@venue_blueprint.route("/<int:venue_id>", methods=["GET"])
 def get(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue(venue_id)
     return render_venue_details(venue)
@@ -182,7 +252,7 @@ def get_stats_data(venue_id: int) -> serialization.VenueStats:
     return serialization.VenueStats(stats=stats, total_revenue=total_revenue)
 
 
-@venue_blueprint.route("/stats", methods=["GET"])
+@venue_blueprint.route("/<int:venue_id>/stats", methods=["GET"])
 def get_stats(venue_id: int) -> utils.BackofficeResponse:
     venue = offerers_models.Venue.query.get_or_404(venue_id)
     data = get_stats_data(venue.id)
@@ -211,7 +281,7 @@ def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
     return venue
 
 
-@venue_blueprint.route("/details", methods=["GET"])
+@venue_blueprint.route("/<int:venue_id>/details", methods=["GET"])
 def get_details(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue_with_history(venue_id)
     actions = sorted(venue.action_history, key=lambda action: action.actionDate, reverse=True)
@@ -228,7 +298,7 @@ def get_details(venue_id: int) -> utils.BackofficeResponse:
     )
 
 
-@venue_blueprint.route("/delete", methods=["POST"])
+@venue_blueprint.route("/<int:venue_id>/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
 def delete_venue(venue_id: int) -> utils.BackofficeResponse:
     venue = offerers_models.Venue.query.get_or_404(venue_id)
@@ -255,7 +325,7 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
     return redirect(url_for("backoffice_v3_web.search_pro"), code=303)
 
 
-@venue_blueprint.route("/update", methods=["POST"])
+@venue_blueprint.route("/<int:venue_id>/update", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_venue(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue(venue_id)
@@ -320,7 +390,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
     return redirect(url_for("backoffice_v3_web.venue.get", venue_id=venue.id), code=303)
 
 
-@venue_blueprint.route("/comment", methods=["POST"])
+@venue_blueprint.route("/<int:venue_id>/comment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_venue(venue_id: int) -> utils.BackofficeResponse:
     venue = offerers_models.Venue.query.get_or_404(venue_id)

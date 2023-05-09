@@ -15,12 +15,13 @@ from pcapi.core.history import models as history_models
 import pcapi.core.history.factories as history_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.offerers.models import VenueTypeCode
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.models import db
-from pcapi.routes.backoffice_v3 import venues
+from pcapi.routes.backoffice_v3 import venues as venues_blueprint
 from pcapi.routes.backoffice_v3.filters import format_dms_status
 
 from .helpers import button as button_helpers
@@ -46,6 +47,118 @@ def venue_fixture(offerer) -> offerers_models.Venue:
         status=finance_models.BankInformationStatus.ACCEPTED,
     )
     return venue
+
+
+@pytest.fixture(scope="function", name="venues")
+def venues_fixture() -> list[offerers_models.Venue]:
+    return [
+        offerers_factories.VenueFactory(
+            venueTypeCode=VenueTypeCode.MOVIE,
+            venueLabelId=offerers_factories.VenueLabelFactory(label="Cinéma d'art et d'essai").id,
+            criteria=[
+                criteria_factories.CriterionFactory(name="Criterion_cinema"),
+                criteria_factories.CriterionFactory(name="Criterion_art"),
+            ],
+            postalCode="82000",
+            isPermanent=True,
+        ),
+        offerers_factories.VenueFactory(
+            venueTypeCode=VenueTypeCode.GAMES,
+            venueLabelId=offerers_factories.VenueLabelFactory(label="Scènes conventionnées").id,
+            criteria=[criteria_factories.CriterionFactory()],
+            postalCode="45000",
+            isPermanent=False,
+        ),
+    ]
+
+
+class ListVenuesTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.venue.list_venues"
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
+    # by a field added in the jinja template.
+    # - fetch session (1 query)
+    # - fetch user (1 query)
+    # - fetch venue_label for select (1 query)
+    # - fetch venues with joinedload including extra data (1 query)
+    expected_num_queries = 4
+
+    def test_list_venues_without_filter(self, authenticated_client):
+        # when
+        response = authenticated_client.get(url_for(self.endpoint))
+
+        # then
+        assert response.status_code == 200
+        assert html_parser.count_table_rows(response.data) == 0
+
+    def test_list_venues_by_type(self, authenticated_client, venues):
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, type=VenueTypeCode.MOVIE.name))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert int(rows[0]["ID"]) == venues[0].id
+        assert rows[0]["Nom"] == venues[0].name
+        assert rows[0]["Structure"] == venues[0].managingOfferer.name
+        assert rows[0]["Lieu permanent"] == "Lieu permanent"
+        assert rows[0]["Label"] == venues[0].venueLabel.label
+        assert sorted(rows[0]["Tags"].split()) == sorted("Criterion_cinema Criterion_art".split())
+        assert rows[0]["Date de création"] == venues[0].dateCreated.strftime("%d/%m/%Y")
+
+    def test_list_venues_by_label(self, authenticated_client, venues):
+        # when
+        venue_label_id = venues[0].venueLabelId
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_label=venue_label_id))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert int(rows[0]["ID"]) == venues[0].id
+
+    def test_list_venues_by_tags(self, authenticated_client, venues):
+        # when
+        expected_num_queries = (
+            self.expected_num_queries + 1
+        )  # 1 more request is necessary to prefill form choices with selected tag(s)
+        criteria_id = venues[0].criteria[0].id
+        with assert_num_queries(expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, criteria=criteria_id))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert int(rows[0]["ID"]) == venues[0].id
+
+    def test_list_venues_by_regions(self, authenticated_client, venues):
+        # when
+        venue = offerers_factories.VenueFactory(postalCode="82000")
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, regions="Occitanie"))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert int(rows[0]["ID"]) == venues[0].id
+        assert int(rows[1]["ID"]) == venue.id
+
+    def test_list_venues_by_department(self, authenticated_client, venues):
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, department="82"))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert int(rows[0]["ID"]) == venues[0].id
 
 
 class GetVenueTest(GetEndpointHelper):
@@ -250,7 +363,7 @@ class GetVenueStatsDataTest:
         venue_id = venue_with_accepted_bank_info.id
 
         with assert_num_queries(2):
-            data = venues.get_stats_data(venue_id)
+            data = venues_blueprint.get_stats_data(venue_id)
 
         stats = data.stats
 
@@ -265,7 +378,7 @@ class GetVenueStatsDataTest:
         venue_id = venue.id
 
         with assert_num_queries(2):
-            data = venues.get_stats_data(venue_id)
+            data = venues_blueprint.get_stats_data(venue_id)
 
         stats = data.stats
 
@@ -381,7 +494,7 @@ class GetVenueStatsTest(GetEndpointHelper):
 
 class HasReimbursementPointTest:
     def test_venue_with_reimbursement_point_links(self, venue):
-        assert venues.has_reimbursement_point(venue)
+        assert venues_blueprint.has_reimbursement_point(venue)
 
     def test_venue_with_no_current_reimbursement_point_links(self):
         venue = offerers_factories.VenueFactory()
@@ -407,11 +520,11 @@ class HasReimbursementPointTest:
             timespan=[datetime.utcnow() - timedelta(days=100), datetime.utcnow() - timedelta(days=10)],
         )
 
-        assert not venues.has_reimbursement_point(venue)
+        assert not venues_blueprint.has_reimbursement_point(venue)
 
     def test_venue_with_no_reimbursement_point_links(self):
         venue = offerers_factories.VenueFactory()
-        assert not venues.has_reimbursement_point(venue)
+        assert not venues_blueprint.has_reimbursement_point(venue)
 
 
 class DeleteVenueTest(PostEndpointHelper):

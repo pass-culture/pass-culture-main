@@ -1,13 +1,17 @@
 import typing
 
 from flask_wtf import FlaskForm
+import sqlalchemy as sa
 import wtforms
 from wtforms import validators
 
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.offerers.models import VenueTypeCode
+from pcapi.routes.backoffice_v3.utils import get_regions_choices
 
 from . import fields
 from . import utils
+from .constants import area_choices
 
 
 class EditVirtualVenueForm(utils.PCForm):
@@ -90,3 +94,43 @@ class EditVenueForm(EditVirtualVenueForm):
 
 class CommentForm(FlaskForm):
     comment = fields.PCCommentField("Commentaire interne pour le lieu")
+
+
+def _get_all_venue_labels_query() -> sa.orm.Query:
+    return offerers_models.VenueLabel.query.order_by(offerers_models.VenueLabel.label)
+
+
+class GetVenuesListForm(FlaskForm):
+    class Meta:
+        csrf = False
+
+    type = fields.PCSelectMultipleField("Type de lieu", choices=utils.choices_from_enum(VenueTypeCode))
+    venue_label = fields.PCQuerySelectMultipleField(
+        "Label",
+        query_factory=_get_all_venue_labels_query,
+        get_pk=lambda venue_label: venue_label.id,
+        get_label=lambda venue_label: venue_label.label,
+    )
+    criteria = fields.PCTomSelectField(
+        "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_criteria"
+    )
+    regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
+    department = fields.PCSelectMultipleField("Départements", choices=area_choices)
+    limit = fields.PCSelectField(
+        "Nombre maximum",
+        choices=((100, "100"), (500, "500"), (1000, "1000"), (3000, "3000")),
+        default="100",
+        coerce=int,
+        validators=(wtforms.validators.Optional(),),
+    )
+
+    def is_empty(self) -> bool:
+        return not any(
+            (
+                self.type.data,
+                self.venue_label.data,
+                self.criteria.data,
+                self.regions.data,
+                self.department.data,
+            )
+        )
