@@ -6,6 +6,9 @@
     .modal-body {
       overflow-y: initial;
     }
+    .modal-content {
+      max-height: 20em;
+    }
     .modal-footer {
       @extend .position-absolute;
       @extend .w-100;
