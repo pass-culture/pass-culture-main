@@ -29,6 +29,7 @@ export interface IActionBarProps {
   nbSelectedOffers: number
   refreshOffers: () => void
   selectedOfferIds: string[]
+  tmpSelectedOfferIds: string[]
   toggleSelectAllCheckboxes: () => void
   audience: Audience
   getUpdateOffersStatusMessage: (selectedOfferIds: string[]) => string
@@ -41,6 +42,7 @@ const getUpdateActiveStatusAdapter = (
   isActive: boolean,
   nbSelectedOffers: number,
   selectedOfferIds: string[],
+  tmpSelectedOfferIds: string[],
   audience: Audience
 ) => {
   if (areAllOffersSelected) {
@@ -68,12 +70,13 @@ const getUpdateActiveStatusAdapter = (
   }
 
   return () =>
-    updateOffersActiveStatusAdapter({ ids: selectedOfferIds, isActive })
+    updateOffersActiveStatusAdapter({ ids: tmpSelectedOfferIds, isActive })
 }
 
 const ActionsBar = ({
   refreshOffers,
   selectedOfferIds,
+  tmpSelectedOfferIds,
   clearSelectedOfferIds,
   toggleSelectAllCheckboxes,
   areAllOffersSelected,
@@ -108,6 +111,7 @@ const ActionsBar = ({
         isActivating,
         nbSelectedOffers,
         selectedOfferIds,
+        tmpSelectedOfferIds,
         audience
       )
 
@@ -127,6 +131,7 @@ const ActionsBar = ({
       areAllOffersSelected,
       refreshOffers,
       nbSelectedOffers,
+      tmpSelectedOfferIds,
       handleClose,
       notify,
     ]
