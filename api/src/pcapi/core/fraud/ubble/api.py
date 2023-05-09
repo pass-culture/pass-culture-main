@@ -30,25 +30,9 @@ def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.Ubbl
     reason_codes = set(content.reason_codes or [])
     detail = f"Ubble score {_ubble_readable_score(content.score)}: {content.comment}"
     for reason_code in reason_codes:
-        match reason_code:
-            case fraud_models.FraudReasonCode.BLURRY_VIDEO:
-                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.BLURRY_VIDEO.value
-            case fraud_models.FraudReasonCode.DOCUMENT_DAMAGED:
-                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.DOCUMENT_DAMAGED.value
-            case fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE:
-                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.ID_CHECK_UNPROCESSABLE.value
-            case fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH:
-                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.ID_CHECK_DATA_MATCH.value
-            case fraud_models.FraudReasonCode.ID_CHECK_EXPIRED:
-                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.ID_CHECK_EXPIRED.value
-            case fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC:
-                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.ID_CHECK_NOT_AUTHENTIC.value
-            case fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED:
-                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.ID_CHECK_NOT_SUPPORTED.value
-            case fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY:
-                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.LACK_OF_LUMINOSITY.value
-            case fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE:
-                detail += " | " + ubble_subsciption_models.UbbleDetailMessage.NETWORK_CONNECTION_ISSUE.value
+        ubble_error = ubble_subsciption_models.UBBLE_CODE_ERROR_MAPPING.get(reason_code)
+        if ubble_error:
+            detail += " | " + ubble_error.detail_message
 
     if reason_codes:
         status = fraud_models.FraudStatus.SUSPICIOUS
@@ -64,10 +48,14 @@ def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.Ubbl
             age = users_utils.get_age_at_date(birth_date, registration_datetime)
             if age < min(users_constants.ELIGIBILITY_UNDERAGE_RANGE):
                 reason_codes.add(fraud_models.FraudReasonCode.AGE_TOO_YOUNG)
-                detail = ubble_subsciption_models.UbbleDetailMessage.AGE_TOO_YOUNG.value.format(age=age)
+                detail = ubble_subsciption_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.AGE_TOO_YOUNG
+                ].detail_message.format(age=age)
             elif age > users_constants.ELIGIBILITY_AGE_18:
                 reason_codes.add(fraud_models.FraudReasonCode.AGE_TOO_OLD)
-                detail = ubble_subsciption_models.UbbleDetailMessage.AGE_TOO_OLD.value.format(age=age)
+                detail = ubble_subsciption_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.AGE_TOO_OLD
+                ].detail_message.format(age=age)
         else:
             status = fraud_models.FraudStatus.OK
     elif content.score == ubble_fraud_models.UbbleScore.INVALID.value:
@@ -97,7 +85,12 @@ def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.Ubbl
     elif content.score == ubble_fraud_models.UbbleScore.UNDECIDABLE.value:
         status = fraud_models.FraudStatus.SUSPICIOUS
         reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE)
-        detail += " | " + ubble_subsciption_models.UbbleDetailMessage.ID_CHECK_UNPROCESSABLE.value
+        detail += (
+            " | "
+            + ubble_subsciption_models.UBBLE_CODE_ERROR_MAPPING[
+                fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
+            ].detail_message
+        )
 
     if status is None:
         # This should never happen
