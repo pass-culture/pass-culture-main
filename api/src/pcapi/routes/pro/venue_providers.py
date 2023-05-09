@@ -94,7 +94,8 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     except exceptions.VenueProviderException:
         raise ApiErrors({"global": ["Le fournisseur n'a pas pu être configuré."]})
 
-    venue_provider_job.delay(new_venue_provider.id)
+    if not new_venue_provider.provider.hasOffererProvider:
+        venue_provider_job(new_venue_provider.id)
 
     if new_venue_provider.isFromAllocineProvider:
         new_venue_provider.price = _allocine_venue_provider_price(new_venue_provider)
