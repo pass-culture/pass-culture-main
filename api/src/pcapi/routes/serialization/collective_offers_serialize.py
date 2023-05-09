@@ -26,7 +26,6 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.serialization.utils import dehumanize_field
-from pcapi.serialization.utils import dehumanize_list_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -633,8 +632,6 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
 class PatchCollectiveOfferActiveStatusBodyModel(BaseModel):
     is_active: bool
     ids: list[int]
-
-    _dehumanize_ids = dehumanize_list_field("ids")
 
     class Config:
         alias_generator = to_camel
