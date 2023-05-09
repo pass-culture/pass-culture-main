@@ -7,6 +7,10 @@
     box-shadow: none;
   }
 
+  &.no-border {
+    border: 0;
+  }
+
   h4 {
     margin-bottom: rem.torem(24px);
   }
