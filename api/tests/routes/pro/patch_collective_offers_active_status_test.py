@@ -8,7 +8,6 @@ from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.models import CollectiveOffer
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
@@ -23,7 +22,7 @@ class Returns204Test:
         client = client.with_session_auth("pro@example.com")
 
         # When
-        data = {"ids": [humanize(offer1.id), humanize(offer2.id)], "isActive": True}
+        data = {"ids": [offer1.id, offer2.id], "isActive": True}
 
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
@@ -45,7 +44,7 @@ class Returns204Test:
 
         # When
         client = client.with_session_auth("pro@example.com")
-        data = {"ids": [humanize(offer1.id), humanize(offer2.id)], "isActive": False}
+        data = {"ids": [offer1.id, offer2.id], "isActive": False}
         with testing.assert_no_duplicated_queries():
             response = client.patch("/collective/offers/active-status", json=data)
 
@@ -63,7 +62,7 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         data = {
-            "ids": [humanize(approved_offer.id), humanize(pending_offer.id), humanize(rejected_offer.id)],
+            "ids": [approved_offer.id, pending_offer.id, rejected_offer.id],
             "isActive": True,
         }
 
@@ -91,7 +90,7 @@ class Returns403Test:
 
         # When
         client = client.with_session_auth("pro@example.com")
-        data = {"ids": [humanize(offer1.id), humanize(offer2.id)], "isActive": True}
+        data = {"ids": [offer1.id, offer2.id], "isActive": True}
 
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
