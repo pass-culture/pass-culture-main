@@ -151,7 +151,7 @@ const Offers = ({
 
   const nbSelectedOffers = areAllOffersSelected
     ? offers.length
-    : selectedOfferIds.length
+    : tmpSelectedOfferIds.length
 
   const clearSelectedOfferIds = useCallback(() => {
     /* istanbul ignore next: DEBT, TO FIX */
@@ -315,7 +315,7 @@ const Offers = ({
           pageCount={pageCount}
           resetFilters={resetFilters}
           searchFilters={searchFilters}
-          selectedOfferIds={selectedOfferIds}
+          selectedOfferIds={tmpSelectedOfferIds}
           setSearchFilters={setSearchFilters}
           setSelectedOfferIds={setSelectedOfferIds}
           setTmpSelectedOfferIds={setTmpSelectedOfferIds}
@@ -330,7 +330,6 @@ const Offers = ({
           clearSelectedOfferIds={clearSelectedOfferIds}
           nbSelectedOffers={nbSelectedOffers}
           refreshOffers={refreshOffers}
-          selectedOfferIds={selectedOfferIds}
           tmpSelectedOfferIds={tmpSelectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           audience={audience}
