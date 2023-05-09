@@ -64,7 +64,7 @@ const getUpdateActiveStatusAdapter = (
   if (audience === Audience.COLLECTIVE) {
     return () =>
       updateCollectiveOffersActiveStatusAdapter({
-        ids: selectedOfferIds,
+        ids: tmpSelectedOfferIds,
         isActive,
       })
   }

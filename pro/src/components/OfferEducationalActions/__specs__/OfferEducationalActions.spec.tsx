@@ -202,6 +202,7 @@ describe('OfferEducationalActions', () => {
 
   it('should activate offer with booking limit date time in the future', async () => {
     const notifyError = jest.fn()
+    const offerId = 12
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useNotification'),
       success: jest.fn(),
@@ -213,6 +214,7 @@ describe('OfferEducationalActions', () => {
       ...defaultValues,
       offer: collectiveOfferFactory({
         id: 'AE',
+        nonHumanizedId: offerId,
         isActive: false,
         collectiveStock: collectiveStockFactory({
           bookingLimitDatetime: bookingLimitDateTomorrow.toDateString(),
@@ -223,7 +225,7 @@ describe('OfferEducationalActions', () => {
       screen.getByRole('button', { name: 'Publier sur Adage' })
     )
     expect(api.patchCollectiveOffersActiveStatus).toHaveBeenCalledWith({
-      ids: ['AE'],
+      ids: [offerId],
       isActive: true,
     })
   })
