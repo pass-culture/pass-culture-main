@@ -340,7 +340,7 @@ describe('Signup', () => {
 
       it('should show a notification on api call error', async () => {
         jest.spyOn(api, 'signupPro').mockRejectedValue({
-          errors: {
+          body: {
             phoneNumber: 'Le téléphone doit faire moins de 20 caractères',
           },
           status: HTTP_STATUS.GONE,
