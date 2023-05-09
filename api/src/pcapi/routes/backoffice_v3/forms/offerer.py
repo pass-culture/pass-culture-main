@@ -5,7 +5,7 @@ import wtforms
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.utils.regions import get_all_regions
+from pcapi.routes.backoffice_v3.utils import get_regions_choices
 
 from . import fields
 from . import utils
@@ -14,10 +14,6 @@ from .empty import BatchEmptyForm
 
 
 TAG_NAME_REGEX = r"^[^\s]+$"
-
-
-def _get_regions_choices() -> list[tuple]:
-    return [(key, key) for key in get_all_regions()]
 
 
 def _get_all_tags_query() -> sa.orm.Query:
@@ -81,7 +77,7 @@ class OffererValidationListForm(utils.PCForm):
         csrf = False
 
     q = fields.PCOptSearchField("Nom de structure, SIREN, code postal, département, ville, email, nom de compte pro")
-    regions = fields.PCSelectMultipleField("Régions", choices=_get_regions_choices())
+    regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
     tags = fields.PCQuerySelectMultipleField(
         "Tags",
         query_factory=_get_validation_tags_query,
@@ -126,7 +122,7 @@ class UserOffererValidationListForm(utils.PCForm):
         csrf = False
 
     q = fields.PCOptSearchField("Nom de structure, SIREN, code postal, département, ville, email, nom de compte pro")
-    regions = fields.PCSelectMultipleField("Régions", choices=_get_regions_choices())
+    regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
     tags = fields.PCQuerySelectMultipleField(
         "Tags",
         query_factory=_get_validation_tags_query,

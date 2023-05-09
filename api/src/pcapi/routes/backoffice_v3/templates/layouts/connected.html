@@ -91,6 +91,9 @@
                   {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
                     {{ menu_section_item("Tags des offres et lieux", "backoffice_v3_web.tags.list_tags") }}
                   {% endif %}
+                  {% if has_permission("MANAGE_PRO_ENTITY") %}
+                    {{ menu_section_item("Actions sur les lieux", "backoffice_v3_web.venue.list_venues") }}
+                  {% endif %}
                 {% endcall %}
               </div>
               <hr />
