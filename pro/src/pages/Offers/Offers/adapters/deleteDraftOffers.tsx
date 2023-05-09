@@ -18,6 +18,7 @@ export const deleteDraftOffersAdapter: UpdateAllCollectiveOffersActiveStatusAdap
   async ({ ids, nbSelectedOffers = 1 }) => {
     try {
       await api.deleteDraftOffers({
+        // @ts-expect-error type string[] is not assignable to type number[]
         ids,
       })
 

@@ -23,7 +23,6 @@ from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_r
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import human_ids
 from pcapi.utils import rest
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
@@ -91,7 +90,7 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
             },
             status_code=404,
         )
-    query = offers_repository.get_offers_by_ids(current_user, offer_ids)  # type: ignore [arg-type]
+    query = offers_repository.get_offers_by_ids(current_user, body.ids)  # type: ignore [arg-type]
     offers_api.batch_delete_draft_offers(query)
 
 

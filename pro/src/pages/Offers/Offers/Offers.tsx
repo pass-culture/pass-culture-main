@@ -2,10 +2,7 @@ import React, { useCallback } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
-import {
-  legacyComputeURLCollectiveOfferId,
-  computeURLCollectiveOfferId,
-} from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
 import { Offer, TSearchFilters } from 'core/Offers/types'
 import { hasSearchFilters, isOfferDisabled } from 'core/Offers/utils'
@@ -15,7 +12,6 @@ import NoResults from 'screens/Offers/NoResults'
 import { Banner } from 'ui-kit'
 import { Pagination } from 'ui-kit/Pagination'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { dehumanizeId } from 'utils/dehumanize'
 
 import styles from './Offers.module.scss'
 import OffersTableBody from './OffersTableBody/OffersTableBody'
@@ -41,7 +37,6 @@ type OffersProps = {
   selectedOfferIds: string[]
   setSearchFilters: React.Dispatch<React.SetStateAction<TSearchFilters>>
   setSelectedOfferIds: React.Dispatch<React.SetStateAction<string[]>>
-  setTmpSelectedOfferIds: React.Dispatch<React.SetStateAction<string[]>>
   toggleSelectAllCheckboxes: () => void
   urlSearchFilters: TSearchFilters
   refreshOffers: () => void
@@ -63,7 +58,6 @@ const Offers = ({
   applyUrlFiltersAndRedirect,
   setSearchFilters,
   setSelectedOfferIds,
-  setTmpSelectedOfferIds,
   toggleSelectAllCheckboxes,
   urlSearchFilters,
   audience,
@@ -106,24 +100,10 @@ const Offers = ({
   }, [currentPageNumber, applyUrlFiltersAndRedirect, urlSearchFilters])
 
   const selectOffer = useCallback(
-    (offerId: string, selected: boolean, isTemplate: boolean) => {
+    (offerId: number, selected: boolean, isTemplate: boolean) => {
       setSelectedOfferIds(currentSelectedIds => {
         const newSelectedOfferIds = [...currentSelectedIds]
-        const id = legacyComputeURLCollectiveOfferId(offerId, isTemplate)
-        if (selected) {
-          newSelectedOfferIds.push(id)
-        } else {
-          const offerIdIndex = newSelectedOfferIds.indexOf(id)
-          newSelectedOfferIds.splice(offerIdIndex, 1)
-        }
-        return newSelectedOfferIds
-      })
-      setTmpSelectedOfferIds(currentSelectedIds => {
-        const newSelectedOfferIds = [...currentSelectedIds]
-        const id = computeURLCollectiveOfferId(
-          dehumanizeId(offerId) || 0,
-          isTemplate
-        )
+        const id = computeURLCollectiveOfferId(offerId, isTemplate)
         if (selected) {
           newSelectedOfferIds.push(id)
         } else {
@@ -138,13 +118,6 @@ const Offers = ({
 
   function selectAllOffers() {
     setSelectedOfferIds(
-      areAllOffersSelected
-        ? []
-        : currentPageOffersSubset
-            .filter(offer => !isOfferDisabled(offer.status))
-            .map(offer => offer.id)
-    )
-    setTmpSelectedOfferIds(
       areAllOffersSelected
         ? []
         : currentPageOffersSubset
