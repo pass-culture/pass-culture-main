@@ -47,6 +47,7 @@ const VenueOfferSteps = ({
     <div
       className={cn(styles['card-wrapper'], 'h-card', {
         [styles['no-shadow']]: hasVenue,
+        [styles['no-border']]: !shouldDisplayEACInformationSection,
       })}
       data-testid={hasVenue ? 'venue-offer-steps' : 'home-offer-steps'}
     >
