@@ -50,6 +50,7 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
             sa.orm.joinedload(offerers_models.Venue.contact),
             sa.orm.joinedload(offerers_models.Venue.bankInformation),
             sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links),
+            sa.orm.joinedload(offerers_models.Venue.venueLabel),
             sa.orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
             sa.orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
                 educational_models.CollectiveDmsApplication.state,
