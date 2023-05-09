@@ -187,6 +187,12 @@
                 <span class="fw-bold">{{ "Activité principale" if is_feature_active("WIP_ENABLE_NEW_ONBOARDING") else "Type de lieu" }} :</span>
                 {{ venue.venueTypeCode.value }}
               </p>
+              {% if venue.venueLabel %}
+                <p class="mb-1">
+                  <span class="fw-bold">Label :</span>
+                  {{ venue.venueLabel.label }}
+                </p>
+              {% endif %}
               <p class="mb-1">
                 <span class="fw-bold">Structure :</span>
                 {{ links.build_offerer_name_to_details_link(venue.managingOfferer) }}

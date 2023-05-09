@@ -37,7 +37,8 @@ pytestmark = [
 
 @pytest.fixture(scope="function", name="venue")
 def venue_fixture(offerer) -> offerers_models.Venue:
-    venue = offerers_factories.VenueReimbursementPointLinkFactory().venue
+    venue = offerers_factories.VenueFactory(venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"))
+    offerers_factories.VenueReimbursementPointLinkFactory(venue=venue)
     finance_factories.BankInformationFactory(
         venue=venue,
         status=finance_models.BankInformationStatus.ACCEPTED,
@@ -86,6 +87,7 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Site web : {venue.contact.website}" in response_text
         assert "Pas de dossier DMS CB" in response_text
         assert f"Activité principale : {venue.venueTypeCode.value}" in response_text
+        assert f"Label : {venue.venueLabel.label} " in response_text
         assert "Type de lieu" not in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
