@@ -775,51 +775,95 @@ class SubscriptionMessageTest:
         [
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
-                ubble_models.UbbleRetryableUserMessage.ID_CHECK_EXPIRED.value,
-                ubble_models.UbbleRetryableMessageSummary.ID_CHECK_EXPIRED.value,
-                ubble_models.UbbleRetryableActionHint.ID_CHECK_EXPIRED.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_EXPIRED
+                ].retryable_user_message,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_EXPIRED
+                ].retryable_message_summary,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_EXPIRED
+                ].retryable_action_hint,
             ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC],
-                ubble_models.UbbleRetryableUserMessage.ID_CHECK_NOT_AUTHENTIC.value,
-                ubble_models.UbbleRetryableMessageSummary.ID_CHECK_NOT_AUTHENTIC.value,
-                ubble_models.UbbleRetryableActionHint.ID_CHECK_NOT_AUTHENTIC.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
+                ].retryable_user_message,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
+                ].retryable_message_summary,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
+                ].retryable_action_hint,
             ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
-                ubble_models.UbbleRetryableUserMessage.ID_CHECK_NOT_SUPPORTED.value,
-                ubble_models.UbbleRetryableMessageSummary.ID_CHECK_NOT_SUPPORTED.value,
-                ubble_models.UbbleRetryableActionHint.ID_CHECK_NOT_SUPPORTED.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED
+                ].retryable_user_message,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED
+                ].retryable_message_summary,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED
+                ].retryable_action_hint,
             ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
-                ubble_models.UbbleRetryableUserMessage.ID_CHECK_UNPROCESSABLE.value,
-                ubble_models.UbbleRetryableMessageSummary.ID_CHECK_UNPROCESSABLE.value,
-                ubble_models.UbbleRetryableActionHint.ID_CHECK_UNPROCESSABLE.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
+                ].retryable_user_message,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
+                ].retryable_message_summary,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
+                ].retryable_action_hint,
             ),
             (
                 [fraud_models.FraudReasonCode.BLURRY_VIDEO],
-                ubble_models.UbbleRetryableUserMessage.BLURRY_VIDEO.value,
-                ubble_models.UbbleRetryableMessageSummary.BLURRY_VIDEO.value,
-                ubble_models.UbbleRetryableActionHint.BLURRY_VIDEO.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[fraud_models.FraudReasonCode.BLURRY_VIDEO].retryable_user_message,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.BLURRY_VIDEO
+                ].retryable_message_summary,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[fraud_models.FraudReasonCode.BLURRY_VIDEO].retryable_action_hint,
             ),
             (
                 [fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE],
-                ubble_models.UbbleRetryableUserMessage.NETWORK_CONNECTION_ISSUE.value,
-                ubble_models.UbbleRetryableMessageSummary.NETWORK_CONNECTION_ISSUE.value,
-                ubble_models.UbbleRetryableActionHint.NETWORK_CONNECTION_ISSUE.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE
+                ].retryable_user_message,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE
+                ].retryable_message_summary,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE
+                ].retryable_action_hint,
             ),
             (
                 [fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY],
-                ubble_models.UbbleRetryableUserMessage.LACK_OF_LUMINOSITY.value,
-                ubble_models.UbbleRetryableMessageSummary.LACK_OF_LUMINOSITY.value,
-                ubble_models.UbbleRetryableActionHint.LACK_OF_LUMINOSITY.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY
+                ].retryable_user_message,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY
+                ].retryable_message_summary,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY
+                ].retryable_action_hint,
             ),
             (
                 [fraud_models.FraudReasonCode.DOCUMENT_DAMAGED],
-                ubble_models.UbbleRetryableUserMessage.DOCUMENT_DAMAGED.value,
-                ubble_models.UbbleRetryableMessageSummary.DOCUMENT_DAMAGED.value,
-                ubble_models.UbbleRetryableActionHint.DOCUMENT_DAMAGED.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.DOCUMENT_DAMAGED
+                ].retryable_user_message,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.DOCUMENT_DAMAGED
+                ].retryable_message_summary,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.DOCUMENT_DAMAGED
+                ].retryable_action_hint,
             ),
         ],
     )
@@ -872,11 +916,13 @@ class SubscriptionMessageTest:
         [
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER],
-                ubble_models.UbbleNotRetryableUserMessage.ID_CHECK_BLOCKED_OTHER.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
+                ].not_retryable_user_message,
             ),
             (
                 None,
-                ubble_models.UbbleNotRetryableUserMessage.DEFAULT.value,
+                ubble_models.UBBLE_DEFAULT.not_retryable_user_message,
             ),
         ],
     )
@@ -904,35 +950,51 @@ class SubscriptionMessageTest:
         [
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
-                ubble_models.UbbleNotRetryableUserMessage.ID_CHECK_EXPIRED.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_EXPIRED
+                ].not_retryable_user_message,
             ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC],
-                ubble_models.UbbleNotRetryableUserMessage.ID_CHECK_NOT_AUTHENTIC.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
+                ].not_retryable_user_message,
             ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
-                ubble_models.UbbleNotRetryableUserMessage.ID_CHECK_NOT_SUPPORTED.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED
+                ].not_retryable_user_message,
             ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
-                ubble_models.UbbleNotRetryableUserMessage.ID_CHECK_UNPROCESSABLE.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
+                ].not_retryable_user_message,
             ),
             (
                 [fraud_models.FraudReasonCode.BLURRY_VIDEO],
-                ubble_models.UbbleNotRetryableUserMessage.BLURRY_VIDEO.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.BLURRY_VIDEO
+                ].not_retryable_user_message,
             ),
             (
                 [fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE],
-                ubble_models.UbbleNotRetryableUserMessage.NETWORK_CONNECTION_ISSUE.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE
+                ].not_retryable_user_message,
             ),
             (
                 [fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY],
-                ubble_models.UbbleNotRetryableUserMessage.LACK_OF_LUMINOSITY.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY
+                ].not_retryable_user_message,
             ),
             (
                 [fraud_models.FraudReasonCode.DOCUMENT_DAMAGED],
-                ubble_models.UbbleNotRetryableUserMessage.DOCUMENT_DAMAGED.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.DOCUMENT_DAMAGED
+                ].not_retryable_user_message,
             ),
         ],
     )

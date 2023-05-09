@@ -668,35 +668,49 @@ class StepperTest:
         [
             (
                 fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
-                ubble_models.UbbleRetryableActionHint.ID_CHECK_UNPROCESSABLE.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
+                ].retryable_action_hint,
             ),
             (
                 fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,
-                ubble_models.UbbleRetryableActionHint.ID_CHECK_NOT_AUTHENTIC.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
+                ].retryable_action_hint,
             ),
             (
                 fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
-                ubble_models.UbbleRetryableActionHint.ID_CHECK_NOT_SUPPORTED.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED
+                ].retryable_action_hint,
             ),
             (
                 fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
-                ubble_models.UbbleRetryableActionHint.ID_CHECK_EXPIRED.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_EXPIRED
+                ].retryable_action_hint,
             ),
             (
                 fraud_models.FraudReasonCode.BLURRY_VIDEO,
-                ubble_models.UbbleRetryableActionHint.BLURRY_VIDEO.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[fraud_models.FraudReasonCode.BLURRY_VIDEO].retryable_action_hint,
             ),
             (
                 fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
-                ubble_models.UbbleRetryableActionHint.NETWORK_CONNECTION_ISSUE.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE
+                ].retryable_action_hint,
             ),
             (
                 fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
-                ubble_models.UbbleRetryableActionHint.LACK_OF_LUMINOSITY.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY
+                ].retryable_action_hint,
             ),
             (
                 fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
-                ubble_models.UbbleRetryableActionHint.DOCUMENT_DAMAGED.value,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.DOCUMENT_DAMAGED
+                ].retryable_action_hint,
             ),
         ],
     )
