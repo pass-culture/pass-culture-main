@@ -87,7 +87,7 @@
                   </div>
                 </div>
               {% endif %}
-              <div>
+              <div class="search-results-modal-container">
                 {{ build_modal_form("add-criteria", url_for('.add_criteria_to_offers'), offer_criteria_form,
                 "Tag des offres", "Enregistrer",
                 "⚠️ " + active_offers_count|string + " offres actives associées à cet ISBN seront affectées") }}

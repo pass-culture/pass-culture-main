@@ -1,0 +1,18 @@
+.search-results-modal-container {
+  .modal {
+    @extend .modal-fullscreen;
+  }
+  .modal-dialog-scrollable {
+    .modal-body {
+      overflow-y: initial;
+    }
+    .modal-content {
+      max-height: 28em;
+    }
+    .modal-footer {
+      @extend .position-absolute;
+      @extend .w-100;
+      bottom: 0;
+    }
+  }
+}
