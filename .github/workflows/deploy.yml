@@ -143,8 +143,7 @@ jobs:
     if: |
       always() &&
       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
-      inputs.deploy_adage == true &&
-      ${{ inputs.environment == 'production' }}
+      inputs.deploy_adage == true 
     uses: ./.github/workflows/deploy-gcs-front.yml
     with:
       app_name: adage
