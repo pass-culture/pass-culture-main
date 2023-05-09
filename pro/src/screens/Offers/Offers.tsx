@@ -79,6 +79,7 @@ const Offers = ({
 
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
+  const [tmpSelectedOfferIds, setTmpSelectedOfferIds] = useState<string[]>([])
   const { logEvent } = useAnalytics()
 
   const { isAdmin } = currentUser
@@ -318,6 +319,7 @@ const Offers = ({
           selectedOfferIds={selectedOfferIds}
           setSearchFilters={setSearchFilters}
           setSelectedOfferIds={setSelectedOfferIds}
+          setTmpSelectedOfferIds={setTmpSelectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           urlSearchFilters={urlSearchFilters}
           refreshOffers={refreshOffers}
