@@ -5,8 +5,8 @@ from pydantic import ValidationError
 
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
-from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
@@ -173,7 +173,7 @@ def start_identification_session(
 
     fraud_check = ubble_fraud_api.get_restartable_identity_checks(user)
     if fraud_check:
-        source_data = typing.cast(ubble_fraud_models.UbbleContent, fraud_check.source_data())
+        source_data = typing.cast(fraud_models.UbbleContent, fraud_check.source_data())
         if not source_data.identification_url:
             raise api_errors.ApiErrors(
                 {"code": "IDENTIFICATION_URL_NOT_FOUND", "message": "L'url d'identification n'a pas été trouvée"},

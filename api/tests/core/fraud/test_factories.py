@@ -2,7 +2,6 @@ import pytest
 
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
-import pcapi.core.fraud.ubble.models as ubble_fraud_models
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -13,7 +12,7 @@ class FactoriesTest:
         "check_type,model_class",
         [
             (fraud_models.FraudCheckType.DMS, fraud_models.DMSContent),
-            (fraud_models.FraudCheckType.UBBLE, ubble_fraud_models.UbbleContent),
+            (fraud_models.FraudCheckType.UBBLE, fraud_models.UbbleContent),
             (fraud_models.FraudCheckType.EDUCONNECT, fraud_models.EduconnectContent),
         ],
     )

@@ -17,8 +17,8 @@ from pcapi.core.fraud.factories import BeneficiaryFraudCheckFactory
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.fraud.models import FraudCheckStatus
 from pcapi.core.fraud.models import FraudCheckType
+from pcapi.core.fraud.models import UbbleContent
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
-from pcapi.core.fraud.ubble.models import UbbleContent
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
