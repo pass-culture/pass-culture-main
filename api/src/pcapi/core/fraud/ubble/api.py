@@ -71,18 +71,21 @@ def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.Ubbl
         else:
             status = fraud_models.FraudStatus.OK
     elif content.score == ubble_fraud_models.UbbleScore.INVALID.value:
-        status = fraud_models.FraudStatus.SUSPICIOUS
         # Decision from reference-data-check/score
         if content.reference_data_check_score == ubble_fraud_models.UbbleScore.INVALID.value:
             reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH)
+            status = fraud_models.FraudStatus.SUSPICIOUS
         elif content.supported == ubble_fraud_models.UbbleScore.INVALID.value:
             # Decision from documents-check/supported
             reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED)
+            status = fraud_models.FraudStatus.SUSPICIOUS
         elif content.expiry_date_score == ubble_fraud_models.UbbleScore.INVALID.value:
             # Decision from documents-check/expiry-date-score
             reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_EXPIRED)
+            status = fraud_models.FraudStatus.SUSPICIOUS
         elif content.ove_score == ubble_fraud_models.UbbleScore.INVALID.value:
             reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC)
+            status = fraud_models.FraudStatus.SUSPICIOUS
         elif not status:
             status = fraud_models.FraudStatus.KO
             reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER)

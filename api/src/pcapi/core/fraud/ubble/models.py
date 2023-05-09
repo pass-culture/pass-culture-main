@@ -43,10 +43,24 @@ class UbbleIdentificationAttributes(UbbleIdentificationObject):
     webhook: str
 
 
+class UbbleReasonCode(UbbleIdentificationObject):
+    type: str = pydantic.Field(alias="type")
+    id: int = pydantic.Field(alias="id")
+
+
+class UbbleReasonCodes(UbbleIdentificationObject):
+    data: list[UbbleReasonCode]
+
+
+class UbbleIdentificationRelationships(UbbleIdentificationObject):
+    reason_codes: UbbleReasonCodes = pydantic.Field(alias="reason-codes")
+
+
 class UbbleIdentificationData(pydantic.BaseModel):
     type: str
     id: int
     attributes: UbbleIdentificationAttributes
+    relationships: UbbleIdentificationRelationships
 
 
 class UbbleIdentificationDocuments(UbbleIdentificationObject):

@@ -450,12 +450,15 @@ class UbbleWorkflowTest:
             ubble_subscription_api.update_ubble_workflow(fraud_check)
 
         assert amplitude_testing.requests[0]["event_name"] == amplitude_connector.AmplitudeEventType.UBBLE_ERROR.value
-        assert amplitude_testing.requests[0]["event_properties"] == {
-            "error_codes": [
-                fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH.value,
-                fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA.value,
-            ]
-        }
+        assert len(amplitude_testing.requests[0]["event_properties"]["error_codes"]) == 2
+        assert (
+            fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH.value
+            in amplitude_testing.requests[0]["event_properties"]["error_codes"]
+        )
+        assert (
+            fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA.value
+            in amplitude_testing.requests[0]["event_properties"]["error_codes"]
+        )
 
 
 class DownloadUbbleDocumentPictureTest:
