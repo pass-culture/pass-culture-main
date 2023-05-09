@@ -28,7 +28,7 @@ export interface IActionBarProps {
   clearSelectedOfferIds: () => void
   nbSelectedOffers: number
   refreshOffers: () => void
-  tmpSelectedOfferIds: string[]
+  selectedOfferIds: string[]
   toggleSelectAllCheckboxes: () => void
   audience: Audience
   getUpdateOffersStatusMessage: (selectedOfferIds: string[]) => string
@@ -40,7 +40,7 @@ const getUpdateActiveStatusAdapter = (
   searchFilters: Partial<TSearchFilters>,
   isActive: boolean,
   nbSelectedOffers: number,
-  tmpSelectedOfferIds: string[],
+  selectedOfferIds: string[],
   audience: Audience
 ) => {
   if (areAllOffersSelected) {
@@ -62,18 +62,18 @@ const getUpdateActiveStatusAdapter = (
   if (audience === Audience.COLLECTIVE) {
     return () =>
       updateCollectiveOffersActiveStatusAdapter({
-        ids: tmpSelectedOfferIds,
+        ids: selectedOfferIds,
         isActive,
       })
   }
 
   return () =>
-    updateOffersActiveStatusAdapter({ ids: tmpSelectedOfferIds, isActive })
+    updateOffersActiveStatusAdapter({ ids: selectedOfferIds, isActive })
 }
 
 const ActionsBar = ({
   refreshOffers,
-  tmpSelectedOfferIds,
+  selectedOfferIds,
   clearSelectedOfferIds,
   toggleSelectAllCheckboxes,
   areAllOffersSelected,
@@ -107,7 +107,7 @@ const ActionsBar = ({
         searchFilters,
         isActivating,
         nbSelectedOffers,
-        tmpSelectedOfferIds,
+        selectedOfferIds,
         audience
       )
 
@@ -126,7 +126,7 @@ const ActionsBar = ({
       areAllOffersSelected,
       refreshOffers,
       nbSelectedOffers,
-      tmpSelectedOfferIds,
+      selectedOfferIds,
       handleClose,
       notify,
     ]
@@ -134,7 +134,7 @@ const ActionsBar = ({
 
   const handleActivate = useCallback(() => {
     const updateOfferStatusMessage =
-      getUpdateOffersStatusMessage(tmpSelectedOfferIds)
+      getUpdateOffersStatusMessage(selectedOfferIds)
     if (!updateOfferStatusMessage) {
       handleUpdateOffersStatus(true)
     } else {
@@ -156,12 +156,12 @@ const ActionsBar = ({
   }
 
   const handleDelete = useCallback(async () => {
-    if (!canDeleteOffers(tmpSelectedOfferIds)) {
+    if (!canDeleteOffers(selectedOfferIds)) {
       notify.error('Seuls les  brouillons peuvent être supprimés')
       return
     }
     const { isOk, message } = await deleteDraftOffersAdapter({
-      ids: tmpSelectedOfferIds,
+      ids: selectedOfferIds,
       nbSelectedOffers,
     })
     if (!isOk) {
@@ -172,10 +172,10 @@ const ActionsBar = ({
       clearSelectedOfferIds()
     }
     hideDeleteDialog()
-  }, [tmpSelectedOfferIds, nbSelectedOffers])
+  }, [selectedOfferIds, nbSelectedOffers])
 
   const handleOpenDeleteDialog = () => {
-    if (!canDeleteOffers(tmpSelectedOfferIds)) {
+    if (!canDeleteOffers(selectedOfferIds)) {
       notify.error('Seuls les brouillons peuvent être supprimés')
       return
     }

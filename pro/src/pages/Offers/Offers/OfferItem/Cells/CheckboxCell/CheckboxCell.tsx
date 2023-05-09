@@ -5,11 +5,11 @@ import { isOfferDisabled } from 'core/Offers'
 
 interface CheckboxCellProps {
   isSelected: boolean
-  offerId: string
+  offerId: number
   status: OfferStatus
   disabled: boolean
   isShowcase: boolean
-  selectOffer: (offerId: string, selected: boolean, isTemplate: boolean) => void
+  selectOffer: (offerId: number, selected: boolean, isTemplate: boolean) => void
 }
 
 const CheckboxCell = ({
