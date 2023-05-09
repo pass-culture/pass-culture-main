@@ -14,9 +14,10 @@ const renderStatusToggleButton = (props: IStatusToggleButton) =>
 
 describe('StatusToggleButton', () => {
   let props: IStatusToggleButton
+  const offerId = 12
   beforeEach(() => {
     props = {
-      offerId: 'AG3A',
+      offerId: offerId,
       isActive: true,
       status: OfferStatus.ACTIVE,
       reloadOffer: jest.fn(),
@@ -45,7 +46,7 @@ describe('StatusToggleButton', () => {
 
     expect(toggle).toHaveBeenCalledTimes(1)
     expect(toggle).toHaveBeenNthCalledWith(1, {
-      ids: ['AG3A'],
+      ids: [offerId],
       isActive: false,
     })
 
@@ -80,7 +81,7 @@ describe('StatusToggleButton', () => {
     await userEvent.click(screen.getByText(/Publier/))
     expect(toggleFunction).toHaveBeenCalledTimes(1)
     expect(toggleFunction).toHaveBeenNthCalledWith(1, {
-      ids: ['AG3A'],
+      ids: [offerId],
       isActive: true,
     })
     expect(notifySuccess).toHaveBeenNthCalledWith(

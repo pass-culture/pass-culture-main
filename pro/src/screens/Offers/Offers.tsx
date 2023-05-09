@@ -157,6 +157,7 @@ const Offers = ({
   const clearSelectedOfferIds = useCallback(() => {
     /* istanbul ignore next: DEBT, TO FIX */
     setSelectedOfferIds([])
+    setTmpSelectedOfferIds([])
   }, [])
 
   const refreshOffers = useCallback(
@@ -230,9 +231,9 @@ const Offers = ({
     applyUrlFiltersAndRedirect(updatedFilters)
   }, [applyUrlFiltersAndRedirect, searchFilters, setOfferer])
 
-  const getUpdateOffersStatusMessage = (selectedOfferIds: string[]) => {
+  const getUpdateOffersStatusMessage = (tmpSelectedOfferIds: string[]) => {
     const selectedOffers = offers.filter(offer =>
-      selectedOfferIds.includes(offer.id)
+      tmpSelectedOfferIds.includes(offer.nonHumanizedId.toString())
     )
     if (selectedOffers.some(offer => offer.status === OFFER_STATUS_DRAFT)) {
       return 'Vous ne pouvez pas publier des brouillons depuis cette liste'
@@ -247,9 +248,9 @@ const Offers = ({
   }
 
   /* istanbul ignore next: DEBT, TO FIX */
-  const canDeleteOffers = (selectedOfferIds: string[]) => {
+  const canDeleteOffers = (tmpSelectedOfferIds: string[]) => {
     const selectedOffers = offers.filter(offer =>
-      selectedOfferIds.includes(offer.id)
+      tmpSelectedOfferIds.includes(offer.nonHumanizedId.toString())
     )
     return !selectedOffers.some(offer => offer.status !== OFFER_STATUS_DRAFT)
   }
@@ -332,6 +333,7 @@ const Offers = ({
           nbSelectedOffers={nbSelectedOffers}
           refreshOffers={refreshOffers}
           selectedOfferIds={selectedOfferIds}
+          tmpSelectedOfferIds={tmpSelectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           audience={audience}
           getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}

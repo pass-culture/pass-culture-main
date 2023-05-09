@@ -8,7 +8,7 @@ import StatusToggleButton from 'screens/OfferIndividual/Status/StatusToggleButto
 import styles from './Status.module.scss'
 
 interface IStatus {
-  offerId: string
+  offerId: number
   status: OfferStatus
   isActive: boolean
   canDeactivate: boolean
