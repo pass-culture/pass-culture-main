@@ -846,7 +846,7 @@ def get_expense_domains(offer: models.Offer) -> list[users_models.ExpenseDomain]
 
 
 def add_criteria_to_offers(
-    criteria: list[criteria_models.Criterion],
+    criterion_ids: list[int],
     isbn: str | None = None,
     visa: str | None = None,
 ) -> bool:
@@ -880,14 +880,14 @@ def add_criteria_to_offers(
     )
 
     offer_criteria: list[criteria_models.OfferCriterion] = []
-    for criterion in criteria:
-        logger.info("Adding criterion %s to %d offers", criterion, len(offer_ids))
+    for criterion_id in criterion_ids:
+        logger.info("Adding criterion %s to %d offers", criterion_id, len(offer_ids))
         for offer_id in offer_ids:
-            if not (offer_id, criterion.id) in existing_criteria_on_offers:
+            if not (offer_id, criterion_id) in existing_criteria_on_offers:
                 offer_criteria.append(
                     criteria_models.OfferCriterion(
                         offerId=offer_id,
-                        criterionId=criterion.id,
+                        criterionId=criterion_id,
                     )
                 )
 

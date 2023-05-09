@@ -1162,7 +1162,7 @@ class AddCriterionToOffersTest:
         criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
 
         # When
-        is_successful = api.add_criteria_to_offers([criterion1, criterion2], isbn=isbn)
+        is_successful = api.add_criteria_to_offers([criterion1.id, criterion2.id], isbn=isbn)
 
         # Then
         assert is_successful is True
@@ -1188,7 +1188,7 @@ class AddCriterionToOffersTest:
         unmatched_offer = factories.OfferFactory()
 
         # When
-        is_successful = api.add_criteria_to_offers([criterion1, criterion2], isbn=isbn)
+        is_successful = api.add_criteria_to_offers([criterion1.id, criterion2.id], isbn=isbn)
 
         # Then
         assert is_successful is True
@@ -1214,7 +1214,7 @@ class AddCriterionToOffersTest:
         criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
 
         # When
-        is_successful = api.add_criteria_to_offers([criterion1, criterion2], visa=visa)
+        is_successful = api.add_criteria_to_offers([criterion1.id, criterion2.id], visa=visa)
 
         # Then
         assert is_successful is True
@@ -1233,7 +1233,7 @@ class AddCriterionToOffersTest:
         criterion = criteria_factories.CriterionFactory(name="Pretty good books")
 
         # When
-        is_successful = api.add_criteria_to_offers([criterion], isbn=isbn)
+        is_successful = api.add_criteria_to_offers([criterion.id], isbn=isbn)
 
         # Then
         assert is_successful is False

@@ -85,6 +85,9 @@
                     {{ menu_section_item("Offres collectives", "backoffice_v3_web.collective_offer.list_collective_offers") }}
                     {{ menu_section_item("Offres collectives vitrines", "backoffice_v3_web.collective_offer_template.list_collective_offer_templates") }}
                   {% endif %}
+                  {% if has_permission("MULTIPLE_OFFERS_ACTIONS") %}
+                    {{ menu_section_item("Opérations sur plusieurs offres", "backoffice_v3_web.multiple_offers.multiple_offers_home") }}
+                  {% endif %}
                   {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
                     {{ menu_section_item("Tags des offres et lieux", "backoffice_v3_web.tags.list_tags") }}
                   {% endif %}

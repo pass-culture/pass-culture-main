@@ -42,6 +42,7 @@ class Permissions(enum.Enum):
 
     READ_OFFERS = "visualiser les offres"
     MANAGE_OFFERS = "gérer les offres"
+    MULTIPLE_OFFERS_ACTIONS = "opérations sur plusieurs offres"
 
     VALIDATE_OFFERER = "gérer la validation des structures et des rattachements"
 

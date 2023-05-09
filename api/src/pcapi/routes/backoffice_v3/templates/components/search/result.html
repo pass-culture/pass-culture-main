@@ -1,3 +1,4 @@
+{% from "components/search/result_form.html" import build_result_page_form %}
 {% macro result_card_switch(row, result_type="public_account") %}
   {% if result_type == "offerer" %}
     {% include "components/search/result_card_offerer.html" %}
@@ -7,26 +8,7 @@
     {% include "components/search/result_card.html" %}
   {% endif %}
 {% endmacro %}
-<form action="{{ dst }}"
-      name="{{ dst | action_to_name }}"
-      method="get">
-  <div class="col-8 row">
-    <div class="col-8">
-      <div class="input-group mb-3">
-        {% for form_field in form %}
-          {% if form_field.type != 'HiddenField' %}{{ form_field }}{% endif %}
-        {% endfor %}
-      </div>
-      {% for form_field in form %}
-        {% if form_field.type == 'HiddenField' %}{{ form_field }}{% endif %}
-      {% endfor %}
-    </div>
-    <div class="col-4">
-      <button type="submit"
-              class="btn btn-primary">Chercher</button>
-    </div>
-  </div>
-</form>
+{{ build_result_page_form(form, macro) }}
 <div>
   <div>
     <p class="lead">{{ rows.total }} résultats</p>
