@@ -1,3 +1,5 @@
+@import "../bootstrap/bootstrap";
+
 // Utilities
 @import "./variables";
 @import "./_utilities";
@@ -12,6 +14,7 @@
 
 // Templates css
 @import "./templates/_login";
+@import "./templates/multiple_offers/_search_results";
 
 // Addons css
 @import "./addons/_personal_information_registration_steps";
