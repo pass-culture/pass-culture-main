@@ -100,12 +100,9 @@ export const getOfferVenueFactory = (
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
     managingOfferer: customOfferer,
-    managingOffererId: customOfferer.id,
     postalCode: '11100',
     publicName: 'Mon Lieu',
     departementCode: '973',
-    fieldsUpdated: [],
-    thumbCount: 1,
     ...customVenue,
   }
 }
@@ -136,14 +133,7 @@ export const offererFactory = (
   return {
     id: `OFFERER${currentOffererId}`,
     name: `La nom de la structure ${currentOffererId}`,
-    city: 'Paris',
-    dateCreated: '2020-04-12T19:31:12Z',
-    fieldsUpdated: [],
-    isActive: true,
-    isValidated: true,
     nonHumanizedId: 3,
-    postalCode: '75001',
-    thumbCount: 1,
     ...customOfferer,
   }
 }

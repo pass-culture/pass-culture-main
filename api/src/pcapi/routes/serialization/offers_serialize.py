@@ -300,25 +300,11 @@ class GetOfferStockResponseModel(BaseModel):
 
 
 class GetOfferManagingOffererResponseModel(BaseModel):
-    address: str | None
-    city: str
-    dateCreated: datetime
-    dateModifiedAtLastProvider: datetime | None
-    fieldsUpdated: list[str]
     id: str
     nonHumanizedId: int
-    idAtProviders: str | None
-    isActive: bool
-    isValidated: bool
-    lastProviderId: str | None
     name: str
-    postalCode: str
-    # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
-    siren: str | None
-    thumbCount: int
 
     _humanize_id = humanize_field("id")
-    _humanize_last_provider_id = humanize_field("lastProviderId")
 
     class Config:
         orm_mode = True
@@ -328,30 +314,17 @@ class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     address: str | None
     bookingEmail: str | None
     city: str | None
-    comment: str | None
-    dateCreated: datetime | None
-    dateModifiedAtLastProvider: datetime | None
     departementCode: str | None
-    fieldsUpdated: list[str]
     id: str
-    idAtProviders: str | None
     isVirtual: bool
     lastProviderId: str | None
-    latitude: float | None
-    longitude: float | None
     managingOfferer: GetOfferManagingOffererResponseModel
-    managingOffererId: str
     name: str
     postalCode: str | None
     publicName: str | None
-    siret: str | None
-    thumbCount: int
-    venueLabelId: str | None
 
     _humanize_id = humanize_field("id")
-    _humanize_managing_offerer_id = humanize_field("managingOffererId")
     _humanize_last_provider_id = humanize_field("lastProviderId")
-    _humanize_venue_label_id = humanize_field("venueLabelId")
 
     class Config:
         orm_mode = True
