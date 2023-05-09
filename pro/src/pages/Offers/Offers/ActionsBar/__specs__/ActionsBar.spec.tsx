@@ -45,6 +45,7 @@ const mockCanDeleteOffers = jest.fn().mockReturnValue(true)
 
 describe('src | components | pages | Offers | ActionsBar', () => {
   let props: IActionBarProps
+  const offerIds = ['1', '2']
 
   beforeEach(() => {
     props = {
@@ -52,6 +53,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       canDeleteOffers: mockCanDeleteOffers,
       refreshOffers: jest.fn(),
       selectedOfferIds: ['testId1', 'testId2'],
+      tmpSelectedOfferIds: offerIds,
       clearSelectedOfferIds: jest.fn(),
       toggleSelectAllCheckboxes: jest.fn(),
       nbSelectedOffers: 2,
@@ -125,7 +127,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
-        ids: ['testId1', 'testId2'],
+        ids: offerIds,
         isActive: true,
       })
       expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
@@ -221,7 +223,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
         }
       )
       expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
-        ids: ['testId1', 'testId2'],
+        ids: offerIds,
         isActive: false,
       })
       expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)

@@ -52,7 +52,7 @@ const Template = ({
     offer &&
     withStatus && (
       <Status
-        offerId={offer.id}
+        offerId={offer.nonHumanizedId}
         status={offer.status}
         isActive={offer.isActive}
         canDeactivate={mode !== OFFER_WIZARD_MODE.DRAFT}

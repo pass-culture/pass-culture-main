@@ -6,7 +6,6 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.providers.factories as providers_factories
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
@@ -23,7 +22,7 @@ class Returns204Test:
 
         # When
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
-        data = {"ids": [humanize(offer1.id), humanize(offer2.id)], "isActive": True}
+        data = {"ids": [offer1.id, offer2.id], "isActive": True}
         response = client.patch("/offers/active-status", json=data)
 
         # Then
@@ -42,7 +41,7 @@ class Returns204Test:
 
         # When
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
-        data = {"ids": [humanize(offer.id), humanize(synchronized_offer.id)], "isActive": False}
+        data = {"ids": [offer.id, synchronized_offer.id], "isActive": False}
         with testing.assert_no_duplicated_queries():
             response = client.patch("/offers/active-status", json=data)
 
@@ -61,7 +60,7 @@ class Returns204Test:
 
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         data = {
-            "ids": [humanize(approved_offer.id), humanize(pending_offer.id), humanize(rejected_offer.id)],
+            "ids": [approved_offer.id, pending_offer.id, rejected_offer.id],
             "isActive": True,
         }
         response = client.patch("/offers/active-status", json=data)
@@ -88,7 +87,7 @@ class Returns204Test:
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         response = client.patch(
             "/offers/active-status",
-            json={"ids": [humanize(offer_that_should_stay_deactivated.id), humanize(offer.id)], "isActive": True},
+            json={"ids": [offer_that_should_stay_deactivated.id, offer.id], "isActive": True},
         )
 
         # Then

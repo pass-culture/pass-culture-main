@@ -9,7 +9,7 @@ import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 export interface IStatusToggleButton {
-  offerId: string
+  offerId: number
   isActive: boolean
   status: OfferStatus
   reloadOffer: () => void
@@ -25,11 +25,7 @@ const StatusToggleButton = ({
 
   const toggleOfferActiveStatus = useCallback(async () => {
     try {
-      await api
-        // FIX ME: we could send nonHumanizedId and remove dehumanization in api
-        // but this involves to modify EAC too
-        // @ts-expect-error: type string is not assignable to type number
-        .patchOffersActiveStatus({ ids: [offerId], isActive: !isActive })
+      await api.patchOffersActiveStatus({ ids: [offerId], isActive: !isActive })
       reloadOffer()
       notification.success(
         `L’offre a bien été ${isActive ? 'désactivée' : 'publiée'}.`
