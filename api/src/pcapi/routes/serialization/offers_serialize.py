@@ -430,7 +430,7 @@ class CategoriesResponseModel(BaseModel):
 
 
 class DeleteOfferRequestBody(BaseModel):
-    ids: list[str | None]
+    ids: list[int | None]
 
 
 class CreatePriceCategoryModel(BaseModel):

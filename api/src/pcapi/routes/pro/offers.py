@@ -84,8 +84,7 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferResponseModel
     api=blueprint.pro_private_schema,
 )
 def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
-    offer_ids = human_ids.dehumanize_ids_list(body.ids)
-    if not offer_ids:
+    if not body.ids:
         raise api_errors.ApiErrors(
             errors={
                 "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
