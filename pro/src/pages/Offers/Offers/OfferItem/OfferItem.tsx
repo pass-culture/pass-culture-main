@@ -17,7 +17,7 @@ export type OfferItemProps = {
   disabled?: boolean
   isSelected?: boolean
   offer: Offer
-  selectOffer: (offerId: string, selected: boolean, isTemplate: boolean) => void
+  selectOffer: (offerId: number, selected: boolean, isTemplate: boolean) => void
   audience: Audience
   refreshOffers: () => void
 }

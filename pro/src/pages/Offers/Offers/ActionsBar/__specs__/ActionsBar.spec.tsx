@@ -52,8 +52,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       getUpdateOffersStatusMessage: mockGetUpdateOffersStatusMessage,
       canDeleteOffers: mockCanDeleteOffers,
       refreshOffers: jest.fn(),
-      selectedOfferIds: ['testId1', 'testId2'],
-      tmpSelectedOfferIds: offerIds,
+      selectedOfferIds: offerIds,
       clearSelectedOfferIds: jest.fn(),
       toggleSelectAllCheckboxes: jest.fn(),
       nbSelectedOffers: 2,
@@ -169,11 +168,11 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       expect(api.deleteDraftOffers).toHaveBeenLastCalledWith({
-        ids: ['testId1', 'testId2'],
+        ids: offerIds,
       })
       expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
       expect(api.deleteDraftOffers).toHaveBeenNthCalledWith(1, {
-        ids: ['testId1', 'testId2'],
+        ids: offerIds,
       })
       expect(props.refreshOffers).toHaveBeenCalledTimes(1)
       expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)

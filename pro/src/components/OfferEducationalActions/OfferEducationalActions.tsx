@@ -70,7 +70,6 @@ const OfferEducationalActions = ({
       : patchIsCollectiveOfferActiveAdapter
     const { isOk, message } = await patchAdapter({
       isActive,
-      // istanbul ignore next: there is always an id so the condition will not be reachable
       offerId: offer.nonHumanizedId,
     })
 
