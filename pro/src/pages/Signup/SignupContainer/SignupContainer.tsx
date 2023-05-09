@@ -43,7 +43,7 @@ const SignupContainer = (): JSX.Element => {
     }
     promise
       .then(() => onHandleSuccess())
-      .catch(response => onHandleFail(response.errors ? response.errors : {}))
+      .catch(response => onHandleFail(response.body ? response.body : {}))
   }
 
   const onHandleSuccess = () => {
