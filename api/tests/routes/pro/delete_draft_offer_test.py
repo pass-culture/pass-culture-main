@@ -5,7 +5,6 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offer_models
 import pcapi.core.users.factories as users_factory
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -19,7 +18,7 @@ class Returns204Test:
             validation=OfferValidationStatus.APPROVED, venue=draft_offer.venue
         )
         offerers_factories.UserOffererFactory(user=pro, offerer=draft_offer.venue.managingOfferer)
-        data = {"ids": [humanize(draft_offer.id), humanize(validated_offer.id)]}
+        data = {"ids": [draft_offer.id, validated_offer.id]}
 
         response = client.with_session_auth(pro.email).post("/offers/delete-draft", json=data)
 
@@ -31,7 +30,7 @@ class Returns204Test:
         pro = users_factory.ProFactory()
         draft_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(offerer=draft_offer.venue.managingOfferer)
-        data = {"ids": [humanize(draft_offer.id)]}
+        data = {"ids": [draft_offer.id]}
 
         response = client.with_session_auth(pro.email).post("/offers/delete-draft", json=data)
 
@@ -45,7 +44,7 @@ class Returns401Test:
         pro = users_factory.ProFactory()
         draft_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(user=pro, offerer=draft_offer.venue.managingOfferer)
-        data = {"ids": [humanize(draft_offer.id)]}
+        data = {"ids": [draft_offer.id]}
 
         response = client.post("/offers/delete-draft", json=data)
 
