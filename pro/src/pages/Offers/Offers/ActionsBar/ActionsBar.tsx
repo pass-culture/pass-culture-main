@@ -28,7 +28,6 @@ export interface IActionBarProps {
   clearSelectedOfferIds: () => void
   nbSelectedOffers: number
   refreshOffers: () => void
-  selectedOfferIds: string[]
   tmpSelectedOfferIds: string[]
   toggleSelectAllCheckboxes: () => void
   audience: Audience
@@ -41,7 +40,6 @@ const getUpdateActiveStatusAdapter = (
   searchFilters: Partial<TSearchFilters>,
   isActive: boolean,
   nbSelectedOffers: number,
-  selectedOfferIds: string[],
   tmpSelectedOfferIds: string[],
   audience: Audience
 ) => {
@@ -75,7 +73,6 @@ const getUpdateActiveStatusAdapter = (
 
 const ActionsBar = ({
   refreshOffers,
-  selectedOfferIds,
   tmpSelectedOfferIds,
   clearSelectedOfferIds,
   toggleSelectAllCheckboxes,
@@ -110,7 +107,6 @@ const ActionsBar = ({
         searchFilters,
         isActivating,
         nbSelectedOffers,
-        selectedOfferIds,
         tmpSelectedOfferIds,
         audience
       )
@@ -127,7 +123,6 @@ const ActionsBar = ({
     },
     [
       searchFilters,
-      selectedOfferIds,
       areAllOffersSelected,
       refreshOffers,
       nbSelectedOffers,
@@ -139,7 +134,7 @@ const ActionsBar = ({
 
   const handleActivate = useCallback(() => {
     const updateOfferStatusMessage =
-      getUpdateOffersStatusMessage(selectedOfferIds)
+      getUpdateOffersStatusMessage(tmpSelectedOfferIds)
     if (!updateOfferStatusMessage) {
       handleUpdateOffersStatus(true)
     } else {
@@ -161,12 +156,12 @@ const ActionsBar = ({
   }
 
   const handleDelete = useCallback(async () => {
-    if (!canDeleteOffers(selectedOfferIds)) {
+    if (!canDeleteOffers(tmpSelectedOfferIds)) {
       notify.error('Seuls les  brouillons peuvent être supprimés')
       return
     }
     const { isOk, message } = await deleteDraftOffersAdapter({
-      ids: selectedOfferIds,
+      ids: tmpSelectedOfferIds,
       nbSelectedOffers,
     })
     if (!isOk) {
@@ -177,10 +172,10 @@ const ActionsBar = ({
       clearSelectedOfferIds()
     }
     hideDeleteDialog()
-  }, [selectedOfferIds, nbSelectedOffers])
+  }, [tmpSelectedOfferIds, nbSelectedOffers])
 
   const handleOpenDeleteDialog = () => {
-    if (!canDeleteOffers(selectedOfferIds)) {
+    if (!canDeleteOffers(tmpSelectedOfferIds)) {
       notify.error('Seuls les brouillons peuvent être supprimés')
       return
     }

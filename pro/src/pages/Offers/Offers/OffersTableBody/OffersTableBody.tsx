@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { legacyComputeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 
@@ -29,8 +29,8 @@ const OffersTableBody = ({
 }: OffersTableBodyProps) => (
   <tbody className="offers-list">
     {offers.map(offer => {
-      const offerId = legacyComputeURLCollectiveOfferId(
-        offer.id,
+      const offerId = computeURLCollectiveOfferId(
+        offer.nonHumanizedId,
         Boolean(offer.isShowcase)
       )
 
