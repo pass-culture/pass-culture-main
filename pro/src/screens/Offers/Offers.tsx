@@ -78,7 +78,6 @@ const Offers = ({
 
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
-  const [tmpSelectedOfferIds, setTmpSelectedOfferIds] = useState<string[]>([])
   const { logEvent } = useAnalytics()
 
   const { isAdmin } = currentUser
@@ -151,12 +150,11 @@ const Offers = ({
 
   const nbSelectedOffers = areAllOffersSelected
     ? offers.length
-    : tmpSelectedOfferIds.length
+    : selectedOfferIds.length
 
   const clearSelectedOfferIds = useCallback(() => {
     /* istanbul ignore next: DEBT, TO FIX */
     setSelectedOfferIds([])
-    setTmpSelectedOfferIds([])
   }, [])
 
   const refreshOffers = useCallback(
@@ -315,10 +313,9 @@ const Offers = ({
           pageCount={pageCount}
           resetFilters={resetFilters}
           searchFilters={searchFilters}
-          selectedOfferIds={tmpSelectedOfferIds}
+          selectedOfferIds={selectedOfferIds}
           setSearchFilters={setSearchFilters}
           setSelectedOfferIds={setSelectedOfferIds}
-          setTmpSelectedOfferIds={setTmpSelectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           urlSearchFilters={urlSearchFilters}
           refreshOffers={refreshOffers}
@@ -330,7 +327,7 @@ const Offers = ({
           clearSelectedOfferIds={clearSelectedOfferIds}
           nbSelectedOffers={nbSelectedOffers}
           refreshOffers={refreshOffers}
-          tmpSelectedOfferIds={tmpSelectedOfferIds}
+          selectedOfferIds={selectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           audience={audience}
           getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
