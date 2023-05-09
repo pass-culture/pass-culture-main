@@ -66,12 +66,8 @@
                 {% endif %}
                 <td>{{ reimbursement_rule.rate | format_rate_multiply_by_100 }}</td>
                 <td>{{ reimbursement_rule.amount | format_amount if reimbursement_rule.amount else "" }}</td>
-                <td>
-                  {{ reimbursement_rule.subcategories | format_subcategories }}
-                </td>
-                <td>
-                  {{ reimbursement_rule.timespan | format_timespan }}
-                </td>
+                <td>{{ reimbursement_rule.subcategories | format_subcategories }}</td>
+                <td>{{ reimbursement_rule.timespan | format_timespan }}</td>
               </tr>
             {% endfor %}
           </tbody>

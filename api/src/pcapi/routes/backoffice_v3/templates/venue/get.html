@@ -200,9 +200,7 @@
                   <span class="fw-bold">Site web :</span>
                   <a href="{{ venue.contact.website | escape }}"
                      target="_blank"
-                     class="link-primary">
-                    {{ venue.contact.website | escape }}
-                  </a>
+                     class="link-primary">{{ venue.contact.website | escape }}</a>
                 </p>
               {% endif %}
               {% if venue.criteria %}
@@ -215,17 +213,17 @@
             <div class="col-4">
               {% if dms_stats %}
                 <p class="mb-1">
-                  <span class="fw-bold">Statut DMS CB : </span>
+                  <span class="fw-bold">Statut DMS CB :</span>
                   {{ dms_stats.status | format_dms_status }}
                 </p>
                 {% if dms_stats.status == "accepte" %}
                   <p class="mb-1">
-                    <span class="fw-bold">Date de validation du dossier DMS CB : </span>
+                    <span class="fw-bold">Date de validation du dossier DMS CB :</span>
                     {{ dms_stats.lastChangeDate | format_date }}
                   </p>
                 {% else %}
                   <p class="mb-1">
-                    <span class="fw-bold">Date de dépôt du dossier DMS CB : </span>
+                    <span class="fw-bold">Date de dépôt du dossier DMS CB :</span>
                     {{ dms_stats.subscriptionDate | format_date }}
                   </p>
                 {% endif %}
@@ -233,9 +231,7 @@
                   <a href="{{ dms_stats.url }}"
                      target="_blank"
                      class="card-link">
-                    <button class="btn btn-outline-primary lead fw-bold mt-2">
-                      ACCÉDER AU DOSSIER DMS CB
-                    </button>
+                    <button class="btn btn-outline-primary lead fw-bold mt-2">ACCÉDER AU DOSSIER DMS CB</button>
                   </a>
                 </p>
               {% else %}
@@ -246,16 +242,12 @@
               <p class="mb-1">
                 <a href="{{ venue | pc_pro_venue_bookings_link }}"
                    target="_blank"
-                   class="fw-bold link-primary">
-                  Réservations
-                </a>
+                   class="fw-bold link-primary">Réservations</a>
               </p>
               <p class="mb-1">
                 <a href="{{ venue | pc_pro_venue_offers_link }}"
                    target="_blank"
-                   class="fw-bold link-primary">
-                  Offres associées
-                </a>
+                   class="fw-bold link-primary">Offres associées</a>
               </p>
             </div>
           </div>
