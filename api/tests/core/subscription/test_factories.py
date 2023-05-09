@@ -10,6 +10,7 @@ import factory
 import pytz
 
 from pcapi import settings
+from pcapi.core.fraud.models import UBBLE_REASON_CODE_MAPPING
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 
 
@@ -40,6 +41,44 @@ class IdentificationIncludedType(Enum):
     FACE_CHECKS = "face-checks"
     REFERENCE_DATA_CHECKS = "reference-data-checks"
     DOC_FACE_MATCHES = "doc-face-matches"
+
+
+class UbbleReasonCodeFactory(factory.Factory):
+    class Meta:
+        model = ubble_fraud_models.UbbleReasonCode
+
+    class Params:
+        error_code = 0
+
+    type = "reason-codes"
+    id = factory.SelfAttribute("..error_code")
+
+
+class UbbleReasonCodesFactory(factory.Factory):
+    class Meta:
+        model = ubble_fraud_models.UbbleReasonCodes
+
+    class Params:
+        error_codes = []
+
+    @factory.lazy_attribute
+    def data(self):
+        return [
+            UbbleReasonCodeFactory(id=str(error_code))
+            for error_code in self.error_codes
+            if error_code in UBBLE_REASON_CODE_MAPPING
+        ]
+
+
+class UbbleIdentificationRelationshipsFactory(factory.Factory):
+    class Meta:
+        model = ubble_fraud_models.UbbleIdentificationRelationships
+        rename = {"reason_codes": "reason-codes"}
+
+    class Params:
+        error_codes = []
+
+    reason_codes = factory.SubFactory(UbbleReasonCodesFactory, error_codes=factory.SelfAttribute("..error_codes"))
 
 
 class UbbleIdentificationDataAttributesFactory(factory.Factory):
@@ -173,12 +212,16 @@ class UbbleIdentificationDataFactory(factory.Factory):
 
     class Params:
         identification_state = IdentificationState.NEW
+        error_codes = []
 
     type = "identifications"
     id = factory.Faker("pyint")
     attributes = factory.SubFactory(
         UbbleIdentificationDataAttributesFactory,
         identification_state=factory.SelfAttribute("..identification_state"),
+    )
+    relationships = factory.SubFactory(
+        UbbleIdentificationRelationshipsFactory, error_codes=factory.SelfAttribute("..error_codes")
     )
 
 
@@ -361,9 +404,12 @@ class UbbleIdentificationResponseFactory(factory.Factory):
 
     class Params:
         identification_state = IdentificationState.NEW
+        error_codes = []
 
     data = factory.SubFactory(
-        UbbleIdentificationDataFactory, identification_state=factory.SelfAttribute("..identification_state")
+        UbbleIdentificationDataFactory,
+        identification_state=factory.SelfAttribute("..identification_state"),
+        error_codes=factory.SelfAttribute("..error_codes"),
     )
 
     @factory.lazy_attribute
