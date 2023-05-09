@@ -7,12 +7,13 @@ import {
 import { patchIsTemplateOfferActiveAdapter } from '../patchIsTemplateOfferActiveAdapter'
 
 describe('patchIsTemplateOfferActiveAdapter', () => {
+  const offerId = 12
   it('should return an error when the offer id is not valid', async () => {
     // given
 
     // when
     const response = await patchIsTemplateOfferActiveAdapter({
-      offerId: '',
+      offerId: 0,
       isActive: false,
     })
 
@@ -31,7 +32,7 @@ describe('patchIsTemplateOfferActiveAdapter', () => {
 
     // when
     const response = await patchIsTemplateOfferActiveAdapter({
-      offerId: '12',
+      offerId: offerId,
       isActive: false,
     })
 
@@ -49,7 +50,7 @@ describe('patchIsTemplateOfferActiveAdapter', () => {
 
     // when
     const response = await patchIsTemplateOfferActiveAdapter({
-      offerId: '12',
+      offerId: offerId,
       isActive: false,
     })
 
@@ -65,7 +66,7 @@ describe('patchIsTemplateOfferActiveAdapter', () => {
 
     // when
     const response = await patchIsTemplateOfferActiveAdapter({
-      offerId: '12',
+      offerId: offerId,
       isActive: true,
     })
 
