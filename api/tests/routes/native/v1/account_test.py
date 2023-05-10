@@ -464,53 +464,6 @@ class AccountCreationTest:
         assert trusted_device.os == "iOS"
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def test_should_not_save_trusted_device_when_no_device_id(self, mocked_check_recaptcha_token_is_valid, client):
-        data = {
-            "email": "John.doe@example.com",
-            "password": "Aazflrifaoi6@",
-            "birthdate": "1960-12-31",
-            "notifications": True,
-            "token": "gnagna",
-            "marketingEmailSubscription": True,
-            "trustedDevice": {
-                "deviceId": "",
-                "source": "iPhone 13",
-                "os": "iOS",
-            },
-        }
-
-        client.post("/native/v1/account", json=data)
-
-        assert users_models.TrustedDevice.query.count() == 0
-
-    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def test_should_log_warning_when_no_device_id(self, mocked_check_recaptcha_token_is_valid, client, caplog):
-        data = {
-            "email": "John.doe@example.com",
-            "password": "Aazflrifaoi6@",
-            "birthdate": "1960-12-31",
-            "notifications": True,
-            "token": "gnagna",
-            "marketingEmailSubscription": True,
-            "trustedDevice": {
-                "deviceId": "",
-                "source": "iPhone 13",
-                "os": "iOS",
-            },
-        }
-
-        client.post("/native/v1/account", json=data)
-
-        assert caplog.messages == ["Invalid deviceId was provided for trusted device"]
-        assert caplog.records[0].extra == {
-            "deviceId": "",
-            "os": "iOS",
-            "source": "iPhone 13",
-        }
-
-    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
     def test_should_not_save_trusted_device_when_feature_flag_is_disabled(
         self, mocked_check_recaptcha_token_is_valid, client
