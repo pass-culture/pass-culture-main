@@ -30,7 +30,8 @@ const OffererAuthentication = (): JSX.Element => {
   }
 
   const handlePreviousStep = () => {
-    navigate('/parcours-inscription/structure')
+    setOfferer(null)
+    navigate('/parcours-inscription')
   }
 
   const onSubmitOffererAuthentication = async (
@@ -65,7 +66,7 @@ const OffererAuthentication = (): JSX.Element => {
           <OffererAuthenticationForm />
           <ActionBar
             onClickPrevious={handlePreviousStep}
-            previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
+            previousTo={SIGNUP_JOURNEY_STEP_IDS.WELCOME}
             nextTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
             previousStepTitle="Retour"
             isDisabled={formik.isSubmitting}
