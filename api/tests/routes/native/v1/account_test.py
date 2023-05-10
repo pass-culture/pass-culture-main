@@ -440,7 +440,7 @@ class AccountCreationTest:
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def test_can_save_trusted_device_when_feature_flag_is_active(self, mocked_check_recaptcha_token_is_valid, client):
+    def test_save_trusted_device(self, mocked_check_recaptcha_token_is_valid, client):
         data = {
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
