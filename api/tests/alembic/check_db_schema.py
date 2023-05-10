@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 
 from pcapi import settings
 from pcapi.alembic.run_migrations import include_object
-from pcapi.models import db
+from pcapi.models import Base
 from pcapi.models import install_models
 
 
@@ -17,7 +17,7 @@ def check_db_schema_alignment():
             connection,
             opts={"include_object": include_object, "compare_server_default": True},
         )
-        diff = compare_metadata(migration_context, db.metadata)
+        diff = compare_metadata(migration_context, Base.metadata)
 
         if len(diff) > 0:
             raise RuntimeError(
