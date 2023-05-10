@@ -23,37 +23,37 @@ export const routesSignupJourney: IRoute[] = [
     element: <Offerer />,
     parentPath: '/parcours-inscription',
     path: '/structure',
-    title: 'Structure',
+    title: 'Structure - Parcours d’inscription',
   },
   {
     element: <SignupJourneyOfferers />,
     parentPath: '/parcours-inscription',
     path: '/structure/rattachement',
-    title: 'Rattachement à une structure',
+    title: 'Rattachement à une structure - Parcours d’inscription',
   },
   {
     element: <ConfirmedAttachment />,
     parentPath: '/parcours-inscription',
     path: '/structure/rattachement/confirmation',
-    title: 'Confirmation rattachement à une structure',
+    title: 'Confirmation rattachement à une structure - Parcours d’inscription',
   },
   {
     element: <OffererAuthentication />,
     parentPath: '/parcours-inscription',
     path: '/identification',
-    title: 'Identification',
+    title: 'Identification - Parcours d’inscription',
   },
   {
     element: <Activity />,
     parentPath: '/parcours-inscription',
     path: '/activite',
-    title: 'Activité',
+    title: 'Activité - Parcours d’inscription',
   },
   {
     element: <Validation />,
     parentPath: '/parcours-inscription',
     path: '/validation',
-    title: 'Validation',
+    title: 'Validation - Parcours d’inscription',
   },
 ]
 

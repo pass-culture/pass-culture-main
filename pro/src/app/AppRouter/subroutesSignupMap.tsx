@@ -13,19 +13,19 @@ export const routesSignup: IRoute[] = [
     element: <SignupContainer />,
     parentPath: '/inscription',
     path: '/',
-    title: 'S’inscrire',
+    title: 'Créer un compte',
   },
   {
     element: <SignupConfirmation />,
     parentPath: '/inscription',
     path: '/confirmation',
-    title: 'S’inscrire',
+    title: 'Confirmation de création de compte',
   },
   {
     element: <SignUpValidation />,
     parentPath: '/inscription',
     path: '/validation/:token',
-    title: 'S’inscrire',
+    title: 'Confirmation de création de compte',
   },
 ]
 
