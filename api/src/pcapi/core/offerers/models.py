@@ -847,7 +847,7 @@ class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
 class ApiKey(PcObject, Base, Model):
     offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
     offerer: sa_orm.Mapped[Offerer] = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKeys"))
-    providerId: int = Column(BigInteger, ForeignKey("provider.id", ondelete="CASCADE"), index=True, unique=True)
+    providerId: int = Column(BigInteger, ForeignKey("provider.id", ondelete="CASCADE"), index=True)
     provider: sa_orm.Mapped["providers_models.Provider"] = relationship(
         "Provider", foreign_keys=[providerId], back_populates="apiKeys"
     )
