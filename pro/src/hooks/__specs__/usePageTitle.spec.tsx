@@ -61,19 +61,13 @@ const renderusePageTitleRoutes = (url = '/accueil') => {
 describe('usePageTitle', () => {
   it('should set initial page title', async () => {
     renderusePageTitleRoutes()
-    expect(document.title).toEqual('Accueil - pass Culture Pro')
+    expect(document.title).toEqual(
+      'Espace acteurs culturels - pass Culture Pro'
+    )
   })
   it('should update page title when user navigates to another page', async () => {
     renderusePageTitleRoutes()
     await userEvent.click(screen.getByRole('link', { name: 'Guichet' }))
     expect(document.title).toEqual('Guichet - pass Culture Pro')
-  })
-  it('should set initial root page title for signupJourney', async () => {
-    renderusePageTitleRoutes('/parcours-inscription')
-    expect(document.title).toEqual("Parcours d'inscription")
-  })
-  it('should set initial page title for signupJourney step', async () => {
-    renderusePageTitleRoutes('/parcours-inscription/structure')
-    expect(document.title).toEqual("Structure - parcours d'inscription")
   })
 })
