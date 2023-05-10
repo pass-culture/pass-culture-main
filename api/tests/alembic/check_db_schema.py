@@ -1,6 +1,11 @@
+import os
+import sys
+import warnings
+
 from alembic.autogenerate import compare_metadata
 from alembic.runtime.migration import MigrationContext
 from sqlalchemy import create_engine
+from sqlalchemy import exc as sa_exc
 
 from pcapi import settings
 from pcapi.alembic.run_migrations import include_object
@@ -17,12 +22,15 @@ def check_db_schema_alignment():
             connection,
             opts={"include_object": include_object, "compare_server_default": True},
         )
-        diff = compare_metadata(migration_context, Base.metadata)
+        with warnings.catch_warnings():
+            # cleaner output
+            warnings.simplefilter("ignore", category=sa_exc.SAWarning)
+            warnings.simplefilter("ignore", category=UserWarning)
 
-        if len(diff) > 0:
-            raise RuntimeError(
-                f"The database is not aligned with application model, create a migration or change the model to remove the following diff: {diff}"
-            )
+            diff = compare_metadata(migration_context, Base.metadata)
+    if diff:
+        diff.insert(0, ">>>>> The following diff was found ! <<<<<")
+    sys.exit("\n".join(str(d) for d in diff) or os.EX_OK)
 
 
 if __name__ == "__main__":
