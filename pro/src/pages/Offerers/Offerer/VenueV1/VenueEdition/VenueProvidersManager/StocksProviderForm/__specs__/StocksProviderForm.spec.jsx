@@ -120,7 +120,7 @@ describe('src | StocksProviderForm', () => {
       ).toBeInTheDocument()
 
       const confirmImportButton = screen.getByRole('button', {
-        name: 'Continuer',
+        name: 'Supprimer la synchronisation',
       })
       await userEvent.click(confirmImportButton)
 
@@ -158,7 +158,7 @@ describe('src | StocksProviderForm', () => {
       ).toBeInTheDocument()
 
       const confirmImportButton = screen.getByRole('button', {
-        name: 'Continuer',
+        name: 'Supprimer la synchronisation',
       })
       await userEvent.click(confirmImportButton)
 
@@ -189,7 +189,7 @@ describe('src | StocksProviderForm', () => {
       ).toBeInTheDocument()
 
       const confirmImportButton = screen.getByRole('button', {
-        name: 'Continuer',
+        name: 'Supprimer la synchronisation',
       })
       await userEvent.click(confirmImportButton)
 
