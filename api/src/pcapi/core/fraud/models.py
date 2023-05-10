@@ -605,7 +605,7 @@ class BeneficiaryFraudReview(PcObject, Base, Model):
 class FraudItem:
     detail: str
     status: FraudStatus
-    reason_codes: list[FraudReasonCode] | None = None
+    reason_codes: list[FraudReasonCode] = dataclasses.field(default_factory=list)
 
     def __bool__(self) -> bool:
         return self.status == FraudStatus.OK
