@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal
+import logging
 
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
@@ -1266,7 +1267,7 @@ class SaveTrustedDeviceTest:
 
         assert user.trusted_devices == [trusted_device]
 
-    def test_should_log_warning_when_no_device_id(self, caplog):
+    def test_should_log_when_no_device_id(self, caplog):
         user = users_factories.UserFactory(email="py@test.com")
         device_info = account_serialization.TrustedDevice(
             deviceId="",
@@ -1274,7 +1275,8 @@ class SaveTrustedDeviceTest:
             os="iOS",
         )
 
-        users_api.save_trusted_device(device_info=device_info, user=user)
+        with caplog.at_level(logging.INFO):
+            users_api.save_trusted_device(device_info=device_info, user=user)
 
         assert caplog.messages == ["Invalid deviceId was provided for trusted device"]
         assert caplog.records[0].extra == {
