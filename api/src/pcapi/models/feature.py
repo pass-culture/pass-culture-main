@@ -119,6 +119,7 @@ class FeatureToggle(enum.Enum):
     WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API = "Active la gestion des providers dans l'api publique EAC"
     WIP_ENABLE_COLLECTIVE_REQUEST = "Active la demande de création d'offre collective de la part des utilisateurs adage"
     WIP_ENABLE_NEW_ADAGE_HEADER = "Active le nouveau header dans l'iframe adage"
+    WIP_ENABLE_COOKIES_BANNER = "Active la nouvelle bannière de cookies"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -184,6 +185,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_REQUEST,
     FeatureToggle.WIP_ENABLE_NEW_ADAGE_HEADER,
+    FeatureToggle.WIP_ENABLE_COOKIES_BANNER,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
