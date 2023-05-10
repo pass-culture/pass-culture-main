@@ -205,7 +205,7 @@ describe('OfferIndividualForm', () => {
   it('should render synchronized banner when lastProviderName is set', async () => {
     const offer = {
       nonHumanizedId: 12,
-      venueId: 'AE',
+      venueId: 5,
       venue: {
         offerer: {
           id: 'AE',
