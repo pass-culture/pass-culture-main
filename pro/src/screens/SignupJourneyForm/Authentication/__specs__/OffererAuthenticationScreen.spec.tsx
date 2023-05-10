@@ -84,8 +84,8 @@ const renderOffererAuthentiationScreen = (
       <SignupJourneyContext.Provider value={contextValue}>
         <Routes>
           <Route
-            path="/parcours-inscription/structure"
-            element={<div>Offerer siret screen</div>}
+            path="/parcours-inscription"
+            element={<div>Welcome screen</div>}
           />
           <Route
             path="/parcours-inscription/identification"
@@ -170,14 +170,14 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     renderOffererAuthentiationScreen(contextValue)
     expect(await screen.findByText('Identification')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Retour' }))
-    expect(screen.getByText('Offerer siret screen')).toBeInTheDocument()
+    expect(screen.getByText('Welcome screen')).toBeInTheDocument()
   })
 
   it('should redirect to offerer screen if there is no offerer siret', async () => {
     contextValue.offerer = DEFAULT_OFFERER_FORM_VALUES
     renderOffererAuthentiationScreen(contextValue)
     expect(await screen.queryByText('Identification')).not.toBeInTheDocument()
-    expect(screen.getByText('Offerer siret screen')).toBeInTheDocument()
+    expect(screen.getByText('Welcome screen')).toBeInTheDocument()
   })
 
   it('should redirect to offerer screen if there is no offerer name', async () => {
@@ -187,6 +187,6 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     }
     renderOffererAuthentiationScreen(contextValue)
     expect(await screen.queryByText('Identification')).not.toBeInTheDocument()
-    expect(screen.getByText('Offerer siret screen')).toBeInTheDocument()
+    expect(screen.getByText('Welcome screen')).toBeInTheDocument()
   })
 })
