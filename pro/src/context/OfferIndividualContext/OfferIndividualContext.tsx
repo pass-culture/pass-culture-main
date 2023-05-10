@@ -25,7 +25,7 @@ export interface IOfferIndividualContext {
   venueList: TOfferIndividualVenue[]
   shouldTrack: boolean
   setShouldTrack: (p: boolean) => void
-  venueId?: string | undefined
+  venueId?: number | undefined
   offerOfferer?: TOffererName | null
   showVenuePopin: Record<string, boolean>
 }
@@ -67,7 +67,7 @@ export function OfferIndividualContextProvider({
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [shouldTrack, setShouldTrack] = useState<boolean>(true)
   const [offerOfferer, setOfferOfferer] = useState<TOffererName | null>(null)
-  const [venueId, setVenueId] = useState<string>()
+  const [venueId, setVenueId] = useState<number>()
 
   const [offer, setOfferState] = useState<IOfferIndividual | null>(null)
   const [categories, setCategories] = useState<IOfferCategory[]>([])

@@ -227,6 +227,7 @@ class Returns200Test:
                 "city": "Paris",
                 "departementCode": "75",
                 "id": humanize(venue.id),
+                "nonHumanizedId": venue.id,
                 "isVirtual": False,
                 "lastProviderId": None,  ## Should be unused
                 "managingOfferer": {

@@ -167,6 +167,7 @@ describe('screens:StocksThing', () => {
         city: 'Paris',
         departementCode: '75',
         id: 'DY',
+        nonHumanizedId: 1,
         isVirtual: false,
         lastProviderId: null,
         managingOfferer: {

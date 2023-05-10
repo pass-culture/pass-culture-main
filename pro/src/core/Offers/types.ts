@@ -124,7 +124,7 @@ export interface IOfferIndividualOfferer {
 }
 
 export interface IOfferIndividualVenue {
-  id: string
+  id: number
   name: string
   publicName: string
   isVirtual: boolean
@@ -187,7 +187,7 @@ export interface IOfferIndividual {
   name: string
   musicSubType: string
   musicType: string
-  offererId: string
+  offererId: number
   offererName: string
   performer: string
   priceCategories?: PriceCategoryResponseModel[] | null
@@ -200,7 +200,7 @@ export interface IOfferIndividual {
   image?: IOfferIndividualImage
   url: string
   externalTicketOfficeUrl: string
-  venueId: string
+  venueId: number
   venue: IOfferIndividualVenue
   visa: string
   withdrawalDetails: string | null

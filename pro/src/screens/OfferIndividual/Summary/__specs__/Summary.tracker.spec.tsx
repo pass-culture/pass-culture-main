@@ -460,6 +460,7 @@ describe('Summary trackers', () => {
   })
 
   describe('First offer Pop in', () => {
+    const venueId = 1
     beforeEach(async () => {
       jest
         .spyOn(useOfferWizardMode, 'default')
@@ -474,9 +475,9 @@ describe('Summary trackers', () => {
           id: 'AB',
           status: OfferStatus.DRAFT,
         }),
-        venueId: 'AB',
+        venueId: venueId,
         showVenuePopin: {
-          AB: true,
+          [venueId]: true,
         },
       }
 
@@ -532,7 +533,7 @@ describe('Summary trackers', () => {
         VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
         {
           from: 'recapitulatif',
-          venue_id: 'AB',
+          venue_id: venueId,
         }
       )
     })
