@@ -159,7 +159,10 @@ const Offerers = (): JSX.Element => {
       <ActionBar
         previousStepTitle="Retour"
         hideRightButton
-        onClickPrevious={() => navigate('/parcours-inscription/structure')}
+        onClickPrevious={() => {
+          setOfferer(null)
+          navigate('/parcours-inscription/structure')
+        }}
         previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
         isDisabled={false}
         logEvent={logEvent}
