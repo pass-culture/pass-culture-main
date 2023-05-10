@@ -182,10 +182,7 @@
           display: block;
           content: "";
           position: absolute;
-          left: rem.torem(-4px);
-          right: rem.torem(-4px);
-          top: rem.torem(-4px);
-          bottom: rem.torem(-4px);
+          inset: rem.torem(-4px);
           border: 1px solid colors.$input-text-color;
           border-radius: rem.torem(8px);
         }
