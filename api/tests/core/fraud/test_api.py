@@ -430,7 +430,7 @@ class EduconnectFraudTest:
             (
                 fraud_item
                 for fraud_item in result
-                if fraud_item.reason_codes and fraud_models.FraudReasonCode.AGE_NOT_VALID in fraud_item.reason_codes
+                if fraud_models.FraudReasonCode.AGE_NOT_VALID in fraud_item.reason_codes
             ),
             None,
         )
@@ -453,9 +453,7 @@ class EduconnectFraudTest:
         fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
         invalid_item = [
-            item
-            for item in fraud_items
-            if item.reason_codes and fraud_models.FraudReasonCode.DUPLICATE_USER in item.reason_codes
+            item for item in fraud_items if fraud_models.FraudReasonCode.DUPLICATE_USER in item.reason_codes
         ][0]
         assert f"Duplicat de l'utilisateur {already_existing_user.id}" in invalid_item.detail
         assert invalid_item.status == fraud_models.FraudStatus.SUSPICIOUS
@@ -475,11 +473,7 @@ class EduconnectFraudTest:
         )
         result = fraud_api.educonnect_fraud_checks(underage_user, fraud_check.source_data())
 
-        assert not any(
-            fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_item.reason_codes
-            for fraud_item in result
-            if fraud_item.reason_codes
-        )
+        assert not any(fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_item.reason_codes for fraud_item in result)
 
     def test_ine_duplicates_fraud_checks(self):
         same_ine_user = users_factories.UnderageBeneficiaryFactory(ineHash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
@@ -492,9 +486,7 @@ class EduconnectFraudTest:
         result = fraud_api.educonnect_fraud_checks(user_in_validation, fraud_check.source_data())
 
         duplicate_ine_check = next(
-            fraud_item
-            for fraud_item in result
-            if fraud_item.reason_codes and fraud_models.FraudReasonCode.DUPLICATE_INE in fraud_item.reason_codes
+            fraud_item for fraud_item in result if fraud_models.FraudReasonCode.DUPLICATE_INE in fraud_item.reason_codes
         )
         assert duplicate_ine_check.status == fraud_models.FraudStatus.SUSPICIOUS
         assert (

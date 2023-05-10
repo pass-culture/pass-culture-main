@@ -462,9 +462,7 @@ def validate_frauds(
     )
     reason_codes = set(
         itertools.chain.from_iterable(
-            fraud_item.reason_codes
-            for fraud_item in fraud_items
-            if fraud_item.status != models.FraudStatus.OK and fraud_item.reason_codes
+            fraud_item.reason_codes for fraud_item in fraud_items if fraud_item.status != models.FraudStatus.OK
         )
     )
 
