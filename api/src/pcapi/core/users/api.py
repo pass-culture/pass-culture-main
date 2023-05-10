@@ -1197,7 +1197,7 @@ def save_trusted_device(device_info: "account_serialization.TrustedDevice | None
         return
 
     if not device_info.device_id:
-        logger.exception(
+        logger.info(
             "Invalid deviceId was provided for trusted device",
             extra={
                 "deviceId": device_info.device_id,
