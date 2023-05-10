@@ -8,6 +8,8 @@ import setInitialFormValues from '../setInitialFormValues'
 describe('setFormReadOnlyFields', () => {
   let offer: IOfferIndividual
   let subCategoryList: IOfferSubCategory[]
+  const venueId = 13
+  const offererId = 12
 
   beforeEach(() => {
     offer = {
@@ -34,7 +36,7 @@ describe('setFormReadOnlyFields', () => {
       name: 'Offer name',
       musicSubType: '',
       musicType: '',
-      offererId: 'AE',
+      offererId: offererId,
       offererName: '',
       performer: 'Offer performer',
       ean: '',
@@ -46,9 +48,9 @@ describe('setFormReadOnlyFields', () => {
       image: undefined,
       url: 'http://offer.example.com',
       externalTicketOfficeUrl: 'http://external.example.com',
-      venueId: 'A9',
+      venueId: venueId,
       venue: {
-        id: 'A9',
+        id: venueId,
         name: 'Venue name',
         publicName: 'Venue publicName',
         isVirtual: false,
@@ -113,7 +115,7 @@ describe('setFormReadOnlyFields', () => {
       musicSubType: '',
       musicType: '',
       name: 'Offer name',
-      offererId: '1',
+      offererId: offererId.toString(),
       receiveNotificationEmails: true,
       showSubType: '',
       showType: '',
@@ -126,7 +128,7 @@ describe('setFormReadOnlyFields', () => {
         'isDuo',
       ],
       subcategoryId: 'SCID',
-      venueId: '2',
+      venueId: venueId.toString(),
       withdrawalDelay: 140,
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalType: WithdrawalTypeEnum.ON_SITE,

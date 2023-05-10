@@ -254,16 +254,17 @@ describe('serializer', () => {
   })
 
   it('serializeVenueApi', async () => {
+    const venueId = 1
     const offerApi = {
       venue: {
         id: 'venue id',
+        nonHumanizedId: venueId,
         name: 'venue name',
         publicName: 'venue publicName',
         isVirtual: false,
         address: 'venue address',
         postalCode: 'venue postalCode',
         departementCode: '75',
-
         city: 'venue city',
         offerer: 'venue offerer',
         visualDisabilityCompliant: true,
@@ -278,7 +279,7 @@ describe('serializer', () => {
       },
     } as unknown as GetIndividualOfferResponseModel
     const venue: IOfferIndividualVenue = {
-      id: 'venue id',
+      id: venueId,
       name: 'venue name',
       publicName: 'venue publicName',
       isVirtual: false,
@@ -383,7 +384,7 @@ describe('serializer', () => {
       musicType: '',
       name: 'Le nom de l’offre 1',
       nonHumanizedId: 1,
-      offererId: 'OFFERER1',
+      offererId: offerApi.venue.managingOfferer.nonHumanizedId,
       offererName: 'La nom de la structure 1',
       performer: '',
       priceCategories: undefined,
@@ -415,7 +416,7 @@ describe('serializer', () => {
       subcategoryId: 'SEANCE_CINE',
       url: '',
       venue: {
-        id: 'VENUE1',
+        id: 1,
         accessibility: {
           audio: false,
           mental: false,
@@ -436,7 +437,7 @@ describe('serializer', () => {
         postalCode: '11100',
         publicName: 'Mon Lieu',
       },
-      venueId: 'VENUE1',
+      venueId: 1,
       visa: '',
       withdrawalDelay: null,
       withdrawalDetails: '',
