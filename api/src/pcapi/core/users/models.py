@@ -760,7 +760,7 @@ class UserProFlags(PcObject, Base, Model):
     __tablename__ = "user_pro_flags"
 
     firebase: dict = sa.Column(
-        MutableDict.as_mutable(postgresql.json.JSONB), nullable=False, default={}, server_default="{}"
+        MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}"
     )
     userId: int = sa.Column(
         sa.BigInteger,
