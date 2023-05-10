@@ -23,16 +23,9 @@ const usePageTitle = (): LocationListener | void => {
           matchPath(`${parentPath || ''}${path}`, location.pathname) !== null
       )
 
-    if (currentRoute?.parentPath === '/parcours-inscription') {
-      document.title =
-        currentRoute.path !== '/'
-          ? `${currentRoute.title} - parcours d'inscription`
-          : `${currentRoute.title}`
-    } else {
-      document.title = currentRoute
-        ? `${currentRoute.title} - pass Culture Pro`
-        : 'pass Culture Pro'
-    }
+    document.title = currentRoute
+      ? `${currentRoute.title} - pass Culture Pro`
+      : 'pass Culture Pro'
   }, [location.pathname])
 }
 

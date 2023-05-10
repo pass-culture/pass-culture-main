@@ -87,27 +87,12 @@ const routes: IRoute[] = [
   },
   {
     element: <Signup />,
-    path: '/inscription',
-    title: 'Inscription',
-    meta: {
-      public: true,
-      withoutLayout: true,
-    },
-  },
-  {
-    element: <Signup />,
     path: '/inscription/*',
-    title: 'Inscription',
+    title: 'Créer un compte',
     meta: {
       public: true,
       withoutLayout: true,
     },
-  },
-  {
-    element: <CsvTable />,
-    path: '/reservations/detail',
-    title: 'Réservations',
-    meta: { withoutLayout: true },
   },
   {
     element: <CsvTable />,
@@ -118,7 +103,7 @@ const routes: IRoute[] = [
   {
     element: <Unavailable />,
     path: UNAVAILABLE_ERROR_PAGE,
-    title: 'Page indisponible',
+    title: 'Erreur 404 - Page indisponible',
     meta: {
       public: true,
       withoutLayout: true,
@@ -127,7 +112,7 @@ const routes: IRoute[] = [
   {
     element: <Homepage />,
     path: '/accueil',
-    title: 'Accueil',
+    title: 'Espace acteurs culturels',
     meta: { shouldRedirect: true },
   },
   {
@@ -138,19 +123,19 @@ const routes: IRoute[] = [
   {
     element: <Bookings />,
     path: '/reservations',
-    title: 'Réservations',
+    title: 'Réservations individuelles',
     meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveBookings />,
     path: '/reservations/collectives',
-    title: 'Réservations',
+    title: 'Réservations collectives',
     meta: { shouldRedirect: true },
   },
   {
     element: <SignIn />,
     path: '/connexion',
-    title: 'Connexion',
+    title: 'Se connecter',
     meta: {
       public: true,
       withoutLayout: true,
@@ -159,7 +144,7 @@ const routes: IRoute[] = [
   {
     element: <EmailChangeValidation />,
     path: '/email_validation',
-    title: 'Validation changement adresse e-mail',
+    title: 'Valider l’adresse e-mail',
     meta: {
       public: true,
       layoutConfig: {
@@ -171,30 +156,30 @@ const routes: IRoute[] = [
   {
     element: <OffererCreation />,
     path: '/structures/creation',
-    title: 'Vos structures juridiques',
+    title: 'Créer une structure',
   },
   {
     element: <OffererDetails />,
     path: '/structures/:offererId',
-    title: 'Vos structures juridiques',
+    title: 'Détails de la structure',
     meta: { shouldRedirect: true },
   },
   {
     element: <VenueCreation />,
     path: '/structures/:offererId/lieux/creation',
-    title: 'Création d’un lieu',
+    title: 'Créer un lieu',
     meta: { shouldRedirect: true },
   },
   {
     element: <VenueEdition />,
     path: '/structures/:offererId/lieux/:venueId',
-    title: 'Edition d’un lieu',
+    title: 'Modifier un lieu',
     meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveDataEdition />,
     path: '/structures/:offererId/lieux/:venueId/eac',
-    title: 'Mes informations pour les enseignants',
+    title: 'Modifier les informations pour les enseignants d’un lieu',
     meta: { shouldRedirect: true },
   },
   {
@@ -206,13 +191,13 @@ const routes: IRoute[] = [
   {
     element: <OffersRoute />,
     path: '/offres',
-    title: 'Vos offres',
+    title: 'Offres individuelles',
     meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveOffers />,
     path: '/offres/collectives',
-    title: 'Vos offres collectives',
+    title: 'Offres collectives',
     meta: { shouldRedirect: true },
   },
   {
@@ -223,25 +208,25 @@ const routes: IRoute[] = [
   {
     element: <CollectiveOfferStockCreation />,
     path: '/offre/:offerId/collectif/stocks',
-    title: 'Edition d’une offre collective',
+    title: 'Date et prix - Créer une offre réservable',
     meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveOfferCreation />,
     path: '/offre/creation/collectif',
-    title: 'Edition d’une offre collective',
+    title: 'Détails - Créer une offre réservable',
     meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveOfferCreation />,
     path: '/offre/creation/collectif/vitrine',
-    title: 'Edition d’une offre collective',
+    title: 'Détails - Créer une offre collective vitrine',
     meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveOfferCreation />,
     path: '/offre/collectif/:offerId/creation',
-    title: 'Edition d’une offre collective',
+    title: 'Détails - Créer une offre collective vitrine',
     meta: { shouldRedirect: true },
   },
   {
@@ -253,37 +238,37 @@ const routes: IRoute[] = [
   {
     element: <CollectiveOfferVisibilityCreation />,
     path: '/offre/:offerId/collectif/visibilite',
-    title: 'Edition d’une offre collective',
+    title: 'Visibilité - Créer une offre réservable',
     meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveOfferSummaryCreation />,
     path: '/offre/:offerId/collectif/creation/recapitulatif',
-    title: 'Edition d’une offre collective',
+    title: 'Récapitulatif - Créer une offre réservable',
     meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveOfferSummaryCreation />,
     path: '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
-    title: 'Edition d’une offre collective',
+    title: 'Récapitulatif - Modifier une offre réservable',
     meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveOfferConfirmation />,
     path: '/offre/:offerId/collectif/confirmation',
-    title: 'Edition d’une offre collective',
+    title: 'Confirmation - Offre réservable publiée',
     meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveOfferConfirmation />,
     path: '/offre/:offerId/collectif/vitrine/confirmation',
-    title: 'Edition d’une offre collective',
+    title: 'Confirmation - Offre collective vitrine publiée',
     meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveOfferEdition />,
     path: '/offre/:offerId/collectif/edition',
-    title: 'Edition d’une offre collective',
+    title: 'Détails - Modifier une offre réservable',
     meta: { shouldRedirect: true },
   },
   {
@@ -295,19 +280,19 @@ const routes: IRoute[] = [
   {
     element: <CollectiveOfferStockEdition />,
     path: '/offre/:offerId/collectif/stocks/edition',
-    title: 'Edition d’une offre collective',
+    title: 'Date et prix - Modifier une offre réservable',
     meta: { shouldRedirect: true },
   },
   {
     element: <CollectiveOfferVisibility />,
     path: '/offre/:offerId/collectif/visibilite/edition',
-    title: 'Edition d’une offre collective',
+    title: 'Visibilité - Modifier une offre réservable',
     meta: { shouldRedirect: true },
   },
   {
     element: <ResetPassword />,
     path: '/mot-de-passe-perdu',
-    title: 'Mot de passe perdu',
+    title: 'Définir un nouveau mot de passe',
     meta: {
       public: true,
       withoutLayout: true,
@@ -316,7 +301,7 @@ const routes: IRoute[] = [
   {
     element: <LostPassword />,
     path: '/demande-mot-de-passe',
-    title: 'Demande de mot de passe',
+    title: 'Demander un nouveau mot de passe',
     meta: {
       public: true,
       withoutLayout: true,
@@ -331,7 +316,7 @@ const routes: IRoute[] = [
   {
     element: <Reimbursements />,
     path: '/remboursements/*',
-    title: 'Vos remboursements',
+    title: 'Remboursements',
     meta: {
       layoutConfig: {
         pageName: 'reimbursements',
