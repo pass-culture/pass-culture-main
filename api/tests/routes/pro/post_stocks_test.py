@@ -55,6 +55,7 @@ class Returns201Test:
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @patch("pcapi.core.search.async_index_offer_ids")
+    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
     def test_create_event_stocks(self, mocked_async_index_offer_ids, client):
         # Given
         offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
@@ -110,7 +111,6 @@ class Returns201Test:
         ]
 
     @patch("pcapi.core.search.async_index_offer_ids")
-    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
     def test_create_event_stocks_with_multi_price(self, mocked_async_index_offer_ids, client):
         # Given
         offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
@@ -188,6 +188,7 @@ class Returns201Test:
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @patch("pcapi.core.search.async_index_offer_ids")
+    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
     def test_edit_one_event_stock_using_price(self, mocked_async_index_offer_ids, client):
         offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         existing_stock = offers_factories.StockFactory(offer=offer, price=10, priceCategory=None)
@@ -218,7 +219,6 @@ class Returns201Test:
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @patch("pcapi.core.search.async_index_offer_ids")
-    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
     def test_edit_one_event_stock_using_price_category(self, mocked_async_index_offer_ids, client):
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.EventOfferFactory(
@@ -253,7 +253,6 @@ class Returns201Test:
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @patch("pcapi.core.search.async_index_offer_ids")
-    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
     def test_edit_one_event_stock_created_with_price_category(self, mocked_async_index_offer_ids, client):
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.EventOfferFactory(
@@ -385,6 +384,7 @@ class Returns201Test:
             ([offer.id],),
         ]
 
+    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
     def test_sends_email_if_beginning_date_changes_on_edition(self, client):
         # Given
         offerer = offerers_factories.OffererFactory()
@@ -429,6 +429,7 @@ class Returns201Test:
         assert mails_testing.outbox[1].sent_data["To"] == "beneficiary@bookingEmail.fr"
 
     @mock.patch("pcapi.core.bookings.api.update_cancellation_limit_dates")
+    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
     def should_update_bookings_cancellation_limit_date_on_delayed_event(
         self, mock_update_cancellation_limit_dates, client
     ):
@@ -459,6 +460,7 @@ class Returns201Test:
         assert response.status_code == 201
         mock_update_cancellation_limit_dates.assert_called_once_with([booking], event_reported_in_10_days)
 
+    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
     def should_invalidate_booking_token_when_event_is_reported(self, client):
         # Given
         now = datetime.datetime.utcnow()
@@ -493,6 +495,7 @@ class Returns201Test:
         assert updated_booking.dateUsed is None
         assert updated_booking.cancellationLimitDate == booking.cancellationLimitDate
 
+    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
     def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self, client):
         # Given
         now = datetime.datetime.utcnow()
@@ -596,7 +599,6 @@ class Returns400Test:
 
         assert response.json["price"] == ["Le prix est obligatoire pour les offres produit"]
 
-    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
     def test_update_product_stock_without_price_is_forbidden(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         existing_stock = offers_factories.StockFactory(offer=offer)
@@ -614,6 +616,7 @@ class Returns400Test:
 
         assert response.json["price"] == ["Le prix est obligatoire pour les offres produit"]
 
+    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
     def when_invalid_quantity_or_price_for_edition_and_creation(self, client):
         # Given
         offer = offers_factories.EventOfferFactory()
@@ -810,6 +813,7 @@ class Returns400Test:
         }
 
     @pytest.mark.parametrize("is_update", [False, True])
+    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
     def test_beginning_datetime_after_booking_limit_datetime(self, is_update, client):
         # Given
         offer = offers_factories.EventOfferFactory()
@@ -845,7 +849,6 @@ class Returns400Test:
             "stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"],
         }
 
-    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
     def test_cannot_create_event_without_price_category(self, client):
         offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(
@@ -868,7 +871,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["price_category_id"] == ["Le tarif est obligatoire pour les offres évènement"]
 
-    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=True)
     def test_cannot_create_event_with_wrong_price_category_id(self, client):
         offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(
