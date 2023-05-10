@@ -121,6 +121,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_COLLECTIVE_REQUEST = "Active la demande de création d'offre collective de la part des utilisateurs adage"
     WIP_ENABLE_NEW_ADAGE_HEADER = "Active le nouveau header dans l'iframe adage"
     WIP_ENABLE_COOKIES_BANNER = "Active la nouvelle bannière de cookies"
+    WIP_RECURRENCE_FILTERS = "Ajoute les filtres et le tri sur la vue liste des récurrences"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -173,11 +174,9 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.ENABLE_OFFERER_STATS,
     FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY,
-    FeatureToggle.WIP_ENABLE_MULTI_PRICE_STOCKS,
     FeatureToggle.ENABLE_CGR_INTEGRATION,
     FeatureToggle.WIP_ADD_CLG_6_5_COLLECTIVE_OFFER,
     FeatureToggle.WIP_ENABLE_LIKE_IN_ADAGE,
-    FeatureToggle.WIP_RECURRENCE,
     FeatureToggle.WIP_ENABLE_NEW_ONBOARDING,
     FeatureToggle.WIP_ENABLE_NEW_FRAUD_RULES,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_DMS_TRACKING,
@@ -188,6 +187,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_COLLECTIVE_REQUEST,
     FeatureToggle.WIP_ENABLE_NEW_ADAGE_HEADER,
     FeatureToggle.WIP_ENABLE_COOKIES_BANNER,
+    FeatureToggle.WIP_RECURRENCE_FILTERS,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
