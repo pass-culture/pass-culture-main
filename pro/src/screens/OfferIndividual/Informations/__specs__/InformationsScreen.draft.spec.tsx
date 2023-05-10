@@ -193,7 +193,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       name: 'Offer name',
       musicSubType: '',
       musicType: '',
-      offererId: 'OFID',
+      offererId: 12,
       offererName: '',
       performer: 'Offer performer',
       ean: '',
@@ -205,9 +205,9 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       image: undefined,
       url: 'http://offer.example.com',
       externalTicketOfficeUrl: 'http://external.example.com',
-      venueId: 'AE',
+      venueId: 2,
       venue: {
-        id: 'AE',
+        id: 2,
         name: 'Venue name',
         publicName: 'Venue publicName',
         isVirtual: false,
@@ -312,7 +312,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
   it('should submit minimal virtual offer', async () => {
     contextOverride.offer = {
       ...offer,
-      venueId: 'AE',
+      venueId: virtualVenueId,
       subcategoryId: 'SCID virtual',
       isEvent: false,
       withdrawalDelay: null,

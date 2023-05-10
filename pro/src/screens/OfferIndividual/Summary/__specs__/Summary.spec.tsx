@@ -407,9 +407,9 @@ describe('Summary', () => {
 
       const context = {
         offer: individualOfferFactory({ id: 'AA' }),
-        venueId: 'AB',
+        venueId: 1,
         showVenuePopin: {
-          AB: true,
+          1: true,
         },
       }
       const storeOverride = {

@@ -3,7 +3,6 @@ import {
   IOfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
 import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
-import { dehumanizeId } from 'utils/dehumanize'
 
 import buildSubCategoryFields from './buildSubCategoryFields'
 
@@ -35,8 +34,8 @@ const setInitialFormValues = (
     subCategoryFields: subCategoryFields,
     name: offer.name,
     description: offer.description,
-    offererId: dehumanizeId(offer.offererId)?.toString() || '',
-    venueId: dehumanizeId(offer.venueId)?.toString() || '',
+    offererId: offer.offererId.toString(),
+    venueId: offer.venueId.toString(),
     isNational: offer.isNational,
     isDuo: offer.isDuo,
     categoryId: subCategory.categoryId,

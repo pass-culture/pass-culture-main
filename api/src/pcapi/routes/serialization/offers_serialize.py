@@ -316,6 +316,7 @@ class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     city: str | None
     departementCode: str | None
     id: str
+    nonHumanizedId: int
     isVirtual: bool
     lastProviderId: str | None
     managingOfferer: GetOfferManagingOffererResponseModel

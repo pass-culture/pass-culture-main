@@ -149,7 +149,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       name: 'Offer name',
       musicSubType: '',
       musicType: '',
-      offererId: 'A',
+      offererId: 12,
       offererName: '',
       performer: 'Offer performer',
       ean: '',
@@ -161,9 +161,9 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       image: undefined,
       url: 'http://offer.example.com',
       externalTicketOfficeUrl: 'http://external.example.com',
-      venueId: 'AA',
+      venueId: 1,
       venue: {
-        id: 'AA',
+        id: 1,
         name: 'Venue name',
         publicName: 'Venue publicName',
         isVirtual: false,
@@ -294,7 +294,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     }
 
     props = {
-      venueId: offer.venue.id,
+      venueId: offer.venue.id.toString(),
       offererId: offer.venue.offerer.id,
     }
 

@@ -33,7 +33,7 @@ export const serializeVenueApi = (
     [AccessiblityEnum.MOTOR]: apiOffer.venue.motorDisabilityCompliant || false,
   }
   return {
-    id: apiOffer.venue.id,
+    id: apiOffer.venue.nonHumanizedId,
     name: apiOffer.venue.name,
     publicName: apiOffer.venue.publicName || '',
     isVirtual: apiOffer.venue.isVirtual,
@@ -155,13 +155,13 @@ export const serializeOfferApi = (
     isEducational: apiOffer.isEducational,
     isNational: apiOffer.isNational,
     name: apiOffer.name,
-    offererId: apiOffer.venue.managingOfferer.id,
+    offererId: apiOffer.venue.managingOfferer.nonHumanizedId,
     offererName: apiOffer.venue.managingOfferer.name,
     priceCategories: apiOffer.priceCategories,
     subcategoryId: apiOffer.subcategoryId,
     url: apiOffer.url || '',
     externalTicketOfficeUrl: apiOffer.externalTicketOfficeUrl || '',
-    venueId: apiOffer.venue.id,
+    venueId: apiOffer.venue.nonHumanizedId,
     venue: serializeVenueApi(apiOffer),
     withdrawalDetails: apiOffer.withdrawalDetails || '',
     withdrawalDelay:

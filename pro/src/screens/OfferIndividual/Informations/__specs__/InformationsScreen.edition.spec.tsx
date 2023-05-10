@@ -207,7 +207,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       name: 'Offer name',
       musicSubType: '',
       musicType: '',
-      offererId: 'AE',
+      offererId: 12,
       offererName: '',
       performer: 'Offer performer',
       ean: '',
@@ -219,9 +219,9 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       image: undefined,
       url: 'http://offer.example.com',
       externalTicketOfficeUrl: 'http://external.example.com',
-      venueId: 'AE',
+      venueId: 1,
       venue: {
-        id: 'AE',
+        id: 1,
         name: 'Venue name',
         publicName: 'Venue publicName',
         isVirtual: false,
@@ -362,7 +362,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
   it('should submit minimal virtual offer and redirect to summary', async () => {
     contextOverride.offer = {
       ...offer,
-      venueId: 'AE',
+      venueId: virtualVenueId,
       subcategoryId: 'SCID virtual',
       isEvent: false,
       withdrawalDelay: undefined,
@@ -581,7 +581,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       const individualStock = individualStockFactory({ offerId: 'AA' })
       contextOverride.offer = {
         ...offer,
-        venueId: 'AE',
+        venueId: virtualVenueId,
         subcategoryId: 'SCID virtual',
         isEvent: false,
         stocks: [individualStock],
@@ -660,7 +660,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       const individualStock = individualStockFactory({ offerId: 'AA' })
       contextOverride.offer = {
         ...offer,
-        venueId: 'AE',
+        venueId: virtualVenueId,
         subcategoryId: 'SCID virtual',
         isEvent: false,
         stocks: [individualStock],
@@ -747,7 +747,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         }
         contextOverride.offer = {
           ...offer,
-          venueId: 'AE',
+          venueId: virtualVenueId,
           subcategoryId: 'SCID virtual',
           isEvent: true,
           withdrawalDelay: undefined,
@@ -810,7 +810,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       const individualStock = individualStockFactory({ offerId: 'AA' })
       contextOverride.offer = {
         ...offer,
-        venueId: 'AE',
+        venueId: virtualVenueId,
         subcategoryId: 'SCID virtual',
         isEvent: true,
         withdrawalDelay: undefined,
@@ -891,7 +891,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         const individualStock = individualStockFactory({ offerId: 'AA' })
         contextOverride.offer = {
           ...offer,
-          venueId: 'AE',
+          venueId: virtualVenueId,
           subcategoryId: 'SCID virtual',
           isEvent: false,
           withdrawalType: WithdrawalTypeEnum.ON_SITE,

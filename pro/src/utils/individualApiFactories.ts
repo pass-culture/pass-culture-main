@@ -47,7 +47,7 @@ export const individualOfferFactory = (
     musicType: 'douleur',
     musicSubType: 'cassage de genoux',
     durationMinutes: 3,
-    offererId: 'chuck.norris',
+    offererId: offerId,
     offererName: 'Chuck Norris',
     performer: 'Le Poing de Chuck',
     ean: "Chuck n'est pas identifiable par un EAN",
@@ -78,7 +78,7 @@ export const individualOfferFactory = (
     isActive: true,
     status: OfferStatus.ACTIVE,
     subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
-    venueId: 'VENUE_ID',
+    venueId: 1,
     stocks: stock ? [stock] : [],
     priceCategories: priceCategory ? [priceCategory] : [],
     ...customOffer,
@@ -117,7 +117,7 @@ export const individualOfferVenueFactory = (
   const currentVenueId = venueId++
 
   return {
-    id: `VENUE${currentVenueId}`,
+    id: currentVenueId,
     address: 'Ma Rue',
     city: 'Ma Ville',
     isVirtual: false,
