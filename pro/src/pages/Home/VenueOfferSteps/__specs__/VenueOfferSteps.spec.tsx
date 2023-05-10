@@ -114,4 +114,13 @@ describe('VenueOfferSteps', () => {
       screen.queryByText('Suivre ma demande de référencement ADAGE')
     ).not.toBeInTheDocument()
   })
+
+  it('should not display venueOfferSteps if no condition to display informations', async () => {
+    renderVenueOfferSteps({
+      hasCreatedOffer: true,
+      shouldDisplayEACInformationSection: false,
+    })
+    expect(screen.queryByTestId('venue-offer-steps')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('home-offer-steps')).not.toBeInTheDocument()
+  })
 })
