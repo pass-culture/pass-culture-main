@@ -2,9 +2,9 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import { Button } from 'ui-kit'
+import { ExternalSiteIcon } from 'icons'
+import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Icon from 'ui-kit/Icon/Icon'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import styles from './StocksProviderForm.module.scss'
@@ -68,7 +68,7 @@ const StocksProviderForm = ({
       {isConfirmDialogOpened && (
         <ConfirmDialog
           cancelText="Annuler"
-          confirmText="Continuer"
+          confirmText="Supprimer la synchronisation"
           onCancel={handleCloseConfirmDialog}
           onConfirm={handleFormSubmit}
           title="Certaines offres ne seront pas synchronisées"
@@ -76,20 +76,19 @@ const StocksProviderForm = ({
           <p>
             Le pass Culture ne permet l’import automatique que des offres dans
             les catégories support audio et livres à l’heure actuelle. Certains
-            rayons ne seront en outre pas synchronisés. Notre FAQ vous décriera
-            les règles précisément.
-            <a
-              className="tertiary-link"
-              href="https://aide.passculture.app/hc/fr/articles/4411999024401--Acteurs-Culturels-Quels-sont-les-livres-%C3%A9ligibles-au-pass-Culture-"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <Icon
-                alt="lien externe, nouvel onglet"
-                svg="ico-external-site-red"
-              />
-            </a>
+            rayons ne seront en outre pas synchronisés.
           </p>
+          <ButtonLink
+            className={styles['aide-stock-button']}
+            Icon={ExternalSiteIcon}
+            link={{
+              isExternal: true,
+              to: 'https://aide.passculture.app/hc/fr/articles/4411999024401--Acteurs-Culturels-Quels-sont-les-livres-%C3%A9ligibles-au-pass-Culture-',
+            }}
+            variant="ternary"
+          >
+            Notre FAQ vous décrira les règles précisément.
+          </ButtonLink>
         </ConfirmDialog>
       )}
     </>
