@@ -94,7 +94,7 @@
   },
   "devDependencies": {
     "@emotion/react": "^11.10.6",
-    "@emotion/styled": "^11.8.1",
+    "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.13.0",
     "@storybook/addon-a11y": "^6.5.16",
     "@storybook/addon-essentials": "^6.5.16",
