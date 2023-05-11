@@ -718,7 +718,7 @@ class Target(enum.Enum):
 class VenueRegistration(PcObject, Base, Model):
     __tablename__ = "venue_registration"
 
-    id: int = Column('id', BigInteger, sa.Identity(), primary_key=True)
+    id: int = Column("id", BigInteger, sa.Identity(), primary_key=True)
 
     venueId: int = Column(
         BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
