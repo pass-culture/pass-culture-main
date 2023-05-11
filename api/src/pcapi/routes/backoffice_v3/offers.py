@@ -244,7 +244,7 @@ def get_batch_validate_offers_form() -> utils.BackofficeResponse:
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
-        dst=url_for("backoffice_v3_web.offer.batch_validate_offer"),
+        dst=url_for("backoffice_v3_web.offer.batch_validate_offers"),
         div_id="batch-validate-offer-modal",
         title="Voulez-vous valider les offres sélectionnées ?",
         button_text="Valider",
@@ -273,7 +273,7 @@ def get_batch_reject_offers_form() -> utils.BackofficeResponse:
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
-        dst=url_for("backoffice_v3_web.offer.batch_reject_offer"),
+        dst=url_for("backoffice_v3_web.offer.batch_reject_offers"),
         div_id="batch-reject-offer-modal",
         title="Voulez-vous rejeter les offres sélectionnées ?",
         button_text="Rejeter",
