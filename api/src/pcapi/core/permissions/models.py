@@ -103,6 +103,7 @@ class RolePermission(PcObject, Base, Model):
 
     roleId: int = sa.Column(sa.BigInteger, sa.ForeignKey("role.id", ondelete="CASCADE"))
     permissionId: int = sa.Column(sa.BigInteger, sa.ForeignKey("permission.id", ondelete="CASCADE"))
+    __table_args__ = (sa.UniqueConstraint("roleId", "permissionId", name="role_permission_roleId_permissionId_key"),)
 
 
 class Permission(PcObject, Base, Model):
