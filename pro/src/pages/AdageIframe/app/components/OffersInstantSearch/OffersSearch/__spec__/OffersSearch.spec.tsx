@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -8,6 +8,7 @@ import {
   AlgoliaQueryContextProvider,
   FiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffersSearchComponent, SearchProps } from '../OffersSearch'
 
@@ -30,7 +31,7 @@ jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
 }))
 
 const renderOffersSearchComponent = (props: SearchProps) => {
-  render(
+  renderWithProviders(
     <FiltersContextProvider>
       <AlgoliaQueryContextProvider>
         <OffersSearchComponent {...props} />

@@ -6,6 +6,7 @@ import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
 import { AuthenticatedResponse, VenueResponse } from 'apiClient/adage'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as InstitutionIcon } from 'icons/ico-institution.svg'
 import { ReactComponent as OffersIcon } from 'icons/ico-offers.svg'
 import { INITIAL_QUERY } from 'pages/AdageIframe/app/constants'
@@ -128,9 +129,13 @@ export const OffersSearchComponent = ({
     }
   }, [setFacetFilters, venueFilter, user.uai])
 
+  const isNewHeaderActive = useActiveFeature('WIP_ENABLE_NEW_ADAGE_HEADER')
+
   return (
     <>
-      {!!user.uai && <Tabs selectedKey={activeTab} tabs={tabs} />}
+      {!!user.uai && !isNewHeaderActive && (
+        <Tabs selectedKey={activeTab} tabs={tabs} />
+      )}
       <SearchBox refine={refine} />
       <OfferFilters
         className="search-filters"

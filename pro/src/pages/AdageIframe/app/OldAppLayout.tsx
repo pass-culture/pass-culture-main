@@ -1,4 +1,4 @@
-import './AppLayout.scss'
+import './OldAppLayout.scss'
 
 import * as React from 'react'
 
@@ -8,7 +8,7 @@ import { ReactComponent as Logo } from 'icons/logo-pass-culture-dark.svg'
 
 import { OffersInstantSearch } from './components/OffersInstantSearch/OffersInstantSearch'
 
-export const AppLayout = ({
+export const OldAppLayout = ({
   user,
   removeVenueFilter,
   venueFilter,
@@ -36,6 +36,7 @@ export const AppLayout = ({
           </div>
           <Logo className="app-logo" />
         </div>
+
         <OffersInstantSearch
           removeVenueFilter={removeVenueFilter}
           user={user}

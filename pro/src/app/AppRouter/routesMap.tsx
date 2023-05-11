@@ -79,7 +79,7 @@ const routes: IRoute[] = [
   },
   {
     element: <AdageIframe />,
-    path: '/adage-iframe',
+    path: '/adage-iframe/*',
     meta: {
       public: true,
       withoutLayout: true,
