@@ -300,7 +300,10 @@ def _create_offer_from_product(
             {"accessibility": ["The accessibility is required when the location type is digital"]}
         )
 
-    offers_validation.check_isbn_or_ean_does_not_exist(product.extraData, venue)
+    if product.extraData:
+        offers_validation.check_isbn_or_ean_does_not_exist(
+            product.extraData.get("ean"), product.extraData.get("isbn"), venue
+        )
 
     offer = offers_api.build_new_offer_from_product(venue, product, id_at_provider, provider_id)
     if accessibility:

@@ -441,8 +441,15 @@ def check_offer_extra_data(
             errors.add_error(field, "Ce champ est obligatoire")
 
     try:
-        _check_ean_field(extra_data)
-        check_isbn_or_ean_does_not_exist(extra_data, venue)
+        # FIXME (mageoffray, 2023-11-05): Once every functionnality using isbn uses ean
+        # we will only check ean field. And the duplication can be removed.
+        ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
+        isbn = extra_data.get(ExtraDataFieldEnum.ISBN.value)
+        if ean or isbn:
+            _check_ean_or_isbn_field(extra_data, ExtraDataFieldEnum.EAN.value)
+            _check_ean_or_isbn_field(extra_data, ExtraDataFieldEnum.ISBN.value)
+            check_isbn_or_ean_does_not_exist(ean, isbn, venue)
+            duplicate_isbn_in_ean(extra_data, isbn)
     except (exceptions.EanFormatException, exceptions.OfferAlreadyExists) as e:
         errors.add_client_error(e)
 
@@ -458,13 +465,12 @@ def check_offer_extra_data(
         raise errors
 
 
-def check_isbn_or_ean_does_not_exist(extra_data: models.OfferExtraData | None, venue: offerers_models.Venue) -> None:
-    if not extra_data:
-        return
-    ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
-    isbn = extra_data.get(ExtraDataFieldEnum.ISBN.value)
-    if not ean and not isbn:
-        return
+def duplicate_isbn_in_ean(extra_data: models.OfferExtraData, isbn: str | None) -> None:
+    if isbn:
+        extra_data["ean"] = isbn
+
+
+def check_isbn_or_ean_does_not_exist(ean: str | None, isbn: str | None, venue: offerers_models.Venue) -> None:
     if repository.has_active_offer_with_ean_or_isbn(ean, isbn, venue):
         if ean:
             raise exceptions.OfferAlreadyExists("ean")
@@ -487,17 +493,16 @@ def _check_value_is_allowed(
         raise exceptions.ExtraDataValueNotAllowed(extra_data_field.value, "should be in allowed values")
 
 
-def _check_ean_field(extra_data: models.OfferExtraData) -> None:
-    ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
-    if ean is None or ean == "":
+def _check_ean_or_isbn_field(extra_data: models.OfferExtraData, field: str) -> None:
+    value = extra_data.get(field)
+    if not value:
         return
 
-    if not isinstance(ean, str):
-        raise exceptions.EanFormatException("L'EAN doit être une chaîne de caractères")
+    if not isinstance(value, str):
+        raise exceptions.EanFormatException(field, f"L'{field.upper()} doit être une chaîne de caractères")
 
-    has_correct_length = len(ean) == 8 or len(ean) == 13
-    if not ean.isdigit() or not has_correct_length:
-        raise exceptions.EanFormatException("L'EAN doit être composé de 8 ou 13 chiffres")
+    if not value.isdigit() or not len(value) == 13:
+        raise exceptions.EanFormatException(field, f"L'{field.upper()} doit être composé de 13 chiffres")
 
 
 def check_offer_is_from_current_cinema_provider(offer: models.Offer) -> None:

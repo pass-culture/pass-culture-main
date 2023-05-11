@@ -750,7 +750,12 @@ class CreateOfferTest:
         assert offer.name == "FONDATION T.1"
         assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert offer.description == "Les prévisions du psychohistorien Hari Seldon sont formelles."
-        assert offer.extraData == {"isbn": "9782207300893", "author": "Isaac Asimov", "bookFormat": "Soft cover"}
+        assert offer.extraData == {
+            "isbn": "9782207300893",
+            "author": "Isaac Asimov",
+            "bookFormat": "Soft cover",
+            "ean": "9782207300893",
+        }
         assert offer.audioDisabilityCompliant
         assert offer.mentalDisabilityCompliant
         assert offer.motorDisabilityCompliant
