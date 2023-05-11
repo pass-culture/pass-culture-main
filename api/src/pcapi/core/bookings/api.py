@@ -42,6 +42,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository import transaction
 import pcapi.serialization.utils as serialization_utils
+from pcapi.utils import queue
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.workers import push_notification_job
 from pcapi.workers import user_emails_job
@@ -584,3 +585,31 @@ def archive_old_bookings() -> None:
             "archivedBookings": number_updated,
         },
     )
+
+
+def cancel_unstored_external_bookings() -> None:
+    """
+    Cancel external bookings if we don't have a corresponding Booking object on our side.
+        When a user wants to book an offer that can be booked by an external partner, we first request a booking
+        from the partner, and then we try to create a Booking in our database.
+        If the second action fails, we need to request the partner to cancel the booking on their side. To do that,
+        we push the information to a Redis queue, and regularly check whether we have a corresponding Booking.
+    To avoid cancel external bookings in process of pass culture booking, we check if the barcode has an age of 1 min
+    in the queue, if it doesn't it will be enqueued again and wait for the next time.
+    """
+    while True:
+        external_booking_info = queue.pop_from_queue(constants.REDIS_EXTERNAL_BOOKINGS_NAME)
+        if not external_booking_info:
+            break
+        if (
+            datetime.datetime.utcnow().timestamp() - external_booking_info["timestamp"]
+            < constants.EXTERNAL_BOOKINGS_MINIMUM_ITEM_AGE_IN_QUEUE
+        ):
+            queue.add_to_queue(constants.REDIS_EXTERNAL_BOOKINGS_NAME, external_booking_info, at_head=True)
+            break
+
+        external_bookings = ExternalBooking.query.filter_by(barcode=external_booking_info["barcode"]).all()
+        if not external_bookings:
+            external_bookings_api.cancel_booking(
+                int(external_booking_info["venue_id"]), [external_booking_info["barcode"]]
+            )
