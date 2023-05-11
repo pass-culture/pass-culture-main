@@ -6,9 +6,11 @@ from pydantic import parse_obj_as
 
 from pcapi.connectors import boost
 from pcapi.connectors.serialization import boost_serializers
+import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
+from pcapi.utils.queue import add_to_queue
 
 from . import constants
 from . import exceptions
@@ -81,6 +83,14 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         )
         sale_response = boost.post_resource(self.cinema_str_id, boost.ResourceBoost.COMPLETE_SALE, sale_body)
         sale_confirmation_response = parse_obj_as(boost_serializers.SaleConfirmationResponse, sale_response)
+        add_to_queue(
+            bookings_constants.REDIS_EXTERNAL_BOOKINGS_NAME,
+            {
+                "barcode": str(sale_confirmation_response.data.id),
+                "venue_id": booking.venueId,
+                "timestamp": datetime.datetime.utcnow().timestamp(),
+            },
+        )
 
         tickets = []
         for ticket_response in sale_confirmation_response.data.tickets:
