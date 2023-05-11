@@ -26,7 +26,7 @@ jobs:
     name: Deploy adage
     if: |
       always() &&
-      inputs.deploy_adage == true && inputs.environment == 'production'
+      inputs.environment == 'production'
     uses: ./.github/workflows/deploy-gcs-front.yml
     with:
       app_name: adage
