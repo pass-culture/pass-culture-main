@@ -107,6 +107,7 @@
   &-quaternary {
     @include fonts.button;
 
+    color: colors.$black;
     background-color: transparent;
     border-color: transparent;
     padding: 0;
@@ -133,6 +134,10 @@
       margin-right: rem.torem(8px);
     }
 
+    .button-icon {
+      fill: colors.$black;
+    }
+
     &.button-center {
       .button-icon {
         margin-right: 0;
@@ -140,19 +145,37 @@
     }
   }
 
-  &-ternary {
+  &-quaternary {
+    @include fonts.caption;
+    
+    padding: 0 rem.torem(4px);
+    border-radius: rem.torem(4px);
+    margin-top: rem.torem(6px);
+    margin-bottom: rem.torem(6px);
     color: colors.$black;
 
-    .button-icon {
-      fill: colors.$black;
+    .button-icon:not(.has-tooltip) {
+      height: rem.torem(16px);
+      width: rem.torem(16px);
+      margin-right: rem.torem(4px);
     }
-  }
 
-  &-quaternary {
-    color: colors.$primary;
+    &.button-left {
+      .button-icon:not(.button-icon-arrow, .has-tooltip) {
+        margin-right: rem.torem(4px);
+      }
+    }
+  
+    &.button-right {
+      .button-icon:not(.button-icon-arrow, .has-tooltip) {
+        margin-left: rem.torem(4px);
+      }
+    }
 
-    .button-icon {
-      fill: colors.$primary;
+    &:focus {
+      outline: none;
+      border: rem.torem(1px) solid colors.$black;
+      padding: rem.torem(2px) rem.torem(4px);
     }
   }
 

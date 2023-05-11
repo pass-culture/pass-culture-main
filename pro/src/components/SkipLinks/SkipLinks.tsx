@@ -22,7 +22,7 @@ const SkipLinks = ({ displayMenu = false }: SkipLinksProps): JSX.Element => {
             }}
             Icon={CircleArrowIcon}
             className={styles['skip-list-button']}
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.QUATERNARY}
           >
             Aller au contenu
           </ButtonLink>
