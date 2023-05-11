@@ -1,3 +1,5 @@
+import logging
+
 import flask
 from flask_login import current_user
 from flask_login import login_required
@@ -17,6 +19,7 @@ from pcapi.core.users.models import TokenType
 from pcapi.domain.password import check_password_validity
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import users as users_serializers
+from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.login_manager import discard_session
 from pcapi.utils.login_manager import stamp_session
@@ -24,6 +27,9 @@ from pcapi.utils.rate_limiting import email_rate_limiter
 from pcapi.utils.rate_limiting import ip_rate_limiter
 
 from . import blueprint
+
+
+logger = logging.getLogger(__name__)
 
 
 @blueprint.pro_private_api.route("/users/tuto-seen", methods=["PATCH"])
@@ -214,3 +220,13 @@ def signout() -> None:
 @spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
 def post_pro_flags(body: users_serializers.ProFlagsQueryModel) -> None:
     users_api.save_flags(user=current_user, flags=body.dict())
+
+
+@blueprint.pro_private_api.route("/users/cookies", methods=["POST"])
+@spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
+def cookies_consent(body: CookieConsentRequest) -> None:
+    logger.info(
+        "Cookies consent",
+        extra={"analyticsSource": "app-pro", **body.dict()},
+        technical_message_id="cookies_consent",
+    )

@@ -1,9 +1,9 @@
 import logging
 
+from pcapi.routes.shared import cookies_consent as serializers
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
-from .serialization import cookies_consent as serializers
 
 
 logger = logging.getLogger(__name__)
