@@ -2,6 +2,7 @@ import '@testing-library/jest-dom'
 
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { addDays } from 'date-fns'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
@@ -85,15 +86,15 @@ describe('TimePicker', () => {
         offerDateCreated: '2023-04-06T13:48:36.304896Z',
       },
     })
-
+    const userDateInput = addDays(new Date(), 1).toLocaleDateString('fr-FR')
     const dateInput = screen.getByLabelText('Date')
     await userEvent.click(dateInput)
     await userEvent.clear(dateInput)
-    await waitFor(() => userEvent.type(dateInput, '10/05/2023'))
+    await waitFor(() => userEvent.type(dateInput, userDateInput))
     const bookingLimitDatetimeInput = screen.getByLabelText(
       'Date limite de réservation'
     )
-    expect(bookingLimitDatetimeInput).toHaveValue('10/05/2023')
+    expect(bookingLimitDatetimeInput).toHaveValue(userDateInput)
   })
 
   it('should not disable price and place when offer status is reimbursment', async () => {
