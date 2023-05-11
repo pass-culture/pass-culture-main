@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from pcapi.connectors.cgr.exceptions import CGRAPIException
@@ -12,9 +14,10 @@ from tests.local_providers.cinema_providers.cgr import fixtures
 
 @pytest.mark.usefixtures("db_session")
 class BookTicketTest:
-    def test_should_book_one_ticket(self, requests_mock):
+    def test_should_book_one_ticket(self, requests_mock, app):
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
         booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1, amount=5.5)
+        venue_id = booking.venueId
         cinema_details = providers_factories.CGRCinemaDetailsFactory(
             cinemaUrl="http://cgr-cinema-0.example.com/web_service"
         )
@@ -39,6 +42,12 @@ class BookTicketTest:
         assert "<pEmail>beneficiary@example.com</pEmail>" in post_adapter.last_request.text
         assert "<pPUTTC>5.50</pPUTTC>" in post_adapter.last_request.text
         assert "<pIDSeances>177182</pIDSeances>" in post_adapter.last_request.text
+        redis_external_bookings = app.redis_client.lrange("api:external_bookings:barcodes", 0, -1)
+        assert len(redis_external_bookings) == 1
+        external_booking_info = json.loads(redis_external_bookings[0])
+        assert external_booking_info["barcode"] == "CINE999508637111"
+        assert external_booking_info["venue_id"] == venue_id
+        assert external_booking_info["timestamp"]
 
     def test_should_book_one_ticket_when_placement_is_disabled(self, requests_mock):
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
