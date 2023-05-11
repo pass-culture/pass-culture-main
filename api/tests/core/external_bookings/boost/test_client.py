@@ -1,4 +1,5 @@
 from decimal import Decimal
+import json
 
 import pytest
 
@@ -91,9 +92,10 @@ class GetShowtimesTest:
 
 
 class BookTicketTest:
-    def test_should_book_duo_tickets(self, requests_mock):
+    def test_should_book_duo_tickets(self, requests_mock, app):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2)
+        venue_id = booking.venueId
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
@@ -120,6 +122,12 @@ class BookTicketTest:
             external_bookings_models.Ticket(barcode="90474", seat_number=None),
             external_bookings_models.Ticket(barcode="90474", seat_number=None),
         ]
+        redis_external_bookings = app.redis_client.lrange("api:external_bookings:barcodes", 0, -1)
+        assert len(redis_external_bookings) == 1
+        external_bookings_infos = json.loads(redis_external_bookings[0])
+        assert external_bookings_infos["barcode"] == "90474"
+        assert external_bookings_infos["venue_id"] == venue_id
+        assert external_bookings_infos["timestamp"]
 
 
 class CancelBookingTest:
