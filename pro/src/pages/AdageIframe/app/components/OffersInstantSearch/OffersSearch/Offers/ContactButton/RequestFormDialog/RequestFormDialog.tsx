@@ -3,16 +3,10 @@ import React from 'react'
 
 import Dialog from 'components/Dialog/Dialog'
 import FormLayout from 'components/FormLayout'
+import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as MailIcon } from 'icons/ico-mail.svg'
-import {
-  Button,
-  DatePicker,
-  SubmitButton,
-  TextArea,
-  TextInput,
-  TimePicker,
-} from 'ui-kit'
+import { Button, DatePicker, SubmitButton, TextArea, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
@@ -68,9 +62,13 @@ const RequestFormDialog = ({
         {contactPhone}
       </div>
       <div className={styles['form-description']}>
-        Pour faciliter le traitement de votre demande par votre partenaire
-        culturel nous vous invitons à remplir les informations ci-dessous
+        <div className={styles['form-description-text']}>
+          Si vous le souhaitez, vous pouvez contacter ce partenaire culturel en
+          renseignant les informations ci-dessous.
+        </div>
+        <MandatoryInfo />
       </div>
+
       <FormikProvider value={formik}>
         <form
           onSubmit={formik.handleSubmit}
@@ -80,36 +78,39 @@ const RequestFormDialog = ({
             <FormLayout.Row>
               <TextInput label="E-Mail" name="teacherEmail" disabled />
             </FormLayout.Row>
-            <FormLayout.Row>
-              <PhoneNumberInput
-                label="Téléphone"
-                name="teacherPhone"
-                isOptional
-              />
-            </FormLayout.Row>
-            <FormLayout.Row inline>
-              <DatePicker
-                label="Date souhaitée"
-                minDateTime={new Date()}
-                name="offerDate"
-                isOptional
-              />
-              <TimePicker label="Heure" name="offerTime" isOptional />
-            </FormLayout.Row>
-            <FormLayout.Row inline>
-              <TextInput
-                label="Nombre d'élèves"
-                name="nbStudents"
-                type="number"
-                isOptional
-              />
-              <TextInput
-                label="Nombre d'accompagnateurs"
-                name="nbTeachers"
-                type="number"
-                isOptional
-              />
-            </FormLayout.Row>
+            <div className={styles['form-row']}>
+              <FormLayout.Row>
+                <PhoneNumberInput
+                  label="Téléphone"
+                  name="teacherPhone"
+                  isOptional
+                />
+              </FormLayout.Row>
+              <FormLayout.Row>
+                <DatePicker
+                  label="Date souhaitée"
+                  minDateTime={new Date()}
+                  name="offerDate"
+                  isOptional
+                />
+              </FormLayout.Row>
+              <FormLayout.Row>
+                <TextInput
+                  label="Nombre d'élèves"
+                  name="nbStudents"
+                  type="number"
+                  isOptional
+                />
+              </FormLayout.Row>
+              <FormLayout.Row>
+                <TextInput
+                  label="Nombre d'accompagnateurs"
+                  name="nbTeachers"
+                  type="number"
+                  isOptional
+                />
+              </FormLayout.Row>
+            </div>
             <FormLayout.Row>
               <TextArea
                 countCharacters
