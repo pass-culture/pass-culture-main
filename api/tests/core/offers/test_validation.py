@@ -436,12 +436,12 @@ class CheckOfferExtraDataTest:
                 subcategories.JEU_EN_LIGNE.id, {"ean": "invalid ean"}, offerers_factories.VenueFactory()
             )
 
-        assert error.value.errors["ean"] == ["L'EAN doit être composé de 8 ou 13 chiffres"]
+        assert error.value.errors["ean"] == ["L'EAN doit être composé de 13 chiffres"]
 
     def test_valid_ean_extra_data(self):
         assert (
             validation.check_offer_extra_data(
-                subcategories.JEU_EN_LIGNE.id, {"ean": "12345678"}, offerers_factories.VenueFactory()
+                subcategories.JEU_EN_LIGNE.id, {"ean": "1234567891234"}, offerers_factories.VenueFactory()
             )
             is None
         )
