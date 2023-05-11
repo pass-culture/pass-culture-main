@@ -1,13 +1,16 @@
+import datetime
 import logging
 
 from pcapi.connectors.cgr.cgr import annulation_pass_culture
 from pcapi.connectors.cgr.cgr import get_seances_pass_culture
 from pcapi.connectors.cgr.cgr import reservation_pass_culture
 from pcapi.connectors.serialization import cgr_serializers
+from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.core.providers.repository import get_cgr_cinema_details
 import pcapi.core.users.models as users_models
+from pcapi.utils.queue import add_to_queue
 
 
 logger = logging.getLogger(__name__)
@@ -41,6 +44,14 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         )
         response = reservation_pass_culture(self.cgr_cinema_details, book_show_body)
         logger.info("Booked CGR Ticket", extra={"barcode": response.QrCode, "seat_number": response.Placement})
+        add_to_queue(
+            REDIS_EXTERNAL_BOOKINGS_NAME,
+            {
+                "barcode": response.QrCode,
+                "venue_id": booking.venueId,
+                "timestamp": datetime.datetime.utcnow().timestamp(),
+            },
+        )
         if booking.quantity == 2:
             tickets = [
                 external_bookings_models.Ticket(
