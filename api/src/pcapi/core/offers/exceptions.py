@@ -180,8 +180,7 @@ class OfferAlreadyExists(OfferCreationBaseException):
 
 
 class EanFormatException(OfferCreationBaseException):
-    def __init__(self, error_message: str) -> None:
-        super().__init__("ean", error_message)
+    pass
 
 
 class ThumbnailStorageError(ApiErrors):

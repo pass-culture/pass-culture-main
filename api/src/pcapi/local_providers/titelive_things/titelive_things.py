@@ -322,6 +322,7 @@ def get_extra_data_from_infos(infos: dict) -> offers_models.OfferExtraData:
     extra_data = offers_models.OfferExtraData()
     extra_data["author"] = infos["auteurs"]
     extra_data["isbn"] = infos["ean13"]
+    extra_data["ean"] = infos["ean13"]
     if infos["indice_dewey"] != "":
         extra_data["dewey"] = infos["indice_dewey"]
     extra_data["titelive_regroup"] = infos["code_regroupement"]

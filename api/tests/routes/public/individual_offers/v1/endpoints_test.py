@@ -205,7 +205,7 @@ class PostProductTest:
             json={
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "ean": "12345678",
+                    "ean": "1234567891234",
                     "musicType": "ROCK-LO_FI",
                 },
                 "accessibility": ACCESSIBILITY_FIELDS,
@@ -225,7 +225,7 @@ class PostProductTest:
         assert created_offer.motorDisabilityCompliant is True
         assert created_offer.visualDisabilityCompliant is True
         assert not created_offer.isDuo
-        assert created_offer.extraData == {"ean": "12345678", "musicType": "820", "musicSubType": "829"}
+        assert created_offer.extraData == {"ean": "1234567891234", "musicType": "820", "musicSubType": "829"}
         assert created_offer.bookingEmail is None
         assert created_offer.description is None
         assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
@@ -235,7 +235,7 @@ class PostProductTest:
             "categoryRelatedFields": {
                 "author": None,
                 "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                "ean": "12345678",
+                "ean": "1234567891234",
                 "musicType": "ROCK-LO_FI",
                 "performer": None,
             },
@@ -271,7 +271,7 @@ class PostProductTest:
                 "categoryRelatedFields": {
                     "author": "Maurice",
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "ean": "12345678",
+                    "ean": "1234567891234",
                     "musicType": "JAZZ-FUSION",
                     "performer": "Pink Pâtisserie",
                     "stageDirector": "Alfred",  # field not applicable
@@ -312,7 +312,7 @@ class PostProductTest:
         assert created_offer.isDuo is False
         assert created_offer.extraData == {
             "author": "Maurice",
-            "ean": "12345678",
+            "ean": "1234567891234",
             "musicType": "501",
             "musicSubType": "511",
             "performer": "Pink Pâtisserie",
@@ -341,7 +341,7 @@ class PostProductTest:
             "bookingEmail": "spam@example.com",
             "categoryRelatedFields": {
                 "author": "Maurice",
-                "ean": "12345678",
+                "ean": "1234567891234",
                 "category": "SUPPORT_PHYSIQUE_MUSIQUE",
                 "musicType": "JAZZ-FUSION",
                 "performer": "Pink Pâtisserie",
@@ -382,7 +382,7 @@ class PostProductTest:
             json={
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "ean": "12345678",
+                    "ean": "1234567891234",
                     "musicType": "ROCK-LO_FI",
                 },
                 "accessibility": ACCESSIBILITY_FIELDS,
@@ -416,7 +416,7 @@ class PostProductTest:
             json={
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "ean": "12345678",
+                    "ean": "1234567891234",
                     "musicType": "ROCK-LO_FI",
                 },
                 "accessibility": ACCESSIBILITY_FIELDS,
@@ -442,7 +442,7 @@ class PostProductTest:
             json={
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "ean": "12345678",
+                    "ean": "1234567891234",
                     "musicType": "ROCK-LO_FI",
                 },
                 "accessibility": ACCESSIBILITY_FIELDS,
@@ -468,7 +468,7 @@ class PostProductTest:
             json={
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "ean": "12345678",
+                    "ean": "1234567891234",
                     "musicType": "ROCK-LO_FI",
                 },
                 "accessibility": ACCESSIBILITY_FIELDS,
@@ -494,7 +494,7 @@ class PostProductTest:
                 "enableDoubleBookings": True,
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "ean": "12345678",
+                    "ean": "1234567891234",
                     "musicType": "ROCK-LO_FI",
                 },
                 "accessibility": ACCESSIBILITY_FIELDS,
@@ -535,7 +535,7 @@ class PostProductTest:
             json={
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "ean": "12345678",
+                    "ean": "1234567891234",
                     "musicType": "ROCK-LO_FI",
                     "performer": "Ichika Nito",
                     "isbn": "1234567891123",  # this field is not applicable and not added to extraData
@@ -552,7 +552,7 @@ class PostProductTest:
         created_offer = offers_models.Offer.query.one()
 
         assert created_offer.extraData == {
-            "ean": "12345678",
+            "ean": "1234567891234",
             "musicType": "820",
             "musicSubType": "829",
             "performer": "Ichika Nito",
@@ -561,7 +561,7 @@ class PostProductTest:
         assert response.json["categoryRelatedFields"] == {
             "author": None,
             "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-            "ean": "12345678",
+            "ean": "1234567891234",
             "musicType": "ROCK-LO_FI",
             "performer": "Ichika Nito",
         }
@@ -575,7 +575,7 @@ class PostProductTest:
             json={
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "ean": "12345678",
+                    "ean": "1234567891234",
                     "musicType": "CHANSON_VARIETE-OTHER",
                 },
                 "accessibility": ACCESSIBILITY_FIELDS,
@@ -617,7 +617,7 @@ class PostProductTest:
             json={
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "ean": "12345678",
+                    "ean": "1234567891234",
                     "musicType": "ROCK-LO_FI",
                 },
                 "accessibility": ACCESSIBILITY_FIELDS,
@@ -641,7 +641,7 @@ class PostProductTest:
             json={
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "ean": "12345678",
+                    "ean": "1234567891234",
                     "musicType": "ROCK-LO_FI",
                 },
                 "accessibility": ACCESSIBILITY_FIELDS,
@@ -667,7 +667,7 @@ class PostProductTest:
             json={
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "ean": "12345678",
+                    "ean": "1234567891234",
                     "musicType": "ROCK-LO_FI",
                 },
                 "accessibility": ACCESSIBILITY_FIELDS,
@@ -696,7 +696,7 @@ class PostProductTest:
             json={
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "ean": "12345678",
+                    "ean": "1234567891234",
                     "musicType": "ROCK-LO_FI",
                 },
                 "accessibility": ACCESSIBILITY_FIELDS,
@@ -723,7 +723,7 @@ class PostProductTest:
             json={
                 "categoryRelatedFields": {
                     "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                    "ean": "12345678",
+                    "ean": "1234567891234",
                     "musicType": "ROCK-LO_FI",
                 },
                 "accessibility": ACCESSIBILITY_FIELDS,
@@ -1682,7 +1682,7 @@ class GetProductByEanTest:
 
     def test_400_when_wrong_ean_format(self, client):
         venue, _ = create_offerer_provider_linked_to_venue()
-        product_offer = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "12345678"})
+        product_offer = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "123456789"})
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
             f"/public/offers/v1/products/ean/{product_offer.extraData['ean']}"
@@ -2496,7 +2496,7 @@ class PatchProductByEanTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=individual_offers_api_provider,
-            extraData={"ean": "12345678"},
+            extraData={"ean": "123456789"},
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(

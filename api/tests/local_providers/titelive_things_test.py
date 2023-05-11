@@ -90,6 +90,7 @@ class TiteliveThingsTest:
         assert product.extraData.get("bookFormat") == offers_models.BookFormat.BEAUX_LIVRES.value
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.extraData.get("isbn") == "9782895026310"
+        assert product.extraData.get("ean") == "9782895026310"
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
