@@ -1,10 +1,11 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
 
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { App } from '../App'
 import {
@@ -84,7 +85,7 @@ jest.mock('utils/config', () => ({
 }))
 
 const renderApp = () => {
-  render(
+  renderWithProviders(
     <FiltersContextProvider>
       <FeaturesContextProvider>
         <AlgoliaQueryContextProvider>

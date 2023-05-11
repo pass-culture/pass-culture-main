@@ -1,5 +1,4 @@
 import {
-  render,
   screen,
   waitFor,
   waitForElementToBeRemoved,
@@ -10,6 +9,7 @@ import { Configure } from 'react-instantsearch-dom'
 
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { App } from '../App'
 import {
@@ -95,7 +95,7 @@ const mockedApi = apiAdage as jest.Mocked<typeof apiAdage>
 const features: FeaturesContextType = []
 
 const renderApp = () => {
-  render(
+  renderWithProviders(
     <FiltersContextProvider>
       <FeaturesContext.Provider value={features}>
         <AlgoliaQueryContextProvider>
