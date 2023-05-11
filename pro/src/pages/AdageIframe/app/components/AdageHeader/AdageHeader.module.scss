@@ -1,0 +1,53 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.adage-header {
+  display: flex;
+  gap: rem.torem(48px);
+  background: colors.$white;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 25%);
+  margin-bottom: rem.torem(48px);
+  padding-left: rem.torem(16px);
+
+  &-brand {
+    display: flex;
+    width: rem.torem(120px);
+  }
+
+  &-menu {
+    display: flex;
+    align-self: center;
+    height: rem.torem(85px);
+    align-items: center;
+  }
+}
+
+.adage-header-item {
+  @include fonts.button;
+
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 rem.torem(16px);
+  gap: rem.torem(10px);
+
+  &-active {
+    color: colors.$primary;
+    border-bottom: solid rem.torem(3px) colors.$primary;
+
+    .adage-header-item-icon {
+      fill: colors.$primary;
+    }
+  }
+
+  &-icon {
+    width: rem.torem(16px);
+    height: rem.torem(16px);
+    fill: colors.$black;
+  }
+
+  &:hover {
+    background-color: colors.$grey-light;
+  }
+}

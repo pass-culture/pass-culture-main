@@ -7,11 +7,12 @@ import {
   VenueResponse,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { LOGS_DATA } from 'utils/config'
 
 import { initAlgoliaAnalytics } from '../libs/initAlgoliaAnalytics'
 
-import { AppLayout } from './AppLayout'
+import { AppLayout } from './components/AppLayout/AppLayout'
 import {
   Notification,
   NotificationComponent,
@@ -19,6 +20,7 @@ import {
 } from './components/Layout/Notification/Notification'
 import { LoaderPage } from './components/LoaderPage/LoaderPage'
 import { UnauthenticatedError } from './components/UnauthenticatedError/UnauthenticatedError'
+import { OldAppLayout } from './OldAppLayout'
 import { FacetFiltersContextProvider } from './providers'
 
 export const App = (): JSX.Element => {
@@ -79,7 +81,7 @@ export const App = (): JSX.Element => {
   const removeVenueFilter = useCallback(() => setVenueFilter(null), [])
 
   const uniqueId = useId()
-
+  const isNewHeaderActive = useActiveFeature('WIP_ENABLE_NEW_ADAGE_HEADER')
   useEffect(() => {
     initAlgoliaAnalytics(uniqueId)
   }, [])
@@ -98,11 +100,19 @@ export const App = (): JSX.Element => {
       [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
         user.role
       ) ? (
-        <AppLayout
-          removeVenueFilter={removeVenueFilter}
-          user={user}
-          venueFilter={venueFilter}
-        />
+        isNewHeaderActive ? (
+          <AppLayout
+            removeVenueFilter={removeVenueFilter}
+            user={user}
+            venueFilter={venueFilter}
+          />
+        ) : (
+          <OldAppLayout
+            removeVenueFilter={removeVenueFilter}
+            user={user}
+            venueFilter={venueFilter}
+          />
+        )
       ) : (
         <UnauthenticatedError />
       )}
