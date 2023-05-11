@@ -8,9 +8,8 @@ import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
 import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { useModal } from 'hooks/useModal'
-import { EuroIcon, PlusCircleIcon } from 'icons'
+import { PlusCircleIcon } from 'icons'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import DialogStockEventDeleteConfirm from 'screens/OfferIndividual/DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'
 import { Button, DatePicker, Select, TextInput, TimePicker } from 'ui-kit'
@@ -67,9 +66,6 @@ const StockFormList = ({
     (page - 1) * STOCKS_PER_PAGE,
     page * STOCKS_PER_PAGE
   )
-  const isPriceCategoriesActive = useActiveFeature(
-    'WIP_ENABLE_MULTI_PRICE_STOCKS'
-  )
 
   return (
     <FieldArray
@@ -84,7 +80,6 @@ const StockFormList = ({
                 arrayHelpers.unshift({
                   ...STOCK_EVENT_FORM_DEFAULT_VALUES,
                   priceCategoryId:
-                    isPriceCategoriesActive &&
                     priceCategoriesOptions.length === 1
                       ? priceCategoriesOptions[0].value
                       : '',
@@ -232,45 +227,27 @@ const StockFormList = ({
                         />
                       </td>
 
-                      {isPriceCategoriesActive ? (
-                        <td className={styles['input-price-category']}>
-                          <Select
-                            name={`stocks[${index}]priceCategoryId`}
-                            options={priceCategoriesOptions}
-                            smallLabel
-                            label="Tarif"
-                            isLabelHidden
-                            classNameLabel={styles['field-layout-label']}
-                            className={styles['field-layout-footer']}
-                            defaultOption={{
-                              label: 'Sélectionner un tarif',
-                              value: '',
-                            }}
-                            disabled={
-                              priceCategoriesOptions.length === 1 ||
-                              readOnlyFields.includes('priceCategoryId')
-                            }
-                            hideFooter
-                          />
-                        </td>
-                      ) : (
-                        <td className={styles['input-price']}>
-                          <TextInput
-                            smallLabel
-                            name={`stocks[${index}]price`}
-                            label="Tarif"
-                            isLabelHidden
-                            classNameLabel={styles['field-layout-label']}
-                            className={styles['field-layout-footer']}
-                            disabled={readOnlyFields.includes('price')}
-                            rightIcon={() => <EuroIcon />}
-                            type="number"
-                            step="0.01"
-                            hideFooter
-                            data-testid="input-price"
-                          />
-                        </td>
-                      )}
+                      <td className={styles['input-price-category']}>
+                        <Select
+                          name={`stocks[${index}]priceCategoryId`}
+                          options={priceCategoriesOptions}
+                          smallLabel
+                          label="Tarif"
+                          isLabelHidden
+                          classNameLabel={styles['field-layout-label']}
+                          className={styles['field-layout-footer']}
+                          defaultOption={{
+                            label: 'Sélectionner un tarif',
+                            value: '',
+                          }}
+                          disabled={
+                            priceCategoriesOptions.length === 1 ||
+                            readOnlyFields.includes('priceCategoryId')
+                          }
+                          hideFooter
+                        />
+                      </td>
+
                       <td className={styles['input-booking-limit-datetime']}>
                         <DatePicker
                           smallLabel

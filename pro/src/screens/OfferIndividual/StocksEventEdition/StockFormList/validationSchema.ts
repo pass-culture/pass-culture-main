@@ -19,8 +19,7 @@ const isBeforeBeginningDate = (
 }
 
 const getSingleValidationSchema = (
-  priceCategoriesOptions?: SelectOption[],
-  isPriceCategoriesActive?: boolean
+  priceCategoriesOptions?: SelectOption[]
 ) => ({
   beginningDate: yup
     .date()
@@ -40,23 +39,10 @@ const getSingleValidationSchema = (
     .string()
     .nullable()
     .required('Veuillez renseigner un horaire'),
-  // To update when WIP_ENABLE_MULTI_PRICE_STOCKS is removed
-  ...(isPriceCategoriesActive
-    ? {
-        priceCategoryId: oneOfSelectOption(
-          yup.string().required('Veuillez renseigner un tarif'),
-          priceCategoriesOptions ?? []
-        ),
-      }
-    : {
-        price: yup
-          .number()
-          .typeError('Doit être un nombre')
-          .min(0, 'Doit être positif')
-          .max(300, 'Veuillez renseigner un prix inférieur à 300€')
-          .required('Veuillez renseigner un prix'),
-      }),
-
+  priceCategoryId: oneOfSelectOption(
+    yup.string().required('Veuillez renseigner un tarif'),
+    priceCategoriesOptions ?? []
+  ),
   bookingLimitDatetime: yup.date().nullable().test({
     name: 'bookingLimitDatetime-before-beginningDate',
     message: 'Veuillez renseigner une date antérieure à la date de l’évènement',
@@ -70,21 +56,11 @@ const getSingleValidationSchema = (
     .min(0, 'Doit être positif'),
 })
 
-export const getValidationSchema = (
-  priceCategoriesOptions?: SelectOption[],
-  isPriceCategoriesActive?: boolean
-) =>
+export const getValidationSchema = (priceCategoriesOptions?: SelectOption[]) =>
   yup.object().shape({
     stocks: yup
       .array()
       .of(
-        yup
-          .object()
-          .shape(
-            getSingleValidationSchema(
-              priceCategoriesOptions,
-              isPriceCategoriesActive
-            )
-          )
+        yup.object().shape(getSingleValidationSchema(priceCategoriesOptions))
       ),
   })

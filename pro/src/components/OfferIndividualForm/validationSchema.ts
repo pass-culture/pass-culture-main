@@ -5,7 +5,6 @@ import { validationSchema as categoriesSchema } from './Categories'
 import { validationSchema as externalLinkSchema } from './ExternalLink'
 import { validationSchema as informationsSchema } from './Informations'
 import { validationSchema as notificationsSchema } from './Notifications'
-import { validationSchema as optionDuoSchema } from './OptionDuo'
 import { validationSchema as usefulInformationsSchema } from './UsefulInformations'
 
 export const validationSchema = yup.object().shape({
@@ -14,6 +13,5 @@ export const validationSchema = yup.object().shape({
   ...usefulInformationsSchema,
   ...accessibilitySchema,
   ...notificationsSchema,
-  ...optionDuoSchema,
   ...externalLinkSchema,
 })

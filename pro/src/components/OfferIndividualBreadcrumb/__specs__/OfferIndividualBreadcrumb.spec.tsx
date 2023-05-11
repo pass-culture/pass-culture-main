@@ -38,7 +38,7 @@ const renderOfferIndividualBreadcrumb = (
     ...contextOverride,
   }
 
-  const rtlReturns = renderWithProviders(
+  renderWithProviders(
     <OfferIndividualContext.Provider value={contextValues}>
       <OfferIndividualBreadcrumb />
       <Routes>
@@ -89,23 +89,6 @@ const renderOfferIndividualBreadcrumb = (
     </OfferIndividualContext.Provider>,
     { storeOverrides, initialRouterEntries: [url] }
   )
-
-  const tabInformations = screen.queryByText('Détails de l’offre')
-  const tabStocks = screen.queryByText('Stock & Prix')
-  const tabPriceCategories = screen.queryByText('Tarifs')
-  const otherNameTabStocks = screen.queryByText('Dates & Capacités')
-  const tabSummary = screen.queryByText('Récapitulatif')
-  const tabConfirmation = screen.queryByText('Confirmation')
-
-  return {
-    ...rtlReturns,
-    tabInformations,
-    tabStocks,
-    tabSummary,
-    tabConfirmation,
-    tabPriceCategories,
-    otherNameTabStocks,
-  }
 }
 
 describe('test OfferIndividualBreadcrumb', () => {
@@ -117,22 +100,21 @@ describe('test OfferIndividualBreadcrumb', () => {
     })
 
     it('should render steps when no offer is given', async () => {
-      const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualBreadcrumb()
+      renderOfferIndividualBreadcrumb()
 
-      expect(tabInformations).toBeInTheDocument()
-      expect(tabStocks).toBeInTheDocument()
-      expect(tabSummary).toBeInTheDocument()
-      expect(tabConfirmation).toBeInTheDocument()
+      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
+      expect(screen.getByText('Confirmation')).toBeInTheDocument()
 
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
       expect(screen.getByTestId('stepper')).toBeInTheDocument()
 
-      tabStocks && (await userEvent.click(tabStocks))
+      await userEvent.click(screen.getByText('Stock & Prix'))
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
-      tabSummary && (await userEvent.click(tabSummary))
+      await userEvent.click(screen.getByText('Récapitulatif'))
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
-      tabConfirmation && (await userEvent.click(tabConfirmation))
+      await userEvent.click(screen.getByText('Confirmation'))
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
     })
 
@@ -140,194 +122,163 @@ describe('test OfferIndividualBreadcrumb', () => {
       const offer: Partial<IOfferIndividual> = individualOfferFactory({
         id: 'AA',
         stocks: [],
+        isEvent: false,
       })
 
       const contextOverride: Partial<IOfferIndividualContext> = {
         offer: offer as IOfferIndividual,
       }
-      const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualBreadcrumb(contextOverride)
+      renderOfferIndividualBreadcrumb(contextOverride)
 
-      expect(tabInformations).toBeInTheDocument()
-      expect(tabStocks).toBeInTheDocument()
-      expect(tabSummary).toBeInTheDocument()
-      expect(tabConfirmation).toBeInTheDocument()
+      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
+      expect(screen.getByText('Confirmation')).toBeInTheDocument()
 
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
 
-      tabStocks && (await userEvent.click(tabStocks))
+      await userEvent.click(screen.getByText('Stock & Prix'))
       expect(screen.getByText('Stocks screen')).toBeInTheDocument()
-      tabSummary && (await userEvent.click(tabSummary))
+      await userEvent.click(screen.getByText('Récapitulatif'))
       expect(screen.getByText('Stocks screen')).toBeInTheDocument()
-      tabConfirmation && (await userEvent.click(tabConfirmation))
+      await userEvent.click(screen.getByText('Confirmation'))
       expect(screen.getByText('Stocks screen')).toBeInTheDocument()
     })
 
     it('should render steps when offer and stock are given', async () => {
       const offer: Partial<IOfferIndividual> = individualOfferFactory({
         id: 'AA',
+        isEvent: false,
       })
 
       const contextOverride: Partial<IOfferIndividualContext> = {
         offer: offer as IOfferIndividual,
       }
-      const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualBreadcrumb(contextOverride)
+      renderOfferIndividualBreadcrumb(contextOverride)
 
-      expect(tabInformations).toBeInTheDocument()
-      expect(tabStocks).toBeInTheDocument()
-      expect(tabSummary).toBeInTheDocument()
-      expect(tabConfirmation).toBeInTheDocument()
+      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
+      expect(screen.getByText('Confirmation')).toBeInTheDocument()
 
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
 
-      tabStocks && (await userEvent.click(tabStocks))
+      await userEvent.click(screen.getByText('Stock & Prix'))
       expect(screen.getByText('Stocks screen')).toBeInTheDocument()
-      tabSummary && (await userEvent.click(tabSummary))
+      await userEvent.click(screen.getByText('Récapitulatif'))
       expect(screen.getByText('Summary screen')).toBeInTheDocument()
-      tabConfirmation && (await userEvent.click(tabConfirmation))
+      await userEvent.click(screen.getByText('Confirmation'))
       expect(screen.getByText('Summary screen')).toBeInTheDocument()
     })
 
     it('should render steps on Information', () => {
-      const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualBreadcrumb(
-          undefined,
-          generatePath(
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-            { offerId: 'AA' }
-          )
+      renderOfferIndividualBreadcrumb(
+        undefined,
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
         )
+      )
 
-      expect(tabInformations).toBeInTheDocument()
-      expect(tabStocks).toBeInTheDocument()
-      expect(tabSummary).toBeInTheDocument()
-      expect(tabConfirmation).toBeInTheDocument()
+      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
+      expect(screen.getByText('Confirmation')).toBeInTheDocument()
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
     })
 
     it('should render steps on Stocks', () => {
-      const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualBreadcrumb(
-          undefined,
-          generatePath(
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.STOCKS,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-            { offerId: 'AA' }
-          )
+      renderOfferIndividualBreadcrumb(
+        undefined,
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
         )
+      )
 
-      expect(tabInformations).toBeInTheDocument()
-      expect(tabStocks).toBeInTheDocument()
-      expect(tabSummary).toBeInTheDocument()
-      expect(tabConfirmation).toBeInTheDocument()
+      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
+      expect(screen.getByText('Confirmation')).toBeInTheDocument()
       expect(screen.getByText('Stocks screen')).toBeInTheDocument()
     })
 
     it('should render steps on Summary', () => {
-      const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualBreadcrumb(
-          undefined,
-          generatePath(
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-            { offerId: 'AA' }
-          )
+      renderOfferIndividualBreadcrumb(
+        undefined,
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
         )
+      )
 
-      expect(tabInformations).toBeInTheDocument()
-      expect(tabStocks).toBeInTheDocument()
-      expect(tabSummary).toBeInTheDocument()
-      expect(tabConfirmation).toBeInTheDocument()
+      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
+      expect(screen.getByText('Confirmation')).toBeInTheDocument()
       expect(screen.getByText('Summary screen')).toBeInTheDocument()
     })
 
-    describe('when WIP_ENABLE_MULTI_PRICE_STOCKS is active and event', () => {
-      it('should render steps on tarif', () => {
-        const {
-          tabInformations,
-          otherNameTabStocks,
-          tabPriceCategories,
-          tabSummary,
-          tabConfirmation,
-        } = renderOfferIndividualBreadcrumb(
-          {
-            offer: {
-              ...individualOfferFactory(),
-              isEvent: true,
-            },
+    it('should render steps on tarif', () => {
+      renderOfferIndividualBreadcrumb(
+        {
+          offer: {
+            ...individualOfferFactory(),
+            isEvent: true,
           },
-          generatePath(
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.TARIFS,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-            { offerId: 'AA' }
-          ),
-          {
-            features: {
-              list: [
-                { isActive: true, nameKey: 'WIP_ENABLE_MULTI_PRICE_STOCKS' },
-              ],
-            },
-          }
+        },
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.TARIFS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
         )
+      )
 
-        expect(tabInformations).toBeInTheDocument()
-        expect(otherNameTabStocks).toBeInTheDocument()
-        expect(tabPriceCategories).toBeInTheDocument()
+      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+      expect(screen.getByText('Dates & Capacités')).toBeInTheDocument()
+      expect(screen.queryByText('Stock & Prix')).not.toBeInTheDocument()
+      expect(screen.getByText('Tarifs')).toBeInTheDocument()
 
-        expect(tabSummary).toBeInTheDocument()
-        expect(tabConfirmation).toBeInTheDocument()
-        expect(screen.getByText('Tarifs screen')).toBeInTheDocument()
-      })
+      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
+      expect(screen.getByText('Confirmation')).toBeInTheDocument()
+      expect(screen.getByText('Tarifs screen')).toBeInTheDocument()
+    })
 
-      it('should not render tarif step when offer is not an event', () => {
-        const {
-          tabInformations,
-          tabStocks,
-          otherNameTabStocks,
-          tabPriceCategories,
-          tabSummary,
-          tabConfirmation,
-        } = renderOfferIndividualBreadcrumb(
-          {
-            offer: {
-              ...individualOfferFactory(),
-              isEvent: false,
-            },
+    it('should not render tarif step when offer is not an event', () => {
+      renderOfferIndividualBreadcrumb(
+        {
+          offer: {
+            ...individualOfferFactory(),
+            isEvent: false,
           },
-          generatePath(
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.STOCKS,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-            { offerId: 'AA' }
-          ),
-          {
-            features: {
-              list: [
-                { isActive: true, nameKey: 'WIP_ENABLE_MULTI_PRICE_STOCKS' },
-              ],
-            },
-          }
+        },
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
         )
+      )
 
-        expect(tabInformations).toBeInTheDocument()
-        expect(tabStocks).toBeInTheDocument()
-        expect(otherNameTabStocks).not.toBeInTheDocument()
-        expect(tabPriceCategories).not.toBeInTheDocument()
-        expect(tabSummary).toBeInTheDocument()
-        expect(tabConfirmation).toBeInTheDocument()
-        expect(screen.getByText('Stocks screen')).toBeInTheDocument()
-      })
+      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+      expect(screen.queryByText('Dates & Capacités')).not.toBeInTheDocument()
+      expect(screen.queryByText('Tarifs')).not.toBeInTheDocument()
+      expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
+      expect(screen.getByText('Confirmation')).toBeInTheDocument()
+      expect(screen.getByText('Stocks screen')).toBeInTheDocument()
     })
   })
 
@@ -366,22 +317,21 @@ describe('test OfferIndividualBreadcrumb', () => {
         offer: offer as IOfferIndividual,
       }
 
-      const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualBreadcrumb(
-          contextOverride,
-          generatePath(
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-              mode: OFFER_WIZARD_MODE.EDITION,
-            }),
-            { offerId: 'AA' }
-          )
+      renderOfferIndividualBreadcrumb(
+        contextOverride,
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          }),
+          { offerId: 'AA' }
         )
+      )
 
-      expect(tabInformations).toBeInTheDocument()
-      expect(tabStocks).toBeInTheDocument()
-      expect(tabSummary).not.toBeInTheDocument()
-      expect(tabConfirmation).not.toBeInTheDocument()
+      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+      expect(screen.queryByText('Récapitulatif')).not.toBeInTheDocument()
+      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
 
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
     })
@@ -396,22 +346,21 @@ describe('test OfferIndividualBreadcrumb', () => {
         offer: offer as IOfferIndividual,
       }
 
-      const { tabInformations, tabStocks, tabSummary, tabConfirmation } =
-        renderOfferIndividualBreadcrumb(
-          contextOverride,
-          generatePath(
-            getOfferIndividualPath({
-              step: OFFER_WIZARD_STEP_IDS.STOCKS,
-              mode: OFFER_WIZARD_MODE.EDITION,
-            }),
-            { offerId: 'AA' }
-          )
+      renderOfferIndividualBreadcrumb(
+        contextOverride,
+        generatePath(
+          getOfferIndividualPath({
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.EDITION,
+          }),
+          { offerId: 'AA' }
         )
+      )
 
-      expect(tabInformations).toBeInTheDocument()
-      expect(tabStocks).toBeInTheDocument()
-      expect(tabSummary).not.toBeInTheDocument()
-      expect(tabConfirmation).not.toBeInTheDocument()
+      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+      expect(screen.queryByText('Récapitulatif')).not.toBeInTheDocument()
+      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
 
       expect(screen.getByText('Stocks screen')).toBeInTheDocument()
     })

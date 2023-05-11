@@ -2,7 +2,6 @@ import React from 'react'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import { SummaryLayout } from 'components/SummaryLayout'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'utils/date'
 import { formatPrice } from 'utils/formatPrice'
 import { formatLocalTimeDateString } from 'utils/timezone'
@@ -28,10 +27,6 @@ const StockEventItem = ({
   departmentCode,
   priceCategory,
 }: IStockEventItemProps): JSX.Element => {
-  const isPriceCategoriesActive = useActiveFeature(
-    'WIP_ENABLE_MULTI_PRICE_STOCKS'
-  )
-
   return (
     <div className={className}>
       {beginningDatetime && (
@@ -56,7 +51,7 @@ const StockEventItem = ({
         />
       )}
 
-      {isPriceCategoriesActive && priceCategory ? (
+      {priceCategory ? (
         <SummaryLayout.Row
           title="Tarif"
           description={`${formatPrice(priceCategory.price)} - ${

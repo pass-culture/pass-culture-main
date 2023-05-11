@@ -77,9 +77,6 @@ const Informations = ({
   } = useOfferIndividualContext()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useIndividualOfferImageUpload()
-  const isPriceCategoriesActive = useActiveFeature(
-    'WIP_ENABLE_MULTI_PRICE_STOCKS'
-  )
 
   const isWithdrawalUpdatedMailActive = useActiveFeature(
     'WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL'
@@ -205,8 +202,7 @@ const Informations = ({
     const nextStep = computeNextStep(
       mode,
       isSubmittingDraft,
-      Boolean(isOfferSubtypeEvent(offerSubtype)),
-      isPriceCategoriesActive
+      Boolean(isOfferSubtypeEvent(offerSubtype))
     )
     if (isOk) {
       const receivedOfferId = payload.id

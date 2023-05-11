@@ -18,7 +18,6 @@ import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOffer'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import useNotification from 'hooks/useNotification'
@@ -52,9 +51,6 @@ const Summary = () => {
   } = useOfferIndividualContext()
   const newOfferCreation = useNewOfferCreationJourney()
   const { logEvent } = useAnalytics()
-  const isPriceCategoriesActive = useActiveFeature(
-    'WIP_ENABLE_MULTI_PRICE_STOCKS'
-  )
 
   if (offer === null) {
     return null
@@ -159,7 +155,7 @@ const Summary = () => {
         <SummaryLayout.Content>
           <OfferSection conditionalFields={conditionalFields} offer={offer} />
 
-          {isPriceCategoriesActive && offer.isEvent && (
+          {offer.isEvent && (
             <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
           )}
 

@@ -19,7 +19,6 @@ import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { getToday } from 'utils/date'
@@ -43,7 +42,6 @@ import {
   StockFormList,
 } from './StockFormList'
 
-// remove price when removing WIP_ENABLE_MULTI_PRICE_STOCKS
 export const hasChangesOnStockWithBookings = (
   values: { stocks: IStockEventFormValues[] },
   initialValues: { stocks: IStockEventFormValues[] }
@@ -54,7 +52,6 @@ export const hasChangesOnStockWithBookings = (
   > = initialValues.stocks.reduce(
     (dict: Record<string, Partial<IStockEventFormValues>>, stock) => {
       dict[stock.stockId || 'IStockEventFormValuesnewStock'] = {
-        price: stock.price,
         priceCategoryId: stock.priceCategoryId,
         beginningDate: stock.beginningDate,
         beginningTime: stock.beginningTime,
@@ -74,7 +71,6 @@ export const hasChangesOnStockWithBookings = (
     }
     const initialStock = initialStocks[stock.stockId]
     const fieldsWithWarning: (keyof IStockEventFormValues)[] = [
-      'price',
       'priceCategoryId',
       'beginningDate',
       'beginningTime',
@@ -133,9 +129,6 @@ const StocksEventEdition = ({
   const providerName = offer?.lastProviderName
   const [showStocksEventConfirmModal, setShowStocksEventConfirmModal] =
     useState(false)
-  const isPriceCategoriesActive = useActiveFeature(
-    'WIP_ENABLE_MULTI_PRICE_STOCKS'
-  )
   const priceCategoriesOptions = getPriceCategoryOptions(offer)
 
   let description
@@ -194,7 +187,6 @@ const StocksEventEdition = ({
             lastProviderName: updatedOffer.lastProviderName,
             offerStatus: updatedOffer.status,
             priceCategoriesOptions,
-            isPriceCategoriesActive,
           }),
         })
       }
@@ -274,16 +266,12 @@ const StocksEventEdition = ({
     lastProviderName: offer.lastProviderName,
     offerStatus: offer.status,
     priceCategoriesOptions,
-    isPriceCategoriesActive,
   })
 
   const formik = useFormik<{ stocks: IStockEventFormValues[] }>({
     initialValues,
     onSubmit,
-    validationSchema: getValidationSchema(
-      priceCategoriesOptions,
-      isPriceCategoriesActive
-    ),
+    validationSchema: getValidationSchema(priceCategoriesOptions),
   })
 
   const isFormEmpty = () => {
@@ -367,9 +355,7 @@ const StocksEventEdition = ({
     if (!formik.dirty) {
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.STOCKS,
-        to: isPriceCategoriesActive
-          ? OFFER_WIZARD_STEP_IDS.TARIFS
-          : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        to: OFFER_WIZARD_STEP_IDS.TARIFS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
@@ -380,9 +366,7 @@ const StocksEventEdition = ({
     navigate(
       getOfferIndividualUrl({
         offerId: offer.nonHumanizedId,
-        step: isPriceCategoriesActive
-          ? OFFER_WIZARD_STEP_IDS.TARIFS
-          : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        step: OFFER_WIZARD_STEP_IDS.TARIFS,
         mode,
       })
     )
@@ -393,12 +377,14 @@ const StocksEventEdition = ({
       {providerName && (
         <SynchronizedProviderInformation providerName={providerName} />
       )}
+
       {showStocksEventConfirmModal && (
         <DialogStocksEventEditConfirm
           onConfirm={formik.submitForm}
           onCancel={() => setShowStocksEventConfirmModal(false)}
         />
       )}
+
       <FormLayout>
         <div aria-current="page">
           <form onSubmit={formik.handleSubmit} data-testid="stock-event-form">

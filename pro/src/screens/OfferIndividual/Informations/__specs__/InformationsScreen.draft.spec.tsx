@@ -180,7 +180,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       isActive: true,
       isDuo: false,
       isEducational: false,
-      isEvent: true,
+      isEvent: false,
       isDigital: false,
       accessibility: {
         [AccessiblityEnum.AUDIO]: true,
