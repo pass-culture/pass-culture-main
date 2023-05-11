@@ -1041,6 +1041,7 @@ def _filter_user_accounts(
                             {
                                 models.EmailHistoryEventTypeEnum.VALIDATION,
                                 models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION,
+                                models.EmailHistoryEventTypeEnum.ADMIN_UPDATE,
                             }
                         ),
                     ),
