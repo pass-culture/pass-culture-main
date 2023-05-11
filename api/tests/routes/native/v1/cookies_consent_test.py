@@ -5,7 +5,7 @@ import uuid
 import pytest
 
 from pcapi.core.users import factories as users_factories
-from pcapi.routes.native.v1.serialization import cookies_consent as serializers
+from pcapi.routes.shared import cookies_consent as serializers
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
