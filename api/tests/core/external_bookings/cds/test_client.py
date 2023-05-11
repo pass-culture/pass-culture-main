@@ -1,4 +1,5 @@
 import datetime
+import json
 from unittest.mock import patch
 
 import pytest
@@ -1029,9 +1030,11 @@ class CineDigitalServiceBookTicketTest:
         mocked_get_screen,
         mocked_get_show,
         mocked_post_resource,
+        app,
     ):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2)
+        venue_id = booking.venueId
         mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
             id=12, internal_code="VCH", is_active=True
         )
@@ -1111,6 +1114,17 @@ class CineDigitalServiceBookTicketTest:
         assert tickets[0].seat_number == "A_1"
         assert tickets[1].barcode == "252525252525"
         assert tickets[1].seat_number == "A_2"
+
+        redis_external_bookings = app.redis_client.lrange("api:external_bookings:barcodes", 0, -1)
+        assert len(redis_external_bookings) == 2
+        first_external_booking_info = json.loads(redis_external_bookings[0])
+        assert first_external_booking_info["barcode"] == "141414141414"
+        assert first_external_booking_info["venue_id"] == venue_id
+        assert first_external_booking_info["timestamp"]
+        second_external_booking_info = json.loads(redis_external_bookings[1])
+        assert second_external_booking_info["barcode"] == "252525252525"
+        assert first_external_booking_info["venue_id"] == venue_id
+        assert first_external_booking_info["timestamp"]
 
     @patch("pcapi.core.external_bookings.cds.client.post_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_show")
