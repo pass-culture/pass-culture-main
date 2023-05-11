@@ -18,6 +18,7 @@ import type { CollectiveOfferType } from '../models/CollectiveOfferType';
 import type { CollectiveStockCreationBodyModel } from '../models/CollectiveStockCreationBodyModel';
 import type { CollectiveStockEditionBodyModel } from '../models/CollectiveStockEditionBodyModel';
 import type { CollectiveStockResponseModel } from '../models/CollectiveStockResponseModel';
+import type { CookieConsentRequest } from '../models/CookieConsentRequest';
 import type { CreateOffererQueryModel } from '../models/CreateOffererQueryModel';
 import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResponseModel';
 import type { DeleteOfferRequestBody } from '../models/DeleteOfferRequestBody';
@@ -1598,6 +1599,28 @@ export class DefaultService {
         'stock_id': stockId,
       },
       errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * cookies_consent <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public cookiesConsent(
+    requestBody?: CookieConsentRequest,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/users/cookies',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: `Bad Request`,
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
