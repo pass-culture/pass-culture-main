@@ -536,6 +536,10 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": venue.name,
                 "publicName": venue.publicName,
             },
+            "_geoloc": {
+                "lat": venue.latitude,
+                "lng": venue.longitude,
+            },
             "isTemplate": False,
         }
 
@@ -573,6 +577,10 @@ class AlgoliaBackend(base.SearchBackend):
                 "id": venue.id,
                 "name": venue.name,
                 "publicName": venue.publicName,
+            },
+            "_geoloc": {
+                "lat": venue.latitude,
+                "lng": venue.longitude,
             },
             "isTemplate": True,
         }
