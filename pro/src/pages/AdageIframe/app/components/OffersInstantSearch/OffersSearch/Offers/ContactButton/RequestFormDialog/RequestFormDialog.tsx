@@ -26,6 +26,7 @@ export interface RequestFormDialogProps {
   contactPhone?: string | null
   venueName: string
   offererName: string
+  userEmail?: string | null
 }
 
 const RequestFormDialog = ({
@@ -34,10 +35,11 @@ const RequestFormDialog = ({
   contactPhone,
   venueName,
   offererName,
+  userEmail,
 }: RequestFormDialogProps): JSX.Element => {
   const notify = useNotification()
   const initialValues = {
-    teacherEmail: 'test@example.com',
+    teacherEmail: userEmail ?? '',
     description: '',
   }
   const onSubmit = () => {

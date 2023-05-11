@@ -13,6 +13,7 @@ const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
       closeModal={jest.fn()}
       venueName={'Venue 1'}
       offererName={'Offerer 1'}
+      userEmail={'contact@example.com'}
       {...props}
     />
   )
@@ -23,6 +24,12 @@ describe('RequestFormDialog', () => {
     renderRequestFormDialog()
 
     expect(screen.getByText('Venue 1 - Offerer 1')).toBeInTheDocument()
+  })
+
+  it('should display user email', () => {
+    renderRequestFormDialog()
+
+    expect(screen.getByLabelText('E-Mail')).toHaveValue('contact@example.com')
   })
 
   it('should submit valid form and close modal on submit', async () => {
