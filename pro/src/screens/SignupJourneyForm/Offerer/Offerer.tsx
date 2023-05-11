@@ -61,7 +61,10 @@ const Offerer = (): JSX.Element => {
       latitude: response.payload.values.latitude,
       longitude: response.payload.values.longitude,
       postalCode: response.payload.values.postalCode,
-      hasVenues: siretResponse.payload.venues.length > 0,
+      hasVenueWithSiret:
+        siretResponse.payload.venues.find(
+          venue => venue.siret == formattedSiret
+        ) !== undefined,
     })
   }
 
@@ -69,7 +72,7 @@ const Offerer = (): JSX.Element => {
   useEffect(() => {
     if (offerer?.siret && offerer?.siret !== '') {
       let to
-      if (offerer.hasVenues) {
+      if (offerer.hasVenueWithSiret) {
         to = SIGNUP_JOURNEY_STEP_IDS.OFFERERS
         navigate('/parcours-inscription/structure/rattachement')
       } else {

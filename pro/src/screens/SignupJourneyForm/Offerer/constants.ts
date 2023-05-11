@@ -4,6 +4,6 @@ export const DEFAULT_OFFERER_FORM_VALUES = {
   siret: '',
   name: '',
   publicName: '',
-  hasVenues: false,
+  hasVenueWithSiret: false,
   ...DEFAULT_ADDRESS_FORM_VALUES,
 }
