@@ -14,7 +14,6 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import {
   getOfferSubtypeFromParamsOrOffer,
@@ -35,9 +34,6 @@ const OfferIndividualBreadcrumb = ({
   const { offer } = useOfferIndividualContext()
   const activeStep = useActiveStep()
   const { logEvent } = useAnalytics()
-  const isPriceCategoriesActive = useActiveFeature(
-    'WIP_ENABLE_MULTI_PRICE_STOCKS'
-  )
   const mode = useOfferWizardMode()
   const hasOffer = offer !== null
   const hasPriceCategories = Boolean(
@@ -71,10 +67,7 @@ const OfferIndividualBreadcrumb = ({
     },
     {
       id: OFFER_WIZARD_STEP_IDS.STOCKS,
-      label:
-        isEvent && isPriceCategoriesActive
-          ? 'Dates & Capacités'
-          : 'Stock & Prix',
+      label: isEvent ? 'Dates & Capacités' : 'Stock & Prix',
       path: {
         [OFFER_WIZARD_MODE.CREATION]: getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -89,13 +82,11 @@ const OfferIndividualBreadcrumb = ({
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
       }[mode],
-      isActive: isPriceCategoriesActive
-        ? (isEvent && hasPriceCategories) || (!isEvent && hasOffer)
-        : hasOffer,
+      isActive: (isEvent && hasPriceCategories) || (!isEvent && hasOffer),
     },
   ]
 
-  if (isEvent && isPriceCategoriesActive) {
+  if (isEvent) {
     stepPatternList.splice(1, 0, {
       id: OFFER_WIZARD_STEP_IDS.TARIFS,
       label: 'Tarifs',

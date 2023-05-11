@@ -121,7 +121,7 @@ describe('Summary trackers', () => {
         {
           from: 'recapitulatif',
           isEdition: true,
-          to: 'stocks',
+          to: 'tarifs',
           used: 'RecapLink',
           isDraft: false,
           offerId: 'AB',
@@ -227,7 +227,7 @@ describe('Summary trackers', () => {
         {
           from: 'recapitulatif',
           isEdition: false,
-          to: 'stocks',
+          to: 'tarifs',
           used: 'RecapLink',
           isDraft: true,
           offerId: 'AB',
@@ -379,7 +379,7 @@ describe('Summary trackers', () => {
         {
           from: 'recapitulatif',
           isEdition: true,
-          to: 'stocks',
+          to: 'tarifs',
           used: 'RecapLink',
           isDraft: true,
           offerId: 'AB',

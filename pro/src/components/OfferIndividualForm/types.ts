@@ -2,6 +2,7 @@ import type { FormikProps } from 'formik'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { IAccessibiltyFormValues } from 'core/shared'
+
 export interface IOfferIndividualFormValues {
   isEvent?: boolean
   subCategoryFields: string[]

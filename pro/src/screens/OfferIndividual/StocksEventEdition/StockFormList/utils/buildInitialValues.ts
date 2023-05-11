@@ -13,8 +13,6 @@ interface BuildInitialValuesCommonArgs {
   lastProviderName: string | null
   offerStatus: OfferStatus
   priceCategoriesOptions: SelectOption[]
-  // TODO remove when WIP_ENABLE_MULTI_PRICE_STOCKS is removed
-  isPriceCategoriesActive: boolean
 }
 
 interface IBuildSingleInitialValuesArgs extends BuildInitialValuesCommonArgs {
@@ -28,7 +26,6 @@ export const buildSingleInitialValues = ({
   lastProviderName,
   offerStatus,
   priceCategoriesOptions,
-  isPriceCategoriesActive,
 }: IBuildSingleInitialValuesArgs): IStockEventFormValues => {
   const hiddenValues = {
     stockId: stock.nonHumanizedId,
@@ -43,9 +40,7 @@ export const buildSingleInitialValues = ({
     }),
   }
   const defaultPriceCategoryOptionId =
-    isPriceCategoriesActive && priceCategoriesOptions.length === 1
-      ? priceCategoriesOptions[0].value
-      : ''
+    priceCategoriesOptions.length === 1 ? priceCategoriesOptions[0].value : ''
 
   return {
     ...hiddenValues,
@@ -72,11 +67,8 @@ export const buildSingleInitialValues = ({
           departmentCode
         )
       : null,
-    price: isPriceCategoriesActive ? '' : stock.price ?? '',
-    priceCategoryId: isPriceCategoriesActive
-      ? stock.priceCategoryId
-        ? String(stock.priceCategoryId) ?? defaultPriceCategoryOptionId
-        : ''
+    priceCategoryId: stock.priceCategoryId
+      ? String(stock.priceCategoryId) ?? defaultPriceCategoryOptionId
       : '',
   }
 }
@@ -92,7 +84,6 @@ export const buildInitialValues = ({
   lastProviderName,
   offerStatus,
   priceCategoriesOptions,
-  isPriceCategoriesActive,
 }: IBuildInitialValuesArgs): { stocks: IStockEventFormValues[] } => {
   if (offerStocks.length === 0) {
     return {
@@ -100,7 +91,7 @@ export const buildInitialValues = ({
         {
           ...STOCK_EVENT_FORM_DEFAULT_VALUES,
           priceCategoryId:
-            isPriceCategoriesActive && priceCategoriesOptions.length === 1
+            priceCategoriesOptions.length === 1
               ? String(priceCategoriesOptions[0].value)
               : '',
         },
@@ -118,7 +109,6 @@ export const buildInitialValues = ({
           lastProviderName,
           offerStatus,
           priceCategoriesOptions,
-          isPriceCategoriesActive,
         })
       )
       .sort(

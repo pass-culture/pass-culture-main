@@ -14,7 +14,6 @@ import {
 } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { SynchronizedProviderInformation } from 'screens/OfferIndividual/SynchronisedProviderInfos'
 import { dehumanizeId } from 'utils/dehumanize'
@@ -25,7 +24,6 @@ import { ExternalLink } from './ExternalLink'
 import { ImageUploaderOffer } from './ImageUploaderOffer'
 import { Informations } from './Informations'
 import { Notifications } from './Notifications'
-import { OptionDuo } from './OptionDuo'
 import { UsefulInformations } from './UsefulInformations'
 import { getFilteredVenueList } from './utils/getFilteredVenueList'
 
@@ -58,9 +56,6 @@ const OfferIndividualForm = ({
   const {
     values: { offererId, subcategoryId, venueId },
   } = useFormikContext<IOfferIndividualFormValues>()
-  const isPriceCategoriesActive = useActiveFeature(
-    'WIP_ENABLE_MULTI_PRICE_STOCKS'
-  )
 
   useScrollToFirstErrorAfterSubmit()
 
@@ -133,10 +128,6 @@ const OfferIndividualForm = ({
           />
 
           <Accessibility readOnlyFields={readOnlyFields} />
-
-          {!isPriceCategoriesActive && (
-            <OptionDuo readOnlyFields={readOnlyFields} />
-          )}
 
           <ExternalLink readOnlyFields={readOnlyFields} />
 

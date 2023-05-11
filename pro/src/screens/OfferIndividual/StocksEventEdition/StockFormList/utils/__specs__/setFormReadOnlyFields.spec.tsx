@@ -30,7 +30,6 @@ describe('setFormReadOnlyFields', () => {
       'remainingQuantity',
       'bookingsQuantity',
       'bookingLimitDatetime',
-      'price',
       'priceCategoryId',
       'stockId',
       'isDeletable',
@@ -53,7 +52,6 @@ describe('setFormReadOnlyFields', () => {
       'remainingQuantity',
       'bookingsQuantity',
       'bookingLimitDatetime',
-      'price',
       'priceCategoryId',
       'stockId',
       'isDeletable',
@@ -76,7 +74,6 @@ describe('setFormReadOnlyFields', () => {
       'remainingQuantity',
       'bookingsQuantity',
       'bookingLimitDatetime',
-      'price',
       'priceCategoryId',
       'stockId',
       'isDeletable',
@@ -106,7 +103,6 @@ describe('setFormReadOnlyFields', () => {
     expect(readOnlyFields).toStrictEqual([
       'beginningDate',
       'beginningTime',
-      'price',
       'priceCategoryId',
     ])
   })

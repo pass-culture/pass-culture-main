@@ -12,7 +12,6 @@ export const STOCK_EVENT_FORM_DEFAULT_VALUES: IStockEventFormValues = {
   remainingQuantity: '',
   bookingsQuantity: 0,
   bookingLimitDatetime: null,
-  price: '',
   priceCategoryId: '',
   ...STOCK_EVENT_FORM_DEFAULT_HIDDEN_VALUES,
 }
@@ -23,13 +22,12 @@ export const STOCK_EVENT_ALLOCINE_READ_ONLY_FIELDS: (keyof IStockEventFormValues
 
 // 'quantity','bookingLimitDatetime' are editable
 export const STOCK_EVENT_CINEMA_PROVIDER_READ_ONLY_FIELDS: (keyof IStockEventFormValues)[] =
-  ['beginningDate', 'beginningTime', 'price', 'priceCategoryId']
+  ['beginningDate', 'beginningTime', 'priceCategoryId']
 
 export const STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS: (keyof IStockEventFormValues)[] =
   [
     'beginningDate',
     'beginningTime',
-    'price',
     'remainingQuantity',
     'bookingLimitDatetime',
     'priceCategoryId',

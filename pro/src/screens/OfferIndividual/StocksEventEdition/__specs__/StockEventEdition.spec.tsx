@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
@@ -48,7 +48,7 @@ const renderStockEventScreen = () => {
     },
   }
 
-  return renderWithProviders(
+  renderWithProviders(
     <>
       <Routes>
         <Route
@@ -92,6 +92,9 @@ const renderStockEventScreen = () => {
   )
 }
 
+const priceCategoryId = '1'
+const otherPriceCategoryId = '2'
+
 describe('screens:StocksEventEdition', () => {
   let apiOffer: GetIndividualOfferResponseModel
   const stockToDelete = {
@@ -107,6 +110,7 @@ describe('screens:StocksEventEdition', () => {
     isSoftDeleted: false,
     offerId: 'BQ',
     price: 10.01,
+    priceCategoryId: Number(otherPriceCategoryId),
     quantity: 10,
     remainingQuantity: 6,
     activationCodesExpirationDatetime: null,
@@ -154,7 +158,10 @@ describe('screens:StocksEventEdition', () => {
         },
       ],
       name: 'Séance ciné duo',
-      priceCategories: [{ price: 12.2, label: 'Mon premier tariff', id: 1 }],
+      priceCategories: [
+        { id: Number(priceCategoryId), label: 'Cat 1', price: 10 },
+        { id: Number(otherPriceCategoryId), label: 'Cat 2', price: 12.2 },
+      ],
       stocks: [stockToDelete],
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
       thumbUrl: null,
@@ -261,6 +268,7 @@ describe('screens:StocksEventEdition', () => {
         isSoftDeleted: false,
         offerId: 'BQ',
         price: 30.01,
+        priceCategoryId: Number(otherPriceCategoryId),
         quantity: 40,
         remainingQuantity: 35,
         activationCodesExpirationDatetime: null,
@@ -305,7 +313,10 @@ describe('screens:StocksEventEdition', () => {
 
     // create new stock
     await userEvent.click(await screen.findByText('Ajouter une date'))
-    await userEvent.type(screen.getAllByLabelText('Tarif')[0], '20')
+    await userEvent.selectOptions(
+      screen.getAllByLabelText('Tarif')[0],
+      priceCategoryId
+    )
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
     )
@@ -355,7 +366,10 @@ describe('screens:StocksEventEdition', () => {
 
     // create new stock
     await userEvent.click(await screen.findByText('Ajouter une date'))
-    await userEvent.type(screen.getAllByLabelText('Tarif')[0], '20')
+    await userEvent.selectOptions(
+      screen.getAllByLabelText('Tarif')[0],
+      priceCategoryId
+    )
 
     // delete existing stock
     jest.spyOn(api, 'getOffer').mockResolvedValue(previousApiOffer)
@@ -378,8 +392,8 @@ describe('screens:StocksEventEdition', () => {
 
     const allPriceInputs = screen.getAllByLabelText('Tarif')
     expect(allPriceInputs).toHaveLength(2)
-    expect(allPriceInputs[1]).toHaveValue(10.01)
-    expect(allPriceInputs[0]).toHaveValue(20)
+    expect(allPriceInputs[0]).toHaveValue(priceCategoryId)
+    expect(allPriceInputs[1]).toHaveValue(otherPriceCategoryId)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
@@ -407,7 +421,7 @@ describe('screens:StocksEventEdition', () => {
     expect(deleteButton).toHaveAttribute('aria-disabled', 'true')
     await deleteButton.click()
     expect(api.deleteStock).not.toHaveBeenCalled()
-    expect(screen.getByLabelText('Tarif')).toHaveValue(10.01)
+    expect(screen.getByLabelText('Tarif')).toHaveValue(otherPriceCategoryId)
   })
 
   it('should allow user to delete stock from a synchronized offer', async () => {
@@ -529,7 +543,10 @@ describe('screens:StocksEventEdition', () => {
     renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
 
-    await userEvent.type(await screen.getByLabelText('Tarif'), '20')
+    await userEvent.selectOptions(
+      screen.getByLabelText('Tarif'),
+      priceCategoryId
+    )
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
@@ -543,11 +560,12 @@ describe('screens:StocksEventEdition', () => {
       .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
     renderStockEventScreen()
     await screen.findByTestId('stock-event-form')
-    // FireEvent.change instead of userEvent.type because userEvent change value but the test doesn"t work (it probably doesn't set touched at true for price field, only with inputs type number)
-    fireEvent.change(screen.getByLabelText('Tarif'), {
-      target: { value: '20' },
-    })
-    await expect(screen.getByLabelText('Tarif')).toHaveValue(20)
+    await userEvent.selectOptions(
+      screen.getByLabelText('Tarif'),
+      priceCategoryId
+    )
+    expect(screen.getByLabelText('Tarif')).toHaveValue(priceCategoryId)
+
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
