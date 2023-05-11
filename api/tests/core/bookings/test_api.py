@@ -18,6 +18,7 @@ from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models
+from pcapi.core.bookings.api import cancel_unstored_external_bookings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -44,6 +45,7 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models import feature
 import pcapi.notifications.push.testing as push_testing
+from pcapi.utils import queue
 
 from tests.conftest import clean_database
 
@@ -1246,3 +1248,38 @@ class ArchiveOldBookingsTest:
         assert not recent_booking.displayAsEnded
         assert not old_not_free_booking.displayAsEnded
         assert old_booking.displayAsEnded
+
+
+@pytest.mark.usefixtures("db_session")
+class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
+    def test_should_not_pop_and_not_try_to_cancel_external_booking_if_minimum_age_not_reached(self, app):
+        queue.add_to_queue(
+            "api:external_bookings:barcodes",
+            {"barcode": "AAA-123456789", "venue_id": 12, "timestamp": datetime.utcnow().timestamp()},
+        )
+
+        cancel_unstored_external_bookings()
+
+        assert app.redis_client.llen("api:external_bookings:barcodes") == 1
+
+    @patch("pcapi.core.bookings.api.external_bookings_api.cancel_booking")
+    def test_should_pop_and_cancel_only_external_booking_reached_minimum_age(self, mocked_cancel_external_booking, app):
+        queue.add_to_queue(
+            "api:external_bookings:barcodes",
+            {"barcode": "BBB-123456789", "venue_id": 13, "timestamp": datetime.utcnow().timestamp() - 90},
+        )
+        queue.add_to_queue(
+            "api:external_bookings:barcodes",
+            {"barcode": "CCC-123456789", "venue_id": 14, "timestamp": datetime.utcnow().timestamp() - 65},
+        )
+        queue.add_to_queue(
+            "api:external_bookings:barcodes",
+            {"barcode": "AAA-123456789", "venue_id": 12, "timestamp": datetime.utcnow().timestamp()},
+        )
+        ExternalBookingFactory(barcode="BBB-123456789")
+
+        cancel_unstored_external_bookings()
+
+        mocked_cancel_external_booking.assert_called_once_with(14, ["CCC-123456789"])
+
+        assert app.redis_client.llen("api:external_bookings:barcodes") == 1
