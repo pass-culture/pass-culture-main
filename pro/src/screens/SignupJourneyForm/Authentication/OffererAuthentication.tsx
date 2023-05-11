@@ -37,7 +37,7 @@ const OffererAuthentication = (): JSX.Element => {
   const onSubmitOffererAuthentication = async (
     formValues: IOffererAuthenticationFormValues
   ): Promise<void> => {
-    setOfferer({ ...formValues, hasVenues: false })
+    setOfferer({ ...formValues, hasVenueWithSiret: false })
     navigate('/parcours-inscription/activite')
   }
 
