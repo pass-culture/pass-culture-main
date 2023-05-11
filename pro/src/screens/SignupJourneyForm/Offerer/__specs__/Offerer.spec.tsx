@@ -137,7 +137,7 @@ describe('screens:SignupJourney::Offerer', () => {
     contextValue.offerer = {
       siret: '12345678933333',
       name: 'Test',
-      hasVenues: false,
+      hasVenueWithSiret: false,
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
 
@@ -213,17 +213,31 @@ describe('screens:SignupJourney::Offerer', () => {
     expect(api.getVenuesOfOffererFromSiret).toHaveBeenCalled()
   })
 
-  it('should redirect to offerers page if the offerer has venues', async () => {
+  it('should redirect to offerers page if the offerer has a venue with the same siret', async () => {
     contextValue.offerer = {
       name: 'name',
       siret: '12345678933333',
-      hasVenues: true,
+      hasVenueWithSiret: true,
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
     renderOffererScreen(contextValue)
 
     await waitFor(() => {
       expect(screen.getByText('Offerers screen')).toBeInTheDocument()
+    })
+  })
+
+  it('should redirect to identification page if the offerer has no venue with the same siret', async () => {
+    contextValue.offerer = {
+      name: 'name',
+      siret: '12345678933333',
+      hasVenueWithSiret: false,
+      ...DEFAULT_ADDRESS_FORM_VALUES,
+    }
+    renderOffererScreen(contextValue)
+
+    await waitFor(() => {
+      expect(screen.getByText('Authentication screen')).toBeInTheDocument()
     })
   })
 
