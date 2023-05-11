@@ -145,6 +145,7 @@ export const OffersSearchComponent = ({
           handleResetFiltersAndLaunchSearch={handleResetFiltersAndLaunchSearch}
           setIsLoading={setIsLoading}
           userRole={user.role}
+          userEmail={user.email}
         />
       </div>
     </>
