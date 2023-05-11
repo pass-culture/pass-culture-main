@@ -98,6 +98,12 @@ def synchronize_cgr_stocks() -> None:
     synchronize_venue_providers(venue_providers)
 
 
+@blueprint.cli.command("cancel_unstored_external_bookings")
+@log_cron_with_transaction
+def cancel_unstored_external_bookings() -> None:
+    bookings_api.cancel_unstored_external_bookings()
+
+
 # TODO: (lixxday 24/02/2023) remove this command when PR https://github.com/pass-culture/pass-culture-deployment/pull/200 is deployed
 @blueprint.cli.command("import_beneficiaries_from_dms_v4")
 @log_cron_with_transaction
