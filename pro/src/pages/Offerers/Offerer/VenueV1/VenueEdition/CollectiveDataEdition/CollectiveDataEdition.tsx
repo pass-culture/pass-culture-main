@@ -130,7 +130,7 @@ const CollectiveDataEdition = (): JSX.Element | null => {
           to: `/structures/${offererId}/lieux/${venueId}#venue-collective-data`,
           isExternal: false,
         }}
-        variant={ButtonVariant.QUATERNARY}
+        variant={ButtonVariant.TERNARY}
         Icon={CircleArrowIcon}
         className={styles['go-back-link']}
       >

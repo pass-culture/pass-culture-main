@@ -67,7 +67,7 @@ const OffererDetails = () => {
     <div className={styles['offerer-page']}>
       <ButtonLink
         link={{ to: `/accueil?structure=${offerer.id}`, isExternal: false }}
-        variant={ButtonVariant.QUATERNARY}
+        variant={ButtonVariant.TERNARY}
         Icon={CircleArrowIcon}
         className={styles['offerer-page-go-back-link']}
       >
