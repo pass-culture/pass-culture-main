@@ -24,7 +24,6 @@ export const validationSchema = () =>
       test: isPhoneValid,
     }),
     offerDate: yup.date().nullable(),
-    offerTime: yup.string().nullable(),
     nbStudents: yup.number().nullable().min(0, 'Nombre positif attendu'),
     nbTeachers: yup.number().nullable().min(0, 'Nombre positif attendu'),
     description: yup
