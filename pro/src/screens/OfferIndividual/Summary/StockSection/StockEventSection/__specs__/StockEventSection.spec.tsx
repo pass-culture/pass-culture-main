@@ -24,34 +24,10 @@ describe('StockEventSection', () => {
       priceCategories: [priceCategory],
     })
 
-    renderWithProviders(<StockEventSection offer={offer} />, {
-      storeOverrides: {
-        features: {
-          initialized: true,
-          list: [{ isActive: true, nameKey: 'WIP_ENABLE_MULTI_PRICE_STOCKS' }],
-        },
-      },
-    })
-
-    // 2 expected because one is not shown under the "show all" button
-    expect(screen.queryAllByText(/Tarif/)).toHaveLength(2)
-  })
-
-  // TODO delete this test when WIP_ENABLE_MULTI_PRICE_STOCKS feature flag is deleted
-  it('should render correctly with old prices', () => {
-    const offer = individualOfferFactory({
-      isEvent: true,
-      stocks: [
-        individualStockFactory(),
-        individualStockFactory(),
-        individualStockFactory(),
-      ],
-    })
-
     renderWithProviders(<StockEventSection offer={offer} />)
 
     // 2 expected because one is not shown under the "show all" button
-    expect(screen.queryAllByText(/Prix/)).toHaveLength(2)
+    expect(screen.queryAllByText(/Tarif/)).toHaveLength(2)
   })
 
   it('should not render if there are no stocks', () => {

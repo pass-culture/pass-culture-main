@@ -41,7 +41,7 @@ const renderOfferIndividualBreadcrumb = (
     ...contextOverride,
   }
 
-  const rtlReturns = renderWithProviders(
+  renderWithProviders(
     <OfferIndividualContext.Provider value={contextValues}>
       <OfferIndividualBreadcrumb />
       <Routes>
@@ -89,17 +89,6 @@ const renderOfferIndividualBreadcrumb = (
     </OfferIndividualContext.Provider>,
     { initialRouterEntries: [url] }
   )
-
-  const tabInformations = screen.queryByText('Détails de l’offre')
-  const tabStocks = screen.queryByText('Stock & Prix')
-  const tabSummary = screen.queryByText('Récapitulatif')
-
-  return {
-    ...rtlReturns,
-    tabInformations,
-    tabStocks,
-    tabSummary,
-  }
 }
 
 describe('test tracker OfferIndividualBreadcrumb', () => {
@@ -118,9 +107,9 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
   })
   describe('in creation', () => {
     it('should track when clicking on steps on Information', async () => {
-      const { tabStocks } = renderOfferIndividualBreadcrumb(contextOverride)
+      renderOfferIndividualBreadcrumb(contextOverride)
 
-      tabStocks && (await userEvent.click(tabStocks))
+      await userEvent.click(screen.getByText('Dates & Capacités'))
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,
@@ -137,7 +126,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
     })
 
     it('should track when clicking on steps on Stocks', async () => {
-      const { tabSummary } = renderOfferIndividualBreadcrumb(
+      renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({
@@ -148,7 +137,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
         )
       )
 
-      tabSummary && (await userEvent.click(tabSummary))
+      await userEvent.click(screen.getByText('Récapitulatif'))
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,
@@ -165,7 +154,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
     })
 
     it('should track when clicking on steps on Summary', async () => {
-      const { tabInformations } = renderOfferIndividualBreadcrumb(
+      renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({
@@ -176,7 +165,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
         )
       )
 
-      tabInformations && (await userEvent.click(tabInformations))
+      await userEvent.click(screen.getByText('Détails de l’offre'))
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,
@@ -195,7 +184,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
 
   describe('in edition', () => {
     it('should track when clicking on steps on Information', async () => {
-      const { tabStocks } = renderOfferIndividualBreadcrumb(
+      renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({
@@ -206,7 +195,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
         )
       )
 
-      tabStocks && (await userEvent.click(tabStocks))
+      await userEvent.click(screen.getByText('Dates & Capacités'))
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,
@@ -223,7 +212,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
     })
 
     it('should track when clicking on steps on Stocks', async () => {
-      const { tabInformations } = renderOfferIndividualBreadcrumb(
+      renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({
@@ -234,7 +223,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
         )
       )
 
-      tabInformations && (await userEvent.click(tabInformations))
+      await userEvent.click(screen.getByText('Détails de l’offre'))
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,
@@ -253,7 +242,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
 
   describe('in draft', () => {
     it('should track when clicking on steps on Information', async () => {
-      const { tabSummary } = renderOfferIndividualBreadcrumb(
+      renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({
@@ -264,7 +253,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
         )
       )
 
-      tabSummary && (await userEvent.click(tabSummary))
+      await userEvent.click(screen.getByText('Récapitulatif'))
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,
@@ -281,7 +270,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
     })
 
     it('should track when clicking on steps on Stocks', async () => {
-      const { tabSummary } = renderOfferIndividualBreadcrumb(
+      renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({
@@ -292,7 +281,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
         )
       )
 
-      tabSummary && (await userEvent.click(tabSummary))
+      await userEvent.click(screen.getByText('Récapitulatif'))
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,
@@ -309,7 +298,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
     })
 
     it('should track when clicking on steps on Summary', async () => {
-      const { tabStocks } = renderOfferIndividualBreadcrumb(
+      renderOfferIndividualBreadcrumb(
         contextOverride,
         generatePath(
           getOfferIndividualPath({
@@ -320,7 +309,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
         )
       )
 
-      tabStocks && (await userEvent.click(tabStocks))
+      await userEvent.click(screen.getByText('Dates & Capacités'))
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,

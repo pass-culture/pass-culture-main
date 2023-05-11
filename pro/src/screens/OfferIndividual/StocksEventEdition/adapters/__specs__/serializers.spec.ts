@@ -26,7 +26,6 @@ describe('screens::StockEvent::serializers:serializeStockEventEdition', () => {
         remainingQuantity: STOCK_EVENT_FORM_DEFAULT_VALUES.remainingQuantity,
         bookingsQuantity: STOCK_EVENT_FORM_DEFAULT_VALUES.bookingsQuantity,
         bookingLimitDatetime: new Date('2022-10-26T00:00:00'),
-        price: 10,
         isDeletable: true,
         readOnlyFields: [],
         stockId: undefined,
@@ -39,8 +38,7 @@ describe('screens::StockEvent::serializers:serializeStockEventEdition', () => {
     const expectedApiStockEvent: StockCreationBodyModel = {
       beginningDatetime: '2022-10-26T13:00:00Z',
       bookingLimitDatetime: '2022-10-26T13:00:00Z',
-      price: 10,
-      priceCategoryId: null,
+      priceCategoryId: 1,
       quantity: null,
     }
 
@@ -55,8 +53,7 @@ describe('screens::StockEvent::serializers:serializeStockEventEdition', () => {
     const expectedApiStockEvent: StockCreationBodyModel = {
       beginningDatetime: '2022-10-26T13:00:00Z',
       bookingLimitDatetime: '2022-10-26T13:00:00Z',
-      price: 10,
-      priceCategoryId: null,
+      priceCategoryId: 1,
       quantity: null,
     }
 
@@ -77,7 +74,6 @@ describe('screens::StockEvent::serializers:serializeStockEventEdition', () => {
       id: 1,
       beginningDatetime: '2022-10-11T13:00:00Z',
       bookingLimitDatetime: '2022-10-10T21:59:59Z',
-      price: null,
       priceCategoryId: 1,
       quantity: null,
     }
@@ -90,7 +86,6 @@ describe('screens::StockEvent::serializers:serializeStockEventEdition', () => {
           beginningDate: new Date('2022-10-11T00:00:00.0200'),
           beginningTime: new Date('2022-10-11T15:00:00.0200'),
           bookingLimitDatetime: new Date('2022-10-10T00:00:00'),
-          price: '' as const,
           priceCategoryId: '1',
         })),
       ],

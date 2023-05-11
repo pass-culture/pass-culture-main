@@ -68,6 +68,7 @@ const renderStockEventScreen = (
   )
 
 const today = getToday()
+const priceCategoryId = '1'
 
 describe('screens:StocksEventEdition', () => {
   let props: IStocksEventEditionProps
@@ -81,6 +82,10 @@ describe('screens:StocksEventEdition', () => {
         departmentCode: '75',
       } as IOfferIndividualVenue,
       stocks: [],
+      priceCategories: [
+        { id: Number(priceCategoryId), label: 'Cat 1', price: 10 },
+        { id: 2, label: 'Cat 2', price: 20 },
+      ],
     }
     props = {
       offer: offer as IOfferIndividual,
@@ -117,7 +122,10 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
+    await userEvent.selectOptions(
+      screen.getByLabelText('Tarif'),
+      priceCategoryId
+    )
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -145,7 +153,10 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
+    await userEvent.selectOptions(
+      screen.getByLabelText('Tarif'),
+      priceCategoryId
+    )
     await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -173,7 +184,10 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
+    await userEvent.selectOptions(
+      screen.getByLabelText('Tarif'),
+      priceCategoryId
+    )
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
@@ -200,7 +214,10 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
+    await userEvent.selectOptions(
+      screen.getByLabelText('Tarif'),
+      priceCategoryId
+    )
     await userEvent.click(screen.getByText('Étape suivante'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -228,7 +245,10 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
+    await userEvent.selectOptions(
+      screen.getByLabelText('Tarif'),
+      priceCategoryId
+    )
     await userEvent.click(screen.getByText('Étape suivante'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -241,54 +261,6 @@ describe('screens:StocksEventEdition', () => {
         isEdition: true,
         offerId: 'OFFER_ID',
         to: 'recapitulatif',
-        used: 'StickyButtons',
-      }
-    )
-  })
-
-  it('should track when clicking on "Étape précédente" on creation', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-
-    renderStockEventScreen(props, contextValue)
-
-    await userEvent.click(screen.getByText('Étape précédente'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'stocks',
-        isDraft: true,
-        isEdition: false,
-        offerId: 'OFFER_ID',
-        to: 'informations',
-        used: 'StickyButtons',
-      }
-    )
-  })
-
-  it('should track when clicking on "Étape précédente" on draft', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-
-    renderStockEventScreen(props, contextValue, '/brouillon/stocks')
-
-    await userEvent.click(screen.getByText('Étape précédente'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'stocks',
-        isDraft: true,
-        isEdition: true,
-        offerId: 'OFFER_ID',
-        to: 'informations',
         used: 'StickyButtons',
       }
     )

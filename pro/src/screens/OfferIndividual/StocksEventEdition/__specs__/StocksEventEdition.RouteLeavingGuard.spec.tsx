@@ -51,7 +51,7 @@ const renderStockEventScreen = (
   contextValue: IOfferIndividualContext,
   url: string = getOfferIndividualPath({
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
-    mode: OFFER_WIZARD_MODE.CREATION,
+    mode: OFFER_WIZARD_MODE.EDITION,
   })
 ) =>
   renderWithProviders(
@@ -106,6 +106,7 @@ const renderStockEventScreen = (
   )
 
 const today = getToday()
+const priceCategoryId = '1'
 
 describe('screens:StocksEventEdition', () => {
   let props: IStocksEventEditionProps
@@ -121,6 +122,10 @@ describe('screens:StocksEventEdition', () => {
         departmentCode: '75',
       } as IOfferIndividualVenue,
       stocks: [],
+      priceCategories: [
+        { id: Number(priceCategoryId), label: 'Cat 1', price: 10 },
+        { id: 2, label: 'Cat 2', price: 20 },
+      ],
     }
     props = {
       offer: offer as IOfferIndividual,
@@ -147,48 +152,6 @@ describe('screens:StocksEventEdition', () => {
     }))
   })
 
-  it('should not block when submitting stock when clicking on "Sauvegarder le brouillon"', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-    renderStockEventScreen(props, contextValue)
-
-    await userEvent.click(screen.getByLabelText('Date', { exact: true }))
-    await userEvent.click(await screen.getByText(today.getDate()))
-    await userEvent.click(screen.getByLabelText('Horaire'))
-    await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
-    )
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-    // Should stay on the same page (text from the stocks event form)
-    expect(
-      screen.getByText(
-        /Les utilisateurs ont un délai de 48h pour annuler leur réservation/
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should not block and submit stock form when click on "Étape suivante"', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-    renderStockEventScreen(props, contextValue)
-
-    await userEvent.click(screen.getByLabelText('Date', { exact: true }))
-    await userEvent.click(await screen.getByText(today.getDate()))
-    await userEvent.click(screen.getByLabelText('Horaire'))
-    await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
-
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-    expect(screen.getByText('Next page')).toBeInTheDocument()
-  })
-
   it('should not block when going outside and form is not touched', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
@@ -201,49 +164,16 @@ describe('screens:StocksEventEdition', () => {
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
   })
 
-  it('should block when clicking on "Étape précédente"', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-
-    renderStockEventScreen(props, contextValue)
-
-    await userEvent.click(screen.getByLabelText('Date', { exact: true }))
-    await userEvent.click(await screen.getByText(today.getDate()))
-    await userEvent.click(screen.getByLabelText('Horaire'))
-    await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape précédente' })
-    )
-    await userEvent.click(screen.getByText('Quitter la page'))
-
-    expect(await screen.findByText('Previous page')).toBeInTheDocument()
-    expect(api.upsertStocks).not.toHaveBeenCalled()
-  })
-
-  it('should be able to stay on stock form after click on "Annuler"', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
-    })
-
-    renderStockEventScreen(props, contextValue)
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
-
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    await userEvent.click(screen.getByText('Rester sur la page'))
-
-    expect(screen.queryByTestId('stock-event-form')).toBeInTheDocument()
-  })
-
   it('should be able to quit without submitting from RouteLeavingGuard', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
     })
 
     renderStockEventScreen(props, contextValue)
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
+    await userEvent.selectOptions(
+      screen.getByLabelText('Tarif'),
+      priceCategoryId
+    )
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -264,7 +194,10 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(await screen.getByText(today.getDate()))
     await userEvent.click(screen.getByLabelText('Horaire'))
     await userEvent.click(await screen.getByText('12:00'))
-    await userEvent.type(screen.getByLabelText('Tarif'), '20')
+    await userEvent.selectOptions(
+      screen.getByLabelText('Tarif'),
+      priceCategoryId
+    )
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -276,8 +209,8 @@ describe('screens:StocksEventEdition', () => {
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
         from: 'stocks',
-        isDraft: true,
-        isEdition: false,
+        isDraft: false,
+        isEdition: true,
         offerId: 'OFFER_ID',
         to: '/outside',
         used: 'RouteLeavingGuard',
