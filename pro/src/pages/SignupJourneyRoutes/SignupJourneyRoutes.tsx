@@ -28,6 +28,21 @@ const SignupJourneyRoutes = () => {
   return (
     <>
       <SkipLinks displayMenu={false} />
+      <header className={styles['header']}>
+        <div className={styles['header-content']}>
+          <img
+            alt="Pass Culture pro, l'espace Pass Culture des acteurs culturels"
+            src={`${ROOT_PATH}/icons/brand-logo-pc-purple.png`}
+          />
+          <Button
+            onClick={onSignoutClick}
+            variant={ButtonVariant.TERNARY}
+            Icon={DisconnectFullIcon}
+          >
+            Se déconnecter
+          </Button>
+        </div>
+      </header>
       <AppLayout
         layoutConfig={{
           fullscreen: true,
@@ -35,21 +50,6 @@ const SignupJourneyRoutes = () => {
         }}
         className={styles['sign-up-journey']}
       >
-        <header className={styles['header']}>
-          <div className={styles['header-content']}>
-            <img
-              alt="Pass Culture pro, l'espace Pass Culture des acteurs culturels"
-              src={`${ROOT_PATH}/icons/brand-logo-pc-purple.png`}
-            />
-            <Button
-              onClick={onSignoutClick}
-              variant={ButtonVariant.TERNARY}
-              Icon={DisconnectFullIcon}
-            >
-              Se déconnecter
-            </Button>
-          </div>
-        </header>
         <SignupJourneyContextProvider>
           <SignupJourneyFormLayout>
             <Routes>

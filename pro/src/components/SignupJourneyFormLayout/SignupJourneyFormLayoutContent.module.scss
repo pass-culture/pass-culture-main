@@ -6,7 +6,7 @@ $header-height: rem.torem(30px) + rem.torem(42px);
 .signup-offerer-layout-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - #{size.$action-bar-sticky-height + $header-height});
+  min-height: calc(100vh - #{size.$action-bar-sticky-height});
   gap: rem.torem(60px);
   margin: 0 auto rem.torem(80px);
   padding-top: rem.torem(50px);
