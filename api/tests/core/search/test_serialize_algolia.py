@@ -317,6 +317,10 @@ def test_serialize_collective_offer():
             "name": "La Moyenne Librairie SA",
             "publicName": "La Moyenne Librairie",
         },
+        "_geoloc": {
+            "lat": collective_offer.venue.latitude,
+            "lng": collective_offer.venue.longitude,
+        },
         "isTemplate": False,
     }
 
@@ -369,6 +373,10 @@ def test_serialize_collective_offer_template():
             "id": collective_offer_template.venue.id,
             "name": "La Moyenne Librairie SA",
             "publicName": "La Moyenne Librairie",
+        },
+        "_geoloc": {
+            "lat": collective_offer_template.venue.latitude,
+            "lng": collective_offer_template.venue.longitude,
         },
         "isTemplate": True,
     }
