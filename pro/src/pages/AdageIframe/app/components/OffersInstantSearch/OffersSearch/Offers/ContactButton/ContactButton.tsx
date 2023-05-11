@@ -17,6 +17,7 @@ export interface IContactButtonProps {
   offerId: number
   position: number
   queryId: string
+  userEmail?: string | null
 }
 
 const ContactButton = ({
@@ -28,6 +29,7 @@ const ContactButton = ({
   offerId,
   position,
   queryId,
+  userEmail,
 }: IContactButtonProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -65,6 +67,7 @@ const ContactButton = ({
           contactPhone={contactPhone}
           venueName={venueName}
           offererName={offererName}
+          userEmail={userEmail}
         />
       )}
     </>

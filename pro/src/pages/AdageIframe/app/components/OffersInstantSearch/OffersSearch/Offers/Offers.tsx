@@ -39,6 +39,7 @@ export interface OffersComponentProps
 interface OffersComponentPropsWithHits
   extends InfiniteHitsProvided<ResultType> {
   userRole: AdageFrontRoles
+  userEmail?: string | null
   setIsLoading: (isLoading: boolean) => void
   handleResetFiltersAndLaunchSearch: () => void
 }
@@ -50,6 +51,7 @@ type OfferMap = Map<
 
 export const OffersComponent = ({
   userRole,
+  userEmail,
   setIsLoading,
   handleResetFiltersAndLaunchSearch,
   hits,
@@ -151,6 +153,7 @@ export const OffersComponent = ({
               offer={offer}
               position={index}
               queryId={queryId}
+              userEmail={userEmail}
             />
           </div>
         ))}

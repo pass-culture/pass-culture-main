@@ -30,6 +30,7 @@ export interface OfferProps {
   canPrebookOffers: boolean
   queryId: string
   position: number
+  userEmail?: string | null
 }
 
 const Offer = ({
@@ -37,6 +38,7 @@ const Offer = ({
   canPrebookOffers,
   queryId,
   position,
+  userEmail,
 }: OfferProps): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(false)
   const [isModalLikeOpen, setIsModalLikeOpen] = useState(false)
@@ -94,6 +96,7 @@ const Offer = ({
               offerId={offer.id}
               position={position}
               queryId={queryId}
+              userEmail={userEmail}
             />
           ) : (
             <PrebookingButton
