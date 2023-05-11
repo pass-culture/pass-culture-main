@@ -11,6 +11,7 @@ from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import post_resource
 from pcapi.connectors.cine_digital_service import put_resource
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
+from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.cds.constants as cds_constants
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
@@ -18,6 +19,7 @@ import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.core.external_bookings.models import ExternalBookingsClientAPI
 from pcapi.core.external_bookings.models import Ticket
 import pcapi.core.users.models as users_models
+from pcapi.utils.queue import add_to_queue
 
 
 CDS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
@@ -238,6 +240,16 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
             self.api_url, self.account_id, self.token, ResourceCDS.CREATE_TRANSACTION, create_transaction_body
         )
         create_transaction_response = parse_obj_as(cds_serializers.CreateTransactionResponseCDS, json_response)
+
+        for ticket in create_transaction_response.tickets:
+            add_to_queue(
+                REDIS_EXTERNAL_BOOKINGS_NAME,
+                {
+                    "barcode": ticket.barcode,
+                    "venue_id": booking.venueId,
+                    "timestamp": datetime.datetime.utcnow().timestamp(),
+                },
+            )
 
         booking_informations = [
             Ticket(barcode=ticket.barcode, seat_number=ticket.seat_number)
