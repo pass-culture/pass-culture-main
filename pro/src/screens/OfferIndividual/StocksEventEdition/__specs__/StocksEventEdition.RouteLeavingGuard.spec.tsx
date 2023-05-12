@@ -24,7 +24,7 @@ import { getToday } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksEventEdition, {
-  IStocksEventEditionProps,
+  StocksEventEditionProps,
 } from '../StocksEventEdition'
 
 const mockLogEvent = jest.fn()
@@ -47,7 +47,7 @@ jest.mock('utils/date', () => ({
 }))
 
 const renderStockEventScreen = (
-  props: IStocksEventEditionProps,
+  props: StocksEventEditionProps,
   contextValue: IOfferIndividualContext,
   url: string = getOfferIndividualPath({
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -109,7 +109,7 @@ const today = getToday()
 const priceCategoryId = '1'
 
 describe('screens:StocksEventEdition', () => {
-  let props: IStocksEventEditionProps
+  let props: StocksEventEditionProps
   let contextValue: IOfferIndividualContext
   let offer: Partial<IOfferIndividual>
   const offerId = 1
