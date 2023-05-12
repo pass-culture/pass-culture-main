@@ -20,7 +20,7 @@ class DigitalThingsReimbursement(finance_models.ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: int) -> bool:
         offer = booking.stock.offer
         return offer.subcategory.reimbursement_rule == subcategories.ReimbursementRuleChoices.NOT_REIMBURSED.value
 
@@ -32,7 +32,7 @@ class EducationalOffersReimbursement(finance_models.ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking | CollectiveBooking, cumulative_revenue: Decimal) -> bool:
+    def is_relevant(self, booking: Booking | CollectiveBooking, cumulative_revenue: int) -> bool:
         return isinstance(booking, CollectiveBooking)
 
     def apply(self, booking: CollectiveBooking) -> Decimal:
@@ -46,7 +46,7 @@ class PhysicalOffersReimbursement(finance_models.ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: int) -> bool:
         return is_relevant_for_standard_reimbursement_rule(booking.stock.offer)
 
 
@@ -58,10 +58,10 @@ class MaxReimbursementByOfferer(finance_models.ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: int) -> bool:
         if not is_relevant_for_standard_reimbursement_rule(booking.stock.offer):
             return False
-        return cumulative_revenue > 20000
+        return cumulative_revenue > (20_000 * 100)  # eurocents
 
 
 class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(finance_models.ReimbursementRule):
@@ -71,10 +71,10 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(finance
     valid_from = None
     valid_until = SEPTEMBER_2021
 
-    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: int) -> bool:
         if not is_relevant_for_standard_reimbursement_rule(booking.stock.offer):
             return False
-        return 20000 < cumulative_revenue <= 40000
+        return (20_000 * 100) < cumulative_revenue <= (40_000 * 100)  # eurocents
 
 
 class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(finance_models.ReimbursementRule):
@@ -84,10 +84,10 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(financ
     valid_from = None
     valid_until = SEPTEMBER_2021
 
-    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: int) -> bool:
         if not is_relevant_for_standard_reimbursement_rule(booking.stock.offer):
             return False
-        return 40000 < cumulative_revenue <= 150000
+        return (40_000 * 100) < cumulative_revenue <= (150_000 * 100)  # eurocents
 
 
 class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(finance_models.ReimbursementRule):
@@ -97,10 +97,10 @@ class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(finance_models.R
     valid_from = None
     valid_until = SEPTEMBER_2021
 
-    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: int) -> bool:
         if not is_relevant_for_standard_reimbursement_rule(booking.stock.offer):
             return False
-        return cumulative_revenue > 150000
+        return cumulative_revenue > (150_000 * 100)  # eurocents
 
 
 class ReimbursementRateByVenueBetween20000And40000(finance_models.ReimbursementRule):
@@ -110,10 +110,10 @@ class ReimbursementRateByVenueBetween20000And40000(finance_models.ReimbursementR
     valid_from = SEPTEMBER_2021
     valid_until = None
 
-    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: int) -> bool:
         if not is_relevant_for_standard_reimbursement_rule(booking.stock.offer):
             return False
-        return 20000 < cumulative_revenue <= 40000
+        return (20_000 * 100) < cumulative_revenue <= (40_000 * 100)  # eurocents
 
 
 class ReimbursementRateByVenueBetween40000And150000(finance_models.ReimbursementRule):
@@ -123,10 +123,10 @@ class ReimbursementRateByVenueBetween40000And150000(finance_models.Reimbursement
     valid_from = SEPTEMBER_2021
     valid_until = None
 
-    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: int) -> bool:
         if not is_relevant_for_standard_reimbursement_rule(booking.stock.offer):
             return False
-        return 40000 < cumulative_revenue <= 150000
+        return (40_000 * 100) < cumulative_revenue <= (150_000 * 100)  # eurocents
 
 
 class ReimbursementRateByVenueAbove150000(finance_models.ReimbursementRule):
@@ -136,10 +136,10 @@ class ReimbursementRateByVenueAbove150000(finance_models.ReimbursementRule):
     valid_from = SEPTEMBER_2021
     valid_until = None
 
-    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: int) -> bool:
         if not is_relevant_for_standard_reimbursement_rule(booking.stock.offer):
             return False
-        return cumulative_revenue > 150000
+        return cumulative_revenue > (150_000 * 100)  # eurocents
 
 
 class ReimbursementRateForBookBelow20000(finance_models.ReimbursementRule):
@@ -149,10 +149,10 @@ class ReimbursementRateForBookBelow20000(finance_models.ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: int) -> bool:
         if booking.stock.offer.subcategory.reimbursement_rule != subcategories.ReimbursementRuleChoices.BOOK.value:
             return False
-        return cumulative_revenue <= 20000
+        return cumulative_revenue <= (20_000 * 100)  # eurocents
 
 
 class ReimbursementRateForBookAbove20000(finance_models.ReimbursementRule):
@@ -162,10 +162,10 @@ class ReimbursementRateForBookAbove20000(finance_models.ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: int) -> bool:
         if booking.stock.offer.subcategory.reimbursement_rule != subcategories.ReimbursementRuleChoices.BOOK.value:
             return False
-        return cumulative_revenue > 20000
+        return cumulative_revenue > (20_000 * 100)  # eurocents
 
 
 REGULAR_RULES = [
@@ -228,7 +228,9 @@ class CustomRuleFinder:
 
 
 def get_reimbursement_rule(
-    booking: Booking | CollectiveBooking, custom_rule_finder: CustomRuleFinder, cumulative_revenue: Decimal
+    booking: Booking | CollectiveBooking,
+    custom_rule_finder: CustomRuleFinder,
+    cumulative_revenue: int,
 ) -> finance_models.ReimbursementRule:
     if isinstance(booking, CollectiveBooking):
         return EducationalOffersReimbursement()

@@ -341,7 +341,7 @@ class ReimbursementRule:
     def is_relevant(
         self,
         booking: "bookings_models.Booking",
-        cumulative_revenue: decimal.Decimal,
+        cumulative_revenue: int,
     ) -> bool:
         raise NotImplementedError()
 
@@ -349,7 +349,7 @@ class ReimbursementRule:
     def description(self) -> str:
         raise NotImplementedError()
 
-    def matches(self, booking: "bookings_models.Booking", cumulative_revenue: decimal.Decimal) -> bool:
+    def matches(self, booking: "bookings_models.Booking", cumulative_revenue: int) -> bool:
         return self.is_active(booking) and self.is_relevant(booking, cumulative_revenue)
 
     def apply(self, booking: "bookings_models.Booking") -> decimal.Decimal:
@@ -424,7 +424,7 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
     def is_relevant(
         self,
         booking: "bookings_models.Booking",
-        cumulative_revenue: decimal.Decimal = decimal.Decimal(0),  # unused
+        cumulative_revenue: int = 0,  # unused
     ) -> bool:
         if booking.stock.offerId == self.offerId:
             return True

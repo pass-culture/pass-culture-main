@@ -479,11 +479,7 @@ def _price_booking(
     if not is_booking_collective:
         new_revenue += utils.to_eurocents(booking.total_amount)
     rule_finder = reimbursement.CustomRuleFinder()
-    # FIXME (dbaty, 2021-11-10): `revenue` here is in eurocents but
-    # `get_reimbursement_rule` expects euros. Clean that once the
-    # old payment code has been removed and the function accepts
-    # eurocents instead.
-    rule = reimbursement.get_reimbursement_rule(booking, rule_finder, utils.to_euros(new_revenue))
+    rule = reimbursement.get_reimbursement_rule(booking, rule_finder, new_revenue)
     amount = -utils.to_eurocents(rule.apply(booking))  # outgoing, thus negative
     # `Pricing.amount` equals the sum of the amount of all lines.
     lines = [

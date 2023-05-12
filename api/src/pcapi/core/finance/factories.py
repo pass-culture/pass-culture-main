@@ -183,7 +183,7 @@ class PaymentFactory(BaseFactory):
     reimbursementRule = factory.Iterator(REIMBURSEMENT_RULE_DESCRIPTIONS)
     reimbursementRate = factory.LazyAttribute(
         lambda payment: reimbursement.get_reimbursement_rule(  # type: ignore [attr-defined]
-            payment.booking, reimbursement.CustomRuleFinder(), decimal.Decimal(0)
+            payment.booking, reimbursement.CustomRuleFinder(), 0
         ).rate
     )
     recipientName = "Récipiendaire"
