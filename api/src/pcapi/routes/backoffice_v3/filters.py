@@ -1,5 +1,6 @@
 import datetime
 import random
+import re
 import typing
 from urllib.parse import urlparse
 from urllib.parse import urlunparse
@@ -377,6 +378,12 @@ def format_offer_types(data: list[str]) -> str:
     return " ou ".join([types[type_name] for type_name in data])
 
 
+def format_website(website: str) -> str:
+    if not re.match(r"^\w+://", website):
+        return "https://{}".format(website)
+    return website
+
+
 def parse_referrer(url: str) -> str:
     """
     Ensure that a relative path is used, which will be understood.
@@ -434,6 +441,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_validation_sub_rule"] = format_offer_validation_sub_rule
     app.jinja_env.filters["format_offer_validation_operator"] = format_offer_validation_operator
     app.jinja_env.filters["format_offer_types"] = format_offer_types
+    app.jinja_env.filters["format_website"] = format_website
     app.jinja_env.filters["parse_referrer"] = parse_referrer
     app.jinja_env.filters["action_to_name"] = action_to_name
     app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link
