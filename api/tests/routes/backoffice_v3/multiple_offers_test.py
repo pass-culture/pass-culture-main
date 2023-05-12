@@ -16,6 +16,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -195,6 +196,16 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
+
+
+class SetProductGcuIncompatibleButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    button_label = "Rendre le livre et les offres associées incompatibles avec les CGU"
+
+    @property
+    def path(self):
+        offers_factories.ThingProductFactory(extraData={"isbn": "9781234567890"})
+        return url_for("backoffice_v3_web.multiple_offers.search_multiple_offers", isbn="9781234567890")
 
 
 class SetProductGcuIncompatibleTest(PostEndpointHelper):
