@@ -33,7 +33,7 @@ interface IStockFormListProps {
   priceCategoriesOptions: SelectOption[]
 }
 
-export const STOCKS_PER_PAGE = 20
+const STOCKS_PER_PAGE = 20
 
 const StockFormList = ({
   offer,

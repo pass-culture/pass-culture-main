@@ -20,7 +20,7 @@ import { getDateToFrenchText } from 'utils/date'
 
 import styles from './CollectiveTimeLine.module.scss'
 
-export interface ICollectiveBookingDetailsProps {
+interface CollectiveTimeLineProps {
   bookingRecap: CollectiveBookingResponseModel
   bookingDetails: CollectiveBookingByIdResponseModel
 }
@@ -50,7 +50,7 @@ const cancellationReasonTitle = (
 const CollectiveTimeLine = ({
   bookingRecap,
   bookingDetails,
-}: ICollectiveBookingDetailsProps) => {
+}: CollectiveTimeLineProps) => {
   const bookingDate = getDateToFrenchText(bookingRecap.bookingDate)
   const confirmationDate =
     bookingRecap.bookingConfirmationDate &&

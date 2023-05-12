@@ -3,9 +3,7 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES, IStockThingFormValues } from '../'
 
-export const buildInitialValues = (
-  offer: IOfferIndividual
-): IStockThingFormValues => {
+const buildInitialValues = (offer: IOfferIndividual): IStockThingFormValues => {
   if (offer.stocks.length === 0) {
     return STOCK_THING_FORM_DEFAULT_VALUES
   }
@@ -29,4 +27,5 @@ export const buildInitialValues = (
     isDuo: offer.isDuo,
   }
 }
+
 export default buildInitialValues

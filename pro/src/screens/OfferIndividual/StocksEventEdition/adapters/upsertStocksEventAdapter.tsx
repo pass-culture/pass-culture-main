@@ -8,7 +8,7 @@ import {
 
 type TSuccessPayload = { stockIds: string[] }
 type TFailurePayload = { errors: Record<string, string>[] }
-export type TUpdateStocksAdapter = Adapter<
+type TUpdateStocksAdapter = Adapter<
   {
     offerId: number
     stocks: Array<StockCreationBodyModel | StockEditionBodyModel>

@@ -9,17 +9,17 @@ import type { LinkProps } from 'ui-kit/Button/ButtonLink'
 
 import styles from './InfoBox.module.scss'
 
-export interface IInfoBoxLinkProps extends LinkProps {
+interface InfoBoxLinkProps extends LinkProps {
   text: string
 }
 
-export interface IInfoBoxProps {
+export interface InfoBoxProps {
   type: 'info' | 'important'
   text: string
-  link?: IInfoBoxLinkProps
+  link?: InfoBoxLinkProps
 }
 
-const InfoBox = ({ type, text, link }: IInfoBoxProps): JSX.Element => {
+const InfoBox = ({ type, text, link }: InfoBoxProps): JSX.Element => {
   return (
     <div className={cn(styles['info-box'], styles[type])}>
       <div className={styles['info-box-header']}>

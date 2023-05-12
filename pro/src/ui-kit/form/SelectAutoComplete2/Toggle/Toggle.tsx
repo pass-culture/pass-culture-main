@@ -5,7 +5,7 @@ import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './Toggle.module.scss'
 
-export interface ToggleProps {
+interface ToggleProps {
   disabled: boolean
   isOpen: boolean
   toggleField: () => void

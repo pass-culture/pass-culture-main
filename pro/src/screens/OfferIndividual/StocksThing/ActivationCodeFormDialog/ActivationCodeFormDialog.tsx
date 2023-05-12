@@ -11,7 +11,7 @@ import styles from './ActivationCodeFormDialog.module.scss'
 import AddActivationCodeConfirmationForm from './AddActivationCodeConfirmationForm'
 import AddActivationCodeForm from './AddActivationCodeForm'
 
-export const ACTIVATION_CODES_UPLOAD_ID = 'ACTIVATION_CODES_UPLOAD_ID'
+const ACTIVATION_CODES_UPLOAD_ID = 'ACTIVATION_CODES_UPLOAD_ID'
 
 interface IActivationCodeFormProps {
   onCancel: () => void

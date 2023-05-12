@@ -13,7 +13,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferSelectionDuplication from '../CollectiveOfferSelectionDuplicationScreen'
 
-export interface InitialValuesProps {
+interface InitialValuesProps {
   searchFilter: string
   templateOfferId: string
 }

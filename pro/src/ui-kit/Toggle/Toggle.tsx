@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import styles from './Toggle.module.scss'
 
-interface IToggle {
+export interface ToggleProps {
   isActiveByDefault?: boolean
   isDisabled?: boolean
   label: string
@@ -15,7 +15,7 @@ const Toggle = ({
   isDisabled = false,
   label = 'Label',
   handleClick,
-}: IToggle) => {
+}: ToggleProps) => {
   const [isActive, setIsActive] = useState(isActiveByDefault)
 
   useEffect(() => {

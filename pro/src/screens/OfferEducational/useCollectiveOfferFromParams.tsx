@@ -23,7 +23,7 @@ export type OptionalCollectiveOfferFromParamsProps = Omit<
 > &
   Partial<Pick<MandatoryCollectiveOfferFromParamsProps, 'offer'>>
 
-export const useCollectiveOfferFromParams = (
+const useCollectiveOfferFromParams = (
   isOfferMandatory: boolean,
   offerIdFromParams?: string
 ) => {

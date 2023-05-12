@@ -7,7 +7,7 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 
 import { buildVenueOptions } from '../UsefulInformations/Venue/utils'
 
-export const setDefaultInitialFormValues = (
+const setDefaultInitialFormValues = (
   values: IOfferIndividualFormValues,
   offererNames: TOffererName[],
   offererId: string | null,

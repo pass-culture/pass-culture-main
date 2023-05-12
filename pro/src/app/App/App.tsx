@@ -10,11 +10,11 @@ import usePageTitle from 'hooks/usePageTitle'
 import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
 import { URL_FOR_MAINTENANCE } from 'utils/config'
 
-export interface IAppProps {
+interface AppProps {
   children: JSX.Element
 }
 
-const App = ({ children }: IAppProps): JSX.Element | null => {
+const App = ({ children }: AppProps): JSX.Element | null => {
   const { currentUser } = useCurrentUser()
 
   const isMaintenanceActivated = useSelector(maintenanceSelector)

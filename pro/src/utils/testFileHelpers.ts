@@ -1,20 +1,20 @@
-interface ICreateImageArgs {
+interface CreateImageArgs {
   name?: string
   type?: string
   sizeInMB?: number
 }
-export const createFile = ({
+const createFile = ({
   name = 'example.json',
   type = 'application/json',
   sizeInMB = 1,
-}: ICreateImageArgs = {}): File => {
+}: CreateImageArgs = {}): File => {
   const oneMB = 1024 * 1024
   const file = new File([''], name, { type })
   Object.defineProperty(file, 'size', { value: oneMB * sizeInMB })
   return file
 }
 
-interface ICreateImageFileArgs {
+interface CreateImageFileArgs {
   name?: string
   type?: string
   sizeInMB?: number
@@ -27,7 +27,7 @@ export const createImageFile = ({
   sizeInMB = 1,
   width = 100,
   height = 100,
-}: ICreateImageFileArgs = {}): File => {
+}: CreateImageFileArgs = {}): File => {
   const file = createFile({ name, type, sizeInMB })
   Object.defineProperty(file, 'width', {
     value: width,
