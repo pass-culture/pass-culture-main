@@ -3,7 +3,6 @@ import React from 'react'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { useOfferWizardMode } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import {
   StocksEventEdition,
   StocksThing,
@@ -15,7 +14,6 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 const Stocks = (): JSX.Element | null => {
   const { offer } = useOfferIndividualContext()
   const mode = useOfferWizardMode()
-  const isRecurrenceActive = useActiveFeature('WIP_RECURRENCE')
 
   // Here we display a spinner because when the router transitions from
   // Informations form to Stocks form the setOffer after the submit is not
@@ -29,7 +27,7 @@ const Stocks = (): JSX.Element | null => {
   return (
     <Template>
       {offer.isEvent ? (
-        isRecurrenceActive && mode !== OFFER_WIZARD_MODE.EDITION ? (
+        mode !== OFFER_WIZARD_MODE.EDITION ? (
           <StocksEventCreation offer={offer} />
         ) : (
           <StocksEventEdition offer={offer} />

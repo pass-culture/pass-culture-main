@@ -33,7 +33,7 @@ const renderStocksScreen = (
     <OfferIndividualContext.Provider value={contextValue}>
       <Stocks />
     </OfferIndividualContext.Provider>,
-    { storeOverrides, initialRouterEntries: ['/creation/stocks'] }
+    { storeOverrides }
   )
 }
 
@@ -70,6 +70,7 @@ describe('screens:Stocks', () => {
       )
     ).toBeInTheDocument()
   })
+
   it('should render stock event', async () => {
     contextOverride.offer = {
       ...contextOverride.offer,
@@ -78,7 +79,7 @@ describe('screens:Stocks', () => {
     renderStocksScreen(storeOverrides, contextOverride)
     expect(
       screen.getByText(
-        'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’évènement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente.'
+        'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’évènement. Vous pouvez annuler un évènement en supprimant la ligne de stock associée. Cette action est irréversible.'
       )
     ).toBeInTheDocument()
   })
@@ -119,7 +120,7 @@ describe('screens:Stocks', () => {
       renderStocksScreen(storeOverrides, contextOverride)
       expect(
         screen.queryByText(
-          'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’évènement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente.'
+          'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’évènement. Vous pouvez annuler un évènement en supprimant la ligne de stock associée. Cette action est irréversible.'
         )
       ).toBeInTheDocument()
     }

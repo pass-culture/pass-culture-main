@@ -13,7 +13,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
+import { isOfferDisabled } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { IOfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
@@ -104,13 +104,13 @@ export const getPriceCategoryOptions = (
   )
 }
 
-export interface IStocksEventEditionProps {
+export interface StocksEventEditionProps {
   offer: IOfferIndividual
 }
 
 const StocksEventEdition = ({
   offer,
-}: IStocksEventEditionProps): JSX.Element => {
+}: StocksEventEditionProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
     getOfferIndividualUrl({
@@ -135,34 +135,27 @@ const StocksEventEdition = ({
   let links
 
   if (!isOfferDisabled(offer.status)) {
-    if (mode === OFFER_WIZARD_MODE.EDITION) {
-      description =
-        'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’évènement. \n Vous pouvez annuler un évènement en supprimant la ligne de stock associée. Cette action est irréversible.'
-      links = [
-        {
-          href: 'https://aide.passculture.app/hc/fr/articles/4411992053649--Acteurs-Culturels-Comment-annuler-ou-reporter-un-%C3%A9v%C3%A9nement-',
-          linkTitle: 'Comment reporter ou annuler un évènement ?',
-        },
-      ]
-    } else {
-      description =
-        'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’évènement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente.'
-    }
+    description =
+      'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’évènement. \n Vous pouvez annuler un évènement en supprimant la ligne de stock associée. Cette action est irréversible.'
+    links = [
+      {
+        href: 'https://aide.passculture.app/hc/fr/articles/4411992053649--Acteurs-Culturels-Comment-annuler-ou-reporter-un-%C3%A9v%C3%A9nement-',
+        linkTitle: 'Comment reporter ou annuler un évènement ?',
+      },
+    ]
   }
 
   const onSubmit = async (formValues: { stocks: IStockEventFormValues[] }) => {
-    if (mode === OFFER_WIZARD_MODE.EDITION) {
-      const changesOnStockWithBookings = hasChangesOnStockWithBookings(
-        formValues,
-        formik.initialValues
-      )
+    const changesOnStockWithBookings = hasChangesOnStockWithBookings(
+      formValues,
+      formik.initialValues
+    )
 
-      if (!showStocksEventConfirmModal && changesOnStockWithBookings) {
-        setShowStocksEventConfirmModal(true)
-        return
-      } else {
-        setShowStocksEventConfirmModal(false)
-      }
+    if (!showStocksEventConfirmModal && changesOnStockWithBookings) {
+      setShowStocksEventConfirmModal(true)
+      return
+    } else {
+      setShowStocksEventConfirmModal(false)
     }
 
     const { isOk, payload } = await upsertStocksEventAdapter({
@@ -199,8 +192,8 @@ const StocksEventEdition = ({
         used: isSubmittingDraft
           ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
           : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        isEdition: true,
+        isDraft: false,
         offerId: offer.id,
       })
       notify.success(getSuccessMessage(mode))
@@ -307,9 +300,9 @@ const StocksEventEdition = ({
         mode,
       })
 
-      // When saving draft with an empty form or in edition mode
+      // When saving draft with an empty form
       // we display a success notification even if nothing is done
-      if (isFormEmpty() && (saveDraft || mode === OFFER_WIZARD_MODE.EDITION)) {
+      if (isFormEmpty()) {
         setIsClickingFromActionBar(false)
         if (saveDraft) {
           notify.success('Brouillon sauvegardé dans la liste des offres')
@@ -357,8 +350,8 @@ const StocksEventEdition = ({
         from: OFFER_WIZARD_STEP_IDS.STOCKS,
         to: OFFER_WIZARD_STEP_IDS.TARIFS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        isEdition: true,
+        isDraft: false,
         offerId: offer.id,
       })
     }
@@ -421,8 +414,8 @@ const StocksEventEdition = ({
             from: OFFER_WIZARD_STEP_IDS.STOCKS,
             to: logTo(nextLocation),
             used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
-            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-            isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+            isEdition: true,
+            isDraft: false,
             offerId: offer?.id,
           })
         }
