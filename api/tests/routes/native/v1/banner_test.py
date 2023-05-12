@@ -1,6 +1,7 @@
 import datetime
 
 from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
 import pytest
 
 import pcapi.core.fraud.factories as fraud_factories
@@ -169,7 +170,7 @@ class BannerTest:
             }
         }
 
-    def should_get_15_18_transition_banner(self, client):
+    def should_get_17_18_transition_id_check_todo_banner(self, client):
         user = users_factories.ExUnderageBeneficiaryFactory()
 
         client.with_token(email=user.email)
@@ -183,6 +184,26 @@ class BannerTest:
             "banner": {
                 "name": "transition_17_18_banner",
                 "text": "Confirme ton identité",
+                "title": f"Débloque tes 300{u_nbsp}€",
+            },
+        }
+
+    def should_get_17_18_transition_id_check_done_banner(self, client):
+        a_year_ago = datetime.datetime.utcnow() - relativedelta(years=1, months=1)
+        with freeze_time(a_year_ago):
+            user = users_factories.BeneficiaryFactory(age=17)
+
+        assert user.age == 18
+
+        client.with_token(email=user.email)
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
+            response = client.get("/native/v1/banner")
+            assert response.status_code == 200
+
+        assert response.json == {
+            "banner": {
+                "name": "transition_17_18_banner",
+                "text": "Confirme tes informations",
                 "title": f"Débloque tes 300{u_nbsp}€",
             },
         }

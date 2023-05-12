@@ -43,23 +43,30 @@ def _is_17_18_transition(user: users_models.User) -> bool:
     )
 
 
+def _has_completed_id_check(user: users_models.User) -> bool:
+    return any(
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type in (fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.UBBLE)
+        and user.eligibility in fraud_check.applicable_eligibilities
+        and fraud_check.status == fraud_models.FraudCheckStatus.OK
+    )
+
+
 def _get_17_18_transition_banner_information_text(
-    user_subscription_state: subscription_models.UserSubscriptionState,
+    user: users_models.User,
 ) -> str:
-    if user_subscription_state.identity_fraud_check and user_subscription_state.identity_fraud_check.type in [
-        fraud_models.FraudCheckType.DMS,
-        fraud_models.FraudCheckType.UBBLE,
-    ]:
+    if _has_completed_id_check(user):
         return serializers.BannerText.TRANSITION_17_18_BANNER_ID_CHECK_DONE.value
 
     return serializers.BannerText.TRANSITION_17_18_BANNER_ID_CHECK_TODO.value
 
 
 def _get_17_18_transition_banner_information(
-    user_subscription_state: subscription_models.UserSubscriptionState,
+    user: users_models.User,
     amount_to_display: decimal.Decimal,
 ) -> serializers.Banner | None:
-    banner_text = _get_17_18_transition_banner_information_text(user_subscription_state)
+    banner_text = _get_17_18_transition_banner_information_text(user)
     return serializers.Banner(
         name=serializers.BannerName.TRANSITION_17_18_BANNER,
         title=serializers.BannerTitle.TRANSITION_17_18_BANNER.value.format(f"{amount_to_display}{u_nbsp}"),
@@ -94,7 +101,7 @@ def _get_activation_banner(
         return None
 
     if _is_17_18_transition(user):
-        return _get_17_18_transition_banner_information(user_subscription_state, amount_to_display)
+        return _get_17_18_transition_banner_information(user, amount_to_display)
 
     return serializers.Banner(
         name=serializers.BannerName.ACTIVATION_BANNER,
