@@ -122,6 +122,7 @@ jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
   },
   name: 'lieu',
   siret: '88145723823022',
+  ape_code: '95.07A',
 })
 
 // Mock l'appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
