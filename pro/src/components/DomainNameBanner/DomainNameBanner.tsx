@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 import { setDisplayDomainBanner } from 'store/app/actions'
+import { RootState } from 'store/reducers'
 import { Banner } from 'ui-kit'
 import { parse, stringify } from 'utils/query-string'
 
@@ -12,7 +13,7 @@ export const DomainNameBanner = () => {
   const location = useLocation()
   const queryParams = parse(location.search)
   const shouldDisplayBanner = useSelector(
-    state => state.app.displayDomainBanner
+    (state: RootState) => state.app.displayDomainBanner
   )
 
   useEffect(() => {

@@ -9,7 +9,7 @@ import CollectiveTimeLine from '../CollectiveTimeLine'
 
 import styles from './CollectiveBookingDetails.module.scss'
 
-export interface ICollectiveBookingDetailsProps {
+interface CollectiveBookingDetailsProps {
   bookingDetails: CollectiveBookingByIdResponseModel
   bookingRecap: CollectiveBookingResponseModel
   reloadBookings: () => void
@@ -19,7 +19,7 @@ const CollectiveBookingDetails = ({
   bookingDetails,
   bookingRecap,
   reloadBookings,
-}: ICollectiveBookingDetailsProps) => {
+}: CollectiveBookingDetailsProps) => {
   const { educationalInstitution, educationalRedactor } = bookingDetails
 
   return (

@@ -6,7 +6,7 @@ import baseCheckboxStyles from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox.mod
 
 import styles from './OptionsList.module.scss'
 
-export interface OptionsListProps {
+interface OptionsListProps {
   className?: string
   fieldName: string
   maxHeight?: number
