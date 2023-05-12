@@ -11,6 +11,7 @@ import redis
 import sqlalchemy as sa
 
 from pcapi import settings
+from pcapi.core.educational.academies import get_academy_from_department
 import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
@@ -526,6 +527,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": offerer.name,
             },
             "venue": {
+                "academy": get_academy_from_department(department_code),
                 "departmentCode": department_code,
                 "id": venue.id,
                 "name": venue.name,
@@ -563,6 +565,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": offerer.name,
             },
             "venue": {
+                "academy": get_academy_from_department(department_code),
                 "departmentCode": department_code,
                 "id": venue.id,
                 "name": venue.name,
