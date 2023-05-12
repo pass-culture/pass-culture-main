@@ -20,6 +20,7 @@ from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.utils import requests
 import pcapi.utils.date as date_utils
+from pcapi.utils.regions import get_department_code_from_postal_code
 from pcapi.utils.stopwords import STOPWORDS
 
 
@@ -501,14 +502,7 @@ class AlgoliaBackend(base.SearchBackend):
         offerer = venue.managingOfferer
         date_created = collective_offer.dateCreated.timestamp()
         beginning_datetime = collective_offer.collectiveStock.beginningDatetime.timestamp()
-
-        # hack to fix seach in adage_iframe for Corse
-        department_code = venue.departementCode
-        if department_code == "20":
-            if venue.postalCode.startswith("200") or venue.postalCode.startswith("201"):
-                department_code = "2A"
-            else:
-                department_code = "2B"
+        department_code = get_department_code_from_postal_code(venue.postalCode)
 
         return {
             "objectID": collective_offer.id,
@@ -547,14 +541,7 @@ class AlgoliaBackend(base.SearchBackend):
         venue = collective_offer_template.venue
         offerer = venue.managingOfferer
         date_created = collective_offer_template.dateCreated.timestamp()
-
-        # hack to fix seach in adage_iframe for Corse
-        department_code = venue.departementCode
-        if department_code == "20":
-            if venue.postalCode.startswith("200") or venue.postalCode.startswith("201"):
-                department_code = "2A"
-            else:
-                department_code = "2B"
+        department_code = get_department_code_from_postal_code(venue.postalCode)
 
         return {
             "objectID": _transform_collective_offer_template_id(collective_offer_template.id),
