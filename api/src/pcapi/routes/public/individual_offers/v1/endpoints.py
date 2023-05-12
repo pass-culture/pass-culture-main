@@ -47,11 +47,11 @@ ASPECT_RATIO = image_conversion.ImageRatio.PORTRAIT
     api=blueprint.v1_schema, tags=[OFFERER_VENUES_TAG], response_model=serialization.GetOfferersVenuesResponse
 )
 @api_key_required
-def get_offerer_venues() -> serialization.GetOfferersVenuesResponse:
+def get_offerer_venues(query: serialization.GetOfferersVenuesQuery) -> serialization.GetOfferersVenuesResponse:
     """
     Get offerer attached the API key used and its venues.
     """
-    query = (
+    offerers_query = (
         db.session.query(offerers_models.Offerer, offerers_models.Venue)
         .join(offerers_models.Venue, offerers_models.Offerer.managedVenues)
         .join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
@@ -59,8 +59,11 @@ def get_offerer_venues() -> serialization.GetOfferersVenuesResponse:
         .order_by(offerers_models.Offerer.id, offerers_models.Venue.id)
     )
 
+    if query.siren:
+        offerers_query = offerers_query.filter(offerers_models.Offerer.siren == query.siren)
+
     accessible_venues_and_offerer = []
-    for offerer, group in itertools.groupby(query, lambda row: row.Offerer):
+    for offerer, group in itertools.groupby(offerers_query, lambda row: row.Offerer):
         accessible_venues_and_offerer.append(
             {
                 "offerer": offerer,

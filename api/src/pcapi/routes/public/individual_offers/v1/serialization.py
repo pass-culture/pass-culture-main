@@ -933,3 +933,7 @@ class GetOfferersVenuesResponse(serialization.BaseModel):
 
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
+
+
+class GetOfferersVenuesQuery(serialization.ConfiguredBaseModel):
+    siren: str | None = pydantic.Field(example="123456789")
