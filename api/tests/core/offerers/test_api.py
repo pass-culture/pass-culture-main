@@ -1242,7 +1242,7 @@ class LinkVenueToPricingPointTest:
         assert new_link.pricingPoint == pricing_point
         assert new_link.timespan.upper is None
 
-    def test_raises_if_pre_existing_link(self):
+    def test_behaviour_if_pre_existing_link(self):
         venue = offerers_factories.VenueWithoutSiretFactory()
         pricing_point_1 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=pricing_point_1)
@@ -1253,14 +1253,13 @@ class LinkVenueToPricingPointTest:
             offerers_api.link_venue_to_pricing_point(venue, pricing_point_2.id)
         assert offerers_models.VenuePricingPointLink.query.one() == pre_existing_link
 
-    def test_raises_if_venue_has_siret(self):
-        venue = offerers_factories.VenueFactory(siret="1234", pricing_point="self")
-        pre_existing_link = offerers_models.VenuePricingPointLink.query.one()
-        pricing_point_2 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-
-        with pytest.raises(api_errors.ApiErrors):
-            offerers_api.link_venue_to_pricing_point(venue, pricing_point_2.id)
-        assert offerers_models.VenuePricingPointLink.query.one() == pre_existing_link
+        # Now force the link.
+        offerers_api.link_venue_to_pricing_point(venue, pricing_point_2.id, force_link=True)
+        link = offerers_models.VenuePricingPointLink.query.order_by(
+            offerers_models.VenuePricingPointLink.id.desc()
+        ).first()
+        assert link.venue == venue
+        assert link.pricingPoint == pricing_point_2
 
     def test_fails_if_venue_has_siret(self):
         reimbursement_point = offerers_factories.VenueFactory()
