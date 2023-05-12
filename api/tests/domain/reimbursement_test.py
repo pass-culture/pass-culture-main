@@ -121,13 +121,13 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000Test:
     def test_relevancy_depending_on_revenue(self):
         booking = create_event_booking()
 
-        assert not self.rule.is_relevant(booking, 20000)
-        assert self.rule.is_relevant(booking, 20001)
-        assert self.rule.is_relevant(booking, 40000)
-        assert not self.rule.is_relevant(booking, 40001)
+        assert not self.rule.is_relevant(booking, 20_000 * 100)
+        assert self.rule.is_relevant(booking, 20_001 * 100)
+        assert self.rule.is_relevant(booking, 40_000 * 100)
+        assert not self.rule.is_relevant(booking, 40_001 * 100)
 
     def test_relevancy_depending_on_offer_subcategory(self):
-        revenue = 20001
+        revenue = 20_001 * 100
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
@@ -144,13 +144,13 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000Test:
     def test_relevancy_depending_on_revenue(self):
         booking = create_event_booking()
 
-        assert not self.rule.is_relevant(booking, 40000)
-        assert self.rule.is_relevant(booking, 40001)
-        assert self.rule.is_relevant(booking, 150000)
-        assert not self.rule.is_relevant(booking, 150001)
+        assert not self.rule.is_relevant(booking, 40_000 * 100)
+        assert self.rule.is_relevant(booking, 40_001 * 100)
+        assert self.rule.is_relevant(booking, 150_000 * 100)
+        assert not self.rule.is_relevant(booking, 150_001 * 100)
 
     def test_relevancy_depending_on_offer_type(self):
-        revenue = 40001
+        revenue = 40_001 * 100
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
@@ -167,11 +167,11 @@ class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000Test:
     def test_relevancy_depending_on_revenue(self):
         booking = create_event_booking()
 
-        assert not self.rule.is_relevant(booking, 150000)
-        assert self.rule.is_relevant(booking, 150001)
+        assert not self.rule.is_relevant(booking, 150_000 * 100)
+        assert self.rule.is_relevant(booking, 150_001 * 100)
 
     def test_relevancy_depending_on_offer_type(self):
-        revenue = 150001
+        revenue = 150_001 * 100
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
@@ -188,13 +188,13 @@ class ReimbursementRateByVenueBetween20000And40000Test:
     def test_relevancy_depending_on_revenue(self):
         booking = create_event_booking()
 
-        assert not self.rule.is_relevant(booking, 20000)
-        assert self.rule.is_relevant(booking, 20001)
-        assert self.rule.is_relevant(booking, 40000)
+        assert not self.rule.is_relevant(booking, 20_000 * 100)
+        assert self.rule.is_relevant(booking, 20_001 * 100)
+        assert self.rule.is_relevant(booking, 40_000 * 100)
         assert not self.rule.is_relevant(booking, 40001)
 
     def test_relevancy_depending_on_offer_type(self):
-        revenue = 20001
+        revenue = 20_001 * 100
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
@@ -211,13 +211,13 @@ class ReimbursementRateByVenueBetween40000And150000Test:
     def test_relevancy_depending_on_revenue(self):
         booking = create_event_booking()
 
-        assert not self.rule.is_relevant(booking, 40000)
-        assert self.rule.is_relevant(booking, 40001)
-        assert self.rule.is_relevant(booking, 150000)
-        assert not self.rule.is_relevant(booking, 150001)
+        assert not self.rule.is_relevant(booking, 40_000 * 100)
+        assert self.rule.is_relevant(booking, 40_001 * 100)
+        assert self.rule.is_relevant(booking, 150_000 * 100)
+        assert not self.rule.is_relevant(booking, 150_001 * 100)
 
     def test_relevancy_depending_on_offer_type(self):
-        revenue = 40001
+        revenue = 40_001 * 100
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
@@ -234,11 +234,11 @@ class ReimbursementRateByVenueAbove150000Test:
     def test_relevancy_depending_on_revenue(self):
         booking = create_event_booking()
 
-        assert not self.rule.is_relevant(booking, 150000)
-        assert self.rule.is_relevant(booking, 150001)
+        assert not self.rule.is_relevant(booking, 150_000 * 100)
+        assert self.rule.is_relevant(booking, 150_001 * 100)
 
     def test_relevancy_depending_on_offer_type(self):
-        revenue = 150001
+        revenue = 150_001 * 100
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
@@ -258,11 +258,11 @@ class ReimbursementRateForBookBelow20000Test:
         assert self.rule.apply(self.book_booking) == Decimal(1) * 40 * 2
 
     def test_relevancy_depending_on_revenue(self):
-        assert self.rule.is_relevant(self.book_booking, 20000)
-        assert not self.rule.is_relevant(self.book_booking, 20001)
+        assert self.rule.is_relevant(self.book_booking, 20_000)
+        assert not self.rule.is_relevant(self.book_booking, 20_001 * 100)
 
     def test_relevancy_depending_on_offer_type(self):
-        revenue = 20000
+        revenue = 20_000 * 100
         assert self.rule.is_relevant(self.book_booking, revenue)
         assert not self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert not self.rule.is_relevant(create_event_booking(), revenue)
@@ -286,11 +286,11 @@ class ReimbursementRateForBookAbove20000Test:
         assert self.rule.apply(self.book_booking) == Decimal("0.95") * 40 * 2
 
     def test_relevancy_depending_on_revenue(self):
-        assert not self.rule.is_relevant(self.book_booking, 20000)
-        assert self.rule.is_relevant(self.book_booking, 20001)
+        assert not self.rule.is_relevant(self.book_booking, 20_000 * 100)
+        assert self.rule.is_relevant(self.book_booking, 20_001 * 100)
 
     def test_relevancy_depending_on_offer_type(self):
-        revenue = 20001
+        revenue = 20_001 * 100
         assert self.rule.is_relevant(self.book_booking, revenue)
         assert not self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert not self.rule.is_relevant(create_event_booking(), revenue)
