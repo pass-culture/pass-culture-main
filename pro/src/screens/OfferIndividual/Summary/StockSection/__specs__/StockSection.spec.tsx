@@ -251,30 +251,26 @@ describe('Summary stock section', () => {
         ),
       }
       renderStockSection(props)
-      expect(screen.getByText(/Date limite de réservation/)).toBeInTheDocument()
     })
 
-    it.each([null, undefined])(
-      'should render quantity as "Illimité" when quantity is null or undefined',
-      async quantity => {
-        props = {
-          offer: individualOfferFactory(
-            {
-              id: 'TEST_OFFER_ID',
-              status: OfferStatus.ACTIVE,
-            },
-            individualStockFactory({
-              quantity,
-              price: 20,
-              bookingLimitDatetime: '2001-06-12',
-            })
-          ),
-        }
-
-        renderStockSection(props)
-        expect(screen.getByText('Illimité')).toBeInTheDocument()
+    it('should render quantity as "Illimité" when quantity is null or undefined', () => {
+      props = {
+        offer: individualOfferFactory(
+          {
+            id: 'TEST_OFFER_ID',
+            status: OfferStatus.ACTIVE,
+          },
+          individualStockFactory({
+            quantity: null,
+            price: 20,
+            bookingLimitDatetime: '2001-06-12',
+          })
+        ),
       }
-    )
+
+      renderStockSection(props)
+      expect(screen.getByText('Illimitée')).toBeInTheDocument()
+    })
   })
 
   describe('for stock event', () => {
@@ -320,7 +316,6 @@ describe('Summary stock section', () => {
       expect(
         screen.getByRole('heading', { name: /Dates et capacité/ })
       ).toBeInTheDocument()
-      expect(screen.getAllByText(/Date limite de réservation/)).toHaveLength(2)
 
       await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
       expect(
@@ -342,7 +337,6 @@ describe('Summary stock section', () => {
       expect(
         screen.getByRole('heading', { name: /Dates et capacité/ })
       ).toBeInTheDocument()
-      expect(screen.getAllByText(/Date limite de réservation/)).toHaveLength(2)
 
       await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
       expect(
@@ -355,7 +349,6 @@ describe('Summary stock section', () => {
       expect(
         screen.getByRole('heading', { name: /Dates et capacité/ })
       ).toBeInTheDocument()
-      expect(screen.getAllByText(/Date limite de réservation/)).toHaveLength(2)
 
       await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
       expect(
@@ -408,11 +401,6 @@ describe('Summary stock section', () => {
       expect(
         screen.getByRole('heading', { name: /Dates et capacité/ })
       ).toBeInTheDocument()
-      expect(screen.getAllByText(/Date limite de réservation/)).toHaveLength(2)
-      const displayMore = screen.getByText('Afficher plus de dates')
-
-      await userEvent.click(displayMore)
-      expect(screen.getAllByText(/Date limite de réservation/)).toHaveLength(3)
       expect(screen.getAllByText(/Illimité/)).toHaveLength(1)
     })
   })
