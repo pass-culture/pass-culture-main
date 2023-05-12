@@ -143,6 +143,7 @@ jobs:
     if: |
       always() &&
       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
+      ( inputs.environment == 'production' || inputs.environment == 'staging' ) &&
       inputs.deploy_pro == true
     uses: ./.github/workflows/configure-live-channel-pro-generic.yml
     secrets:
