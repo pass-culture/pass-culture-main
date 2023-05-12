@@ -8,8 +8,10 @@ import type { CatalogViewBody } from '../models/CatalogViewBody';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { CollectiveOfferResponseModel } from '../models/CollectiveOfferResponseModel';
 import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveOfferTemplateResponseModel';
+import type { CollectiveRequestResponseModel } from '../models/CollectiveRequestResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
 import type { OfferIdBody } from '../models/OfferIdBody';
+import type { PostCollectiveRequestBodyModel } from '../models/PostCollectiveRequestBodyModel';
 import type { SearchBody } from '../models/SearchBody';
 import type { StockIdBody } from '../models/StockIdBody';
 import type { VenueResponse } from '../models/VenueResponse';
@@ -74,6 +76,33 @@ export class DefaultService {
       path: {
         'offer_id': offerId,
       },
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * create_collective_request <POST>
+   * @param offerId
+   * @param requestBody
+   * @returns CollectiveRequestResponseModel OK
+   * @throws ApiError
+   */
+  public createCollectiveRequest(
+    offerId: number,
+    requestBody?: PostCollectiveRequestBodyModel,
+  ): CancelablePromise<CollectiveRequestResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/collective/offers-template/{offer_id}/request',
+      path: {
+        'offer_id': offerId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
