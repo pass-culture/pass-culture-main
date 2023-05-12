@@ -63,7 +63,7 @@ def create_offerer_provider_linked_to_venue(venue_params=None, is_virtual=False)
 
 @pytest.mark.usefixtures("db_session")
 class GetOffererVenuesTest:
-    def test_get_offerer_venues(self, client):
+    def create_multiple_venue_providers(self):
         provider, _ = create_offerer_provider()
         offerer_with_two_venues = offerers_factories.OffererFactory(
             name="Offreur de fleurs", dateCreated=datetime.datetime(2022, 2, 22, 22, 22, 22), siren="123456789"
@@ -100,6 +100,16 @@ class GetOffererVenuesTest:
         providers_factories.VenueProviderFactory(
             venue=other_physical_venue, provider=provider, venueIdAtOfferProvider="Test"
         )
+        return offerer_with_two_venues, digital_venue, physical_venue, offerer_with_one_venue, other_physical_venue
+
+    def test_get_offerer_venues(self, client):
+        (
+            offerer_with_two_venues,
+            digital_venue,
+            physical_venue,
+            offerer_with_one_venue,
+            other_physical_venue,
+        ) = self.create_multiple_venue_providers()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
             "/public/offers/v1/offerer_venues",
@@ -184,6 +194,24 @@ class GetOffererVenuesTest:
                 }
             ],
         }
+
+    def test_get_filtered_offerer_venues(self, client):
+        (
+            offerer_with_two_venues,
+            _,
+            _,
+            _,
+            _,
+        ) = self.create_multiple_venue_providers()
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/offerer_venues?siren={offerer_with_two_venues.siren}",
+        )
+        assert response == 200
+        json_dict = response.json
+        assert len(json_dict) == 1
+        assert json_dict[0]["offerer"]["siren"] == offerer_with_two_venues.siren
+        assert len(json_dict[0]["venues"]) == 2
 
     def test_when_no_venues(self, client):
         create_offerer_provider()
