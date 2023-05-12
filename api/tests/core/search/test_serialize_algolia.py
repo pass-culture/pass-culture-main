@@ -308,6 +308,7 @@ def test_serialize_collective_offer():
             "name": "Les Librairies Associées",
         },
         "venue": {
+            "academy": "Poitiers",
             "departmentCode": "86",
             "id": collective_offer.venue.id,
             "name": "La Moyenne Librairie SA",
@@ -360,6 +361,7 @@ def test_serialize_collective_offer_template():
             "name": "Les Librairies Associées",
         },
         "venue": {
+            "academy": "Poitiers",
             "departmentCode": "86",
             "id": collective_offer_template.venue.id,
             "name": "La Moyenne Librairie SA",
