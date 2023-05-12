@@ -37,7 +37,9 @@ pytestmark = [
 
 @pytest.fixture(scope="function", name="venue")
 def venue_fixture(offerer) -> offerers_models.Venue:
-    venue = offerers_factories.VenueFactory(venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"))
+    venue = offerers_factories.VenueFactory(
+        venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"), contact__website="www.example.com"
+    )
     offerers_factories.VenueReimbursementPointLinkFactory(venue=venue)
     finance_factories.BankInformationFactory(
         venue=venue,
@@ -84,7 +86,7 @@ class GetVenueTest(GetEndpointHelper):
         assert "Peut créer une offre EAC : Non" in response_text
         assert "Statut dossier DMS Adage :" not in response_text
         assert "ID Adage" not in response_text
-        assert f"Site web : {venue.contact.website}" in response_text
+        assert "Site web : https://www.example.com" in response_text
         assert "Pas de dossier DMS CB" in response_text
         assert f"Activité principale : {venue.venueTypeCode.value}" in response_text
         assert f"Label : {venue.venueLabel.label} " in response_text

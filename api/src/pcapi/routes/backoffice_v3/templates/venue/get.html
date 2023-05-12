@@ -204,9 +204,9 @@
               {% if venue.contact and venue.contact.website %}
                 <p class="mb-1">
                   <span class="fw-bold">Site web :</span>
-                  <a href="{{ venue.contact.website | escape }}"
+                  <a href="{{ venue.contact.website | format_website }}"
                      target="_blank"
-                     class="link-primary">{{ venue.contact.website | escape }}</a>
+                     class="link-primary">{{ venue.contact.website | format_website }}</a>
                 </p>
               {% endif %}
               {% if venue.criteria %}
