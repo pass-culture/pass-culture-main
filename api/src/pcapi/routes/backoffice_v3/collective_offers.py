@@ -22,8 +22,8 @@ from pcapi.utils import date as date_utils
 
 from . import autocomplete
 from . import utils
-from .forms import collective_offer as collective_offer_forms
 from .forms import empty as empty_forms
+from .forms import offer as offer_forms
 
 
 list_collective_offers_blueprint = utils.child_backoffice_blueprint(
@@ -35,7 +35,7 @@ list_collective_offers_blueprint = utils.child_backoffice_blueprint(
 
 
 def _get_collective_offers(
-    form: collective_offer_forms.GetCollectiveOffersListForm,
+    form: offer_forms.GetCollectiveOffersListForm,
 ) -> list[educational_models.CollectiveOffer]:
     base_query = educational_models.CollectiveOffer.query.options(
         sa.orm.load_only(
@@ -101,7 +101,9 @@ def _get_collective_offers(
             base_query = base_query.filter(educational_models.CollectiveOffer.name.ilike(name_query))
 
     if form.sort.data:
-        base_query = base_query.order_by(getattr(educational_models.CollectiveOffer, form.sort.data))
+        base_query = base_query.order_by(
+            getattr(getattr(educational_models.CollectiveOffer, form.sort.data), form.order.data)()
+        )
 
     # +1 to check if there are more results than requested
     return base_query.limit(form.limit.data + 1).all()
@@ -109,7 +111,7 @@ def _get_collective_offers(
 
 @list_collective_offers_blueprint.route("", methods=["GET"])
 def list_collective_offers() -> utils.BackofficeResponse:
-    form = collective_offer_forms.GetCollectiveOffersListForm(formdata=utils.get_query_params())
+    form = offer_forms.GetCollectiveOffersListForm(formdata=utils.get_query_params())
     if not form.validate():
         return render_template("collective_offer/list.html", rows=[], form=form), 400
 
@@ -133,6 +135,7 @@ def list_collective_offers() -> utils.BackofficeResponse:
         "collective_offer/list.html",
         rows=collective_offers,
         form=form,
+        date_created_sort_url=form.get_sort_link(".list_collective_offers") if form.sort.data else None,
     )
 
 

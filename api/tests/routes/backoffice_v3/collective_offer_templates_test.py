@@ -182,7 +182,17 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offer_templates[2].id}
 
-    def test_list_offers_pending_from_validated_offerers_sorted_by_date(self, authenticated_client):
+    @pytest.mark.parametrize(
+        "order,expected_list",
+        [
+            ("", ["Offre 4", "Offre 3", "Offre 2", "Offre 1"]),
+            ("asc", ["Offre 4", "Offre 3", "Offre 2", "Offre 1"]),
+            ("desc", ["Offre 1", "Offre 2", "Offre 3", "Offre 4"]),
+        ],
+    )
+    def test_list_offers_pending_from_validated_offerers_sorted_by_date(
+        self, authenticated_client, order, expected_list
+    ):
         # test results when clicking on pending collective offers link (home page)
         # given
         educational_factories.CollectiveOfferTemplateFactory(
@@ -207,13 +217,14 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
                     status=[offers_models.OfferValidationStatus.PENDING.value],
                     only_validated_offerers="on",
                     sort="dateCreated",
+                    order=order,
                 )
             )
             assert response.status_code == 200
 
         # then: must be sorted, older first
         rows = html_parser.extract_table_rows(response.data)
-        assert [row["Nom de l'offre"] for row in rows] == ["Offre 4", "Offre 3", "Offre 2", "Offre 1"]
+        assert [row["Nom de l'offre"] for row in rows] == expected_list
 
 
 class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):

@@ -153,7 +153,7 @@ def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer
         query = base_query
 
     if form.sort.data:
-        query = query.order_by(getattr(offers_models.Offer, form.sort.data))
+        query = query.order_by(getattr(getattr(offers_models.Offer, form.sort.data), form.order.data)())
 
     # +1 to check if there are more results than requested
     return query.limit(form.limit.data + 1).all()
@@ -202,6 +202,7 @@ def list_offers() -> utils.BackofficeResponse:
         "offer/list.html",
         rows=offers,
         form=form,
+        date_created_sort_url=form.get_sort_link(".list_offers") if form.sort.data else None,
         get_initial_stock=_get_initial_stock,
         get_remaining_stock=_get_remaining_stock,
     )

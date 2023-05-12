@@ -23,7 +23,18 @@
               <th scope="col">Catégorie</th>
               <th scope="col">Sous-catégorie</th>
               <th scope="col">État</th>
-              <th scope="col">Date de création</th>
+              <th scope="col">
+                {% if date_created_sort_url %}
+                  <a href="{{ date_created_sort_url }}"
+                     class="text-decoration-none"
+                     title="Changer pour un tri {{ 'croissant' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'desc' else 'décroissant' }}">
+                    Date de création
+                    <i class="bi bi-sort-{{ 'down' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
+                  </a>
+                {% else %}
+                  Date de création
+                {% endif %}
+              </th>
               <th scope="col">Structure</th>
               <th scope="col">Lieu</th>
               <th scope="col">{# icon #}</th>
