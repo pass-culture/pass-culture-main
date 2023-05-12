@@ -30,7 +30,7 @@ const computeDurationString = (
   }`
 }
 
-export const getCategoryAndSubcategoryFromOffer = (
+const getCategoryAndSubcategoryFromOffer = (
   categories: EducationalCategories,
   offer: CollectiveOffer | CollectiveOfferTemplate
 ): {
@@ -53,7 +53,7 @@ export const getCategoryAndSubcategoryFromOffer = (
   }
 }
 
-export const getInitialOffererId = (
+const getInitialOffererId = (
   offerers: GetEducationalOffererResponseModel[],
   offer?: CollectiveOffer | CollectiveOfferTemplate,
   offererIdQueryParam?: string | null
@@ -73,7 +73,7 @@ export const getInitialOffererId = (
   return DEFAULT_EAC_FORM_VALUES.offererId
 }
 
-export const getInitialVenueId = (
+const getInitialVenueId = (
   offerers: GetEducationalOffererResponseModel[],
   offererId: string,
   offer?: CollectiveOffer | CollectiveOfferTemplate,

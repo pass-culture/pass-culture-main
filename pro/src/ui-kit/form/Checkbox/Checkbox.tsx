@@ -6,7 +6,7 @@ import { BaseCheckbox, FieldError } from '../shared'
 
 import styles from './Checkbox.module.scss'
 
-export interface ICheckboxProps {
+export interface CheckboxProps {
   name: string
   value?: string
   label: string
@@ -32,7 +32,7 @@ const Checkbox = ({
   hideFooter,
   disabled,
   withBorder,
-}: ICheckboxProps): JSX.Element => {
+}: CheckboxProps): JSX.Element => {
   const [field, meta] = useField({ name, type: 'checkbox' })
   return (
     <div className={cn(styles['checkbox'], className)}>

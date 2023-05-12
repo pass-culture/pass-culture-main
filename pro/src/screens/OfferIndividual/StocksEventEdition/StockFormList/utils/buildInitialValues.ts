@@ -19,7 +19,7 @@ interface IBuildSingleInitialValuesArgs extends BuildInitialValuesCommonArgs {
   stock: IOfferIndividualStock
 }
 
-export const buildSingleInitialValues = ({
+const buildSingleInitialValues = ({
   departmentCode,
   stock,
   today,

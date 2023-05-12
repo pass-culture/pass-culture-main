@@ -4,7 +4,7 @@ import Tag from 'ui-kit/Tag'
 
 import styles from './Tags.module.scss'
 
-export interface TagsProps {
+interface TagsProps {
   disabled: boolean
   fieldName: string
   optionsLabelById: Record<string, string>

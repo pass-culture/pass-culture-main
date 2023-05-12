@@ -4,12 +4,13 @@ import React, { FC } from 'react'
 import styles from './Divider.module.scss'
 
 type Size = 'medium' | 'large'
-interface IDividerProps {
+
+export interface DividerProps {
   size?: Size
   className?: string
 }
 
-const Divider: FC<IDividerProps> = ({ size, className }) => {
+const Divider: FC<DividerProps> = ({ size, className }) => {
   const sizeClassName = {
     medium: styles['divider-medium'],
     large: styles['divider-large'],

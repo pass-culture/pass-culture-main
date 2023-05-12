@@ -1,13 +1,14 @@
+import type { Story } from '@storybook/react'
 import React from 'react'
 
-import Divider from './Divider'
+import Divider, { DividerProps } from './Divider'
 
 export default {
   title: 'ui-kit/Divider',
   component: Divider,
 }
 
-const Template = args => (
+const Template: Story<DividerProps> = args => (
   <div>
     <p>Second text</p>
     <Divider {...args} />
@@ -16,7 +17,6 @@ const Template = args => (
 )
 
 export const Default = Template.bind({})
-
 Default.args = {
   size: 'medium',
 }

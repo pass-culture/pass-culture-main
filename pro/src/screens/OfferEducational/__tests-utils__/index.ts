@@ -5,4 +5,3 @@ export {
   managedVenuesFactory,
 } from './userOfferersFactory'
 export { defaultCreationProps, defaultEditionProps } from './defaultProps'
-export { elements } from './elements'

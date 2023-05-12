@@ -3,7 +3,7 @@ import React from 'react'
 
 import { BaseCheckbox } from '../shared'
 
-interface ICheckboxProps {
+interface CheckboxGroupItemProps {
   setGroupTouched(): void
   name: string
   label: string
@@ -23,7 +23,7 @@ const CheckboxGroupItem = ({
   Icon,
   disabled,
   onChange,
-}: ICheckboxProps): JSX.Element => {
+}: CheckboxGroupItemProps): JSX.Element => {
   const [field] = useField({ name, type: 'checkbox' })
 
   const onCustomChange = (event: React.ChangeEvent<HTMLInputElement>): void => {

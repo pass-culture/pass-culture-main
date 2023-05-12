@@ -2,12 +2,6 @@ import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
-export interface IUseFilteredVenueListProps {
-  subCategories: IOfferSubCategory[]
-  subcategoryId: string
-  venueList: TOfferIndividualVenue[]
-}
-
 export const getFilteredVenueList = (
   subcategoryId: string,
   subCategories: IOfferSubCategory[],

@@ -9,7 +9,7 @@ import { serializeStockThingList } from './serializers'
 
 type TSuccessPayload = { stockIds: string[] }
 type TFailurePayload = { errors: Record<string, string> }
-export type TUpdateStocksAdapter = Adapter<
+type TUpdateStocksAdapter = Adapter<
   {
     offerId: number
     formValues: IStockThingFormValues

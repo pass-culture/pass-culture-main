@@ -1,14 +1,14 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import InfoBox, { IInfoBoxProps } from './InfoBox'
+import InfoBox, { InfoBoxProps } from './InfoBox'
 
 export default {
   title: 'ui-kit/InfoBox',
   component: InfoBox,
 }
 
-const Template: Story<IInfoBoxProps> = props => (
+const Template: Story<InfoBoxProps> = props => (
   <div style={{ maxWidth: '316px' }}>
     <InfoBox {...props} />
   </div>
