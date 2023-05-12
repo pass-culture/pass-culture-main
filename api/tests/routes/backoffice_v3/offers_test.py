@@ -107,13 +107,12 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Nom de l'offre"] == offers[0].name
         assert rows[0]["Catégorie"] == offers[0].category.pro_label
         assert rows[0]["Sous-catégorie"] == offers[0].subcategory_v2.pro_label
-        assert rows[0]["Stock initial"] == "Illimité"
-        assert rows[0]["Stock restant"] == "Illimité"
+        assert rows[0]["Stock restant"] == "Illimité / Illimité"
         assert rows[0]["Tag"] == offers[0].criteria[0].name
-        assert rows[0]["Pondération"] == ""
+        assert rows[0]["Pond."] == ""
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
-        assert rows[0]["Dernière date de validation"] == ""
+        assert rows[0]["Dernière validation"] == ""
         assert rows[0]["Dép."] == offers[0].venue.departementCode
         assert rows[0]["Structure"] == offers[0].venue.managingOfferer.name
         assert rows[0]["Lieu"] == offers[0].venue.name
@@ -160,13 +159,12 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Nom de l'offre"] == offers[1].name
         assert rows[0]["Catégorie"] == offers[1].category.pro_label
         assert rows[0]["Sous-catégorie"] == offers[1].subcategory_v2.pro_label
-        assert rows[0]["Stock initial"] == "20"
-        assert rows[0]["Stock restant"] == "15"
+        assert rows[0]["Stock restant"] == "15 / 20"
         assert rows[0]["Tag"] == ""
-        assert rows[0]["Pondération"] == ""
+        assert rows[0]["Pond."] == ""
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
-        assert rows[0]["Dernière date de validation"] == "22/02/2022"
+        assert rows[0]["Dernière validation"] == "22/02/2022"
         assert rows[0]["Dép."] == offers[1].venue.departementCode
         assert rows[0]["Structure"] == offers[1].venue.managingOfferer.name
         assert rows[0]["Lieu"] == offers[1].venue.name
@@ -396,7 +394,7 @@ class EditOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         row = html_parser.extract_table_rows(response.data)
         assert len(row) == 1
-        assert row[0]["Pondération"] == str(choosen_ranking_weight)
+        assert row[0]["Pond."] == str(choosen_ranking_weight)
         assert criteria[0].name in row[0]["Tag"]
         assert criteria[1].name in row[0]["Tag"]
         assert criteria[2].name not in row[0]["Tag"]
@@ -416,7 +414,7 @@ class EditOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         row = html_parser.extract_table_rows(response.data)
         assert len(row) == 1
-        assert row[0]["Pondération"] == ""
+        assert row[0]["Pond."] == ""
         assert criteria[2].name in row[0]["Tag"]
         assert criteria[1].name in row[0]["Tag"]
         assert criteria[0].name not in row[0]["Tag"]
@@ -565,7 +563,7 @@ class ValidateOfferTest(PostEndpointHelper):
         row = html_parser.extract_table_rows(response.data)
         assert len(row) == 1
         assert row[0]["État"] == "Validée"
-        assert row[0]["Dernière date de validation"] == (datetime.date.today()).strftime("%d/%m/%Y")
+        assert row[0]["Dernière validation"] == (datetime.date.today()).strftime("%d/%m/%Y")
 
         assert offer_to_validate.isActive is True
         assert offer_to_validate.lastValidationType == OfferValidationType.MANUAL
@@ -607,7 +605,7 @@ class RejectOfferTest(PostEndpointHelper):
         row = html_parser.extract_table_rows(response.data)
         assert len(row) == 1
         assert row[0]["État"] == "Rejetée"
-        assert row[0]["Dernière date de validation"] == (datetime.date.today()).strftime("%d/%m/%Y")
+        assert row[0]["Dernière validation"] == (datetime.date.today()).strftime("%d/%m/%Y")
 
         assert offer_to_reject.isActive is False
         assert offer_to_reject.lastValidationType == OfferValidationType.MANUAL
