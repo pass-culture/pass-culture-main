@@ -59,13 +59,12 @@
               <th scope="col">Nom de l'offre</th>
               <th scope="col">Catégorie</th>
               <th scope="col">Sous-catégorie</th>
-              <th scope="col">Stock initial</th>
               <th scope="col">Stock restant</th>
               <th scope="col">Tag</th>
-              <th scope="col">Pondération</th>
+              <th scope="col">Pond.</th>
               <th scope="col">État</th>
               <th scope="col">Date de création</th>
-              <th scope="col">Dernière date de validation</th>
+              <th scope="col">Dernière validation</th>
               <th scope="col">Dép.</th>
               <th scope="col">Structure</th>
               <th scope="col">Lieu</th>
@@ -116,8 +115,7 @@
                 <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
                 <td>{{ offer.category.pro_label }}</td>
                 <td>{{ offer.subcategory_v2.pro_label }}</td>
-                <td>{{ get_initial_stock(offer) }}</td>
-                <td>{{ get_remaining_stock(offer) }}</td>
+                <td class="text-nowrap">{{ get_remaining_stock(offer) }} / {{ get_initial_stock(offer) }}</td>
                 <td>{{ offer.criteria | format_criteria | safe }}</td>
                 <td>{{ offer.rankingWeight | empty_string_if_null }}</td>
                 <td>{{ offer.validation | format_offer_validation_status }}</td>
