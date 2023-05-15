@@ -172,11 +172,7 @@ class TestingBackend(BaseBackend):
         )
 
         return SiretInfo(
-            siret=siret,
-            active=True,
-            name="MINISTERE DE LA CULTURE",
-            address=self.address,
-            ape_code=siret_ape[siret]
+            siret=siret, active=True, name="MINISTERE DE LA CULTURE", address=self.address, ape_code=siret_ape[siret]
         )
 
 
@@ -271,7 +267,7 @@ class InseeBackend(BaseBackend):
             city=city,
             insee_code=block["codeCommuneEtablissement"] or "",
         )
-    
+
     def _get_ape_code_from_siret_data(self, data: dict) -> str:
         block = data["uniteLegale"]
         return block["activitePrincipaleUniteLegale"]

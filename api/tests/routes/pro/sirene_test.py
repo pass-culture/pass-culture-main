@@ -58,6 +58,7 @@ class GetSiretTest:
                 "postalCode": "75001",
                 "city": "Paris",
             },
+            "ape_code": "90.03A",
         }
 
     @pytest.mark.usefixtures("db_session")
