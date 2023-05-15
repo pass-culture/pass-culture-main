@@ -24,12 +24,6 @@ const ModalImageUploadConfirm = ({
   onUploadImage,
   mode,
 }: IModalImageUploadConfirmProps): JSX.Element => {
-  const title = {
-    [UploaderModeEnum.VENUE]: 'Image du lieu',
-    [UploaderModeEnum.OFFER]: 'Image de l’offre',
-    [UploaderModeEnum.OFFER_COLLECTIVE]: 'Image de l’offre',
-  }[mode]
-
   const AppPreview = {
     [UploaderModeEnum.VENUE]: AppPreviewVenue,
     [UploaderModeEnum.OFFER]: AppPreviewOffer,
@@ -39,7 +33,7 @@ const ModalImageUploadConfirm = ({
   return (
     <div className={style['container']}>
       <header>
-        <h1 className={style['header']}>{title}</h1>
+        <h1 className={style['header']}>Ajouter une image</h1>
       </header>
       <div className={style['subtitle']}>
         Prévisualisation de votre image dans l’application pass Culture
