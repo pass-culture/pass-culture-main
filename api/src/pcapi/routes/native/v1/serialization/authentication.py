@@ -9,6 +9,9 @@ class SigninRequest(BaseModel):
     password: str
     device_info: TrustedDevice | None = None
 
+    class Config:
+        alias_generator = to_camel
+
 
 class SigninResponse(BaseModel):
     refresh_token: str
