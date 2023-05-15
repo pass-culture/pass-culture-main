@@ -148,10 +148,16 @@ describe('PriceCategories', () => {
         priceCategoryFormFactory({ id: 66 }),
         priceCategoryFormFactory({ id: 2 }),
       ],
-      isDuo: false,
+      isDuo: true,
     }
 
-    renderPriceCategoriesForm(values)
+    renderPriceCategoriesForm(values, true)
+    await userEvent.click(
+      screen.getByLabelText('Accepter les réservations “Duo“')
+    )
+    expect(
+      screen.getByLabelText('Accepter les réservations “Duo“')
+    ).not.toBeChecked()
 
     await userEvent.click(
       screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
@@ -160,6 +166,9 @@ describe('PriceCategories', () => {
     expect(api.postPriceCategories).toHaveBeenNthCalledWith(1, 42, {
       priceCategories: [{ id: 2, label: 'Tarif unique' }],
     })
+    expect(
+      screen.getByLabelText('Accepter les réservations “Duo“')
+    ).not.toBeChecked()
   })
 
   it('should display delete banner when stock is linked and delete right line', async () => {
