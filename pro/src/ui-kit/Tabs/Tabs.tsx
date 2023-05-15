@@ -41,11 +41,7 @@ const Tabs = ({ selectedKey, tabs }: IFilterTabsProps): JSX.Element => {
               </Link>
             ) : (
               <Button
-                variant={
-                  selectedKey === key
-                    ? ButtonVariant.QUATERNARY
-                    : ButtonVariant.TERNARY
-                }
+                variant={ButtonVariant.TERNARY}
                 Icon={Icon}
                 onClick={onClick}
                 className={styles['tabs-tab-button']}
