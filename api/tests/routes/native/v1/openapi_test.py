@@ -1255,6 +1255,11 @@ def test_public_api(client):
                 },
                 "SigninRequest": {
                     "properties": {
+                        "deviceInfo": {
+                            "anyOf": [{"$ref": "#/components/schemas/TrustedDevice"}],
+                            "nullable": True,
+                            "title": "TrustedDevice",
+                        },
                         "identifier": {"title": "Identifier", "type": "string"},
                         "password": {"title": "Password", "type": "string"},
                     },
