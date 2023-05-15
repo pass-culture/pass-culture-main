@@ -100,11 +100,7 @@ const SigninForm = (): JSX.Element => {
                   />
                 </FormLayout.Row>
                 <FormLayout.Row>
-                  <PasswordInput
-                    name="password"
-                    label="Mot de passe"
-                    placeholder="Votre mot de passe"
-                  />
+                  <PasswordInput name="password" label="Mot de passe" />
                 </FormLayout.Row>
               </div>
               <Link

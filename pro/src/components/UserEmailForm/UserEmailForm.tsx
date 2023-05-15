@@ -72,7 +72,6 @@ const UserEmailForm = ({
                   label="Mot de passe (requis pour modifier votre e-mail)"
                   name="password"
                   type="password"
-                  placeholder="Votre mot de passe"
                 />
               </FormLayout.Row>
             </FormLayout>
