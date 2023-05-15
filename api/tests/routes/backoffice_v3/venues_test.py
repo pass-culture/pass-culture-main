@@ -469,6 +469,8 @@ class GetVenueStatsTest(GetEndpointHelper):
         offerer_inactive_individual_offers,
         offerer_active_collective_offers,
         offerer_inactive_collective_offers,
+        offerer_active_collective_offer_templates,
+        offerer_inactive_collective_offer_templates,
     ):
         # when
         venue_id = venue_with_accepted_bank_info.id
@@ -478,7 +480,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         # then
         assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
-        assert "6 offres actives (2 IND / 4 EAC) 8 offres inactives (3 IND / 5 EAC)" in cards_text
+        assert "7 offres actives (2 IND / 5 EAC) 10 offres inactives (3 IND / 7 EAC)" in cards_text
 
     def test_venue_offers_stats_0_if_no_offer(self, authenticated_client, venue_with_accepted_bank_info):
         # when

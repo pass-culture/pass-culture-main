@@ -330,6 +330,39 @@ def offerer_inactive_collective_offers_fixture(offerer, venue_with_accepted_bank
     return approved_offers + [rejected_offer]
 
 
+@pytest.fixture(name="offerer_active_collective_offer_templates")
+def offerer_active_collective_offer_templates_fixture(offerer, venue_with_accepted_bank_info):
+    approved_offers = educational_factories.CollectiveOfferTemplateFactory(
+        venue=venue_with_accepted_bank_info,
+        validation=offers_models.OfferValidationStatus.APPROVED.value,
+    )
+
+    rejected_offer = educational_factories.CollectiveOfferTemplateFactory(
+        venue=venue_with_accepted_bank_info,
+        validation=offers_models.OfferValidationStatus.REJECTED.value,
+    )
+
+    return [approved_offers, rejected_offer]
+
+
+@pytest.fixture(name="offerer_inactive_collective_offer_templates")
+def offerer_inactive_collective_offer_templates_fixture(offerer, venue_with_accepted_bank_info):
+    approved_offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(
+        2,
+        venue=venue_with_accepted_bank_info,
+        isActive=False,
+        validation=offers_models.OfferValidationStatus.APPROVED.value,
+    )
+
+    rejected_offer = educational_factories.CollectiveOfferTemplateFactory(
+        venue=venue_with_accepted_bank_info,
+        isActive=False,
+        validation=offers_models.OfferValidationStatus.REJECTED.value,
+    )
+
+    return approved_offers + [rejected_offer]
+
+
 @pytest.fixture(name="offerer_stocks")
 def offerer_stocks_fixture(offerer_active_individual_offers):
     stocks = [offers_factories.StockFactory(offer=offer) for offer in offerer_active_individual_offers]
