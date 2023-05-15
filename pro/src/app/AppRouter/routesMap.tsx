@@ -9,6 +9,7 @@ import CollectiveBookings from 'pages/CollectiveBookings'
 import CollectiveOfferConfirmation from 'pages/CollectiveOfferConfirmation'
 import CollectiveOfferCreation from 'pages/CollectiveOfferCreation'
 import CollectiveOfferEdition from 'pages/CollectiveOfferEdition'
+import CollectiveOfferFromRequest from 'pages/CollectiveOfferFromRequest'
 import CollectiveOffers from 'pages/CollectiveOffers'
 import CollectiveOfferStockCreation from 'pages/CollectiveOfferStockCreation'
 import CollectiveOfferStockEdition from 'pages/CollectiveOfferStockEdition'
@@ -287,6 +288,12 @@ const routes: IRoute[] = [
     element: <CollectiveOfferVisibility />,
     path: '/offre/:offerId/collectif/visibilite/edition',
     title: 'Visibilité - Modifier une offre réservable',
+    meta: { shouldRedirect: true },
+  },
+  {
+    element: <CollectiveOfferFromRequest />,
+    path: '/offre/collectif/creation/:offerId/requete',
+    title: 'Détails - Créer une offre réservable',
     meta: { shouldRedirect: true },
   },
   {
