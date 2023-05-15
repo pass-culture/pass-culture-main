@@ -1,0 +1,33 @@
+name: Security - scan dependencies
+on:
+  push:
+
+jobs:
+  scan-dependencies:
+    permissions: write-all
+    runs-on: [self-hosted, linux, x64]
+    steps:
+      - uses: actions/checkout@v3
+      - id: openid-auth
+        name: "OpenID Connect Authentication"
+        uses: "google-github-actions/auth@v1"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: Get Secret
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v1"
+        with:
+          secrets: |-
+            SNYK_TOKEN_SECRET:passculture-metier-ehp/passculture-app-pro-snyk-token
+      - uses: actions/checkout@master
+      - name: Install dep
+        run: |
+          cd ./pro 
+          yarn
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ steps.secrets.outputs.SNYK_TOKEN_SECRET }}
+        with:
+          args: "--file=./pro/package.json"
