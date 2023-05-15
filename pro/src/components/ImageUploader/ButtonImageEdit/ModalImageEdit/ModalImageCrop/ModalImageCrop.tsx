@@ -61,11 +61,6 @@ const ModalImageCrop = ({
     (maxWidth - 10) / // Add few security pixel to garantie that max zoom will never be 399px.
       minWidth
   )
-  const title: string = {
-    [UploaderModeEnum.OFFER]: 'Ajouter une image',
-    [UploaderModeEnum.OFFER_COLLECTIVE]: 'Ajouter une image',
-    [UploaderModeEnum.VENUE]: 'Ajouter une image',
-  }[mode]
   const canvasHeight: number = {
     [UploaderModeEnum.OFFER]: 384,
     [UploaderModeEnum.OFFER_COLLECTIVE]: 384,
@@ -129,7 +124,9 @@ const ModalImageCrop = ({
     <section className={style['modal-image-crop']}>
       <form action="#" className={style['modal-image-crop-form']}>
         <header>
-          <h1 className={style['modal-image-crop-header']}>{title}</h1>
+          <h1 className={style['modal-image-crop-header']}>
+            Ajouter une image
+          </h1>
         </header>
         <p className={style['modal-image-crop-right']}>
           En utilisant ce contenu, je certifie que je suis propriétaire ou que

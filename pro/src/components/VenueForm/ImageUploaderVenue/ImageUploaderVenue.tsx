@@ -100,7 +100,7 @@ const ImageUploaderVenue = () => {
 
   return (
     <FormLayout.Section
-      title="Image du lieu"
+      title="Ajouter une image"
       description={`Vous pouvez ajouter une image qui sera visible sur l’application pass Culture.
       Elle permettra au public de mieux identifier votre lieu.`}
     >
