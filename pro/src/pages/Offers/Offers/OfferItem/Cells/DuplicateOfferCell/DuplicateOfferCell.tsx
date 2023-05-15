@@ -18,7 +18,7 @@ export const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
 const DuplicateOfferCell = ({
   templateOfferId,
 }: {
-  templateOfferId: string
+  templateOfferId: number
 }) => {
   const navigate = useNavigate()
   const notify = useNotification()

@@ -83,7 +83,7 @@ const CollectiveOfferSummaryEdition = ({
               logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
                 from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
               })
-              createOfferFromTemplate(navigate, notify, offer.id)
+              createOfferFromTemplate(navigate, notify, offer.nonHumanizedId)
             }}
           >
             Créer une offre réservable pour un établissement scolaire

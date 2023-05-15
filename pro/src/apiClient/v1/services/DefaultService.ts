@@ -393,7 +393,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public editCollectiveOfferTemplate(
-    offerId: string,
+    offerId: number,
     requestBody?: PatchCollectiveOfferTemplateBodyModel,
   ): CancelablePromise<GetCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
@@ -419,7 +419,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createCollectiveOfferTemplateFromCollectiveOffer(
-    offerId: string,
+    offerId: number,
     requestBody?: CollectiveOfferTemplateBodyModel,
   ): CancelablePromise<CollectiveOfferTemplateResponseIdModel> {
     return this.httpRequest.request({
