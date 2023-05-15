@@ -1,4 +1,5 @@
 import datetime
+from operator import itemgetter
 from unittest.mock import patch
 
 from flask import g
@@ -155,6 +156,7 @@ class ListOffersTest(GetEndpointHelper):
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
+        rows = sorted(rows, key=itemgetter("ID"))  # ensure deterministic order
         assert rows[0]["ID"] == str(offers[1].id)
         assert rows[0]["Nom de l'offre"] == offers[1].name
         assert rows[0]["Catégorie"] == offers[1].category.pro_label
@@ -168,6 +170,8 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Dép."] == offers[1].venue.departementCode
         assert rows[0]["Structure"] == offers[1].venue.managingOfferer.name
         assert rows[0]["Lieu"] == offers[1].venue.name
+        assert rows[1]["ID"] == str(offers[2].id)
+        assert rows[1]["Nom de l'offre"] == offers[2].name
 
     @pytest.mark.parametrize(
         "isbn, where",
