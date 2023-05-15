@@ -1335,3 +1335,21 @@ class UpdateLoginDeviceHistoryTest:
         login_device = users_models.LoginDeviceHistory.query.one()
 
         assert user.login_device_history == [login_device]
+
+    def test_should_log_when_no_device_id(self, caplog):
+        user = users_factories.UserFactory(email="py@test.com")
+        device_info = account_serialization.TrustedDevice(
+            deviceId="",
+            source="iPhone 13",
+            os="iOS",
+        )
+
+        with caplog.at_level(logging.INFO):
+            users_api.update_login_device_history(device_info=device_info, user=user)
+
+        assert caplog.messages == ["Invalid deviceId was provided for login device"]
+        assert caplog.records[0].extra == {
+            "deviceId": "",
+            "os": "iOS",
+            "source": "iPhone 13",
+        }
