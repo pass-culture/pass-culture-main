@@ -1,14 +1,17 @@
 import datetime
 
+import pytest
+
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.categories import subcategories_v2
 from pcapi.core.offers import factories as offers_factories
 
 from tests.conftest import clean_database
 from tests.test_utils import run_command
 
 
-class ArchiveOldDigitalBookingsTest:
+class ArchiveOldBookingsTest:
     @clean_database
     def test_basics(self, app):
         # given
@@ -25,10 +28,49 @@ class ArchiveOldDigitalBookingsTest:
         old_booking_id = old_booking.id
 
         # when
-        run_command(app, "archive_old_activation_code_bookings")
+        run_command(app, "archive_old_bookings")
 
         # then
         old_booking = bookings_models.Booking.query.get(old_booking_id)
         recent_booking = bookings_models.Booking.query.get(recent_booking_id)
         assert old_booking.displayAsEnded
         assert not recent_booking.displayAsEnded
+
+    @clean_database
+    @pytest.mark.parametrize(
+        "subcategoryId",
+        [
+            subcategories_v2.ABO_MUSEE.id,
+            subcategories_v2.CARTE_MUSEE.id,
+            subcategories_v2.ABO_BIBLIOTHEQUE.id,
+            subcategories_v2.ABO_MEDIATHEQUE.id,
+        ],
+    )
+    def test_old_subcategories_bookings_are_archived(self, app, subcategoryId):
+        # given
+        now = datetime.datetime.utcnow()
+        recent = now - datetime.timedelta(days=29, hours=23)
+        old = now - datetime.timedelta(days=30, hours=1)
+        stock_free = offers_factories.StockFactory(
+            offer=offers_factories.OfferFactory(subcategoryId=subcategoryId), price=0
+        )
+        stock_not_free = offers_factories.StockFactory(
+            offer=offers_factories.OfferFactory(subcategoryId=subcategoryId), price=10
+        )
+        recent_booking = bookings_factories.BookingFactory(stock=stock_free, dateCreated=recent)
+        old_booking = bookings_factories.BookingFactory(stock=stock_free, dateCreated=old)
+        old_not_free_booking = bookings_factories.BookingFactory(stock=stock_not_free, dateCreated=old)
+        recent_booking_id = recent_booking.id
+        old_booking_id = old_booking.id
+        old_not_free_booking_id = old_not_free_booking.id
+
+        # when
+        run_command(app, "archive_old_bookings")
+
+        # then
+        old_booking = bookings_models.Booking.query.get(old_booking_id)
+        old_not_free_booking = bookings_models.Booking.query.get(old_not_free_booking_id)
+        recent_booking = bookings_models.Booking.query.get(recent_booking_id)
+        assert not recent_booking.displayAsEnded
+        assert not old_not_free_booking.displayAsEnded
+        assert old_booking.displayAsEnded
