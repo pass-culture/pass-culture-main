@@ -79,7 +79,7 @@ describe('test ButtonImageEdit', () => {
     )
     expect(
       await screen.findByRole('heading', {
-        name: /Image de l’offre/,
+        name: /Ajouter une image/,
       })
     ).toBeInTheDocument()
   })
