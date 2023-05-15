@@ -1,4 +1,5 @@
 from pcapi.core.users.models import AccountState
+from pcapi.routes.native.v1.serialization.account import TrustedDevice
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
@@ -6,6 +7,7 @@ from pcapi.serialization.utils import to_camel
 class SigninRequest(BaseModel):
     identifier: str
     password: str
+    device_info: TrustedDevice | None = None
 
 
 class SigninResponse(BaseModel):

@@ -54,6 +54,8 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     if user.account_state.is_deleted:
         raise ApiErrors({"code": "ACCOUNT_DELETED", "general": ["Le compte a été supprimé"]})
 
+    users_api.update_login_device_history(body.device_info)
+
     users_api.update_last_connection_date(user)
     return authentication.SigninResponse(
         access_token=users_api.create_user_access_token(user),
