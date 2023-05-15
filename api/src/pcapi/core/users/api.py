@@ -1215,3 +1215,8 @@ def save_trusted_device(device_info: "account_serialization.TrustedDevice | None
         user=user,
     )
     repository.save(trusted_device)
+
+
+def update_login_device_history(device_info: "account_serialization.TrustedDevice | None") -> None:
+    if device_info is None:
+        return

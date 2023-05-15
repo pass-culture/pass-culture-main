@@ -1284,3 +1284,10 @@ class SaveTrustedDeviceTest:
             "os": "iOS",
             "source": "iPhone 13",
         }
+
+
+class UpdateLoginDeviceHistoryTest:
+    def test_should_not_save_login_device_when_no_info_provided(self):
+        users_api.update_login_device_history(device_info=None)
+
+        assert users_models.LoginDeviceHistory.query.count() == 0
