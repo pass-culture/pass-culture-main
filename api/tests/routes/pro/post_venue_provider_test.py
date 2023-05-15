@@ -532,3 +532,30 @@ class ConnectProviderToVenueTest:
         venue_provider = venue.venueProviders[0]
         assert venue_provider.provider == provider
         mocked_venue_provider_job.assert_called_once_with(venue_provider.id)
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.workers.venue_provider_job.venue_provider_job")
+    def test_should_connect_to_provider_linked_to_an_offerer(
+        self,
+        mocked_venue_provider_job,
+        client,
+    ):
+        user = user_factories.AdminFactory()
+        venue = offerers_factories.VenueFactory()
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider", localClass=None, isActive=True, enabledForPro=True
+        )
+        providers_factories.OffererProviderFactory(offerer=venue.managingOfferer, provider=provider)
+
+        venue_provider_data = {
+            "providerId": provider.id,
+            "venueId": venue.id,
+        }
+
+        response = client.with_session_auth(email=user.email).post("/venueProviders", json=venue_provider_data)
+
+        assert response.status_code == 201
+        assert len(venue.venueProviders) == 1
+        venue_provider = venue.venueProviders[0]
+        assert venue_provider.provider == provider
+        mocked_venue_provider_job.assert_not_called()
