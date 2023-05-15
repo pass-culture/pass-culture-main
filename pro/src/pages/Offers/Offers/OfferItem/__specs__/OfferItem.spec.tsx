@@ -39,11 +39,12 @@ const renderOfferItem = (props: OfferItemProps) =>
 describe('src | components | pages | Offers | OfferItem', () => {
   let props: OfferItemProps
   let eventOffer: Offer
+  const offerId = 12
 
   beforeEach(() => {
     eventOffer = {
       id: 'M4',
-      nonHumanizedId: 1,
+      nonHumanizedId: offerId,
       isActive: true,
       isEditable: true,
       isEvent: true,
@@ -123,7 +124,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
           expect(deleteButton).toBeInTheDocument()
           await userEvent.click(deleteButton)
           expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
-          expect(api.deleteDraftOffers).toHaveBeenCalledWith({ ids: ['M4'] })
+          expect(api.deleteDraftOffers).toHaveBeenCalledWith({
+            ids: [offerId.toString()],
+          })
           expect(mockRefreshOffer).toHaveBeenCalledTimes(1)
           expect(
             screen.getByText('1 brouillon a bien été supprimé')
@@ -155,7 +158,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
             })
           )
           expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
-          expect(api.deleteDraftOffers).toHaveBeenCalledWith({ ids: ['M4'] })
+          expect(api.deleteDraftOffers).toHaveBeenCalledWith({
+            ids: [offerId.toString()],
+          })
           expect(
             screen.getByText(
               'Une erreur est survenue lors de la suppression du brouillon'
