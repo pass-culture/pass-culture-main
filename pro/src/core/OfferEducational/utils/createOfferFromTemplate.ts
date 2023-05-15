@@ -19,8 +19,6 @@ export const createOfferFromTemplate = async (
   )
 
   if (!offerTemplateResponse.isOk) {
-    navigate('/accueil')
-
     return notify.error(offerTemplateResponse.message)
   }
   const offererId =

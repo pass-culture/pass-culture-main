@@ -4,7 +4,7 @@
 .eac {
     position: relative;
   
-    &-heading {
+    &-section {
       margin-bottom: rem.torem(32px);
     }
   
@@ -13,8 +13,4 @@
       margin-top: rem.torem(4px);
       font-weight: 500;
     }
-
-    &-info {
-        margin-bottom: rem.torem(32px);
-    } 
 }
