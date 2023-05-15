@@ -56,17 +56,12 @@ const UserPasswordForm = ({
           <Form onSubmit={formik.handleSubmit}>
             <FormLayout>
               <FormLayout.Row>
-                <PasswordInput
-                  name="oldPassword"
-                  label="Mot de passe actuel"
-                  placeholder="Votre mot de passe actuel"
-                />
+                <PasswordInput name="oldPassword" label="Mot de passe actuel" />
               </FormLayout.Row>
               <FormLayout.Row>
                 <PasswordInput
                   name="newPassword"
                   label="Nouveau mot de passe"
-                  placeholder="Votre nouveau mot de passe"
                   withErrorPreview={true}
                 />
               </FormLayout.Row>
@@ -74,7 +69,6 @@ const UserPasswordForm = ({
                 <PasswordInput
                   name="newConfirmationPassword"
                   label="Confirmer votre nouveau mot de passe"
-                  placeholder="Votre nouveau mot de passe"
                 />
               </FormLayout.Row>
             </FormLayout>
