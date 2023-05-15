@@ -19,12 +19,6 @@ const ModalAppPreview = ({
   hideModal,
   imageUrl,
 }: IModalAppPreviewProps): JSX.Element => {
-  const title = {
-    [UploaderModeEnum.VENUE]: 'Ajouter une image',
-    [UploaderModeEnum.OFFER]: 'Ajouter une image',
-    [UploaderModeEnum.OFFER_COLLECTIVE]: 'Ajouter une image',
-  }[mode]
-
   const AppPreview = {
     [UploaderModeEnum.VENUE]: AppPreviewVenue,
     [UploaderModeEnum.OFFER]: AppPreviewOffer,
@@ -32,10 +26,14 @@ const ModalAppPreview = ({
   }[mode]
 
   return (
-    <DialogBox hasCloseButton labelledBy={title} onDismiss={hideModal}>
+    <DialogBox
+      hasCloseButton
+      labelledBy="Ajouter une image"
+      onDismiss={hideModal}
+    >
       <div className={style['container']}>
         <header>
-          <h1 className={style['header']}>{title}</h1>
+          <h1 className={style['header']}>Ajouter une image</h1>
         </header>
         <div className={style['subtitle']}>
           Prévisualisation de votre image dans l’application pass Culture
