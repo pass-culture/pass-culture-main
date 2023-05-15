@@ -1291,3 +1291,14 @@ class UpdateLoginDeviceHistoryTest:
         users_api.update_login_device_history(device_info=None)
 
         assert users_models.LoginDeviceHistory.query.count() == 0
+
+    def test_should_not_save_login_device_when_no_device_id_provided(self):
+        device_info = account_serialization.TrustedDevice(
+            deviceId="",
+            source="iPhone 13",
+            os="iOS",
+        )
+
+        users_api.update_login_device_history(device_info=device_info)
+
+        assert users_models.LoginDeviceHistory.query.count() == 0
