@@ -36,11 +36,15 @@
     &.is-selected {
       border-bottom: rem.torem(2px) solid colors.$primary;
 
-      .tabs-tab-link {
+      .tabs-tab-link, .tabs-tab-button {
         color: colors.$primary;
       }
 
       .tabs-tab-icon {
+        fill: colors.$primary;
+      }
+
+      .tabs-tab-button svg{
         fill: colors.$primary;
       }
     }
