@@ -6,7 +6,7 @@ import {
 } from 'core/OfferEducational'
 
 type Params = {
-  offerId: number
+  offerId: string
   values: Pick<OfferEducationalStockFormValues, 'priceDetail'>
 }
 

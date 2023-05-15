@@ -14,8 +14,6 @@ jest.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
   createOfferFromTemplate: jest.fn(),
 }))
 
-const offerId = 12
-
 const renderDuplicateOfferCell = () => {
   const storeOverrides = {
     user: {
@@ -36,7 +34,7 @@ const renderDuplicateOfferCell = () => {
             <tbody>
               <tr>
                 <td>
-                  <DuplicateOfferCell templateOfferId={offerId} />
+                  <DuplicateOfferCell templateOfferId="AE" />
                 </td>
               </tr>
             </tbody>
@@ -44,7 +42,7 @@ const renderDuplicateOfferCell = () => {
         }
       />
       <Route
-        path={`/offre/duplication/collectif/${offerId}`}
+        path="/offre/duplication/collectif/AE"
         element={<div>Parcours de duplication d’offre</div>}
       />
     </Routes>,

@@ -7,7 +7,7 @@ import {
 import { createPatchOfferPayload } from '../utils/createPatchOfferPayload'
 
 export type Params = {
-  offerId: number
+  offerId: string
   offer: IOfferEducationalFormValues
   initialValues: IOfferEducationalFormValues
 }
@@ -22,7 +22,7 @@ export const patchCollectiveOfferTemplateAdapter: patchCollectiveOfferTemplateAd
   async ({ offerId, offer, initialValues }) => {
     try {
       // the api returns no understandable error when the id is not valid, so we deal before calling the api
-      if (!offerId) {
+      if (!offerId || offerId === '') {
         throw new Error('L’identifiant de l’offre n’est pas valide.')
       }
       const payload = createPatchOfferPayload(offer, initialValues, true)

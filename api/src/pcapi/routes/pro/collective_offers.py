@@ -235,7 +235,7 @@ def edit_collective_offer(
     return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/collective/offers-template/<int:offer_id>/", methods=["POST"])
+@private_api.route("/collective/offers-template/<offer_id>/", methods=["POST"])
 @login_required
 @spectree_serialize(
     on_success_status=201,
@@ -244,17 +244,18 @@ def edit_collective_offer(
     response_model=collective_offers_serialize.CollectiveOfferTemplateResponseIdModel,
 )
 def create_collective_offer_template_from_collective_offer(
-    offer_id: int, body: collective_offers_serialize.CollectiveOfferTemplateBodyModel
+    offer_id: str, body: collective_offers_serialize.CollectiveOfferTemplateBodyModel
 ) -> collective_offers_serialize.CollectiveOfferTemplateResponseIdModel:
+    dehumanized_offer_id = dehumanize_or_raise(offer_id)
     try:
-        offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
+        offerer = offerers_api.get_offerer_by_collective_offer_id(dehumanized_offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         collective_offer_template = educational_api_offer.create_collective_offer_template_from_collective_offer(
-            price_detail=body.price_detail, user=current_user, offer_id=offer_id
+            price_detail=body.price_detail, user=current_user, offer_id=dehumanized_offer_id
         )
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors(
@@ -270,17 +271,18 @@ def create_collective_offer_template_from_collective_offer(
     return collective_offers_serialize.CollectiveOfferTemplateResponseIdModel.from_orm(collective_offer_template)
 
 
-@private_api.route("/collective/offers-template/<int:offer_id>", methods=["PATCH"])
+@private_api.route("/collective/offers-template/<offer_id>", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.GetCollectiveOfferTemplateResponseModel,
     api=blueprint.pro_private_schema,
 )
 def edit_collective_offer_template(
-    offer_id: int, body: collective_offers_serialize.PatchCollectiveOfferTemplateBodyModel
+    offer_id: str, body: collective_offers_serialize.PatchCollectiveOfferTemplateBodyModel
 ) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
+    dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offerer = offerers_api.get_offerer_by_collective_offer_template_id(offer_id)
+        offerer = offerers_api.get_offerer_by_collective_offer_template_id(dehumanized_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
@@ -292,7 +294,7 @@ def edit_collective_offer_template(
     except educational_exceptions.CulturalPartnerNotFoundException:
         raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
     try:
-        offers_api.update_collective_offer_template(offer_id=offer_id, new_values=new_values)
+        offers_api.update_collective_offer_template(offer_id=dehumanized_id, new_values=new_values)
     except educational_exceptions.VenueIdDontExist:
         raise ApiErrors({"venueId": "The venue does not exist."}, 404)
     except educational_exceptions.OffererOfVenueDontMatchOfferer:
@@ -308,7 +310,7 @@ def edit_collective_offer_template(
             {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
             status_code=404,
         )
-    offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
+    offer = educational_api_offer.get_collective_offer_template_by_id(dehumanized_id)
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
 
 

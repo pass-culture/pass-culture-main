@@ -76,7 +76,7 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         'Vous devez séléctionner une offre vitrine à dupliquer'
       )
     }
-    createOfferFromTemplate(navigate, notify, Number(templateOfferId))
+    createOfferFromTemplate(navigate, notify, templateOfferId)
   }
 
   return (
@@ -114,16 +114,15 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
             </p>
             {offers?.slice(0, 5).map(offer => (
               <div
-                key={offer.nonHumanizedId}
+                key={offer.id}
                 className={cn(styles['offer-selection'], {
                   [styles['offer-selected']]:
-                    formikSelection.values.templateOfferId ===
-                    offer.nonHumanizedId.toString(),
+                    formikSelection.values.templateOfferId === offer.id,
                 })}
               >
                 <RadioButton
                   name="templateOfferId"
-                  value={offer.nonHumanizedId.toString()}
+                  value={offer.id}
                   label={
                     <div className={styles['offer-selection-label']}>
                       <Thumb

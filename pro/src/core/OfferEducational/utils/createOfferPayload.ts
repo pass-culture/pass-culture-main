@@ -26,7 +26,7 @@ const disabilityCompliances = (
 export const createCollectiveOfferPayload = (
   offer: IOfferEducationalFormValues,
   isTemplate: boolean,
-  offerTemplateId?: number
+  offerTemplateId?: string
 ): PostCollectiveOfferTemplateBodyModel => ({
   venueId: Number(offer.venueId),
   subcategoryId: offer.subCategory,
