@@ -1288,17 +1288,36 @@ class SaveTrustedDeviceTest:
 
 class UpdateLoginDeviceHistoryTest:
     def test_should_not_save_login_device_when_no_info_provided(self):
-        users_api.update_login_device_history(device_info=None)
+        user = users_factories.UserFactory(email="py@test.com")
+
+        users_api.update_login_device_history(device_info=None, user=user)
 
         assert users_models.LoginDeviceHistory.query.count() == 0
 
     def test_should_not_save_login_device_when_no_device_id_provided(self):
+        user = users_factories.UserFactory(email="py@test.com")
         device_info = account_serialization.TrustedDevice(
             deviceId="",
             source="iPhone 13",
             os="iOS",
         )
 
-        users_api.update_login_device_history(device_info=device_info)
+        users_api.update_login_device_history(device_info=device_info, user=user)
 
         assert users_models.LoginDeviceHistory.query.count() == 0
+
+    def test_can_save_login_device(self):
+        user = users_factories.UserFactory(email="py@test.com")
+        device_info = account_serialization.TrustedDevice(
+            deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
+            source="iPhone 13",
+            os="iOS",
+        )
+
+        users_api.update_login_device_history(device_info=device_info, user=user)
+
+        login_device = users_models.LoginDeviceHistory.query.one()
+
+        assert login_device.deviceId == device_info.device_id
+        assert login_device.source == "iPhone 13"
+        assert login_device.os == "iOS"

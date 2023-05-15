@@ -1217,9 +1217,17 @@ def save_trusted_device(device_info: "account_serialization.TrustedDevice | None
     repository.save(trusted_device)
 
 
-def update_login_device_history(device_info: "account_serialization.TrustedDevice | None") -> None:
+def update_login_device_history(device_info: "account_serialization.TrustedDevice | None", user: models.User) -> None:
     if device_info is None:
         return
 
     if not device_info.device_id:
         return
+
+    login_device = users_models.LoginDeviceHistory(
+        deviceId=device_info.device_id,
+        os=device_info.os,
+        source=device_info.source,
+        user=user,
+    )
+    repository.save(login_device)
