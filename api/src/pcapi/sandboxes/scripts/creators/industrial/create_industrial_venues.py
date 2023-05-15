@@ -9,6 +9,7 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.providers import factories as providers_factories
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 
 
@@ -100,6 +101,9 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 pricing_point="self" if siret else None,
                 reimbursement_point="self" if siret else None,
             )
+
+            if offerer.validationStatus == ValidationStatus.NEW:
+                offerers_factories.VenueRegistrationFactory(venue=venue)
 
             if image_venue_counter < DEFAULT_VENUE_IMAGES:
                 add_default_image_to_venue(image_venue_counter, offerer, venue)
