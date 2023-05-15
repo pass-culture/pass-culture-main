@@ -1220,3 +1220,6 @@ def save_trusted_device(device_info: "account_serialization.TrustedDevice | None
 def update_login_device_history(device_info: "account_serialization.TrustedDevice | None") -> None:
     if device_info is None:
         return
+
+    if not device_info.device_id:
+        return
