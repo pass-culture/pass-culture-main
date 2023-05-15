@@ -35,8 +35,6 @@ from pcapi.routes.serialization.collective_offers_serialize import PostCollectiv
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.utils import image_conversion
 from pcapi.utils import rest
-from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.human_ids import dehumanize_or_raise
 
 
 logger = logging.getLogger(__name__)
@@ -268,7 +266,7 @@ def create_collective_offer(
         motorDisabilityCompliant=offer_data.motor_disability_compliant,
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
-        templateId=dehumanize(offer_data.template_id) if offer_data.template_id else None,
+        templateId=offer_data.template_id,
     )
     collective_offer.bookingEmails = offer_data.booking_emails
     db.session.add(collective_offer)
@@ -285,7 +283,7 @@ def get_venue_and_check_access_for_offer_creation(
     user: User,
 ) -> offerers_models.Venue:
     if offer_data.template_id is not None:
-        template = get_collective_offer_template_by_id(dehumanize_or_raise(offer_data.template_id))
+        template = get_collective_offer_template_by_id(offer_data.template_id)
         rest.check_user_has_access_to_offerer(user, offerer_id=template.venue.managingOffererId)
     venue: offerers_models.Venue = offerers_models.Venue.query.get_or_404(offer_data.venue_id)
     rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)

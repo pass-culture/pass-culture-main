@@ -10,7 +10,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
@@ -46,7 +45,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "interventionArea": ["75", "92", "93"],
-            "templateId": humanize(template.id),
+            "templateId": template.id,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -113,7 +112,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "interventionArea": ["75", "92", "93"],
-            "templateId": humanize(template.id),
+            "templateId": template.id,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -213,7 +212,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "interventionArea": [],
-            "templateId": humanize(template.id),
+            "templateId": template.id,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -259,7 +258,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "interventionArea": ["75", "92", "93"],
-            "templateId": humanize(template.id),
+            "templateId": template.id,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -599,7 +598,7 @@ class Returns404Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "interventionArea": ["75", "92", "93"],
-            "templateId": humanize(1234567890),
+            "templateId": 1234567890,
         }
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):

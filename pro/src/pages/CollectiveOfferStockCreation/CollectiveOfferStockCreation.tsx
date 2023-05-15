@@ -75,7 +75,7 @@ export const CollectiveOfferStockCreation = ({
       values.educationalOfferType === EducationalOfferType.SHOWCASE
     if (isTemplate) {
       const response = await postCollectiveOfferTemplateAdapter({
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         values,
       })
       isOk = response.isOk

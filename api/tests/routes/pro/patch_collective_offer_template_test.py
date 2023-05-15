@@ -10,7 +10,6 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -47,7 +46,7 @@ class Returns200Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers-template/{humanize(offer.id)}", json=data)
+            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 200
@@ -84,7 +83,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers-template/{humanize(offer.id)}", json=data)
+            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -103,7 +102,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers-template/{humanize(offer.id)}", json=data)
+            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -122,7 +121,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers-template/{humanize(offer.id)}", json=data)
+            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -141,7 +140,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers-template/{humanize(offer.id)}", json=data)
+            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -160,7 +159,7 @@ class Returns400Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers-template/{humanize(offer.id)}", json=data)
+            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -175,7 +174,7 @@ class Returns403Test:
         # When
         data = {"name": "New name"}
         response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers-template/{humanize(offer.id)}", json=data
+            f"/collective/offers-template/{offer.id}", json=data
         )
 
         # Then
@@ -192,7 +191,7 @@ class Returns404Test:
         users_factories.UserFactory(email="user@example.com")
 
         # when
-        response = client.with_session_auth("user@example.com").patch("/collective/offers-template/ADFGA", json={})
+        response = client.with_session_auth("user@example.com").patch("/collective/offers-template/12", json={})
 
         # then
         assert response.status_code == 404
@@ -211,7 +210,7 @@ class Returns404Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers-template/{humanize(offer.id)}", json=data)
+            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 200
@@ -231,7 +230,7 @@ class Returns404Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers-template/{humanize(offer.id)}", json=data)
+            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 404
@@ -252,7 +251,7 @@ class Returns404Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers-template/{humanize(offer.id)}", json=data)
+            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 404
@@ -275,7 +274,7 @@ class Returns404Test:
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
         ):
-            response = client.patch(f"/collective/offers-template/{humanize(offer.id)}", json=data)
+            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
         # Then
         assert response.status_code == 403
@@ -301,7 +300,7 @@ class Returns404Test:
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
             side_effect=CulturalPartnerNotFoundException,
         ):
-            response = client.patch(f"/collective/offers-template/{humanize(offer.id)}", json=data)
+            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
         # THEN
         assert response.status_code == 403

@@ -6,7 +6,7 @@ import { createCollectiveOfferPayload } from '../utils/createOfferPayload'
 
 type Params = {
   offer: IOfferEducationalFormValues
-  offerTemplateId?: string
+  offerTemplateId?: number
 }
 
 type IPayloadSuccess = { id: string }
