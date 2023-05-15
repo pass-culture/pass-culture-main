@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 
 import useNotification from 'hooks/useNotification'
-import { dehumanizeId } from 'utils/dehumanize'
 
 import getCollectiveOfferFormDataApdater from '../adapters/getCollectiveOfferFormDataAdapter'
 import getCollectiveOfferTemplateAdapter from '../adapters/getCollectiveOfferTemplateAdapter'
@@ -13,11 +12,10 @@ import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
 export const createOfferFromTemplate = async (
   navigate: ReturnType<typeof useNavigate>,
   notify: ReturnType<typeof useNotification>,
-  templateOfferId: string
+  templateOfferId: number
 ) => {
   const offerTemplateResponse = await getCollectiveOfferTemplateAdapter(
-    // This will be deleted once all routes are dehumanized
-    dehumanizeId(templateOfferId) || 0
+    templateOfferId
   )
 
   if (!offerTemplateResponse.isOk) {

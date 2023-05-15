@@ -21,9 +21,10 @@ const allParticipantsOptionsToFalse = {
 
 describe('patchCollectiveOfferTemplateAdapter', () => {
   let props: Params
+  const offerId = 12
   beforeEach(() => {
     props = {
-      offerId: '12',
+      offerId: offerId,
       offer: {
         category: 'PRATIQUE_ART',
         subCategory: SubcategoryIdEnum.ATELIER_PRATIQUE_ART,
@@ -88,7 +89,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
       // when
       const response = await patchCollectiveOfferTemplateAdapter({
         ...props,
-        offerId: '',
+        offerId: 0,
       })
 
       // then
@@ -113,7 +114,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
       // when
       const response = await patchCollectiveOfferTemplateAdapter({
         ...props,
-        offerId: '12',
+        offerId: offerId,
       })
 
       // then
@@ -131,7 +132,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
       // when
       const response = await patchCollectiveOfferTemplateAdapter({
         ...props,
-        offerId: '12',
+        offerId: offerId,
       })
       // then
       expect(response.isOk).toBeTruthy()

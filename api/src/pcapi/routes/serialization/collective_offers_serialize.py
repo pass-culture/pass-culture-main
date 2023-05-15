@@ -434,7 +434,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     contact_email: EmailStr
     contact_phone: str | None
     intervention_area: list[str] | None
-    template_id: str | None
+    template_id: int | None
     offerer_id: str | None  # FIXME (MathildeDuboille - 24/10/22) prevent bug in production where offererId is sent in params
 
     @validator("name", pre=True)
