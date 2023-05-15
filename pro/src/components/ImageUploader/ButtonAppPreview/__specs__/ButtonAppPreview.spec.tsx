@@ -47,7 +47,7 @@ describe('ButtonAppPreview', () => {
     )
 
     const modalPreview = await screen.findByRole('heading', {
-      name: 'Image de l’offre',
+      name: 'Ajouter une image',
     })
     expect(modalPreview).toBeInTheDocument()
 
