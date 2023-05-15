@@ -32,7 +32,7 @@ const DeleteDraftCell = ({ offer, refreshOffers }: IDeleteDraftOffers) => {
 
   const onConfirmDeleteDraftOffer = useCallback(async () => {
     const { isOk, message } = await deleteDraftOffersAdapter({
-      ids: [offer.id],
+      ids: [offer.nonHumanizedId.toString()],
     })
 
     if (!isOk) {
