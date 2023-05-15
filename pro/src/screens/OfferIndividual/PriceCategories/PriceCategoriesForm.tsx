@@ -44,7 +44,7 @@ export const PriceCategoriesForm = ({
   isDisabled,
   canBeDuo,
 }: IPriceCategoriesForm): JSX.Element => {
-  const { setFieldValue, resetForm, values } =
+  const { setFieldValue, setValues, values } =
     useFormikContext<PriceCategoriesFormValues>()
   const notify = useNotification()
   const [currentDeletionIndex, setCurrentDeletionIndex] = useState<
@@ -100,6 +100,7 @@ export const PriceCategoriesForm = ({
     } else {
       arrayHelpers.remove(index)
     }
+
     if (values.priceCategories.length === 2) {
       setFieldValue(`priceCategories[0].label`, UNIQUE_PRICE)
       const otherPriceCategory = priceCategories.filter(
@@ -124,8 +125,9 @@ export const PriceCategoriesForm = ({
       if (response.isOk) {
         const updatedOffer = response.payload
         setOffer && setOffer(updatedOffer)
-        resetForm({
-          values: computeInitialValues(updatedOffer),
+        setValues({
+          ...values,
+          priceCategories: computeInitialValues(updatedOffer).priceCategories,
         })
       }
     }
