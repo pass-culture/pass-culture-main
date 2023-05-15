@@ -11,6 +11,10 @@ export type TimePickerProps = FieldLayoutBaseProps & {
   dateTime?: Date
 }
 
+const isDateValid = (date: Date | null): boolean => {
+  return date === null || (date instanceof Date && !isNaN(date.getTime()))
+}
+
 const TimePicker = ({
   name,
   className,
@@ -28,7 +32,6 @@ const TimePicker = ({
   const [field, meta, helpers] = useField({ name, type: 'text' })
   const showError = meta.touched && !!meta.error
 
-  /* istanbul ignore next: DEBT, TO FIX */
   return (
     <FieldLayout
       className={className}
@@ -48,12 +51,12 @@ const TimePicker = ({
         {...field}
         hasError={meta.touched && !!meta.error}
         filterVariant={filterVariant}
-        selected={field.value}
+        // react-datepicker crashes if the value is not a Date or an InvalidDate
+        // (InvalidDate is the result of new Date('stringthebrowsercantparse'))
+        selected={isDateValid(field.value) ? field.value : new Date()}
         disabled={disabled}
         onChange={(time: Date | null) => {
-          /* istanbul ignore next: DEBT, TO FIX */
           helpers.setTouched(true)
-          /* istanbul ignore next: DEBT, TO FIX */
           helpers.setValue(time)
         }}
       />
