@@ -1,7 +1,6 @@
 import { api } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { unhumanizeSiret } from 'core/Venue/utils'
-import { validateSiret } from 'core/Venue/validate'
 
 type Params = string
 type IPayload = {
