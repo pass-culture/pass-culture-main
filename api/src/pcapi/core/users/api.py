@@ -1222,6 +1222,14 @@ def update_login_device_history(device_info: "account_serialization.TrustedDevic
         return
 
     if not device_info.device_id:
+        logger.info(
+            "Invalid deviceId was provided for login device",
+            extra={
+                "deviceId": device_info.device_id,
+                "os": device_info.os,
+                "source": device_info.source,
+            },
+        )
         return
 
     login_device = users_models.LoginDeviceHistory(
