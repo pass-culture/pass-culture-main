@@ -38,7 +38,6 @@ export const BaseTimePicker = ({
       showTimeSelect
       showTimeSelectOnly
       timeCaption="Horaire"
-      timeFormat={FORMAT_HH_mm}
       timeIntervals={15}
       onKeyDown={event => {
         !/[0-9:]|Backspace|Tab/.test(event.key) && event.preventDefault()
