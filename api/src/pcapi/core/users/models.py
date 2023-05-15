@@ -224,6 +224,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     )
     schoolType = sa.Column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
     trusted_devices: list["TrustedDevice"] = orm.relationship("TrustedDevice", back_populates="user")
+    login_device_history: list["LoginDeviceHistory"] = orm.relationship("LoginDeviceHistory", back_populates="user")
     validatedBirthDate = sa.Column(sa.Date, nullable=True)  # validated by an Identity Provider
     backoffice_profile = orm.relationship("BackOfficeUserProfile", uselist=False, back_populates="user")  # type: ignore [misc]
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
@@ -787,4 +788,18 @@ class TrustedDevice(PcObject, Base, Model):
 
     source = sa.Column(sa.Text, nullable=True)
     os = sa.Column(sa.Text, nullable=True)
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+
+
+class LoginDeviceHistory(PcObject, Base, Model):
+    __tablename__ = "login_device_history"
+
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
+    user: User = orm.relationship(User, foreign_keys=[userId], back_populates="login_device_history")
+
+    deviceId: str = sa.Column(sa.Text, nullable=False, index=True)
+
+    source = sa.Column(sa.Text, nullable=True)
+    os = sa.Column(sa.Text, nullable=True)
+    location = sa.Column(sa.Text, nullable=True)
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
