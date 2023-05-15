@@ -148,6 +148,7 @@ def test_user_logs_in_with_missing_fields(client):
     }
 
 
+@override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
 def test_save_login_device_history_on_signin(client):
     data = {
         "identifier": "user@test.com",
@@ -168,6 +169,24 @@ def test_save_login_device_history_on_signin(client):
     assert login_device.source == "iPhone 13"
     assert login_device.os == "iOS"
     assert login_device.location == "127.0.0.1"
+
+
+@override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
+def test_should_not_save_login_device_history_when_feature_flag_is_disabled(client):
+    data = {
+        "identifier": "user@test.com",
+        "password": settings.TEST_DEFAULT_PASSWORD,
+        "deviceInfo": {
+            "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
+            "source": "iPhone 13",
+            "os": "iOS",
+        },
+    }
+    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
+
+    client.post("/native/v1/signin", json=data)
+
+    assert LoginDeviceHistory.query.count() == 0
 
 
 def test_send_reset_password_email_without_email(client):
