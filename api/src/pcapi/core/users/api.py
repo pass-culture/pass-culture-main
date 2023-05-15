@@ -8,6 +8,7 @@ import typing
 
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended import create_access_token
+from flask_limiter.util import get_remote_address
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 
@@ -1236,6 +1237,7 @@ def update_login_device_history(device_info: "account_serialization.TrustedDevic
         deviceId=device_info.device_id,
         os=device_info.os,
         source=device_info.source,
+        location=get_remote_address(),  # TODO(PC-21660): Save location instead of ip address
         user=user,
     )
     repository.save(login_device)
