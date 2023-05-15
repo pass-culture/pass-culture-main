@@ -9,6 +9,5 @@ export type SiretInfo = {
   address: Address;
   name: string;
   siret: string;
-  ape_code: string;
 };
 

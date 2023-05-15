@@ -79,7 +79,6 @@ class SiretInfo(pydantic.BaseModel):
     active: bool
     name: str
     address: _Address
-    ape_code: str
 
 
 def get_siren(siren: str, with_address: bool = True) -> SirenInfo:
@@ -161,22 +160,11 @@ class TestingBackend(BaseBackend):
 
     def get_siret(self, siret: str) -> SiretInfo:
         assert len(siret) == 14
-
-        siret_ape = defaultdict(
-            lambda: "90.03A",
-            {
-                "77708411211111": "85.31Z",
-                "77708411211112": "85.32Z",
-                "77708411211113": "91.03Z",
-            },
-        )
-
         return SiretInfo(
             siret=siret,
             active=True,
             name="MINISTERE DE LA CULTURE",
             address=self.address,
-            ape_code=siret_ape[siret]
         )
 
 
@@ -271,10 +259,6 @@ class InseeBackend(BaseBackend):
             city=city,
             insee_code=block["codeCommuneEtablissement"] or "",
         )
-    
-    def _get_ape_code_from_siret_data(self, data: dict) -> str:
-        block = data["uniteLegale"]
-        return block["activitePrincipaleUniteLegale"]
 
     def get_siren(self, siren: str, with_address: bool = True) -> SirenInfo:
         subpath = f"/siren/{siren}"
@@ -306,7 +290,6 @@ class InseeBackend(BaseBackend):
             active=active,
             name=self._get_name_from_siret_data(data),
             address=self._get_address_from_siret_data(data),
-            ape_code=self._get_ape_code_from_siret_data(data),
         )
         self._check_non_public_data(info)
         return info

@@ -104,7 +104,6 @@ describe('components | Informations', () => {
         city: 'BAYEUX',
         postalCode: '14400',
       },
-      ape_code: '95.07A',
     })
     jest
       .spyOn(apiAdresse, 'getDataFromAddress')
