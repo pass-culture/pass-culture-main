@@ -144,9 +144,7 @@
                 </td>
                 <td>{{ offerer.id }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
-                <td>
-                  {{ build_offerer_status_badge(offerer) }}
-                </td>
+                <td>{{ build_offerer_status_badge(offerer) }}</td>
                 <td>
                   {% set top_actor_checked = "top-acteur" in item.tags | map(attribute="name") %}
                   <div class="form-check form-switch">
@@ -158,12 +156,8 @@
                     </form>
                   </div>
                 </td>
-                <td>
-                  {{ item.tags | map(attribute="label") | join(", ") | escape }}
-                </td>
-                <td>
-                  {{ offerer.dateCreated | format_date("%d/%m/%Y") }}
-                </td>
+                <td>{{ item.tags | map(attribute="label") | join(", ") | escape }}</td>
+                <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>
                   {{ item.last_comment | empty_string_if_null | replace("\n", "
                   <br />
