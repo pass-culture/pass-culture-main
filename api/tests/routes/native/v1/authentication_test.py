@@ -22,6 +22,7 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.models import AccountState
+from pcapi.core.users.models import LoginDeviceHistory
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.models import db
@@ -145,6 +146,28 @@ def test_user_logs_in_with_missing_fields(client):
         "identifier": ["Ce champ est obligatoire"],
         "password": ["Ce champ est obligatoire"],
     }
+
+
+def test_save_login_device_history_on_signin(client):
+    data = {
+        "identifier": "user@test.com",
+        "password": settings.TEST_DEFAULT_PASSWORD,
+        "deviceInfo": {
+            "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
+            "source": "iPhone 13",
+            "os": "iOS",
+        },
+    }
+    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
+
+    client.post("/native/v1/signin", json=data)
+
+    login_device = LoginDeviceHistory.query.one()
+
+    assert login_device.deviceId == data["deviceInfo"]["deviceId"]
+    assert login_device.source == "iPhone 13"
+    assert login_device.os == "iOS"
+    assert login_device.location == "127.0.0.1"
 
 
 def test_send_reset_password_email_without_email(client):
