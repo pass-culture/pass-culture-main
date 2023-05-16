@@ -348,9 +348,9 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     @property
     def age(self) -> int | None:
-        return users_utils.get_age_from_birth_date(self.birth_date) if self.birth_date else None
+        return users_utils.get_age_from_birth_date(self.birth_date) if self.birth_date else None  # type: ignore [arg-type]
 
-    @property
+    @hybrid_property
     def birth_date(self) -> date | None:
         """
         Returns the birth date validated by an Identity Provider if it exists,
@@ -361,6 +361,16 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         if self.dateOfBirth:
             return self.dateOfBirth.date()
         return None
+
+    @birth_date.expression  # type: ignore [no-redef]
+    def birth_date(cls) -> date | None:  # pylint: disable=no-self-argument
+        return sa.case(
+            [
+                (cls.validatedBirthDate.is_not(None), cls.validatedBirthDate),
+                (cls.dateOfBirth.is_not(None), sa.cast(cls.dateOfBirth, sa.Date)),
+            ],
+            else_=None,
+        )
 
     @property
     def deposit(self) -> "Deposit | None":
@@ -396,7 +406,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def eligibility(self) -> EligibilityType | None:
         from pcapi.core.fraud import api as fraud_api
 
-        return fraud_api.decide_eligibility(self, self.birth_date, datetime.utcnow())
+        return fraud_api.decide_eligibility(self, self.birth_date, datetime.utcnow())  # type: ignore [arg-type]
 
     @hybrid_property
     def full_name(self) -> str:
@@ -438,7 +448,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     @property
     def latest_birthday(self) -> date | None:
-        return _get_latest_birthday(self.birth_date)
+        return _get_latest_birthday(self.birth_date)  # type: ignore [arg-type]
 
     @property
     def wallet_balance(self):  # type: ignore [no-untyped-def]

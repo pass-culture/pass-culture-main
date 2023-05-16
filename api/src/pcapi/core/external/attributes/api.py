@@ -311,7 +311,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     is_former_beneficiary = (user.has_beneficiary_role and not has_remaining_credit) or (
         user.has_underage_beneficiary_role and user.eligibility is None
     )
-    user_birth_date = datetime.combine(user.birth_date, datetime.min.time()) if user.birth_date else None
+    user_birth_date = datetime.combine(user.birth_date, datetime.min.time()) if user.birth_date else None  # type: ignore [arg-type]
 
     return models.UserAttributes(
         booking_categories=bookings_attributes.booking_categories,

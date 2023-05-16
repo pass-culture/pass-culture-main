@@ -110,10 +110,12 @@ def get_newly_eligible_age_18_users(since: date) -> list[models.User]:
             models.User.has_beneficiary_role == False,  # not already beneficiary
             models.User.has_admin_role == False,  # not an admin
             offerers_models.UserOfferer.userId.is_(None),  # not a pro
-            models.User.dateOfBirth > today - relativedelta(years=(constants.ELIGIBILITY_AGE_18 + 1)),  # less than 19yo
-            models.User.dateOfBirth <= today - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # more than or 18yo
-            models.User.dateOfBirth
-            > since - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # less than 18yo at since
+            # less than 19yo
+            models.User.birth_date > today - relativedelta(years=(constants.ELIGIBILITY_AGE_18 + 1)),  # type: ignore [operator]
+            # more than or 18yo
+            models.User.birth_date <= today - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # type: ignore [operator]
+            # less than 18yo at since
+            models.User.birth_date > since - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # type: ignore [operator]
             models.User.dateCreated < today,
         )
         .all()
