@@ -1,7 +1,9 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { format } from 'date-fns'
 import React from 'react'
 
+import { apiAdage } from 'apiClient/api'
 import * as useNotification from 'hooks/useNotification'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -13,11 +15,18 @@ const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
       closeModal={jest.fn()}
       venueName={'Venue 1'}
       offererName={'Offerer 1'}
+      offerId={1}
       userEmail={'contact@example.com'}
       {...props}
     />
   )
 }
+
+jest.mock('apiClient/api', () => ({
+  apiAdage: {
+    createCollectiveRequest: jest.fn(),
+  },
+}))
 
 describe('RequestFormDialog', () => {
   it('should display venueName and offererName', () => {
@@ -48,16 +57,58 @@ describe('RequestFormDialog', () => {
     const descriptionField = screen.getByLabelText(
       'Que souhaitez vous organiser ?'
     )
+    const dateField = screen.getByLabelText('Date souhaitée', {
+      exact: false,
+    })
+
+    await userEvent.type(descriptionField, 'Test description')
+    await userEvent.click(dateField)
+    const dates = screen.queryAllByText(new Date().getDate())
+    await userEvent.click(dates[dates.length - 1])
+
+    const submitButton = screen.getByRole('button', {
+      name: 'Envoyer ma demande',
+    })
+    await userEvent.click(submitButton)
+    expect(apiAdage.createCollectiveRequest).toHaveBeenCalledWith(1, {
+      comment: 'Test description',
+      phoneNumber: undefined,
+      requestedDate: format(new Date(), 'yyyy-MM-dd'),
+      totalTeachers: undefined,
+      totalStudents: undefined,
+    })
+    expect(notifySuccess).toHaveBeenCalledWith(
+      'Votre demande a bien été envoyée'
+    )
+    expect(mockCloseModal).toHaveBeenCalled()
+  })
+  it('should display error message when api reject call', async () => {
+    jest.spyOn(apiAdage, 'createCollectiveRequest').mockRejectedValueOnce({})
+    const notifyError = jest.fn()
+    const mockCloseModal = jest.fn()
+    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      success: jest.fn(),
+      error: notifyError,
+      information: jest.fn(),
+      pending: jest.fn(),
+      close: jest.fn(),
+    }))
+
+    renderRequestFormDialog({ closeModal: mockCloseModal })
+
+    const descriptionField = screen.getByLabelText(
+      'Que souhaitez vous organiser ?'
+    )
     await userEvent.type(descriptionField, 'Test description')
 
     const submitButton = screen.getByRole('button', {
       name: 'Envoyer ma demande',
     })
     await userEvent.click(submitButton)
-    expect(notifySuccess).toHaveBeenCalledWith(
-      'Votre demande a bien été envoyée'
+
+    expect(notifyError).toHaveBeenCalledWith(
+      'Impossible de créer la demande.\nVeuillez contacter le support pass culture'
     )
-    expect(mockCloseModal).toHaveBeenCalled()
   })
 
   it('should display error message when description is empty', async () => {
