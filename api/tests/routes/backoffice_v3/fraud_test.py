@@ -129,6 +129,8 @@ class RemoveBlacklistedDomainNameTest(PostEndpointHelper):
 
     def test_remove_blacklisted_domain(self, authenticated_client):
         domain = fraud_factories.BlacklistedDomainNameFactory().domain
+        other_domain = fraud_factories.BlacklistedDomainNameFactory().domain
+
         response = self.post_to_endpoint(authenticated_client, domain=domain)
 
         assert response.status_code == 302
@@ -138,6 +140,9 @@ class RemoveBlacklistedDomainNameTest(PostEndpointHelper):
 
         # domain is not blacklisted anymore
         assert fraud_models.BlacklistedDomainName.query.filter_by(domain=domain).first() is None
+
+        # other domain is still blacklisted
+        assert fraud_models.BlacklistedDomainName.query.filter_by(domain=other_domain).first() is not None
 
         # action has been logged
         action_type = history_models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME

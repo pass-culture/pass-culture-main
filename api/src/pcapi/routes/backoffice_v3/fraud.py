@@ -186,11 +186,13 @@ def blacklist_domain_name() -> utils.BackofficeResponse:
 
 @fraud_blueprint.route("/blacklist-domain-name/remove/<string:domain>", methods=["POST"])
 def remove_blacklisted_domain_name(domain: str) -> utils.BackofficeResponse:
-    row = fraud_models.BlacklistedDomainName.query.filter_by(domain=domain).one_or_none()
+    query = fraud_models.BlacklistedDomainName.query.filter_by(domain=domain)
+
+    row = query.one_or_none()
     if not row:
         raise NotFound()
 
-    row.query.delete(synchronize_session=False)
+    query.delete(synchronize_session=False)
     action = history_api.log_action(
         action_type=history_models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
         author=current_user,
