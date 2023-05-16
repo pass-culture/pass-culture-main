@@ -384,6 +384,18 @@ def format_website(website: str) -> str:
     return website
 
 
+def format_venue_target(target: offerers_models.Target) -> str:
+    match target:
+        case offerers_models.Target.INDIVIDUAL:
+            return "Individuelles"
+        case offerers_models.Target.EDUCATIONAL:
+            return "Collectives"
+        case offerers_models.Target.INDIVIDUAL_AND_EDUCATIONAL:
+            return "Indiv. et coll."
+        case _:
+            return ""
+
+
 def parse_referrer(url: str) -> str:
     """
     Ensure that a relative path is used, which will be understood.
@@ -442,6 +454,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_validation_operator"] = format_offer_validation_operator
     app.jinja_env.filters["format_offer_types"] = format_offer_types
     app.jinja_env.filters["format_website"] = format_website
+    app.jinja_env.filters["format_venue_target"] = format_venue_target
     app.jinja_env.filters["parse_referrer"] = parse_referrer
     app.jinja_env.filters["action_to_name"] = action_to_name
     app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link

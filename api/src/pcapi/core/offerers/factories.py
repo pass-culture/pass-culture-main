@@ -268,3 +268,12 @@ class VenueEducationalStatusFactory(BaseFactory):
 
     id = factory.Sequence(int)
     name = factory.Sequence(lambda x: f"venue educational status {x}")
+
+
+class VenueRegistrationFactory(BaseFactory):
+    class Meta:
+        model = models.VenueRegistration
+
+    venue = factory.SubFactory(VenueFactory)
+    target = models.Target.INDIVIDUAL_AND_EDUCATIONAL
+    webPresence = "https://example.com, https://pass.culture.fr"
