@@ -64,7 +64,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
 
     extra_data = booking.stock.offer.extraData or {}
 
-    birth_date = isoformat(booking.user.birth_date) if booking.user.birth_date else None
+    birth_date = isoformat(booking.user.birth_date) if booking.user.birth_date else None  # type: ignore [arg-type]
     return GetBookingResponse(
         bookingId=humanize(booking.id),  # type: ignore [arg-type]
         dateOfBirth=birth_date,

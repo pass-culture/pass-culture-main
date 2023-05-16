@@ -64,33 +64,54 @@ class CheckUserAndCredentialsTest:
 class GetNewlyEligibleUsersTest:
     @freeze_time("2018-01-01")
     def test_eligible_user(self):
-        user_already_18 = users_factories.UserFactory(
+        user_already_18 = users_factories.BaseUserFactory(
             dateOfBirth=datetime(1999, 12, 31), dateCreated=datetime(2017, 12, 1)
         )
-        user_just_18 = users_factories.UserFactory(
-            dateOfBirth=datetime(2000, 1, 1),
-            dateCreated=datetime(2017, 12, 31),
+        user_just_18 = users_factories.BaseUserFactory(
+            dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2017, 12, 31)
         )
-        user_just_18_ex_underage_beneficiary = users_factories.UserFactory(
+        user_just_18_ex_underage_beneficiary = users_factories.BaseUserFactory(
             dateOfBirth=datetime(2000, 1, 1),
             dateCreated=datetime(2017, 12, 1),
             roles=[UserRole.UNDERAGE_BENEFICIARY],
         )
         # Possible beneficiary that registered too late
-        users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
+        users_factories.BaseUserFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
         # Admin
         users_factories.AdminFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
         # Pro
         pro_user = users_factories.ProFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
         offerers_factories.UserOffererFactory(user=pro_user)
         # User not yet 18
-        users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 2), dateCreated=datetime(2017, 12, 1))
+        users_factories.BaseUserFactory(dateOfBirth=datetime(2000, 1, 2), dateCreated=datetime(2017, 12, 1))
 
         # Users 18 on the day `since` should not appear, nor those that are not 18 yet
         users = repository.get_newly_eligible_age_18_users(since=date(2017, 12, 31))
         assert set(users) == {user_just_18, user_just_18_ex_underage_beneficiary}
         users = repository.get_newly_eligible_age_18_users(since=date(2017, 12, 30))
         assert set(users) == {user_just_18, user_just_18_ex_underage_beneficiary, user_already_18}
+
+    @freeze_time("2018-01-01")
+    def test_eligible_user_with_discordant_dates_on_declared_one(self):
+        users_factories.BaseUserFactory(
+            dateOfBirth=datetime(2000, 1, 1),
+            validatedBirthDate=datetime(2000, 2, 1),
+            dateCreated=datetime(2017, 12, 1),
+            roles=[UserRole.UNDERAGE_BENEFICIARY],
+        )
+        users = repository.get_newly_eligible_age_18_users(since=date(2017, 12, 31))
+        assert set(users) == set()
+
+    @freeze_time("2018-02-01")
+    def test_eligible_user_with_discordant_dates_on_validated_one(self):
+        user_just_18_discordant_dates = users_factories.BaseUserFactory(
+            dateOfBirth=datetime(2000, 1, 1),
+            validatedBirthDate=datetime(2000, 2, 1),
+            dateCreated=datetime(2017, 12, 1),
+            roles=[UserRole.UNDERAGE_BENEFICIARY],
+        )
+        users = repository.get_newly_eligible_age_18_users(since=date(2018, 1, 31))
+        assert set(users) == {user_just_18_discordant_dates}
 
 
 class GetApplicantOfOffererUnderValidationTest:

@@ -262,8 +262,8 @@ def _get_tunnel_type(user: users_models.User) -> TunnelType:
     if user.birth_date is None:
         return TunnelType.NOT_ELIGIBLE
 
-    age_at_creation = users_utils.get_age_at_date(user.birth_date, user.dateCreated)
-    age_now = users_utils.get_age_from_birth_date(user.birth_date)
+    age_at_creation = users_utils.get_age_at_date(user.birth_date, user.dateCreated)  # type: ignore [arg-type]
+    age_now = users_utils.get_age_from_birth_date(user.birth_date)  # type: ignore [arg-type]
 
     if age_now < users_constants.ELIGIBILITY_AGE_18:
         return TunnelType.UNDERAGE
@@ -854,7 +854,7 @@ def get_eligibility_history(user: users_models.User) -> dict[str, accounts.Eligi
     ]
     # Do not show information about eligibility types which are not possible depending on known user age
     if user.birth_date:
-        age_at_creation = users_utils.get_age_at_date(user.birth_date, user.dateCreated)
+        age_at_creation = users_utils.get_age_at_date(user.birth_date, user.dateCreated)  # type: ignore [arg-type]
         if age_at_creation <= users_constants.ELIGIBILITY_AGE_18:
             if age_at_creation == users_constants.ELIGIBILITY_AGE_18:
                 eligibility_types.append(users_models.EligibilityType.AGE18)
@@ -864,7 +864,7 @@ def get_eligibility_history(user: users_models.User) -> dict[str, accounts.Eligi
                     eligibility_types.insert(0, users_models.EligibilityType.UNDERAGE)
             else:
                 eligibility_types.append(users_models.EligibilityType.UNDERAGE)
-                age_now = users_utils.get_age_from_birth_date(user.birth_date)
+                age_now = users_utils.get_age_from_birth_date(user.birth_date)  # type: ignore [arg-type]
                 if age_now >= users_constants.ELIGIBILITY_AGE_18 or users_models.EligibilityType.AGE18 in [
                     fraud_check.eligibilityType for fraud_check in user.beneficiaryFraudChecks
                 ]:

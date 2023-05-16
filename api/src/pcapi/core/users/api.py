@@ -626,7 +626,7 @@ def _update_underage_beneficiary_deposit_expiration_date(user: users_models.User
         raise ValueError("Trying to update underage beneficiary deposit expiration date but user has no deposit")
 
     current_deposit_expiration_datetime = user.deposit.expirationDate
-    new_deposit_expiration_datetime = finance_api.compute_underage_deposit_expiration_datetime(user.birth_date)
+    new_deposit_expiration_datetime = finance_api.compute_underage_deposit_expiration_datetime(user.birth_date)  # type: ignore [arg-type]
 
     if current_deposit_expiration_datetime == new_deposit_expiration_datetime:
         return
