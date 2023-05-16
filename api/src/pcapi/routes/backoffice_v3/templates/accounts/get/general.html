@@ -74,6 +74,9 @@
             <p class="mb-1">
               <span class="fw-bold">Date de création du compte :</span> {{ user.dateCreated | format_date }}
             </p>
+            <p class="mb-1">
+              <span class="fw-bold">Date de dernière connexion :</span> {{ user.lastConnectionDate | format_date_time }}
+            </p>
             <div class="mb-1">
               <span class="fw-bold">Adresse</span>
               <p class="mb-0">{{ user.address }}</p>
