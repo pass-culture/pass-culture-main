@@ -10,7 +10,7 @@ import { Button } from 'ui-kit/index'
 import DeleteVenueProviderDialog from '../DeleteVenueProviderDialog/DeleteVenueProviderDialog'
 import style from '../VenueProviderItem/VenueProviderItem.module.scss'
 
-export interface IDeleteVenueProviderButtonProps {
+interface DeleteVenueProviderButtonProps {
   venueProviderId: number
   afterDelete: (deletedVenueProvider: number) => void
 }
@@ -18,7 +18,7 @@ export interface IDeleteVenueProviderButtonProps {
 const DeleteVenueProviderButton = ({
   venueProviderId,
   afterDelete,
-}: IDeleteVenueProviderButtonProps): JSX.Element => {
+}: DeleteVenueProviderButtonProps): JSX.Element => {
   const { visible, showModal, hideModal } = useModal()
   const [isLoading, setIsLoading] = useState(false)
   const notification = useNotification()

@@ -10,7 +10,7 @@ import {
 import { Option } from 'pages/AdageIframe/app/types'
 import { Tag } from 'ui-kit'
 
-export const OfferFiltersTags = ({
+const OfferFiltersTags = ({
   venueFilter,
   removeVenueFilter,
   handleResetFilters,

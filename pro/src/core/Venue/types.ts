@@ -6,8 +6,8 @@ import {
   LegalStatusResponseModel,
   StudentLevels,
 } from 'apiClient/v1'
+import { VenueBannerMetaProps } from 'components/VenueForm/ImageUploaderVenue/ImageUploaderVenue'
 import { IAccessibiltyFormValues } from 'core/shared'
-import { IVenueBannerMetaProps } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
 
 export type TOfferIndividualVenue = {
   id: string
@@ -44,7 +44,7 @@ export interface IVenue {
   managingOffererId: string
   accessibility: IAccessibiltyFormValues
   address: string
-  bannerMeta: IVenueBannerMetaProps | null | undefined
+  bannerMeta: VenueBannerMetaProps | null | undefined
   bannerUrl: string
   city: string
   hasPendingBankInformationApplication: boolean | null

@@ -21,7 +21,7 @@ import { BaseCheckbox } from 'ui-kit/form/shared'
 import OfferFiltersTags from './OfferFiltersTags'
 import { studentsOptions } from './studentsOptions'
 
-export interface OfferFiltersProps {
+interface OfferFiltersProps {
   className?: string
   handleLaunchSearchButton: (filters: Filters) => void
   venueFilter: VenueResponse | null

@@ -5,7 +5,7 @@ import { IVenue } from 'core/Venue/types'
 
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 
-export interface IVenueProviderListV2Props {
+interface VenueProviderListV2Props {
   afterVenueProviderDelete: (deletedVenueProvider: number) => void
   afterVenueProviderEdit: (editedVenueProvider: VenueProviderResponse) => void
   venue: IVenue
@@ -17,7 +17,7 @@ const VenueProviderList = ({
   afterVenueProviderEdit,
   venue,
   venueProviders,
-}: IVenueProviderListV2Props): JSX.Element => {
+}: VenueProviderListV2Props): JSX.Element => {
   return (
     <ul className="provider-list">
       {venueProviders.map(venueProvider => (

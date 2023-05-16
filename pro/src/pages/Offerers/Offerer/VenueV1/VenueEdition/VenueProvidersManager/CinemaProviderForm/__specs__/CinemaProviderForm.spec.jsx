@@ -8,7 +8,7 @@ import Notification from 'components/Notification/Notification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import VenueProvidersManager from '../../index'
+import VenueProvidersManager from '../../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),

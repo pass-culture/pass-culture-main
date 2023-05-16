@@ -11,7 +11,7 @@ import { Button } from 'ui-kit/index'
 import ToggleVenueProviderStatusDialog from '../ToggleVenueProviderStatusDialog/ToggleVenueProviderStatusDialog'
 import style from '../VenueProviderItem/VenueProviderItem.module.scss'
 
-export interface IToggleVenueProviderStatusButtonProps {
+interface ToggleVenueProviderStatusButtonProps {
   venueProvider: VenueProviderResponse
   afterEdit: (venueProvider: VenueProviderResponse) => void
 }
@@ -19,7 +19,7 @@ export interface IToggleVenueProviderStatusButtonProps {
 const ToggleVenueProviderStatusButton = ({
   venueProvider,
   afterEdit,
-}: IToggleVenueProviderStatusButtonProps) => {
+}: ToggleVenueProviderStatusButtonProps) => {
   const { visible, showModal, hideModal } = useModal()
   const [isLoading, setIsLoading] = useState(false)
   const notification = useNotification()

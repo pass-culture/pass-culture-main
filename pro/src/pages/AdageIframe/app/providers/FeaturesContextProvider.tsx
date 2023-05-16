@@ -13,7 +13,7 @@ import { Feature } from '../types'
 
 export type FeaturesContextType = Feature[]
 
-export const featuresContextInitialValues: FeaturesContextType = []
+const featuresContextInitialValues: FeaturesContextType = []
 
 export const FeaturesContext = createContext<FeaturesContextType>(
   featuresContextInitialValues

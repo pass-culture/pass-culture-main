@@ -10,7 +10,7 @@ import Select from 'ui-kit/form_raw/Select'
 import { sortByDisplayName } from 'utils/strings'
 
 import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
-import VenueProviderForm from '../VenueProviderForm'
+import VenueProviderForm from '../VenueProviderForm/VenueProviderForm'
 
 const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
   const [isCreationMode, setIsCreationMode] = useState(false)

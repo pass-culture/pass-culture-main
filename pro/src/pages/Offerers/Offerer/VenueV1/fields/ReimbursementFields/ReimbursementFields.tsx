@@ -9,7 +9,7 @@ import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
 import PricingPoint from '../PricingPoint'
 
-export interface ReimbursementInterface {
+interface ReimbursementFieldsProps {
   offerer: GetOffererResponseModel
   readOnly: boolean
   scrollToSection?: boolean
@@ -21,7 +21,7 @@ const ReimbursementFields = ({
   readOnly,
   scrollToSection,
   venue,
-}: ReimbursementInterface) => {
+}: ReimbursementFieldsProps) => {
   const venueHaveSiret = !!venue.siret
   const offererHaveVenueWithSiret = offerer.hasAvailablePricingPoints
   const createVenuePath = `/structures/${offerer.id}/lieux/creation`
@@ -36,6 +36,7 @@ const ReimbursementFields = ({
       }, 200)
     }
   }, [])
+
   return (
     <>
       <div ref={scrollToReimbursementSection} id="reimbursement-section">

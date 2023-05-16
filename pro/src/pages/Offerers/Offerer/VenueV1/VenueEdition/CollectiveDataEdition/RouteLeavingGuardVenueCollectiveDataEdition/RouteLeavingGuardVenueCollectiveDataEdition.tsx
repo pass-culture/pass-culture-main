@@ -4,7 +4,7 @@ import RouteLeavingGuard, {
   BlockerFunction,
 } from 'components/RouteLeavingGuard'
 
-export interface RouteLeavingGuardCollectiveOfferCreationProps {
+interface RouteLeavingGuardCollectiveOfferCreationProps {
   shouldBlock: boolean
 }
 

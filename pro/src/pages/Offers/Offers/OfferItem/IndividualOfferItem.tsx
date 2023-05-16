@@ -19,7 +19,7 @@ import OfferStatusCell from './Cells/OfferStatusCell'
 import OfferVenueCell from './Cells/OfferVenueCell'
 import ThumbCell from './Cells/ThumbCell'
 
-export type IndividualOfferItemProps = {
+type IndividualOfferItemProps = {
   disabled: boolean
   isSelected: boolean
   offer: Offer
