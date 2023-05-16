@@ -1020,6 +1020,14 @@ def _filter_user_accounts(
     if search_term.isnumeric():
         term_filters.append(models.User.id == int(search_term))
 
+    # birthdate
+    try:
+        date_term = datetime.datetime.strptime(search_term, "%d/%m/%Y").date()
+    except ValueError:
+        pass  # date has invalid format
+    else:
+        term_filters.append(models.User.validatedBirthDate == date_term)
+
     # email
     sanitized_term = email_utils.sanitize_email(search_term)
 
