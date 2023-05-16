@@ -5,7 +5,7 @@ import { BoxFormLayout } from 'components/BoxFormLayout'
 import FormLayout from 'components/FormLayout'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { PostEmailAdapter } from 'pages/User/adapters/postEmailAdapter'
-import { TextInput, Button, SubmitButton } from 'ui-kit'
+import { TextInput, Button, SubmitButton, PasswordInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './UserEmailForm.module.scss'
@@ -68,10 +68,9 @@ const UserEmailForm = ({
                 />
               </FormLayout.Row>
               <FormLayout.Row>
-                <TextInput
-                  label="Mot de passe (requis pour modifier votre e-mail)"
+                <PasswordInput
                   name="password"
-                  type="password"
+                  label="Mot de passe (requis pour modifier votre e-mail)"
                 />
               </FormLayout.Row>
             </FormLayout>
