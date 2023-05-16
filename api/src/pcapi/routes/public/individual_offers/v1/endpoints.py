@@ -30,6 +30,7 @@ from . import serialization
 logger = logging.getLogger(__name__)
 
 PRODUCT_OFFER_TAG = "Product offer"
+PRODUCT_EAN_OFFER_TAG = "Bulk product offer operation"
 EVENT_OFFER_INFO_TAG = "Event offer main information (except prices and dates)"
 EVENT_OFFER_PRICES_TAG = "Event offer prices"
 EVENT_OFFER_DATES_TAG = "Event offer dates"
@@ -44,7 +45,7 @@ ASPECT_RATIO = image_conversion.ImageRatio.PORTRAIT
 
 @blueprint.v1_blueprint.route("/offerer_venues", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[OFFERER_VENUES_TAG], response_model=serialization.GetOfferersVenuesResponse
+    api=blueprint.v1_product_schema, tags=[OFFERER_VENUES_TAG], response_model=serialization.GetOfferersVenuesResponse
 )
 @api_key_required
 def get_offerer_venues(query: serialization.GetOfferersVenuesQuery) -> serialization.GetOfferersVenuesResponse:
@@ -196,7 +197,7 @@ def _save_image(image_body: serialization.ImageBody, offer: offers_models.Offer)
 
 @blueprint.v1_blueprint.route("/products", methods=["POST"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
+    api=blueprint.v1_product_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
 )
 @api_key_required
 def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse:
@@ -248,7 +249,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
 
 @blueprint.v1_blueprint.route("/products/ean", methods=["POST"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
+    api=blueprint.v1_product_schema, tags=[PRODUCT_EAN_OFFER_TAG], response_model=serialization.ProductOfferResponse
 )
 @api_key_required
 def post_product_offer_by_ean(body: serialization.ProductOfferByEanCreation) -> serialization.ProductOfferResponse:
@@ -349,7 +350,7 @@ def _deserialize_ticket_collection(
 
 @blueprint.v1_blueprint.route("/events", methods=["POST"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[EVENT_OFFER_INFO_TAG], response_model=serialization.EventOfferResponse
+    api=blueprint.v1_event_schema, tags=[EVENT_OFFER_INFO_TAG], response_model=serialization.EventOfferResponse
 )
 @api_key_required
 def post_event_offer(body: serialization.EventOfferCreation) -> serialization.EventOfferResponse:
@@ -403,7 +404,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/price_categories", methods=["POST"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[EVENT_OFFER_PRICES_TAG], response_model=serialization.PriceCategoriesResponse
+    api=blueprint.v1_event_schema, tags=[EVENT_OFFER_PRICES_TAG], response_model=serialization.PriceCategoriesResponse
 )
 @api_key_required
 def post_event_price_categories(
@@ -427,7 +428,7 @@ def post_event_price_categories(
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates", methods=["POST"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[EVENT_OFFER_DATES_TAG], response_model=serialization.PostDatesResponse
+    api=blueprint.v1_event_schema, tags=[EVENT_OFFER_DATES_TAG], response_model=serialization.PostDatesResponse
 )
 @api_key_required
 def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
@@ -474,7 +475,7 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
 
 @blueprint.v1_blueprint.route("/products/<int:product_id>", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
+    api=blueprint.v1_product_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
 )
 @api_key_required
 def get_product(product_id: int) -> serialization.ProductOfferResponse:
@@ -494,7 +495,7 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
 
 @blueprint.v1_blueprint.route("/products/ean/<string:ean>", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
+    api=blueprint.v1_product_schema, tags=[PRODUCT_EAN_OFFER_TAG], response_model=serialization.ProductOfferResponse
 )
 @api_key_required
 def get_product_by_ean(ean: str) -> serialization.ProductOfferResponse:
@@ -517,7 +518,7 @@ def get_product_by_ean(ean: str) -> serialization.ProductOfferResponse:
 
 @blueprint.v1_blueprint.route("/products", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOffersResponse
+    api=blueprint.v1_product_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOffersResponse
 )
 @api_key_required
 def get_products(query: serialization.GetOffersQueryParams) -> serialization.ProductOffersResponse:
@@ -559,7 +560,7 @@ def get_products(query: serialization.GetOffersQueryParams) -> serialization.Pro
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[EVENT_OFFER_INFO_TAG], response_model=serialization.EventOfferResponse
+    api=blueprint.v1_event_schema, tags=[EVENT_OFFER_INFO_TAG], response_model=serialization.EventOfferResponse
 )
 @api_key_required
 def get_event(event_id: int) -> serialization.EventOfferResponse:
@@ -579,7 +580,7 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[EVENT_OFFER_DATES_TAG], response_model=serialization.GetDatesResponse
+    api=blueprint.v1_event_schema, tags=[EVENT_OFFER_DATES_TAG], response_model=serialization.GetDatesResponse
 )
 @api_key_required
 def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> serialization.GetDatesResponse:
@@ -629,7 +630,7 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
 
 @blueprint.v1_blueprint.route("/events", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[EVENT_OFFER_INFO_TAG], response_model=serialization.EventOffersResponse
+    api=blueprint.v1_event_schema, tags=[EVENT_OFFER_INFO_TAG], response_model=serialization.EventOffersResponse
 )
 @api_key_required
 def get_events(query: serialization.GetOffersQueryParams) -> serialization.EventOffersResponse:
@@ -705,7 +706,7 @@ def _check_offer_subcategory(
 
 @blueprint.v1_blueprint.route("/products/<int:product_id>", methods=["PATCH"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
+    api=blueprint.v1_product_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
 )
 @api_key_required
 def edit_product(product_id: int, body: serialization.ProductOfferEdition) -> serialization.ProductOfferResponse:
@@ -752,7 +753,7 @@ def edit_product(product_id: int, body: serialization.ProductOfferEdition) -> se
 
 @blueprint.v1_blueprint.route("/products/ean/<string:ean>", methods=["PATCH"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
+    api=blueprint.v1_product_schema, tags=[PRODUCT_EAN_OFFER_TAG], response_model=serialization.ProductOfferResponse
 )
 @api_key_required
 def edit_product_by_ean(ean: str, body: serialization.ProductOfferByEanEdition) -> serialization.ProductOfferResponse:
@@ -817,7 +818,7 @@ def _upsert_product_stock(
 
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["DELETE"])
-@spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFER_DATES_TAG], on_success_status=204)
+@spectree_serialize(api=blueprint.v1_event_schema, tags=[EVENT_OFFER_DATES_TAG], on_success_status=204)
 @api_key_required
 def delete_event_date(event_id: int, date_id: int) -> None:
     """
@@ -842,7 +843,7 @@ def delete_event_date(event_id: int, date_id: int) -> None:
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>", methods=["PATCH"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[EVENT_OFFER_INFO_TAG], response_model=serialization.EventOfferResponse
+    api=blueprint.v1_event_schema, tags=[EVENT_OFFER_INFO_TAG], response_model=serialization.EventOfferResponse
 )
 @api_key_required
 def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serialization.EventOfferResponse:
@@ -895,7 +896,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/price_categories/<int:price_category_id>", methods=["PATCH"])
 @spectree_serialize(
-    api=blueprint.v1_schema, tags=[EVENT_OFFER_PRICES_TAG], response_model=serialization.PriceCategoryResponse
+    api=blueprint.v1_event_schema, tags=[EVENT_OFFER_PRICES_TAG], response_model=serialization.PriceCategoryResponse
 )
 @api_key_required
 def patch_event_price_categories(
@@ -944,7 +945,9 @@ def patch_event_price_categories(
 
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["PATCH"])
-@spectree_serialize(api=blueprint.v1_schema, tags=[EVENT_OFFER_DATES_TAG], response_model=serialization.DateResponse)
+@spectree_serialize(
+    api=blueprint.v1_event_schema, tags=[EVENT_OFFER_DATES_TAG], response_model=serialization.DateResponse
+)
 @api_key_required
 def patch_event_date(
     event_id: int,
