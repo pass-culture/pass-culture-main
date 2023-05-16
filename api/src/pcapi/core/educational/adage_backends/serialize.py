@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 
 from pcapi.core.educational import models
@@ -103,3 +104,11 @@ class AdageEducationalInstitution(AdageBaseResponseModel):
     courriel: str | None
     telephone: str | None
     codePostal: str
+
+
+class AdageCollectiveOfferRequest(AdageBaseResponseModel):
+    phoneNumber: str | None
+    requestedDate: date | None
+    totalStudents: int | None
+    totalTeachers: int | None
+    comment: str

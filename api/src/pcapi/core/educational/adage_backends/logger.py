@@ -5,6 +5,7 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
+from pcapi.routes.adage.v1.serialization import collective_offer_request
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.serialization import venues_serialize
 
@@ -177,3 +178,10 @@ class AdageLoggerClient(AdageClient):
             raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
 
         return response_content
+
+    def notify_collective_request_to_cultural_partner(
+        self, data: collective_offer_request.CollectiveOfferRequestResponse
+    ) -> None:
+        logger.info(
+            "Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/offer-request-received", data
+        )

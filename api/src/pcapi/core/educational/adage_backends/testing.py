@@ -3,6 +3,7 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
+from pcapi.routes.adage.v1.serialization import collective_offer_request
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.serialization import venues_serialize
 
@@ -168,3 +169,8 @@ class AdageSpyClient(AdageClient):
                 },
             ]
         raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
+
+    def notify_collective_request_to_cultural_partner(
+        self, data: collective_offer_request.CollectiveOfferRequestResponse
+    ) -> None:
+        testing.adage_requests.append({"url": f"{self.base_url}/v1/offer-request-received", "sent_data": data})

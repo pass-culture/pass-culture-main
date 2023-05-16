@@ -2,6 +2,7 @@ import logging
 
 from sqlalchemy.orm import exc as orm_exc
 
+from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api.categories import get_educational_categories
 from pcapi.core.educational.repository import get_educational_institution_public
@@ -101,5 +102,7 @@ def create_collective_request(
         raise ApiErrors({"code": "INSTITUTION_NOT_FOUND"}, status_code=404)
     email_redactor = authenticated_information.email
     collective_request = educational_api_offer.create_offer_request(body, offer, institution, email_redactor)  # type: ignore [arg-type]
+
+    adage_client.notify_collective_request_to_cultural_partner(data=collective_request)
 
     return serializers.CollectiveRequestResponseModel.from_orm(collective_request)

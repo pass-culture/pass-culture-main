@@ -9,6 +9,7 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
+from pcapi.routes.adage.v1.serialization import collective_offer_request
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.serialization import venues_serialize
 from pcapi.utils import requests
@@ -253,3 +254,28 @@ class AdageHttpClient(AdageClient):
             raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
 
         return redactors
+
+    def notify_collective_request_to_cultural_partner(
+        self, data: collective_offer_request.CollectiveOfferRequestResponse
+    ) -> None:
+        api_url = f"{self.base_url}/v1/offer-request-received"
+        try:
+            api_response = requests.post(
+                api_url,
+                headers={self.header_key: self.api_key, "Content-Type": "application/json"},
+                data=data.json(),
+            )
+        except ConnectionError as exp:
+            logger.info("could not connect to adage, error: %s", traceback.format_exc())
+            raise exceptions.AdageException(
+                status_code=502,
+                response_text="Connection Error",
+                message="Cannot establish connection to omogen api",
+            ) from exp
+
+        if api_response.status_code != 201:
+            raise exceptions.AdageException(
+                "Error posting booking cancellation by offerer notification to Adage API.",
+                api_response.status_code,
+                api_response.text,
+            )
