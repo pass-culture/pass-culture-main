@@ -52,6 +52,7 @@ def list_blacklisted_domain_names() -> utils.BackofficeResponse:
 
 def _filter_non_pro_by_domain_name_query(domain_name: str) -> BaseQuery:
     return users_models.User.query.filter(
+        sa.not_(users_models.User.isActive.is_(False)),
         sa.not_(users_models.User.has_pro_role),
         sa.not_(users_models.User.has_non_attached_pro_role),
         users_models.User.email.like(f"%@{domain_name.lower()}"),
