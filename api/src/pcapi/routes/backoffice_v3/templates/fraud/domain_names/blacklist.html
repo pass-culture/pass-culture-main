@@ -1,0 +1,57 @@
+<div class="pt-3 px-5">
+  <table class="table mb-4">
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">Nom de domaine</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in blacklist %}
+        <tr>
+          <th scope="col">
+            <div class="dropdown">
+              <button type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      class="btn p-0">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li class="dropdown-item p-0">
+                  <a href="{{ url_for('backoffice_v3_web.fraud.prepare_blacklist_domain_name', domain=row.domain) }}"
+                     class="text-decoration-none">
+                    <button type="submit"
+                            class="btn btn-sm d-block w-100 text-start px-3">Répéter l'opération</button>
+                  </a>
+                </li>
+
+                <li class="dropdown-item p-0">
+                  <form action="{{ url_for("backoffice_v3_web.fraud.remove_blacklisted_domain_name", domain=row.domain) }}"
+                        name="{{ url_for("backoffice_v3_web.fraud.remove_blacklisted_domain_name", domain=row.domain) | action_to_name }}"
+                        method="post"
+                        data-turbo="false">
+                    <div class="col-8 row">
+                      {{ csrf_token }}
+                      <div class="col-4">
+                        <button type="submit"
+                                class="btn btn-sm d-block w-100 text-start px-3">Supprimer de la liste</button>
+                      </div>
+                    </div>
+                  </form>
+
+
+                  <a href="{{ url_for('backoffice_v3_web.fraud.remove_blacklisted_domain_name', domain=row.domain) }}"
+                     class="text-decoration-none">
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </th>
+          <td>{{ row.domain }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+

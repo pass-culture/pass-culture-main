@@ -28,7 +28,8 @@ def log_action(
     before the new object itself is inserted in the database. RuntimeError are issued in case this function would save
     new resources in parameters; when such an exception is raised, it shows a bug in our code.
     """
-    if (not user and not offerer and not venue) and (action_type != models.ActionType.BLACKLIST_DOMAIN_NAME):
+    legit_actions = (models.ActionType.BLACKLIST_DOMAIN_NAME, models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME)
+    if (not user and not offerer and not venue) and (action_type not in legit_actions):
         raise ValueError("No resource (user, offerer, venue)")
 
     if save:

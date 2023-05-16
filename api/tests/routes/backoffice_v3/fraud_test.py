@@ -3,6 +3,8 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
+import pcapi.core.fraud.factories as fraud_factories
+import pcapi.core.fraud.models as fraud_models
 import pcapi.core.history.factories as history_factories
 import pcapi.core.history.models as history_models
 import pcapi.core.permissions.models as perm_models
@@ -36,13 +38,15 @@ class ListBlacklistedDomainNamesTest(GetEndpointHelper):
             "cancelled_bookings_count": 2,
         }
         history_factories.BlacklistDomainNameFactory(extraData=event_extra)
+        fraud_factories.BlacklistedDomainNameFactory.create_batch(2)
 
         url = url_for("backoffice_v3_web.fraud.list_blacklisted_domain_names")
 
         # get session (1 query)
         # get user with profile and permissions (1 query)
         # get history (1 query)
-        with assert_num_queries(3):
+        # get blacklisted domains (1 query)
+        with assert_num_queries(4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -112,6 +116,36 @@ class BlacklistDomainNameTest(PostEndpointHelper):
         # all bookings should have been cancelled
         for booking in user.userBookings:
             assert booking.status == bookings_models.BookingStatus.CANCELLED
+
+        # ensure the domain has been blacklisted properly
+        domain = fraud_models.BlacklistedDomainName.query.filter_by(domain=domain).first()
+        assert domain is not None
+
+
+class RemoveBlacklistedDomainNameTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.fraud.remove_blacklisted_domain_name"
+    endpoint_kwargs = {"domain": "example.fr"}
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+
+    def test_remove_blacklisted_domain(self, authenticated_client):
+        domain = fraud_factories.BlacklistedDomainNameFactory().domain
+        response = self.post_to_endpoint(authenticated_client, domain=domain)
+
+        assert response.status_code == 302
+
+        expected_url = url_for("backoffice_v3_web.fraud.list_blacklisted_domain_names", _external=True)
+        assert response.location == expected_url
+
+        # domain is not blacklisted anymore
+        assert fraud_models.BlacklistedDomainName.query.filter_by(domain=domain).first() is None
+
+        # action has been logged
+        action_type = history_models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME
+        assert history_models.ActionHistory.query.filter_by(actionType=action_type).one() is not None
+
+    def test_unknown_blacklisted_domain(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, domain="unknown.domain")
+        assert response.status_code == 404
 
 
 def test_blacklist_domain_name_excludes_pro_users(legit_user):
