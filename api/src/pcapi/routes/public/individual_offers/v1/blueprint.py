@@ -14,6 +14,24 @@ def check_api_is_enabled() -> None:
         raise api_errors.ApiErrors({"global": ["This API is not enabled"]}, status_code=400)
 
 
+class IndividualApiSpectree(ExtendedSpecTree):
+    def __init__(self, title: str, PATH: str, version: str):
+        super().__init__(
+            "flask",
+            title=title,
+            MODE="strict",
+            before=before_handler,
+            security_schemes=[
+                SecurityScheme(
+                    name=users_authentifications.API_KEY_AUTH_NAME,
+                    data={"type": "http", "scheme": "bearer", "description": "Api key issued on passculture.pro"},
+                )
+            ],
+            PATH=PATH,
+            version=version,
+        )
+
+
 v1_blueprint = Blueprint("v1_blueprint", __name__, url_prefix="/v1")
 v1_blueprint.before_request(check_api_is_enabled)
 CORS(
@@ -22,19 +40,21 @@ CORS(
     supports_credentials=True,
 )
 
+# FIXME (mageoffray, 2023-05-19)
+# For a short period of time we want to move event documentation
+# out of the main path.
+# In the long run we will want to have all our apis documentation at the same
+# place.
+v1_event_schema = IndividualApiSpectree(
+    title="Event Offers API",
+    PATH="/event",
+    version="1.0",
+)
+v1_event_schema.register(v1_blueprint)
 
-v1_schema = ExtendedSpecTree(
-    "flask",
-    title="Offers creation API",
-    MODE="strict",
-    before=before_handler,
-    security_schemes=[
-        SecurityScheme(
-            name=users_authentifications.API_KEY_AUTH_NAME,
-            data={"type": "http", "scheme": "bearer", "description": "Api key issued on passculture.pro"},
-        )
-    ],
+v1_product_schema = IndividualApiSpectree(
+    title="Product Offers API",
     PATH="/",
     version="1.0",
 )
-v1_schema.register(v1_blueprint)
+v1_product_schema.register(v1_blueprint)
