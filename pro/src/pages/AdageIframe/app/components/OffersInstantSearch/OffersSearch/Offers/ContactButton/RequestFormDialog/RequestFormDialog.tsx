@@ -10,6 +10,7 @@ import { Button, DatePicker, SubmitButton, TextArea, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
+import { createCollectiveRequestAdapter } from './adapter/createCollectiveRequestAdapter'
 import styles from './RequestFormDialog.module.scss'
 import { RequestFormValues } from './type'
 import { validationSchema } from './validationSchema'
@@ -20,6 +21,7 @@ export interface RequestFormDialogProps {
   contactPhone?: string | null
   venueName: string
   offererName: string
+  offerId: number
   userEmail?: string | null
 }
 
@@ -29,6 +31,7 @@ const RequestFormDialog = ({
   contactPhone,
   venueName,
   offererName,
+  offerId,
   userEmail,
 }: RequestFormDialogProps): JSX.Element => {
   const notify = useNotification()
@@ -36,10 +39,18 @@ const RequestFormDialog = ({
     teacherEmail: userEmail ?? '',
     description: '',
   }
-  const onSubmit = () => {
-    // TODO : send request to backend
-    closeModal()
+  const onSubmit = async (formValues: RequestFormValues) => {
+    const response = await createCollectiveRequestAdapter({
+      offerId,
+      formValues,
+    })
+    if (!response.isOk) {
+      notify.error(response.message)
+      closeModal()
+      return
+    }
     notify.success('Votre demande a bien été envoyée')
+    closeModal()
   }
 
   const formik = useFormik<RequestFormValues>({

@@ -67,6 +67,7 @@ const ContactButton = ({
           contactPhone={contactPhone}
           venueName={venueName}
           offererName={offererName}
+          offerId={offerId}
           userEmail={userEmail}
         />
       )}
