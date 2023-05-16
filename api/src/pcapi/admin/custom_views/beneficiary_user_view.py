@@ -129,7 +129,7 @@ def _update_underage_beneficiary_deposit_expiration_date(user: User) -> None:
     assert user.deposit and user.deposit.expirationDate  # helps mypy
 
     current_deposit_expiration_datetime = user.deposit.expirationDate
-    new_deposit_expiration_datetime = compute_underage_deposit_expiration_datetime(user.birth_date)
+    new_deposit_expiration_datetime = compute_underage_deposit_expiration_datetime(user.birth_date)  # type: ignore [arg-type]
 
     if current_deposit_expiration_datetime == new_deposit_expiration_datetime:
         return
