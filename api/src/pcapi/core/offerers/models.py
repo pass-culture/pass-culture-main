@@ -225,6 +225,12 @@ VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
 )
 
 
+class Target(enum.Enum):
+    EDUCATIONAL = "EDUCATIONAL"
+    INDIVIDUAL_AND_EDUCATIONAL = "INDIVIDUAL_AND_EDUCATIONAL"
+    INDIVIDUAL = "INDIVIDUAL"
+
+
 class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, AccessibilityMixin):
     __tablename__ = "venue"
 
@@ -584,6 +590,14 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     def common_name(cls) -> str:  # pylint: disable=no-self-argument
         return sqla_func.coalesce(func.nullif(cls.publicName, ""), cls.name)
 
+    @property
+    def web_presence(self) -> str | None:
+        return self.registration.webPresence if self.registration else None
+
+    @property
+    def target(self) -> Target | None:
+        return self.registration.target if self.registration else None
+
 
 class VenueLabel(PcObject, Base, Model):
     __tablename__ = "venue_label"
@@ -707,12 +721,6 @@ class VenueEducationalStatus(Base, Model):
     id: int = Column(BigInteger, primary_key=True, autoincrement=False, nullable=False)
     name: str = Column(String(256), nullable=False)
     venues = relationship(Venue, back_populates="venueEducationalStatus", uselist=True)
-
-
-class Target(enum.Enum):
-    EDUCATIONAL = "EDUCATIONAL"
-    INDIVIDUAL_AND_EDUCATIONAL = "INDIVIDUAL_AND_EDUCATIONAL"
-    INDIVIDUAL = "INDIVIDUAL"
 
 
 class VenueRegistration(PcObject, Base, Model):

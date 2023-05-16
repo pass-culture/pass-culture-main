@@ -331,6 +331,10 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
                 educational_models.CollectiveDmsApplication.state,
                 educational_models.CollectiveDmsApplication.lastChangeDate,
             ),
+            sa.orm.joinedload(offerers_models.Venue.registration).load_only(
+                offerers_models.VenueRegistration.target,
+                offerers_models.VenueRegistration.webPresence,
+            ),
         )
         .all()
     )
