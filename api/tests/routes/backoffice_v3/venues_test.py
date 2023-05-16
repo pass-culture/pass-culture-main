@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
+import json
 from unittest import mock
 
 from flask import url_for
@@ -8,6 +9,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -36,6 +38,15 @@ pytestmark = [
 ]
 
 
+@pytest.fixture(scope="function", name="criteria")
+def criteria_fixture() -> list[criteria_models.Criterion]:
+    return [
+        criteria_factories.CriterionFactory(name="Criterion_cinema"),
+        criteria_factories.CriterionFactory(name="Criterion_art"),
+        criteria_factories.CriterionFactory(name="Criterion_game"),
+    ]
+
+
 @pytest.fixture(scope="function", name="venue")
 def venue_fixture(offerer) -> offerers_models.Venue:
     venue = offerers_factories.VenueFactory(
@@ -50,22 +61,19 @@ def venue_fixture(offerer) -> offerers_models.Venue:
 
 
 @pytest.fixture(scope="function", name="venues")
-def venues_fixture() -> list[offerers_models.Venue]:
+def venues_fixture(criteria) -> list[offerers_models.Venue]:
     return [
         offerers_factories.VenueFactory(
             venueTypeCode=VenueTypeCode.MOVIE,
             venueLabelId=offerers_factories.VenueLabelFactory(label="Cinéma d'art et d'essai").id,
-            criteria=[
-                criteria_factories.CriterionFactory(name="Criterion_cinema"),
-                criteria_factories.CriterionFactory(name="Criterion_art"),
-            ],
+            criteria=criteria[:2],
             postalCode="82000",
             isPermanent=True,
         ),
         offerers_factories.VenueFactory(
             venueTypeCode=VenueTypeCode.GAMES,
             venueLabelId=offerers_factories.VenueLabelFactory(label="Scènes conventionnées").id,
-            criteria=[criteria_factories.CriterionFactory()],
+            criteria=criteria[2:],
             postalCode="45000",
             isPermanent=False,
         ),
@@ -901,3 +909,100 @@ class GetVenueDetailsTest(GetEndpointHelper):
         with assert_num_queries(3):
             response = authenticated_client.get(url)
             assert response.status_code == 200
+
+
+class GetBatchEditVenuesFormTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.venue.get_batch_edit_venues_form"
+    endpoint_kwargs = {"object_ids": "1,2"}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_get_empty_batch_edit_venues_form(self, legit_user, authenticated_client):
+        with assert_num_queries(2):  # session + user
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+    def test_get_edit_batch_venues_form_with_ids(self, legit_user, authenticated_client, criteria):
+        venues = [
+            offerers_factories.VenueFactory(criteria=criteria[:2]),
+            offerers_factories.VenueFactory(criteria=criteria[1:]),
+        ]
+
+        form_data = {
+            "object_ids": ",".join(str(venue.id) for venue in venues),
+        }
+
+        with assert_num_queries(self.fetch_csrf_num_queries + 3):  # session + user + criteria
+            response = self.post_to_endpoint(authenticated_client, form=form_data)
+            assert response.status_code == 200
+
+        autocomplete_select = html_parser.get_soup(response.data).find(
+            "select", attrs={"data-tomselect-autocomplete-url": "/autocomplete/criteria"}
+        )
+        assert json.loads(autocomplete_select.attrs["data-tomselect-options"]) == [
+            {"id": str(criteria[1].id), "text": criteria[1].name}
+        ]
+        assert json.loads(autocomplete_select.attrs["data-tomselect-items"]) == [str(criteria[1].id)]
+
+
+class BatchEditVenuesTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.venue.batch_edit_venues"
+    endpoint_kwargs = {"object_ids": "1,2"}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_empty_batch_edit_venues(self, legit_user, authenticated_client):
+        form_data = {
+            "object_ids": "",
+            "all_permanent": "",
+            "all_not_permanent": "",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+        assert response.status_code == 303
+
+        redirected_response = authenticated_client.get(response.location)
+        assert "L'un des identifiants sélectionnés est invalide" in html_parser.extract_alert(redirected_response.data)
+
+    @pytest.mark.parametrize("is_permanent", [True, False])
+    def test_batch_edit_venues_two_checkboxes(self, legit_user, authenticated_client, is_permanent):
+        venue = offerers_factories.VenueFactory(isPermanent=is_permanent)
+
+        form_data = {
+            "object_ids": str(venue.id),
+            "criteria": "",
+            "all_permanent": "on",
+            "all_not_permanent": "on",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+        assert response.status_code == 303
+
+        redirected_response = authenticated_client.get(response.location)
+        assert "Impossible de passer tous les lieux en permanents et non permanents" in html_parser.extract_alert(
+            redirected_response.data
+        )
+
+        assert venue.isPermanent is is_permanent  # unchanged
+
+    @pytest.mark.parametrize("set_permanent", [True, False])
+    def test_batch_edit_venues(self, legit_user, authenticated_client, criteria, set_permanent):
+        new_criterion = criteria_factories.CriterionFactory()
+        venues = [
+            offerers_factories.VenueFactory(criteria=criteria[:2], isPermanent=set_permanent),
+            offerers_factories.VenueFactory(criteria=criteria[1:], isPermanent=not set_permanent),
+        ]
+
+        form_data = {
+            "object_ids": ",".join(str(venue.id) for venue in venues),
+            "criteria": [criteria[0].id, new_criterion.id],
+            "all_permanent": "on" if set_permanent else "",
+            "all_not_permanent": "" if set_permanent else "on",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+        assert response.status_code == 303
+
+        assert set(venues[0].criteria) == {criteria[0], new_criterion}  # 1 kept, 1 removed, 1 added
+        assert venues[0].isPermanent is set_permanent
+
+        assert set(venues[1].criteria) == {criteria[0], criteria[2], new_criterion}  # 1 kept, 1 added
+        assert venues[1].isPermanent is set_permanent
