@@ -47,7 +47,7 @@
     "@reach/menu-button": "^0.18.0",
     "@reduxjs/toolkit": "^1.9.5",
     "@sentry/browser": "^7.1.1",
-    "@sentry/react": "^7.51.2",
+    "@sentry/react": "^7.52.1",
     "@sentry/tracing": "^7.51.2",
     "@types/react-instantsearch-dom": "^6.12.3",
     "@types/react-select": "^5.0.1",
