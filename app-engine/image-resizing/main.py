@@ -72,6 +72,6 @@ def root():
             )
         )
     # cache control header set, to work with Google cache cdn
-    response.headers['Cache-Control'] = 'public,max-age=86400' # 1 day
+    response.headers['Cache-Control'] = 'public, max-age=86400' # 1 day
 
     return response
