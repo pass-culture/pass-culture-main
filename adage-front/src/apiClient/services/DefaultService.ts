@@ -9,6 +9,7 @@ import type { CategoriesResponseModel } from '../models/CategoriesResponseModel'
 import type { CollectiveOfferResponseModel } from '../models/CollectiveOfferResponseModel';
 import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveOfferTemplateResponseModel';
 import type { CollectiveRequestResponseModel } from '../models/CollectiveRequestResponseModel';
+import type { EducationalInstitutionWithBudgetResponseModel } from '../models/EducationalInstitutionWithBudgetResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
 import type { OfferIdBody } from '../models/OfferIdBody';
 import type { PostCollectiveRequestBodyModel } from '../models/PostCollectiveRequestBodyModel';
@@ -55,6 +56,22 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         400: `Bad Request`,
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_educational_institution_with_budget <GET>
+   * @returns EducationalInstitutionWithBudgetResponseModel OK
+   * @throws ApiError
+   */
+  public getEducationalInstitutionWithBudget(): CancelablePromise<EducationalInstitutionWithBudgetResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/collective/institution',
+      errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
