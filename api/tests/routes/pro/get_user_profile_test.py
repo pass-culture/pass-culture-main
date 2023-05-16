@@ -52,7 +52,7 @@ class Returns200Test:
             "idPieceNumber": None,
             "isAdmin": False,
             "isEmailValidated": True,
-            "lastConnectionDate": None,
+            "lastConnectionDate": format_into_utc_date(user.lastConnectionDate),
             "lastName": "Smisse",
             "needsToFillCulturalSurvey": False,
             "notificationSubscriptions": {"marketing_email": True, "marketing_push": True},

@@ -161,7 +161,7 @@ def test_format_sendinblue_user():
         "LASTNAME": "Doux",
         "LAST_BOOKING_DATE": booking.dateCreated,
         "LAST_FAVORITE_CREATION_DATE": favorite.dateCreated,
-        "LAST_VISIT_DATE": None,
+        "LAST_VISIT_DATE": user.lastConnectionDate,
         "MARKETING_EMAIL_SUBSCRIPTION": True,
         "MOST_BOOKED_OFFER_SUBCATEGORY": "SUPPORT_PHYSIQUE_FILM",
         "MOST_BOOKED_MOVIE_GENRE": None,

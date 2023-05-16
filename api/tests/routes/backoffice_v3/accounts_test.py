@@ -423,8 +423,13 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert f"E-mail : {user.email} " in content
         assert f"Tél : {user.phoneNumber} " in content
         if user.dateOfBirth:
-            assert f"Date de naissance {user.dateOfBirth.strftime('%d/%m/%Y')} " in content
+            assert f"Date de naissance {user.dateOfBirth.strftime('%d/%m/%Y')}" in content
         assert "Date de naissance déclarée à l'inscription" not in content
+        assert f"Date de création du compte : {user.dateCreated.strftime('%d/%m/%Y')}" in content
+        assert (
+            f"Date de dernière connexion : {user.lastConnectionDate.strftime('%d/%m/%Y') if user.lastConnectionDate else ''}"
+            in content
+        )
         assert f"Adresse {user.address} " in content
         if expected_badge:
             assert expected_badge in content
@@ -648,7 +653,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert "Aucune données" in html_no_bfc_data[0]
 
         for key, value in rows_with_bfc_data[0].items():
-            if key not in ("ID Technique", "Détails technique"):
+            if key not in ("ID Technique", "Détails techniques"):
                 assert value == expected_rows_with_bfc_data[key]
 
     def test_fraud_check_link(self, authenticated_client):

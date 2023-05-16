@@ -311,6 +311,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
     address = factory.Sequence("{} rue des machines".format)
     city = "Paris"
     dateCreated = LazyAttribute(lambda _: datetime.utcnow())
+    lastConnectionDate = LazyAttribute(lambda _: datetime.utcnow() - relativedelta(days=1))
     dateOfBirth = LazyAttribute(  # LazyAttribute to allow freez_time overrides
         lambda _: datetime.combine(date.today(), time(0, 0))
         - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, months=1)
