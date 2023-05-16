@@ -551,14 +551,12 @@ def _offerer_batch_action(
     success_message: str,
     form_class: typing.Callable,
 ) -> utils.BackofficeResponse:
-    try:
-        form = form_class()
-        offerer_ids = [int(id) for id in form.object_ids.data.split(",")]
-    except ValueError:
-        flash("Identifiant(s) invalide(s)")
+    form = form_class()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_offerer_validation_action(400)
 
-    offerers = offerers_models.Offerer.query.filter(offerers_models.Offerer.id.in_(offerer_ids)).all()
+    offerers = offerers_models.Offerer.query.filter(offerers_models.Offerer.id.in_(form.object_ids_list)).all()
 
     # FIXME PC-21406 - disabled until tags are initialized in the form
     # if hasattr(form, "tags"):
@@ -588,7 +586,7 @@ def batch_validate_offerer() -> utils.BackofficeResponse:
         return _offerer_batch_action(
             offerers_api.validate_offerer,
             "Les structures sélectionnées ont été validées avec succès",
-            offerer_forms.BatchEmptyForm,
+            offerer_forms.BatchForm,
         )
     except offerers_exceptions.OffererAlreadyValidatedException:
         flash("Au moins une des structures a déjà été validée", "error")
@@ -927,13 +925,13 @@ def _user_offerer_batch_action(
     success_message: str,
 ) -> utils.BackofficeResponse:
     form = offerer_forms.BatchOptionalCommentForm()
-    try:
-        user_offerer_ids = [int(id) for id in form.object_ids.data.split(",")]
-    except ValueError:
-        flash("Identifiant(s) invalide(s)")
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_user_offerer_validation_action_list(400)
 
-    user_offerers = offerers_models.UserOfferer.query.filter(offerers_models.UserOfferer.id.in_(user_offerer_ids)).all()
+    user_offerers = offerers_models.UserOfferer.query.filter(
+        offerers_models.UserOfferer.id.in_(form.object_ids_list)
+    ).all()
 
     for user_offerer in user_offerers:
         api_function(user_offerer, current_user, form.comment.data)

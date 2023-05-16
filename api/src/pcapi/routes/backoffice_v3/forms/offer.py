@@ -15,6 +15,7 @@ from . import constants
 from . import fields
 from . import utils
 from .. import filters
+from ..forms import empty as empty_forms
 
 
 class OfferSearchColumn(enum.Enum):
@@ -152,9 +153,5 @@ class EditOfferForm(FlaskForm):
     rankingWeight = fields.PCOptIntegerField("Pondération")
 
 
-class BatchEditOfferForm(EditOfferForm):
-    object_ids = wtforms.HiddenField("Identifiants à traiter")
-
-
-class BatchEmptyOfferForm(FlaskForm):
-    object_ids = wtforms.HiddenField("Identifiants à traiter")
+class BatchEditOfferForm(empty_forms.BatchForm, EditOfferForm):
+    pass
