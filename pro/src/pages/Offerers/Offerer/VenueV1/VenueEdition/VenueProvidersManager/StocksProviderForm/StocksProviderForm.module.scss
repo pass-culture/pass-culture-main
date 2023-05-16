@@ -1,3 +1,4 @@
+@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 
 .stocks-provider-form {
@@ -5,6 +6,6 @@
 }
 
 .aide-stock-button {
-    margin-top: 2rem;
-    font-size: 12px;
+    margin-top: rem.torem(32px);
+    color: colors.$black; 
 }

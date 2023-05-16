@@ -46,7 +46,7 @@ const DeleteVenueProviderButton = ({
         variant={ButtonVariant.TERNARY}
       >
         <TrashFilledIcon
-          title="Supprimer la synchronisation"
+          title="Continuer"
           className={style['provider-action-icon']}
         />
         Supprimer

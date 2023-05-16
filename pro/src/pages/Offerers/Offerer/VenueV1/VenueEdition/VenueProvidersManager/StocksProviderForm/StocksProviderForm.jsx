@@ -68,7 +68,7 @@ const StocksProviderForm = ({
       {isConfirmDialogOpened && (
         <ConfirmDialog
           cancelText="Annuler"
-          confirmText="Supprimer la synchronisation"
+          confirmText="Continuer"
           onCancel={handleCloseConfirmDialog}
           onConfirm={handleFormSubmit}
           title="Certaines offres ne seront pas synchronisées"
@@ -85,7 +85,7 @@ const StocksProviderForm = ({
               isExternal: true,
               to: 'https://aide.passculture.app/hc/fr/articles/4411999024401--Acteurs-Culturels-Quels-sont-les-livres-%C3%A9ligibles-au-pass-Culture-',
             }}
-            variant="ternary"
+            variant="quaternary"
           >
             Notre FAQ vous décrira les règles précisément.
           </ButtonLink>
