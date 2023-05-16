@@ -3,9 +3,9 @@ import {
   DMSApplicationForEAC,
   GetVenueResponseModel,
 } from 'apiClient/v1'
+import { VenueBannerMetaProps } from 'components/VenueForm/ImageUploaderVenue/ImageUploaderVenue'
 import { AccessiblityEnum } from 'core/shared'
 import { IVenue } from 'core/Venue'
-import { IVenueBannerMetaProps } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
 
 export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
   const venueAccessibility = {
@@ -86,7 +86,7 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
 
 const serializeBannerMetaApi = (
   apiBannerMeta: BannerMetaModel
-): IVenueBannerMetaProps => {
+): VenueBannerMetaProps => {
   /* istanbul ignore next: DEBT, TO FIX */
   return {
     image_credit: apiBannerMeta.image_credit || '',

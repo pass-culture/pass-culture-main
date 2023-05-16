@@ -12,8 +12,6 @@ import {
   getUserHasBookingsAdapter,
 } from './adapters'
 
-export type BookingsRouterState = { statuses: string[] }
-
 const Bookings = (): JSX.Element => {
   const location = useLocation()
 

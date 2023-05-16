@@ -12,10 +12,6 @@ import {
   getUserHasCollectiveBookingsAdapter,
 } from './adapters'
 
-export type CollectiveBookingsRouterState = {
-  statuses: string[]
-}
-
 const CollectiveBookings = (): JSX.Element => {
   const location = useLocation()
 

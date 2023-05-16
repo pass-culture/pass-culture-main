@@ -11,7 +11,7 @@ import OfferNameCell from './Cells/OfferNameCell'
 import OfferVenueCell from './Cells/OfferVenueCell'
 import ThumbCell from './Cells/ThumbCell'
 
-export type CollectiveOfferItemProps = {
+type CollectiveOfferItemProps = {
   disabled: boolean
   isSelected: boolean
   offer: Offer

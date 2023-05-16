@@ -15,7 +15,7 @@ import { Banner, Title } from 'ui-kit/index'
 
 import styles from './PricingPoint.module.scss'
 
-export interface IPricingPointProps {
+interface PricingPointProps {
   readOnly: boolean
   offerer: GetOffererResponseModel
   venue: IVenue
@@ -27,7 +27,7 @@ const PricingPoint = ({
   offerer,
   venue,
   setVenueHasPricingPoint,
-}: IPricingPointProps) => {
+}: PricingPointProps) => {
   const [canSubmit, setCanSubmit] = useState(true)
   const [isInputDisabled, setIsInputDisabled] = useState(false)
   const [isConfirmSiretDialogOpen, setIsConfirmSiretDialogOpen] =

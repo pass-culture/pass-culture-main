@@ -11,7 +11,7 @@ import { CinemaProviderFormDialog } from '../CinemaProviderFormDialog/CinemaProv
 import style from './CinemaProviderParameters.module.scss'
 import { ICinemaProviderParametersValues } from './types'
 
-export interface ICinemaProviderParametersProps {
+interface CinemaProviderParametersProps {
   venueProvider: VenueProviderResponse
   afterVenueProviderEdit: (editedVenueProvider: VenueProviderResponse) => void
 }
@@ -19,7 +19,7 @@ export interface ICinemaProviderParametersProps {
 const CinemaProviderParameters = ({
   venueProvider,
   afterVenueProviderEdit,
-}: ICinemaProviderParametersProps): JSX.Element => {
+}: CinemaProviderParametersProps): JSX.Element => {
   const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
   const notification = useNotification()
 

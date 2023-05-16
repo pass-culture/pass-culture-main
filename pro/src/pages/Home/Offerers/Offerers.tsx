@@ -26,7 +26,7 @@ import OffererCreationLinks from './OffererCreationLinks'
 import OffererDetails from './OffererDetails'
 import VenueCreationLinks from './VenueCreationLinks'
 
-export const CREATE_OFFERER_SELECT_ID = 'creation'
+const CREATE_OFFERER_SELECT_ID = 'creation'
 
 interface IOfferersProps {
   receivedOffererNames?: GetOfferersNamesResponseModel | null

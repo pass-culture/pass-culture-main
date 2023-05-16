@@ -5,7 +5,7 @@ import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { ReactComponent as SearchIco } from 'icons/search-ico.svg'
 import { AlgoliaQueryContext } from 'pages/AdageIframe/app/providers'
 
-export const SearchBoxComponent = ({
+const SearchBoxComponent = ({
   refine,
 }: {
   refine: SearchBoxProvided['refine']
