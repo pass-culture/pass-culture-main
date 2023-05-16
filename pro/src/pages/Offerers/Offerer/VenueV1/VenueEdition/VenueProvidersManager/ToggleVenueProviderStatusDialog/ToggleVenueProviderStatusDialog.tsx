@@ -4,7 +4,7 @@ import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 
 import style from './ToggleVenueProviderStatusDialog.module.scss'
 
-export interface IToggleVenueProviderStatusDialogProps {
+interface ToggleVenueProviderStatusDialogProps {
   onConfirm: () => void
   onCancel: () => void
   isLoading: boolean
@@ -16,7 +16,7 @@ const ToggleVenueProviderStatusDialog = ({
   onCancel,
   isLoading,
   isActive,
-}: IToggleVenueProviderStatusDialogProps) => {
+}: ToggleVenueProviderStatusDialogProps) => {
   return (
     <ConfirmDialog
       onConfirm={onConfirm}

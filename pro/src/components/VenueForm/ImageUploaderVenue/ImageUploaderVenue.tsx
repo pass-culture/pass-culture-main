@@ -8,15 +8,27 @@ import { IUploadImageValues } from 'components/ImageUploader/ButtonImageEdit'
 import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import useNotification from 'hooks/useNotification'
-import { IVenueBannerMetaProps } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
 
 import { IVenueFormValues } from '../types'
 
+interface VenueBannerMetaCropParamsProps {
+  x_crop_percent: number
+  y_crop_percent: number
+  height_crop_percent: number
+  width_crop_percent: number
+}
+
+export interface VenueBannerMetaProps {
+  image_credit: string
+  original_image_url: string
+  crop_params: VenueBannerMetaCropParamsProps
+}
+
 /* istanbul ignore next: DEBT, TO FIX */
 const buildInitialValues = (
   bannerUrl?: string,
-  bannerMeta?: IVenueBannerMetaProps
+  bannerMeta?: VenueBannerMetaProps
 ): IUploadImageValues => {
   let cropParams
   if (bannerMeta !== undefined) {

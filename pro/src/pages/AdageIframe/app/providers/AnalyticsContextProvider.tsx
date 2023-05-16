@@ -1,13 +1,13 @@
 import React, { createContext, ReactNode, useState } from 'react'
 
-export type AnalyticsContextType = {
+type AnalyticsContextType = {
   hasClickedSearch: boolean
   setHasClickedSearch: (hasClickedSearch: boolean) => void
   filtersKeys: string[]
   setFiltersKeys: (filtersKeys: string[]) => void
 }
 
-export const analyticsContextInitialValues: AnalyticsContextType = {
+const analyticsContextInitialValues: AnalyticsContextType = {
   hasClickedSearch: false,
   setHasClickedSearch: () => null,
   filtersKeys: [],

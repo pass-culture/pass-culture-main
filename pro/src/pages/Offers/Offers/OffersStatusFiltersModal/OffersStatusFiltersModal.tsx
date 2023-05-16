@@ -126,5 +126,3 @@ export const OffersStatusFiltersModal = ({
     </div>
   )
 }
-
-export default OffersStatusFiltersModal

@@ -13,7 +13,7 @@ import ToggleVenueProviderStatusButton from '../ToggleVenueProviderStatusButton/
 
 import style from './VenueProviderItem.module.scss'
 
-export interface IVenueProviderItemV2Props {
+interface VenueProviderItemV2Props {
   afterDelete: (deletedVenueProvider: number) => void
   afterSubmit: (editedVenueProvider: VenueProviderResponse) => void
   venueProvider: VenueProviderResponse
@@ -25,7 +25,7 @@ const VenueProviderItem = ({
   afterSubmit,
   venueProvider,
   venueDepartmentCode,
-}: IVenueProviderItemV2Props): JSX.Element => {
+}: VenueProviderItemV2Props): JSX.Element => {
   const { lastSyncDate, nOffers, provider, venueIdAtOfferProvider } =
     venueProvider
 

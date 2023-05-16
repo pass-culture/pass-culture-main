@@ -11,13 +11,13 @@ import VenueProviderList from './VenueProviderList/VenueProviderList'
 import styles from './VenueProvidersManager.module.scss'
 import VenueProviderStatus from './VenueProviderStatus/VenueProviderStatus'
 
-export interface IVenueProvidersManagerV2Props {
+interface VenueProvidersManagerV2Props {
   venue: IVenue
 }
 
 const VenueProvidersManager = ({
   venue,
-}: IVenueProvidersManagerV2Props): JSX.Element | null => {
+}: VenueProvidersManagerV2Props): JSX.Element | null => {
   const [providers, setProviders] = useState([])
   const [venueProviders, setVenueProviders] = useState<VenueProviderResponse[]>(
     []

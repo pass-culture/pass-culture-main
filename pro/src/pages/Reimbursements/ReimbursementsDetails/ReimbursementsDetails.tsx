@@ -20,7 +20,7 @@ type venuesOptionsType = [
   }
 ]
 
-interface IReimbursementsDetailsProps {
+interface ReimbursementsDetailsProps {
   isCurrentUserAdmin: boolean
   venuesOptions: venuesOptionsType
 }
@@ -34,7 +34,7 @@ interface ICsvQueryParams {
 const ReimbursementsDetails = ({
   isCurrentUserAdmin,
   venuesOptions,
-}: IReimbursementsDetailsProps): JSX.Element => {
+}: ReimbursementsDetailsProps): JSX.Element => {
   const ALL_VENUES_OPTION_ID = 'allVenues'
   const today = getToday()
   const oneMonthAGo = new Date(

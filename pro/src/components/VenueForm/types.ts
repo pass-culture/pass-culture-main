@@ -1,12 +1,13 @@
 import { IAccessibiltyFormValues } from 'core/shared'
-import { IVenueBannerMetaProps } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/ImageVenueUploaderSection/ImageVenueUploaderSection'
+
+import { VenueBannerMetaProps } from './ImageUploaderVenue/ImageUploaderVenue'
 
 export interface IVenueFormValues {
   reimbursementPointId: number | null
   accessibility: IAccessibiltyFormValues
   address: string
   addressAutocomplete: string
-  bannerMeta: IVenueBannerMetaProps | undefined | null
+  bannerMeta: VenueBannerMetaProps | undefined | null
   bannerUrl: string | undefined
   city: string
   comment: string

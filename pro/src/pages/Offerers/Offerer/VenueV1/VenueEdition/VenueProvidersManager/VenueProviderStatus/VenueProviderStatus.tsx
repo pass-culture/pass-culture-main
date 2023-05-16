@@ -5,7 +5,7 @@ import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validate
 
 import styles from './VenueProviderStatus.module.scss'
 
-export interface VenueProviderStatusProps {
+interface VenueProviderStatusProps {
   isActive: boolean
 }
 

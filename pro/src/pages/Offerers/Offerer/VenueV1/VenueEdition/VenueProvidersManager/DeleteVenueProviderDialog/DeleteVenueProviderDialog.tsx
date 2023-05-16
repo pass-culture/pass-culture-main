@@ -4,7 +4,7 @@ import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 
 import style from './DeleteVenueProviderDialog.module.scss'
 
-export interface IDeleteVenueProviderDialogProps {
+interface DeleteVenueProviderDialogProps {
   onConfirm: () => void
   onCancel: () => void
   isLoading: boolean
@@ -14,7 +14,7 @@ const DeleteVenueProviderDialog = ({
   onConfirm,
   onCancel,
   isLoading,
-}: IDeleteVenueProviderDialogProps): JSX.Element => {
+}: DeleteVenueProviderDialogProps): JSX.Element => {
   return (
     <ConfirmDialog
       onConfirm={onConfirm}

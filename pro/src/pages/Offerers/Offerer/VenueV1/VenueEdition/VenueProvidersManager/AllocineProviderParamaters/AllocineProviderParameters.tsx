@@ -13,7 +13,7 @@ import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringF
 import style from './AllocineProviderParameters.module.scss'
 import { IAllocineProviderParametersValues } from './types'
 
-export interface IAllocineProviderParametersProps {
+interface AllocineProviderParametersProps {
   venueProvider: VenueProviderResponse
   afterVenueProviderEdit: (editedVenueProvider: VenueProviderResponse) => void
 }
@@ -21,7 +21,7 @@ export interface IAllocineProviderParametersProps {
 const AllocineProviderParameters = ({
   venueProvider,
   afterVenueProviderEdit,
-}: IAllocineProviderParametersProps): JSX.Element => {
+}: AllocineProviderParametersProps): JSX.Element => {
   const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
   const notification = useNotification()
 
