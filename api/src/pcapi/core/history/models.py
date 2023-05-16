@@ -41,6 +41,7 @@ class ActionType(enum.Enum):
     USER_EMAIL_VALIDATED = "Validation manuelle de l'e-mail"
     # Fraud and compliance actions:
     BLACKLIST_DOMAIN_NAME = "Blacklist d'un nom de domaine"
+    REMOVE_BLACKLISTED_DOMAIN_NAME = "Suppression d'un nom de domaine banni"
 
 
 class ActionHistory(PcObject, Base, Model):
@@ -117,7 +118,9 @@ class ActionHistory(PcObject, Base, Model):
 
     __table_args__ = (
         sa.CheckConstraint(
-            ('num_nonnulls("userId", "offererId", "venueId") >= 1 OR actionType = "BLACKLIST_DOMAIN_NAME"'),
+            (
+                'num_nonnulls("userId", "offererId", "venueId") >= 1 OR actionType = "BLACKLIST_DOMAIN_NAME" OR actionType = "REMOVE_BLACKLISTED_DOMAIN_NAME"'
+            ),
             name="check_at_least_one_resource",
         ),
     )

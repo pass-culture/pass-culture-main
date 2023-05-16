@@ -1,0 +1,75 @@
+<div class="pt-3 px-5">
+  <table class="table mb-4">
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">Nom de domaine</th>
+        <th scope="col">Date</th>
+        <th scope="col">Auteur de l'action</th>
+        <th scope="col">Impact</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for event in history %}
+        {% if event.extraData %}
+          {% set domain = event.extraData.get("domain", "") %}
+        {% else %}
+          {% set domain = '' %}
+        {% endif %}
+        <tr>
+          <th scope="col">
+            {% if domain and event.actionType.name != 'REMOVE_BLACKLISTED_DOMAIN_NAME' %}
+              <div class="dropdown">
+                <button type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        class="btn p-0">
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-item p-0">
+                    <a href="{{ url_for('backoffice_v3_web.fraud.prepare_blacklist_domain_name', domain=domain) }}"
+                       class="text-decoration-none">
+                      <button type="submit"
+                              class="btn btn-sm d-block w-100 text-start px-3">Répéter l'opération</button>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            {% endif %}
+          </th>
+          <td>{{ domain }}</td>
+          <td>{{ event.actionDate | format_date_time }}</td>
+          <td>{{ event.authorUser.full_name if event.authorUser else None | empty_string_if_null }}</td>
+          <td>
+            {% if event.actionType.name == 'REMOVE_BLACKLISTED_DOMAIN_NAME' %}
+              Domaine retiré de la blacklist
+            {% else %}
+              {% if event.extraData %}
+                {% set deactivated_users = event.extraData["deactivated_users"] %}
+                {% set cancelled_bookings_count = event.extraData["cancelled_bookings_count"] %}
+
+                {% if deactivated_users | length > 1 %}
+                  {{ deactivated_users | length }} comptes suspendus,
+                {% elif deactivated_users | length == 1 %}
+                  Un compte suspendu,
+                {% else %}
+                  Aucun compte suspendu,  {# should not happen, but just in case #}
+                {% endif %}
+
+                {% if cancelled_bookings_count > 1 %}
+                  {{ cancelled_bookings_count }} réservations annulées
+                {% elif cancelled_bookings_count == 1 %}
+                  une réservation annulée
+                {% else %}
+                  aucune réservation annulée
+                {% endif %}
+              {% endif %}
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+

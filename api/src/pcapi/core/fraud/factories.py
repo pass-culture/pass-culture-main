@@ -228,3 +228,10 @@ class UbbleRetryFraudCheckFactory(BeneficiaryFraudCheckFactory):
     resultContent = factory.SubFactory(UbbleContentFactory)
     status = models.FraudCheckStatus.KO
     reasonCodes = [models.FraudReasonCode.ID_CHECK_UNPROCESSABLE]
+
+
+class BlacklistedDomainNameFactory(testing.BaseFactory):
+    class Meta:
+        model = models.BlacklistedDomainName
+
+    domain = factory.Faker("domain_name")
