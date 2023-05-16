@@ -14,7 +14,7 @@ from pcapi.core.users import repository as users_repository
 from pcapi.models import db
 from pcapi.repository import repository
 
-from .send import send_beneficiary_user_emails_for_email_change
+from .send import send_beneficiary_confirmation_email_for_email_change
 from .send import send_pro_user_emails_for_email_change
 
 
@@ -33,7 +33,7 @@ def request_email_update(user: models.User, email: str, password: str) -> None:
     email_history = models.UserEmailHistory.build_update_request(user=user, new_email=email)
     repository.save(email_history)
 
-    send_beneficiary_user_emails_for_email_change(user, email, expiration_date)
+    send_beneficiary_confirmation_email_for_email_change(user, email, expiration_date)
 
 
 def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:

@@ -597,7 +597,7 @@ class UpdateUserEmailTest:
 
         user = users_models.User.query.filter_by(email=self.identifier).first()
         assert user.email == self.identifier  # email not updated until validation link is used
-        assert len(mails_testing.outbox) == 2  # one email to the current address, another to the new
+        assert len(mails_testing.outbox) == 1  # one confirmation email to the current address
 
         # extract new email from activation link, which is a firebase
         # dynamic link meaning that the real url needs to be extracted

@@ -1,4 +1,5 @@
 from datetime import datetime
+import enum
 from urllib.parse import urlencode
 
 from pcapi import settings
@@ -9,11 +10,18 @@ from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.utils.urls import generate_firebase_dynamic_link
 
 
-def _build_link_for_email_change(current_email: str, new_email: str, expiration_date: datetime) -> str:
+class EmailChangeAction(enum.Enum):
+    CONFIRMATION = "changement-email/confirmation"
+    CANCELLATION = "suspension-compte/confirmation"
+
+
+def _build_link_for_email_change_action(
+    action: EmailChangeAction, current_email: str, new_email: str, expiration_date: datetime
+) -> str:
     token = encode_jwt_payload({"current_email": current_email, "new_email": new_email}, expiration_date)
     expiration = int(expiration_date.timestamp())
 
-    path = "changement-email"
+    path = action.value
     params = {
         "token": token,
         "expiration_timestamp": expiration,
@@ -23,14 +31,29 @@ def _build_link_for_email_change(current_email: str, new_email: str, expiration_
     return generate_firebase_dynamic_link(path, params)
 
 
-def send_beneficiary_user_emails_for_email_change(user: User, new_email: str, expiration_date: datetime) -> bool:
+def send_beneficiary_confirmation_email_for_email_change(user: User, new_email: str, expiration_date: datetime) -> bool:
     user_with_new_email = find_user_by_email(new_email)
     if user_with_new_email:
         return True
 
-    success = transactional_mails.send_information_email_change_email(user)
-    link_for_email_change = _build_link_for_email_change(user.email, new_email, expiration_date)
-    success &= transactional_mails.send_confirmation_email_change_email(user, new_email, link_for_email_change)
+    link_for_email_change_confirmation = _build_link_for_email_change_action(
+        EmailChangeAction.CONFIRMATION,
+        user.email,
+        new_email,
+        expiration_date,
+    )
+    link_for_email_change_cancellation = _build_link_for_email_change_action(
+        EmailChangeAction.CANCELLATION,
+        user.email,
+        new_email,
+        expiration_date,
+    )
+    success = transactional_mails.send_confirmation_email_change_email(
+        user,
+        link_for_email_change_confirmation,
+        link_for_email_change_cancellation,
+    )
+
     return success
 
 
