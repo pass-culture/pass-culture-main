@@ -10,7 +10,7 @@ from pcapi.routes.backoffice_v3.utils import get_regions_choices
 from . import fields
 from . import utils
 from ..filters import format_graphql_application_status
-from .empty import BatchEmptyForm
+from .empty import BatchForm
 
 
 TAG_NAME_REGEX = r"^[^\s]+$"
@@ -170,7 +170,7 @@ class OptionalCommentForm(FlaskForm):
     comment = fields.PCOptCommentField("Commentaire interne")
 
 
-class BatchOptionalCommentForm(BatchEmptyForm, OptionalCommentForm):
+class BatchOptionalCommentForm(BatchForm, OptionalCommentForm):
     pass
 
 
@@ -183,7 +183,7 @@ class CommentAndTagOffererForm(OptionalCommentForm):
     )
 
 
-class BatchCommentAndTagOffererForm(BatchEmptyForm, CommentAndTagOffererForm):
+class BatchCommentAndTagOffererForm(BatchForm, CommentAndTagOffererForm):
     pass
 
 

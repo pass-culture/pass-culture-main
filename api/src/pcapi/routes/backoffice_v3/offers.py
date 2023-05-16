@@ -241,7 +241,7 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/batch/validate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def get_batch_validate_offers_form() -> utils.BackofficeResponse:
-    form = offer_forms.BatchEmptyOfferForm()
+    form = empty_forms.BatchForm()
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
@@ -255,14 +255,12 @@ def get_batch_validate_offers_form() -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/batch-validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def batch_validate_offers() -> utils.BackofficeResponse:
-    form = offer_forms.BatchEmptyOfferForm()
-    try:
-        offer_ids = [int(id) for id in form.object_ids.data.split(",")]
-    except ValueError:
-        flash("L'un des identifiants sélectionnés est invalide", "danger")
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
 
-    _batch_validate_offers(offer_ids)
+    _batch_validate_offers(form.object_ids_list)
     flash("Les offres ont été validées avec succès", "success")
     return redirect(request.referrer or url_for("backoffice_v3_web.offer.list_offers"), 303)
 
@@ -270,7 +268,7 @@ def batch_validate_offers() -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/batch/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def get_batch_reject_offers_form() -> utils.BackofficeResponse:
-    form = offer_forms.BatchEmptyOfferForm()
+    form = empty_forms.BatchForm()
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
@@ -284,14 +282,12 @@ def get_batch_reject_offers_form() -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/batch-reject", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def batch_reject_offers() -> utils.BackofficeResponse:
-    form = offer_forms.BatchEmptyOfferForm()
-    try:
-        offer_ids = [int(id) for id in form.object_ids.data.split(",")]
-    except ValueError:
-        flash("L'un des identifiants sélectionnés est invalide", "danger")
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
 
-    _batch_reject_offers(offer_ids)
+    _batch_reject_offers(form.object_ids_list)
     flash("Les offres ont été rejetées avec succès", "success")
     return redirect(request.referrer or url_for("backoffice_v3_web.offer.list_offers"), 303)
 
@@ -301,13 +297,12 @@ def batch_reject_offers() -> utils.BackofficeResponse:
 def get_batch_edit_offer_form() -> utils.BackofficeResponse:
     form = offer_forms.BatchEditOfferForm()
     if form.object_ids.data:
-        try:
-            offer_ids = [int(id) for id in form.object_ids.data.split(",")]
-        except ValueError:
-            flash("L'un des identifiants sélectionnés est invalide", "danger")
+        if not form.validate():
+            flash(utils.build_form_error_msg(form), "warning")
             return redirect(request.referrer, 400)
+
         offers = (
-            offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids))
+            offers_models.Offer.query.filter(offers_models.Offer.id.in_(form.object_ids_list))
             .options(
                 sa.orm.joinedload(offers_models.Offer.criteria).load_only(
                     criteria_models.Criterion.id, criteria_models.Criterion.name
@@ -334,13 +329,11 @@ def get_batch_edit_offer_form() -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def batch_edit_offer() -> utils.BackofficeResponse:
     form = offer_forms.BatchEditOfferForm()
-
-    try:
-        offer_ids = [int(id) for id in form.object_ids.data.split(",")]
-    except ValueError:
-        flash("L'un des identifiants sélectionnés est invalide", "danger")
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
-    offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids)).all()
+
+    offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(form.object_ids_list)).all()
     criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
 
     previous_criteria = list(reduce(set.intersection, [set(offer.criteria) for offer in offers]))  # type: ignore
@@ -361,7 +354,7 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 
         repository.save(offer)
 
-    search.async_index_offer_ids(offer_ids)
+    search.async_index_offer_ids(form.object_ids_list)
 
     flash("Les offres ont été modifiées avec succès", "success")
     return redirect(request.referrer or url_for("backoffice_v3_web.offer.list_offers"), 303)

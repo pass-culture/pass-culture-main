@@ -243,6 +243,11 @@ class PCSwitchBooleanField(wtforms.BooleanField):
     false_values = (False, "False", "false", "off", "0", "")
 
 
+class PCCheckboxField(wtforms.BooleanField):
+    widget = partial(widget, template="components/forms/checkbox_field.html")
+    false_values = (False, "False", "false", "off", "0", "")
+
+
 class PcPostalAddressAutocomplete(wtforms.StringField):
     widget = partial(widget, template="components/forms/postal_address_autocomplete.html")
 

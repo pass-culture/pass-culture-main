@@ -1,0 +1,7 @@
+<div class="form-check">
+  {% set checkbox_field_id = random_hash() %}
+  <input class="form-check-input" type="checkbox" name="{{ field.name }}" id="{{ checkbox_field_id }}" {{ " checked" if field.data }} />
+  <label role="button"
+         class="form-check-label pc-switch-boolean-field-label"
+         for="{{ checkbox_field_id }}">{{ field.label.text }}</label>
+</div>

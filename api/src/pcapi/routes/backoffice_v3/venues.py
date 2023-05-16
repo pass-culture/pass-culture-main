@@ -1,8 +1,10 @@
 from datetime import datetime
+from functools import reduce
 
 from flask import flash
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 from flask_login import current_user
 import gql.transport.exceptions as gql_exceptions
@@ -22,6 +24,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.permissions.models as perm_models
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import repository
 import pcapi.routes.serialization.base as serialize_base
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 import pcapi.utils.regions as regions_utils
@@ -403,3 +406,70 @@ def comment_venue(venue_id: int) -> utils.BackofficeResponse:
         flash("Commentaire enregistré", "success")
 
     return redirect(url_for("backoffice_v3_web.venue.get", venue_id=venue_id), code=303)
+
+
+@venue_blueprint.route("/batch-edit-form", methods=["GET", "POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def get_batch_edit_venues_form() -> utils.BackofficeResponse:
+    form = forms.BatchEditVenuesForm()
+    if form.object_ids.data:
+        if not form.validate():
+            flash(utils.build_form_error_msg(form), "warning")
+            return redirect(request.referrer or url_for(".list_venues"), code=303)
+
+        venues = (
+            offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(form.object_ids_list))
+            .options(
+                sa.orm.load_only(offerers_models.Venue.id),
+                sa.orm.joinedload(offerers_models.Venue.criteria).load_only(
+                    criteria_models.Criterion.id, criteria_models.Criterion.name
+                ),
+            )
+            .all()
+        )
+        criteria = list(reduce(set.intersection, [set(venue.criteria) for venue in venues]))  # type: ignore
+
+        if len(criteria) > 0:
+            form.criteria.choices = [(criterion.id, criterion.name) for criterion in criteria]
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for(".batch_edit_venues"),
+        div_id="batch-edit-venues-modal",
+        title="Édition des lieux",
+        button_text="Enregistrer les modifications",
+    )
+
+
+@venue_blueprint.route("/batch-edit", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def batch_edit_venues() -> utils.BackofficeResponse:
+    form = forms.BatchEditVenuesForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer or url_for(".list_venues"), code=303)
+
+    venues = offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(form.object_ids_list)).all()
+    criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
+
+    previous_criteria = list(reduce(set.intersection, [set(venue.criteria) for venue in venues]))  # type: ignore
+    deleted_criteria = list(set(previous_criteria).difference(criteria))
+
+    for venue in venues:
+        if venue.criteria:
+            venue.criteria.extend(criterion for criterion in criteria if criterion not in venue.criteria)
+            for criterion in deleted_criteria:
+                venue.criteria.remove(criterion)
+        else:
+            venue.criteria = criteria
+
+        if form.all_permanent.data:
+            venue.isPermanent = True
+        elif form.all_not_permanent.data:
+            venue.isPermanent = False
+
+    repository.save(*venues)
+
+    flash("Les lieux ont été modifiés avec succès", "success")
+    return redirect(request.referrer or url_for(".list_venues"), code=303)

@@ -11,6 +11,7 @@ from pcapi.routes.backoffice_v3.utils import get_regions_choices
 
 from . import fields
 from . import utils
+from ..forms import empty as empty_forms
 from .constants import area_choices
 
 
@@ -134,3 +135,17 @@ class GetVenuesListForm(FlaskForm):
                 self.department.data,
             )
         )
+
+
+class BatchEditVenuesForm(empty_forms.BatchForm):
+    criteria = fields.PCTomSelectField(
+        "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_criteria"
+    )
+    all_permanent = fields.PCCheckboxField("Marquer tous les lieux comme permanents")
+    all_not_permanent = fields.PCCheckboxField("Marquer tous les lieux comme non permanents")
+
+    def validate_all_permanent(self, all_permanent: fields.PCCheckboxField) -> fields.PCCheckboxField:
+        if all_permanent.data and self._fields["all_not_permanent"].data:
+            raise wtforms.ValidationError("Impossible de passer tous les lieux en permanents et non permanents")
+
+        return all_permanent

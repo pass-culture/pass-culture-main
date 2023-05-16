@@ -14,8 +14,16 @@
             aria-label="Fermer"></button>
   </div>
   <div class="modal-body row">
-    {{ information | safe }}  {# can be undefined #}
-    {% for form_field in form %}{{ form_field }}{% endfor %}
+    <div class="d-flex flex-column">
+      {% if information %}<div class="my-1">{{ information | safe }}</div>{% endif %}
+      {% for form_field in form %}
+        {% if "Hidden" in form_field.type %}
+          {{ form_field }}
+        {% else %}
+          <div class="my-1">{{ form_field }}</div>
+        {% endif %}
+      {% endfor %}
+    </div>
   </div>
   <div class="modal-footer">
     <button type="button"
