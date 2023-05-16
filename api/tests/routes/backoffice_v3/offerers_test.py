@@ -836,6 +836,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         other_offerer = offerers_factories.OffererFactory()
         venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
         venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VenueRegistrationFactory(venue=venue_2)
         educational_factories.CollectiveDmsApplicationFactory(venue=venue_2)
         offerers_factories.VenueFactory(managingOfferer=other_offerer)
 
@@ -856,6 +857,8 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[0]["Nom"] == venue_1.name
         assert rows[0]["Activité principale"] == venue_1.venueTypeCode.value
         assert not rows[0].get("Type de lieu")
+        assert rows[0]["Présence web"] == ""
+        assert rows[0]["Offres cibles"] == ""
         assert rows[0]["Statut du dossier DMS Adage"] == ""
 
         assert rows[1]["ID"] == str(venue_2.id)
@@ -863,6 +866,8 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[1]["Nom"] == venue_2.name
         assert rows[1]["Activité principale"] == venue_2.venueTypeCode.value
         assert not rows[1].get("Type de lieu")
+        assert rows[1]["Présence web"] == "https://example.com https://pass.culture.fr"
+        assert rows[1]["Offres cibles"] == "Indiv. et coll."
         assert rows[1]["Statut du dossier DMS Adage"] == "En construction"
 
     @override_features(WIP_ENABLE_NEW_ONBOARDING=False)

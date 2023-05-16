@@ -8,6 +8,8 @@
       <th scope="col">Nom</th>
       <th scope="col">SIRET</th>
       <th scope="col">{{ "Activité principale" if is_feature_active("WIP_ENABLE_NEW_ONBOARDING") else "Type de lieu" }}</th>
+      <th scope="col">Présence web</th>
+      <th scope="col">Offres cibles</th>
       <th scope="col">Statut du dossier DMS Adage</th>
     </tr>
   </thead>
@@ -19,6 +21,19 @@
         <td class="text-break">{{ links.build_venue_name_to_pc_pro_link(venue, public_name=true) }}</td>
         <td>{{ links.build_siret_to_external_link(venue) }}</td>
         <td>{{ venue.venueTypeCode.value }}</td>
+        <td>
+          {% if venue.web_presence %}
+            {% for link in venue.web_presence.split(", ") %}
+              <div class="text-truncate"
+                   style="max-width: 9ch">
+                <a href="{{ link }}"
+                   class="link-primary"
+                   target="_blank">{{ link }}</a>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </td>
+        <td>{{ venue.target | format_venue_target }}</td>
         <td>{{ venue.dms_adage_status | format_dms_status if venue.dms_adage_status else "" }}</td>
       </tr>
     {% endfor %}
