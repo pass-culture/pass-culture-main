@@ -3,17 +3,21 @@ from operator import attrgetter
 from flask import flash
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
+import pcapi.core.fraud.models as fraud_models
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.users.api import suspend_account
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
+from pcapi.repository import repository
 
 from . import utils
 from .forms import fraud as forms
@@ -31,8 +35,12 @@ def render_domain_names_list(form: forms.BlacklistDomainNameForm | None = None) 
     if not form:
         form = forms.PrepareBlacklistDomainNameForm()
 
+    fraud_actions = (
+        history_models.ActionType.BLACKLIST_DOMAIN_NAME,
+        history_models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
+    )
     history = (
-        history_models.ActionHistory.query.filter_by(actionType=history_models.ActionType.BLACKLIST_DOMAIN_NAME)
+        history_models.ActionHistory.query.filter(history_models.ActionHistory.actionType.in_(fraud_actions))
         .order_by(history_models.ActionHistory.actionDate.desc())
         .limit(50)
         .options(
@@ -42,7 +50,14 @@ def render_domain_names_list(form: forms.BlacklistDomainNameForm | None = None) 
         )
     )
 
-    return render_template("fraud/domain_names.html", history=history, form=form)
+    blacklist = fraud_models.BlacklistedDomainName.query.order_by(
+        fraud_models.BlacklistedDomainName.dateCreated.desc()
+    ).options(sa.orm.load_only(fraud_models.BlacklistedDomainName.id, fraud_models.BlacklistedDomainName.domain))
+
+    active_tab = request.args.get("active_tab", "blacklist")
+    return render_template(
+        "fraud/domain_names.html", history=history, blacklist=blacklist, form=form, active_tab=active_tab
+    )
 
 
 @fraud_blueprint.route("", methods=["GET"])
@@ -131,13 +146,22 @@ def blacklist_domain_name() -> utils.BackofficeResponse:
 
     users, cancelled_bookings_count = _blacklist_domain_name(form.domain.data, current_user)
 
-    history_api.log_action(
+    # a domain can be blacklisted many times but there can be one entry
+    # only
+    domain = fraud_models.BlacklistedDomainName.query.filter_by(domain=form.domain.data).first()
+    if not domain:
+        domain = fraud_models.BlacklistedDomainName(domain=form.domain.data)
+
+    action = history_api.log_action(
         action_type=history_models.ActionType.BLACKLIST_DOMAIN_NAME,
         author=current_user,
         domain=form.domain.data,
         deactivated_users=sorted([(user.id, user.email) for user in users]),
         cancelled_bookings_count=cancelled_bookings_count,
+        save=False,
     )
+
+    repository.save(domain, action)
 
     deactivated_accounts_count = len(users)
     if deactivated_accounts_count > 1:
@@ -157,4 +181,24 @@ def blacklist_domain_name() -> utils.BackofficeResponse:
         cancelled_bookings_msg = "L'action n'a annulé aucune réservation."
 
     flash(f"{deactivated_accounts_msg} {cancelled_bookings_msg}", "success")
+    return redirect(url_for(".list_blacklisted_domain_names"))
+
+
+@fraud_blueprint.route("/blacklist-domain-name/remove/<string:domain>", methods=["POST"])
+def remove_blacklisted_domain_name(domain: str) -> utils.BackofficeResponse:
+    row = fraud_models.BlacklistedDomainName.query.filter_by(domain=domain).one_or_none()
+    if not row:
+        raise NotFound()
+
+    row.query.delete(synchronize_session=False)
+    action = history_api.log_action(
+        action_type=history_models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
+        author=current_user,
+        domain=row.domain,
+        save=False,
+    )
+
+    repository.save(action)
+
+    flash(f"Le nom de domaine {domain} a été retiré de la liste", "success")
     return redirect(url_for(".list_blacklisted_domain_names"))

@@ -609,3 +609,18 @@ class FraudItem:
 
     def __bool__(self) -> bool:
         return self.status == FraudStatus.OK
+
+
+class BlacklistedDomainName(PcObject, Base, Model):
+    """
+    Track all blacklisted domain names. Any account creation or update
+    using an email from one of those domain names should be blocked.
+
+    To get more context, seek for the corresponding action that has been
+    logged inside the action_history table.
+    """
+
+    domain: str = sa.Column(sa.Text, nullable=False, unique=True)
+    dateCreated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
+    )
