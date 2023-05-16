@@ -3,6 +3,8 @@ import re
 from typing import Any
 from typing import Callable
 
+import gql.transport.exceptions
+import gql.transport.requests
 import requests
 from requests import Response
 from requests.adapters import HTTPAdapter
@@ -111,3 +113,37 @@ class CustomZeepTransport(zeep.Transport):
     def __init__(self, *args: Any, **kwargs: Any):
         kwargs.setdefault("session", Session())
         super().__init__(*args, **kwargs)
+
+
+class CustomGqlTransport(gql.transport.requests.RequestsHTTPTransport):
+    def __init__(self, *args: Any, **kwargs: Any):
+        # This is needed to make mypy (almost) happy, otherwise it
+        # says that `session` has type `None` (because of the
+        # constructor of the parent class) and that triggers an error
+        # in `connect()` when setting the attribute.
+        self.session: requests.Session | None = None  # type: ignore [assignment]
+        super().__init__(*args, **kwargs)
+
+    def connect(self) -> None:
+        # This is a copy of `RequestsHTTPTransport.connect()` that
+        # uses our own custom `Session` class instead of the default
+        # `requests.Session`.
+        if self.session is None:
+            # --- 8-> --- start of change ---
+            # self.session = requests.Session()
+            self.session = Session()
+            # --- 8-> --- end of change ---
+
+            if self.retries > 0:
+                adapter = HTTPAdapter(
+                    max_retries=Retry(
+                        total=self.retries,
+                        backoff_factor=0.1,
+                        status_forcelist=[500, 502, 503, 504],
+                        allowed_methods=None,
+                    )
+                )
+                for prefix in "http://", "https://":
+                    self.session.mount(prefix, adapter)
+        else:
+            raise gql.transport.exceptions.TransportAlreadyConnected("Transport is already connected")
