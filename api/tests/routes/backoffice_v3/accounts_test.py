@@ -210,6 +210,24 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert " Théodule Dorantissime " in cards_text[1]
         assert " Théos Doranta " in cards_text[2]
 
+    @pytest.mark.parametrize(
+        "query,expected_results",
+        [("01/01/2000", 1), ("01/01/2001", 1), ("1/1/2001", 1), ("12/12/2001", 0), ("31/31/3131", 0)],
+    )
+    def test_can_search_public_account_by_birthdate(self, authenticated_client, query, expected_results):
+        # given
+        create_bunch_of_accounts()
+        users_factories.BeneficiaryGrant18Factory(validatedBirthDate=datetime.date(year=2000, month=1, day=1))
+        users_factories.BeneficiaryGrant18Factory(validatedBirthDate=datetime.date(year=2001, month=1, day=1))
+
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, terms=query))
+
+        # then
+        assert response.status_code == 200
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == expected_results
+
     def test_can_search_public_account_by_email(self, authenticated_client):
         # given
         _, _, _, random, _ = create_bunch_of_accounts()
