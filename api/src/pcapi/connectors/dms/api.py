@@ -6,10 +6,10 @@ from typing import Any
 from typing import Generator
 
 import gql
-from gql.transport.requests import RequestsHTTPTransport
 
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
+from pcapi.utils import requests
 
 from . import exceptions
 
@@ -32,7 +32,7 @@ GET_EAC_APPLICATIONS_STATE_SIRET = "eac/get_applications_state_siret"
 
 class DMSGraphQLClient:
     def __init__(self) -> None:
-        transport = RequestsHTTPTransport(
+        transport = requests.CustomGqlTransport(
             url="https://www.demarches-simplifiees.fr/api/v2/graphql",
             headers={"Authorization": f"Bearer {settings.DMS_TOKEN}"},
             retries=3,
