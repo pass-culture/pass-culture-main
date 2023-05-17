@@ -15,8 +15,3 @@ def install_local_providers() -> None:
         localClass=providers_constants.PASS_CULTURE_STOCKS_FAKE_CLASS_NAME,
         enabledForPro=False,
     )
-    providers_factories.ProviderFactory(
-        name=providers_constants.INDIVIDUAL_OFFERS_API_PROVIDER_NAME,
-        localClass=providers_constants.INDIVIDUAL_OFFERS_API_FAKE_CLASS_NAME,
-        enabledForPro=False,
-    )
