@@ -3,7 +3,7 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
-import { IStocksEvent } from 'components/StocksEventList/StocksEventList'
+import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -46,7 +46,7 @@ import styles from './RecurrenceForm.module.scss'
 interface Props {
   offer: IOfferIndividual
   onCancel: () => void
-  onConfirm: (newStocks: IStocksEvent[]) => void
+  onConfirm: (newStocks: StocksEvent[]) => void
 }
 
 export const RecurrenceForm = ({

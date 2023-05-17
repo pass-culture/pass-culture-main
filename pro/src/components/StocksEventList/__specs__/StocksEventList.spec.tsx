@@ -11,7 +11,7 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksEventList, {
-  IStocksEvent,
+  StocksEvent,
   STOCKS_PER_PAGE,
 } from '../StocksEventList'
 
@@ -19,7 +19,7 @@ const mockLogEvent = jest.fn()
 
 const mockSetSotcks = jest.fn()
 interface IrenderStocksEventList {
-  stocks: IStocksEvent[]
+  stocks: StocksEvent[]
 }
 
 const renderStocksEventList = ({ stocks }: IrenderStocksEventList) =>
