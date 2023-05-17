@@ -168,7 +168,7 @@ def test_save_login_device_history_on_signin(client):
     assert login_device.deviceId == data["deviceInfo"]["deviceId"]
     assert login_device.source == "iPhone 13"
     assert login_device.os == "iOS"
-    assert login_device.location == "127.0.0.1"
+    assert login_device.location == None
 
 
 @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
