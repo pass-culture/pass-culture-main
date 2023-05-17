@@ -6,7 +6,7 @@ import DialogBox from 'components/DialogBox'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import StocksEventList from 'components/StocksEventList'
-import { IStocksEvent } from 'components/StocksEventList/StocksEventList'
+import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
@@ -38,7 +38,7 @@ export interface IStocksEventCreationProps {
 }
 
 const getInitialStocks = (offer: IOfferIndividual) =>
-  offer.stocks.map((stock): IStocksEvent => {
+  offer.stocks.map((stock): StocksEvent => {
     if (
       stock.beginningDatetime === null ||
       stock.beginningDatetime === undefined ||
@@ -65,7 +65,7 @@ export const StocksEventCreation = ({
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
   const { logEvent } = useAnalytics()
-  const [stocks, setStocks] = useState<IStocksEvent[]>(getInitialStocks(offer))
+  const [stocks, setStocks] = useState<StocksEvent[]>(getInitialStocks(offer))
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
   const { setOffer } = useOfferIndividualContext()
@@ -74,7 +74,7 @@ export const StocksEventCreation = ({
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
 
   const onCancel = () => setIsRecurrenceModalOpen(false)
-  const onConfirm = (newStocks: IStocksEvent[]) => {
+  const onConfirm = (newStocks: StocksEvent[]) => {
     setIsRecurrenceModalOpen(false)
     const rawStocksToAdd = [...stocks, ...newStocks]
     // deduplicate stocks in th whole list

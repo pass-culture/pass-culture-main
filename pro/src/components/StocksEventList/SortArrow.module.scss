@@ -1,0 +1,26 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.sorting-icons {
+  display: inline-block;
+  height: rem.torem(20px);
+  margin-left: rem.torem(4px);
+  position: relative;
+  vertical-align: middle;
+  width: rem.torem(18px);
+  cursor: pointer;
+
+  // Reset button styles
+  background: none;
+  border: none;
+  padding: 0;
+
+  & > img {
+    display: block;
+    left: 50%;
+    max-height: rem.torem(20px);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    width: auto;
+  }
+}

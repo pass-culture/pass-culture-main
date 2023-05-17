@@ -1,6 +1,6 @@
 import sub from 'date-fns/sub'
 
-import { IStocksEvent } from 'components/StocksEventList/StocksEventList'
+import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { serializeBeginningDateTime } from 'screens/OfferIndividual/StocksEventEdition/adapters/serializers'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 
@@ -10,7 +10,7 @@ import { RecurrenceFormValues, RecurrenceType } from './types'
 export const onSubmit = (
   values: RecurrenceFormValues,
   departmentCode: string
-): IStocksEvent[] => {
+): StocksEvent[] => {
   const dates = getRecurrenceDates(values)
 
   return generateStocksForDates(values, dates, departmentCode)
@@ -44,7 +44,7 @@ const generateStocksForDates = (
   values: RecurrenceFormValues,
   dates: Date[],
   departmentCode: string
-): IStocksEvent[] =>
+): StocksEvent[] =>
   dates.flatMap(beginningDate =>
     values.beginningTimes.flatMap(beginningTime =>
       values.quantityPerPriceCategories.flatMap(quantityPerPriceCategory => {

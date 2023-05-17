@@ -10,6 +10,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { useOfferWizardMode } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { TrashFilledIcon } from 'icons'
@@ -19,11 +20,13 @@ import { Pagination } from 'ui-kit/Pagination'
 import { formatPrice } from 'utils/formatPrice'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
+import { SortArrow } from './SortArrow'
 import styles from './StocksEventList.module.scss'
+import { SortingColumn, SortingMode, sortStocks } from './stocksFiltering'
 
 export const STOCKS_PER_PAGE = 20
 
-export interface IStocksEvent {
+export interface StocksEvent {
   id?: string
   beginningDatetime: string
   bookingLimitDatetime: string
@@ -31,19 +34,13 @@ export interface IStocksEvent {
   quantity: number | null
 }
 
-interface IStocksEventListProps {
-  stocks: IStocksEvent[]
+interface StocksEventListProps {
+  stocks: StocksEvent[]
   priceCategories: PriceCategoryResponseModel[]
   className?: string
   departmentCode: string
   offerId: string
-  setStocks: (stocks: IStocksEvent[]) => void
-}
-
-const sortStocks = (stocks: IStocksEvent[]): IStocksEvent[] => {
-  return stocks.sort(
-    (a, b) => Date.parse(a.beginningDatetime) - Date.parse(b.beginningDatetime)
-  )
+  setStocks: (stocks: StocksEvent[]) => void
 }
 
 const StocksEventList = ({
@@ -53,20 +50,46 @@ const StocksEventList = ({
   departmentCode,
   offerId,
   setStocks,
-}: IStocksEventListProps): JSX.Element => {
+}: StocksEventListProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const [isCheckedArray, setIsCheckedArray] = useState<boolean[]>(
     Array(stocks.length).fill(false)
   )
+  const areFiltersEnabled = useActiveFeature('WIP_RECURRENCE_FILTERS')
+
+  const [currentSortingColumn, setCurrentSortingColumn] =
+    useState<SortingColumn | null>(null)
+  const [currentSortingMode, setCurrentSortingMode] = useState<SortingMode>(
+    SortingMode.NONE
+  )
+
+  const onHeaderClick = (headerName: SortingColumn) => {
+    if (currentSortingColumn !== headerName) {
+      setCurrentSortingColumn(headerName)
+      setCurrentSortingMode(SortingMode.ASC)
+      return
+    } else {
+      if (currentSortingMode === SortingMode.ASC) {
+        setCurrentSortingMode(SortingMode.DESC)
+      } else if (currentSortingMode === SortingMode.DESC) {
+        setCurrentSortingMode(SortingMode.NONE)
+      } else {
+        setCurrentSortingMode(SortingMode.ASC)
+      }
+    }
+  }
+
   const [page, setPage] = useState(1)
   const previousPage = useCallback(() => setPage(page => page - 1), [])
   const nextPage = useCallback(() => setPage(page => page + 1), [])
-  const stocksPage = sortStocks(stocks).slice(
-    (page - 1) * STOCKS_PER_PAGE,
-    page * STOCKS_PER_PAGE
-  )
+  const stocksPage = sortStocks(
+    stocks,
+    priceCategories,
+    currentSortingColumn,
+    currentSortingMode
+  ).slice((page - 1) * STOCKS_PER_PAGE, page * STOCKS_PER_PAGE)
   const pageCount = Math.ceil(stocks.length / STOCKS_PER_PAGE)
   const areAllChecked = isCheckedArray.every(isChecked => isChecked)
 
@@ -170,15 +193,50 @@ const StocksEventList = ({
               className={cn(styles['date-column'], styles['header'])}
             >
               Date
+              {areFiltersEnabled && (
+                <SortArrow
+                  onClick={() => onHeaderClick(SortingColumn.DATE)}
+                  sortingMode={
+                    currentSortingColumn === SortingColumn.DATE
+                      ? currentSortingMode
+                      : SortingMode.NONE
+                  }
+                />
+              )}
             </th>
             <th
               scope="col"
               className={cn(styles['time-column'], styles['header'])}
+              onClick={() => onHeaderClick(SortingColumn.HOUR)}
             >
               Horaire
+              {areFiltersEnabled && (
+                <SortArrow
+                  onClick={() => onHeaderClick(SortingColumn.DATE)}
+                  sortingMode={
+                    currentSortingColumn === SortingColumn.HOUR
+                      ? currentSortingMode
+                      : SortingMode.NONE
+                  }
+                />
+              )}
             </th>
-            <th scope="col" className={styles['header']}>
+            <th
+              scope="col"
+              className={styles['header']}
+              onClick={() => onHeaderClick(SortingColumn.PRICE_CATEGORY)}
+            >
               Tarif
+              {areFiltersEnabled && (
+                <SortArrow
+                  onClick={() => onHeaderClick(SortingColumn.DATE)}
+                  sortingMode={
+                    currentSortingColumn === SortingColumn.PRICE_CATEGORY
+                      ? currentSortingMode
+                      : SortingMode.NONE
+                  }
+                />
+              )}
             </th>
             <th
               scope="col"
@@ -186,16 +244,41 @@ const StocksEventList = ({
                 styles['booking-limit-date-column'],
                 styles['header']
               )}
+              onClick={() =>
+                onHeaderClick(SortingColumn.BOOKING_LIMIT_DATETIME)
+              }
             >
               Date limite
               <br />
               de réservation
+              {areFiltersEnabled && (
+                <SortArrow
+                  onClick={() => onHeaderClick(SortingColumn.DATE)}
+                  sortingMode={
+                    currentSortingColumn ===
+                    SortingColumn.BOOKING_LIMIT_DATETIME
+                      ? currentSortingMode
+                      : SortingMode.NONE
+                  }
+                />
+              )}
             </th>
             <th
               scope="col"
               className={cn(styles['quantity-column'], styles['header'])}
+              onClick={() => onHeaderClick(SortingColumn.QUANTITY)}
             >
               Places
+              {areFiltersEnabled && (
+                <SortArrow
+                  onClick={() => onHeaderClick(SortingColumn.DATE)}
+                  sortingMode={
+                    currentSortingColumn === SortingColumn.QUANTITY
+                      ? currentSortingMode
+                      : SortingMode.NONE
+                  }
+                />
+              )}
             </th>
             <th className={cn(styles['actions-column'], styles['header'])} />
           </tr>
