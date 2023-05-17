@@ -1,3 +1,4 @@
+from dataclasses import asdict
 import datetime
 
 from flask import url_for
@@ -6,11 +7,15 @@ import pytest
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
+import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 
@@ -367,3 +372,132 @@ class RejectCollectiveOfferFormTest(GetEndpointHelper):
         with assert_num_queries(2):  # session + user
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
+
+
+class BatchCollectiveOffersValidateTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_offer.batch_validate_collective_offers"
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+
+    def test_batch_validate_collective_offers(self, legit_user, authenticated_client):
+        collective_offers = educational_factories.CollectiveOfferFactory.create_batch(
+            3, validation=OfferValidationStatus.PENDING
+        )
+        parameter_ids = ",".join(str(collective_offer.id) for collective_offer in collective_offers)
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_v3_web.collective_offer.list_collective_offers", _external=True)
+        assert response.location == expected_url
+
+        for collective_offer in collective_offers:
+            db.session.refresh(collective_offer)
+            assert collective_offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime(
+                "%d/%m/%Y"
+            )
+            assert collective_offer.isActive is True
+            assert collective_offer.lastValidationType is OfferValidationType.MANUAL
+            assert collective_offer.validation is OfferValidationStatus.APPROVED
+
+        assert len(mails_testing.outbox) == 3
+
+        received_dict = {email.sent_data["To"]: email.sent_data["template"] for email in mails_testing.outbox}
+        expected_dict = {
+            collective_offers[0].venue.bookingEmail: asdict(TransactionalEmail.OFFER_APPROVAL_TO_PRO.value),
+            collective_offers[1].venue.bookingEmail: asdict(TransactionalEmail.OFFER_APPROVAL_TO_PRO.value),
+            collective_offers[2].venue.bookingEmail: asdict(TransactionalEmail.OFFER_APPROVAL_TO_PRO.value),
+        }
+        assert received_dict == expected_dict
+
+    def test_batch_validate_collective_offers_wrong_id(self, legit_user, authenticated_client):
+        fake_offer_ids = [123, 456]
+        collective_offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
+        parameter_ids = f"{str(fake_offer_ids[0])}, {str(fake_offer_ids[1])}, {collective_offer}"
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+
+        assert response.status_code == 303
+        assert collective_offer.validation == OfferValidationStatus.PENDING
+        collective_offer_template = educational_models.CollectiveOffer.query.get(collective_offer.id)
+        assert collective_offer_template.validation == OfferValidationStatus.PENDING
+        non_existing_collective_offers = educational_models.CollectiveOffer.query.filter(
+            educational_models.CollectiveOffer.id.in_(fake_offer_ids)
+        ).all()
+        assert len(non_existing_collective_offers) == 0
+
+
+class BatchCollectiveOffersRejectTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_offer.batch_reject_collective_offers"
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+
+    def test_batch_reject_offers(self, legit_user, authenticated_client):
+        collective_offers = educational_factories.CollectiveOfferFactory.create_batch(
+            3, validation=OfferValidationStatus.PENDING
+        )
+        parameter_ids = ",".join(str(collective_offer.id) for collective_offer in collective_offers)
+
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_v3_web.collective_offer.list_collective_offers", _external=True)
+        assert response.location == expected_url
+
+        for collective_offer in collective_offers:
+            db.session.refresh(collective_offer)
+            assert collective_offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime(
+                "%d/%m/%Y"
+            )
+            assert collective_offer.isActive is False
+            assert collective_offer.lastValidationType is OfferValidationType.MANUAL
+            assert collective_offer.validation is OfferValidationStatus.REJECTED
+
+        assert len(mails_testing.outbox) == 3
+
+        received_dict = {email.sent_data["To"]: email.sent_data["template"] for email in mails_testing.outbox}
+        expected_dict = {
+            collective_offers[0].venue.bookingEmail: asdict(TransactionalEmail.OFFER_REJECTION_TO_PRO.value),
+            collective_offers[1].venue.bookingEmail: asdict(TransactionalEmail.OFFER_REJECTION_TO_PRO.value),
+            collective_offers[2].venue.bookingEmail: asdict(TransactionalEmail.OFFER_REJECTION_TO_PRO.value),
+        }
+        assert received_dict == expected_dict
+
+    def test_batch_reject_collective_offers_wrong_id(self, legit_user, authenticated_client):
+        fake_offer_ids = [123, 456]
+        collective_offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
+        parameter_ids = f"{str(fake_offer_ids[0])}, {str(fake_offer_ids[1])}, {collective_offer}"
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+
+        assert response.status_code == 303
+        assert collective_offer.validation == OfferValidationStatus.PENDING
+        collective_offer_template = educational_models.CollectiveOffer.query.get(collective_offer.id)
+        assert collective_offer_template.validation == OfferValidationStatus.PENDING
+        non_existing_collective_offers = educational_models.CollectiveOffer.query.filter(
+            educational_models.CollectiveOffer.id.in_(fake_offer_ids)
+        ).all()
+        assert len(non_existing_collective_offers) == 0
+
+
+class GetBatchCollectiveOffersApproveFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_offer.get_batch_validate_collective_offers_form"
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+
+    def test_get_batch_collective_offers_approve_form(self, legit_user, authenticated_client):
+        # when
+        url = url_for(self.endpoint)
+        response = authenticated_client.get(url)
+
+        # then
+        assert response.status_code == 200
+
+
+class GetBatchCollectiveOffersRejectFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_offer.get_batch_reject_collective_offers_form"
+    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+
+    def test_get_batch_collective_offers_reject_form(self, legit_user, authenticated_client):
+        # when
+        url = url_for(self.endpoint)
+        response = authenticated_client.get(url)
+
+        # then
+        assert response.status_code == 200
