@@ -18,6 +18,9 @@ from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.exceptions import StudentsNotOpenedYet
 from pcapi.core.educational.models import HasImageMixin
 from pcapi.core.educational.utils import get_image_from_url
+from pcapi.core.mails.transactional.educational.eac_new_request_made_by_redactor_to_ac import (
+    send_new_request_made_by_redactor_to_ac,
+)
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -733,7 +736,7 @@ def create_offer_request(
     body: PostCollectiveRequestBodyModel,
     offer: educational_models.CollectiveOfferTemplate,
     institution: educational_models.EducationalInstitution,
-    email_redactor: str,
+    redactor: educational_models.EducationalRedactor,
 ) -> educational_models.CollectiveOfferRequest:
     request = educational_models.CollectiveOfferRequest(
         phoneNumber=body.phone_number,  # type: ignore [call-arg]
@@ -743,9 +746,13 @@ def create_offer_request(
         comment=body.comment,
         collectiveOfferTemplateId=offer.id,
         educationalInstitutionId=institution.id,
+        educationalRedactorId=redactor.id,
     )
 
     db.session.add(request)
     db.session.commit()
-    request.email = email_redactor
+    request.email = redactor.email
+
+    send_new_request_made_by_redactor_to_ac(request)
+
     return request

@@ -2,9 +2,9 @@ import logging
 
 from sqlalchemy.orm import exc as orm_exc
 
+from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api.categories import get_educational_categories
-from pcapi.core.educational.repository import get_educational_institution_public
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
@@ -96,10 +96,13 @@ def create_collective_request(
         offer = educational_api_offer.get_collective_offer_template_by_id_for_adage(offer_id)
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
-    institution = get_educational_institution_public(institution_id=None, uai=authenticated_information.uai)
+    institution = educational_repository.get_educational_institution_public(
+        institution_id=None, uai=authenticated_information.uai
+    )
     if not institution:
         raise ApiErrors({"code": "INSTITUTION_NOT_FOUND"}, status_code=404)
-    email_redactor = authenticated_information.email
-    collective_request = educational_api_offer.create_offer_request(body, offer, institution, email_redactor)  # type: ignore [arg-type]
+    redactor = educational_repository.find_redactor_by_email(authenticated_information.email)  # type: ignore [arg-type]
+    assert redactor
+    collective_request = educational_api_offer.create_offer_request(body, offer, institution, redactor)
 
     return serializers.CollectiveRequestResponseModel.from_orm(collective_request)
