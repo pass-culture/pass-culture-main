@@ -84,6 +84,7 @@ const renderOffererScreen = (contextValue: ISignupJourneyContext) => {
 
 describe('screens:SignupJourney::Offerer', () => {
   let contextValue: ISignupJourneyContext
+
   beforeEach(() => {
     contextValue = {
       activity: null,
@@ -91,17 +92,6 @@ describe('screens:SignupJourney::Offerer', () => {
       setActivity: () => {},
       setOfferer: () => {},
     }
-    jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
-      active: true,
-      address: {
-        city: 'Paris',
-        postalCode: '75008',
-        street: 'rue du test',
-      },
-      name: 'Test',
-      siret: '12345678933333',
-      ape_code: '95.01A',
-    })
 
     jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       venues: [],
@@ -148,7 +138,7 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should not display authentication screen on submit with form error', async () => {
-    jest.spyOn(api, 'getSiretInfo').mockRejectedValueOnce(
+    jest.spyOn(api, 'getSiretInfo').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -181,6 +171,17 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should not render offerers screen on submit if venuesList is empty', async () => {
+    jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
+      active: true,
+      address: {
+        city: 'Paris',
+        postalCode: '75008',
+        street: 'rue du test',
+      },
+      name: 'Test',
+      siret: '12345678933333',
+      ape_code: '95.01A',
+    })
     renderOffererScreen(contextValue)
 
     expect(
@@ -196,7 +197,18 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should submit the form when clicking the continue button', async () => {
-    jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValueOnce({
+    jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
+      active: true,
+      address: {
+        city: 'Paris',
+        postalCode: '75008',
+        street: 'rue du test',
+      },
+      name: 'Test',
+      siret: '12345678933333',
+      ape_code: '95.01A',
+    })
+    jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       venues: [
         { id: '1', name: 'First Venue', isPermanent: true },
         { id: '2', name: 'Second Venue', isPermanent: true },
@@ -264,6 +276,18 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should not display MaybeAppUserDialog component on submit with valid apeCode', async () => {
+    jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
+      active: true,
+      address: {
+        city: 'Paris',
+        postalCode: '75008',
+        street: 'rue du test',
+      },
+      name: 'Test',
+      siret: '12345678933333',
+      ape_code: '95.01A',
+    })
+
     renderOffererScreen(contextValue)
 
     await userEvent.click(
@@ -285,7 +309,7 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should not display MaybeAppUserDialog component if siret is incorrect', async () => {
-    jest.spyOn(api, 'getSiretInfo').mockRejectedValueOnce(
+    jest.spyOn(api, 'getSiretInfo').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -327,7 +351,6 @@ describe('screens:SignupJourney::Offerer', () => {
       siret: '12345678933333',
       ape_code: '85.31Z',
     })
-
     renderOffererScreen(contextValue)
 
     await userEvent.type(
@@ -336,7 +359,7 @@ describe('screens:SignupJourney::Offerer', () => {
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
-    expect(api.getSiretInfo).toHaveBeenCalled()
+    await expect(api.getSiretInfo).toHaveBeenCalled()
 
     await waitFor(() => {
       expect(
