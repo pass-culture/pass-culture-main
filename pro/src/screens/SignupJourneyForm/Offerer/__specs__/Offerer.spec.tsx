@@ -5,7 +5,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { ApiError, SiretInfo } from 'apiClient/v1'
+import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address'
@@ -81,6 +81,7 @@ const renderOffererScreen = (contextValue: ISignupJourneyContext) => {
     }
   )
 }
+
 describe('screens:SignupJourney::Offerer', () => {
   let contextValue: ISignupJourneyContext
   beforeEach(() => {
@@ -180,9 +181,6 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should not render offerers screen on submit if venuesList is empty', async () => {
-    jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValueOnce({
-      venues: [],
-    })
     renderOffererScreen(contextValue)
 
     expect(
@@ -265,7 +263,7 @@ describe('screens:SignupJourney::Offerer', () => {
     })
   })
 
-  it('should not display MaybeAppUserDialog component on siret input blur', async () => {
+  it('should not display MaybeAppUserDialog component on submit with valid apeCode', async () => {
     renderOffererScreen(contextValue)
 
     await userEvent.click(
@@ -278,7 +276,8 @@ describe('screens:SignupJourney::Offerer', () => {
       screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
       '12345678933333'
     )
-    await userEvent.tab()
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
     expect(api.getSiretInfo).toHaveBeenCalled()
     expect(
       screen.queryByText('Il semblerait que tu ne sois pas')
@@ -302,15 +301,22 @@ describe('screens:SignupJourney::Offerer', () => {
       screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
       '12345678933333'
     )
-    await userEvent.tab()
+
+    await waitFor(() => {
+      expect(
+        screen.getByLabelText('Numéro de SIRET à 14 chiffres')
+      ).toHaveValue('123 456 789 33333')
+    })
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
     expect(api.getSiretInfo).toHaveBeenCalled()
     expect(
       screen.queryByText('Il semblerait que tu ne sois pas')
     ).not.toBeInTheDocument()
   })
 
-  describe('MaybeAppUserDialog displayed behavior', () => {
-    const siretInfo: SiretInfo = {
+  it('should display MaybeAppUserDialog and hide on cancel button', async () => {
+    jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
       active: true,
       address: {
         city: 'Paris',
@@ -320,65 +326,71 @@ describe('screens:SignupJourney::Offerer', () => {
       name: 'Test',
       siret: '12345678933333',
       ape_code: '85.31Z',
-    }
-
-    beforeEach(() => {
-      jest.spyOn(api, 'getSiretInfo').mockResolvedValueOnce(siretInfo)
     })
 
-    it('should display MaybeAppUserDialog and hide on cancel button', async () => {
-      renderOffererScreen(contextValue)
+    renderOffererScreen(contextValue)
 
-      await userEvent.type(
-        screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
-        '12345678933333'
-      )
-      await userEvent.tab()
-      expect(api.getSiretInfo).toHaveBeenCalled()
+    await userEvent.type(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      '12345678933333'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    expect(api.getSiretInfo).toHaveBeenCalled()
+
+    await waitFor(() => {
       expect(
         screen.getByText('Il semblerait que tu ne sois pas')
       ).toBeInTheDocument()
+    })
 
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: 'Continuer vers le pass Culture Pro',
-        })
-      )
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Continuer vers le pass Culture Pro',
+      })
+    )
 
+    await waitFor(() => {
       expect(
         screen.queryByText('Il semblerait que tu ne sois pas')
       ).not.toBeInTheDocument()
     })
+  })
 
-    it('should display MaybeAppUserDialog component and redirect user to public app', async () => {
-      renderOffererScreen(contextValue)
-
-      await userEvent.type(
-        screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
-        '12345678933333'
-      )
-      await userEvent.tab()
-
-      await userEvent.click(
-        screen.getByRole('link', {
-          name: 'S’inscrire sur l’application pass Culture',
-        })
-      )
+  it('should display MaybeAppUserDialog component and redirect user to public app', async () => {
+    jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
+      active: true,
+      address: {
+        city: 'Paris',
+        postalCode: '75008',
+        street: 'rue du test',
+      },
+      name: 'Test',
+      siret: '12345678933333',
+      ape_code: '85.31Z',
     })
 
-    it('should not open dialog if siret offerer is not active', async () => {
-      siretInfo.active = false
-      renderOffererScreen(contextValue)
-      await userEvent.type(
-        screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
-        '12345678933333'
-      )
-      await userEvent.tab()
+    renderOffererScreen(contextValue)
 
-      expect(api.getSiretInfo).toHaveBeenCalled()
+    await userEvent.type(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      '12345678933333'
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    expect(api.getSiretInfo).toHaveBeenCalled()
+
+    await waitFor(() => {
       expect(
-        screen.queryByText('Il semblerait que tu ne sois pas')
-      ).not.toBeInTheDocument()
+        screen.getByText('Il semblerait que tu ne sois pas')
+      ).toBeInTheDocument()
     })
+
+    await userEvent.click(
+      screen.getByRole('link', {
+        name: 'S’inscrire sur l’application pass Culture',
+      })
+    )
   })
 })
