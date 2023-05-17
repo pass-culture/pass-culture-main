@@ -1,5 +1,5 @@
 import algoliasearch from 'algoliasearch/lite'
-import React, { useContext } from 'react'
+import React from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
 import { AuthenticatedResponse, VenueResponse } from 'apiClient/adage'
@@ -9,7 +9,6 @@ import {
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
 } from 'utils/config'
 
-import { FacetFiltersContext } from '../../providers'
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
 
 import OffersInstitutionList from './OffersInstitutionList/OffersInstitutionList'
@@ -36,8 +35,6 @@ const OffersForMyInstitution = ({
   venueFilter,
   removeVenueFilter,
 }: OffersForMyInstitutionProps): JSX.Element => {
-  const { facetFilters } = useContext(FacetFiltersContext)
-
   return (
     <InstantSearch
       indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
@@ -47,7 +44,7 @@ const OffersForMyInstitution = ({
         attributesToHighlight={[]}
         attributesToRetrieve={attributesToRetrieve}
         clickAnalytics
-        facetFilters={facetFilters}
+        facetFilters={[`offer.educationalInstitutionUAICode:${user.uai}`]}
         hitsPerPage={8}
       />
       <AnalyticsContextProvider>
