@@ -1,4 +1,4 @@
-import { IStocksEvent } from 'components/StocksEventList/StocksEventList'
+import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 
 import { onSubmit } from '../onSubmit'
 import { RecurrenceFormValues, RecurrenceType } from '../types'
@@ -7,7 +7,7 @@ describe('onSubmit', () => {
   const cases: {
     description: string
     formValues: RecurrenceFormValues
-    expectedStocks: IStocksEvent[]
+    expectedStocks: StocksEvent[]
   }[] = [
     {
       description: 'generate stocks for one unique date',
