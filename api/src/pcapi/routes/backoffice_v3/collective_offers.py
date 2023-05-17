@@ -161,37 +161,85 @@ def get_validate_collective_offer_form(collective_offer_id: int) -> utils.Backof
 @list_collective_offers_blueprint.route("/<int:collective_offer_id>/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def validate_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
-    collective_offer = educational_models.CollectiveOffer.query.get_or_404(collective_offer_id)
-
-    new_validation_status = OfferValidationStatus.APPROVED
-    if collective_offer.validation != OfferValidationStatus.PENDING:
-        flash("Seules les offres collectives en attente peuvent être validées", "warning")
-        return redirect(request.referrer or url_for("backoffice_v3_web.collective_offer.list_collective_offers"), 303)
-    collective_offer.validation = new_validation_status
-    collective_offer.isActive = True
-
-    try:
-        db.session.commit()
-    except Exception:  # pylint: disable=broad-except
-        flash("Une erreur est survenue lors de la validation de l'offre", "warning")
-        return redirect(request.referrer, 400)
-    search.async_index_collective_offer_ids([collective_offer.id])
-
-    flash("L'offre a bien été validée", "success")
-    collective_offer.lastValidationDate = datetime.datetime.utcnow()
-    collective_offer.lastValidationType = OfferValidationType.MANUAL
-    recipients = (
-        [collective_offer.venue.bookingEmail]
-        if collective_offer.venue.bookingEmail
-        else [recipient.user.email for recipient in collective_offer.venue.managingOfferer.UserOfferers]
-    )
-
-    transactional_mails.send_offer_validation_status_update_email(collective_offer, new_validation_status, recipients)
-
-    if collective_offer.institutionId is not None:
-        adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
-
+    _batch_validate_or_reject_collective_offers(OfferValidationStatus.APPROVED, [collective_offer_id])
     return redirect(request.referrer or url_for("backoffice_v3_web.collective_offer.list_collective_offers"), 303)
+
+
+def _batch_validate_or_reject_collective_offers(
+    validation: OfferValidationStatus, collective_offer_ids: list[int]
+) -> bool:
+    collective_offers = educational_models.CollectiveOffer.query.filter(
+        educational_models.CollectiveOffer.id.in_(collective_offer_ids),
+        educational_models.CollectiveOffer.validation == OfferValidationStatus.PENDING,
+    ).all()
+
+    if len(collective_offer_ids) != len(collective_offers):
+        flash(
+            "Seules les offres collectives en attente peuvent être validées"
+            if validation is OfferValidationStatus.APPROVED
+            else "Seules les offres collectives en attente peuvent être rejetées",
+            "danger",
+        )
+        return False
+
+    collective_offer_update_succeed_ids: list[int] = []
+    collective_offer_update_failed_ids: list[int] = []
+
+    for collective_offer in collective_offers:
+        new_validation_status = validation
+        collective_offer.validation = new_validation_status
+        collective_offer.lastValidationDate = datetime.datetime.utcnow()
+        collective_offer.lastValidationType = OfferValidationType.MANUAL
+
+        if validation is OfferValidationStatus.APPROVED:
+            collective_offer.isActive = True
+
+        try:
+            db.session.commit()
+        except Exception:  # pylint: disable=broad-except
+            collective_offer_update_failed_ids.append(collective_offer.id)
+            continue
+
+        collective_offer_update_succeed_ids.append(collective_offer.id)
+
+        recipients = (
+            [collective_offer.venue.bookingEmail]
+            if collective_offer.venue.bookingEmail
+            else [recipient.user.email for recipient in collective_offer.venue.managingOfferer.UserOfferers]
+        )
+
+        transactional_mails.send_offer_validation_status_update_email(
+            collective_offer, new_validation_status, recipients
+        )
+
+        if collective_offer.institutionId is not None:
+            adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
+
+    search.async_index_collective_offer_ids(collective_offer_update_succeed_ids)
+
+    if len(collective_offer_update_succeed_ids) == 1:
+        flash(
+            "L'offre collective a bien été validée"
+            if validation is OfferValidationStatus.APPROVED
+            else "L'offre collective a bien été rejetée",
+            "success",
+        )
+    elif collective_offer_update_succeed_ids:
+        flash(
+            f"Les offres collectives {', '.join(map(str, collective_offer_update_succeed_ids))} ont bien été validées"
+            if validation is OfferValidationStatus.APPROVED
+            else f"Les offres collectives {','.join(map(str, collective_offer_update_succeed_ids))} ont bien été rejetées",
+            "success",
+        )
+
+    if len(collective_offer_update_failed_ids) > 0:
+        flash(
+            f"Une erreur est survenue lors de la validation des offres collectives : {', '.join(map(str, collective_offer_update_failed_ids))}"
+            if validation is OfferValidationStatus.APPROVED
+            else f"Une erreur est survenue lors du rejet des offres collectives : {', '.join(map(str, collective_offer_update_failed_ids))}",
+            "danger",
+        )
+    return True
 
 
 @list_collective_offers_blueprint.route("/<int:collective_offer_id>/reject", methods=["GET"])
@@ -216,33 +264,59 @@ def get_reject_collective_offer_form(collective_offer_id: int) -> utils.Backoffi
 @list_collective_offers_blueprint.route("/<int:collective_offer_id>/reject", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def reject_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
-    collective_offer = educational_models.CollectiveOffer.query.get_or_404(collective_offer_id)
+    _batch_validate_or_reject_collective_offers(OfferValidationStatus.REJECTED, [collective_offer_id])
+    return redirect(request.referrer or url_for("backoffice_v3_web.collective_offer.list_collective_offers"), 303)
 
-    new_validation_status = OfferValidationStatus.REJECTED
-    if collective_offer.validation != OfferValidationStatus.PENDING:
-        flash("Seules les offres collectives en attente peuvent être rejetées", "warning")
-        return redirect(request.referrer or url_for("backoffice_v3_web.collective_offer.list_collective_offers"), 303)
-    collective_offer.validation = new_validation_status
 
-    try:
-        db.session.commit()
-    except Exception:  # pylint: disable=broad-except
-        flash("Une erreur est survenue lors de la validation de l'offre", "warning")
-        return redirect(request.referrer, 400)
-    search.async_index_collective_offer_ids([collective_offer.id])
-
-    flash("L'offre a bien été rejetée", "success")
-    collective_offer.lastValidationDate = datetime.datetime.utcnow()
-    collective_offer.lastValidationType = OfferValidationType.MANUAL
-    recipients = (
-        [collective_offer.venue.bookingEmail]
-        if collective_offer.venue.bookingEmail
-        else [recipient.user.email for recipient in collective_offer.venue.managingOfferer.UserOfferers]
+@list_collective_offers_blueprint.route("/batch/validate", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+def get_batch_validate_collective_offers_form() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.collective_offer.batch_validate_collective_offers"),
+        div_id="batch-validate-modal",
+        title="Voulez-vous valider les offres collectives sélectionnées ?",
+        button_text="Valider",
     )
 
-    transactional_mails.send_offer_validation_status_update_email(collective_offer, new_validation_status, recipients)
 
-    if collective_offer.institutionId is not None:
-        adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
+@list_collective_offers_blueprint.route("/batch/reject", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+def get_batch_reject_collective_offers_form() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.collective_offer.batch_reject_collective_offers"),
+        div_id="batch-reject-modal",
+        title="Voulez-vous rejeter les offres collectives sélectionnées ?",
+        button_text="Rejeter",
+    )
 
+
+@list_collective_offers_blueprint.route("/batch/validate", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+def batch_validate_collective_offers() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+
+    if not form.validate():
+        flash("L'un des identifiants sélectionnés est invalide", "danger")
+        return redirect(request.referrer or url_for("backoffice_v3_web.collective_offer.list_collective_offers"), 303)
+
+    _batch_validate_or_reject_collective_offers(OfferValidationStatus.APPROVED, form.object_ids_list)
+    return redirect(request.referrer or url_for("backoffice_v3_web.collective_offer.list_collective_offers"), 303)
+
+
+@list_collective_offers_blueprint.route("/batch/reject", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+def batch_reject_collective_offers() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+
+    if not form.validate():
+        flash("L'un des identifiants sélectionnés est invalide", "danger")
+        return redirect(request.referrer or url_for("backoffice_v3_web.collective_offer.list_collective_offers"), 303)
+
+    _batch_validate_or_reject_collective_offers(OfferValidationStatus.REJECTED, form.object_ids_list)
     return redirect(request.referrer or url_for("backoffice_v3_web.collective_offer.list_collective_offers"), 303)

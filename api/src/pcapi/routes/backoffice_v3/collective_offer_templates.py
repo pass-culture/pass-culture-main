@@ -159,42 +159,10 @@ def get_validate_collective_offer_template_form(collective_offer_template_id: in
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def validate_collective_offer_template(collective_offer_template_id: int) -> utils.BackofficeResponse:
-    collective_offer_template = educational_models.CollectiveOfferTemplate.query.get_or_404(
-        collective_offer_template_id
-    )
-
-    new_validation_status = OfferValidationStatus.APPROVED
-    if collective_offer_template.validation != OfferValidationStatus.PENDING:
-        flash("Seules les offres collectives vitrines en attente peuvent être validées", "warning")
-        return redirect(
-            request.referrer or url_for("backoffice_v3_web.collective_offer_template.list_collective_offer_templates"),
-            303,
-        )
-    collective_offer_template.validation = new_validation_status
-    collective_offer_template.isActive = True
-
-    try:
-        db.session.commit()
-    except Exception:  # pylint: disable=broad-except
-        flash("Une erreur est survenue lors de la validation de l'offre vitrine", "warning")
-        return redirect(request.referrer, 400)
-    search.async_index_collective_offer_template_ids([collective_offer_template.id])
-
-    flash("L'offre a bien été validée", "success")
-    collective_offer_template.lastValidationDate = datetime.datetime.utcnow()
-    collective_offer_template.lastValidationType = OfferValidationType.MANUAL
-    recipients = (
-        [collective_offer_template.venue.bookingEmail]
-        if collective_offer_template.venue.bookingEmail
-        else [recipient.user.email for recipient in collective_offer_template.venue.managingOfferer.UserOfferers]
-    )
-
-    transactional_mails.send_offer_validation_status_update_email(
-        collective_offer_template, new_validation_status, recipients
-    )
-
+    _batch_validate_or_reject_collective_offer_templates(OfferValidationStatus.APPROVED, [collective_offer_template_id])
     return redirect(
-        request.referrer or url_for("backoffice_v3_web.collective_offer_template.list_collective_offer_templates"), 303
+        request.referrer or url_for("backoffice_v3_web.collective_offer_template.list_collective_offer_templates"),
+        303,
     )
 
 
@@ -223,39 +191,146 @@ def get_reject_collective_offer_template_form(collective_offer_template_id: int)
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/reject", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def reject_collective_offer_template(collective_offer_template_id: int) -> utils.BackofficeResponse:
-    collective_offer_template = educational_models.CollectiveOfferTemplate.query.get_or_404(
-        collective_offer_template_id
+    _batch_validate_or_reject_collective_offer_templates(OfferValidationStatus.REJECTED, [collective_offer_template_id])
+    return redirect(
+        request.referrer or url_for("backoffice_v3_web.collective_offer_template.list_collective_offer_templates"),
+        303,
     )
 
-    new_validation_status = OfferValidationStatus.REJECTED
-    if collective_offer_template.validation != OfferValidationStatus.PENDING:
-        flash("Seules les offres collectives vitrines en attente peuvent être rejetées", "warning")
+
+def _batch_validate_or_reject_collective_offer_templates(
+    validation: OfferValidationStatus, collective_offer_template_ids: list[int]
+) -> bool:
+    collective_offer_templates = educational_models.CollectiveOfferTemplate.query.filter(
+        educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids),
+        educational_models.CollectiveOfferTemplate.validation == OfferValidationStatus.PENDING,
+    ).all()
+
+    if len(collective_offer_template_ids) != len(collective_offer_templates):
+        flash(
+            "Seules les offres collectives vitrines en attente peuvent être validées"
+            if validation is OfferValidationStatus.APPROVED
+            else "Seules les offres collectives vitrines en attente peuvent être rejetées",
+            "danger",
+        )
+        return False
+
+    collective_offer_template_update_succeed_ids: list[int] = []
+    collective_offer_template_update_failed_ids: list[int] = []
+
+    for collective_offer_template in collective_offer_templates:
+        new_validation_status = validation
+        collective_offer_template.validation = new_validation_status
+        collective_offer_template.lastValidationDate = datetime.datetime.utcnow()
+        collective_offer_template.lastValidationType = OfferValidationType.MANUAL
+        if validation is OfferValidationStatus.APPROVED:
+            collective_offer_template.isActive = True
+
+        try:
+            db.session.commit()
+        except Exception:  # pylint: disable=broad-except
+            collective_offer_template_update_failed_ids.append(collective_offer_template.id)
+            continue
+
+        collective_offer_template_update_succeed_ids.append(collective_offer_template.id)
+
+        recipients = (
+            [collective_offer_template.venue.bookingEmail]
+            if collective_offer_template.venue.bookingEmail
+            else [recipient.user.email for recipient in collective_offer_template.venue.managingOfferer.UserOfferers]
+        )
+
+        transactional_mails.send_offer_validation_status_update_email(
+            collective_offer_template, new_validation_status, recipients
+        )
+
+    search.async_index_collective_offer_template_ids(collective_offer_template_update_succeed_ids)
+
+    if len(collective_offer_template_update_succeed_ids) == 1:
+        flash(
+            "L'offre collective vitrine a bien été validée"
+            if validation is OfferValidationStatus.APPROVED
+            else "L'offre collective vitrine a bien été rejetée",
+            "success",
+        )
+    elif collective_offer_template_update_succeed_ids:
+        flash(
+            f"Les offres collectives vitrines {', '.join(map(str, collective_offer_template_update_succeed_ids))} ont bien été validées"
+            if validation is OfferValidationStatus.APPROVED
+            else f"Les offres collectives vitrines {', '.join(map(str, collective_offer_template_update_succeed_ids))} ont bien été rejetées",
+            "success",
+        )
+
+    if len(collective_offer_template_update_failed_ids) > 0:
+        flash(
+            f"Une erreur est survenue lors du rejet des offres collectives vitrines : {', '.join(map(str, collective_offer_template_update_failed_ids))}"
+            if validation is OfferValidationStatus.APPROVED
+            else f"Une erreur est survenue lors du rejet des offres collectives vitrines : {', '.join(map(str, collective_offer_template_update_failed_ids))}"
+            "danger",
+        )
+
+    return True
+
+
+@list_collective_offer_templates_blueprint.route("/batch/validate", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+def get_batch_validate_collective_offer_templates_form() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.collective_offer_template.batch_validate_collective_offer_templates"),
+        div_id="batch-validate-modal",
+        title="Voulez-vous valider les offres collectives vitrines sélectionnées ?",
+        button_text="Valider",
+    )
+
+
+@list_collective_offer_templates_blueprint.route("/batch/reject", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+def get_batch_reject_collective_offer_templates_form() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.collective_offer_template.batch_reject_collective_offer_templates"),
+        div_id="batch-reject-modal",
+        title="Voulez-vous rejeter les offres collectives vitrines sélectionnées ?",
+        button_text="Rejeter",
+    )
+
+
+@list_collective_offer_templates_blueprint.route("/batch/validate", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+def batch_validate_collective_offer_templates() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+
+    if not form.validate():
+        flash("L'un des identifiants sélectionnés est invalide", "danger")
         return redirect(
             request.referrer or url_for("backoffice_v3_web.collective_offer_template.list_collective_offer_templates"),
             303,
         )
-    collective_offer_template.validation = new_validation_status
 
-    try:
-        db.session.commit()
-    except Exception:  # pylint: disable=broad-except
-        flash("Une erreur est survenue lors de la validation de l'offre vitrine", "warning")
-        return redirect(request.referrer, 400)
-    search.async_index_collective_offer_template_ids([collective_offer_template.id])
-
-    flash("L'offre vitrine a bien été rejetée", "success")
-    collective_offer_template.lastValidationDate = datetime.datetime.utcnow()
-    collective_offer_template.lastValidationType = OfferValidationType.MANUAL
-    recipients = (
-        [collective_offer_template.venue.bookingEmail]
-        if collective_offer_template.venue.bookingEmail
-        else [recipient.user.email for recipient in collective_offer_template.venue.managingOfferer.UserOfferers]
+    _batch_validate_or_reject_collective_offer_templates(OfferValidationStatus.APPROVED, form.object_ids_list)
+    return redirect(
+        request.referrer or url_for("backoffice_v3_web.collective_offer_template.list_collective_offer_templates"), 303
     )
 
-    transactional_mails.send_offer_validation_status_update_email(
-        collective_offer_template, new_validation_status, recipients
-    )
 
+@list_collective_offer_templates_blueprint.route("/batch/reject", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+def batch_reject_collective_offer_templates() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+
+    if not form.validate():
+        flash("L'un des identifiants sélectionnés est invalide", "danger")
+        return redirect(
+            request.referrer or url_for("backoffice_v3_web.collective_offer_template.list_collective_offer_templates"),
+            303,
+        )
+
+    _batch_validate_or_reject_collective_offer_templates(OfferValidationStatus.REJECTED, form.object_ids_list)
     return redirect(
         request.referrer or url_for("backoffice_v3_web.collective_offer_template.list_collective_offer_templates"), 303
     )
