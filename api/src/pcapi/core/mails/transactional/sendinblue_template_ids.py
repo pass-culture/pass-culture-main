@@ -116,6 +116,7 @@ class TransactionalEmail(Enum):
     EAC_PENDING_BOOKING_WITH_BOOKING_LIMIT_DATE_3_DAYS = models.TemplatePro(
         id_prod=524, id_not_prod=64, tags=["pro_preresa_3_jours_avant_la_date_limite"]
     )
+    EAC_NEW_REQUEST_FOR_OFFER = models.TemplatePro(id_prod=962, id_not_prod=128, tags=["pro_nouvel_offre_requete_eac"])
     EAC_OFFERER_ACTIVATION_EMAIL = models.TemplatePro(id_prod=815, id_not_prod=114, tags=["pro_offerer_activation"])
     EDUCATIONAL_BOOKING_CANCELLATION = models.TemplatePro(
         id_prod=522, id_not_prod=65, tags=["pro_eac_annulation_reservation"]
