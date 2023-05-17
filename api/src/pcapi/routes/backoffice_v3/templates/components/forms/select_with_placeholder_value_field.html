@@ -1,7 +1,7 @@
 <div class="form-floating">
   {% set select_with_placeholder_value_field_id = random_hash() %}
   <select id="{{ select_with_placeholder_value_field_id }}"
-          class="form-select"
+          class="form-select value-element-form"
           name="{{ field.name }}"
           aria-label="{{ field.name }}"
           {% if field.flags.required %}required{% endif %}>
@@ -13,5 +13,6 @@
       </option>
     {% endfor %}
   </select>
-  <label for="{{ select_with_placeholder_value_field_id }}">{{ field.label.text }}</label>
+  <label class="label-element-form"
+         for="{{ select_with_placeholder_value_field_id }}">{{ field.label.text }}</label>
 </div>

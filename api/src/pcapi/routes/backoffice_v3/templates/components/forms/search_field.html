@@ -1,7 +1,7 @@
 <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
 {% set search_field_id = random_hash() %}
 <input type="text"
-       class="form-control col-8 border-start-0"
+       class="form-control col-8 border-start-0 value-element-form"
        id="{{ search_field_id }}"
        name="{{ field.name }}"
        value="{{ field.data | empty_string_if_null }}"
