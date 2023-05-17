@@ -41,9 +41,11 @@ const Offerers = (): JSX.Element => {
     getVenuesOfOffererFromSiretAdapter(offerer?.siret.replaceAll(' ', '') ?? '')
   )
 
-  const displayToggleVenueList =
-    venuesOfOfferer &&
-    venuesOfOfferer?.venues.filter(venue => venue.isPermanent).length > 5
+  const permanentVenues =
+    (venuesOfOfferer &&
+      venuesOfOfferer?.venues.filter(venue => venue.isPermanent)) ??
+    []
+  const displayToggleVenueList = permanentVenues.length > 5
 
   useEffect(() => {
     if (venuesOfOffererError || (!isLoadingVenues && !venuesOfOfferer)) {
@@ -93,9 +95,6 @@ const Offerers = (): JSX.Element => {
       notify.error('Impossible de lier votre compte à cette structure.')
     }
   }
-
-  const permanentVenues =
-    venuesOfOfferer?.venues.filter(venue => venue.isPermanent) ?? []
 
   return (
     <div className={styles['existing-offerers-layout-wrapper']}>
