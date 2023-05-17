@@ -1,4 +1,3 @@
-import './Offers.scss'
 import { captureException } from '@sentry/react'
 import isEqual from 'lodash/isEqual'
 import React, { memo, useContext, useEffect, useState } from 'react'
@@ -30,6 +29,7 @@ import { Spinner } from '../../../Layout/Spinner/Spinner'
 
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import Offer from './Offer'
+import styles from './Offers.module.scss'
 import { extractOfferIdFromObjectId, offerIsBookable } from './utils'
 
 export interface OffersComponentProps
@@ -41,7 +41,8 @@ interface OffersComponentPropsWithHits
   userRole: AdageFrontRoles
   userEmail?: string | null
   setIsLoading: (isLoading: boolean) => void
-  handleResetFiltersAndLaunchSearch: () => void
+  handleResetFiltersAndLaunchSearch?: () => void
+  displayStats?: boolean
 }
 
 type OfferMap = Map<
@@ -58,6 +59,7 @@ export const OffersComponent = ({
   hasMore,
   refineNext,
   nbHits,
+  displayStats = true,
 }: OffersComponentProps): JSX.Element => {
   const [queriesAreLoading, setQueriesAreLoading] = useState(false)
   const [offers, setOffers] = useState<
@@ -126,7 +128,7 @@ export const OffersComponent = ({
 
   if (queriesAreLoading && offers.length === 0) {
     return (
-      <div className="offers-loader">
+      <div className={styles['offers-loader']}>
         <Spinner message="Recherche en cours" />
       </div>
     )
@@ -142,10 +144,12 @@ export const OffersComponent = ({
 
   return (
     <>
-      <div className="offers-stats">
-        {`${nbHits} résultat${nbHits > 1 ? 's' : ''}`}
-      </div>
-      <ul className="offers">
+      {displayStats && (
+        <div className={styles['offers-stats']}>
+          {`${nbHits} résultat${nbHits > 1 ? 's' : ''}`}
+        </div>
+      )}
+      <ul className={styles['offers-list']}>
         {offers.map((offer, index) => (
           <div key={`${offer.isTemplate ? 'T' : ''}${offer.id}`}>
             <Offer
@@ -157,8 +161,8 @@ export const OffersComponent = ({
             />
           </div>
         ))}
-        <div className="offers-load-more">
-          <div className="offers-load-more-text">
+        <div className={styles['offers-load-more']}>
+          <div className={styles['offers-load-more-text']}>
             {hasMore
               ? `Vous avez vu ${offers.length} offre${
                   offers.length > 1 ? 's' : ''
@@ -167,7 +171,7 @@ export const OffersComponent = ({
           </div>
           {hasMore &&
             (queriesAreLoading ? (
-              <div className="offers-loader">
+              <div className={styles['offers-loader']}>
                 <Spinner message="Chargement en cours" />
               </div>
             ) : (

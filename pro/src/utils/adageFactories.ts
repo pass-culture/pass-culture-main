@@ -1,4 +1,6 @@
 import {
+  AdageFrontRoles,
+  AuthenticatedResponse,
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
 } from 'apiClient/adage'
@@ -39,3 +41,12 @@ export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseMode
       },
     },
   }
+
+export const defaultAdageUser: AuthenticatedResponse = {
+  departmentCode: '75',
+  email: 'test@example.com',
+  institutionCity: 'Paris',
+  institutionName: 'Mon établissement',
+  role: AdageFrontRoles.REDACTOR,
+  uai: '1234567A',
+}
