@@ -36,10 +36,15 @@ import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 
 import { getPriceCategoryOptions } from '../StocksEventEdition/StocksEventEdition'
 
+import { DayCheckbox } from './DayCheckbox'
 import { computeInitialValues } from './form/computeInitialValues'
 import { INITIAL_QUANTITY_PER_PRICE_CATEGORY } from './form/constants'
 import { onSubmit } from './form/onSubmit'
-import { RecurrenceFormValues, RecurrenceType } from './form/types'
+import {
+  RecurrenceDays,
+  RecurrenceFormValues,
+  RecurrenceType,
+} from './form/types'
 import { getValidationSchema } from './form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
 
@@ -119,8 +124,6 @@ export const RecurrenceForm = ({
                 name="recurrenceType"
                 value={RecurrenceType.WEEKLY}
                 withBorder
-                disabled
-                className={styles['coming-soon']}
                 onChange={onRecurrenceTypeChange}
               />
 
@@ -135,6 +138,53 @@ export const RecurrenceForm = ({
                 onChange={onRecurrenceTypeChange}
               />
             </div>
+
+            {values.recurrenceType === RecurrenceType.WEEKLY && (
+              <FormLayout.Row inline className={styles['day-inputs']}>
+                <DayCheckbox
+                  letter="L"
+                  label="Lundi"
+                  name="days"
+                  value={RecurrenceDays.MONDAY}
+                />
+                <DayCheckbox
+                  letter="M"
+                  label="Mardi"
+                  name="days"
+                  value={RecurrenceDays.TUESDAY}
+                />
+                <DayCheckbox
+                  letter="M"
+                  label="Mercredi"
+                  name="days"
+                  value={RecurrenceDays.WEDNESDAY}
+                />
+                <DayCheckbox
+                  letter="J"
+                  label="Jeudi"
+                  name="days"
+                  value={RecurrenceDays.THURSDAY}
+                />
+                <DayCheckbox
+                  letter="V"
+                  label="Vendredi"
+                  name="days"
+                  value={RecurrenceDays.FRIDAY}
+                />
+                <DayCheckbox
+                  letter="S"
+                  label="Samedi"
+                  name="days"
+                  value={RecurrenceDays.SATURDAY}
+                />
+                <DayCheckbox
+                  letter="D"
+                  label="Dimanche"
+                  name="days"
+                  value={RecurrenceDays.SUNDAY}
+                />
+              </FormLayout.Row>
+            )}
 
             <FormLayout.Row inline>
               <DatePicker

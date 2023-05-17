@@ -10,6 +10,7 @@ const priceCategoriesOptions: SelectOption[] = [
 
 const baseValidForm: RecurrenceFormValues = {
   recurrenceType: RecurrenceType.UNIQUE,
+  days: [],
   startingDate: new Date('2020-03-03'),
   endingDate: null,
   beginningTimes: [
@@ -43,6 +44,7 @@ describe('validationSchema', () => {
     {
       description: 'missing required fields for unique date',
       formValues: {
+        ...baseValidForm,
         recurrenceType: '',
         startingDate: null,
         endingDate: null,
