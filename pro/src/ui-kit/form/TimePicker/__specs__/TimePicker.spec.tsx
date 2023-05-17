@@ -5,9 +5,9 @@ import React from 'react'
 
 import TimePicker from '../TimePicker'
 
-const renderTimePicker = () => {
+const renderTimePicker = (initialValue: string | Date | null | undefined) => {
   render(
-    <Formik initialValues={{ time: '' }} onSubmit={jest.fn()}>
+    <Formik initialValues={{ time: initialValue }} onSubmit={jest.fn()}>
       <TimePicker name="time" label="Horaire" />
     </Formik>
   )
@@ -15,25 +15,29 @@ const renderTimePicker = () => {
 
 describe('TimePicker', () => {
   it('should render field', () => {
-    renderTimePicker()
+    renderTimePicker('')
     expect(screen.getByLabelText('Horaire')).toBeInTheDocument()
   })
 
   const setNumberInputValue = [
-    { value: '20', expectedNumber: '20' },
-    { value: 'azer', expectedNumber: '' },
-    { value: 'AZER', expectedNumber: '' },
-    { value: '2fsqjk', expectedNumber: '2' },
-    { value: '2fs:qm0', expectedNumber: '2:0' },
+    { initialValue: '', value: '20', expectedNumber: '20' },
+    { initialValue: '', value: 'azer', expectedNumber: '' },
+    { initialValue: '', value: 'AZER', expectedNumber: '' },
+    { initialValue: '', value: '2fsqjk', expectedNumber: '2' },
+    { initialValue: '', value: '2fs:qm0', expectedNumber: '2:0' },
+    { initialValue: null, value: '20', expectedNumber: '20' },
+    { initialValue: undefined, value: '20', expectedNumber: '20' },
+    { initialValue: new Date(), value: '20', expectedNumber: '20' },
   ]
   it.each(setNumberInputValue)(
     'should complete input correctly',
-    async ({ value, expectedNumber }) => {
-      renderTimePicker()
+    async ({ initialValue, value, expectedNumber }) => {
+      renderTimePicker(initialValue)
 
       const timepicker = screen.getByLabelText('Horaire', {
         exact: false,
       })
+      await userEvent.clear(timepicker)
       await userEvent.type(timepicker, value)
       expect(timepicker).toHaveValue(expectedNumber)
     }
