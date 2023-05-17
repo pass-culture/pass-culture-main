@@ -9,7 +9,6 @@ import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import { FORM_ERROR_MESSAGE } from 'core/shared'
 import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
-import getSiretInfoAdapter from 'core/Venue/adapters/getSiretInfoAdapter'
 import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
@@ -47,6 +46,20 @@ const Offerer = (): JSX.Element => {
   ): Promise<void> => {
     const formattedSiret = formValues.siret.replaceAll(' ', '')
     const response = await getSiretData(formattedSiret)
+
+    if (
+      !showIsAppUserDialog &&
+      response.isOk &&
+      response.payload.values?.apeCode &&
+      MAYBE_APP_USER_APE_CODE.includes(response.payload.values.apeCode)
+    ) {
+      setShowIsAppUserDialog(true)
+      return
+    }
+
+    if (showIsAppUserDialog) {
+      setShowIsAppUserDialog(false)
+    }
 
     const siretResponse = await getVenuesOfOffererFromSiretAdapter(
       formattedSiret
@@ -98,29 +111,10 @@ const Offerer = (): JSX.Element => {
     enableReinitialize: true,
   })
 
-  const siretMeta = formik.getFieldMeta('siret')
-  const checkSiretApeCode = async () => {
-    const response = await getSiretInfoAdapter(siretMeta.value)
-    if (
-      response.isOk &&
-      response.payload.values?.apeCode &&
-      MAYBE_APP_USER_APE_CODE.includes(response.payload.values.apeCode)
-    ) {
-      setShowIsAppUserDialog(true)
-    }
-  }
-  useEffect(() => {
-    if (!siretMeta.error && siretMeta.touched) {
-      if (siretMeta.value !== '') {
-        checkSiretApeCode()
-      }
-    }
-  }, [siretMeta.touched, siretMeta.error, siretMeta.value])
-
   return (
     <>
       {showIsAppUserDialog && (
-        <MaybeAppUserDialog onCancel={() => setShowIsAppUserDialog(false)} />
+        <MaybeAppUserDialog onCancel={formik.handleSubmit} />
       )}
       <FormLayout className={styles['offerer-layout']}>
         <FormikProvider value={formik}>
