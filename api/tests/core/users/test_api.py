@@ -1321,7 +1321,7 @@ class UpdateLoginDeviceHistoryTest:
         assert login_device.deviceId == device_info.device_id
         assert login_device.source == "iPhone 13"
         assert login_device.os == "iOS"
-        assert login_device.location == "127.0.0.1"
+        assert login_device.location == None
 
     def test_can_access_login_device_history_from_user(self):
         user = users_factories.UserFactory(email="py@test.com")
