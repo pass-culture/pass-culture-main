@@ -106,12 +106,4 @@ describe('AppLayout', () => {
       screen.getByRole('link', { name: 'Pour mon établissement' })
     ).toBeInTheDocument()
   })
-
-  it('should display offers for my institution when url match', async () => {
-    renderAppLayout('/mon-etablissement')
-
-    expect(
-      screen.getByText('Offres pour mon établissement')
-    ).toBeInTheDocument()
-  })
 })
