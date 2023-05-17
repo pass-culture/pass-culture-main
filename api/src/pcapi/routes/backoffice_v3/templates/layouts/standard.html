@@ -2,7 +2,10 @@
 {% block page %}
   <div class="py-4 px-5">
     <div class="d-flex justify-content-between mx-3">
-      <h1 class="text-muted">{% block title %}{% endblock title %}</h1>
+      <h1 class="text-muted">
+        {% block title %}
+        {% endblock title %}
+      </h1>
       {% block extra_header %}
       {% endblock extra_header %}
     </div>

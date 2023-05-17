@@ -14,7 +14,7 @@
         {% if event.extraData %}
           {% set domain = event.extraData.get("domain", "") %}
         {% else %}
-          {% set domain = '' %}
+          {% set domain = "" %}
         {% endif %}
         <tr>
           <th scope="col">
@@ -48,7 +48,6 @@
               {% if event.extraData %}
                 {% set deactivated_users = event.extraData["deactivated_users"] %}
                 {% set cancelled_bookings_count = event.extraData["cancelled_bookings_count"] %}
-
                 {% if deactivated_users | length > 1 %}
                   {{ deactivated_users | length }} comptes suspendus,
                 {% elif deactivated_users | length == 1 %}
@@ -56,7 +55,6 @@
                 {% else %}
                   Aucun compte suspendu,  {# should not happen, but just in case #}
                 {% endif %}
-
                 {% if cancelled_bookings_count > 1 %}
                   {{ cancelled_bookings_count }} réservations annulées
                 {% elif cancelled_bookings_count == 1 %}
@@ -72,4 +70,3 @@
     </tbody>
   </table>
 </div>
-

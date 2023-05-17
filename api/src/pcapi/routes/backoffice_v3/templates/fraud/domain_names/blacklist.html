@@ -25,7 +25,6 @@
                             class="btn btn-sm d-block w-100 text-start px-3">Répéter l'opération</button>
                   </a>
                 </li>
-
                 <li class="dropdown-item p-0">
                   <form action="{{ url_for("backoffice_v3_web.fraud.remove_blacklisted_domain_name", domain=row.domain) }}"
                         name="{{ url_for("backoffice_v3_web.fraud.remove_blacklisted_domain_name", domain=row.domain) | action_to_name }}"
@@ -39,11 +38,8 @@
                       </div>
                     </div>
                   </form>
-
-
                   <a href="{{ url_for('backoffice_v3_web.fraud.remove_blacklisted_domain_name', domain=row.domain) }}"
-                     class="text-decoration-none">
-                  </a>
+                     class="text-decoration-none"></a>
                 </li>
               </ul>
             </div>
@@ -54,4 +50,3 @@
     </tbody>
   </table>
 </div>
-

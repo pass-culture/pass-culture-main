@@ -100,9 +100,7 @@
               {% if has_permission("MOVE_SIRET") or has_permission("MANAGE_PROVIDERS") or has_permission("READ_REIMBURSEMENT_RULES") %}
                 <div class="nav nav-pills flex-column">
                   {% call menu_section("Support Pro") %}
-                    {% if has_permission("MOVE_SIRET") %}
-                      {{ menu_section_item("Déplacer un SIRET", "backoffice_v3_web.move_siret.move_siret") }}
-                    {% endif %}
+                    {% if has_permission("MOVE_SIRET") %}{{ menu_section_item("Déplacer un SIRET", "backoffice_v3_web.move_siret.move_siret") }}{% endif %}
                     {% if has_permission("MANAGE_PROVIDERS") %}
                       {{ menu_section_item("Synchronisation Pivot", "backoffice_v3_web.pivots.get_pivots") }}
                       {{ menu_section_item("Synchronisation Prestataires", "backoffice_v3_web.providers.get_providers") }}
@@ -134,12 +132,8 @@
               {% endif %}
               <div class="nav nav-pills flex-column">
                 {% call menu_section("Admin") %}
-                  {% if has_permission("MANAGE_PERMISSIONS") %}
-                    {{ menu_section_item("Gestion des rôles", "backoffice_v3_web.get_roles") }}
-                  {% endif %}
-                  {% if has_permission("FEATURE_FLIPPING") %}
-                    {{ menu_section_item("Feature flipping", "backoffice_v3_web.list_feature_flags") }}
-                  {% endif %}
+                  {% if has_permission("MANAGE_PERMISSIONS") %}{{ menu_section_item("Gestion des rôles", "backoffice_v3_web.get_roles") }}{% endif %}
+                  {% if has_permission("FEATURE_FLIPPING") %}{{ menu_section_item("Feature flipping", "backoffice_v3_web.list_feature_flags") }}{% endif %}
                   {% if get_setting("ENABLE_TEST_USER_GENERATION") %}
                     {{ menu_section_item("Générateur d'utilisateurs de test", "backoffice_v3_web.generate_user") }}
                   {% endif %}
