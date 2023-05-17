@@ -43,6 +43,7 @@ const AdageHeader = () => {
         <a
           href={REACT_APP_ADAGE_SUIVI_URL}
           className={styles['adage-header-item']}
+          target="_parent"
         >
           <CalendarCheckIcon className={styles['adage-header-item-icon']} />
           Suivi
