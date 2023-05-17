@@ -1,5 +1,6 @@
 import datetime
 from functools import partial
+from functools import reduce
 import typing
 from urllib.parse import urlparse
 
@@ -554,22 +555,20 @@ def _offerer_batch_action(
     form = form_class()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return _redirect_after_offerer_validation_action(400)
+        return _redirect_after_offerer_validation_action()
 
     offerers = offerers_models.Offerer.query.filter(offerers_models.Offerer.id.in_(form.object_ids_list)).all()
 
-    # FIXME PC-21406 - disabled until tags are initialized in the form
-    # if hasattr(form, "tags"):
-    #     tags = form.tags.data
-    #     previous_tags = list(reduce(set.intersection, [set(offerer.tags) for offerer in offerers]))  # type: ignore
-    #     deleted_tags = list(set(previous_tags).difference(list(set(tags))))
+    if hasattr(form, "tags"):
+        tags = form.tags.data
+        previous_tags = list(reduce(set.intersection, [set(offerer.tags) for offerer in offerers]))  # type: ignore
+        deleted_tags = list(set(previous_tags).difference(list(set(tags))))
 
     for offerer in offerers:
         kwargs = {}
         if hasattr(form, "tags"):
             kwargs["tags_to_add"] = form.tags.data
-            # FIXME PC-21406 - disabled until tags are initialized in the form
-            # kwargs["tags_to_remove"] = deleted_tags
+            kwargs["tags_to_remove"] = deleted_tags
         if hasattr(form, "comment"):
             kwargs["comment"] = form.comment.data
 
@@ -590,14 +589,31 @@ def batch_validate_offerer() -> utils.BackofficeResponse:
         )
     except offerers_exceptions.OffererAlreadyValidatedException:
         flash("Au moins une des structures a déjà été validée", "error")
-        return _redirect_after_offerer_validation_action(400)
+        return _redirect_after_offerer_validation_action()
 
 
-@validation_blueprint.route("/offerer/batch-pending", methods=["GET"])
+@validation_blueprint.route("/offerer/batch-pending-form", methods=["GET", "POST"])
 def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
     form = offerer_forms.BatchCommentAndTagOffererForm()
+    if form.object_ids.data:
+        if not form.validate():
+            flash(utils.build_form_error_msg(form), "warning")
+            return _redirect_after_offerer_validation_action()
 
-    # FIXME PC-21406 - common tags should be retrieved to initialize the form depending on checked ids
+        offerers = (
+            offerers_models.Offerer.query.filter(offerers_models.Offerer.id.in_(form.object_ids_list))
+            .options(
+                sa.orm.load_only(offerers_models.Offerer.id),
+                sa.orm.joinedload(offerers_models.Offerer.tags).load_only(
+                    offerers_models.OffererTag.id, offerers_models.OffererTag.label
+                ),
+            )
+            .all()
+        )
+        tags = list(reduce(set.intersection, [set(offerer.tags) for offerer in offerers]))  # type: ignore
+
+        if len(tags) > 0:
+            form.tags.data = tags
 
     return render_template(
         "components/turbo/modal_form.html",
@@ -618,7 +634,7 @@ def batch_set_offerer_pending() -> utils.BackofficeResponse:
     )
 
 
-@validation_blueprint.route("/offerer/batch-reject", methods=["GET"])
+@validation_blueprint.route("/offerer/batch-reject-form", methods=["GET"])
 def get_batch_reject_offerer_form() -> utils.BackofficeResponse:
     form = offerer_forms.BatchOptionalCommentForm()
     return render_template(
@@ -641,7 +657,7 @@ def batch_reject_offerer() -> utils.BackofficeResponse:
         )
     except offerers_exceptions.OffererAlreadyRejectedException:
         flash("Une des structures a déjà été rejetée", "error")
-        return _redirect_after_offerer_validation_action(400)
+        return _redirect_after_offerer_validation_action()
 
 
 # #
@@ -927,7 +943,7 @@ def _user_offerer_batch_action(
     form = offerer_forms.BatchOptionalCommentForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return _redirect_after_user_offerer_validation_action_list(400)
+        return _redirect_after_user_offerer_validation_action_list()
 
     user_offerers = offerers_models.UserOfferer.query.filter(
         offerers_models.UserOfferer.id.in_(form.object_ids_list)

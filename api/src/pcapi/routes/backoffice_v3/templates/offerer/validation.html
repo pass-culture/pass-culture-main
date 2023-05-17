@@ -59,6 +59,8 @@
                     type="button"
                     class="btn btn-outline-primary"
                     data-use-confirmation-modal="true"
+                    data-mode="fetch"
+                    data-fetch-url="{{ url_for('backoffice_v3_web.validation.get_batch_offerer_pending_form') }}"
                     data-modal-selector="#batch-pending-modal">Mettre en attente</button>
             <button disabled
                     type="button"
