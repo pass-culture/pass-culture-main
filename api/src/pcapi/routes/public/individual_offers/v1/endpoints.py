@@ -708,10 +708,7 @@ def _check_offer_subcategory(
     api=blueprint.v1_schema, tags=[PRODUCT_OFFER_TAG], response_model=serialization.ProductOfferResponse
 )
 @api_key_required
-@public_utils.individual_offers_api_provider
-def edit_product(
-    individual_offers_provider: providers_models.Provider, product_id: int, body: serialization.ProductOfferEdition
-) -> serialization.ProductOfferResponse:
+def edit_product(product_id: int, body: serialization.ProductOfferEdition) -> serialization.ProductOfferResponse:
     """
     Edit a CD or vinyl product.
 
@@ -746,7 +743,7 @@ def edit_product(
                 **compute_accessibility_edition_fields(update_body.get("accessibility")),
             )
             if "stock" in update_body:
-                _upsert_product_stock(offer, body.stock, individual_offers_provider)
+                _upsert_product_stock(offer, body.stock, current_api_key.provider)
     except offers_exceptions.OfferCreationBaseException as e:
         raise api_errors.ApiErrors(e.errors, status_code=400)
 
@@ -787,7 +784,7 @@ def edit_product_by_ean(ean: str, body: serialization.ProductOfferByEanEdition) 
 def _upsert_product_stock(
     offer: offers_models.Offer,
     stock_body: serialization.StockEdition | None,
-    individual_offers_provider: providers_models.Provider,
+    provider: providers_models.Provider,
 ) -> None:
     existing_stock = next((stock for stock in offer.activeStocks), None)
     if not stock_body:
@@ -803,7 +800,7 @@ def _upsert_product_stock(
             price=finance_utils.to_euros(stock_body.price),
             quantity=serialization.deserialize_quantity(stock_body.quantity),
             booking_limit_datetime=stock_body.booking_limit_datetime,
-            creating_provider=individual_offers_provider,
+            creating_provider=provider,
         )
         return
 
@@ -815,7 +812,7 @@ def _upsert_product_stock(
         quantity=serialization.deserialize_quantity(quantity),
         price=finance_utils.to_euros(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,
         booking_limit_datetime=stock_update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
-        editing_provider=individual_offers_provider,
+        editing_provider=provider,
     )
 
 

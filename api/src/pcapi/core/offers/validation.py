@@ -15,7 +15,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
-from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as user_models
 from pcapi.domain import music_types
@@ -105,7 +104,7 @@ def check_update_only_allowed_fields_for_offer_from_provider(
 ) -> None:
     if provider.isAllocine:
         rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_ALLOCINE_OFFER
-    elif provider.name == providers_constants.INDIVIDUAL_OFFERS_API_PROVIDER_NAME:
+    elif provider.hasOffererProvider:
         rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER
     else:
         rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
