@@ -71,6 +71,19 @@ class EditCustomReimbursementRule(FlaskForm):
         "Date de fin d'application (optionnelle)", validators=(wtforms.validators.Optional(),)
     )
 
+    lieux = fields.PCFieldListField(
+        fields.PCTomSelectField(
+            "Lieux", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_v3_web.autocomplete_venues"
+        ),
+        min_entries=1,
+        max_entries=3,
+    )
+
+    number = fields.PCFieldListField(fields.PCIntegerField("number"), min_entries=1, max_entries=3)
+
+    checkbox = fields.PCFieldListField(fields.PCCheckboxField("Checkbox"), min_entries=1, max_entries=3)
+
+
     def validate_start_date(self, start_date: fields.PCDateField) -> fields.PCDateField:
         start_date = start_date.data
         end_date = self._fields["end_date"].data

@@ -1,184 +1,182 @@
 /**
- * This adds PcAddOn support for field list (PcFieldList).
+ * This addon add support for field list (PcFieldList).
+ *
+ * Field list can be used to add or remove new field
+ *
  */
 class PcFieldList extends PcAddOn {
 
-  static PC_FIELD_LIST_CONTAINER = '.field-list'
+  static PC_FIELD_LIST_CONTAINER_SELECTOR = '[data-field-list-container]'
+  static PC_FIELD_LIST_UL_SELECTOR = 'ul.field-list'
   static ADD_BUTTON_SELECTOR = '.field-list-add-btn'
   static REMOVE_BUTTON_SELECTOR = '.field-list-rm-btn'
   static FIELD_ELEMENT_BEARING_VALUE_SELECTOR = '.value-element-form'
   static FIELD_LABEL_SELECTOR = '.label-element-form'
+  static EMPTY_TOM_SELECT_FORM_CONTAINER_CLASS = 'empty-tom-select-form-container'
 
-  get $$addButton() {
-    return document.querySelectorAll(PcFieldList.ADD_BUTTON_SELECTOR)
-  }
-  get $$removeButton() {
-    return document.querySelectorAll(PcFieldList.REMOVE_BUTTON_SELECTOR)
+  get $$fieldListContainer() {
+    return document.querySelectorAll(PcFieldList.PC_FIELD_LIST_CONTAINER_SELECTOR)
   }
 
-  get $$fieldList() {
-    return document.querySelectorAll(PcFieldList.PC_FIELD_LIST_CONTAINER)
+
+  initialize = () => {
+    this.$$fieldListContainer.forEach(($fieldListContainer) => {
+      this.#filterMaxEntries(this.#getUlFromContainer($fieldListContainer), true)
+      this.#filterMinEntries(this.#getUlFromContainer($fieldListContainer), true)
+      this.#getButtonsFromContainer($fieldListContainer).forEach(($button) => {
+        $button.dataset.fieldListContainerId = $fieldListContainer.dataset.fieldListContainer
+      })
+    })
   }
 
-  getTagFromEvent = (event, tag) => {
-    let candidate = event.target;
-    while (candidate.tagName !== tag) {
-      candidate = candidate.parentNode
-      if (candidate.tagName === "BODY") {
-        throw new Error('Pas trouvé de ' + tag + ' !')
+  bindEvents = () => {
+    this.initialize()
+    EventHandler.on(document.body, 'click', PcFieldList.ADD_BUTTON_SELECTOR, this.#onAdd)
+    EventHandler.on(document.body, 'click', PcFieldList.REMOVE_BUTTON_SELECTOR, this.#onRemove)
+  }
+
+  unbindEvents = () => {
+    EventHandler.off(document.body, 'click', PcFieldList.ADD_BUTTON_SELECTOR, this.#onAdd)
+    EventHandler.off(document.body, 'click', PcFieldList.REMOVE_BUTTON_SELECTOR, this.#onRemove)
+  }
+
+  #getFieldListContainerFromId(fieldListContainerId) {
+    return document.querySelector(`${PcFieldList.PC_FIELD_LIST_CONTAINER_SELECTOR.slice(0, -1)}=${fieldListContainerId}]`)
+  }
+
+  #getUlFromContainer($fieldListContainer) {
+    return $fieldListContainer.querySelector(PcFieldList.PC_FIELD_LIST_UL_SELECTOR)
+  }
+
+  #getButtonsFromContainer($fieldListContainer) {
+    return $fieldListContainer.querySelectorAll('button')
+  }
+
+  #changeButtonDisplay = ($ul, selector, shouldDisplay) => {
+    const $$buttons = $ul.parentElement.querySelectorAll(selector)
+    $$buttons.forEach(($button) => {
+      if (shouldDisplay === true) {
+        $button.classList.remove('d-none')
+      } else {
+        $button.classList.add('d-none')
       }
-    }
-    return candidate
+    })
   }
 
-  changeButtonDisplay = (ulElement, selector, display) => {
-    const buttons = ulElement.querySelectorAll(selector)
-    for (let i = 0; i < buttons.length; i++) {
-      buttons[i].style.display = display
-    }
+  #generateNextElementName = ($ul) => {
+    const { fieldName: baseFieldName, entriesCount } = $ul.dataset
+    const nextFieldNumber = Number(entriesCount) + 1
+    $ul.dataset.entriesCount = nextFieldNumber
+    return `${baseFieldName}-${nextFieldNumber}`
   }
 
-  generateNextElementName = (ulElement) => {
-    const baseFieldName = ulElement.dataset.fieldName
-    const nextFieldNumber = Number(ulElement.dataset.entriesCount)
-    ulElement.dataset.entriesCount = nextFieldNumber + 1
-    return baseFieldName + "-" + nextFieldNumber
-  }
-
-  filterMaxEntries = (ulElement, silent) => {
-    if (ulElement.dataset.maxEntries && ulElement.dataset.maxEntries != undefined) {
-      const fieldsCount = ulElement.children.length - 1
-      const maxEntries = Number(ulElement.dataset.maxEntries)
+  #filterMaxEntries = ($ul, skipError) => {
+    const maxEntries = Number($ul.dataset.maxEntries)
+    if (maxEntries && maxEntries !== undefined) {
+      const fieldsCount = $ul.children.length
       if (fieldsCount >= maxEntries - 1) {
-        this.changeButtonDisplay(ulElement, PcFieldList.ADD_BUTTON_SELECTOR, "none")
+        this.#changeButtonDisplay($ul, PcFieldList.ADD_BUTTON_SELECTOR, "none")
       }
-      if (fieldsCount >= maxEntries && !silent) {
+      if (fieldsCount >= maxEntries && !skipError) {
         throw new Error('Already max entries');
       }
     }
   }
 
-  filterMinEntries = (ulElement, silent) => {
-    if (ulElement.dataset.minEntries && ulElement.dataset.minEntries != undefined) {
-      const fieldsCount = ulElement.children.length - 1
-      const minEntries = Number(ulElement.dataset.minEntries)
+  #filterMinEntries = ($ul, skipError) => {
+    const minEntries = Number($ul.dataset.minEntries)
+    if (minEntries && minEntries !== undefined) {
+      const fieldsCount = $ul.children.length
       if (fieldsCount <= minEntries + 1) {
-        this.changeButtonDisplay(ulElement, PcFieldList.REMOVE_BUTTON_SELECTOR, "none")
+        this.#changeButtonDisplay($ul, PcFieldList.REMOVE_BUTTON_SELECTOR, "none")
       }
-      if (fieldsCount <= minEntries && !silent) {
+      if (fieldsCount <= minEntries && !skipError) {
         throw new Error('Already min entries');
       }
     }
   }
 
-
-  cloneElementFunction = (ulElement) => {
-    const firstLi = ulElement.firstElementChild
-    const cloneFunctionName = firstLi.firstElementChild.dataset.cloneFunction
-    if (cloneFunctionName) {
-      this[cloneFunctionName](ulElement)
-    } else {
-      this.defaultCloneFunction(ulElement)
-    }
-  }
-  // clone functions --------------------------------------------------------------
-  tomSelectCloneFunction = (ulElement) => {
-    const emptyForm = ulElement.querySelector(".empty-tom-select-form")
-
-    const newIlElement = document.createElement("li")
-    const newNodeDivContainer = emptyForm.cloneNode(true)
-    newIlElement.appendChild(newNodeDivContainer)
-    newIlElement.appendChild(emptyForm.cloneNode(true))
-    newIlElement.appendChild(ulElement.querySelector(PcFieldList.REMOVE_BUTTON_SELECTOR).cloneNode(true))
-    const newNodeClassList = newIlElement.querySelector(PcFieldList.FIELD_ELEMENT_BEARING_VALUE_SELECTOR).classList.add("pc-tom-select-field")
-
-    const newName = this.generateNextElementName(ulElement)
-    this.resetAndRenameElement(newIlElement, newName)
-
-    ulElement.insertBefore(newIlElement, ulElement.querySelector(PcFieldList.ADD_BUTTON_SELECTOR))
-    newIlElement.querySelector(PcFieldList.REMOVE_BUTTON_SELECTOR).addEventListener("click", this.rmButtonFieldList)
-    app.addons.pcTomSelectField.bindEvents()
-    newNodeDivContainer.classList.remove("d-none")
-    newNodeDivContainer.classList.remove("empty-tom-select-form")
+  #cloneElementFunction = ($ul) => {
+    const $firstLi = $ul.firstElementChild
+    const { cloneFunctionName } = $firstLi.firstElementChild.dataset
+    cloneFunctionName ? this[cloneFunctionName]($ul) : this.#defaultCloneFunction($ul)
   }
 
-  defaultCloneFunction = (ulElement) => {
-    const firstLi = ulElement.firstElementChild
-    const newIlElement = firstLi.cloneNode(true)
-    const newName = this.generateNextElementName(ulElement)
-    this.resetAndRenameElement(newIlElement, newName)
-    ulElement.insertBefore(newIlElement, ulElement.querySelector(PcFieldList.ADD_BUTTON_SELECTOR))
-    newIlElement.querySelector(PcFieldList.REMOVE_BUTTON_SELECTOR).addEventListener("click", this.rmButtonFieldList)
+  // Those methods will be referenced within many of our flask form fields
+  
+  _tomSelectCloneFunction = ($ul) => {
+    const tomSelectClass = this.app.addons[this.app.addons.PcTomSelectFieldId.constructor.ID].constructor.PC_TOM_SELECT_FIELD_CLASS
+    const $emptyForm = $ul.querySelector(`.${PcFieldList.EMPTY_TOM_SELECT_FORM_CONTAINER_CLASS}`)
+    const $removeButton = $ul.querySelector(PcFieldList.REMOVE_BUTTON_SELECTOR).cloneNode(true)
+    const $li = document.createElement('li')
+    const $newEmptyForm = $emptyForm.cloneNode(true)
+    $li.append($newEmptyForm, $emptyForm.cloneNode(true), $removeButton) // we keep a clone within the newly added and edited $newEmptyForm form
+    $li.querySelector(PcFieldList.FIELD_ELEMENT_BEARING_VALUE_SELECTOR).classList.add(tomSelectClass)
+    this.#resetAndRenameElement($li, this.#generateNextElementName($ul))
+    $ul.insertBefore($li, $ul.querySelector(PcFieldList.ADD_BUTTON_SELECTOR))
+    app.addons.pcTomSelectField.rebindEvents()
+    $newEmptyForm.classList.remove("d-none")
+    $newEmptyForm.classList.remove(PcFieldList.EMPTY_TOM_SELECT_FORM_CONTAINER_CLASS)
   }
-  // /clone functions -------------------------------------------------------------
 
-  resetAndRenameElement = (newIlElement, newName) => {
-    const resetAndRenameFunctionName = newIlElement.firstElementChild.dataset.resetAndRenameFunction
+  #defaultCloneFunction = ($ul) => {
+    const firstLi = $ul.firstElementChild
+    const $li = firstLi.cloneNode(true)
+    this.#resetAndRenameElement($li, this.#generateNextElementName($ul))
+    $ul.insertBefore($li, $ul.querySelector(PcFieldList.ADD_BUTTON_SELECTOR))
+  }
+  
+  
+  // method will be referenced within many of our flask form fields
+  #resetAndRenameElement = ($li, newName) => {
+    const { resetAndRenameFunctionName } = $li.firstElementChild.dataset
     if (resetAndRenameFunctionName) {
-      this[resetAndRenameFunctionName](newIlElement, newName)
+      this[resetAndRenameFunctionName]($li, newName)
     } else {
-      this.defaultResetAndRename(newIlElement, newName)
+      this.#defaultResetAndRename($li, newName)
     }
   }
 
   // reset functions --------------------------------------------------------------
-  resetAndRenameCheckbox = (newIlElement, newName) => {
-    const valueElement = newIlElement.querySelector(PcFieldList.FIELD_ELEMENT_BEARING_VALUE_SELECTOR)
-    const label = newIlElement.querySelector(PcFieldList.FIELD_LABEL_SELECTOR)
+  _resetAndRenameCheckbox = ($li, newName) => {
+    const valueElement = $li.querySelector(PcFieldList.FIELD_ELEMENT_BEARING_VALUE_SELECTOR)
+    const label = $li.querySelector(PcFieldList.FIELD_LABEL_SELECTOR)
     valueElement.id = newName
     valueElement.name = newName
     valueElement.checked = valueElement.dataset.defaultValue
-    if (label != null) {
+    if (label !== null) {
       label.htmlFor = newName
     }
   }
 
-  defaultResetAndRename = (newIlElement, newName) => {
-    const valueElement = newIlElement.querySelector(PcFieldList.FIELD_ELEMENT_BEARING_VALUE_SELECTOR)
-    const label = newIlElement.querySelector(PcFieldList.FIELD_LABEL_SELECTOR)
+  #defaultResetAndRename = ($li, newName) => {
+    const valueElement = $li.querySelector(PcFieldList.FIELD_ELEMENT_BEARING_VALUE_SELECTOR)
+    const label = $li.querySelector(PcFieldList.FIELD_LABEL_SELECTOR)
     valueElement.id = newName
     valueElement.name = newName
     valueElement.value = valueElement.dataset.defaultValue ? valueElement.dataset.defaultValue : ""
-    if (label != null) {
+    if (label !== null) {
       label.htmlFor = newName
     }
   }
 
-  addButtonFieldList = (event) => {
-    const ulElement = this.getTagFromEvent(event, "UL")
-    this.filterMaxEntries(ulElement)
-    const newIlElement = this.cloneElementFunction(ulElement)
-    this.changeButtonDisplay(ulElement, PcFieldList.REMOVE_BUTTON_SELECTOR, "")
+  #onAdd = (event) => {
+    const { fieldListContainerId } = event.target.dataset
+    const $fieldListContainer = this.#getFieldListContainerFromId(fieldListContainerId)
+    const $ul = $fieldListContainer.querySelector(PcFieldList.PC_FIELD_LIST_UL_SELECTOR)
+    this.#filterMaxEntries($ul)
+    this.#cloneElementFunction($ul)
+    this.#changeButtonDisplay($ul, PcFieldList.REMOVE_BUTTON_SELECTOR, true)
   }
 
-  rmButtonFieldList = (event) => {
-    const ulElement = this.getTagFromEvent(event, "UL")
-    const liElement = this.getTagFromEvent(event, "LI")
-    this.filterMinEntries(ulElement)
-    liElement.querySelector(PcFieldList.REMOVE_BUTTON_SELECTOR).removeEventListener("click", this.rmButtonFieldList)
-    liElement.remove()
-    this.changeButtonDisplay(ulElement, PcFieldList.ADD_BUTTON_SELECTOR, "")
+  #onRemove = (event) => {
+    const { fieldListContainerId } = event.target.dataset
+    const $fieldListContainer = this.#getFieldListContainerFromId(fieldListContainerId)
+    const $ul = $fieldListContainer.querySelector(PcFieldList.PC_FIELD_LIST_UL_SELECTOR)
+    const $li = event.target.parentElement // remove button is within li
+    this.#filterMinEntries($ul)
+    $li.remove()
+    this.#changeButtonDisplay($ul, PcFieldList.ADD_BUTTON_SELECTOR, true)
   }
 
-  bindEvents = () => {
-    if(this.$$fieldList)
-    {
-      this.$$addButton.forEach((button) => {button.addEventListener("click", this.addButtonFieldList)})
-      this.$$removeButton.forEach((button) => {button.addEventListener("click", this.rmButtonFieldList)})
-
-      this.$$fieldList.forEach((fieldList) => {
-          this.filterMaxEntries(fieldList, true)
-          this.filterMinEntries(fieldList, true)
-        }
-      )
-    }
-  }
-
-  unbindEvents = () => {
-    if(this.$$fieldList)
-    {
-      this.$$addButton.forEach((button) => {button.removeEventListener("click", this.addButtonFieldList)})
-      this.$$removeButton.forEach((button) => {button.removeEventListener("click", this.rmButtonFieldList)})
-    }
-  }
 }

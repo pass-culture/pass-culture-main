@@ -1,4 +1,4 @@
-<div class="col-6 form-check form-switch mb-2" data-reset-and-rename-function="resetAndRenameCheckbox">
+<div class="col-6 form-check form-switch mb-2" data-reset-and-rename-function-name="_resetAndRenameCheckbox">
   {% set switch_boolean_field_id = random_hash() %}
   <input class="form-check-input value-element-form" type="checkbox" role="switch" name="{{ field.name }}" id="{{ switch_boolean_field_id }}" {{ " checked" if field.data }} data-default-value="{{"true" if field.default }}"/>
   <label role="button"
