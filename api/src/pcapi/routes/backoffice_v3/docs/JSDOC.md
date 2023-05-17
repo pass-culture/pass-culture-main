@@ -55,37 +55,40 @@
     *   [bindEvents][51]
         *   [Examples][52]
     *   [initialize][53]
-    *   [saveState][54]
-        *   [Parameters][55]
-        *   [Examples][56]
-    *   [unbindEvents][57]
+    *   [rebindEvents][54]
+        *   [Examples][55]
+    *   [saveState][56]
+        *   [Parameters][57]
         *   [Examples][58]
-*   [Add Ons features][59]
-*   [BsTooltips][60]
-*   [e][61]
-*   [PcTableMultiSelect][62]
-    *   [Examples][63]
-    *   [ID][64]
-*   [PcTomSelectField][65]
-    *   [Examples][66]
-    *   [ID][67]
-*   [PcBatchActionForm][68]
-    *   [Examples][69]
-*   [PcConfirmModal][70]
+    *   [unbindEvents][59]
+        *   [Examples][60]
+*   [Add Ons features][61]
+*   [BsTooltips][62]
+*   [e][63]
+*   [PcTomSelectField][64]
+    *   [Examples][65]
+    *   [ID][66]
+*   [PcTableMultiSelect][67]
+    *   [Examples][68]
+    *   [ID][69]
+*   [PcBatchActionForm][70]
     *   [Examples][71]
-*   [PcFilterDataset][72]
+*   [PcConfirmModal][72]
     *   [Examples][73]
-*   [PcFormsCheckValidity][74]
-*   [PcOverrideCustomTextareaEnter][75]
+*   [PcFieldList][74]
+*   [PcFilterDataset][75]
     *   [Examples][76]
-*   [PcPostalAddressAutocomplete][77]
-    *   [Examples][78]
-*   [PcRegistrationSteps][79]
-*   [PcResetModalTurboSrc][80]
+*   [PcFormsCheckValidity][77]
+*   [PcOverrideCustomTextareaEnter][78]
+    *   [Examples][79]
+*   [PcPostalAddressAutocomplete][80]
     *   [Examples][81]
-*   [PcValidationFilters][82]
-    *   [Examples][83]
-*   [prototype][84]
+*   [PcRegistrationSteps][82]
+*   [PcResetModalTurboSrc][83]
+    *   [Examples][84]
+*   [PcValidationFilters][85]
+    *   [Examples][86]
+*   [prototype][87]
 
 ## PcBackofficeApp
 
@@ -96,7 +99,7 @@ See below for how to regenerate the documentation or initialize the application.
 
 ### Parameters
 
-*   `config` **{addOns: [Array][85]<[PcAddOn][44]>}** the application configuration.
+*   `config` **{addOns: [Array][88]<[PcAddOn][44]>}** the application configuration.
 
     *   `config.addOns` &#x20;
 
@@ -157,7 +160,7 @@ We have 3 turbo events binding at the moments:
 4.  `turbo:load`: trigger `app.initialize` and `app.bindEvents` on XHR visit navigation load,
 5.  `turbo:frame-missing`: trigger `app.onTurboFrameMissing` on XHR response if the `id` of the turbo frame doesn't exist.
 
-Read more: [https://turbo.hotwired.dev/reference/events][86]
+Read more: [https://turbo.hotwired.dev/reference/events][89]
 
 ### csrfTokenInput
 
@@ -193,7 +196,7 @@ the whole page will be replaced by a generic 504 error message, which is not gre
 
 #### Parameters
 
-*   `event` **[Event][87]**&#x20;
+*   `event` **[Event][90]**&#x20;
 
 #### Examples
 
@@ -243,7 +246,7 @@ Push a callback function to window.onload
 
 #### Parameters
 
-*   `callback` **[function][88]** the function to be called on `window.onload`
+*   `callback` **[function][91]** the function to be called on `window.onload`
 
 ### debounce
 
@@ -251,10 +254,10 @@ Debounce a function (prevents function to be called until a certain delay. Can b
 
 #### Parameters
 
-*   `callback` **[function][88]** the function to debounce
-*   `ms` **[number][89]** the debounce delay in milliseconds
+*   `callback` **[function][91]** the function to debounce
+*   `ms` **[number][92]** the debounce delay in milliseconds
 
-Returns **[function][88]** the debounced function
+Returns **[function][91]** the debounced function
 
 ## KeyboardKeyCode
 
@@ -298,7 +301,7 @@ This singleton utility class can be used to bind/unbind event in the style of `j
 
 It is heavily inspired from Bootstrap (v5.3.0-alpha1): `dom/event-handler.js`
 
-Original source: [https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js][90]
+Original source: [https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js][93]
 
 As the original source, this addon is licensed as MIT.
 
@@ -333,14 +336,14 @@ class PcLoggingOnImage extend PcAddOn {
 
 ### off
 
-Read more: [https://api.jquery.com/off/#off-events-selector-data][91]
+Read more: [https://api.jquery.com/off/#off-events-selector-data][94]
 
 #### Parameters
 
-*   `element` **[element][92]** the parent element to unbind from
-*   `originalTypeEvent` **[string][93]** the event name to unbind
-*   `handler` **[string][93]** the selector for element bind apply
-*   `delegationFunction` **[function][88]** the event method to unbind
+*   `element` **[element][95]** the parent element to unbind from
+*   `originalTypeEvent` **[string][96]** the event name to unbind
+*   `handler` **[string][96]** the selector for element bind apply
+*   `delegationFunction` **[function][91]** the event method to unbind
 
 #### Examples
 
@@ -350,14 +353,14 @@ EventHandler.off(document.body, 'click', '.nav-link', onNavLinkClick)
 
 ### on
 
-Read more: [https://api.jquery.com/on/#on-events-selector-data][94]
+Read more: [https://api.jquery.com/on/#on-events-selector-data][97]
 
 #### Parameters
 
-*   `element` **[element][92]** the parent element to apply bind
-*   `event` **[string][93]** the event name to bind
-*   `handler` **[string][93]** the selector for elements bind apply
-*   `delegationFunction` **[function][88]** the event method to bind
+*   `element` **[element][95]** the parent element to apply bind
+*   `event` **[string][96]** the event name to bind
+*   `handler` **[string][96]** the selector for elements bind apply
+*   `delegationFunction` **[function][91]** the event method to bind
 
 #### Examples
 
@@ -367,14 +370,14 @@ EventHandler.on(document.body, 'click', '.nav-link', onNavLinkClick)
 
 ### one
 
-Read more: [https://api.jquery.com/one/#one-events-selector-data][95]
+Read more: [https://api.jquery.com/one/#one-events-selector-data][98]
 
 #### Parameters
 
-*   `element` **[element][92]** the parent element to apply bind
-*   `event` **[string][93]** the event name to bind
-*   `handler` **[string][93]** the selector for element bind apply
-*   `delegationFunction` **[function][88]** the event method to bind
+*   `element` **[element][95]** the parent element to apply bind
+*   `event` **[string][96]** the event name to bind
+*   `handler` **[string][96]** the selector for element bind apply
+*   `delegationFunction` **[function][91]** the event method to bind
 
 #### Examples
 
@@ -384,12 +387,12 @@ EventHandler.one(document.body, 'click', '.nav-link#something', onNavLinkClick)
 
 ### trigger
 
-Read more: [https://api.jquery.com/trigger/#trigger-events-selector-data][96]
+Read more: [https://api.jquery.com/trigger/#trigger-events-selector-data][99]
 
 #### Parameters
 
-*   `element` **[element][92]** DOM element to trigger event on
-*   `event` **[string][93]** The event to trigger
+*   `element` **[element][95]** DOM element to trigger event on
+*   `event` **[string][96]** The event to trigger
 *   `args` **any** Arguments to be passed to the event
 
 #### Examples
@@ -398,7 +401,7 @@ Read more: [https://api.jquery.com/trigger/#trigger-events-selector-data][96]
 EventHandler.trigger(document.querySelectorAll('.nav-link')[2], 'click')
 ```
 
-Returns **(null | [Event][87])** null if element is undefined or event is not a string, the triggered event otherwise
+Returns **(null | [Event][90])** null if element is undefined or event is not a string, the triggered event otherwise
 
 ## PcAddOn
 
@@ -408,7 +411,7 @@ This abstract class can be extended to create new addon for new JavaScript featu
 
 ### Parameters
 
-*   `config` **{name: [string][93], app: [PcBackofficeApp][1], addOnState: any}** the addon configuration
+*   `config` **{name: [string][96], app: [PcBackofficeApp][1], addOnState: any}** the addon configuration
 
     *   `config.name` &#x20;
     *   `config.app` &#x20;
@@ -453,7 +456,7 @@ Can be useful to prevent code duplication between addons when you only need to p
 
 #### Parameters
 
-*   `event` **[event][87]** the event
+*   `event` **[event][90]** the event
 
 ### \_preventSubmitOnEnter
 
@@ -462,11 +465,11 @@ Can be useful to prevent code duplication between addons when you only need to p
 
 #### Parameters
 
-*   `event` **[event][87]** the event
+*   `event` **[event][90]** the event
 
 ### bindEvents
 
-This method binds addon events.
+This method binds addons events.
 Initialization is already called on document load through instance of `PcBackofficeApp`.
 It is called when event `turbo:frame-render` is emitted, prior an XHR call.
 
@@ -480,6 +483,16 @@ app.addons.bsTooltips.bindEvents()
 
 This method initializes the addon.
 Initialization is already called on document load through instance of `PcBackofficeApp`
+
+### rebindEvents
+
+This method unbinds and rebinds addons events.
+
+#### Examples
+
+```javascript
+app.addons.bsTooltips.unbindEvents()
+```
 
 ### saveState
 
@@ -503,7 +516,7 @@ app.addons[name].saveState(newState)
 
 ### unbindEvents
 
-This method unbinds addon events.
+This method unbinds addons events.
 It is called when event `turbo:before-frame-render` is emitted, after an XHR call.
 
 #### Examples
@@ -522,12 +535,50 @@ Below addons are created using PcAddOn class.
 
 This adds PcAddOn support for bootstrap 5 tooltips.
 It works using bootstrap 5 html markup.
-Read documentation: [https://getbootstrap.com/docs/5.0/components/tooltips/#examples][97]
+Read documentation: [https://getbootstrap.com/docs/5.0/components/tooltips/#examples][100]
 
 ## e
 
 Tom Select v2.2.2
 Licensed under the Apache License, Version 2.0 (the "License");
+
+## PcTomSelectField
+
+**Extends PcAddOn**
+
+Configure TomSelect on a `<select />`.
+
+We have two types of tom select instances:
+
+1.  select field with static options,
+2.  select field with dynamic options (xhr autocomplete).
+
+> Use `multiple` HTML attribut on `<select />` if needed.
+
+### Examples
+
+```javascript
+// select field
+<select class="pc-tom-select-field">
+  <option value="1">item #1</option>
+  <option value="2">item #2</option>
+</select>
+```
+
+```javascript
+// select field with xhr autocomplete.
+// In this example, our backend automatically sets data attributes, this allows the initial render to have the initialValues
+<select
+  class="pc-tom-select-field pc-tom-select-autocomplete-field"
+  data-tomselect-autocomplete-url="/backofficev3/autocomplete/offerers"
+  data-tomselect-options="[{\"id\": \"84\", \"text\": \"Cin\u00e9ma - CGR (00000003800058)\"}]"
+  data-tomselect-items="[\"84\"]"
+></select>
+```
+
+### ID
+
+Unique identifier of this addon, in order to reference it from another add on
 
 ## PcTableMultiSelect
 
@@ -580,49 +631,11 @@ class PcExample extends PcAddOn {
 
 Unique identifier of this addon, in order to reference it from another add on
 
-## PcTomSelectField
-
-**Extends PcAddOn**
-
-Configure TomSelect on a `<select />`.
-
-We have two types of tom select instances:
-
-1.  select field with static options,
-2.  select field with dynamic options (xhr autocomplete).
-
-> Use `multiple` HTML attribut on `<select />` if needed.
-
-### Examples
-
-```javascript
-// select field
-<select class="pc-tom-select-field">
-  <option value="1">item #1</option>
-  <option value="2">item #2</option>
-</select>
-```
-
-```javascript
-// select field with xhr autocomplete.
-// In this example, our backend automatically sets data attributes, this allows the initial render to have the initialValues
-<select
-  class="pc-tom-select-field pc-tom-select-autocomplete-field"
-  data-tomselect-autocomplete-url="/backofficev3/autocomplete/offerers"
-  data-tomselect-options="[{\"id\": \"84\", \"text\": \"Cin\u00e9ma - CGR (00000003800058)\"}]"
-  data-tomselect-items="[\"84\"]"
-></select>
-```
-
-### ID
-
-Unique identifier of this addon, in order to reference it from another add on
-
 ## PcBatchActionForm
 
 **Extends PcAddOn**
 
-Add batch submit form to selection done using one `selectedRowsIds` within [PcTableMultiSelect][62].
+Add batch submit form to selection done using one `selectedRowsIds` within [PcTableMultiSelect][67].
 
 Form is renderer through a turbo frame which must be loaded with `loading="true"`.
 
@@ -707,6 +720,14 @@ Add `data-confirm-modal=".my-modal-123"` on your input with `.my-modal-123` bein
     <!-- modal content -->
 </div>
 ```
+
+## PcFieldList
+
+**Extends PcAddOn**
+
+This addon adds support for field list (PcFieldList).
+
+Field list can be used to add or remove new field
 
 ## PcFilterDataset
 
@@ -1004,90 +1025,96 @@ THE SOFTWARE.
 
 [53]: #initialize-1
 
-[54]: #savestate
+[54]: #rebindevents
 
-[55]: #parameters-11
+[55]: #examples-14
 
-[56]: #examples-14
+[56]: #savestate
 
-[57]: #unbindevents-1
+[57]: #parameters-11
 
 [58]: #examples-15
 
-[59]: #add-ons-features
+[59]: #unbindevents-1
 
-[60]: #bstooltips
+[60]: #examples-16
 
-[61]: #e
+[61]: #add-ons-features
 
-[62]: #pctablemultiselect
+[62]: #bstooltips
 
-[63]: #examples-16
+[63]: #e
 
-[64]: #id
+[64]: #pctomselectfield
 
-[65]: #pctomselectfield
+[65]: #examples-17
 
-[66]: #examples-17
+[66]: #id
 
-[67]: #id-1
+[67]: #pctablemultiselect
 
-[68]: #pcbatchactionform
+[68]: #examples-18
 
-[69]: #examples-18
+[69]: #id-1
 
-[70]: #pcconfirmmodal
+[70]: #pcbatchactionform
 
 [71]: #examples-19
 
-[72]: #pcfilterdataset
+[72]: #pcconfirmmodal
 
 [73]: #examples-20
 
-[74]: #pcformscheckvalidity
+[74]: #pcfieldlist
 
-[75]: #pcoverridecustomtextareaenter
+[75]: #pcfilterdataset
 
 [76]: #examples-21
 
-[77]: #pcpostaladdressautocomplete
+[77]: #pcformscheckvalidity
 
-[78]: #examples-22
+[78]: #pcoverridecustomtextareaenter
 
-[79]: #pcregistrationsteps
+[79]: #examples-22
 
-[80]: #pcresetmodalturbosrc
+[80]: #pcpostaladdressautocomplete
 
 [81]: #examples-23
 
-[82]: #pcvalidationfilters
+[82]: #pcregistrationsteps
 
-[83]: #examples-24
+[83]: #pcresetmodalturbosrc
 
-[84]: #prototype
+[84]: #examples-24
 
-[85]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[85]: #pcvalidationfilters
 
-[86]: https://turbo.hotwired.dev/reference/events
+[86]: #examples-25
 
-[87]: https://developer.mozilla.org/docs/Web/API/Event
+[87]: #prototype
 
-[88]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[88]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[89]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[89]: https://turbo.hotwired.dev/reference/events
 
-[90]: https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js
+[90]: https://developer.mozilla.org/docs/Web/API/Event
 
-[91]: https://api.jquery.com/off/#off-events-selector-data
+[91]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[92]: https://developer.mozilla.org/docs/Web/API/Element
+[92]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[93]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[93]: https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js
 
-[94]: https://api.jquery.com/on/#on-events-selector-data
+[94]: https://api.jquery.com/off/#off-events-selector-data
 
-[95]: https://api.jquery.com/one/#one-events-selector-data
+[95]: https://developer.mozilla.org/docs/Web/API/Element
 
-[96]: https://api.jquery.com/trigger/#trigger-events-selector-data
+[96]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[97]: https://getbootstrap.com/docs/5.0/components/tooltips/#examples
+[97]: https://api.jquery.com/on/#on-events-selector-data
+
+[98]: https://api.jquery.com/one/#one-events-selector-data
+
+[99]: https://api.jquery.com/trigger/#trigger-events-selector-data
+
+[100]: https://getbootstrap.com/docs/5.0/components/tooltips/#examples
