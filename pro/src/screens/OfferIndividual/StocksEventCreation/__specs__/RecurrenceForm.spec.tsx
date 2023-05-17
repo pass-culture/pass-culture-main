@@ -130,4 +130,18 @@ describe('RecurrenceForm', () => {
 
     await userEvent.click(screen.getByLabelText('Tous les jours'))
   })
+
+  it('should render for weekly recurrence', async () => {
+    renderWithProviders(<RecurrenceForm {...defaultProps} />)
+
+    await userEvent.click(screen.getByLabelText('Toutes les semaines'))
+
+    expect(screen.getByLabelText('Lundi')).toBeInTheDocument()
+    expect(screen.getByLabelText('Mardi')).toBeInTheDocument()
+    expect(screen.getByLabelText('Mercredi')).toBeInTheDocument()
+    expect(screen.getByLabelText('Jeudi')).toBeInTheDocument()
+    expect(screen.getByLabelText('Vendredi')).toBeInTheDocument()
+    expect(screen.getByLabelText('Samedi')).toBeInTheDocument()
+    expect(screen.getByLabelText('Dimanche')).toBeInTheDocument()
+  })
 })

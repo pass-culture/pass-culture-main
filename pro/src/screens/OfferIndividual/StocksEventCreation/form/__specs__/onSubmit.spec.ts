@@ -13,6 +13,7 @@ describe('onSubmit', () => {
       description: 'generate stocks for one unique date',
       formValues: {
         recurrenceType: RecurrenceType.UNIQUE,
+        days: [],
         startingDate: new Date('2020-03-03'),
         endingDate: null,
         beginningTimes: [
@@ -56,6 +57,7 @@ describe('onSubmit', () => {
       description: 'generate stocks on a daily basis',
       formValues: {
         recurrenceType: RecurrenceType.DAILY,
+        days: [],
         startingDate: new Date('2020-03-03'),
         endingDate: new Date('2020-03-06'),
         beginningTimes: [new Date('2020-01-01T10:00:00')],
