@@ -1,0 +1,22 @@
+{% set field_id = random_hash() %}
+<div class="d-flex d-flex-column justify-content-between"
+     data-field-list-container="{{ field.name }}-{{ field_id }}">
+  <ul
+      data-entries-count="{{ field|length }}"
+      data-max-entries="{{ field.max_entries }}"
+      data-min-entries="{{ field.min_entries }}"
+      data-field-name="{{ field.name }}"
+      class="field-list list-style-type-none flex-grow">
+    {% for subfield in field %}
+      <li>
+        {{ subfield }}
+        <button class="btn btn-primary field-list-rm-btn" type="button">
+          <i class="bi bi-trash3 pe-none"></i>
+        </button>
+      </li>
+    {% endfor %}
+  </ul>
+  <button class="btn btn-primary field-list-add-btn align-self-start" type="button">
+    <i class="bi bi-plus-circle pe-none"></i>
+  </button>
+</div>
