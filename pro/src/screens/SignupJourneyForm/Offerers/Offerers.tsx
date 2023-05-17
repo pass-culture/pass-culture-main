@@ -94,6 +94,9 @@ const Offerers = (): JSX.Element => {
     }
   }
 
+  const permanentVenues =
+    venuesOfOfferer?.venues.filter(venue => venue.isPermanent) ?? []
+
   return (
     <div className={styles['existing-offerers-layout-wrapper']}>
       <div className={styles['existing-offerers-layout']}>
@@ -105,10 +108,9 @@ const Offerers = (): JSX.Element => {
           <div className={styles['offerer-name-accent']}>
             {venuesOfOfferer?.offererName}
           </div>
-          <ul className={styles['venue-list']}>
-            {venuesOfOfferer?.venues
-              .filter(venue => venue.isPermanent)
-              .map((venue, index) => (
+          {permanentVenues.length > 0 && (
+            <ul className={styles['venue-list']}>
+              {permanentVenues.map((venue, index) => (
                 <li
                   key={venue.id}
                   hidden={
@@ -118,7 +120,8 @@ const Offerers = (): JSX.Element => {
                   {venue.publicName ?? venue.name}
                 </li>
               ))}
-          </ul>
+            </ul>
+          )}
           {displayToggleVenueList && (
             <Button
               onClick={() => {
