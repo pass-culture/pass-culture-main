@@ -1,7 +1,7 @@
-<div class="form-floating {{ field.name }}-container">
+<div class="form-floating {{ field.name }}-container" data-clone-function="tomSelectCloneFunction">
   {% set select_field_id = random_hash() %}
   <select multiple
-          class="form-select pc-select-field pc-tom-select-field"
+          class="form-select pc-select-field pc-tom-select-field value-element-form"
           id="{{ select_field_id }}"
           name="{{ field.name }}"
           size="2">
@@ -11,6 +11,21 @@
       </option>
     {% endfor %}
   </select>
-  <label class="pc-select-label"
+  <label class="pc-select-label label-element-form"
          for="{{ select_field_id }}">{{ field.label.text }}</label>
+</div>
+
+<!-- (Almost) duplicated html for field list field widget -->
+<div class="form-floating {{ field.name }}-container d-none empty-tom-select-form" data-clone-function="tomSelectCloneFunction">
+  {% set select_field_id = random_hash() %}
+  <select multiple
+          class="form-select pc-select-field value-element-form"
+          size="2">
+    {% for value, label, selected in field.iter_choices() %}
+      <option value="{{ value }}" {{ "selected" if selected else "" }}>
+        {{ label | i18n_public_account }}
+      </option>
+    {% endfor %}
+  </select>
+  <label class="pc-select-label label-element-form">{{ field.label.text }}</label>
 </div>

@@ -285,3 +285,6 @@ class PcPostalAddressAutocomplete(wtforms.StringField):
 
 class PCDecimalField(wtforms.DecimalField):
     widget = partial(widget, template="components/forms/string_field.html")
+
+class PCFieldListField(wtforms.FieldList):
+    widget = partial(widget, template="components/forms/field_list_field.html")

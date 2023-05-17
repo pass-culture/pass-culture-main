@@ -3,11 +3,12 @@
   <input {% if field.type == "PCIntegerField" or field.type == "PCOptIntegerField" %}type="number"{% else %}type="text"{% endif %}
          id="{{ string_field_id }}"
          name="{{ field.name }}"
-         class="form-control"
+         class="form-control value-element-form"
          value="{{ field.data | empty_string_if_null }}"
          {% if field.flags.required %}required{% endif %}
          {% if field.flags.pattern %}pattern="{{ field.flags.pattern }}"{% endif %}
          {% if field.flags.minlength %}minlength="{{ field.flags.minlength }}"{% endif %}
          {% if field.flags.maxlength %}maxlength="{{ field.flags.maxlength }}"{% endif %} />
-  <label for="{{ string_field_id }}">{{ field.label.text }}</label>
+  <label class="label-element-form"
+         for="{{ string_field_id }}">{{ field.label.text }}</label>
 </div>
