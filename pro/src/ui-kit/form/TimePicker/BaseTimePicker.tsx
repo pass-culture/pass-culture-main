@@ -1,5 +1,5 @@
 import fr from 'date-fns/locale/fr'
-import React, { createRef } from 'react'
+import React from 'react'
 import ReactDatePicker, { registerLocale } from 'react-datepicker'
 import type { ReactDatePickerProps } from 'react-datepicker'
 
@@ -18,30 +18,22 @@ export const BaseTimePicker = ({
   hasError,
   filterVariant,
   ...props
-}: Props): JSX.Element => {
-  const ref = createRef<HTMLInputElement>()
-
-  return (
-    <ReactDatePicker
-      {...props}
-      customInput={
-        <BaseInput
-          hasError={hasError}
-          filterVariant={filterVariant}
-          ref={ref}
-        />
-      }
-      dateFormat={FORMAT_HH_mm}
-      dropdownMode="scroll"
-      locale="fr"
-      placeholderText="HH:MM"
-      showTimeSelect
-      showTimeSelectOnly
-      timeCaption="Horaire"
-      timeIntervals={15}
-      onKeyDown={event => {
-        !/[0-9:]|Backspace|Tab/.test(event.key) && event.preventDefault()
-      }}
-    />
-  )
-}
+}: Props): JSX.Element => (
+  <ReactDatePicker
+    {...props}
+    customInput={
+      <BaseInput hasError={hasError} filterVariant={filterVariant} />
+    }
+    dateFormat={FORMAT_HH_mm}
+    dropdownMode="scroll"
+    locale="fr"
+    placeholderText="HH:MM"
+    showTimeSelect
+    showTimeSelectOnly
+    timeCaption="Horaire"
+    timeIntervals={15}
+    onKeyDown={event => {
+      !/[0-9:]|Backspace|Tab/.test(event.key) && event.preventDefault()
+    }}
+  />
+)
