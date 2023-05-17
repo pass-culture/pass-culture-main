@@ -287,7 +287,7 @@ class CollectiveDmsApplicationFactory(BaseFactory):
     buildDate = factory.SelfAttribute("lastChangeDate")
 
 
-class CollectiveOfferRequest(BaseFactory):
+class CollectiveOfferRequestFactory(BaseFactory):
     class Meta:
         model = models.CollectiveOfferRequest
 

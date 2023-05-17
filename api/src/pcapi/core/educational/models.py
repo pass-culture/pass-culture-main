@@ -848,6 +848,10 @@ class EducationalRedactor(PcObject, Base, Model):
 
     collectiveOffers: list["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="teacher")
 
+    collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = relationship(
+        "CollectiveOfferRequest", back_populates="educationalRedactor"
+    )
+
 
 class CollectiveBooking(PcObject, Base, Model):
     __tablename__ = "collective_booking"
@@ -1198,6 +1202,12 @@ class CollectiveOfferRequest(PcObject, Base, Model):
     totalTeachers: int | None = sa.Column(sa.Integer, nullable=True)
 
     comment: str = sa.Column(sa.Text, nullable=False)
+
+    educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
+
+    educationalRedactor: sa_orm.Mapped["EducationalRedactor"] = relationship(
+        "EducationalRedactor", foreign_keys=educationalRedactorId, back_populates="collectiveOfferRequest"
+    )
 
     collectiveOfferTemplateId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=False
