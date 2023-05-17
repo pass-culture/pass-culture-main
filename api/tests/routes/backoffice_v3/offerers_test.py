@@ -2376,10 +2376,7 @@ class SetBatchOffererPendingTest(PostEndpointHelper):
 
     def test_batch_set_offerer_pending(self, legit_user, authenticated_client, offerer_tags):
         _offerers = offerers_factories.NotValidatedOffererFactory.create_batch(
-            # FIXME PC-21406 - disabled until tags are initialized in the form
-            # 10, tags=[offerer_tags[0], offerer_tags[1]]
-            10,
-            tags=[offerer_tags[0]],
+            10, tags=[offerer_tags[0], offerer_tags[1]]
         )
         parameter_ids = ",".join(str(offerer.id) for offerer in _offerers)
         comment = "test pending comment"
@@ -2410,9 +2407,7 @@ class SetBatchOffererPendingTest(PostEndpointHelper):
                 "modified_info": {
                     "tags": {
                         "new_info": f"{offerer_tags[0].label}, {offerer_tags[2].label}",
-                        # FIXME PC-21406 - disabled until tags are initialized in the form
-                        # "old_info": offerer_tags[1].label,
-                        "old_info": "",
+                        "old_info": offerer_tags[1].label,
                     },
                 }
             }
