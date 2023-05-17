@@ -11,7 +11,7 @@ export default {
 }
 
 const Template: Story<TimePickerProps> = props => (
-  <Formik initialValues={{ time: '' }} onSubmit={action('onSubmit')}>
+  <Formik initialValues={{ time: null }} onSubmit={action('onSubmit')}>
     <TimePicker {...props} name="time" />
   </Formik>
 )
