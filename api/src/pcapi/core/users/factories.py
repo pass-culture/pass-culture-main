@@ -764,6 +764,27 @@ class UserEmailHistoryFactory(BaseFactory):
     newDomainEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[1] + ".update")
 
 
+class TrustedDeviceFactory(BaseFactory):
+    class Meta:
+        model = models.TrustedDevice
+
+    user = factory.SubFactory(UserFactory)
+    deviceId = "2E429592-2446-425F-9A62-D6983F375B3B"
+    os = "iOS"
+    source = "iPhone 13"
+
+
+class LoginDeviceHistoryFactory(BaseFactory):
+    class Meta:
+        model = models.LoginDeviceHistory
+
+    user = factory.SubFactory(UserFactory)
+    deviceId = "2E429592-2446-425F-9A62-D6983F375B3B"
+    os = "iOS"
+    source = "iPhone 13"
+    location = "Paris"
+
+
 class EmailUpdateEntryFactory(UserEmailHistoryFactory):
     eventType = models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
 

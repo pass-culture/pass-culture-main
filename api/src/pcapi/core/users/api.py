@@ -1247,3 +1247,20 @@ def update_login_device_history(device_info: "account_serialization.TrustedDevic
         user=user,
     )
     repository.save(login_device)
+
+
+def should_save_login_device_as_trusted_device(
+    device_info: "account_serialization.TrustedDevice | None", user: models.User
+) -> bool:
+    if device_info is None or not device_info.device_id:
+        return False
+
+    if any(device.deviceId == device_info.device_id for device in user.trusted_devices):
+        return False
+
+    return db.session.query(
+        users_models.LoginDeviceHistory.query.with_entities(users_models.LoginDeviceHistory.deviceId)
+        .filter(users_models.LoginDeviceHistory.userId == user.id)
+        .filter(users_models.LoginDeviceHistory.deviceId == device_info.device_id)
+        .exists()
+    ).scalar()

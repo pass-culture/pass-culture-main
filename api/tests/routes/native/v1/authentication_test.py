@@ -25,6 +25,7 @@ from pcapi.core.users.models import AccountState
 from pcapi.core.users.models import LoginDeviceHistory
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
+from pcapi.core.users.models import TrustedDevice
 from pcapi.models import db
 import pcapi.notifications.push.testing as bash_testing
 from pcapi.utils import crypto
@@ -187,6 +188,73 @@ def test_should_not_save_login_device_history_when_feature_flag_is_disabled(clie
     client.post("/native/v1/signin", json=data)
 
     assert LoginDeviceHistory.query.count() == 0
+
+
+@override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+def test_save_login_device_as_trusted_device_on_second_signin_with_same_device(client):
+    data = {
+        "identifier": "user@test.com",
+        "password": settings.TEST_DEFAULT_PASSWORD,
+        "deviceInfo": {
+            "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
+            "source": "iPhone 13",
+            "os": "iOS",
+        },
+    }
+    user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
+
+    client.post("/native/v1/signin", json=data)
+    client.post("/native/v1/signin", json=data)
+
+    trusted_device = TrustedDevice.query.filter(TrustedDevice.deviceId == data["deviceInfo"]["deviceId"]).one()
+    assert user.trusted_devices == [trusted_device]
+
+
+@override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
+def test_should_not_save_login_device_as_trusted_device_on_second_signin_when_feature_flag_is_inactive(
+    client,
+):
+    data = {
+        "identifier": "user@test.com",
+        "password": settings.TEST_DEFAULT_PASSWORD,
+        "deviceInfo": {
+            "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
+            "source": "iPhone 13",
+            "os": "iOS",
+        },
+    }
+    user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
+
+    client.post("/native/v1/signin", json=data)
+    client.post("/native/v1/signin", json=data)
+
+    assert TrustedDevice.query.count() == 0
+    assert user.trusted_devices == []
+
+
+@override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+def test_should_not_save_login_device_as_trusted_device_on_second_signin_when_using_different_devices(client):
+    login_data = {
+        "identifier": "user@test.com",
+        "password": settings.TEST_DEFAULT_PASSWORD,
+    }
+    first_device = {
+        "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
+        "source": "iPhone 13",
+        "os": "iOS",
+    }
+    second_device = {
+        "deviceId": "5F810092-1832-9A32-5B30-P2112F375G3G",
+        "source": "Chrome",
+        "os": "Mac OS",
+    }
+    user = users_factories.UserFactory(email=login_data["identifier"], password=login_data["password"], isActive=True)
+
+    client.post("/native/v1/signin", json={**login_data, "deviceInfo": first_device})
+    client.post("/native/v1/signin", json={**login_data, "deviceInfo": second_device})
+
+    assert TrustedDevice.query.count() == 0
+    assert user.trusted_devices == []
 
 
 def test_send_reset_password_email_without_email(client):
