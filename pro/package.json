@@ -40,7 +40,7 @@
     "copy-assets": "cp ./src/icons/*.svg ./public/icons/"
   },
   "dependencies": {
-    "@firebase/analytics": "^0.9.5",
+    "@firebase/analytics": "^0.10.0",
     "@firebase/app": "^0.9.10",
     "@firebase/remote-config": "0.4.4",
     "@reach/dialog": "^0.18.0",
