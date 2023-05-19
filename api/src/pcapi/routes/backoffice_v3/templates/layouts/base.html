@@ -15,11 +15,13 @@
           type="image/x-icon"
           href="{{ url_for('static', filename='backofficev3/favicon.ico' ) }}" />
     <!-- Bootstrap icons -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" />
+    <link href="{{ url_for('static', filename='backofficev3/css/bootstrap-icons@1.9.1/font/bootstrap-icons.css') }}"
+          rel="stylesheet"
+          type="text/css" />
     <!-- Tom Select JS configuration -->
-    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css"
-          rel="stylesheet" />
+    <link href="{{ url_for('static', filename='backofficev3/css/tom-select@2.2.2/dist/css/tom-select.css') }}"
+          rel="stylesheet"
+          type="text/css" />
     <link href="{{ url_for('static', filename='backofficev3/css/tom-select-bootstrap-5.min.css') }}"
           rel="stylesheet"
           type="text/css" />
@@ -28,14 +30,10 @@
           rel="stylesheet"
           type="text/css" />
     <!-- Hotwired turbo frame -->
-    <script type="module">
-      import * as Turbo from 'https://cdn.skypack.dev/@hotwired/turbo';
-    </script>
+    <script src="{{ url_for('static', filename='backofficev3/js/libs/@hotwired/turbo@v7.3.0/dist/turbo.es2017-umd.js') }}"></script>
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    <script src="{{ url_for('static', filename='backofficev3/js/libs/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='backofficev3/js/libs/tom-select@2.2.2/dist/js/tom-select.complete.min.js') }}"></script>
     <!-- Our core libs -->
     <script src="{{ url_for('static', filename='backofficev3/js/core/pc-utils.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/core/pc-event-handler.js') }}"></script>
