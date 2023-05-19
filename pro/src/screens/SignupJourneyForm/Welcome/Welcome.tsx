@@ -20,8 +20,8 @@ const Welcome = (): JSX.Element => {
         Commencer
       </ButtonLink>
       <div className={styles['caption-informations']}>
-        Vous préférez continuer plus tard ? Utilisez simplement vos identifiants
-        pour vous reconnecter.
+        <div>Vous préférez continuer plus tard ?</div>
+        <div>Utilisez simplement vos identifiants pour vous reconnecter.</div>
       </div>
     </div>
   )
