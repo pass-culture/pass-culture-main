@@ -2,7 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_colors.scss" as colors; 
 
-$welcome-gap: rem.torem(40px);
+$welcome-gap: rem.torem(32px);
 
 .welcome-layout {
     display: flex;
