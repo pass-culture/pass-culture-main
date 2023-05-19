@@ -39,7 +39,7 @@ describe('screens:SignupJourney::ConfirmedAttachment', () => {
     renderConfirmedAttachmentScreen()
 
     expect(
-      await screen.getByText('Votre demande a été prise en compte.')
+      await screen.getByText('Votre demande a été prise en compte')
     ).toBeInTheDocument()
   })
 
