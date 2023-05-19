@@ -52,7 +52,7 @@ Le repo `main` contient les 5 projets suivants :
 - Pour MacOS spécifiquement
   - CoreUtils: `brew install coreutils libxmlsec1`
 - Pour Linux spécifiquement
-  - L'API a besoin des paquets suivants, à installer avec `sudo apt install python3-dev libpq-dev xmlsec1 libpango-1.0-0 libpangoft2-1.0-0` pour les distributions Ubuntu
+  - L'API a besoin des paquets suivants, à installer avec `sudo apt install python3-dev libpq5:i386 libpq-dev xmlsec1 libpango-1.0-0 libpangoft2-1.0-0` pour les distributions Ubuntu
 
 #### Installer les CLI
 
@@ -88,13 +88,6 @@ manières de lancer le backend.
 - `http://localhost:3001/` devrait être lancé et fonctionnel
 - Connectez-vous avec `pctest.admin93.0@example.com` (admin) ou `pctest.pro93.0@example.com` (non-admin)
 
-#### adage-front
-
-- `pc start-adage-front`
-- `http://localhost:3002/` devrait être lancé et fonctionnel
-- Connectez-vous avec un token valide en le passant en query param (pour générer un token valide, générez-le via le
-  helper de test dans l'API)
-
 #### Flask Admin
 
 - lancer `api` ou `pro`
@@ -113,7 +106,7 @@ Ces utilisateurs existent également pour le 97, en remplaçant `93` par `97`.
 #### Backoffice v3
 
 - `pc start-backoffice`
-- `http://localhost:5001/backofficev3/` devrait être lancé et fonctionnel
+- `http://localhost:5001/` devrait être lancé et fonctionnel
 - Cliquez sur _Se connecter via Google_
 - Vous arriverez alors sur la page d'accueil du BO v3, en tant qu'utilisateur admin `admin@passculture.local`
 
