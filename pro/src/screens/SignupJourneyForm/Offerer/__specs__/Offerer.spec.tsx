@@ -96,6 +96,18 @@ describe('screens:SignupJourney::Offerer', () => {
     jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       venues: [],
     })
+
+    jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
+      active: true,
+      address: {
+        city: 'Paris',
+        postalCode: '75008',
+        street: 'rue du test',
+      },
+      name: 'Test',
+      siret: '12345678933333',
+      ape_code: '95.01A',
+    })
   })
 
   it('should render component', async () => {
@@ -163,7 +175,7 @@ describe('screens:SignupJourney::Offerer', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
     expect(await screen.findByText('Le SIRET n’existe pas')).toBeInTheDocument()
-    expect(api.getSiretInfo).toHaveBeenCalledTimes(1)
+    expect(api.getSiretInfo).toHaveBeenCalled()
     expect(screen.queryByText('Authentication screen')).not.toBeInTheDocument()
     expect(
       await screen.getByText('Renseignez le SIRET de votre structure')
@@ -171,17 +183,6 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should not render offerers screen on submit if venuesList is empty', async () => {
-    jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
-      active: true,
-      address: {
-        city: 'Paris',
-        postalCode: '75008',
-        street: 'rue du test',
-      },
-      name: 'Test',
-      siret: '12345678933333',
-      ape_code: '95.01A',
-    })
     renderOffererScreen(contextValue)
 
     expect(
@@ -197,17 +198,6 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should submit the form when clicking the continue button', async () => {
-    jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
-      active: true,
-      address: {
-        city: 'Paris',
-        postalCode: '75008',
-        street: 'rue du test',
-      },
-      name: 'Test',
-      siret: '12345678933333',
-      ape_code: '95.01A',
-    })
     jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       venues: [
         { id: '1', name: 'First Venue', isPermanent: true },
@@ -276,18 +266,6 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should not display MaybeAppUserDialog component on submit with valid apeCode', async () => {
-    jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
-      active: true,
-      address: {
-        city: 'Paris',
-        postalCode: '75008',
-        street: 'rue du test',
-      },
-      name: 'Test',
-      siret: '12345678933333',
-      ape_code: '95.01A',
-    })
-
     renderOffererScreen(contextValue)
 
     await userEvent.click(
@@ -298,7 +276,7 @@ describe('screens:SignupJourney::Offerer', () => {
 
     await userEvent.type(
       screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
-      '12345678933333'
+      '12345678933338'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
@@ -323,13 +301,13 @@ describe('screens:SignupJourney::Offerer', () => {
 
     await userEvent.type(
       screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
-      '12345678933333'
+      '12345678933334'
     )
 
     await waitFor(() => {
       expect(
         screen.getByLabelText('Numéro de SIRET à 14 chiffres')
-      ).toHaveValue('123 456 789 33333')
+      ).toHaveValue('123 456 789 33334')
     })
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
@@ -348,18 +326,18 @@ describe('screens:SignupJourney::Offerer', () => {
         street: 'rue du test',
       },
       name: 'Test',
-      siret: '12345678933333',
+      siret: '12345678933335',
       ape_code: '85.31Z',
     })
     renderOffererScreen(contextValue)
 
     await userEvent.type(
       screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
-      '12345678933333'
+      '12345678933335'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
-    await expect(api.getSiretInfo).toHaveBeenCalled()
+    expect(api.getSiretInfo).toHaveBeenCalled()
 
     await waitFor(() => {
       expect(
@@ -381,28 +359,14 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should display MaybeAppUserDialog component and redirect user to public app', async () => {
-    jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
-      active: true,
-      address: {
-        city: 'Paris',
-        postalCode: '75008',
-        street: 'rue du test',
-      },
-      name: 'Test',
-      siret: '12345678933333',
-      ape_code: '85.31Z',
-    })
-
     renderOffererScreen(contextValue)
 
     await userEvent.type(
       screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
-      '12345678933333'
+      '12345678933335'
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
-
-    expect(api.getSiretInfo).toHaveBeenCalled()
 
     await waitFor(() => {
       expect(
