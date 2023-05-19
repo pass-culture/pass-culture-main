@@ -574,8 +574,6 @@ class PostProductTest:
             },
         )
 
-        print(response.json)
-
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
 
@@ -2943,8 +2941,6 @@ class PatchPriceCategoryTest:
     def test_update_with_error(self, client):
         venue, api_key = create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
-        print(event_offer.id)
-        print(api_key.provider)
         price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
