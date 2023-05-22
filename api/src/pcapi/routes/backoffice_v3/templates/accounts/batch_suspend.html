@@ -1,0 +1,48 @@
+<turbo-frame id="turbo-{{ div_id }}">
+<form action="{{ dst }}"
+      name="{{ dst | action_to_name }}"
+      method="post"
+      target="_top"
+      data-turbo="false"
+      class="modal-content">
+  {{ csrf_token }}
+  <div class="modal-header">
+    <h5 class="modal-title">Suspendre des utilisateurs en masse</h5>
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Fermer"></button>
+  </div>
+  <div class="modal-body row">
+    <p>
+      {{ users_count }}
+      {% if users_count > 1 %}
+        utilisateurs seront suspendus.
+      {% else %}
+        utilisateur sera suspendu.
+      {% endif %}
+    </p>
+    <p>
+      {{ cancellable_bookings_count }}
+      {% if cancellable_bookings_count > 1 %}
+        réservations seront annulées.
+      {% else %}
+        réservation sera annulée.
+      {% endif %}
+    </p>
+    <p>Voulez-vous continuer ?</p>
+    {% for form_field in form %}
+      <input type="hidden"
+             name="{{ form_field.name }}"
+             value="{{ form_field.data }}" />
+    {% endfor %}
+  </div>
+  <div class="modal-footer">
+    <button type="button"
+            class="btn btn-outline-primary"
+            data-bs-dismiss="modal">Annuler</button>
+    <button type="submit"
+            class="btn btn-primary">Confirmer</button>
+  </div>
+</form>
+</turbo-frame>

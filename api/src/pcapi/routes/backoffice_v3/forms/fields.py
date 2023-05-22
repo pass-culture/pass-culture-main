@@ -134,16 +134,22 @@ class PCPhoneNumberField(PCStringField):
     ]
 
 
-class PCOptCommentField(wtforms.StringField):
+class PCTextareaField(wtforms.StringField):
     widget = partial(widget, template="components/forms/textarea_field.html")
+
+    def __init__(self, label: str, rows: int = 3, **kwargs: typing.Any):
+        super().__init__(label, **kwargs)
+        self.rows = rows
+
+
+class PCOptCommentField(PCTextareaField):
     validators = [
         validators.Optional(""),
         validators.Length(min=1, max=1024, message="doit contenir entre %(min)d et %(max)d caractères"),
     ]
 
 
-class PCCommentField(wtforms.StringField):
-    widget = partial(widget, template="components/forms/textarea_field.html")
+class PCCommentField(PCTextareaField):
     validators = [
         validators.InputRequired("Information obligatoire"),
         validators.Length(min=1, max=1024, message="doit contenir entre %(min)d et %(max)d caractères"),
