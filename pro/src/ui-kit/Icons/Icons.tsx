@@ -18,10 +18,179 @@ function fuzzyMatch(pattern: string, str: string) {
 
 interface IconListItem {
   src: string
-  viewbox?: string
+  viewBox?: string
 }
 
-const iconList = [{ src: 'icons/user.svg' }]
+const iconList = [
+  { src: 'icons/user.svg', viewBox: '0 0 49 48' },
+  { src: 'icons/ico-action-pause.svg' },
+  { src: 'icons/ico-action-play.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/add-activation-code-error.svg', viewBox: '0 0 197 124' },
+  { src: 'icons/add-activation-code-light.svg', viewBox: '0 0 32 32' },
+  { src: 'icons/arrow-down.svg', viewBox: '0 0 32 32' },
+  { src: 'icons/ico-arrow-down-r.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-arrow-right.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-arrow-up-r.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-attention.svg', viewBox: '0 0 24 26' },
+  { src: 'icons/audio-disability.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-back.svg', viewBox: '0 0 24 17' },
+  { src: 'icons/ico-bookings-w.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-box.svg', viewBox: '0 0 33 32' },
+  { src: 'icons/ico-breadcrumb-arrow-right.svg', viewBox: '0 0 7 12' },
+  { src: 'icons/building.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-bulb.svg', viewBox: '0 0 22 26' },
+  { src: 'icons/ico-calendar-big.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-calendar-disabled.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-calendar-v2.svg', viewBox: '0 0 24 25' },
+  { src: 'icons/ico-caret-down.svg', viewBox: '0 0 13 10' },
+  { src: 'icons/ico-caret-right.svg', viewBox: '0 0 10 13' },
+  { src: 'icons/checkbox-check.svg', viewBox: '0 0 10 8' },
+  { src: 'icons/checkbox.svg', viewBox: '0 0 10 8' },
+  { src: 'icons/ico-circle-arrow-left.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-clear-red.svg', viewBox: '0 0 15 14' },
+  { src: 'icons/ico-close-b.svg', viewBox: '0 0 17 16' },
+  { src: 'icons/close-dialog.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/icons-close.svg', viewBox: '0 0 18 18' },
+  { src: 'icons/ico-close-r.svg', viewBox: '0 0 17 16' },
+  { src: 'icons/close-tag.svg', viewBox: '0 0 10 10' },
+  { src: 'icons/ico-compta.svg', viewBox: '0 0 20 23' },
+  { src: 'icons/ico-copy.svg', viewBox: '0 0 21 20' },
+  { src: 'icons/ico-desk.svg', viewBox: '0 0 49 48' },
+  { src: 'icons/ico-deconnect.svg', viewBox: '0 0 25 24' },
+  { src: 'icons/ico-double-check.svg' },
+  { src: 'icons/ico-download-filled.svg' },
+  { src: 'icons/ico-download.svg', viewBox: '0 0 20 20' },
+  {
+    src: 'icons/dropdown-disclosure-down-b-disabled.svg',
+    viewBox: '0 0 14 7',
+  },
+  { src: 'icons/dropdown-disclosure-down-b.svg', viewBox: '0 0 14 7' },
+  { src: 'icons/dropdown-disclosure-down-s-w.svg', viewBox: '0 0 14 7' },
+  { src: 'icons/ico-duo.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-duplicate-offer.svg', viewBox: '0 0 40 40' },
+  { src: 'icons/ico-email-red.svg', viewBox: '0 0 25 24' },
+  { src: 'icons/error.svg', viewBox: '0 0 18 18' },
+  { src: 'icons/ico-euro-grey.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-euro-v2.svg', viewBox: '0 0 24 25' },
+  { src: 'icons/ico-external-site-filled.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-external-site-red.svg', viewBox: '0 0 25 24' },
+  { src: 'icons/external-site.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-eye-full-close.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-eye-full-open.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-eye-hidden.svg', viewBox: '0 0 88 88' },
+  { src: 'icons/ico-eye-open-filled-black.svg' },
+  { src: 'icons/ico-filter-status-active.svg', viewBox: '0 0 16 16' },
+  { src: 'icons/ico-filter-status-black.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-filter-status-red.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/fraud.svg', viewBox: '0 0 88 88' },
+  { src: 'icons/ico-geoloc-solid.svg', viewBox: '0 0 21 30' },
+  { src: 'icons/ico-guichet-full.svg' },
+  { src: 'icons/ico-help.svg', viewBox: '0 0 30 30' },
+  { src: 'icons/ico-home.svg' },
+  { src: 'icons/ico-hourglass.svg' },
+  { src: 'icons/info.svg', viewBox: '0 0 78 78' },
+  { src: 'icons/ico-is-valid.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-left-arrow.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/library.svg', viewBox: '0 0 49 48' },
+  { src: 'icons/linear-gradient.svg', viewBox: '0 0 623 1024' }, // TODO replace by a jpg/png
+  { src: 'icons/loader.svg', viewBox: '0 0 32 32' },
+  { src: 'icons/loader-pc.svg', viewBox: '0 0 56 56' },
+  { src: 'icons/location.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/logo-allocine.svg', viewBox: '0 0 100 24' }, // TODO replace by a jpg/png
+  { src: 'icons/logo-boost.svg', viewBox: '0 0 386 254' }, // TODO replace by a jpg/png
+  { src: 'icons/logo-cgr.svg', viewBox: '0 0 283.46 255.12' }, // TODO replace by a jpg/png
+  { src: 'icons/logo-cdi-bookshop.svg', viewBox: '0 0 804 167.35' },
+  { src: 'icons/logo-cine-digital-service.svg', viewBox: '0 0 529 169' },
+  { src: 'icons/logo-decitre.svg', viewBox: '0 0 483 320' },
+  { src: 'icons/logo-fnac.svg', viewBox: '0 0 29 24' },
+  { src: 'icons/logo-libraires.svg', viewBox: '0 0 74 24' },
+  { src: 'icons/logo-librisoft.svg', viewBox: '0 0 526 206' },
+  { src: 'icons/logo-openAgenda.svg', viewBox: '0 0 44 44' },
+  { src: 'icons/logo-pass-culture.svg', viewBox: '0 0 114 84' },
+  { src: 'icons/logo-pass-culture-header.svg', viewBox: '0 0 119 40' },
+  { src: 'icons/logo-pass-culture-white.svg', viewBox: '0 0 282 120' },
+  { src: 'icons/logo-praxiel.svg', viewBox: '0 0 29 24' },
+  { src: 'icons/logo-tmic-ellipses.svg', viewBox: '0 0 390 120' },
+  { src: 'icons/logo-titeLive.svg', viewBox: '0 0 75 24' },
+  { src: 'icons/mental-disability.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-mini-arrow-left.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-mini-arrow-right.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-more-circle.svg', viewBox: '0 0 25 24' },
+  { src: 'icons/ico-more-horiz.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/motor-disability.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-new-offer.svg', viewBox: '0 0 40 40' },
+  { src: 'icons/ico-next-S.svg', viewBox: '0 0 11 23' },
+  { src: 'icons/ico-no-bookings.svg', viewBox: '0 0 124 124' },
+  { src: 'icons/ico-404.svg', viewBox: '0 0 308 194' },
+  { src: 'icons/ico-notification-error-red.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-notification-success.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-placeholder-offer-image.svg', viewBox: '0 0 80 80' },
+  { src: 'icons/ico-offers.svg', viewBox: '0 0 48 49' },
+  { src: 'icons/open-dropdown.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-other-download.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-other.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-outer-pen.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-pen-black-big.svg' },
+  { src: 'icons/ico-pen-black.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/pending.svg', viewBox: '0 0 44 44' },
+  { src: 'icons/ico-phone.svg', viewBox: '0 0 16 16' },
+  { src: 'icons/picto-info-grey.svg', viewBox: '0 0 22 22' },
+  { src: 'icons/picto-info.svg', viewBox: '0 0 22 22' },
+  { src: 'icons/picto-tip.svg', viewBox: '0 0 18 18' },
+  { src: 'icons/ico-plus.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-radio-off.svg', viewBox: '0 0 16 16' },
+  { src: 'icons/ico-radio-on.svg', viewBox: '0 0 16 16' },
+  { src: 'icons/reset.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-right-arrow.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-screen-play.svg', viewBox: '0 0 33 32' },
+  { src: 'icons/ico-search-gray.svg', viewBox: '0 0 124 125' },
+  { src: 'icons/ico-separator.svg', viewBox: '0 0 20 1' },
+  { src: 'icons/ico-signout.svg', viewBox: '0 0 48 49' },
+  { src: 'icons/ico-star.svg', viewBox: '0 0 38 36' },
+  { src: 'icons/ico-stars.svg', viewBox: '0 0 16 16' },
+  { src: 'icons/ico-stats.svg' },
+  { src: 'icons/ico-stats-grey.svg', viewBox: '0 0 88 88' },
+  { src: 'icons/ico-status-booked.svg', viewBox: '0 0 16 16' },
+  { src: 'icons/ico-status-cancelled.svg', viewBox: '0 0 16 16' },
+  { src: 'icons/ico-status-double-validated.svg', viewBox: '0 0 16 16' },
+  { src: 'icons/ico-status-draft.svg', viewBox: '0 0 16 16' },
+  { src: 'icons/ico-status-expired.svg', viewBox: '0 0 16 16' },
+  { src: 'icons/ico-status-inactive.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-status-pending.svg', viewBox: '0 0 16 16' },
+  { src: 'icons/ico-status-pending-full.svg', viewBox: '0 0 21 20' },
+  { src: 'icons/ico-status-pending-tag.svg', viewBox: '0 0 12 14' },
+  { src: 'icons/ico-status-reimbursed.svg', viewBox: '0 0 22 14' },
+  { src: 'icons/ico-status-rejected.svg', viewBox: '0 0 16 16' },
+  { src: 'icons/ico-status-sold-out.svg', viewBox: '0 0 16 16' },
+  { src: 'icons/ico-status-validated.svg', viewBox: '0 0 17 17' },
+  { src: 'icons/ico-status-validated-white.svg', viewBox: '0 0 17 17' },
+  { src: 'icons/ico-structure.svg', viewBox: '0 0 30 25' },
+  { src: 'icons/ico-structure-r.svg', viewBox: '0 0 28 25' },
+  { src: 'icons/ico-success.svg', viewBox: '0 0 88 88' },
+  { src: 'icons/ico-tag.svg', viewBox: '0 0 33 33' },
+  { src: 'icons/ico-template-offer.svg' },
+  { src: 'icons/ico-thing.svg' },
+  { src: 'icons/ticket-cross.svg', viewBox: '0 0 100 80' },
+  { src: 'icons/ico-trash.svg' },
+  { src: 'icons/ico-trophee.svg', viewBox: '0 0 24 25' },
+  { src: 'icons/ico-unavailable-gradient.svg', viewBox: '0 0 178 100' },
+  { src: 'icons/ico-unavailable-page.svg', viewBox: '0 0 317 198' },
+  { src: 'icons/ico-unfold.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-unavailable-page-white.svg', viewBox: '0 0 317 198' },
+  { src: 'icons/ico-user.svg', viewBox: '0 0 17 16' },
+  { src: 'icons/ico-validate-green.svg', viewBox: '0 0 15 14' },
+  { src: 'icons/validate.svg', viewBox: '0 0 56 56' },
+  { src: 'icons/ico-validate-p.svg', viewBox: '0 0 17 17' },
+  { src: 'icons/ico-validate-purple.svg', viewBox: '0 0 15 14' },
+  { src: 'icons/ico-valide-cercle.svg', viewBox: '0 0 88 88' },
+  { src: 'icons/visual-disability.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-warning-grey.svg' },
+  { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },
+  { src: 'icons/ico-subcategory.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-like.svg' },
+  { src: 'icons/ico-liked.svg' },
+  { src: 'icons/ico-chevron-adage.svg', viewBox: '0 0 20 20' },
+]
 
 export const Icons = () => {
   const [filteredIcons, setFilteredIcons] = useState<IconListItem[]>(iconList)
@@ -76,16 +245,16 @@ export const Icons = () => {
             onClick={onClickToggleIconColor}
           >
             {whiteIcon
-              ? 'Afficher les icons en noir'
-              : 'Afficher les icons en blanc'}
+              ? 'Afficher les icônes en noir'
+              : 'Afficher les icônes en blanc'}
           </Button>
           <Button
             variant={ButtonVariant.PRIMARY}
             onClick={onClickToggleBackgroundColor}
           >
             {blackBackground
-              ? 'Afficher les background en blanc'
-              : 'Afficher les background en noir'}
+              ? 'Afficher les backgrounds en blanc'
+              : 'Afficher les backgrounds en noir'}
           </Button>
         </div>
       </div>
@@ -116,7 +285,7 @@ export const Icons = () => {
               <SvgIcon
                 src={icon.src}
                 alt={icon.src}
-                viewBox={icon.viewbox}
+                viewBox={icon.viewBox}
                 className={styles['icon']}
               />
             </div>

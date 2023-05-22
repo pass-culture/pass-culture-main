@@ -139,7 +139,7 @@ $offer-image-width: rem.torem(176px);
   &-see-more {
     border: none;
     background-color: transparent;
-    color: #eb0055;
+    color: colors.$primary;
     font-weight: bold;
     display: flex;
     align-items: center;
@@ -148,7 +148,7 @@ $offer-image-width: rem.torem(176px);
 
     &-icon {
       margin-right: rem.torem(10px);
-      fill: #eb0055;
+      fill: colors.$primary;
 
       &-closed {
         transform: rotate(180deg);
