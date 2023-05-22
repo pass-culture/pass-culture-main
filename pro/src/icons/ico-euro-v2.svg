@@ -1,4 +1,5 @@
 <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icon">
 <g clip-path="url(#clip0_964_6562)">
 <g clip-path="url(#clip1_964_6562)">
 <circle opacity="0.4" cx="10.5" cy="13.8047" r="10.5" fill="#FFA5C0"/>
@@ -14,4 +15,5 @@
 <rect width="24" height="24" fill="white" transform="translate(0 0.304688)"/>
 </clipPath>
 </defs>
+</g>
 </svg>
