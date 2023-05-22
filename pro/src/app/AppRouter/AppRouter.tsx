@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import {
@@ -15,6 +16,9 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import NotFound from 'pages/Errors/NotFound/NotFound'
 import { selectActiveFeatures } from 'store/features/selectors'
 import { dehumanizedRoute } from 'utils/dehumanize'
+
+const sentryCreateBrowserRouter =
+  Sentry.wrapCreateBrowserRouter(createBrowserRouter)
 
 const RouteWrapper = ({ route }: { route: IRoute }) => {
   const { currentUser } = useCurrentUser()
@@ -65,7 +69,7 @@ const AppRouter = ({ routes }: { routes: IRoute[] }): JSX.Element => {
       element: <RouteWrapper route={route} />,
     }))
 
-  const router = createBrowserRouter([
+  const router = sentryCreateBrowserRouter([
     ...activeRoutes,
     { path: '*', element: <NotFound /> },
   ])
