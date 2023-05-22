@@ -154,11 +154,7 @@ describe('Signup', () => {
         })
       ).toBeInTheDocument()
       // and a telephone field
-      expect(
-        screen.getByRole('textbox', {
-          name: /Téléphone/,
-        })
-      ).toBeInTheDocument()
+      expect(screen.getByLabelText('Numéro de téléphone')).toBeInTheDocument()
       // and a SIREN field
       expect(
         screen.getByRole('textbox', {
@@ -190,9 +186,7 @@ describe('Signup', () => {
             'test@example.com'
           )
           await userEvent.type(
-            screen.getByRole('textbox', {
-              name: /Téléphone/,
-            }),
+            screen.getByLabelText('Numéro de téléphone'),
             '1234'
           )
           // We simulate onBlur to have email field touched
@@ -287,10 +281,7 @@ describe('Signup', () => {
           'Prénom'
         )
         await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /Téléphone/,
-          }),
-
+          screen.getByLabelText('Numéro de téléphone'),
           '+33722332233'
         )
         expect(submitButton).toBeEnabled()
@@ -362,9 +353,7 @@ describe('Signup', () => {
         await userEvent.type(screen.getByLabelText('Prénom'), 'Prénom')
 
         await userEvent.type(
-          screen.getByLabelText(
-            'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
-          ),
+          screen.getByLabelText('Numéro de téléphone'),
           '0722332200'
         )
         await userEvent.type(
@@ -383,9 +372,7 @@ describe('Signup', () => {
           )
         ).toBeInTheDocument()
 
-        const phoneInput = screen.getByLabelText(
-          'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
-        )
+        const phoneInput = screen.getByLabelText('Numéro de téléphone')
         await userEvent.clear(phoneInput)
         await userEvent.type(phoneInput, '0622332233')
         await userEvent.tab()
@@ -463,10 +450,7 @@ describe('Signup', () => {
           'Prénom'
         )
         await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /Téléphone/,
-          }),
-
+          screen.getByLabelText('Numéro de téléphone'),
           '+33722332233'
         )
         expect(submitButton).toBeEnabled()
