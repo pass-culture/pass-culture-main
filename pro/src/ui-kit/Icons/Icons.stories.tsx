@@ -1,9 +1,9 @@
 import React from 'react'
 
-import { Icons as IconsComponent } from './Icons'
+import { Icons } from './Icons'
 
 export default {
   title: 'icons/icons',
 }
 
-export const SourceIcons = () => <IconsComponent />
+export const SourceIcons = () => <Icons />
