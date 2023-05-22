@@ -3,7 +3,7 @@
       name="{{ dst | action_to_name }}"
       method="post"
       target="_top"
-      data-turbo="false"
+      data-turbo="{{ data_turbo or 'false' }}"
       class="modal-content">
   {{ csrf_token }}
   <div class="modal-header">
@@ -20,7 +20,10 @@
         {% if "Hidden" in form_field.type %}
           {{ form_field }}
         {% else %}
-          <div class="my-1">{{ form_field }}</div>
+          <div class="my-1">
+            {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
+            {{ form_field }}
+          </div>
         {% endif %}
       {% endfor %}
     </div>

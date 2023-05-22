@@ -5,11 +5,23 @@
 {% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
 {% from "components/presentation/details/tabs.html" import build_details_tab_content %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% extends "layouts/standard.html" %}
 {% block title %}
   Suspension de comptes jeunes
 {% endblock title %}
 {% block main_content %}
+  <div>
+    {% set turbo_src = url_for("backoffice_v3_web.users.get_batch_suspend_users_form") %}
+    <button class="btn btn-outline-primary lead fw-bold mt-2"
+            data-bs-toggle="modal"
+            data-bs-target="#batch-suspend-users-form"
+            type="button"
+            onclick="document.getElementById('turbo-batch-suspend-users-form').src='{{ turbo_src }}';">
+      Suspendre des utilisateurs en masse via leur ID
+    </button>
+    {{ build_lazy_modal(turbo_src, "batch-suspend-users-form") }}
+  </div>
   <div class="row row-cols-1 g-4 py-3">
     <div class="col">
       <h2 class="card-title text-primary">Noms de domaines</h2>

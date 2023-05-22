@@ -5,9 +5,12 @@
           name="{{ field.name }}"
           aria-label="{{ field.name }}"
           {% if field.flags.required %}required{% endif %}>
-    <option value="" selected>---Sélectionnez une valeur---</option>
+    <option value=""
+            {% if not field.data %}selected{% endif %}>---Sélectionnez une valeur---</option>
     {% for choice_value, choice_label in field.choices %}
-      <option value="{{ choice_value }}">{{ choice_label | i18n_public_account }}</option>
+      <option value="{{ choice_value }}" {{ 'selected' if field.data==choice_value else '' }}>
+        {{ choice_label | i18n_public_account }}
+      </option>
     {% endfor %}
   </select>
   <label for="{{ select_with_placeholder_value_field_id }}">{{ field.label.text }}</label>
