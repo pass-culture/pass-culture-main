@@ -81,6 +81,7 @@ smoothscroll.polyfill()
 
 // Start app
 const root = createRoot(document.getElementById('root'))
+
 root.render(
   <React.StrictMode>
     <Root />
