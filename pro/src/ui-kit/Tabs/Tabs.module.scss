@@ -14,6 +14,7 @@
 
     &-icon {
       fill: colors.$black;
+      color: colors.$black;
       width: rem.torem(20px);
       height: auto;
       margin-right: rem.torem(12px);
@@ -36,16 +37,19 @@
     &.is-selected {
       border-bottom: rem.torem(2px) solid colors.$primary;
 
-      .tabs-tab-link, .tabs-tab-button {
+      .tabs-tab-link,
+      .tabs-tab-button {
         color: colors.$primary;
       }
 
       .tabs-tab-icon {
         fill: colors.$primary;
+        color: colors.$primary;
       }
 
       .tabs-tab-button svg {
         fill: colors.$primary;
+        color: colors.$primary;
       }
     }
 
