@@ -20,6 +20,7 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scripts.clean_database",
         "pcapi.scripts.external_users.commands",
         "pcapi.scripts.full_index_offers",
+        "pcapi.scripts.offer.fill_product_and_offer_ean",
         "pcapi.scripts.full_index_collective_offers",
         "pcapi.scripts.install_data",
         "pcapi.scripts.offerer.commands",
