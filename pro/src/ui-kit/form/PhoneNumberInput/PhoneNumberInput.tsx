@@ -28,12 +28,13 @@ const PhoneNumberInput = ({
   )
   const [phoneInputValue, setPhoneInputValue] = useState<string>('')
 
-  const validatePhoneNumber = (
-    phoneNumberInputValue: string
-  ): string | undefined => {
+  const validateAndSetPhoneNumber = (
+    phoneNumberInputValue: string,
+    currentCountryCode: CountryCode
+  ): string => {
     const phoneNumber = parsePhoneNumberFromString(
       phoneNumberInputValue,
-      countryCode
+      currentCountryCode
     )
 
     // save formatted phone number i.e +33639980101 even if user types 0639980101 or 639980101
@@ -57,18 +58,19 @@ const PhoneNumberInput = ({
     }
 
     helpers.setError(undefined)
-    return phoneNumber?.nationalNumber
+    return phoneNumber.nationalNumber
   }
 
   const onPhoneNumberChange = (event: ChangeEvent<HTMLInputElement>) => {
     const phoneNumberInputValue = event.target.value
-    validatePhoneNumber(phoneNumberInputValue)
+    validateAndSetPhoneNumber(phoneNumberInputValue, countryCode)
   }
 
   const onPhoneCodeChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setCountryCode(e.target.value as CountryCode)
+    const changedCountryCode = e.target.value as CountryCode
+    setCountryCode(changedCountryCode)
     if (phoneInputValue) {
-      validatePhoneNumber(phoneInputValue)
+      validateAndSetPhoneNumber(phoneInputValue, changedCountryCode)
     }
   }
 
@@ -77,7 +79,10 @@ const PhoneNumberInput = ({
       helpers.setTouched(true, false)
     }
 
-    const phoneNumberInputValue = validatePhoneNumber(event.target.value) ?? ''
+    const phoneNumberInputValue = validateAndSetPhoneNumber(
+      event.target.value,
+      countryCode
+    )
     setPhoneInputValue(phoneNumberInputValue)
   }
 
@@ -102,7 +107,7 @@ const PhoneNumberInput = ({
           </span>
         )}
       </legend>
-      <label htmlFor="countryCode" className={styles['label-hidden']}>
+      <label htmlFor="countryCode" className={styles['label-visually-hidden']}>
         Indicatif téléphonique
       </label>
       <CodeCountrySelect
@@ -113,7 +118,7 @@ const PhoneNumberInput = ({
         onChange={onPhoneCodeChange}
       />
 
-      <label htmlFor={name} className={styles['label-hidden']}>
+      <label htmlFor={name} className={styles['label-visually-hidden']}>
         Numéro de téléphone
       </label>
       <BaseInput

@@ -5,6 +5,7 @@
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 $input-phone-number-padding-left: calc(
   countryCodeSelect.$input-width + rem.torem(8px) + countryCodeSelect.$focus-border-width
@@ -16,6 +17,7 @@ $input-phone-number-padding-left: calc(
 
   &-input {
     padding-left: calc($input-phone-number-padding-left + rem.torem(1px));
+    
     &:focus {
       padding-left: $input-phone-number-padding-left;
     }
@@ -52,8 +54,8 @@ $input-phone-number-padding-left: calc(
   }
 }
 
-.label-hidden {
-  display: none;
+.label-visually-hidden {
+  @include a11y.visually-hidden;
 }
 
 .country-code-select {
