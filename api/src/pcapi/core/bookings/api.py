@@ -439,8 +439,11 @@ def update_cancellation_limit_dates(
 def _compute_edition_cancellation_limit_date(
     event_beginning: datetime.datetime, edition_date: datetime.datetime
 ) -> datetime.datetime:
-    after_edition_cancellation_date = edition_date + constants.CONFIRM_BOOKING_AFTER_CREATION_DELAY
-    return min(event_beginning, after_edition_cancellation_date)
+    after_edition_cancellation_date = min(
+        edition_date + constants.CONFIRM_BOOKING_AFTER_CREATION_DELAY,
+        event_beginning - constants.CONFIRM_EDITED_BOOKING_BEFORE_EVENT_DELAY,
+    )
+    return after_edition_cancellation_date
 
 
 def recompute_dnBookedQuantity(stock_ids: list[int]) -> None:

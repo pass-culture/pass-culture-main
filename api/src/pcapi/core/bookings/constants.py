@@ -3,6 +3,7 @@ import datetime
 
 ARCHIVE_DELAY = datetime.timedelta(days=30)
 CONFIRM_BOOKING_AFTER_CREATION_DELAY = datetime.timedelta(hours=48)
+CONFIRM_EDITED_BOOKING_BEFORE_EVENT_DELAY = datetime.timedelta(minutes=5)
 CONFIRM_BOOKING_BEFORE_EVENT_DELAY = datetime.timedelta(hours=48)
 BOOKINGS_AUTO_EXPIRY_DELAY = datetime.timedelta(days=30)
 BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY = datetime.timedelta(days=10)

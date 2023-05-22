@@ -1013,7 +1013,8 @@ class UpdateCancellationLimitDatesTest:
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
-        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == tomorrow
+        five_min_prior_event = tomorrow - timedelta(minutes=5)
+        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == five_min_prior_event
 
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_in_three_days(self):
         #  Given
