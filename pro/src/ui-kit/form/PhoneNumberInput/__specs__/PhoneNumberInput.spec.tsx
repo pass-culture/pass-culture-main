@@ -41,9 +41,7 @@ describe('PhoneNumberInput', () => {
 
     it('should change placeholder when user change country code', async () => {
       renderPhoneNumberInput()
-      const countryCodeSelect = screen.getByLabelText(
-        'Sélectionner un indicatif téléphonique'
-      )
+      const countryCodeSelect = screen.getByLabelText('Indicatif téléphonique')
 
       await userEvent.selectOptions(countryCodeSelect, '+590')
 
@@ -65,7 +63,7 @@ describe('PhoneNumberInput', () => {
 
     it('should show an error if user touched input and did not enter any phone number', async () => {
       renderPhoneNumberInput()
-      const input = screen.getByLabelText('Téléphone')
+      const input = screen.getByText('Numéro de téléphone')
 
       await userEvent.click(input)
       await userEvent.tab()
@@ -77,12 +75,10 @@ describe('PhoneNumberInput', () => {
 
     it('should call phone validation with country code', async () => {
       renderPhoneNumberInput()
-      const countryCodeSelect = screen.getByLabelText(
-        'Sélectionner un indicatif téléphonique'
-      )
+      const countryCodeSelect = screen.getByLabelText('Indicatif téléphonique')
       await userEvent.selectOptions(countryCodeSelect, '+590')
 
-      const input = screen.getByLabelText('Téléphone')
+      const input = screen.getByLabelText('Numéro de téléphone')
 
       await userEvent.type(input, '123')
       await userEvent.tab()
@@ -91,20 +87,6 @@ describe('PhoneNumberInput', () => {
       expect(
         screen.queryByText('Veuillez entrer un numéro de téléphone valide')
       ).toBeInTheDocument()
-    })
-  })
-
-  describe('label', () => {
-    it('default label', () => {
-      renderPhoneNumberInput()
-
-      expect(screen.getByLabelText('Téléphone')).toBeInTheDocument()
-    })
-
-    it('it should have a custom label when set', async () => {
-      renderPhoneNumberInput('Custom Label')
-      expect(screen.getByLabelText('Custom Label')).toBeInTheDocument()
-      expect(screen.queryByLabelText('Téléphone')).not.toBeInTheDocument()
     })
   })
 })

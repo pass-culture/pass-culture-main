@@ -3,7 +3,7 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import type { CountryCode } from 'libphonenumber-js'
 import React, { ChangeEvent, FocusEvent, useEffect, useState } from 'react'
 
-import { BaseInput, FieldLayout } from '../shared'
+import { BaseInput, FieldError } from '../shared'
 import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import CodeCountrySelect from './CodeCountrySelect/CountryCodeSelect'
@@ -26,7 +26,7 @@ const PhoneNumberInput = ({
   const [countryCode, setCountryCode] = useState<CountryCode>(
     PHONE_CODE_COUNTRY_CODE_OPTIONS[0].value
   )
-  const [phoneInutValue, setPhoneInputValue] = useState<string>('')
+  const [phoneInputValue, setPhoneInputValue] = useState<string>('')
 
   const validatePhoneNumber = (
     phoneNumberInputValue: string
@@ -37,10 +37,14 @@ const PhoneNumberInput = ({
     )
 
     // save formatted phone number i.e +33639980101 even if user types 0639980101 or 639980101
-    helpers.setValue(phoneNumber?.number, false)
+    if (phoneNumber) {
+      helpers.setValue(phoneNumber?.number, false)
+    }
+
     setPhoneInputValue(phoneNumberInputValue)
 
     if (isOptional && phoneNumberInputValue === '') {
+      helpers.setValue('')
       helpers.setError(undefined)
       return phoneNumberInputValue
     }
@@ -63,8 +67,8 @@ const PhoneNumberInput = ({
 
   const onPhoneCodeChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setCountryCode(e.target.value as CountryCode)
-    if (phoneInutValue) {
-      validatePhoneNumber(phoneInutValue)
+    if (phoneInputValue) {
+      validatePhoneNumber(phoneInputValue)
     }
   }
 
@@ -89,35 +93,48 @@ const PhoneNumberInput = ({
   }, [field.value])
 
   return (
-    <FieldLayout
-      label={label}
-      name={name}
-      isOptional={isOptional}
-      showError={meta.touched && !!meta.error}
-      error={meta.error}
-    >
-      <div className={styles['phone-number-input-wrapper']}>
-        <CodeCountrySelect
-          disabled={Boolean(disabled)}
-          options={PHONE_CODE_COUNTRY_CODE_OPTIONS}
-          className={styles['country-code-select']}
-          value={countryCode}
-          onChange={onPhoneCodeChange}
-        />
+    <fieldset className={styles['phone-number-input-wrapper']}>
+      <legend className={styles['phone-number-input-legend']}>
+        {label}
+        {isOptional && (
+          <span className={styles['phone-number-input-optional']}>
+            Optionnel
+          </span>
+        )}
+      </legend>
+      <label htmlFor="countryCode" className={styles['label-hidden']}>
+        Indicatif téléphonique
+      </label>
+      <CodeCountrySelect
+        disabled={Boolean(disabled)}
+        options={PHONE_CODE_COUNTRY_CODE_OPTIONS}
+        className={styles['country-code-select']}
+        value={countryCode}
+        onChange={onPhoneCodeChange}
+      />
 
-        <BaseInput
-          disabled={disabled}
-          hasError={meta.touched && !!meta.error}
-          placeholder={PLACEHOLDER_MAP[countryCode]}
-          type="text"
-          name={name}
-          value={phoneInutValue}
-          onChange={onPhoneNumberChange}
-          className={styles['phone-number-input']}
-          onBlur={onPhoneNumberBlur}
-        />
+      <label htmlFor={name} className={styles['label-hidden']}>
+        Numéro de téléphone
+      </label>
+      <BaseInput
+        disabled={disabled}
+        hasError={meta.touched && !!meta.error}
+        placeholder={PLACEHOLDER_MAP[countryCode]}
+        type="text"
+        name={name}
+        value={phoneInputValue}
+        onChange={onPhoneNumberChange}
+        className={styles['phone-number-input']}
+        onBlur={onPhoneNumberBlur}
+      />
+      <div className={styles['phone-number-input-footer']}>
+        {meta.error && (
+          <div className={styles['phone-number-input-error']}>
+            <FieldError name={name}>{meta.error}</FieldError>
+          </div>
+        )}
       </div>
-    </FieldLayout>
+    </fieldset>
   )
 }
 

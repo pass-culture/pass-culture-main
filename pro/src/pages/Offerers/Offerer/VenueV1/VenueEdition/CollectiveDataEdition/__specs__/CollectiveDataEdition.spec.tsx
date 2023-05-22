@@ -160,7 +160,7 @@ describe('CollectiveDataEdition', () => {
       )
       const studentsField = screen.getByLabelText(/Public cible/)
       const websiteField = screen.getByLabelText(/URL de votre site web/)
-      const phoneField = screen.getByLabelText(/Téléphone/)
+      const phoneField = screen.getByLabelText(/Numéro de téléphone/)
       const emailField = screen.getByLabelText(/E-mail/)
       const domainsField = screen.getByLabelText(
         /Domaine artistique et culturel/
@@ -206,7 +206,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitForLoader()
 
-      const phoneField = screen.getByLabelText(/Téléphone/)
+      const phoneField = screen.getByLabelText(/Numéro de téléphone/)
       await userEvent.type(phoneField, '0612345678')
       await userEvent.click(screen.getByText('Retour page lieu'))
 
@@ -227,7 +227,7 @@ describe('CollectiveDataEdition', () => {
       await waitForLoader()
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
-      const phoneField = screen.getByLabelText(/Téléphone/)
+      const phoneField = screen.getByLabelText(/Numéro de téléphone/)
       const emailField = screen.getByLabelText(/E-mail/)
       const title = screen.getByText('Présentation pour les enseignants')
 
@@ -256,7 +256,7 @@ describe('CollectiveDataEdition', () => {
       await waitForLoader()
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
-      const phoneField = screen.getByLabelText(/Téléphone/)
+      const phoneField = screen.getByLabelText(/Numéro de téléphone/)
       const emailField = screen.getByLabelText(/E-mail/)
       const title = screen.getByText('Présentation pour les enseignants')
 
@@ -287,7 +287,7 @@ describe('CollectiveDataEdition', () => {
       await waitForLoader()
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
-      const phoneField = screen.getByLabelText(/Téléphone/)
+      const phoneField = screen.getByLabelText(/Numéro de téléphone/)
       const emailField = screen.getByLabelText(/E-mail/)
       const title = screen.getByText('Présentation pour les enseignants')
 

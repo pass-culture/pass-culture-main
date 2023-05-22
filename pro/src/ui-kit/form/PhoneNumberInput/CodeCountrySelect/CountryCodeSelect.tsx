@@ -31,10 +31,10 @@ const CountryCodeSelect = ({
       />
       <select
         className={styles['select-input']}
+        id="countryCode"
         disabled={disabled}
         value={value}
         onChange={onChange}
-        aria-label="Sélectionner un indicatif téléphonique"
       >
         {options.map(option => (
           <option key={option.value} value={option.value} label={option.label}>
