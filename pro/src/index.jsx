@@ -1,9 +1,15 @@
 import './styles/index.scss'
-
 import { init as SentryInit } from '@sentry/browser'
+import * as Sentry from '@sentry/react'
 import { Integrations as TracingIntegrations } from '@sentry/tracing'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
+import {
+  useLocation,
+  useNavigationType,
+  createRoutesFromChildren,
+  matchRoutes,
+} from 'react-router-dom'
 import smoothscroll from 'smoothscroll-polyfill'
 
 import Root from 'Root'
@@ -23,7 +29,17 @@ if (SENTRY_SERVER_URL) {
     dsn: SENTRY_SERVER_URL,
     environment: ENVIRONMENT_NAME,
     release: config.version,
-    integrations: [new TracingIntegrations.BrowserTracing()],
+    integrations: [
+      new TracingIntegrations.BrowserTracing({
+        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
+          React.useEffect,
+          useLocation,
+          useNavigationType,
+          createRoutesFromChildren,
+          matchRoutes
+        ),
+      }),
+    ],
     tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
   })
 }
