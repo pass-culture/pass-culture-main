@@ -1,5 +1,9 @@
+import re
+import typing
+
 from flask import url_for
 from flask_wtf import FlaskForm
+import wtforms
 
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants
@@ -39,3 +43,30 @@ def get_toggle_suspension_args(user: users_models.User) -> dict:
             "suspension_dst": url_for("backoffice_v3_web.users.unsuspend_user", user_id=user.id),
         }
     return {}
+
+
+class BatchSuspendUsersForm(SuspendUserForm):
+    user_ids = fields.PCTextareaField(
+        "Liste des ID d'utilisateurs",
+        rows=10,
+        validators=(
+            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.Length(min=1, max=10000, message="doit contenir entre %(min)d et %(max)d caractères"),
+        ),
+    )
+
+    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+        super().__init__(*args, **kwargs)
+        self._fields.move_to_end("user_ids", last=False)
+
+    def validate_user_ids(self, user_ids: fields.PCTextareaField) -> fields.PCTextareaField:
+        if user_ids.data:
+            if not re.match(r"^[\d\s,;]+$", user_ids.data):
+                raise wtforms.validators.ValidationError(
+                    "Seuls les chiffres, espaces, tabulations, retours à la ligne et virgules sont autorisés"
+                )
+            user_ids.data = " ".join(re.split(r"[\s,;]+", user_ids.data)).strip()
+        return user_ids
+
+    def get_user_ids(self) -> set[int]:
+        return {int(user_id) for user_id in self.user_ids.data.split(" ")}
