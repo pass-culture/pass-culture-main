@@ -9,9 +9,9 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class FeaturesToggleTest:
     @override_features(ENABLE_NATIVE_APP_RECAPTCHA=False)
-    def toggle_feature_flags(self, client):
+    def test_set_features(self, client):
         response = client.patch(
-            "/native/v1/features",
+            "/testing/features",
             json={
                 "features": [
                     {
