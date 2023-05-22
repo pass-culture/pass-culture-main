@@ -23,7 +23,8 @@ jobs:
       ENV: staging
       CHANNEL: "${{ github.event.inputs.releaseNumber }}.0.0"
       EXPIRES: "30d"
-  
+      PUSH_RELEASE_TO_SENTRY: true
+
   create-pro-integration-release:
     uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
     secrets:
@@ -33,7 +34,7 @@ jobs:
       ENV: integration
       CHANNEL: "${{ github.event.inputs.releaseNumber }}.0.0"
       EXPIRES: "30d"
-  
+
   create-pro-production-release:
     uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
     secrets:
@@ -43,7 +44,7 @@ jobs:
       ENV: production
       CHANNEL: "${{ github.event.inputs.releaseNumber }}.0.0"
       EXPIRES: "30d"
-      
+
   build-and-tag-version:
     name: Build and tag version
     uses: ./.github/workflows/reusable--build-and-tag.yml
@@ -54,7 +55,7 @@ jobs:
 
   create-maintenance-branch:
     name: Create maintenance branch
-    needs: 
+    needs:
       - build-and-tag-version
       - create-pro-production-release
       - create-pro-staging-release

@@ -49,7 +49,8 @@ jobs:
       ENV: staging
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
       EXPIRES: "30d"
-  
+      PUSH_RELEASE_TO_SENTRY: true
+
   create-pro-integration-release:
     needs: find-hotfix-tag-number
     uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
@@ -60,7 +61,7 @@ jobs:
       ENV: integration
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
       EXPIRES: "30d"
-  
+
   create-pro-production-release:
     needs: find-hotfix-tag-number
     uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
@@ -71,7 +72,7 @@ jobs:
       ENV: production
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
       EXPIRES: "30d"
-      
+
   build-and-tag-version:
     needs: find-hotfix-tag-number
     name: Build and tag version
