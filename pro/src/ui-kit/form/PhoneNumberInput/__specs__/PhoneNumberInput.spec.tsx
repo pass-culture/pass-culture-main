@@ -48,56 +48,43 @@ describe('PhoneNumberInput', () => {
       screen.getByPlaceholderText(guadeloupePlaceholder as string)
     ).toBeInTheDocument()
   })
-})
 
-it('should change placeholder when user change country code', async () => {
-  renderPhoneNumberInput()
-  const countryCodeSelect = screen.getByLabelText('Indicatif téléphonique')
+  it('should not show an error if input has not been touched', () => {
+    renderPhoneNumberInput()
+    expect(
+      screen.queryByText('Veuillez entrer un numéro de téléphone valide')
+    ).not.toBeInTheDocument()
+  })
 
-  await userEvent.selectOptions(countryCodeSelect, '+590')
+  it('should show an error if user touched input and did not enter any phone number', async () => {
+    renderPhoneNumberInput()
+    const input = screen.getByText('Numéro de téléphone')
 
-  const guadeloupePlaceholder = PLACEHOLDER_MAP['GP']
-  expect(guadeloupePlaceholder).toBeDefined()
-  expect(
-    screen.getByPlaceholderText(guadeloupePlaceholder as string)
-  ).toBeInTheDocument()
-})
+    await userEvent.click(input)
+    await userEvent.tab()
 
-it('should not show an error if input has not been touched', () => {
-  renderPhoneNumberInput()
-  expect(
-    screen.queryByText('Veuillez entrer un numéro de téléphone valide')
-  ).not.toBeInTheDocument()
-})
+    expect(
+      screen.queryByText('Veuillez entrer un numéro de téléphone valide')
+    ).toBeInTheDocument()
+  })
 
-it('should show an error if user touched input and did not enter any phone number', async () => {
-  renderPhoneNumberInput()
-  const input = screen.getByText('Numéro de téléphone')
+  it('should call phone validation with country code', async () => {
+    renderPhoneNumberInput()
+    const countryCodeSelect = screen.getByLabelText('Indicatif téléphonique')
+    await userEvent.selectOptions(countryCodeSelect, '+590')
 
-  await userEvent.click(input)
-  await userEvent.tab()
+    const input = screen.getByLabelText('Numéro de téléphone')
 
-  expect(
-    screen.queryByText('Veuillez entrer un numéro de téléphone valide')
-  ).toBeInTheDocument()
-})
+    await userEvent.type(input, '123')
+    await userEvent.tab()
 
-it('should call phone validation with country code', async () => {
-  renderPhoneNumberInput()
-  const countryCodeSelect = screen.getByLabelText('Indicatif téléphonique')
-  await userEvent.selectOptions(countryCodeSelect, '+590')
+    expect(parsePhoneNumberFromString).toHaveBeenLastCalledWith('123', 'GP')
+    expect(
+      screen.queryByText('Veuillez entrer un numéro de téléphone valide')
+    ).toBeInTheDocument()
 
-  const input = screen.getByLabelText('Numéro de téléphone')
+    await userEvent.selectOptions(countryCodeSelect, '+33')
 
-  await userEvent.type(input, '123')
-  await userEvent.tab()
-
-  expect(parsePhoneNumberFromString).toHaveBeenLastCalledWith('123', 'GP')
-  expect(
-    screen.queryByText('Veuillez entrer un numéro de téléphone valide')
-  ).toBeInTheDocument()
-
-  await userEvent.selectOptions(countryCodeSelect, '+33')
-
-  expect(parsePhoneNumberFromString).toHaveBeenLastCalledWith('123', 'FR')
+    expect(parsePhoneNumberFromString).toHaveBeenLastCalledWith('123', 'FR')
+  })
 })
