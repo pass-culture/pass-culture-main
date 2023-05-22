@@ -84,11 +84,13 @@
   width: rem.torem(40px);
   height: rem.torem(40px);
   fill: colors.$black;
+  color: colors.$black;
 }
 
 .icon-white {
   .icon {
     fill: colors.$white;
+    color: colors.$white;
   }
 }
 
