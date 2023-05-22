@@ -48,6 +48,7 @@ class EditCustomReimbursementRule(FlaskForm):
         choices=[],
         validate_choice=False,
         endpoint="backoffice_v3_web.autocomplete_offerers",
+        validators=[wtforms.validators.InputRequired("Information obligatoire")],
     )
     subcategories = fields.PCSelectMultipleField(
         "Sous-catégories", choices=map(lambda s: (s.id, s.pro_label), subcategories_v2.ALL_SUBCATEGORIES)
@@ -62,7 +63,10 @@ class EditCustomReimbursementRule(FlaskForm):
             wtforms.validators.NumberRange(max=100, message="Doit contenir un nombre inférieur ou égal à 100"),
         ],
     )
-    start_date = fields.PCDateField("Date de début d'application")
+    start_date = fields.PCDateField(
+        "Date de début d'application",
+        validators=[wtforms.validators.InputRequired("Information obligatoire")],
+    )
     end_date = fields.PCDateField(
         "Date de fin d'application (optionnelle)", validators=(wtforms.validators.Optional(),)
     )
