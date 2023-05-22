@@ -614,27 +614,6 @@ def test_public_api(client):
                     "title": "FavoritesCountResponse",
                     "type": "object",
                 },
-                "FeatureToggle": {
-                    "properties": {
-                        "isActive": {"title": "Isactive", "type": "boolean"},
-                        "name": {"title": "Name", "type": "string"},
-                    },
-                    "required": ["name", "isActive"],
-                    "title": "FeatureToggle",
-                    "type": "object",
-                },
-                "FeaturesToggleRequest": {
-                    "properties": {
-                        "features": {
-                            "items": {"$ref": "#/components/schemas/FeatureToggle"},
-                            "title": "Features",
-                            "type": "array",
-                        }
-                    },
-                    "required": ["features"],
-                    "title": "FeaturesToggleRequest",
-                    "type": "object",
-                },
                 "GenreType": {
                     "description": "An enumeration.",
                     "enum": ["BOOK", "MUSIC", "SHOW", "MOVIE"],
@@ -2312,30 +2291,6 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "get_cultural_survey_questions <GET>",
-                    "tags": [],
-                }
-            },
-            "/native/v1/features": {
-                "patch": {
-                    "description": "",
-                    "operationId": "patch_/native/v1/features",
-                    "parameters": [],
-                    "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/FeaturesToggleRequest"}}
-                        }
-                    },
-                    "responses": {
-                        "204": {"description": "No Content"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "set_feature <PATCH>",
                     "tags": [],
                 }
             },
