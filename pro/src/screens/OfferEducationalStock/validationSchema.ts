@@ -61,7 +61,8 @@ export const generateValidationSchema = (
       .nullable()
       .required('Champ requis')
       .when('eventDate', {
-        is: (eventDate: string) => isSameDay(new Date(eventDate), new Date()),
+        is: (eventDate: string) =>
+          isSameDay(new Date(eventDate), new Date()) && !preventPriceIncrease,
         then: schema =>
           schema.test({
             name: 'is-before-current-time',
