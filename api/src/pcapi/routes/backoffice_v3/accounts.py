@@ -213,6 +213,7 @@ def render_public_account_details(
     return render_template(
         "accounts/get.html",
         user=user,
+        beneficiaryFraudReviews=user.beneficiaryFraudReviews,
         tunnel=tunnel,
         id_check_histories_desc=id_check_histories_desc,
         credit=domains_credit,
