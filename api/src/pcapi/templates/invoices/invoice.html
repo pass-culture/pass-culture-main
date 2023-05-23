@@ -57,12 +57,12 @@
             margin: 0;
         }
 
-        .custumerInfo {
+        .customerInfo {
             margin: 1cm 0;
         }
 
-        .custumerInfo > p {
-            margin: 0.1cm;
+        .customerInfo > p {
+            margin: 0.1cm 0;
         }
 
         h3 {
@@ -157,6 +157,7 @@
 
         .coloredTitle {
             color: #870087;
+            font-weight: 700;
         }
 
         .coloredSection {
@@ -191,12 +192,12 @@
     </defs>
 </svg>
 <h1>Justificatif de remboursement</h1>
-<div class="custumerInfo">
+<div class="customerInfo">
     <p><b>Structure :</b> {{ reimbursement_point.managingOfferer.name }} - {{ reimbursement_point.managingOfferer.siren }}</p>
     <p><b>Point de remboursement :</b> {{ reimbursement_point_name }} - {{ reimbursement_point_iban }}</p>
 </div>
 <h3 class="coloredTitle">
-    Remboursement des réservations validées entre le {{ period_start.strftime("%d/%m/%y") }} et le {{ period_end.strftime("%d/%m/%y") }}, sauf cas exceptionnels
+    Remboursement des réservations validées entre le {{ period_start.strftime("%d/%m/%y") }} et le {{ period_end.strftime("%d/%m/%y") }}, sauf cas exceptionnels.
 </h3>
 <h3>
     Détail des offres remboursées incluant la contribution offreur,
