@@ -142,7 +142,7 @@ const Offerers = (): JSX.Element => {
           )}
         </div>
         <Button
-          variant={ButtonVariant.PRIMARY}
+          variant={ButtonVariant.SECONDARY}
           onClick={() => setShowLinkDialog(true)}
         >
           Rejoindre cet espace
