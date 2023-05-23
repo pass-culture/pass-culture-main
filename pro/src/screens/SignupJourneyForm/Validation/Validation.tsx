@@ -180,7 +180,7 @@ const Validation = (): JSX.Element => {
         onClickNext={onSubmit}
         isDisabled={false}
         withRightIcon={false}
-        nextStepTitle="Valider et créer mon espace"
+        nextStepTitle="Valider et créer ma structure"
         logEvent={logEvent}
       />
     </div>
