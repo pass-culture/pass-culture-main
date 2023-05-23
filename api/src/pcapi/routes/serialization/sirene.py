@@ -25,3 +25,4 @@ class SiretInfo(serialization.BaseModel):
     active: bool
     address: Address
     ape_code: str
+    legal_category_code: str

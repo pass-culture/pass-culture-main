@@ -105,6 +105,7 @@ describe('components | Informations', () => {
         postalCode: '14400',
       },
       ape_code: '95.07A',
+      legal_category_code: '1000',
     })
     jest
       .spyOn(apiAdresse, 'getDataFromAddress')
