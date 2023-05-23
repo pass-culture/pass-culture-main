@@ -1,7 +1,11 @@
+import difflib
+import json
+
+
 def test_public_api(client):
     response = client.get("/native/v1/openapi.json")
     assert response.status_code == 200
-    assert response.json == {
+    expected = {
         "components": {
             "schemas": {
                 "AccountRequest": {
@@ -3270,3 +3274,7 @@ def test_public_api(client):
         "security": [],
         "tags": [],
     }
+    got_lines = json.dumps(response.json, indent=2, sort_keys=True).splitlines()
+    expected_lines = json.dumps(expected, indent=2, sort_keys=True).splitlines()
+    diff = "\n".join(difflib.unified_diff(got_lines, expected_lines))
+    assert response.json == expected, f"Got diff from expected schema: {diff}"
