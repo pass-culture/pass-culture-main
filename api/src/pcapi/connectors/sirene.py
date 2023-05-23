@@ -80,6 +80,7 @@ class SiretInfo(pydantic.BaseModel):
     name: str
     address: _Address
     ape_code: str
+    legal_category_code: str
 
 
 def get_siren(siren: str, with_address: bool = True) -> SirenInfo:
@@ -172,7 +173,12 @@ class TestingBackend(BaseBackend):
         )
 
         return SiretInfo(
-            siret=siret, active=True, name="MINISTERE DE LA CULTURE", address=self.address, ape_code=siret_ape[siret]
+            siret=siret,
+            active=True,
+            name="MINISTERE DE LA CULTURE",
+            address=self.address,
+            ape_code=siret_ape[siret],
+            legal_category_code="1000",
         )
 
 
@@ -268,10 +274,6 @@ class InseeBackend(BaseBackend):
             insee_code=block["codeCommuneEtablissement"] or "",
         )
 
-    def _get_ape_code_from_siret_data(self, data: dict) -> str:
-        block = data["uniteLegale"]
-        return block["activitePrincipaleUniteLegale"]
-
     def get_siren(self, siren: str, with_address: bool = True) -> SirenInfo:
         subpath = f"/siren/{siren}"
         data = self._get(subpath)["uniteLegale"]
@@ -292,6 +294,7 @@ class InseeBackend(BaseBackend):
     def get_siret(self, siret: str) -> SiretInfo:
         subpath = f"/siret/{siret}"
         data = self._get(subpath)["etablissement"]
+        legal_unit_block = data["uniteLegale"]
         try:
             block = [_b for _b in data["periodesEtablissement"] if _b["dateFin"] is None][0]
             active = block["etatAdministratifEtablissement"] == "A"
@@ -302,7 +305,8 @@ class InseeBackend(BaseBackend):
             active=active,
             name=self._get_name_from_siret_data(data),
             address=self._get_address_from_siret_data(data),
-            ape_code=self._get_ape_code_from_siret_data(data),
+            ape_code=legal_unit_block["activitePrincipaleUniteLegale"],
+            legal_category_code=legal_unit_block["categorieJuridiqueUniteLegale"],
         )
         self._check_non_public_data(info)
         return info

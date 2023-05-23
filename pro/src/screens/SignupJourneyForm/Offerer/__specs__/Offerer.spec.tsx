@@ -107,6 +107,7 @@ describe('screens:SignupJourney::Offerer', () => {
       name: 'Test',
       siret: '12345678933333',
       ape_code: '95.01A',
+      legal_category_code: '1000',
     })
   })
 
@@ -328,6 +329,7 @@ describe('screens:SignupJourney::Offerer', () => {
       name: 'Test',
       siret: '12345678933335',
       ape_code: '85.31Z',
+      legal_category_code: '1000',
     })
     renderOffererScreen(contextValue)
 

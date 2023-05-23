@@ -107,6 +107,7 @@ describe('screens:SignupJourney::OffererForm', () => {
       name: 'Test',
       siret: '12345678933333',
       ape_code: '95.01A',
+      legal_category_code: '1000',
     })
   })
 

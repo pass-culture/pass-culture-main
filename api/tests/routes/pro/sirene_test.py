@@ -59,6 +59,7 @@ class GetSiretTest:
                 "city": "Paris",
             },
             "ape_code": "90.03A",
+            "legal_category_code": "1000",
         }
 
     @pytest.mark.usefixtures("db_session")

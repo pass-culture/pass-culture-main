@@ -93,6 +93,7 @@ def test_get_siret():
         assert siret_info.address.postal_code == "75002"
         assert siret_info.address.city == "PARIS"
         assert siret_info.ape_code == "47.61Z"
+        assert siret_info.legal_category_code == "5499"
 
 
 @override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
