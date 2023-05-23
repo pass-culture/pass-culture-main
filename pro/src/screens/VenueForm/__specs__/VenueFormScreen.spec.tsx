@@ -120,6 +120,7 @@ jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
   name: 'lieu',
   siret: '88145723823022',
   ape_code: '95.07A',
+  legal_category_code: '1000',
 })
 
 jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()

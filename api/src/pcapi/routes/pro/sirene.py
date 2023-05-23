@@ -48,4 +48,5 @@ def get_siret_info(siret: str) -> sirene_serializers.SiretInfo:
         active=info.active,
         address=sirene_serializers.Address(**info_address_dict),
         ape_code=info.ape_code,
+        legal_category_code=info.legal_category_code,
     )
