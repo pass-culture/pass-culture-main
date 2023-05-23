@@ -206,7 +206,7 @@ describe('screens:SignupJourney::Validation', () => {
       jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      await userEvent.click(screen.getByText('Valider et créer mon espace'))
+      await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
         publicName: 'nom public',
         siret: '123123123',
@@ -252,7 +252,7 @@ describe('screens:SignupJourney::Validation', () => {
         .mockResolvedValue({} as GetOffererResponseModel)
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      await userEvent.click(screen.getByText('Valider et créer mon espace'))
+      await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
         publicName: '',
         siret: '123123123',
@@ -300,7 +300,7 @@ describe('screens:SignupJourney::Validation', () => {
       jest.spyOn(api, 'saveNewOnboardingData').mockRejectedValue({})
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      await userEvent.click(screen.getByText('Valider et créer mon espace'))
+      await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(
         await screen.findByText('Erreur lors de la création de votre structure')
       ).toBeInTheDocument()
