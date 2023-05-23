@@ -456,9 +456,12 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": offerer.name,
             },
             "venue": {
+                "address": venue.address,
+                "city": venue.city,
                 "departmentCode": venue.departementCode,
                 "id": venue.id,
                 "name": venue.name,
+                "postalCode": venue.postalCode,
                 "publicName": venue.publicName,
             },
             "_geoloc": position(venue),

@@ -92,9 +92,12 @@ def test_serialize_offer():
             "name": "Les Librairies Associées",
         },
         "venue": {
+            "address": offer.venue.address,
+            "city": offer.venue.city,
             "departmentCode": "86",
             "id": offer.venueId,
             "name": "La Moyenne Librairie SA",
+            "postalCode": offer.venue.postalCode,
             "publicName": "La Moyenne Librairie",
         },
         "_geoloc": {"lat": 48.87004, "lng": 2.3785},
