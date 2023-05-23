@@ -100,8 +100,8 @@ const Offerers = (): JSX.Element => {
     <div className={styles['existing-offerers-layout-wrapper']}>
       <div className={styles['existing-offerers-layout']}>
         <div className={styles['title-4']}>
-          Nous avons trouvé un espace déjà inscrit comprenant le SIRET "
-          {offerer.siret}" :
+          Nous avons trouvé un espace déjà inscrit comprenant le SIRET{' '}
+          {offerer.siret} :
         </div>
         <div className={styles['venues-layout']}>
           <div className={styles['offerer-name-accent']}>
