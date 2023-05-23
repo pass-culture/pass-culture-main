@@ -543,6 +543,17 @@ def test_public_api(client):
                     "title": "DomainsCredit",
                     "type": "object",
                 },
+                "E2EUbbleIdCheck": {
+                    "properties": {
+                        "errors": {
+                            "items": {"$ref": "#/components/schemas/UbbleError"},
+                            "nullable": True,
+                            "type": "array",
+                        }
+                    },
+                    "title": "E2EUbbleIdCheck",
+                    "type": "object",
+                },
                 "EligibilityType": {
                     "description": "An enumeration.",
                     "enum": ["underage", "age-18"],
@@ -1635,6 +1646,11 @@ def test_public_api(client):
                     "required": ["deviceId"],
                     "title": "TrustedDevice",
                     "type": "object",
+                },
+                "UbbleError": {
+                    "description": "An enumeration.",
+                    "enum": [1201, 1310, 1320, 2101, 2102, 2103, 2201],
+                    "title": "UbbleError",
                 },
                 "UpdateEmailTokenExpiration": {
                     "properties": {
@@ -3277,6 +3293,29 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "start_identification_session <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/ubble_identification/e2e": {
+                "post": {
+                    "description": "",
+                    "operationId": "post_/native/v1/ubble_identification/e2e",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/E2EUbbleIdCheck"}}}
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "ubble_identification <POST>",
                     "tags": [],
                 }
             },
