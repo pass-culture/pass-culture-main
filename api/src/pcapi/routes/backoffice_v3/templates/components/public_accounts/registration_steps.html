@@ -26,7 +26,7 @@
               </td>
               <td>{{ id_check_item.thirdPartyId }}</td>
               <td>
-                {% if id_check_item | format_fraud_check_url %}
+                {% if id_check_item.type and id_check_item | format_fraud_check_url %}
                   <a href="{{ id_check_item | format_fraud_check_url }}"
                      target="_blank">
                     {{ id_check_item.type }}
@@ -46,15 +46,15 @@
                 {% endif %}
               </td>
               <td>
-                {% if id_check_item.status == 'ok' %}
+                {% if id_check_item.status.upper() == 'OK' %}
                   <span class="badge rounded-pill text-bg-success align-middle px-3 py-2">
                     <i class="bi bi-check-circle"></i> {{ id_check_item.status.upper() }}
                   </span>
-                {% elif id_check_item.status == 'ko' %}
+                {% elif id_check_item.status.upper() == 'KO' %}
                   <span class="badge rounded-pill text-bg-danger align-middle px-3 py-2">
                     <i class="bi bi-exclamation-circle"></i> {{ id_check_item.status.upper() }}
                   </span>
-                {% elif id_check_item.status == 'suspicious' %}
+                {% elif id_check_item.status.upper() == 'SUSPICIOUS' %}
                   <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
                     <i class="bi bi-shield-shaded"></i> {{ id_check_item.status.upper() }}
                   </span>

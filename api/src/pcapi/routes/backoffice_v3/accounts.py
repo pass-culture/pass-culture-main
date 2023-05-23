@@ -213,7 +213,6 @@ def render_public_account_details(
     return render_template(
         "accounts/get.html",
         user=user,
-        beneficiaryFraudReviews=user.beneficiaryFraudReviews,
         tunnel=tunnel,
         id_check_histories_desc=id_check_histories_desc,
         credit=domains_credit,
@@ -496,6 +495,27 @@ def _get_steps_tunnel_underage_age18(
     return steps
 
 
+def _convert_bfr_to_bfc_dict(beneficiaryFraudReviews: list[fraud_models.BeneficiaryFraudReview]):
+    bfrs = []
+
+    for beneficiaryFraudReview in beneficiaryFraudReviews:
+        if beneficiaryFraudReview.eligibilityType == EligibilityType.AGE18:
+            bfrs.append(
+                {
+                    "dateCreated": beneficiaryFraudReview.dateReviewed,
+                    "thirdPartyId": beneficiaryFraudReview.author.full_name,
+                    "type": beneficiaryFraudReview.author.full_name,
+                    "applicable_eligibilities": [EligibilityType.AGE18.value],
+                    "status": beneficiaryFraudReview.review.value,
+                    "reason": beneficiaryFraudReview.reason,
+                    "reasonCodes": None,
+                    "technicalDetails": {},
+                }
+            )
+
+    return bfrs
+
+
 def _get_steps_tunnel_age18(
     user: users_models.User, id_check_histories: list, item_status_18: dict
 ) -> list[RegistrationStep]:
@@ -559,6 +579,7 @@ def _get_steps_tunnel_age18(
             if user.received_pass_18
             else SubscriptionItemStatus.VOID.value,
             icon="18",
+            id_check_histories=[],
         ),
     ]
     return steps

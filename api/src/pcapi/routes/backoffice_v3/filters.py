@@ -277,10 +277,13 @@ def format_criteria(criteria: list[criteria_models.OfferCriterion]) -> str:
 
 
 def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemModel) -> str:
-    if id_check_item.type == fraud_models.FraudCheckType.UBBLE.value:
-        return f"https://dashboard.ubble.ai/identifications/{id_check_item.thirdPartyId}"
-    if id_check_item.type == fraud_models.FraudCheckType.DMS.value and id_check_item.technicalDetails:
-        return f"https://www.demarches-simplifiees.fr/procedures/{id_check_item.technicalDetails['procedure_number']}/dossiers/{id_check_item.thirdPartyId}"
+    try:
+        if id_check_item.type == fraud_models.FraudCheckType.UBBLE.value:
+            return f"https://dashboard.ubble.ai/identifications/{id_check_item.thirdPartyId}"
+        if id_check_item.type == fraud_models.FraudCheckType.DMS.value and id_check_item.technicalDetails:
+            return f"https://www.demarches-simplifiees.fr/procedures/{id_check_item.technicalDetails['procedure_number']}/dossiers/{id_check_item.thirdPartyId}"
+    except AttributeError:
+        return ""
     return ""
 
 

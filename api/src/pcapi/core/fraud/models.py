@@ -18,6 +18,7 @@ from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.serialization.utils import to_camel
 
+from ..users.models import EligibilityType
 from .common import models as common_models
 from .ubble import models as ubble_fraud_models
 
@@ -598,6 +599,10 @@ class BeneficiaryFraudReview(PcObject, Base, Model):
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
     user: users_models.User = sa.orm.relationship(
         "User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudReviews")
+    )
+    eligibilityType: EligibilityType = sa.Column(
+        sa.Enum(EligibilityType, create_constraint=False),
+        nullable=True,
     )
 
 

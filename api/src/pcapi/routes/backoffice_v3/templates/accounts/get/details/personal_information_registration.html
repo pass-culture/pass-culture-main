@@ -3,6 +3,33 @@
 {% for step in tunnel.steps %}
   {% set _ = builded_steps.append(macro.build_step('step-' + step.step_id|string, step.description, step.subscription_item_status, step.icon, step.status)) %}
 {% endfor %}
+<h3>Revue(s) manuelle(s)</h3>
+{% for review in user.beneficiaryFraudReviews %}
+
+<table class="table" style="border-style: solid; border-width:1px;">
+    <tr>
+        <th scope="row">Auteur</th>
+        <td>{{ review.author.full_name }}</td>
+    </tr>
+
+    <tr>
+        <th scope="row">Etat</th>
+        <td>{{ review.review.value }}</td>
+    </tr>
+    <tr>
+        <th scope="row">Date de création</th>
+        <td>{{ review.dateReviewed.strftime('le %d/%m/%Y à %H:%M:%S') }}</td>
+    </tr>
+    <tr>
+        <th scope="row">Explication</th>
+        <td>{{ review.reason | safe }}</td>
+    </tr>
+    <tr>
+        <th scope="row">Éligibilité</th>
+        <td>{{ review.eligibilityType }}</td>
+    </tr>
+</table>
+{% endfor %}
 {% call macro.build_registration_steps(tunnel, builded_steps) %}
   <div class="col-6 form-check form-switch m-3 form-switch-show-all-steps">
     {% set switch_boolean_field_id = random_hash() %}
