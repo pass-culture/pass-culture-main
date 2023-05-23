@@ -1909,8 +1909,8 @@ class GenerateInvoiceHtmlTest:
         )
         start_period, end_period = api.get_invoice_period(invoice.date)
         expected_invoice_html = expected_invoice_html.replace(
-            "Remboursement des réservations validées entre le 01/01/22 et le 14/01/22, sauf cas exceptionnels",
-            f'Remboursement des réservations validées entre le {start_period.strftime("%d/%m/%y")} et le {end_period.strftime("%d/%m/%y")}, sauf cas exceptionnels',
+            "Remboursement des réservations validées entre le 01/01/22 et le 14/01/22, sauf cas exceptionnels.",
+            f'Remboursement des réservations validées entre le {start_period.strftime("%d/%m/%y")} et le {end_period.strftime("%d/%m/%y")}, sauf cas exceptionnels.',
         )
         expected_invoice_html = expected_invoice_html.replace("\n    <p><b>SIRET :</b> 85331845900023</p>", "")
         assert expected_invoice_html == invoice_html
