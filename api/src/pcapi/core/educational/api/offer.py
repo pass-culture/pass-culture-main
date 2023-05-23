@@ -18,8 +18,8 @@ from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.exceptions import StudentsNotOpenedYet
 from pcapi.core.educational.models import HasImageMixin
 from pcapi.core.educational.utils import get_image_from_url
-from pcapi.core.mails.transactional.educational.eac_new_request_made_by_redactor_to_ac import (
-    send_new_request_made_by_redactor_to_ac,
+from pcapi.core.mails.transactional.educational.eac_new_request_made_by_redactor_to_pro import (
+    send_new_request_made_by_redactor_to_pro,
 )
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import api as offerers_api
@@ -94,7 +94,10 @@ def unindex_expired_collective_offers(process_all_expired: bool = False) -> None
     page = 0
     limit = settings.ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE
     while collective_offer_ids := _get_expired_collective_offer_ids(interval, page, limit):
-        logger.info("[ALGOLIA] Found %d expired collective offers to unindex", len(collective_offer_ids))
+        logger.info(
+            "[ALGOLIA] Found %d expired collective offers to unindex",
+            len(collective_offer_ids),
+        )
         search.unindex_collective_offer_ids(collective_offer_ids)
         page += 1
 
@@ -239,7 +242,10 @@ def create_collective_offer_template(
     db.session.commit()
     logger.info(
         "Collective offer template has been created",
-        extra={"collectiveOfferTemplate": collective_offer_template.id, "offerId": offer_id},
+        extra={
+            "collectiveOfferTemplate": collective_offer_template.id,
+            "offerId": offer_id,
+        },
     )
     return collective_offer_template
 
@@ -314,7 +320,10 @@ def create_collective_offer_template_from_collective_offer(
     search.unindex_collective_offer_ids([offer.id])
     logger.info(
         "Collective offer template has been created and regular collective offer deleted",
-        extra={"collectiveOfferTemplate": collective_offer_template.id, "CollectiveOffer": offer.id},
+        extra={
+            "collectiveOfferTemplate": collective_offer_template.id,
+            "CollectiveOffer": offer.id,
+        },
     )
     return collective_offer_template
 
@@ -323,15 +332,21 @@ def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOf
     return educational_repository.get_collective_offer_by_id(offer_id)
 
 
-def get_collective_offer_template_by_id(offer_id: int) -> educational_models.CollectiveOffer:
+def get_collective_offer_template_by_id(
+    offer_id: int,
+) -> educational_models.CollectiveOffer:
     return educational_repository.get_collective_offer_template_by_id(offer_id)
 
 
-def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
+def get_collective_offer_by_id_for_adage(
+    offer_id: int,
+) -> educational_models.CollectiveOffer:
     return educational_repository.get_collective_offer_by_id_for_adage(offer_id)
 
 
-def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOfferTemplate:
+def get_collective_offer_template_by_id_for_adage(
+    offer_id: int,
+) -> educational_models.CollectiveOfferTemplate:
     return educational_repository.get_collective_offer_template_by_id_for_adage(offer_id)
 
 
@@ -416,7 +431,8 @@ def update_collective_offer_educational_institution(
 
 
 def create_collective_offer_public(
-    offerer_id: int, body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel
+    offerer_id: int,
+    body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel,
 ) -> educational_models.CollectiveOffer:
     from pcapi.core.offers.api import update_offer_fraud_information
 
@@ -430,7 +446,10 @@ def create_collective_offer_public(
         # FIXME: remove after 2023-09-01
         new_students = []
         for student in body.students:
-            if student not in (educational_models.StudentLevels.COLLEGE5, educational_models.StudentLevels.COLLEGE6):
+            if student not in (
+                educational_models.StudentLevels.COLLEGE5,
+                educational_models.StudentLevels.COLLEGE6,
+            ):
                 new_students.append(student)
         if new_students:
             body.students = new_students
@@ -457,7 +476,8 @@ def create_collective_offer_public(
     if body.offer_venue.venueId:
         query = db.session.query(sa.func.count(offerers_models.Venue.id))
         query = query.filter(
-            offerers_models.Venue.id == body.offer_venue.venueId, offerers_models.Venue.managingOffererId == offerer_id
+            offerers_models.Venue.id == body.offer_venue.venueId,
+            offerers_models.Venue.managingOffererId == offerer_id,
         )
         if query.scalar() == 0:
             raise offerers_exceptions.VenueNotFoundException()
@@ -528,7 +548,10 @@ def edit_collective_offer_public(
     students = new_values.get("students", offer.students)
     if beginning < datetime.datetime(2023, 9, 1, tzinfo=beginning.tzinfo):
         for student in students:
-            if student in (educational_models.StudentLevels.COLLEGE5, educational_models.StudentLevels.COLLEGE6):
+            if student in (
+                educational_models.StudentLevels.COLLEGE5,
+                educational_models.StudentLevels.COLLEGE6,
+            ):
                 raise StudentsNotOpenedYet()
 
     offer_fields = {field for field in dir(educational_models.CollectiveOffer) if not field.startswith("_")}
@@ -536,7 +559,8 @@ def edit_collective_offer_public(
 
     collective_stock_unique_booking = (
         educational_models.CollectiveBooking.query.join(
-            educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
+            educational_models.CollectiveStock,
+            educational_models.CollectiveBooking.collectiveStock,
         )
         .filter(
             educational_models.CollectiveStock.collectiveOfferId == offer.id,
@@ -642,7 +666,10 @@ def delete_image(obj: HasImageMixin) -> None:
 
 
 def attach_image(
-    obj: educational_models.HasImageMixin, image: bytes, crop_params: image_conversion.CropParams, credit: str
+    obj: educational_models.HasImageMixin,
+    image: bytes,
+    crop_params: image_conversion.CropParams,
+    credit: str,
 ) -> None:
     try:
         obj.set_image(
@@ -671,7 +698,9 @@ def _get_expired_collective_offer_ids(
     return [offer_id for offer_id, in collective_offers.with_entities(educational_models.CollectiveOffer.id)]
 
 
-def duplicate_offer_and_stock(original_offer: educational_models.CollectiveOffer) -> educational_models.CollectiveOffer:
+def duplicate_offer_and_stock(
+    original_offer: educational_models.CollectiveOffer,
+) -> educational_models.CollectiveOffer:
     if original_offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
         raise exceptions.ValidationFailedOnCollectiveOffer()
     offerer = original_offer.venue.managingOfferer
@@ -753,6 +782,6 @@ def create_offer_request(
     db.session.commit()
     request.email = redactor.email
 
-    send_new_request_made_by_redactor_to_ac(request)
+    send_new_request_made_by_redactor_to_pro(request)
 
     return request
