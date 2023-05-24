@@ -37,7 +37,11 @@ const OffererAuthentication = (): JSX.Element => {
   const onSubmitOffererAuthentication = async (
     formValues: IOffererAuthenticationFormValues
   ): Promise<void> => {
-    setOfferer({ ...formValues, hasVenueWithSiret: false })
+    setOfferer({
+      ...formValues,
+      hasVenueWithSiret: false,
+      legalCategoryCode: offerer?.legalCategoryCode,
+    })
     navigate('/parcours-inscription/activite')
   }
 
@@ -71,6 +75,7 @@ const OffererAuthentication = (): JSX.Element => {
             previousStepTitle="Retour"
             isDisabled={formik.isSubmitting}
             logEvent={logEvent}
+            legalCategoryCode={offerer?.legalCategoryCode}
           />
         </form>
       </FormikProvider>

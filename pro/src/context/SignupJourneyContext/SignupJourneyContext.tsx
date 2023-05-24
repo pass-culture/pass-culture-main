@@ -12,6 +12,7 @@ export interface IOfferer extends IOffererFormValues, IAddress {
   name: string
   publicName?: string
   createVenueWithoutSiret?: boolean
+  legalCategoryCode?: string
   hasVenueWithSiret: boolean
 }
 

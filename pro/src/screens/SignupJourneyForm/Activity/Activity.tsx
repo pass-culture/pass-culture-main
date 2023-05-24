@@ -27,7 +27,7 @@ const Activity = (): JSX.Element => {
   } = useGetVenueTypes()
   const notify = useNotification()
   const navigate = useNavigate()
-  const { activity, setActivity } = useSignupJourneyContext()
+  const { activity, setActivity, offerer } = useSignupJourneyContext()
   const { logEvent } = useAnalytics()
 
   const serializeActivityContext = (
@@ -118,6 +118,7 @@ const Activity = (): JSX.Element => {
             previousTo={SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION}
             nextTo={SIGNUP_JOURNEY_STEP_IDS.VALIDATION}
             logEvent={logEvent}
+            legalCategoryCode={offerer?.legalCategoryCode}
           />
         </form>
       </FormikProvider>
