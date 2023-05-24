@@ -91,6 +91,11 @@
                    data-bs-toggle="modal"
                    data-bs-target="#pending-modal-{{ user_offerer.id }}">Mettre en attente</a>
               </li>
+              <li class="dropdown-item p-0">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#delete-modal-{{ user_offerer.id }}">Supprimer</a>
+              </li>
             </ul>
           </div>
         </td>
@@ -110,5 +115,8 @@
   {{ build_lazy_modal(
   url_for("backoffice_v3_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer.id),
   "pending-modal-" + user_offerer.id|string) }}
+  {{ build_lazy_modal(
+  url_for("backoffice_v3_web.offerer.get_delete_user_offerer_form", offerer_id=user_offerer.offerer.id, user_offerer_id=user_offerer.id),
+  "delete-modal-" + user_offerer.id|string) }}
 {% endfor %}
 </turbo-frame>

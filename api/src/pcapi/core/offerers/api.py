@@ -643,6 +643,27 @@ def reject_offerer_attachment(
     db.session.commit()
 
 
+def delete_offerer_attachment(
+    user_offerer: offerers_models.UserOfferer,
+    author_user: users_models.User,
+    comment: str | None = None,
+) -> None:
+    db.session.add(
+        history_api.log_action(
+            history_models.ActionType.USER_OFFERER_DELETED,
+            author_user,
+            user=user_offerer.user,
+            offerer=user_offerer.offerer,
+            comment=comment,
+            save=False,
+        )
+    )
+
+    db.session.delete(user_offerer)
+    remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
+    db.session.commit()
+
+
 def validate_offerer(offerer: models.Offerer, author_user: users_models.User) -> None:
     if offerer.isValidated:
         raise exceptions.OffererAlreadyValidatedException()

@@ -314,6 +314,70 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
     )
 
 
+@offerer_blueprint.route("/users/<int:user_offerer_id>/delete", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> utils.BackofficeResponse:
+    user_offerer = (
+        offerers_models.UserOfferer.query.options(
+            sa.orm.joinedload(offerers_models.UserOfferer.offerer).load_only(
+                offerers_models.Offerer.id,
+                offerers_models.Offerer.name,
+            ),
+        )
+        .filter_by(id=user_offerer_id)
+        .one_or_none()
+    )
+    if not user_offerer:
+        raise NotFound()
+
+    form = offerer_forms.OptionalCommentForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for(
+            "backoffice_v3_web.offerer.delete_user_offerer", offerer_id=offerer_id, user_offerer_id=user_offerer.id
+        ),
+        div_id=f"delete-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
+        title=f"Supprimer le rattachement à {user_offerer.offerer.name.upper()}",
+        button_text="Supprimer le rattachement",
+        information="Cette action entraîne la suppression du lien utilisateur/structure et non le rejet. Cette action n’envoie aucun mail à l’acteur culturel.",
+    )
+
+
+@offerer_blueprint.route("/users/<int:user_offerer_id>/delete", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.BackofficeResponse:
+    user_offerer = (
+        offerers_models.UserOfferer.query.options(
+            sa.orm.joinedload(offerers_models.UserOfferer.offerer).load_only(
+                offerers_models.Offerer.id,
+                offerers_models.Offerer.name,
+            ),
+            sa.orm.joinedload(offerers_models.UserOfferer.user).load_only(users_models.User.email),
+        )
+        .filter_by(id=user_offerer_id)
+        .one_or_none()
+    )
+    if not user_offerer:
+        raise NotFound()
+
+    form = offerer_forms.OptionalCommentForm()
+    if not form.validate():
+        flash("Les données envoyées comportent des erreurs", "warning")
+        return _redirect_after_user_offerer_validation_action(offerer_id)
+    user_email = user_offerer.user.email
+    offerer_name = user_offerer.offerer.name
+
+    offerers_api.delete_offerer_attachment(user_offerer, current_user, form.comment.data)
+
+    flash(
+        f"Le rattachement de {user_email} à la structure {offerer_name} a été supprimé",
+        "success",
+    )
+    return _redirect_after_user_offerer_validation_action(offerer_id)
+
+
 @offerer_blueprint.route("/venues", methods=["GET"])
 def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
     venues = (
