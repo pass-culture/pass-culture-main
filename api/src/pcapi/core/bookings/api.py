@@ -4,7 +4,6 @@ import typing
 
 import sentry_sdk
 import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
 
 from pcapi.analytics.amplitude import events as amplitude_events
 from pcapi.core import search
@@ -13,7 +12,6 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.bookings.repository import generate_booking_token
-from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
@@ -542,45 +540,20 @@ def get_individual_bookings_from_stock(stock_id: int) -> typing.Generator[Bookin
         yield booking
 
 
-def archive_old_bookings() -> None:
-    date_condition = Booking.dateCreated < datetime.datetime.utcnow() - constants.ARCHIVE_DELAY
-
-    query_old_booking_ids = (
-        Booking.query.join(Booking.stock, Stock.offer, Booking.activationCode)
-        .filter(date_condition)
-        .filter(
-            offers_models.Offer.isDigital.is_(True),  # type: ignore [attr-defined]
-            offers_models.ActivationCode.id.isnot(None),
-        )
-        .options(sa_orm.load_only(Booking.id))
-        .with_entities(Booking.id)
-        .union(
-            Booking.query.join(Booking.stock, Stock.offer)
-            .filter(date_condition)
-            .filter(
-                offers_models.Offer.subcategoryId.in_(
-                    [
-                        subcategories_v2.ABO_MUSEE.id,
-                        subcategories_v2.CARTE_MUSEE.id,
-                        subcategories_v2.ABO_BIBLIOTHEQUE.id,
-                        subcategories_v2.ABO_MEDIATHEQUE.id,
-                    ]
-                ),
-                offers_models.Stock.price == 0,
-            )
-            .options(sa_orm.load_only(Booking.id))
-            .with_entities(Booking.id)
-        )
+def archive_old_activation_code_bookings() -> None:
+    old_bookings = Booking.query.join(Booking.stock, Stock.offer, Booking.activationCode).filter(
+        offers_models.Offer.isDigital.is_(True),  # type: ignore [attr-defined]
+        offers_models.ActivationCode.id.isnot(None),
+        Booking.dateCreated < datetime.datetime.utcnow() - constants.ARCHIVE_DELAY,
     )
-
-    number_updated = Booking.query.filter(Booking.id.in_(query_old_booking_ids)).update(
+    number_updated = Booking.query.filter(Booking.id.in_(old_bookings.with_entities(Booking.id))).update(
         {"displayAsEnded": True},
         synchronize_session=False,
     )
     db.session.commit()
 
     logger.info(
-        "Old bookings archived (displayAsEnded=True)",
+        "Old activation code bookings archived (displayAsEnded=True)",
         extra={
             "archivedBookings": number_updated,
         },
