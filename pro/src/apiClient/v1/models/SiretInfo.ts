@@ -12,3 +12,4 @@ export type SiretInfo = {
   name: string;
   siret: string;
 };
+
