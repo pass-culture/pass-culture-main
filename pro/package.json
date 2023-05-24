@@ -123,7 +123,7 @@
     "babel-loader": "^9.1.2",
     "babel-plugin-typescript-to-proptypes": "^2.1.0",
     "count-lines-in-file": "^1.1.0",
-    "cypress": "^12.12.0",
+    "cypress": "^12.13.0",
     "env-cmd": "^10.1.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
