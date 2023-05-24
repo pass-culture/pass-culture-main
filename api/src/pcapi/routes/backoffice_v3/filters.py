@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import random
 import re
 import typing
@@ -99,18 +100,18 @@ def format_timespan(timespan: psycopg2.extras.DateTimeRange) -> str:
     return f"{start} → {end}"
 
 
-def format_amount(amount: float | None) -> str:
+def format_amount(amount: float | decimal.Decimal | None) -> str:
     if amount is None:
         amount = 0.0
 
     return f"{amount:,.2f} €".replace(",", "\u202f").replace(".", ",")
 
 
-def format_cents(amount_in_cents: float | None) -> str:
+def format_cents(amount_in_cents: int | None) -> str:
     if amount_in_cents is None:
-        amount_in_cents = 0.0
+        amount_in_cents = 0
 
-    return format_amount(amount_in_cents / 100)
+    return format_amount(finance_utils.to_euros(amount_in_cents))
 
 
 def format_rate(rate: float | None) -> str:

@@ -18,8 +18,8 @@
      class="link-primary"
      target="_top">{{ offerer[text_attr] }}</a>
 {% endmacro %}
-{% macro build_venue_name_to_details_link(venue, text_attr="name") %}
-  <a href="{{ url_for('backoffice_v3_web.venue.get', venue_id=venue.id) }}"
+{% macro build_venue_name_to_details_link(venue, text_attr="name", active_tab=None) %}
+  <a href="{{ url_for('backoffice_v3_web.venue.get', venue_id=venue.id, active_tab=active_tab) }}"
      class="link-primary"
      target="_top">{{ venue[text_attr] }}</a>
 {% endmacro %}

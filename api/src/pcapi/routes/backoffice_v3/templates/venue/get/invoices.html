@@ -1,0 +1,39 @@
+{% import "components/links.html" as links %}
+<turbo-frame id="venue_invoices_frame">
+{% if reimbursement_point %}
+  <div class="text-center mx-4 my-4">
+    Le point de remboursement du lieu est actuellement :
+    {{ links.build_venue_name_to_details_link(reimbursement_point, "name", "invoices") }}
+  </div>
+{% endif %}
+{% if invoices %}
+  <table class="table table-hover my-4">
+    <thead>
+      <tr>
+        <th scope="col">Date du justificatif</th>
+        <th scope="col">N° du justificatif</th>
+        <th scope="col">N° de virement</th>
+        <th scope="col">Montant remboursé</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for invoice in invoices %}
+        <tr>
+          <td>{{ invoice.date | format_date }}</td>
+          <td>{{ invoice.reference }}</td>
+          <td>{{ invoice.cashflows | map(attribute="batch.label") | join(", ") | escape }}</td>
+          <td>{{ -invoice.amount | format_cents }}</td>
+          <td>
+            <a class="link-primary"
+               download
+               href="{{ invoice.url }}"><i class="bi bi-cloud-download-fill"></i> PDF</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% elif not reimbursement_point %}
+  <div class="text-center mx-4 my-4">Aucun remboursement à ce jour</div>
+{% endif %}
+</turbo-frame>
