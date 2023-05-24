@@ -33,6 +33,7 @@ class ActionType(enum.Enum):
     USER_OFFERER_PENDING = "Rattachement mis en attente"
     USER_OFFERER_VALIDATED = "Rattachement validé"
     USER_OFFERER_REJECTED = "Rattachement rejeté"
+    USER_OFFERER_DELETED = "Rattachement supprimé, sans mail envoyé"
     # User account status changes:
     USER_CREATED = "Création du compte"
     USER_SUSPENDED = "Compte suspendu"

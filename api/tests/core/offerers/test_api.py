@@ -828,6 +828,64 @@ class RejectOffererAttachementTest:
 
 
 @freeze_time("2020-10-15 00:00:00")
+class DeleteOffererAttachementTest:
+    def test_offerer_attachement_is_not_validated(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+
+        # When
+        offerers_api.delete_offerer_attachment(user_offerer, admin)
+
+        # Then
+        assert offerers_models.UserOfferer.query.count() == 0
+
+    def test_pro_role_is_not_added_to_user(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        user = users_factories.UserFactory()
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=user)
+
+        # When
+        offerers_api.delete_offerer_attachment(user_offerer, admin)
+
+        # Then
+        assert not user.has_pro_role
+        assert user.has_non_attached_pro_role
+
+    def test_pro_role_is_not_removed_from_user(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        validated_user_offerer = offerers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=validated_user_offerer.user)
+
+        # When
+        offerers_api.delete_offerer_attachment(user_offerer, admin)
+
+        # Then
+        assert validated_user_offerer.user.has_pro_role
+
+    def test_action_is_logged(self):
+        # Given
+        admin = users_factories.AdminFactory()
+        user = users_factories.UserFactory()
+        offerer = offerers_factories.OffererFactory()
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=user, offerer=offerer)
+
+        # When
+        offerers_api.delete_offerer_attachment(user_offerer, admin)
+
+        # Then
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.USER_OFFERER_DELETED
+        assert action.actionDate is not None
+        assert action.authorUserId == admin.id
+        assert action.userId == user.id
+        assert action.offererId == offerer.id
+        assert action.venueId is None
+
+
+@freeze_time("2020-10-15 00:00:00")
 class ValidateOffererTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_offerer_is_validated(self, mocked_async_index_offers_of_venue_ids):

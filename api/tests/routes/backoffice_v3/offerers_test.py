@@ -821,6 +821,62 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert [option["value"] for option in options] == ["", str(user3.id), str(user2.id)]
 
 
+class GetDeleteOffererAttachmentFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.offerer.get_delete_user_offerer_form"
+    endpoint_kwargs = {"offerer_id": 1, "user_offerer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_get_delete_offerer_attachment_form(self, legit_user, authenticated_client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+
+        # when
+        url = url_for(self.endpoint, offerer_id=user_offerer.offerer.id, user_offerer_id=user_offerer.id)
+        with assert_num_queries(3):
+            response = authenticated_client.get(url)
+
+        # then
+        # Rendering is not checked, but at least the fetched frame does not crash
+        assert response.status_code == 200
+
+
+class DeleteOffererAttachmentTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.offerer.delete_user_offerer"
+    endpoint_kwargs = {"offerer_id": 1, "user_offerer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_delete_offerer_attachment(self, legit_user, authenticated_client):
+        # given
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory()
+
+        # when
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=user_offerer.offerer.id, user_offerer_id=user_offerer.id
+        )
+
+        # then
+        assert response.status_code == 303
+
+        assert offerers_models.UserOfferer.query.count() == 0
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.USER_OFFERER_DELETED
+        assert action.actionDate is not None
+        assert action.authorUserId == legit_user.id
+        assert action.userId == user_offerer.user.id
+        assert action.offererId == user_offerer.offerer.id
+        assert action.venueId is None
+
+        assert len(mails_testing.outbox) == 0
+
+    def test_delete_offerer_returns_404_if_offerer_attachment_is_not_found(self, authenticated_client, offerer):
+        # when
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, user_offerer_id=42)
+
+        # then
+        assert response.status_code == 404
+
+
 class GetOffererVenuesTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.offerer.get_managed_venues"
     endpoint_kwargs = {"offerer_id": 1}
