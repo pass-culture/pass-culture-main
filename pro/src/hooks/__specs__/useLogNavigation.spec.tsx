@@ -53,10 +53,14 @@ describe('useLogNavigation', () => {
     const homeButton = screen.getByRole('link', { name: 'Accueil' })
     await userEvent.click(homeButton)
     expect(mockLogEvent).toHaveBeenCalledTimes(3)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'page_view', { from: '/' })
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'page_view', {
+      from: undefined,
+    })
     expect(mockLogEvent).toHaveBeenNthCalledWith(2, 'page_view', {
+      from: '/',
+    })
+    expect(mockLogEvent).toHaveBeenNthCalledWith(3, 'page_view', {
       from: '/other_page',
     })
-    expect(mockLogEvent).toHaveBeenNthCalledWith(3, 'page_view', { from: '/' })
   })
 })
