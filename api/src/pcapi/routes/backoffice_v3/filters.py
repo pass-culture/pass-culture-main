@@ -143,8 +143,12 @@ def format_string_list(data: list[str] | None) -> str:
     return ", ".join(data)
 
 
-def format_reason_label(reason: str) -> str:
-    return users_constants.SUSPENSION_REASON_CHOICES.get(users_constants.SuspensionReason(reason), "Raison inconnue")
+def format_reason_label(reason: str | None) -> str:
+    if reason:
+        return users_constants.SUSPENSION_REASON_CHOICES.get(
+            users_constants.SuspensionReason(reason), "Raison inconnue"
+        )
+    return ""
 
 
 def format_booking_cancellation_reason(
