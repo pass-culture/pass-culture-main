@@ -3160,12 +3160,12 @@
     "@sentry/types" "7.53.0"
     "@sentry/utils" "7.53.0"
 
-"@sentry/tracing@^7.52.1":
-  version "7.52.1"
-  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-7.52.1.tgz#65db0404b3d83a268ece9773ddd6aa5fa609d801"
-  integrity sha512-1afFeb0X6YcMK8mcsGXpO9rNFEF4Kd3mAUF22hXyFNWVoPNQsvdh/WxG2t3U+hLhehQ1ps3iJ0jxFRGF5zSboA==
+"@sentry/tracing@^7.53.0":
+  version "7.53.0"
+  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-7.53.0.tgz#09913f75b2d17262fb4589a5cf914236993b5dc9"
+  integrity sha512-s0vwXOyn3BEFzuHRGFfZJycmLMnKi74wDoForvbWxhoxgUJNAocuShVSMx4pClCaNtfkOGgD/axG2wxSpLHHxQ==
   dependencies:
-    "@sentry-internal/tracing" "7.52.1"
+    "@sentry-internal/tracing" "7.53.0"
 
 "@sentry/types@7.52.1":
   version "7.52.1"
