@@ -23,7 +23,6 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
-from pcapi.core.categories import subcategories_v2
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
@@ -1192,7 +1191,7 @@ class GetInvidualBookingsFromStockTest:
         assert not list(api.get_individual_bookings_from_stock(stock.id))
 
 
-class ArchiveOldBookingsTest:
+class ArchiveOldActivationCodeBookingsTest:
     def test_old_activation_code_bookings_are_archived(self, db_session):
         # given
         now = datetime.utcnow()
@@ -1206,47 +1205,12 @@ class ArchiveOldBookingsTest:
         offers_factories.ActivationCodeFactory(booking=old_booking, stock=stock)
 
         # when
-        api.archive_old_bookings()
+        api.archive_old_activation_code_bookings()
 
         # then
         db_session.refresh(recent_booking)
         db_session.refresh(old_booking)
         assert not recent_booking.displayAsEnded
-        assert old_booking.displayAsEnded
-
-    @pytest.mark.parametrize(
-        "subcategoryId",
-        [
-            subcategories_v2.ABO_MUSEE.id,
-            subcategories_v2.CARTE_MUSEE.id,
-            subcategories_v2.ABO_BIBLIOTHEQUE.id,
-            subcategories_v2.ABO_MEDIATHEQUE.id,
-        ],
-    )
-    def test_old_subcategories_bookings_are_archived(self, db_session, subcategoryId):
-        # given
-        now = datetime.utcnow()
-        recent = now - timedelta(days=29, hours=23)
-        old = now - timedelta(days=30, hours=1)
-        stock_free = offers_factories.StockFactory(
-            offer=offers_factories.OfferFactory(subcategoryId=subcategoryId), price=0
-        )
-        stock_not_free = offers_factories.StockFactory(
-            offer=offers_factories.OfferFactory(subcategoryId=subcategoryId), price=10
-        )
-        recent_booking = bookings_factories.BookingFactory(stock=stock_free, dateCreated=recent)
-        old_booking = bookings_factories.BookingFactory(stock=stock_free, dateCreated=old)
-        old_not_free_booking = bookings_factories.BookingFactory(stock=stock_not_free, dateCreated=old)
-
-        # when
-        api.archive_old_bookings()
-
-        # then
-        db_session.refresh(recent_booking)
-        db_session.refresh(old_booking)
-        db_session.refresh(old_not_free_booking)
-        assert not recent_booking.displayAsEnded
-        assert not old_not_free_booking.displayAsEnded
         assert old_booking.displayAsEnded
 
 
