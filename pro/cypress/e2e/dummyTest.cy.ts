@@ -1,8 +1,11 @@
 describe('Dummy test', () => {
-  it('should load login page', () => {
-    cy.visit('/')
+  it('should login', () => {
+    cy.login('pctest.admin93.0@example.com', 'user@AZERTY123')
+      .url()
+      .should('be.equal', 'http://localhost:3001/accueil')
+  })
 
-    cy.contains('Bienvenue sur l’espace dédié aux acteurs culturels')
+    cy.contains('Bienvenue dans l’espace acteurs culturels')
   })
 })
 

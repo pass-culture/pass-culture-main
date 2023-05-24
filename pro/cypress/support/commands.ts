@@ -38,4 +38,16 @@
 
 // TODO Albéric: can be re-added when this issue is solved: https://github.com/testing-library/cypress-testing-library/issues/252
 // import '@testing-library/cypress/add-commands'
+
+Cypress.Commands.add('login', (email: string, password: string) => {
+  return cy
+    .visit('http://localhost:3001/connexion')
+    .get('#email')
+    .type(email)
+    .get('#password')
+    .type(password)
+    .get('button[type=submit]')
+    .click()
+})
+
 export {}
