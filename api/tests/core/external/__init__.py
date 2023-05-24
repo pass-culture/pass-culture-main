@@ -8,6 +8,7 @@ from pcapi.core.users.models import DomainsCredit
 
 
 common_user_attributes = attributes_models.UserAttributes(
+    age=18,
     booking_count=4,
     booking_categories=["CINEMA", "LIVRE"],
     booking_subcategories=["ABO_LIVRE_NUMERIQUE", "CARTE_CINE_ILLIMITE", "CINE_PLEIN_AIR"],
