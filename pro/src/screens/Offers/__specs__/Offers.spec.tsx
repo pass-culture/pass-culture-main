@@ -425,7 +425,7 @@ describe('screen Offers', () => {
           renderOffers({ ...props, offers: [] }, store)
           // Then
           const noOffersText = screen.getByText(
-            'Vous n’avez pas encore créé d’offre.'
+            'Vous n’avez pas encore créé d’offre'
           )
           expect(noOffersText).toBeInTheDocument()
         })
