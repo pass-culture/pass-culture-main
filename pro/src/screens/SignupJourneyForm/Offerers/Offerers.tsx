@@ -66,6 +66,7 @@ const Offerers = (): JSX.Element => {
       from: location.pathname,
       to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
       used: OnboardingFormNavigationAction.NewOfferer,
+      categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
     })
     setOfferer(newOfferer)
     navigate('/parcours-inscription/identification')
@@ -76,6 +77,7 @@ const Offerers = (): JSX.Element => {
       from: location.pathname,
       to: '/parcours-inscription/structure/rattachement/confirmation',
       used: OnboardingFormNavigationAction.JoinModal,
+      categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
     })
     /* istanbul ignore next: venuesOfOfferer will always be defined here or else,
      the user would have been redirected */
@@ -168,6 +170,7 @@ const Offerers = (): JSX.Element => {
         previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
         isDisabled={false}
         logEvent={logEvent}
+        legalCategoryCode={offerer?.legalCategoryCode}
       />
       {showLinkDialog && (
         <ConfirmDialog

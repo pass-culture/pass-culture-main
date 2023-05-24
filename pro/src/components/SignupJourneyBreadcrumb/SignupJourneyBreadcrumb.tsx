@@ -37,6 +37,7 @@ const SignupJourneyBreadcrumb = () => {
         from: location.pathname,
         to,
         used: OnboardingFormNavigationAction.Breadcrumb,
+        categorieJuridiqueUniteLegale: offerer?.legalCategoryCode,
       })
     }
   }
