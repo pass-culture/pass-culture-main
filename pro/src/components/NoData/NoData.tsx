@@ -12,8 +12,8 @@ interface INoOffers {
 
 const wordingMapping = {
   offers: {
-    [Audience.INDIVIDUAL]: 'Vous n’avez pas encore créé d’offre.',
-    [Audience.COLLECTIVE]: 'Vous n’avez pas encore créé d’offre.',
+    [Audience.INDIVIDUAL]: 'Vous n’avez pas encore créé d’offre',
+    [Audience.COLLECTIVE]: 'Vous n’avez pas encore créé d’offre',
   },
   bookings: {
     [Audience.INDIVIDUAL]: 'Vous n’avez aucune réservation pour le moment',
