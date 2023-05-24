@@ -354,7 +354,7 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
     return (
         Booking.query.filter(
             Booking.depositId == deposit_id,
-            or_(Booking.status != BookingStatus.CANCELLED, Booking.status == None),
+            Booking.status != BookingStatus.CANCELLED,
         )
         .options(joinedload(Booking.stock).joinedload(Stock.offer))
         .all()
