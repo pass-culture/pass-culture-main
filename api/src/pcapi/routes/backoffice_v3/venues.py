@@ -17,6 +17,7 @@ from pcapi.connectors.dms.api import DMSGraphQLClient
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.finance import models as finance_models
 import pcapi.core.history.models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -191,6 +192,7 @@ def render_venue_details(
         has_reimbursement_point=has_reimbursement_point(venue),
         dms_stats=dms_stats,
         delete_venue_form=delete_venue_form,
+        active_tab=request.args.get("active_tab", "history"),
     )
 
 
@@ -298,8 +300,8 @@ def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
     return venue
 
 
-@venue_blueprint.route("/<int:venue_id>/details", methods=["GET"])
-def get_details(venue_id: int) -> utils.BackofficeResponse:
+@venue_blueprint.route("/<int:venue_id>/history", methods=["GET"])
+def get_history(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue_with_history(venue_id)
     actions = sorted(venue.action_history, key=lambda action: action.actionDate, reverse=True)
 
@@ -307,11 +309,48 @@ def get_details(venue_id: int) -> utils.BackofficeResponse:
     dst = url_for("backoffice_v3_web.venue.comment_venue", venue_id=venue.id)
 
     return render_template(
-        "venue/get/details.html",
+        "venue/get/history.html",
         venue=venue,
         actions=actions,
         dst=dst,
         form=form,
+    )
+
+
+@venue_blueprint.route("/<int:venue_id>/invoices", methods=["GET"])
+def get_invoices(venue_id: int) -> utils.BackofficeResponse:
+    # Find current reimbursement point for the current venue, if different from itself
+    current_link = (
+        offerers_models.VenueReimbursementPointLink.query.filter(
+            offerers_models.VenueReimbursementPointLink.venueId == venue_id,
+            offerers_models.VenueReimbursementPointLink.reimbursementPointId != venue_id,
+            offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow()),
+        )
+        .options(
+            sa.orm.joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint).load_only(
+                offerers_models.Venue.id, offerers_models.Venue.name
+            )
+        )
+        .one_or_none()
+    )
+
+    # Get invoices for the current venue as a reimbursement point
+    # We may have results even if the venue is no longer a reimbursement point
+    invoices = (
+        finance_models.Invoice.query.filter(finance_models.Invoice.reimbursementPointId == venue_id)
+        .options(
+            sa.orm.joinedload(finance_models.Invoice.cashflows)
+            .load_only(finance_models.Cashflow.batchId)
+            .joinedload(finance_models.Cashflow.batch)
+            .load_only(finance_models.CashflowBatch.label),
+        )
+        .order_by(finance_models.Invoice.date.desc())
+    ).all()
+
+    return render_template(
+        "venue/get/invoices.html",
+        reimbursement_point=current_link.reimbursementPoint if current_link else None,
+        invoices=invoices,
     )
 
 

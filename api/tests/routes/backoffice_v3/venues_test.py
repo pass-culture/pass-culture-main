@@ -857,8 +857,8 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.status_code == 400
 
 
-class GetVenueDetailsTest(GetEndpointHelper):
-    endpoint = "backoffice_v3_web.venue.get_details"
+class GetVenueHistoryTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.venue.get_history"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
@@ -869,7 +869,7 @@ class GetVenueDetailsTest(GetEndpointHelper):
         @property
         def path(self):
             venue = offerers_factories.VenueFactory()
-            return url_for("backoffice_v3_web.venue.get_details", venue_id=venue.id)
+            return url_for("backoffice_v3_web.venue.get_history", venue_id=venue.id)
 
     def test_venue_history(self, authenticated_client, legit_user):
         venue = offerers_factories.VenueFactory()
@@ -911,6 +911,70 @@ class GetVenueDetailsTest(GetEndpointHelper):
         with assert_num_queries(3):
             response = authenticated_client.get(url)
             assert response.status_code == 200
+
+
+class GetVenueInvoicesTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.venue.get_invoices"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # get session (1 query)
+    # get user with profile and permissions (1 query)
+    # get venue reimbursement point (1 query)
+    # get invoices (1 query)
+    expected_num_queries = 4
+
+    def test_venue_has_no_reimbursement_point(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(reimbursement_point=None)
+        venue_id = venue.id
+        finance_factories.InvoiceFactory(reimbursementPoint=offerers_factories.VenueFactory(reimbursement_point="self"))
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        assert "Aucun remboursement à ce jour" in html_parser.content_as_text(response.data)
+
+    def test_venue_has_different_reimbursement_point(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(reimbursement_point=offerers_factories.VenueFactory(name="PDR"))
+        venue_id = venue.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        assert "Le point de remboursement du lieu est actuellement : PDR" in html_parser.content_as_text(response.data)
+
+    def test_venue_has_invoices(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(reimbursement_point="self")
+        venue_id = venue.id
+        invoice1 = finance_factories.InvoiceFactory(reimbursementPoint=venue, date=datetime(2023, 4, 1), amount=-1000)
+        invoice2 = finance_factories.InvoiceFactory(reimbursementPoint=venue, date=datetime(2023, 5, 1), amount=-1250)
+        finance_factories.CashflowFactory(
+            invoices=[invoice1, invoice2],
+            reimbursementPoint=venue,
+            bankAccount=finance_factories.BankInformationFactory(venue=venue),
+            amount=-2250,
+            batch=finance_factories.CashflowBatchFactory(label="TEST123"),
+        )
+        finance_factories.InvoiceFactory(reimbursementPoint=offerers_factories.VenueFactory(reimbursement_point="self"))
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+
+        assert rows[0]["Date du justificatif"] == "01/05/2023"
+        assert rows[0]["N° du justificatif"] == invoice2.reference
+        assert rows[0]["N° de virement"] == "TEST123"
+        assert rows[0]["Montant remboursé"] == "12,50 €"
+
+        assert rows[1]["Date du justificatif"] == "01/04/2023"
+        assert rows[1]["N° du justificatif"] == invoice1.reference
+        assert rows[1]["N° de virement"] == "TEST123"
+        assert rows[1]["Montant remboursé"] == "10,00 €"
 
 
 class GetBatchEditVenuesFormTest(PostEndpointHelper):

@@ -1,6 +1,10 @@
 {% from "components/badges.html" import build_venue_badges %}
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% import "components/links.html" as links %}
+{% from "components/presentation/details/tabs.html" import build_details_tab %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
 {% from "components/turbo/spinner.html" import build_loading_spinner with context %}
 {% extends "layouts/pro.html" %}
 {% block pro_main_content %}
@@ -265,9 +269,22 @@
         </turbo-frame>
       </div>
       <div class="mt-4">
-        <turbo-frame data-turbo="false" id="venue_details_frame" src="{{ url_for("backoffice_v3_web.venue.get_details", venue_id=venue.id) }}">
-        {{ build_loading_spinner() }}
-        </turbo-frame>
+        {% call build_details_tabs_wrapper() %}
+          {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
+          {{ build_details_tab("invoices", "Remboursements", active_tab == 'invoices') }}
+        {% endcall %}
+        {% call build_details_tabs_content_wrapper() %}
+          {% call build_details_tab_content("history", active_tab == 'history') %}
+            <turbo-frame data-turbo="false" id="venue_history_frame" loading="lazy" src="{{ url_for("backoffice_v3_web.venue.get_history", venue_id=venue.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+          {% call build_details_tab_content("invoices", active_tab == 'invoices') %}
+            <turbo-frame data-turbo="false" id="venue_invoices_frame" loading="lazy" src="{{ url_for("backoffice_v3_web.venue.get_invoices", venue_id=venue.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+        {% endcall %}
       </div>
     </div>
   </div>
