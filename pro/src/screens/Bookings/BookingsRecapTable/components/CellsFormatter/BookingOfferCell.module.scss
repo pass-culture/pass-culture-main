@@ -5,6 +5,8 @@
 .booking-offer-name {
   @include fonts.button;
 
+  overflow-wrap: break-word;
+
   &:hover,
   &:focus {
     text-decoration: underline;
