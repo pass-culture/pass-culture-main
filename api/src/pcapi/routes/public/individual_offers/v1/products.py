@@ -369,39 +369,6 @@ def edit_product(product_id: int, body: serialization.ProductOfferEdition) -> se
     return serialization.ProductOfferResponse.build_product_offer(offer)
 
 
-@blueprint.v1_blueprint.route("/products/ean/<string:ean>", methods=["PATCH"])
-@spectree_serialize(
-    api=blueprint.v1_product_schema,
-    tags=[constants.PRODUCT_EAN_OFFER_TAG],
-    response_model=serialization.ProductOfferResponse,
-)
-@api_key_required
-def edit_product_by_ean(ean: str, body: serialization.ProductOfferByEanEdition) -> serialization.ProductOfferResponse:
-    """
-    Edit a product by accessing it through its European Article Number (EAN-13).
-
-    Leave fields undefined to keep their current value.
-    """
-    if len(ean) != 13:
-        raise api_errors.ApiErrors({"ean": ["Only 13 characters EAN are accepted"]})
-
-    offer: offers_models.Offer | None = (
-        utils.retrieve_offer_relations_query(_retrieve_offer_by_ean_query(ean))
-        .filter(offers_models.Offer.isEvent == False)
-        .first()
-    )
-    if not offer:
-        raise api_errors.ApiErrors({"ean": ["The product offer could not be found"]}, status_code=404)
-
-    try:
-        with repository.transaction():
-            _upsert_product_stock(offer, body.stock, current_api_key.provider)
-    except offers_exceptions.OfferCreationBaseException as e:
-        raise api_errors.ApiErrors(e.errors, status_code=400)
-
-    return serialization.ProductOfferResponse.build_product_offer(offer)
-
-
 def _upsert_product_stock(
     offer: offers_models.Offer,
     stock_body: serialization.StockEdition | None,
