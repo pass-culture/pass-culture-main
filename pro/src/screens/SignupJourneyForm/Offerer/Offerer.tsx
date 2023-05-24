@@ -82,6 +82,7 @@ const Offerer = (): JSX.Element => {
         siretResponse.payload.venues.find(
           venue => venue.siret == formattedSiret
         ) !== undefined,
+      legalCategoryCode: response.payload.values.legalCategoryCode,
     })
   }
 
@@ -100,6 +101,7 @@ const Offerer = (): JSX.Element => {
         from: location.pathname,
         to,
         used: OnboardingFormNavigationAction.ActionBar,
+        categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
       })
     }
   }, [offerer])

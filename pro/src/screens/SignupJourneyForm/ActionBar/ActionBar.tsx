@@ -22,6 +22,7 @@ export interface IActionBarProps {
   hideRightButton?: boolean
   withRightIcon?: boolean
   logEvent: logEventType | null
+  legalCategoryCode?: string
 }
 
 const ActionBar = ({
@@ -35,6 +36,7 @@ const ActionBar = ({
   previousTo,
   withRightIcon = true,
   logEvent,
+  legalCategoryCode,
 }: IActionBarProps) => {
   const location = useLocation()
 
@@ -43,6 +45,7 @@ const ActionBar = ({
       from: location.pathname,
       to,
       used: OnboardingFormNavigationAction.ActionBar,
+      categorieJuridiqueUniteLegale: legalCategoryCode,
     })
   }
   const Left = (): JSX.Element => {
