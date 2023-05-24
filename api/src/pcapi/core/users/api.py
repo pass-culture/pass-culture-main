@@ -1025,7 +1025,7 @@ def _filter_user_accounts(
     except ValueError:
         pass  # date has invalid format
     else:
-        term_filters.append(models.User.validatedBirthDate == date_term)
+        term_filters.append(models.User.birth_date == date_term)  # type: ignore [arg-type]
 
     # email
     sanitized_term = email_utils.sanitize_email(search_term)
