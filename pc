@@ -166,9 +166,9 @@ elif [[ "$CMD" == "dump-db" ]]; then
 
 # Force docker-compose to build the docker images
 elif [[ "$CMD" == "rebuild-backend" ]]; then
-  RUN='docker-compose build --no-cache;
+  RUN='docker-compose -f "$ROOT_PATH/docker-compose-app.yml" build --no-cache;
     sudo rm -rf $ROOT_PATH/api/static/object_store_data;
-    docker-compose down --volumes'
+    docker-compose -f "$ROOT_PATH/docker-compose-app.yml" down --volumes'
 
 # Execute request from specified file
 elif [[ "$CMD" == "psql-file" ]]; then
