@@ -134,7 +134,7 @@ const OfferEducationalActions = ({
                   logEvent?.(
                     CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
                     {
-                      from: location.pathname,
+                      from: '/offre/collectif/recapitulatif',
                     }
                   )
                 }

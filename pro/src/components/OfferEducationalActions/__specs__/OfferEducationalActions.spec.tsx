@@ -172,7 +172,7 @@ describe('OfferEducationalActions', () => {
       1,
       CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
       {
-        from: '/',
+        from: '/offre/collectif/recapitulatif',
       }
     )
   })
