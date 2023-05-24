@@ -210,11 +210,12 @@ def render_public_account_details(
     tunnel = _get_tunnel(user, eligibility_history)
     id_check_histories_desc = _get_id_check_histories_desc(eligibility_history)
 
+
     return render_template(
         "accounts/get.html",
         user=user,
-        tunnel=tunnel,
-        id_check_histories_desc=id_check_histories_desc,
+        tunnel=tunnel, # array de bfc
+        id_check_histories_desc=id_check_histories_desc,  # array de bfc
         credit=domains_credit,
         history=history,
         duplicate_user_id=duplicate_user_id,
@@ -232,12 +233,20 @@ def render_public_account_details(
     )
 
 
+def _obj_to_dict(obj):
+    my_dict = {}
+    for attribute in dir(obj):
+        value = getattr(obj, attribute)
+        if not callable(value):
+            my_dict[attribute] = value
+    return my_dict
+
 def _get_id_check_histories_desc(
     eligibility_history: dict[str, accounts.EligibilitySubscriptionHistoryModel]
-) -> list[serialization_accounts.IdCheckItemModel]:
-    id_check_histories_desc: list[serialization_accounts.IdCheckItemModel] = []
+) -> list[dict]:
+    id_check_histories_desc: list[dict] = []
     for history in eligibility_history.values():
-        id_check_histories_desc += history.idCheckHistory
+        id_check_histories_desc += _obj_to_dict(history.idCheckHistory)
     return sorted(
         id_check_histories_desc,
         key=lambda h: h.dateCreated,
@@ -496,11 +505,16 @@ def _get_steps_tunnel_underage_age18(
 
 
 def _convert_bfr_to_bfc_dict(beneficiaryFraudReviews: list[fraud_models.BeneficiaryFraudReview]):
-    bfrs = []
+    bfrs = {
+        EligibilityType.AGE18: [],
+        EligibilityType.UNDERAGE: [],
+    }
 
+    beneficiary_fraud_check_age18 = []
+    beneficiary_fraud_check_underage = []
     for beneficiaryFraudReview in beneficiaryFraudReviews:
         if beneficiaryFraudReview.eligibilityType == EligibilityType.AGE18:
-            bfrs.append(
+            bfrs[EligibilityType.AGE18].append(
                 {
                     "dateCreated": beneficiaryFraudReview.dateReviewed,
                     "thirdPartyId": beneficiaryFraudReview.author.full_name,
@@ -512,6 +526,43 @@ def _convert_bfr_to_bfc_dict(beneficiaryFraudReviews: list[fraud_models.Benefici
                     "technicalDetails": {},
                 }
             )
+            beneficiary_fraud_check_age18.append(
+                fraud_models.BeneficiaryFraudCheck(
+                    dateCreated=beneficiaryFraudReview.dateReviewed,
+                    thirdPartyId=beneficiaryFraudReview.author.full_name,
+                    type=beneficiaryFraudReview.author.full_name,
+                    # applicable_eligibilities=[],
+                    status=beneficiaryFraudReview.review.value,
+                    reason=beneficiaryFraudReview.reason,
+                    reasonCodes=None,
+                    # technicalDetails={},
+                )
+            )
+        if beneficiaryFraudReview.eligibilityType == EligibilityType.UNDERAGE:
+            bfrs[EligibilityType.UNDERAGE].append(
+                {
+                    "dateCreated": beneficiaryFraudReview.dateReviewed,
+                    "thirdPartyId": beneficiaryFraudReview.author.full_name,
+                    "type": beneficiaryFraudReview.author.full_name,
+                    "applicable_eligibilities": [EligibilityType.UNDERAGE.value],
+                    "status": beneficiaryFraudReview.review.value,
+                    "reason": beneficiaryFraudReview.reason,
+                    "reasonCodes": None,
+                    "technicalDetails": {},
+                }
+            )
+            # beneficiary_fraud_check_underage.append(
+            #     fraud_models.BeneficiaryFraudCheck(
+            #         dateCreated=beneficiaryFraudReview.dateReviewed,
+            #         thirdPartyId=beneficiaryFraudReview.author.full_name,
+            #         type=beneficiaryFraudReview.author.full_name,
+            #         applicable_eligibilities=[EligibilityType.UNDERAGE.value],
+            #         status=beneficiaryFraudReview.review.value,
+            #         reason=beneficiaryFraudReview.reason,
+            #         reasonCodes=None,
+            #         technicalDetails={},
+            #     )
+            # )
 
     return bfrs
 
@@ -519,6 +570,7 @@ def _convert_bfr_to_bfc_dict(beneficiaryFraudReviews: list[fraud_models.Benefici
 def _get_steps_tunnel_age18(
     user: users_models.User, id_check_histories: list, item_status_18: dict
 ) -> list[RegistrationStep]:
+    bfrs = _convert_bfr_to_bfc_dict(user.beneficiaryFraudReviews)
     steps = [
         RegistrationStep(
             step_id=1,
@@ -579,7 +631,7 @@ def _get_steps_tunnel_age18(
             if user.received_pass_18
             else SubscriptionItemStatus.VOID.value,
             icon="18",
-            id_check_histories=[],
+            id_check_histories=bfrs[EligibilityType.UNDERAGE],
         ),
     ]
     return steps
