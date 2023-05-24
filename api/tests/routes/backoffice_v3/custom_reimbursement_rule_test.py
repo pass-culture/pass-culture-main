@@ -12,6 +12,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 from .helpers import html_parser
@@ -158,8 +159,20 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         assert "Il y a plus de 25 résultats dans la base de données" in html_parser.extract_alert(response.data)
 
 
-class CreateCustomReimbursementRulesTest(PostEndpointHelper):
-    endpoint = "backoffice_v3_web.reimbursement_rules.create_custom_reimbursement_rules"
+class GetCreateCustomReimbursementRuleFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.reimbursement_rules.get_create_custom_reimbursement_rule_form"
+    needed_permission = perm_models.Permissions.CREATE_REIMBURSEMENT_RULES
+
+    def test_get_create_form_test(self, legit_user, authenticated_client):
+        form_url = url_for(self.endpoint)
+
+        with assert_num_queries(2):  # session + user
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+
+class CreateCustomReimbursementRuleTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.reimbursement_rules.create_custom_reimbursement_rule"
     needed_permission = perm_models.Permissions.CREATE_REIMBURSEMENT_RULES
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
     next_year = datetime.date.today() + datetime.timedelta(days=365)
@@ -177,6 +190,8 @@ class CreateCustomReimbursementRulesTest(PostEndpointHelper):
             },
         )
         assert response.status_code == 303
+        assert html_parser.extract_alert(authenticated_client.get(response.location).data) == "Tarif dérogatoire créé"
+
         rule = finance_models.CustomReimbursementRule.query.one()
         assert rule.offererId == offerer.id
         assert rule.rate == Decimal("0.1234")
@@ -187,7 +202,6 @@ class CreateCustomReimbursementRulesTest(PostEndpointHelper):
             self.next_year + datetime.timedelta(days=1), finance_utils.ACCOUNTING_TIMEZONE
         ).astimezone(tz=None).replace(tzinfo=None)
         assert set(rule.subcategories) == {"ABO_CONCERT", "ABO_JEU_VIDEO"}
-        assert "Tarif dérogatoire créé" in html_parser.extract_alert(authenticated_client.get(response.location).data)
 
     def test_create_with_invalid_offerer(self, authenticated_client):
         response = self.post_to_endpoint(
@@ -199,10 +213,11 @@ class CreateCustomReimbursementRulesTest(PostEndpointHelper):
             },
         )
         assert response.status_code == 303
-        assert finance_models.CustomReimbursementRule.query.count() == 0
         assert "Tarif dérogatoire non créé" in html_parser.extract_alert(
             authenticated_client.get(response.location).data
         )
+
+        assert finance_models.CustomReimbursementRule.query.count() == 0
 
     def test_create_with_no_end_date(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -216,12 +231,13 @@ class CreateCustomReimbursementRulesTest(PostEndpointHelper):
             },
         )
         assert response.status_code == 303
+        assert html_parser.extract_alert(authenticated_client.get(response.location).data) == "Tarif dérogatoire créé"
+
         rule = finance_models.CustomReimbursementRule.query.one()
         assert rule.timespan.lower == date_utils.get_day_start(
             self.tomorrow, finance_utils.ACCOUNTING_TIMEZONE
         ).astimezone(tz=None).replace(tzinfo=None)
-        assert rule.timespan.upper == None
-        assert "Tarif dérogatoire créé" in html_parser.extract_alert(authenticated_client.get(response.location).data)
+        assert rule.timespan.upper is None
 
     def test_create_with_start_date_too_early(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -234,10 +250,11 @@ class CreateCustomReimbursementRulesTest(PostEndpointHelper):
             },
         )
         assert response.status_code == 303
-        assert finance_models.CustomReimbursementRule.query.count() == 0
         assert "Ne peut pas commencer avant demain" in html_parser.extract_alert(
             authenticated_client.get(response.location).data
         )
+
+        assert finance_models.CustomReimbursementRule.query.count() == 0
 
     def test_create_with_end_date_before_start_date(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -251,10 +268,11 @@ class CreateCustomReimbursementRulesTest(PostEndpointHelper):
             },
         )
         assert response.status_code == 303
-        assert finance_models.CustomReimbursementRule.query.count() == 0
         assert "Ne peut pas être postérieure à la date de fin" in html_parser.extract_alert(
             authenticated_client.get(response.location).data
         )
+
+        assert finance_models.CustomReimbursementRule.query.count() == 0
 
     def test_create_with_invalid_rate(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -281,9 +299,10 @@ class CreateCustomReimbursementRulesTest(PostEndpointHelper):
             },
         )
         assert response.status_code == 303
+        assert html_parser.extract_alert(authenticated_client.get(response.location).data) == "Tarif dérogatoire créé"
+
         rule = finance_models.CustomReimbursementRule.query.one()
         assert rule.rate == Decimal(1)
-        assert "Tarif dérogatoire créé" in html_parser.extract_alert(authenticated_client.get(response.location).data)
 
     def test_create_with_rate_0(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -297,9 +316,10 @@ class CreateCustomReimbursementRulesTest(PostEndpointHelper):
             },
         )
         assert response.status_code == 303
+        assert html_parser.extract_alert(authenticated_client.get(response.location).data) == "Tarif dérogatoire créé"
+
         rule = finance_models.CustomReimbursementRule.query.one()
         assert rule.rate == Decimal(0)
-        assert "Tarif dérogatoire créé" in html_parser.extract_alert(authenticated_client.get(response.location).data)
 
     def test_create_with_negative_rate(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -312,10 +332,11 @@ class CreateCustomReimbursementRulesTest(PostEndpointHelper):
             },
         )
         assert response.status_code == 303
-        assert finance_models.CustomReimbursementRule.query.count() == 0
         assert "Doit contenir un nombre positif" in html_parser.extract_alert(
             authenticated_client.get(response.location).data
         )
+
+        assert finance_models.CustomReimbursementRule.query.count() == 0
 
     def test_create_with_greater_rate(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -328,10 +349,11 @@ class CreateCustomReimbursementRulesTest(PostEndpointHelper):
             },
         )
         assert response.status_code == 303
-        assert finance_models.CustomReimbursementRule.query.count() == 0
         assert "Doit contenir un nombre inférieur ou égal à 100" in html_parser.extract_alert(
             authenticated_client.get(response.location).data
         )
+
+        assert finance_models.CustomReimbursementRule.query.count() == 0
 
     def test_create_with_no_subcategory(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -345,10 +367,11 @@ class CreateCustomReimbursementRulesTest(PostEndpointHelper):
             },
         )
         assert response.status_code == 303
+        assert html_parser.extract_alert(authenticated_client.get(response.location).data) == "Tarif dérogatoire créé"
+
         rule = finance_models.CustomReimbursementRule.query.one()
         assert rule.offererId == offerer.id
         assert rule.subcategories == []
-        assert "Tarif dérogatoire créé" in html_parser.extract_alert(authenticated_client.get(response.location).data)
 
     def test_create_with_invalid_subcategory(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -364,3 +387,110 @@ class CreateCustomReimbursementRulesTest(PostEndpointHelper):
         )
         assert response.status_code == 303
         assert finance_models.CustomReimbursementRule.query.count() == 0
+
+
+class GetEditCustomReimbursementRuleFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.reimbursement_rules.get_edit_custom_reimbursement_rule_form"
+    endpoint_kwargs = {"reimbursement_rule_id": 1}
+    needed_permission = perm_models.Permissions.CREATE_REIMBURSEMENT_RULES
+
+    def test_get_edit_form_test(self, legit_user, authenticated_client):
+        custom_reimbursement_rule = finance_factories.CustomReimbursementRuleFactory()
+        form_url = url_for(self.endpoint, reimbursement_rule_id=custom_reimbursement_rule.id)
+        db.session.expire(custom_reimbursement_rule)
+
+        with assert_num_queries(3):  # session + user + rule
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+
+class EditCustomReimbursementRuleTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.reimbursement_rules.edit_custom_reimbursement_rule"
+    endpoint_kwargs = {"reimbursement_rule_id": 1}
+    needed_permission = perm_models.Permissions.CREATE_REIMBURSEMENT_RULES
+
+    def test_update_custom_reimbursement_rule(self, authenticated_client):
+        original_timespan = (datetime.datetime.today() - datetime.timedelta(days=10), None)
+        rule = finance_factories.CustomReimbursementRuleFactory(timespan=original_timespan)
+        new_end_date = datetime.date.today() + datetime.timedelta(days=5)
+
+        response = self.post_to_endpoint(
+            authenticated_client, reimbursement_rule_id=rule.id, form={"end_date": new_end_date}
+        )
+
+        assert response.status_code == 303
+        assert "Tarif dérogatoire modifié" in html_parser.extract_alert(
+            authenticated_client.get(response.location).data
+        )
+
+        db.session.refresh(rule)
+        assert rule.timespan.lower == original_timespan[0]
+        assert rule.timespan.upper == date_utils.get_day_start(
+            new_end_date + datetime.timedelta(days=1), finance_utils.ACCOUNTING_TIMEZONE
+        ).astimezone(tz=None).replace(tzinfo=None)
+
+    def test_update_with_no_end_date(self, authenticated_client):
+        original_timespan = (
+            datetime.datetime.today() - datetime.timedelta(days=10),
+            datetime.datetime.today() + datetime.timedelta(days=5),
+        )
+        rule = finance_factories.CustomReimbursementRuleFactory(timespan=original_timespan)
+
+        response = self.post_to_endpoint(authenticated_client, reimbursement_rule_id=rule.id, form={"end_date": ""})
+
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data) == "Tarif dérogatoire modifié"
+        )
+
+        db.session.refresh(rule)
+        assert rule.timespan.lower == original_timespan[0]
+        assert rule.timespan.upper is None
+
+    def test_update_with_end_date_before_start_date(self, authenticated_client):
+        original_timespan = (datetime.datetime.today() + datetime.timedelta(days=10), None)
+        rule = finance_factories.CustomReimbursementRuleFactory(timespan=original_timespan)
+        new_end_date = datetime.date.today() + datetime.timedelta(days=5)
+
+        response = self.post_to_endpoint(
+            authenticated_client, reimbursement_rule_id=rule.id, form={"end_date": new_end_date}
+        )
+
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "La date de fin ne peut être avant la date de début"
+        )
+
+        db.session.refresh(rule)
+        assert rule.timespan.lower, rule.timespan.upper == original_timespan
+
+    def test_update_with_conflicting_end_date(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+        original_timespan = (
+            datetime.datetime.today() - datetime.timedelta(days=10),
+            datetime.datetime.today() + datetime.timedelta(days=5),
+        )
+        rule = finance_factories.CustomReimbursementRuleFactory(offerer=offerer, timespan=original_timespan)
+
+        conflicting_rule = finance_factories.CustomReimbursementRuleFactory(
+            offerer=offerer,
+            timespan=(
+                datetime.datetime.today() + datetime.timedelta(days=10),
+                datetime.datetime.today() + datetime.timedelta(days=15),
+            ),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            reimbursement_rule_id=rule.id,
+            form={"end_date": datetime.date.today() + datetime.timedelta(days=20)},
+        )
+
+        assert response.status_code == 303
+        assert html_parser.extract_alert(
+            authenticated_client.get(response.location).data
+        ) == "Ce tarif dérogatoire est en conflit avec les tarifs dérogatoires {'%s'}" % (conflicting_rule.id,)
+
+        db.session.refresh(rule)
+        assert rule.timespan.lower, rule.timespan.upper == original_timespan
