@@ -1,4 +1,6 @@
 {% from "components/history/view.html" import build_history_view with context %}
+<turbo-frame id="venue_history_frame">
 {% call build_history_view(dst, form, actions, false) %}
   {{ venue.name }}
 {% endcall %}
+</turbo-frame>
