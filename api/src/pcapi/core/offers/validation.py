@@ -259,15 +259,12 @@ def check_image(
         raise exceptions.ImageValidationError()
 
     if image.format.lower() not in accepted_types:
-        raise exceptions.UnacceptedFileType(accepted_types)
+        raise exceptions.UnacceptedFileType(accepted_types, image.format)
 
     if image.width < min_width or image.height < min_height:
         raise exceptions.ImageTooSmall(min_width, min_height)
 
-    if max_width is not None and image.width > max_width:
-        raise exceptions.ImageTooLarge(max_width, max_height)
-
-    if max_height is not None and image.height > max_height:
+    if max_width is not None and image.width > max_width or max_height is not None and image.height > max_height:
         raise exceptions.ImageTooLarge(max_width, max_height)
 
 
