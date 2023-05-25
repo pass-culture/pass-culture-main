@@ -1411,3 +1411,11 @@ class ShouldSaveLoginDeviceAsTrustedDeviceTest:
         users_factories.LoginDeviceHistoryFactory(deviceId=self.device_info.device_id, user=user)
 
         assert users_api.should_save_login_device_as_trusted_device(device_info=self.device_info, user=user) is False
+
+
+class IsSuspiciousLoginTest:
+    def test_should_be_true_when_user_has_no_trusted_device(self):
+        user = users_factories.UserFactory(email="py@test.com")
+
+        assert user.trusted_devices == []
+        assert users_api.is_suspicious_login(user=user) is True
