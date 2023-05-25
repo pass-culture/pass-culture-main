@@ -1264,3 +1264,8 @@ def should_save_login_device_as_trusted_device(
         .filter(users_models.LoginDeviceHistory.deviceId == device_info.device_id)
         .exists()
     ).scalar()
+
+
+def is_suspicious_login(user: models.User) -> bool:
+    if not user.trusted_devices:
+        return True
