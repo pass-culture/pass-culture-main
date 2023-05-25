@@ -1436,12 +1436,17 @@ class IsSuspiciousLoginTest:
 
     def test_should_be_false_when_device_id_matches_at_least_one_trusted_device(self):
         user = users_factories.UserFactory(email="py@test.com")
-        trusted_device = users_factories.TrustedDeviceFactory(
-            deviceId="2E429592-2446-425F-9A62-D6983F375B3B", user=user
-        )
+        trusted_device = users_factories.TrustedDeviceFactory(user=user)
         users_factories.TrustedDeviceFactory(deviceId="3A44812-5776-235D-8E31-G4361H987A1A", user=user)
         device_info = account_serialization.TrustedDevice(
             deviceId=trusted_device.deviceId, os="iOS", source="iPhone 13"
         )
 
         assert users_api.is_suspicious_login(device_info=device_info, user=user) is False
+
+    def test_should_be_true_when_device_id_does_not_any_trusted_device(self):
+        user = users_factories.UserFactory(email="py@test.com")
+        users_factories.TrustedDeviceFactory(user=user)
+        device_info = account_serialization.TrustedDevice(deviceId="other-device-id", os="iOS", source="iPhone 13")
+
+        assert users_api.is_suspicious_login(device_info=device_info, user=user) is True

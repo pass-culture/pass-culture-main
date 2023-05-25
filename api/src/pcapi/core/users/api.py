@@ -1275,3 +1275,5 @@ def is_suspicious_login(device_info: "account_serialization.TrustedDevice | None
 
     if any(device.deviceId == device_info.device_id for device in user.trusted_devices):
         return False
+
+    return True
