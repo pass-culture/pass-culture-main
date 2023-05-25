@@ -11,6 +11,10 @@ logger = logging.getLogger(__name__)
 
 @app.errorhandler(offers_exceptions.ImageValidationError)
 def handle_create_a_thumbnail(exception: Exception) -> tuple[Response, int]:
-    logger.info("When creating the offer thumbnail, this error was encountered: %s", exception.__class__.__name__)
     error_message = exception.args[0] if exception.args else "L'image n'est pas valide"
+    logger.error(
+        "When creating the offer thumbnail, this error was encountered: %s: %s",
+        exception.__class__.__name__,
+        error_message,
+    )
     return app.generate_error_response({"errors": [error_message]}), 400  # type: ignore [attr-defined]
