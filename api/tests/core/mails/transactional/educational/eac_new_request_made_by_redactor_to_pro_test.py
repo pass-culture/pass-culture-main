@@ -24,6 +24,7 @@ class SendEacNewBookingEmailToProTest:
                 "pouet@example.com",
                 "plouf@example.com",
             ],
+            requestedDate="2019-11-26",
         )
 
         # when
@@ -33,13 +34,17 @@ class SendEacNewBookingEmailToProTest:
         mails.send.assert_called_once()
         assert mails.send.call_args.kwargs["data"].params == {
             "OFFER_NAME": request.collectiveOfferTemplate.name,
-            "EVENT_DATE_REQUESTED": None,
-            "TOTAL_STUDENTS": None,
-            "TOTAL_TEACHERS": None,
-            "COMMENT": "Un commentaire sublime",
-            "REDACTOR_NAME": "Reda",
-            "REDACTOR_LAST_NAME": "Khteur",
-            "REDACTOR_MAIL": request.educationalRedactor.email,
-            "REDACTOR_PHONE": None,
+            "VENUE_NAME": request.collectiveOfferTemplate.venue.name,
+            "EVENT_DATE": "26/11/2019",
+            "NB_STUDENTS": None,
+            "NB_TEACHERS": None,
+            "REQUEST_COMMENT": "Un commentaire sublime",
+            "EDUCATIONAL_INSTITUTION_NAME": request.educationalInstitution.name,
+            "CITY_NAME": "PARIS",
+            "INSTITUTION_ZIP_CODE": "75000",
+            "REDACTOR_FIRSTNAME": "Reda",
+            "REDACTOR_LASTNAME": "Khteur",
+            "REDACTOR_EMAIL": request.educationalRedactor.email,
+            "REDACTOR_PHONE_NUMBER": None,
             "OFFER_CREATION_URL": f"{settings.PRO_URL}/offre/collectif/creation/{request.id}/requete",
         }
