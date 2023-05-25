@@ -76,9 +76,13 @@ export const serializeEditVenueBodyModel = (
   { hideSiret }: HideSiretParam,
   shouldSendMail?: boolean
 ): EditVenueBodyModel | EditVirtualVenueBodyModel => {
+  const reimbursementPointId =
+    !formValues.reimbursementPointId || formValues.reimbursementPointId === ''
+      ? null
+      : Number(formValues.reimbursementPointId)
   if (formValues.isVenueVirtual) {
     return {
-      reimbursementPointId: formValues.reimbursementPointId || null,
+      reimbursementPointId: reimbursementPointId,
     }
   } else {
     const model = serializeCommunData(formValues, {
@@ -90,7 +94,7 @@ export const serializeEditVenueBodyModel = (
       venueLabelId: !formValues.venueLabel ? null : formValues.venueLabel,
       isEmailAppliedOnAllOffers: true,
       isWithdrawalAppliedOnAllOffers: formValues.isWithdrawalAppliedOnAllOffers,
-      reimbursementPointId: formValues.reimbursementPointId,
+      reimbursementPointId: reimbursementPointId,
       shouldSendMail: shouldSendMail,
     }
   }
