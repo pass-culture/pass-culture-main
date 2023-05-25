@@ -3,7 +3,7 @@ import { IAccessibiltyFormValues } from 'core/shared'
 import { VenueBannerMetaProps } from './ImageUploaderVenue/ImageUploaderVenue'
 
 export interface IVenueFormValues {
-  reimbursementPointId: number | null
+  reimbursementPointId: number | string | null
   accessibility: IAccessibiltyFormValues
   address: string
   addressAutocomplete: string
