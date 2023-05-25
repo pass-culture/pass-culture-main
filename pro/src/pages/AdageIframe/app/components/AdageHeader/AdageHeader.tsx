@@ -1,14 +1,17 @@
 import cn from 'classnames'
 import React from 'react'
+import type { HitsProvided } from 'react-instantsearch-core'
+import { connectHits } from 'react-instantsearch-dom'
 import { NavLink } from 'react-router-dom'
 
 import { CalendarCheckIcon, InstitutionIcon, SearchIcon } from 'icons'
 import Icon from 'ui-kit/Icon/Icon'
 import { REACT_APP_ADAGE_SUIVI_URL } from 'utils/config'
+import { ResultType } from 'utils/types'
 
 import styles from './AdageHeader.module.scss'
 
-const AdageHeader = () => {
+export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
   const params = new URLSearchParams(location.search)
   const adageAuthToken = params.get('token')
   return (
@@ -39,6 +42,7 @@ const AdageHeader = () => {
         >
           <InstitutionIcon className={styles['adage-header-item-icon']} />
           Pour mon établissement
+          <div className={styles['adage-header-nb-hits']}>{hits.length}</div>
         </NavLink>
         <a
           href={REACT_APP_ADAGE_SUIVI_URL}
@@ -53,4 +57,4 @@ const AdageHeader = () => {
   )
 }
 
-export default AdageHeader
+export const AdageHeader = connectHits(AdageHeaderComponent)
