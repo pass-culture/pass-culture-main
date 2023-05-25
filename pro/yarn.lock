@@ -3089,7 +3089,7 @@
     "@sentry/utils" "7.53.1"
     tslib "^1.9.3"
 
-"@sentry/browser@7.53.0", "@sentry/browser@^7.53.0":
+"@sentry/browser@7.53.0":
   version "7.53.0"
   resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-7.53.0.tgz#f638c463a086a67d0879eb249c5fbcde69f7240c"
   integrity sha512-P+vn+RdDZQ9ODjYmr9j1vo+YlbTXEnNKlXL+ECoD4yoSNizN21Q1BBoiLSn1kipcdfbgUix+eEFNdhbpNxPQwA==
@@ -3099,6 +3099,18 @@
     "@sentry/replay" "7.53.0"
     "@sentry/types" "7.53.0"
     "@sentry/utils" "7.53.0"
+    tslib "^1.9.3"
+
+"@sentry/browser@^7.53.1":
+  version "7.53.1"
+  resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-7.53.1.tgz#1efd94cd9a56360fc401b99043eeaaac3da2e70e"
+  integrity sha512-1zas2R6riJaj0k7FoeieCW0SuC7UyKaBGA6jEG2LsgIqyD7IDOlF3BPZ4Yt08GFav0ImpyhGn5Vbrq5JLbeQdw==
+  dependencies:
+    "@sentry-internal/tracing" "7.53.1"
+    "@sentry/core" "7.53.1"
+    "@sentry/replay" "7.53.1"
+    "@sentry/types" "7.53.1"
+    "@sentry/utils" "7.53.1"
     tslib "^1.9.3"
 
 "@sentry/core@7.53.0":
@@ -3138,6 +3150,15 @@
     "@sentry/core" "7.53.0"
     "@sentry/types" "7.53.0"
     "@sentry/utils" "7.53.0"
+
+"@sentry/replay@7.53.1":
+  version "7.53.1"
+  resolved "https://registry.yarnpkg.com/@sentry/replay/-/replay-7.53.1.tgz#543272827d3ca034c62b0a822503d0a57c9229e7"
+  integrity sha512-5He5JLJiYLeWtXHC53z2ZzfbgAedafbHNZVS4+MBCOtydCk7cnuyJ0gGV6Rfxej/lZSNXZxOdW7HeMhzBtZCxw==
+  dependencies:
+    "@sentry/core" "7.53.1"
+    "@sentry/types" "7.53.1"
+    "@sentry/utils" "7.53.1"
 
 "@sentry/tracing@^7.53.1":
   version "7.53.1"
