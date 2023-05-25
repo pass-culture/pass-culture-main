@@ -125,7 +125,9 @@ const Validation = (): JSX.Element => {
             {offerer?.publicName || offerer?.name}
           </div>
           <div className={styles['data-line']}>{offerer?.siret}</div>
-          <div className={styles['data-line']}>{offerer?.address}</div>
+          <div className={styles['data-line']}>
+            {offerer?.address}, {offerer?.postalCode} {offerer?.city}
+          </div>
         </Banner>
       </section>
       <section className={styles['validation-screen']}>
