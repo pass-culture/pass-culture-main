@@ -1585,7 +1585,7 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
-        self.assert_only_welcome_email_to_pro_was_sent()
+        assert len(mails_testing.outbox) == 0
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
 
@@ -1623,7 +1623,7 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
-        self.assert_only_welcome_email_to_pro_was_sent()
+        assert len(mails_testing.outbox) == 0
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
 
@@ -1656,6 +1656,6 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
-        self.assert_only_welcome_email_to_pro_was_sent()
+        assert len(mails_testing.outbox) == 0
         # Venue Registration
         assert offerers_models.VenueRegistration.query.count() == 0
