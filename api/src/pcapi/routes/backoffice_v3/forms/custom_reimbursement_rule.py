@@ -38,7 +38,7 @@ class GetCustomReimbursementRulesListForm(FlaskForm):
         )
 
 
-class CreateCustomReimbursementRuleForm(FlaskForm):
+class EditCustomReimbursementRule(FlaskForm):
     class Meta:
         locales = ["fr_FR", "fr"]
 
@@ -51,7 +51,7 @@ class CreateCustomReimbursementRuleForm(FlaskForm):
         validators=[wtforms.validators.InputRequired("Information obligatoire")],
     )
     subcategories = fields.PCSelectMultipleField(
-        "Sous-catégories", choices=[(s.id, s.pro_label) for s in subcategories_v2.ALL_SUBCATEGORIES]
+        "Sous-catégories", choices=map(lambda s: (s.id, s.pro_label), subcategories_v2.ALL_SUBCATEGORIES)
     )
 
     rate = fields.PCDecimalField(
@@ -82,12 +82,3 @@ class CreateCustomReimbursementRuleForm(FlaskForm):
             raise wtforms.ValidationError("Ne peut pas commencer avant demain")
 
         return start_date
-
-
-class EditCustomReimbursementRuleForm(FlaskForm):
-    class Meta:
-        locales = ["fr_FR", "fr"]
-
-    end_date = fields.PCDateField(
-        "Date de fin d'application (optionnelle)", validators=(wtforms.validators.Optional(),)
-    )
