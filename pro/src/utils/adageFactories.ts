@@ -1,9 +1,13 @@
+import type { Hit } from 'react-instantsearch-core'
+
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
 } from 'apiClient/adage'
+
+import { ResultType } from './types'
 
 export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseModel =
   {
@@ -49,4 +53,20 @@ export const defaultAdageUser: AuthenticatedResponse = {
   institutionName: 'Mon établissement',
   role: AdageFrontRoles.REDACTOR,
   uai: '1234567A',
+}
+
+export const defaultAlgoliaHits: Hit<ResultType> = {
+  objectID: '1',
+  offer: {
+    dates: [new Date().valueOf()],
+    name: 'Une offre collective',
+    thumbUrl: '/imageUrl',
+  },
+  venue: {
+    name: 'Lieu collectif #1',
+    publicName: 'Mon super lieu collectif',
+  },
+  _highlightResult: {},
+  isTemplate: false,
+  __queryID: 'queryId',
 }

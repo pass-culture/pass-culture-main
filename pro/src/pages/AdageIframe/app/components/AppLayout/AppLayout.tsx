@@ -1,10 +1,17 @@
+import algoliasearch from 'algoliasearch/lite'
 import * as React from 'react'
+import { Configure, InstantSearch } from 'react-instantsearch-dom'
 import { Route, Routes } from 'react-router-dom'
 
 import { AuthenticatedResponse, VenueResponse } from 'apiClient/adage'
+import {
+  ALGOLIA_API_KEY,
+  ALGOLIA_APP_ID,
+  ALGOLIA_COLLECTIVE_OFFERS_INDEX,
+} from 'utils/config'
 
 import routesAdage from '../../subRoutesAdage'
-import AdageHeader from '../AdageHeader/AdageHeader'
+import { AdageHeader } from '../AdageHeader/AdageHeader'
 
 import styles from './AppLayout.module.scss'
 
@@ -19,8 +26,19 @@ export const AppLayout = ({
 }): JSX.Element => {
   return (
     <div>
-      <AdageHeader />
-
+      <InstantSearch
+        searchClient={algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY)}
+        indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
+      >
+        <Configure
+          attributesToHighlight={[]}
+          attributesToRetrieve={[]}
+          clickAnalytics
+          facetFilters={[`offer.educationalInstitutionUAICode:${user.uai}`]}
+          hitsPerPage={8}
+        />
+        <AdageHeader />
+      </InstantSearch>
       <main className={styles['app-layout-content']} id="content">
         <Routes>
           {routesAdage.map(({ path, element }) => {
