@@ -453,6 +453,21 @@ class GetPublicAccountTest(GetEndpointHelper):
             assert expected_badge in content
         assert "Suspendu" not in content
 
+    def test_get_public_account_with_modified_email(self, authenticated_client):
+        _, grant_18, _, _, _ = create_bunch_of_accounts()
+        users_factories.EmailUpdateEntryFactory(user=grant_18)
+
+        # when
+        user_id = grant_18.id
+
+        with assert_num_queries(3):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+
+        # then
+        assert response.status_code == 200
+        parsed_html = html_parser.get_soup(response.data)
+        assert parsed_html.find("i", class_="pc-email-changed-icon") is not None
+
     @pytest.mark.parametrize(
         "reasonCodes",
         ([fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER], [fraud_models.FraudReasonCode.DUPLICATE_USER]),
