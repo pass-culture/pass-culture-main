@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as SVGOffers } from 'icons/ico-list-offers.svg'
+import { ReactComponent as SVGOffers } from 'icons/ico-placeholder-offer-image.svg'
 
 import styles from './Thumb.module.scss'
 
