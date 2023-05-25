@@ -1266,6 +1266,10 @@ def should_save_login_device_as_trusted_device(
     ).scalar()
 
 
-def is_suspicious_login(user: models.User) -> bool:
+def is_suspicious_login(device_info: "account_serialization.TrustedDevice | None", user: models.User) -> bool:
+    if device_info is None or not device_info.device_id:
+        return True
+
     if not user.trusted_devices:
         return True
+
