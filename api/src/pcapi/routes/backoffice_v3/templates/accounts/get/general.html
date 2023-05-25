@@ -83,12 +83,17 @@
               <p>{{ user.postalCode | empty_string_if_null }}&nbsp;{{ user.city | empty_string_if_null }}</p>
             </div>
           </div>
-          <div class="d-flex flex-column  ms-5">
+          <div class="d-flex flex-column">
             <div class="mb-1">
               <span class="fw-bold">Numéro de pièce d'identité</span>
               <p>{{ user.idPieceNumber | empty_string_if_null }}</p>
               <div class="mb-1">
-                <span class="fw-bold">E-mail :</span> {{ user.email }}
+                <div class="d-flex align-items-center">
+                  <span class="fw-bold me-1">E-mail :</span> {{ user.email }}
+                  {% if user.email_history | length > 0 %}
+                    <i class="bi bi-exclamation-circle-fill text-warning ms-1 fs-4 pc-email-changed-icon"></i>
+                  {% endif %}
+                </div>
                 {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
                   <form action="{{ url_for('.resend_validation_email', user_id=user.id) }}"
                         name="{{ url_for('.resend_validation_email', user_id=user.id) | action_to_name }}"
