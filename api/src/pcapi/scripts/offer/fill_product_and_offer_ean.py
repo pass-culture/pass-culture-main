@@ -40,7 +40,7 @@ def fill_product_ean(start: int, end: int) -> None:
         start_time = time.perf_counter()
         db.session.execute(
             """
-            update product set "jsonData" = jsonb_set("jsonData", '{ean}', ("jsonData"->>'isbn')::jsonb)
+            update product set "jsonData" = jsonb_set("jsonData", '{ean}', to_jsonb("jsonData"->>'isbn'))
             where "jsonData"->>'isbn' != ''
             and id between :start and :end
             """,
@@ -68,7 +68,7 @@ def fill_offer_ean(start: int, end: int) -> None:
         start_time = time.perf_counter()
         db.session.execute(
             """
-            update offer set "jsonData" = jsonb_set("jsonData", '{ean}', ("jsonData"->>'isbn')::jsonb)
+            update offer set "jsonData" = jsonb_set("jsonData", '{ean}', to_jsonb("jsonData"->>'isbn'))
             where "jsonData"->>'isbn' != ''
             and id between :start and :end
             """,
