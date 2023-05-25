@@ -84,8 +84,10 @@ class ImageTooLarge(ImageValidationError):
 
 
 class UnacceptedFileType(ImageValidationError):
-    def __init__(self, accepted_types: typing.Iterable) -> None:
-        super().__init__(f"Utilisez un format {', '.join(accepted_types)}")
+    def __init__(self, accepted_types: typing.Iterable, image_format: str) -> None:
+        super().__init__(
+            f"Le format {image_format.lower()} n'est pas supporté. Utilisez un format {', '.join(accepted_types)}"
+        )
 
 
 class MissingImage(ImageValidationError):
