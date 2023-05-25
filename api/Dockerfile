@@ -59,6 +59,7 @@ COPY --from=builder /home/pcapi/.local /home/pcapi/.local
 WORKDIR /usr/src/app
 
 COPY --from=sources --chown=pcapi:pcapi /tmp/src .
+RUN chown pcapi:pcapi /usr/src/app
 
 USER pcapi
 
