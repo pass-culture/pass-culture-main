@@ -2,6 +2,7 @@ import dataclasses
 from datetime import datetime
 import enum
 import logging
+import re
 import secrets
 import time
 import typing
@@ -67,6 +68,7 @@ UNCHANGED = T_UNCHANGED.TOKEN
 VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "postalCode", "city", "latitude", "longitude", "criteria"]
 API_KEY_SEPARATOR = "_"
 APE_TAG_MAPPING = {"84.11Z": "Collectivité"}
+DMS_TOKEN_REGEX = r"^(?:PRO-)?([a-fA-F0-9]{12})$"
 
 
 def create_digital_venue(offerer: models.Offerer) -> models.Venue:
@@ -1047,6 +1049,9 @@ def search_venue(search_query: str, order_by: list[str] | None = None) -> BaseQu
     if search_query.isnumeric():
         if len(search_query) == 14:
             venues = venues.filter(sa.or_(models.Venue.id == int(search_query), models.Venue.siret == search_query))
+        # for dmsToken containing digits only
+        elif len(search_query) == 12:
+            venues = venues.filter(sa.or_(models.Venue.id == int(search_query), models.Venue.dmsToken == search_query))
         else:
             venues = venues.filter(models.Venue.id == int(search_query))
     else:
@@ -1064,6 +1069,11 @@ def search_venue(search_query: str, order_by: list[str] | None = None) -> BaseQu
                     models.VenueContact.email.like(f"%{sanitized_term}"),
                 )
             )
+        # dmsToken
+        # We theoretically can have venues which name is 12 letters between a and f
+        # But it never happened in the database, and it's costly to handle
+        elif dms_token_term := re.match(DMS_TOKEN_REGEX, search_query):
+            venues = venues.filter(models.Venue.dmsToken == dms_token_term.group(1).lower())
         else:
             # non-numeric terms are searched by trigram distance in the name
             venues = venues.filter(
@@ -1377,7 +1387,10 @@ def _apply_query_filters(
 
         if sanitized_q.isnumeric():
             num_digits = len(sanitized_q)
-            if num_digits == 9:
+            # for dmsToken containing digits only
+            if num_digits == 12:
+                query = query.join(offerers_models.Venue).filter(models.Venue.dmsToken == sanitized_q)
+            elif num_digits == 9:
                 query = query.filter(offerers_models.Offerer.siren == sanitized_q)
             elif num_digits == 5:
                 query = query.filter(offerers_models.Offerer.postalCode == sanitized_q)
@@ -1385,10 +1398,14 @@ def _apply_query_filters(
                 query = query.filter(offerers_models.Offerer.departementCode == sanitized_q)
             else:
                 raise exceptions.InvalidSiren(
-                    "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
+                    "Le nombre de chiffres ne correspond pas à un SIREN, code postal, département ou ID DMS CB"
                 )
         elif email_utils.is_valid_email(sanitized_q):
             query = query.filter(users_models.User.email == sanitized_q)
+        # We theoretically can have venues which name is 12 letters between a and f
+        # But it never happened in the database, and it's costly to handle
+        elif dms_token_term := re.match(DMS_TOKEN_REGEX, q):
+            query = query.join(offerers_models.Venue).filter(models.Venue.dmsToken == dms_token_term.group(1).lower())
         else:
             name_query = "%{}%".format(clean_accents(q))
             query = query.filter(

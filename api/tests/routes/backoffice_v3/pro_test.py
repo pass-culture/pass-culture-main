@@ -405,6 +405,26 @@ class SearchVenueTest:
         assert_venue_equals(cards_text[0], self.venues[2])  # Théâtre du Centre (most relevant)
         assert_venue_equals(cards_text[1], self.venues[11])  # Théâtre du Centaure (very close to the first one)
 
+    @pytest.mark.parametrize(
+        "query", ["123a456b789c", "123A456B789C", "PRO-123a456b789c", "124578235689", "PRO-124578235689"]
+    )
+    def test_can_search_venue_by_dms_token(self, authenticated_client, query):
+        # given
+        self._create_venues()
+        venue_with_token = offerers_factories.VenueFactory(dmsToken="123a456b789c")
+        venue_with_num_token = offerers_factories.VenueFactory(
+            name="ONLY_NUM", publicName="ONLY_NUM", dmsToken="124578235689"
+        )
+
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, terms=query, pro_type="venue"))
+
+        # then
+        assert response.status_code == 200
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        assert_venue_equals(cards_text[0], venue_with_num_token if "ONLY_NUM" in cards_text[0] else venue_with_token)
+
     @pytest.mark.parametrize("query", ["987654321", "festival@example.com", "Festival de la Montagne"])
     def test_can_search_venue_no_result(self, authenticated_client, query):
         # given
