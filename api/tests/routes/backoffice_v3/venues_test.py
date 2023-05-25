@@ -3,6 +3,7 @@ from datetime import timedelta
 from decimal import Decimal
 import json
 from unittest import mock
+from unittest.mock import patch
 
 from flask import url_for
 import pytest
@@ -22,6 +23,8 @@ import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
+from pcapi.core.users import factories as users_factories
+from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 from pcapi.routes.backoffice_v3 import venues as venues_blueprint
 from pcapi.routes.backoffice_v3.filters import format_dms_status
@@ -814,7 +817,99 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.siret is None
         assert venue.contact.phone_number == "+33203040506"
 
-    def test_update_venue_create_siret(self, authenticated_client, offerer):
+    def test_update_venue_create_siret(self, authenticated_client, legit_user, offerer):
+        venue = offerers_factories.VenueWithoutSiretFactory()
+
+        data = self._get_current_data(venue)
+        data["siret"] = f"{venue.managingOfferer.siren}12345"
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+        db.session.refresh(venue)
+        assert venue.siret == data["siret"]
+        assert venue.comment is None
+        assert venue.current_pricing_point_id == venue.id
+        assert len(venue.action_history) == 1
+        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].authorUser == legit_user
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "siret": {"old_info": "None", "new_info": data["siret"]},
+                "comment": {"old_info": "No SIRET", "new_info": "None"},
+            }
+        }
+
+    def test_update_venue_create_siret_without_permission(self, client, roles_with_permissions, offerer):
+        bo_user = users_factories.AdminFactory()
+        backoffice_api.upsert_roles(bo_user, [perm_models.Roles.SUPPORT_PRO])
+
+        venue = offerers_factories.VenueWithoutSiretFactory()
+
+        data = self._get_current_data(venue)
+        data["siret"] = f"{venue.managingOfferer.siren}12345"
+
+        response = self.post_to_endpoint(client.with_bo_session_auth(bo_user), venue_id=venue.id, form=data)
+
+        assert response.status_code == 400
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Vous ne pouvez pas ajouter le SIRET d'un lieu. Contactez le support pro N2."
+        )
+        db.session.refresh(venue)
+        assert venue.siret is None
+
+    def test_update_venue_create_siret_wrong_siren(self, authenticated_client, offerer):
+        venue = offerers_factories.VenueWithoutSiretFactory()
+
+        data = self._get_current_data(venue)
+        data["siret"] = "12345678912345"
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 400
+        assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(response.data)
+        db.session.refresh(venue)
+        assert venue.siret is None
+
+    def test_update_venue_create_siret_which_exists(self, authenticated_client, offerer):
+        offerer = offerers_factories.OffererFactory(siren="111222333")
+        offerers_factories.VenueFactory(managingOfferer=offerer, siret="11122233344444")
+        venue = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)
+
+        data = self._get_current_data(venue)
+        data["siret"] = "11122233344444"
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 400
+        assert (
+            html_parser.extract_alert(response.data)
+            == "[siret] Une entrée avec cet identifiant existe déjà dans notre base de données"
+        )
+        db.session.refresh(venue)
+        assert venue.siret is None
+
+    def test_update_venue_create_siret_when_pricing_point_exists(self, authenticated_client, offerer):
+        venue = offerers_factories.VenueWithoutSiretFactory()
+        offerers_factories.VenuePricingPointLinkFactory(
+            venue=venue,
+            pricingPoint=offerers_factories.VenueFactory(),
+            timespan=[datetime.utcnow() - timedelta(days=60), None],
+        )
+
+        data = self._get_current_data(venue)
+        data["siret"] = f"{venue.managingOfferer.siren}12345"
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 400
+        assert "Ce lieu a déjà un point de valorisation" in html_parser.extract_alert(response.data)
+        db.session.refresh(venue)
+        assert venue.siret is None
+
+    @patch("pcapi.connectors.sirene.siret_is_active", return_value=False)
+    def test_update_venue_create_siret_inactive(self, mock_siret_is_active, authenticated_client, offerer):
         venue = offerers_factories.VenueWithoutSiretFactory()
 
         data = self._get_current_data(venue)
@@ -823,11 +918,31 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 400
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce lieu"
+        )
         db.session.refresh(venue)
         assert venue.siret is None
-        assert "Vous ne pouvez pas créer le SIRET d'un lieu. Contactez le support pro." in html_parser.extract_alert(
-            response.data
+
+    def test_update_venue_update_siret_without_permission(self, client, roles_with_permissions, offerer):
+        bo_user = users_factories.AdminFactory()
+        backoffice_api.upsert_roles(bo_user, [perm_models.Roles.SUPPORT_PRO])
+
+        venue = offerers_factories.VenueFactory(siret="11122233344444", managingOfferer__siren="111222333")
+
+        data = self._get_current_data(venue)
+        data["siret"] = "11122233355555"
+
+        response = self.post_to_endpoint(client.with_bo_session_auth(bo_user), venue_id=venue.id, form=data)
+
+        assert response.status_code == 400
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Vous ne pouvez pas modifier le SIRET d'un lieu. Contactez le support pro N2."
         )
+        db.session.refresh(venue)
+        assert venue.siret == "11122233344444"
 
     @pytest.mark.parametrize("siret", ["", " "])
     def test_update_venue_remove_siret(self, authenticated_client, offerer, siret):
@@ -839,11 +954,9 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 400
+        assert html_parser.extract_alert(response.data) == "Vous ne pouvez pas retirer le SIRET d'un lieu."
         db.session.refresh(venue)
         assert venue.siret
-        assert "Vous ne pouvez pas retirer le SIRET d'un lieu. Contactez le support pro." in html_parser.extract_alert(
-            response.data
-        )
 
     @pytest.mark.parametrize("siret", ["1234567891234", "123456789123456", "123456789ABCDE", "11122233300001"])
     def test_update_venue_invalid_siret(self, authenticated_client, offerer, siret):

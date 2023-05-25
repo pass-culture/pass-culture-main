@@ -13,6 +13,7 @@ import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
 from pcapi import settings
+from pcapi.connectors import sirene
 from pcapi.connectors.dms.api import DMSGraphQLClient
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
@@ -46,6 +47,10 @@ venue_blueprint = utils.child_backoffice_blueprint(
     url_prefix="/pro/venue",
     permission=perm_models.Permissions.READ_PRO_ENTITY,
 )
+
+
+def _can_edit_siret() -> bool:
+    return utils.has_current_user_permission(perm_models.Permissions.MOVE_SIRET)
 
 
 def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
@@ -181,6 +186,7 @@ def render_venue_details(
                 longitude=venue.longitude,
             )
         edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
+        edit_venue_form.siret.flags.disabled = not _can_edit_siret()
 
     delete_venue_form = empty_forms.EmptyForm()
 
@@ -405,18 +411,49 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         flash(msg, "warning")
         return render_venue_details(venue, form), 400
 
-    if not venue.isVirtual and bool(venue.siret) != bool(form.siret.data):
-        flash(
-            f"Vous ne pouvez pas {'créer' if form.siret.data else 'retirer'} le SIRET d'un lieu. Contactez le support pro.",
-            "warning",
-        )
-        return render_venue_details(venue, form), 400
-
     attrs = {
         to_camelcase(field.name): field.data
         for field in form
         if field.name and hasattr(venue, to_camelcase(field.name))
     }
+
+    update_siret = False
+    if not venue.isVirtual and venue.siret != form.siret.data:
+        if not _can_edit_siret():
+            flash(
+                f"Vous ne pouvez pas {'modifier' if venue.siret else 'ajouter'} le SIRET d'un lieu. Contactez le support pro N2.",
+                "warning",
+            )
+            return render_venue_details(venue, form), 400
+
+        if venue.siret:
+            if not form.siret.data:
+                flash("Vous ne pouvez pas retirer le SIRET d'un lieu.", "warning")
+                return render_venue_details(venue, form), 400
+        elif form.siret.data:
+            # Remove comment because of constraint check_has_siret_xor_comment_xor_isVirtual
+            attrs["comment"] = None
+
+        existing_pricing_point_id = venue.current_pricing_point_id
+        if existing_pricing_point_id and venue.id != existing_pricing_point_id:
+            flash(
+                f"Ce lieu a déjà un point de valorisation (Venue.id={existing_pricing_point_id}). "
+                f"Définir un SIRET impliquerait qu'il devienne son propre point de valorisation, "
+                f"mais le changement de point de valorisation n'est pas autorisé",
+                "warning",
+            )
+            return render_venue_details(venue, form), 400
+
+        try:
+            if not sirene.siret_is_active(form.siret.data):
+                flash("Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce lieu", "error")
+                return render_venue_details(venue, form), 400
+        except sirene.SireneException:
+            unavailable_sirene = True
+        else:
+            unavailable_sirene = False
+
+        update_siret = True
 
     if form.phone_number.data or venue.contact:
         contact_data = serialize_base.VenueContactModel(
@@ -441,6 +478,12 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             for error_detail in error_details:
                 flash(f"[{error_key}] {error_detail}", "warning")
         return render_venue_details(venue, form), 400
+
+    if update_siret:
+        if unavailable_sirene:
+            flash("Ce SIRET n'a pas pu être vérifié, mais la modification a néanmoins été effectuée", "warning")
+        if not existing_pricing_point_id:
+            offerers_api.link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
 
     flash("Les informations ont bien été mises à jour", "success")
     return redirect(url_for("backoffice_v3_web.venue.get", venue_id=venue.id), code=303)
