@@ -1735,11 +1735,13 @@ def create_from_onboarding_data(
         venue = create_venue(venue_creation_info, strict_accessibility_compliance=False)
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
-    if not transactional_mails.send_welcome_to_pro_email(user):
-        logger.warning(
-            "Could not send welcome to pro email",
-            extra={"user": user.id},
-        )
+    # Send welcome email only in the case of offerer creation
+    if user_offerer.validationStatus == ValidationStatus.VALIDATED:
+        if not transactional_mails.send_welcome_to_pro_email(user):
+            logger.warning(
+                "Could not send welcome to pro email",
+                extra={"user": user.id},
+            )
 
     return user_offerer
 
