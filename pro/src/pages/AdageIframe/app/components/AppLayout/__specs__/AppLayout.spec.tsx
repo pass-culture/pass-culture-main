@@ -103,7 +103,7 @@ describe('AppLayout', () => {
 
     expect(screen.getByRole('link', { name: 'Rechercher' })).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: 'Pour mon établissement' })
+      screen.getByRole('link', { name: 'Pour mon établissement 0' })
     ).toBeInTheDocument()
   })
 })
