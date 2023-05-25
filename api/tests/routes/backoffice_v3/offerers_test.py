@@ -978,6 +978,13 @@ class ListOfferersToValidateTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     class ListOfferersToBeValidatedTest:
+        # - session + authenticated user (2 queries)
+        # - validation status count (1 query)
+        # - offerer tags filter (1 query)
+        # - get results (1 query)
+        # - get results count (1 query)
+        expected_num_queries = 6
+
         @pytest.mark.parametrize(
             "row_key,sort,order",
             [
@@ -1003,7 +1010,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 to_be_validated_offerers.append(user_offerer.offerer)
 
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_v3_web.validation.list_offerers_to_validate", order=order, sort=sort)
                 )
@@ -1073,7 +1080,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             )
 
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for("backoffice_v3_web.validation.list_offerers_to_validate"))
 
             # then
@@ -1102,7 +1109,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             )
 
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for("backoffice_v3_web.validation.list_offerers_to_validate"))
 
             # then
@@ -1124,7 +1131,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             educational_factories.CollectiveDmsApplicationFactory(venue=other_venue, state="accepte")
 
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for("backoffice_v3_web.validation.list_offerers_to_validate"))
 
             # then
@@ -1190,7 +1197,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             self, authenticated_client, region_filter, expected_offerer_names, offerers_to_be_validated
         ):
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_v3_web.validation.list_offerers_to_validate", regions=region_filter)
                 )
@@ -1221,7 +1228,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             tags_ids = [_id for _id, in tags]
 
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_v3_web.validation.list_offerers_to_validate", tags=tags_ids)
                 )
@@ -1251,7 +1258,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             offerers_factories.UserNotValidatedOffererFactory(offerer__dateCreated=datetime.datetime(2022, 11, 10, 7))
 
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for(
                         "backoffice_v3_web.validation.list_offerers_to_validate",
@@ -1283,7 +1290,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         @pytest.mark.parametrize("search", ["123004004", "  123004004 ", "123004004\n"])
         def test_list_search_by_siren(self, authenticated_client, offerers_to_be_validated, search):
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_v3_web.validation.list_offerers_to_validate", q=search)
                 )
@@ -1295,7 +1302,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
         def test_list_search_by_postal_code(self, authenticated_client, offerers_to_be_validated):
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_v3_web.validation.list_offerers_to_validate", q="35400")
                 )
@@ -1307,7 +1314,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
         def test_list_search_by_department_code(self, authenticated_client, offerers_to_be_validated):
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_v3_web.validation.list_offerers_to_validate", q="35")
                 )
@@ -1323,7 +1330,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
             # Search "quimper" => results include "Quimper" and "Quimperlé"
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_v3_web.validation.list_offerers_to_validate", q="quimper")
                 )
@@ -1344,13 +1351,13 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             # then
             assert response.status_code == 400
             assert (
-                "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
+                "Le nombre de chiffres ne correspond pas à un SIREN, code postal, département ou ID DMS CB"
                 in response.data.decode("utf-8")
             )
 
         def test_list_search_by_email(self, authenticated_client, offerers_to_be_validated):
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_v3_web.validation.list_offerers_to_validate", q="sadi@example.com")
                 )
@@ -1362,7 +1369,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
         def test_list_search_by_user_name(self, authenticated_client, offerers_to_be_validated):
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_v3_web.validation.list_offerers_to_validate", q="Felix faure")
                 )
@@ -1392,7 +1399,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 offerers_factories.NotValidatedOffererFactory(name=name)
 
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_v3_web.validation.list_offerers_to_validate", q=search_filter)
                 )
@@ -1419,7 +1426,10 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             self, authenticated_client, status_filter, expected_status, expected_offerer_names, offerers_to_be_validated
         ):
             # when
-            with assert_no_duplicated_queries():
+            expected_num_queries = (
+                self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 2
+            )
+            with assert_num_queries(expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_v3_web.validation.list_offerers_to_validate", status=status_filter)
                 )
@@ -1455,7 +1465,10 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             offerers_to_be_validated,
         ):
             # when
-            with assert_no_duplicated_queries():
+            expected_num_queries = (
+                self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 2
+            )
+            with assert_num_queries(expected_num_queries):
                 response = authenticated_client.get(
                     url_for(
                         "backoffice_v3_web.validation.list_offerers_to_validate", dms_adage_status=dms_status_filter
@@ -1470,13 +1483,34 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             else:
                 assert html_parser.count_table_rows(response.data) == 0
 
+        @pytest.mark.parametrize(
+            "query", ["123a456b789c", "123A456B789C", "PRO-123a456b789c", "124578235689", "PRO-124578235689"]
+        )
+        def test_list_filtering_by_dms_token(self, authenticated_client, query, offerers_to_be_validated):
+            # given
+            user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+            offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, dmsToken="123a456b789c")
+            offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, dmsToken="124578235689")
+
+            # when
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(
+                    url_for("backoffice_v3_web.validation.list_offerers_to_validate", q=query)
+                )
+
+            # then
+            assert response.status_code == 200
+            rows = html_parser.extract_table_rows(response.data)
+            assert len(rows) == 1
+            assert rows[0]["ID"] == str(user_offerer.offerer.id)
+
         def test_offerers_stats_are_displayed(self, authenticated_client, offerers_to_be_validated):
             # given
             offerers_factories.UserOffererFactory(offerer__validationStatus=ValidationStatus.PENDING)
             offerers_factories.UserOffererFactory(offerer__validationStatus=ValidationStatus.REJECTED)
 
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for("backoffice_v3_web.validation.list_offerers_to_validate"))
 
             # then
@@ -1489,7 +1523,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
         def test_no_offerer(self, authenticated_client):
             # when
-            with assert_no_duplicated_queries():
+            with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for("backoffice_v3_web.validation.list_offerers_to_validate"))
 
             # then
