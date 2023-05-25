@@ -26,7 +26,7 @@
                 data-bs-toggle="modal"
                 data-bs-target="#create-custom-reimbursement-rule"
                 type="button">Créer un tarif dérogatoire</button>
-        {{ build_lazy_modal(url_for("backoffice_v3_web.reimbursement_rules.get_create_custom_reimbursement_rule_form"), "create-custom-reimbursement-rule") }}
+        {{ build_lazy_modal(url_for("backoffice_v3_web.reimbursement_rules.get_custom_reimbursement_rules_form"), "create-custom-reimbursement-rule") }}
       {% endif %}
       {% if rows %}
         <div class="d-flex justify-content-between">
@@ -58,13 +58,6 @@
                             class="btn p-0">
                       <i class="bi bi-three-dots-vertical"></i>
                     </button>
-                    <ul class="dropdown-menu">
-                      <li class="dropdown-item p-0">
-                        <a class="btn btn-sm d-block w-100 text-start px-3"
-                           data-bs-toggle="modal"
-                           data-bs-target="#edit-custom-reimbursement-rule-{{ reimbursement_rule.id }}">Modifier</a>
-                      </li>
-                    </ul>
                   </div>
                 </td>
                 <td>{{ reimbursement_rule.id }}</td>
@@ -87,11 +80,6 @@
             {% endfor %}
           </tbody>
         </table>
-        {% for reimbursement_rule in rows %}
-          {{ build_lazy_modal(
-          url_for("backoffice_v3_web.reimbursement_rules.get_edit_custom_reimbursement_rule_form", reimbursement_rule_id=reimbursement_rule.id),
-          "edit-custom-reimbursement-rule-" + reimbursement_rule.id|string) }}
-        {% endfor %}
       {% endif %}
     </div>
   </div>
