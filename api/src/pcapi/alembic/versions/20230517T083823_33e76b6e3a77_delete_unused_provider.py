@@ -16,20 +16,18 @@ depends_on = None
 
 def upgrade() -> None:
     # Some offer have this provider in integration, don't touch it
-    if settings.IS_INTEGRATION:
-        return
-    op.execute(
-        f"""DELETE FROM provider WHERE "localClass" = '{providers_constants.INDIVIDUAL_OFFERS_API_FAKE_CLASS_NAME}'"""
-    )
+    if settings.IS_TESTING or settings.IS_DEV:
+        op.execute(
+            f"""DELETE FROM provider WHERE "localClass" = '{providers_constants.INDIVIDUAL_OFFERS_API_FAKE_CLASS_NAME}'"""
+        )
 
 
 def downgrade() -> None:
     # Some offer have this provider in integration, don't touch it
-    if settings.IS_INTEGRATION:
-        return
-    op.execute(
-        f"""
-        INSERT INTO provider (name, "localClass", "apiUrl", "enabledForPro", "isActive")
-        VALUES ('{providers_constants.INDIVIDUAL_OFFERS_API_PROVIDER_NAME}', '{providers_constants.INDIVIDUAL_OFFERS_API_FAKE_CLASS_NAME}', null, false, true)
-        """
-    )
+    if settings.IS_TESTING or settings.IS_DEV:
+        op.execute(
+            f"""
+            INSERT INTO provider (name, "localClass", "apiUrl", "enabledForPro", "isActive")
+            VALUES ('{providers_constants.INDIVIDUAL_OFFERS_API_PROVIDER_NAME}', '{providers_constants.INDIVIDUAL_OFFERS_API_FAKE_CLASS_NAME}', null, false, true)
+            """
+        )
