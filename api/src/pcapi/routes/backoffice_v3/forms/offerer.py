@@ -76,7 +76,9 @@ class OffererValidationListForm(utils.PCForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("Nom de structure, SIREN, code postal, département, ville, email, nom de compte pro")
+    q = fields.PCOptSearchField(
+        "Nom de structure, SIREN, code postal, dép., ville, email, nom de compte pro, ID DMS CB"
+    )
     regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
     tags = fields.PCQuerySelectMultipleField(
         "Tags",
@@ -110,9 +112,9 @@ class OffererValidationListForm(utils.PCForm):
     )
 
     def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
-        if q.data and q.data.isnumeric() and len(q.data) not in (2, 3, 5, 9):
+        if q.data and q.data.isnumeric() and len(q.data) not in (2, 3, 5, 9, 12):
             raise wtforms.validators.ValidationError(
-                "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
+                "Le nombre de chiffres ne correspond pas à un SIREN, code postal, département ou ID DMS CB"
             )
         return q
 
