@@ -145,7 +145,7 @@ describe('screens:SignupJourney::Validation', () => {
     expect(screen.getByText('url2')).toBeInTheDocument()
     expect(screen.getByText('nom public')).toBeInTheDocument()
     expect(screen.getByText('123123123')).toBeInTheDocument()
-    expect(screen.getByText('3 Rue de Valois')).toBeInTheDocument()
+    expect(screen.getByText('3 Rue de Valois, 75001 Paris')).toBeInTheDocument()
     expect(screen.getByText('À des groupes scolaires')).toBeInTheDocument()
   })
 
