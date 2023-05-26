@@ -1187,48 +1187,35 @@ def get_offerer_total_revenue(offerer_id: int) -> float:
 
 
 def get_offerer_offers_stats(offerer_id: int) -> sa.engine.Row:
-    individual_offers_query = sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
-        sa.select(
-            sa.case(
-                [
-                    (offers_models.Offer.isActive.is_(True), "active"),
-                    (offers_models.Offer.isActive.is_(False), "inactive"),
-                ]
-            ).label("status"),
-            sa.func.count(offers_models.Offer.id).label("number"),
+    def _get_subquery(offer_class: typing.Type[offers_api.AnyOffer]) -> BaseQuery:
+        return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
+            sa.select(
+                sa.case(
+                    [
+                        (offer_class.isActive.is_(True), "active"),  # type: ignore [attr-defined]
+                        (offer_class.isActive.is_(False), "inactive"),  # type: ignore [attr-defined]
+                    ]
+                ).label("status"),
+                sa.func.count(offer_class.id).label("number"),
+            )
+            .select_from(offerers_models.Venue)
+            .outerjoin(offer_class)
+            .filter(
+                offerers_models.Venue.managingOffererId == offerer_id,
+                offer_class.validation == offers_models.OfferValidationStatus.APPROVED.value,
+            )
+            .group_by(offer_class.isActive)
+            .subquery()
         )
-        .select_from(offerers_models.Venue)
-        .outerjoin(offers_models.Offer)
-        .filter(
-            offerers_models.Venue.managingOffererId == offerer_id,
-            offers_models.Offer.validation == offers_models.OfferValidationStatus.APPROVED.value,
-        )
-        .group_by(offers_models.Offer.isActive)
-        .subquery()
-    )
-    collective_offers_query = sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
-        sa.select(
-            sa.case(
-                [
-                    (educational_models.CollectiveOffer.isActive.is_(True), "active"),
-                    (educational_models.CollectiveOffer.isActive.is_(False), "inactive"),
-                ]
-            ).label("status"),
-            sa.func.count(educational_models.CollectiveOffer.id).label("number"),
-        )
-        .select_from(offerers_models.Venue)
-        .outerjoin(educational_models.CollectiveOffer)
-        .filter(
-            offerers_models.Venue.managingOffererId == offerer_id,
-            educational_models.CollectiveOffer.validation == offers_models.OfferValidationStatus.APPROVED.value,
-        )
-        .group_by(educational_models.CollectiveOffer.isActive)
-        .subquery()
-    )
+
+    individual_offers_query = _get_subquery(offers_models.Offer)
+    collective_offers_query = _get_subquery(educational_models.CollectiveOffer)
+    collective_offer_templates_query = _get_subquery(educational_models.CollectiveOfferTemplate)
 
     offers_stats_query = sa.select(
         individual_offers_query.scalar_subquery().label("individual_offers"),
-        collective_offers_query.label("collective_offers"),
+        collective_offers_query.scalar_subquery().label("collective_offers"),
+        collective_offer_templates_query.scalar_subquery().label("collective_offer_templates"),
     )
 
     return db.session.execute(offers_stats_query).one()
