@@ -1,6 +1,8 @@
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 
+from flask import url_for
 import pytest
 
 from pcapi.core import testing
@@ -177,3 +179,76 @@ class Returns403Test:
 
         # Then
         assert response.status_code == 403
+
+
+@pytest.mark.usefixtures("db_session")
+class GetCollectiveOfferRequestTest:
+    def test_get_offer_request(self, client):
+        pro_user = users_factories.ProFactory()
+
+        redactor = educational_factories.EducationalRedactorFactory()
+        request = educational_factories.CollectiveOfferRequestFactory(
+            educationalRedactor=redactor,
+            requestedDate=date.today() + timedelta(days=7),
+            totalStudents=40,
+            totalTeachers=2,
+            comment="Some offer request with all information filled",
+            phoneNumber="0102030405",
+        )
+
+        offerers_factories.UserOffererFactory(
+            user=pro_user, offerer=request.collectiveOfferTemplate.venue.managingOfferer
+        )
+
+        dst = url_for(
+            "Private API.get_collective_offer_request",
+            offer_id=request.collectiveOfferTemplateId,
+            request_id=request.id,
+        )
+        response = client.with_session_auth(email=pro_user.email).get(dst)
+
+        assert response.status_code == 200
+        assert response.json == {
+            "email": redactor.email,
+            "requestedDate": request.requestedDate.isoformat(),
+            "totalStudents": request.totalStudents,
+            "totalTeachers": request.totalTeachers,
+            "comment": request.comment,
+            "phoneNumber": request.phoneNumber,
+        }
+
+    def test_user_does_not_have_access_to_the_offer(self, client):
+        pro_user = users_factories.ProFactory()
+        another_pro_user = users_factories.ProFactory()
+
+        redactor = educational_factories.EducationalRedactorFactory()
+        request = educational_factories.CollectiveOfferRequestFactory(educationalRedactor=redactor)
+        offerers_factories.UserOffererFactory(
+            user=another_pro_user, offerer=request.collectiveOfferTemplate.venue.managingOfferer
+        )
+
+        dst = url_for(
+            "Private API.get_collective_offer_request",
+            offer_id=request.collectiveOfferTemplateId,
+            request_id=request.id,
+        )
+        response = client.with_session_auth(email=pro_user.email).get(dst)
+
+        assert response.status_code == 403
+
+    def test_offer_request_does_not_exist(self, client):
+        pro_user = users_factories.ProFactory()
+        request = educational_factories.CollectiveOfferRequestFactory()
+        offerers_factories.UserOffererFactory(
+            user=pro_user, offerer=request.collectiveOfferTemplate.venue.managingOfferer
+        )
+
+        dst = url_for(
+            "Private API.get_collective_offer_request",
+            offer_id=request.collectiveOfferTemplateId,
+            request_id=request.id + 1,
+        )
+
+        response = client.with_session_auth(email=pro_user.email).get(dst)
+
+        assert response.status_code == 404

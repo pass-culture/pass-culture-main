@@ -104,6 +104,36 @@ def get_collective_offer_template(offer_id: int) -> collective_offers_serialize.
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
 
 
+@private_api.route("/collective/offers-template/request/<int:request_id>", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=collective_offers_serialize.GetCollectiveOfferRequestResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def get_collective_offer_request(request_id: int) -> collective_offers_serialize.GetCollectiveOfferRequestResponseModel:
+    try:
+        collective_offer_request = educational_api_offer.get_collective_offer_request_by_id(request_id)
+    except educational_exceptions.CollectiveOfferRequestNotFound:
+        raise ApiErrors(
+            errors={
+                "global": ["Le formulairé demande n'existe pas"],
+            },
+            status_code=404,
+        )
+
+    offerer_id = collective_offer_request.collectiveOfferTemplate.venue.managingOffererId
+    check_user_has_access_to_offerer(current_user, offerer_id)
+
+    return collective_offers_serialize.GetCollectiveOfferRequestResponseModel(
+        email=collective_offer_request.educationalRedactor.email,
+        requestedDate=collective_offer_request.requestedDate,
+        totalStudents=collective_offer_request.totalStudents,
+        totalTeachers=collective_offer_request.totalTeachers,
+        comment=collective_offer_request.comment,
+        phoneNumber=collective_offer_request.phoneNumber,  # type: ignore
+    )
+
+
 @private_api.route("/collective/offers", methods=["POST"])
 @login_required
 @spectree_serialize(
