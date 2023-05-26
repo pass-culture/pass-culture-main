@@ -45,6 +45,7 @@
 .day-inputs {
   display: flex;
   gap: rem.torem(16px);
+  margin-bottom: rem.torem(16px);
 }
 
 .days-error {
