@@ -1,19 +1,43 @@
 import cn from 'classnames'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import type { HitsProvided } from 'react-instantsearch-core'
 import { connectHits } from 'react-instantsearch-dom'
 import { NavLink } from 'react-router-dom'
 
+import useNotification from 'hooks/useNotification'
 import { CalendarCheckIcon, InstitutionIcon, SearchIcon } from 'icons'
 import Icon from 'ui-kit/Icon/Icon'
 import { REACT_APP_ADAGE_SUIVI_URL } from 'utils/config'
 import { ResultType } from 'utils/types'
+
+import { getEducationalInstitutionWithBudgetAdapter } from '../../adapters/getEducationalInstitutionWithBudgetAdapter'
 
 import styles from './AdageHeader.module.scss'
 
 export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
   const params = new URLSearchParams(location.search)
   const adageAuthToken = params.get('token')
+  const notify = useNotification()
+
+  const [isLoading, setIsLoading] = useState(true)
+  const [institutionBudget, setInstitutionBudget] = useState(0)
+
+  const getEducationalInstitutionBudget = async () => {
+    const { isOk, payload, message } =
+      await getEducationalInstitutionWithBudgetAdapter()
+
+    if (!isOk) {
+      return notify.error(message)
+    }
+
+    setInstitutionBudget(payload.budget)
+    setIsLoading(false)
+  }
+
+  useEffect(() => {
+    getEducationalInstitutionBudget()
+  }, [])
+
   return (
     <nav className={styles['adage-header']}>
       <div className={styles['adage-header-brand']}>
@@ -53,6 +77,19 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
           Suivi
         </a>
       </div>
+      {!isLoading && (
+        <div className={styles['adage-header-menu-budget']}>
+          <a className={styles['adage-header-menu-budget-item']}>
+            <div className={styles['adage-header-separator']}></div>
+            <div className={styles['adage-budget-text']}>
+              <span>Budget restant</span>
+              <span className={styles['adage-header-budget']}>
+                {institutionBudget.toLocaleString()}€
+              </span>
+            </div>
+          </a>
+        </div>
+      )}
     </nav>
   )
 }
