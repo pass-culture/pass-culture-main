@@ -26,8 +26,16 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       .nullable('Veuillez renseigner une date de fin')
       .transform((curr, orig) => (orig === null ? null : curr))
       .when('recurrenceType', {
-        is: RecurrenceType.DAILY,
+        is: (recurrenceType: RecurrenceType) =>
+          recurrenceType !== RecurrenceType.UNIQUE,
         then: schema => schema.required('Veuillez renseigner une date de fin'),
+      }),
+    days: yup
+      .array()
+      .of(yup.string())
+      .when('recurrenceType', {
+        is: RecurrenceType.WEEKLY,
+        then: schema => schema.min(1, 'Veuillez renseigner au moins un jour'),
       }),
     beginningTimes: yup
       .array()

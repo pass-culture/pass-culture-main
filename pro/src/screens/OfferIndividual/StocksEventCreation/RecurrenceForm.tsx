@@ -32,6 +32,7 @@ import {
   TimePicker,
 } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { FieldError } from 'ui-kit/form/shared'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 
 import { getPriceCategoryOptions } from '../StocksEventEdition/StocksEventEdition'
@@ -140,50 +141,57 @@ export const RecurrenceForm = ({
             </div>
 
             {values.recurrenceType === RecurrenceType.WEEKLY && (
-              <FormLayout.Row inline className={styles['day-inputs']}>
-                <DayCheckbox
-                  letter="L"
-                  label="Lundi"
-                  name="days"
-                  value={RecurrenceDays.MONDAY}
-                />
-                <DayCheckbox
-                  letter="M"
-                  label="Mardi"
-                  name="days"
-                  value={RecurrenceDays.TUESDAY}
-                />
-                <DayCheckbox
-                  letter="M"
-                  label="Mercredi"
-                  name="days"
-                  value={RecurrenceDays.WEDNESDAY}
-                />
-                <DayCheckbox
-                  letter="J"
-                  label="Jeudi"
-                  name="days"
-                  value={RecurrenceDays.THURSDAY}
-                />
-                <DayCheckbox
-                  letter="V"
-                  label="Vendredi"
-                  name="days"
-                  value={RecurrenceDays.FRIDAY}
-                />
-                <DayCheckbox
-                  letter="S"
-                  label="Samedi"
-                  name="days"
-                  value={RecurrenceDays.SATURDAY}
-                />
-                <DayCheckbox
-                  letter="D"
-                  label="Dimanche"
-                  name="days"
-                  value={RecurrenceDays.SUNDAY}
-                />
-              </FormLayout.Row>
+              <>
+                <div className={styles['day-inputs']}>
+                  <DayCheckbox
+                    letter="L"
+                    label="Lundi"
+                    name="days"
+                    value={RecurrenceDays.MONDAY}
+                  />
+                  <DayCheckbox
+                    letter="M"
+                    label="Mardi"
+                    name="days"
+                    value={RecurrenceDays.TUESDAY}
+                  />
+                  <DayCheckbox
+                    letter="M"
+                    label="Mercredi"
+                    name="days"
+                    value={RecurrenceDays.WEDNESDAY}
+                  />
+                  <DayCheckbox
+                    letter="J"
+                    label="Jeudi"
+                    name="days"
+                    value={RecurrenceDays.THURSDAY}
+                  />
+                  <DayCheckbox
+                    letter="V"
+                    label="Vendredi"
+                    name="days"
+                    value={RecurrenceDays.FRIDAY}
+                  />
+                  <DayCheckbox
+                    letter="S"
+                    label="Samedi"
+                    name="days"
+                    value={RecurrenceDays.SATURDAY}
+                  />
+                  <DayCheckbox
+                    letter="D"
+                    label="Dimanche"
+                    name="days"
+                    value={RecurrenceDays.SUNDAY}
+                  />
+                </div>
+                <div className={styles['days-error']}>
+                  {formik.errors.days && (
+                    <FieldError name="days">{formik.errors.days}</FieldError>
+                  )}
+                </div>
+              </>
             )}
 
             <FormLayout.Row inline>

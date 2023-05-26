@@ -2,6 +2,7 @@
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .section {
@@ -42,7 +43,15 @@
 }
 
 .day-inputs {
-  margin-bottom: rem.torem(24px);
+  display: flex;
+  gap: rem.torem(16px);
+}
+
+.days-error {
+  @include formsM.field-layout-footer;
+
+  justify-content: initial;
+  margin-bottom: rem.torem(8px);
 }
 
 .beginning-time-list {
