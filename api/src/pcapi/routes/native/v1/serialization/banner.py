@@ -31,7 +31,7 @@ class BannerText(enum.Enum):
     ACTIVATION_BANNER = "à dépenser sur l'application"
     RETRY_IDENTITY_CHECK_BANNER = "Réessaie dès maintenant"
     TRANSITION_17_18_BANNER_ID_CHECK_DONE = "Confirme tes informations"
-    TRANSITION_17_18_BANNER_ID_CHECK_TODO = "Confirme ton identité"
+    TRANSITION_17_18_BANNER_ID_CHECK_TODO = "Vérifie ton identité"
 
 
 @dataclasses.dataclass

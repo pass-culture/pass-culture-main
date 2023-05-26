@@ -183,7 +183,7 @@ class BannerTest:
         assert response.json == {
             "banner": {
                 "name": "transition_17_18_banner",
-                "text": "Confirme ton identité",
+                "text": "Vérifie ton identité",
                 "title": f"Débloque tes 300{u_nbsp}€",
             },
         }
