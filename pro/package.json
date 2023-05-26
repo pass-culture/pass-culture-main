@@ -85,7 +85,7 @@
     "reselect": "^4.1.5",
     "search-insights": "^2.6.0",
     "smoothscroll-polyfill": "^0.4.4",
-    "yup": "^1.1.1"
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "@emotion/react": "^11.11.0",
