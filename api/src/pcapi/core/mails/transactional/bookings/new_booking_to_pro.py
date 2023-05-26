@@ -1,9 +1,14 @@
+from datetime import datetime
+
+from sqlalchemy.orm import joinedload
+
 from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offerers.models import Venue
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
 
@@ -12,8 +17,20 @@ def get_new_booking_to_pro_email_data(
     booking: Booking, first_venue_booking: bool = False
 ) -> models.TransactionalEmailData:
     offer = booking.stock.offer
-    venue = offer.venue
-
+    venue = (
+        Venue.query.filter(Venue.id == offer.venueId)
+        .options(joinedload(Venue.bankInformation))
+        .options(joinedload(Venue.reimbursement_point_links))
+        .one()
+    )
+    now = datetime.utcnow()
+    current_reimbursement_point = any(
+        (
+            reimbursement_point_link
+            for reimbursement_point_link in venue.reimbursement_point_links
+            if now in reimbursement_point_link.timespan
+        )
+    )
     if offer.isEvent:
         event_date = format_booking_date_for_email(booking)
         event_hour = format_booking_hours_for_email(booking)
@@ -67,6 +84,9 @@ def get_new_booking_to_pro_email_data(
             "USER_LASTNAME": booking.user.lastName,
             "USER_PHONENUMBER": booking.user.phoneNumber or "",
             "VENUE_NAME": venue.publicName if venue.publicName else venue.name,
+            "NEEDS_BANK_INFORMATION_REMINDER": not (
+                venue.hasPendingBankInformationApplication or current_reimbursement_point
+            ),
             "MUST_USE_TOKEN_FOR_PAYMENT": not (
                 booking.stock.price == 0 or booking.activationCode or is_booking_autovalidated
             ),
