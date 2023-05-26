@@ -4,11 +4,7 @@ import fetchMock from 'jest-fetch-mock'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import {
-  ApiError,
-  CollectiveOfferResponseIdModel,
-  GetVenueResponseModel,
-} from 'apiClient/v1'
+import { ApiError, CollectiveOfferResponseIdModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import {
@@ -28,7 +24,10 @@ import {
   categoriesFactory,
   subCategoriesFactory,
 } from 'screens/OfferEducational/__tests-utils__'
-import { collectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
+import {
+  collectiveOfferTemplateFactory,
+  defaultVenueResponseModel,
+} from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferSummaryEdition from '../CollectiveOfferSummaryEdition'
@@ -89,7 +88,7 @@ describe('CollectiveOfferSummary', () => {
       setLogEvent: null,
     }))
 
-    jest.spyOn(api, 'getVenue').mockResolvedValue({} as GetVenueResponseModel)
+    jest.spyOn(api, 'getVenue').mockResolvedValue(defaultVenueResponseModel)
 
     jest.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
 
