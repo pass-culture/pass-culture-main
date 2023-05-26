@@ -12,11 +12,13 @@ import {
   GetCollectiveOfferManagingOffererResponseModel,
   GetCollectiveOfferVenueResponseModel,
   GetCollectiveVenueResponseModel,
+  GetVenueResponseModel,
   OfferAddressType,
   OfferStatus,
   StudentLevels,
   SubcategoryIdEnum,
   SubcategoryResponseModel,
+  VenueTypeCode,
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
@@ -399,4 +401,33 @@ export const defaultIVenue: IVenue = {
   adageInscriptionDate: null,
   hasAdageId: false,
   collectiveDmsApplication: null,
+}
+
+export const defaultVenueResponseModel: GetVenueResponseModel = {
+  dateCreated: new Date().toISOString(),
+  dmsToken: 'fakeDmsToken',
+  fieldsUpdated: [],
+  hasAdageId: true,
+  id: '1',
+  collectiveDmsApplications: [],
+  isVirtual: false,
+  collectiveDomains: [],
+  managingOfferer: {
+    city: 'Paris',
+    dateCreated: new Date().toISOString(),
+    fieldsUpdated: [],
+    id: '1',
+    isValidated: true,
+    lastProviderId: '',
+    name: 'Ma super structure',
+    nonHumanizedId: 1,
+    postalCode: '75000',
+    siren: '',
+  },
+  managingOffererId: '1',
+  mentalDisabilityCompliant: null,
+  motorDisabilityCompliant: null,
+  name: 'Lieu de test',
+  nonHumanizedId: 1,
+  venueTypeCode: VenueTypeCode.CENTRE_CULTUREL,
 }
