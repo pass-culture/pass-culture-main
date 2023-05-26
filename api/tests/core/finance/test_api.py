@@ -2140,14 +2140,24 @@ class CreateOfferReimbursementRuleTest:
 
 class EditReimbursementRuleTest:
     def test_edit_rule(self):
-        timespan = (pytz.utc.localize(datetime.datetime(2021, 1, 1)), None)
+        today = datetime.date.today()
+        timespan = (pytz.utc.localize(datetime.datetime(today.year + 1, 1, 1)), None)
         rule = factories.CustomReimbursementRuleFactory(timespan=timespan)
-        end = pytz.utc.localize(datetime.datetime(2030, 10, 3, 0, 0))
+        end = pytz.utc.localize(datetime.datetime(today.year + 2, 10, 3, 0, 0))
         api.edit_reimbursement_rule(rule, end_date=end)
 
         db.session.refresh(rule)
-        assert rule.timespan.lower == datetime.datetime(2021, 1, 1, 0, 0)  # unchanged
-        assert rule.timespan.upper == datetime.datetime(2030, 10, 3, 0, 0)
+        assert rule.timespan.lower == datetime.datetime(today.year + 1, 1, 1, 0, 0)  # unchanged
+        assert rule.timespan.upper == datetime.datetime(today.year + 2, 10, 3, 0, 0)
+
+    def test_cannot_change_end_date_when_start_date_is_reached(self):
+        today = datetime.date.today()
+        timespan = (pytz.utc.localize(datetime.datetime(today.year, 1, 1)), None)
+        rule = factories.CustomReimbursementRuleFactory(timespan=timespan)
+        end = pytz.utc.localize(datetime.datetime(today.year + 1, 10, 3, 0, 0))
+
+        with pytest.raises(exceptions.WrongDateForReimbursementRule):
+            api.edit_reimbursement_rule(rule, end_date=end)
 
     def test_cannot_change_existing_end_date(self):
         today = datetime.datetime.today()

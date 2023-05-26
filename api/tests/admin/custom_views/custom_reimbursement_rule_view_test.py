@@ -39,7 +39,7 @@ def test_create_rule(mocked_validate_csrf_token, client, app):
 @mock.patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
 def test_edit_rule(mocked_validate_csrf_token, client, app):
     admin = users_factories.AdminFactory()
-    timespan = (datetime.datetime.today() - datetime.timedelta(days=10), None)
+    timespan = (datetime.datetime.today() + datetime.timedelta(days=10), None)
     rule = finance_factories.CustomReimbursementRuleFactory(timespan=timespan)
 
     client = client.with_session_auth(admin.email)
