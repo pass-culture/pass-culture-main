@@ -186,11 +186,11 @@ export const RecurrenceForm = ({
                     value={RecurrenceDays.SUNDAY}
                   />
                 </div>
-                <div className={styles['days-error']}>
-                  {formik.errors.days && (
+                {formik.errors.days && formik.touched.days && (
+                  <div className={styles['days-error']}>
                     <FieldError name="days">{formik.errors.days}</FieldError>
-                  )}
-                </div>
+                  </div>
+                )}
               </>
             )}
 

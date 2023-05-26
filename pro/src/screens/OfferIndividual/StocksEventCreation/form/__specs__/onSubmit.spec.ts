@@ -1,7 +1,7 @@
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 
 import { onSubmit } from '../onSubmit'
-import { RecurrenceFormValues, RecurrenceType } from '../types'
+import { RecurrenceDays, RecurrenceFormValues, RecurrenceType } from '../types'
 
 describe('onSubmit', () => {
   const cases: {
@@ -86,6 +86,44 @@ describe('onSubmit', () => {
         {
           beginningDatetime: '2020-03-06T09:00:00Z',
           bookingLimitDatetime: '2020-03-04T09:00:00Z',
+          priceCategoryId: 1,
+          quantity: 5,
+        },
+      ],
+    },
+    {
+      description: 'generate stocks on a weekly basis',
+      formValues: {
+        recurrenceType: RecurrenceType.WEEKLY,
+        days: [RecurrenceDays.SATURDAY, RecurrenceDays.SUNDAY],
+        startingDate: new Date('2020-03-03'),
+        endingDate: new Date('2020-03-20'),
+        beginningTimes: [new Date('2020-01-01T10:00:00')],
+        quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
+        bookingLimitDateInterval: 2,
+      },
+      expectedStocks: [
+        {
+          beginningDatetime: '2020-03-07T09:00:00Z',
+          bookingLimitDatetime: '2020-03-05T09:00:00Z',
+          priceCategoryId: 1,
+          quantity: 5,
+        },
+        {
+          beginningDatetime: '2020-03-08T09:00:00Z',
+          bookingLimitDatetime: '2020-03-06T09:00:00Z',
+          priceCategoryId: 1,
+          quantity: 5,
+        },
+        {
+          beginningDatetime: '2020-03-14T09:00:00Z',
+          bookingLimitDatetime: '2020-03-12T09:00:00Z',
+          priceCategoryId: 1,
+          quantity: 5,
+        },
+        {
+          beginningDatetime: '2020-03-15T09:00:00Z',
+          bookingLimitDatetime: '2020-03-13T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         },

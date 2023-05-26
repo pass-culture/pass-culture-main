@@ -1,4 +1,5 @@
 import { getDatesInInterval } from '../recurrenceUtils'
+import { RecurrenceDays } from '../types'
 
 describe('getDatesInInterval', () => {
   it('should return an empty array when start date is after end date', () => {
@@ -21,6 +22,21 @@ describe('getDatesInInterval', () => {
       new Date('2020-03-04'),
       new Date('2020-03-05'),
       new Date('2020-03-06'),
+    ])
+  })
+
+  it('should return only selected days', () => {
+    expect(
+      getDatesInInterval(new Date('2020-03-03'), new Date('2020-03-20'), [
+        RecurrenceDays.SATURDAY,
+        RecurrenceDays.SUNDAY,
+      ])
+    ).toStrictEqual([
+      // Those are only saturdays and sundays
+      new Date('2020-03-07'),
+      new Date('2020-03-08'),
+      new Date('2020-03-14'),
+      new Date('2020-03-15'),
     ])
   })
 })
