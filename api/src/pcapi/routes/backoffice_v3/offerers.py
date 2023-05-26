@@ -100,11 +100,25 @@ def get_stats_data(offerer_id: int) -> serialization.OfferersStats:
     stats = serialization.OffersStats(
         active=serialization.BaseOffersStats(
             individual=offers_stats.individual_offers.get("active", 0) if offers_stats.individual_offers else 0,
-            collective=offers_stats.collective_offers.get("active", 0) if offers_stats.collective_offers else 0,
+            collective=sum(
+                [
+                    offers_stats.collective_offers.get("active", 0) if offers_stats.collective_offers else 0,
+                    offers_stats.collective_offer_templates.get("active", 0)
+                    if offers_stats.collective_offer_templates
+                    else 0,
+                ]
+            ),
         ),
         inactive=serialization.BaseOffersStats(
             individual=offers_stats.individual_offers.get("inactive", 0) if offers_stats.individual_offers else 0,
-            collective=offers_stats.collective_offers.get("inactive", 0) if offers_stats.collective_offers else 0,
+            collective=sum(
+                [
+                    offers_stats.collective_offers.get("inactive", 0) if offers_stats.collective_offers else 0,
+                    offers_stats.collective_offer_templates.get("inactive", 0)
+                    if offers_stats.collective_offer_templates
+                    else 0,
+                ]
+            ),
         ),
     )
 

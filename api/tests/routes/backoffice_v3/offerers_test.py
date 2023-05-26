@@ -7,6 +7,7 @@ import pytest
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import factories as history_factories
@@ -51,6 +52,22 @@ def venue_fixture(offerer) -> offerers_models.Venue:
 @pytest.fixture(scope="function", name="offer")
 def offer_fixture(venue) -> offers_models.Offer:
     return offers_factories.OfferFactory(
+        venue=venue,
+        validation=offers_models.OfferValidationStatus.APPROVED.value,
+    )
+
+
+@pytest.fixture(scope="function", name="collective_offer")
+def collective_offer_fixture(venue) -> educational_models.CollectiveOffer:
+    return educational_factories.CollectiveOfferFactory(
+        venue=venue,
+        validation=offers_models.OfferValidationStatus.APPROVED.value,
+    )
+
+
+@pytest.fixture(scope="function", name="collective_offer_template")
+def collective_offer_template_fixture(venue) -> educational_models.CollectiveOfferTemplate:
+    return educational_factories.CollectiveOfferTemplateFactory(
         venue=venue,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
@@ -379,7 +396,9 @@ class GetOffererStatsTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    def test_get_stats(self, authenticated_client, offerer, offer, booking):
+    def test_get_stats(
+        self, authenticated_client, offerer, offer, collective_offer, collective_offer_template, booking
+    ):
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
         # get session (1 query)
@@ -390,11 +409,9 @@ class GetOffererStatsTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        content = response.data.decode("utf-8")
-
-        # cast to integer to avoid errors due to amount formatting
-        assert str(int(booking.amount)) in content
-        assert "1 IND" in content  # one active individual offer
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert f"{str(booking.amount).replace('.', ',')} € de CA" in cards_text
+        assert "3 offres actives (1 IND / 2 EAC) 0 offres inactives (0 IND / 0 EAC)" in cards_text
 
 
 class GetOffererStatsDataTest:
@@ -405,6 +422,8 @@ class GetOffererStatsDataTest:
         offerer_inactive_individual_offers,
         offerer_active_collective_offers,
         offerer_inactive_collective_offers,
+        offerer_active_collective_offer_templates,
+        offerer_inactive_collective_offer_templates,
         individual_offerer_bookings,
         collective_offerer_booking,
     ):
@@ -418,9 +437,9 @@ class GetOffererStatsDataTest:
         stats = data.stats
 
         assert stats.active.individual == 2
-        assert stats.active.collective == 4
+        assert stats.active.collective == 5
         assert stats.inactive.individual == 3
-        assert stats.inactive.collective == 5
+        assert stats.inactive.collective == 7
 
         total_revenue = data.total_revenue
 
