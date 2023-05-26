@@ -1875,15 +1875,11 @@ def get_granted_deposit(
         )
 
     if eligibility == users_models.EligibilityType.AGE18:
-        pass_culture_tz = pytz.timezone("Europe/Paris")
-        today_paris = pytz.utc.localize(datetime.datetime.utcnow()).astimezone(pass_culture_tz).date()
-        last_day_paris = today_paris + relativedelta(years=conf.GRANT_18_VALIDITY_IN_YEARS)
-        expiration_paris = pass_culture_tz.localize(datetime.datetime.combine(last_day_paris, datetime.time.max))
-        expiration_utc = expiration_paris.astimezone(pytz.utc).replace(tzinfo=None)
-
+        expiration_date = datetime.datetime.utcnow().date() + relativedelta(years=conf.GRANT_18_VALIDITY_IN_YEARS)
+        expiration_datetime = datetime.datetime.combine(expiration_date, datetime.time.max)
         return models.GrantedDeposit(
             amount=conf.GRANTED_DEPOSIT_AMOUNTS_FOR_18_BY_VERSION[2],
-            expiration_date=expiration_utc,
+            expiration_date=expiration_datetime,
             type=models.DepositType.GRANT_18,
             version=2,
         )

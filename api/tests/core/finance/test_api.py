@@ -2291,7 +2291,103 @@ class CreateDepositTest:
         assert deposit.amount == Decimal(300)
         assert deposit.user.id == beneficiary.id
         # We use freeze time to ensure this test is not flaky. Otherwise, the expiration date would be dependant on the daylight saving time.
-        assert deposit.expirationDate == datetime.datetime(2024, 9, 5, 21, 59, 59, 999999)
+        assert deposit.expirationDate == datetime.datetime(2024, 9, 5, 23, 59, 59, 999999)
+
+    def test_tahiti_grant_18_expiration_is_2_years_after_at_EOD(self):
+        tahiti_tz = datetime.timezone(datetime.timedelta(hours=-10))
+        tahiti_datetime = datetime.datetime(2023, 5, 29, tzinfo=tahiti_tz)
+        with freezegun.freeze_time(tahiti_datetime.replace(hour=0, minute=0, second=0)):
+            beneficiary = users_factories.UserFactory()
+            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
+        assert deposit.type == models.DepositType.GRANT_18
+        assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
+            tzinfo=None
+        )
+        with freezegun.freeze_time(tahiti_datetime.replace(hour=23, minute=59, second=59)):
+            beneficiary = users_factories.UserFactory()
+            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
+        assert deposit.type == models.DepositType.GRANT_18
+        assert deposit.expirationDate == datetime.datetime(2025, 5, 30, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
+            tzinfo=None
+        )
+        with freezegun.freeze_time(tahiti_datetime.replace(hour=13, minute=59, second=59)):
+            beneficiary = users_factories.UserFactory()
+            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
+        assert deposit.type == models.DepositType.GRANT_18
+        assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
+            tzinfo=None
+        )
+        with freezegun.freeze_time(tahiti_datetime.replace(hour=14, minute=0, second=0)):
+            beneficiary = users_factories.UserFactory()
+            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
+        assert deposit.type == models.DepositType.GRANT_18
+        assert deposit.expirationDate == datetime.datetime(2025, 5, 30, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
+            tzinfo=None
+        )
+
+    def test_wallis_grant_18_expiration_is_2_years_after_at_EOD(self):
+        wallis_tz = datetime.timezone(datetime.timedelta(hours=12))
+        wallis_datetime = datetime.datetime(2023, 5, 29, tzinfo=wallis_tz)
+        with freezegun.freeze_time(wallis_datetime.replace(hour=0, minute=0, second=0)):
+            beneficiary = users_factories.UserFactory()
+            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
+        assert deposit.type == models.DepositType.GRANT_18
+        assert deposit.expirationDate == datetime.datetime(2025, 5, 28, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
+            tzinfo=None
+        )
+        with freezegun.freeze_time(wallis_datetime.replace(hour=23, minute=59, second=59)):
+            beneficiary = users_factories.UserFactory()
+            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
+        assert deposit.type == models.DepositType.GRANT_18
+        assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
+            tzinfo=None
+        )
+        with freezegun.freeze_time(wallis_datetime.replace(hour=11, minute=59, second=59)):
+            beneficiary = users_factories.UserFactory()
+            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
+        assert deposit.type == models.DepositType.GRANT_18
+        assert deposit.expirationDate == datetime.datetime(2025, 5, 28, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
+            tzinfo=None
+        )
+        with freezegun.freeze_time(wallis_datetime.replace(hour=12, minute=00, second=00)):
+            beneficiary = users_factories.UserFactory()
+            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
+        assert deposit.type == models.DepositType.GRANT_18
+        assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
+            tzinfo=None
+        )
+
+    def test_metropole_grant_18_expiration_is_2_years_after_at_EOD(self):
+        metropole_tz = datetime.timezone(datetime.timedelta(hours=1))
+        metropole_datetime = datetime.datetime(2023, 5, 29, tzinfo=metropole_tz)
+        with freezegun.freeze_time(metropole_datetime.replace(hour=0, minute=0, second=0)):
+            beneficiary = users_factories.UserFactory()
+            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
+        assert deposit.type == models.DepositType.GRANT_18
+        assert deposit.expirationDate == datetime.datetime(2025, 5, 28, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
+            tzinfo=None
+        )
+        with freezegun.freeze_time(metropole_datetime.replace(hour=23, minute=59, second=59)):
+            beneficiary = users_factories.UserFactory()
+            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
+        assert deposit.type == models.DepositType.GRANT_18
+        assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
+            tzinfo=None
+        )
+        with freezegun.freeze_time(metropole_datetime.replace(hour=0, minute=59, second=59)):
+            beneficiary = users_factories.UserFactory()
+            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
+        assert deposit.type == models.DepositType.GRANT_18
+        assert deposit.expirationDate == datetime.datetime(2025, 5, 28, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
+            tzinfo=None
+        )
+        with freezegun.freeze_time(metropole_datetime.replace(hour=1, minute=0, second=0)):
+            beneficiary = users_factories.UserFactory()
+            deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
+        assert deposit.type == models.DepositType.GRANT_18
+        assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
+            tzinfo=None
+        )
 
     def test_deposit_created_when_another_type_already_exist_for_user(self):
         with freezegun.freeze_time(datetime.datetime.utcnow() - relativedelta(years=3)):
