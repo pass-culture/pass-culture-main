@@ -34,6 +34,23 @@ const getRecurrenceDates = (values: RecurrenceFormValues): Date[] => {
       return getDatesInInterval(values.startingDate, values.endingDate)
     }
 
+    case RecurrenceType.WEEKLY: {
+      /* istanbul ignore next: should be already validated by yup */
+      if (
+        values.startingDate === null ||
+        values.endingDate === null ||
+        values.days.length === 0
+      ) {
+        throw new Error('Starting, ending date or days is empty')
+      }
+
+      return getDatesInInterval(
+        values.startingDate,
+        values.endingDate,
+        values.days
+      )
+    }
+
     default:
       /* istanbul ignore next: should be already validated by yup */
       throw new Error(`Unhandled recurrence type: ${values.recurrenceType}`)
