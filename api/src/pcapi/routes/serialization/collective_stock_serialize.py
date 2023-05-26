@@ -39,6 +39,8 @@ def validate_price(price: float | None) -> float:
         raise ValueError("Le prix ne peut pas être nul.")
     if price < 0:
         raise ValueError("Le prix ne peut pas être négatif.")
+    if price > 100_000:
+        raise ValueError("Le prix est trop élevé.")
     return price
 
 
