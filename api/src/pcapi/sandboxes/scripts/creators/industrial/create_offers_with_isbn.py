@@ -19,7 +19,7 @@ def create_offers_with_isbn() -> None:
         offers_factories.ThingProductFactory(
             name=f"Livre {i} avec ISBN",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            extraData={"isbn": f"9780000000{i:03}"},
+            extraData={"isbn": f"9780000000{i:03}", "ean": f"9780000000{i:03}"},
         )
         for i in range(1, 5)
     ]
