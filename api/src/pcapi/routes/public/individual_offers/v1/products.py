@@ -1,4 +1,5 @@
 import copy
+import datetime
 import itertools
 import logging
 
@@ -6,8 +7,8 @@ import flask
 from sqlalchemy import orm as sqla_orm
 
 from pcapi import repository
+from pcapi.core import search
 from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.external.attributes import api as attributes_api
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
@@ -17,9 +18,12 @@ from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
+from pcapi.workers import worker
+from pcapi.workers.decorators import job
 
 from . import blueprint
 from . import constants
@@ -129,77 +133,147 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
 @spectree_serialize(
     api=blueprint.v1_product_schema,
     tags=[constants.PRODUCT_EAN_OFFER_TAG],
-    response_model=serialization.ProductOfferResponse,
+    on_success_status=204,
 )
 @api_key_required
-def post_product_offer_by_ean(body: serialization.ProductOfferByEanCreation) -> serialization.ProductOfferResponse:
+def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) -> None:
     """
-    Create a product offer using its European Article Number (EAN-13).
+    Create products offer using their European Article Number (EAN-13).
     """
-    allowed_product_subcategories = [subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, subcategories.LIVRE_PAPIER.id]
-    product = offers_models.Product.query.filter(
-        offers_models.Product.extraData["ean"].astext == body.ean,
-        offers_models.Product.subcategoryId.in_(allowed_product_subcategories),
-    ).one_or_none()
-    if not product:
-        raise api_errors.ApiErrors({"ean": ["The product is not present in pass Culture's database"]}, status_code=404)
-
     venue = utils.retrieve_venue_from_location(body.location)
-    try:
-        with repository.transaction():
-            created_offer = _create_offer_from_product(
-                venue,
-                product,
-                body.id_at_provider,
-                current_api_key.provider.id,
-                body.accessibility,
-            )
+    if venue.isVirtual:
+        raise api_errors.ApiErrors({"location": ["Cannot create product offer for virtual venues"]})
+    serialized_products_stocks = _serialize_products_from_body(body.products)
+    _create_or_update_ean_offers.delay(serialized_products_stocks, venue.id, current_api_key.provider.id)
 
-            if body.stock:
-                offers_api.create_stock(
-                    offer=created_offer,
-                    price=finance_utils.to_euros(body.stock.price),
-                    quantity=serialization.deserialize_quantity(body.stock.quantity),
-                    booking_limit_datetime=body.stock.booking_limit_datetime,
-                    creating_provider=current_api_key.provider,
+
+@job(worker.low_queue)
+def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int, provider_id: int) -> None:
+    provider = providers_models.Provider.query.filter_by(id=provider_id).one()
+    venue = offerers_models.Venue.query.filter_by(id=venue_id).one()
+
+    ean_to_create_or_update = set(serialized_products_stocks.keys())
+
+    offers_to_update = _get_existing_offers(ean_to_create_or_update, venue, provider)
+
+    offer_to_update_by_ean = {}
+    ean_list_to_update = set()
+    for offer in offers_to_update:
+        ean_list_to_update.add(offer.extraData["ean"])  # type: ignore [index]
+        offer_to_update_by_ean[offer.extraData["ean"]] = offer  # type: ignore [index]
+
+    ean_list_to_create = ean_to_create_or_update - ean_list_to_update
+    offers_to_index = []
+
+    if ean_list_to_create:
+        existing_products = _get_existing_products(ean_list_to_create)
+        product_by_ean = {product.extraData["ean"]: product for product in existing_products}  # type: ignore [index]
+        for product in existing_products:
+            try:
+                with repository.transaction():
+                    ean = product.extraData["ean"]  # type: ignore [index]
+                    stock_data = serialized_products_stocks[ean]
+                    created_offer = _create_offer_from_product(
+                        venue,
+                        product_by_ean[ean],
+                        stock_data["id_at_provider"],
+                        current_api_key.provider.id,
+                    )
+                    offers_to_index.append(created_offer.id)
+
+                    offers_api.create_stock(
+                        offer=created_offer,
+                        price=finance_utils.to_euros(stock_data["price"]),
+                        quantity=serialization.deserialize_quantity(stock_data["quantity"]),
+                        booking_limit_datetime=stock_data["booking_limit_datetime"],
+                        creating_provider=current_api_key.provider,
+                    )
+
+                    offers_api.publish_offer(created_offer, user=None)
+            except offers_exceptions.OfferCreationBaseException as exc:
+                logger.exception("Error while creating offer by ean", extra={"exc": exc})
+                continue
+
+    for offer in offers_to_update:
+        try:
+            with repository.transaction():
+                ean = offer.extraData["ean"]  # type: ignore [index]
+                stock_data = serialized_products_stocks[ean]
+                _upsert_product_stock(
+                    offer_to_update_by_ean[ean],
+                    serialization.StockEdition(
+                        **{
+                            "price": stock_data["price"],
+                            "quantity": stock_data["quantity"],
+                            "booking_limit_datetime": stock_data["booking_limit_datetime"],
+                        }
+                    ),
+                    provider,
                 )
+                offers_api.publish_offer(offer_to_update_by_ean[ean], user=None)
+                offers_to_index.append(offer_to_update_by_ean[ean].id)
+        except offers_exceptions.OfferCreationBaseException as exc:
+            logger.exception("Error while creating offer by ean", extra={"exc": exc})
+            continue
 
-            offers_api.publish_offer(created_offer, user=None)
+    search.async_index_offer_ids(offers_to_index)
 
-    except offers_exceptions.OfferCreationBaseException as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
 
-    return serialization.ProductOfferResponse.build_product_offer(created_offer)
+def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:
+    allowed_product_subcategories = [subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, subcategories.LIVRE_PAPIER.id]
+    return offers_models.Product.query.filter(
+        offers_models.Product.extraData["ean"].astext.in_(ean_to_create),
+        offers_models.Product.can_be_synchronized == True,
+        offers_models.Product.subcategoryId.in_(allowed_product_subcategories),
+    ).all()
+
+
+def _get_existing_offers(
+    ean_to_create_or_update: set[str], venue: offerers_models.Venue, provider: providers_models.Provider
+) -> list[offers_models.Offer]:
+    return (
+        utils.retrieve_offer_relations_query(offers_models.Offer.query)
+        .filter(offers_models.Offer.isEvent == False)
+        .filter(offers_models.Offer.venue == venue)
+        .filter(offers_models.Offer.lastProvider == provider)  # pylint: disable=comparison-with-callable
+        .filter(offers_models.Offer.extraData["ean"].astext.in_(ean_to_create_or_update))
+        .all()
+    )
+
+
+def _serialize_products_from_body(products: list[serialization.ProductOfferByEanCreation]) -> dict:
+    stock_details = {}
+    for product in products:
+        stock_details[product.ean] = {
+            "quantity": product.stock.quantity,
+            "price": product.stock.price,
+            "booking_limit_datetime": product.stock.booking_limit_datetime,
+            "id_at_provider": product.id_at_provider,
+        }
+    return stock_details
 
 
 def _create_offer_from_product(
     venue: offerers_models.Venue,
     product: offers_models.Product,
     id_at_provider: str | None,
-    provider_id: int | None,
-    accessibility: serialization.Accessibility | None,
+    provider: providers_models.Provider,
 ) -> offers_models.Offer:
-    if venue.isVirtual and accessibility is None:
-        raise api_errors.ApiErrors(
-            {"accessibility": ["The accessibility is required when the location type is digital"]}
-        )
-
     if product.extraData:
         offers_validation.check_isbn_or_ean_does_not_exist(
             product.extraData.get("ean"), product.extraData.get("isbn"), venue
         )
 
-    offer = offers_api.build_new_offer_from_product(venue, product, id_at_provider, provider_id)
-    if accessibility:
-        offer.audioDisabilityCompliant = accessibility.audio_disability_compliant
-        offer.mentalDisabilityCompliant = accessibility.mental_disability_compliant
-        offer.motorDisabilityCompliant = accessibility.motor_disability_compliant
-        offer.visualDisabilityCompliant = accessibility.visual_disability_compliant
-    else:
-        offer.audioDisabilityCompliant = venue.audioDisabilityCompliant
-        offer.mentalDisabilityCompliant = venue.mentalDisabilityCompliant
-        offer.motorDisabilityCompliant = venue.motorDisabilityCompliant
-        offer.visualDisabilityCompliant = venue.visualDisabilityCompliant
+    offer = offers_api.build_new_offer_from_product(venue, product, id_at_provider, provider.id)
+
+    offer.audioDisabilityCompliant = venue.audioDisabilityCompliant
+    offer.mentalDisabilityCompliant = venue.mentalDisabilityCompliant
+    offer.motorDisabilityCompliant = venue.motorDisabilityCompliant
+    offer.visualDisabilityCompliant = venue.visualDisabilityCompliant
+
+    offer.isActive = True
+    offer.lastValidationDate = datetime.datetime.utcnow()
+    offer.lastValidationType = OfferValidationType.AUTO
 
     repository.repository.add_to_session(offer)
     db.session.flush()
@@ -209,8 +283,6 @@ def _create_offer_from_product(
         extra={"offer_id": offer.id, "venue_id": venue.id, "product_id": offer.productId},
         technical_message_id="offer.created",
     )
-
-    attributes_api.update_external_pro(venue.bookingEmail)
 
     return offer
 
