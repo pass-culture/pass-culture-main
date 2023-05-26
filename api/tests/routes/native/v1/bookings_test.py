@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
+from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -47,6 +48,7 @@ class PostBookingTest:
         booking = Booking.query.filter(Booking.stockId == stock.id).first()
         assert booking.userId == user.id
         assert response.json["bookingId"] == booking.id
+        assert booking.status == BookingStatus.CONFIRMED
 
     def test_no_stock_found(self, client):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
@@ -110,6 +112,49 @@ class PostBookingTest:
 
         assert response.status_code == 400
         assert response.json["external_booking"] == "Cette offre n'est plus réservable."
+
+    @pytest.mark.parametrize(
+        "subcategory,price",
+        [(category, 0) for category in FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE],
+    )
+    def test_post_free_bookings_from_subcategories_with_archive(self, client, subcategory, price):
+        stock = StockFactory(price=price, offer__subcategoryId=subcategory.id)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+
+        client = client.with_token(self.identifier)
+        response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
+
+        assert response.status_code == 200
+
+        booking = Booking.query.filter(Booking.stockId == stock.id).first()
+        assert booking.userId == user.id
+        assert response.json["bookingId"] == booking.id
+        assert booking.status == BookingStatus.USED
+        assert booking.dateUsed.strftime("%d/%m/%Y") == datetime.today().strftime("%d/%m/%Y")
+
+    @pytest.mark.parametrize(
+        "subcategory,price,status",
+        [
+            (subcategories.ABO_MEDIATHEQUE, 10, BookingStatus.CONFIRMED),
+            (subcategories.ACTIVATION_THING, 0, BookingStatus.CONFIRMED),
+        ],
+    )
+    def test_post_non_free_bookings_or_from_wrong_subcategories_without_archive(
+        self, client, subcategory, price, status
+    ):
+        stock = StockFactory(price=price, offer__subcategoryId=subcategory.id)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+
+        client = client.with_token(self.identifier)
+        response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
+
+        assert response.status_code == 200
+
+        booking = Booking.query.filter(Booking.stockId == stock.id).first()
+        assert booking.userId == user.id
+        assert response.json["bookingId"] == booking.id
+        assert booking.status == BookingStatus.CONFIRMED
+        assert not booking.dateUsed
 
 
 class GetBookingsTest:
