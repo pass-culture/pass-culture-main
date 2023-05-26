@@ -153,6 +153,30 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"totalPrice": ["Le prix ne peut pas être négatif."]}
 
+    def should_not_allow_price_to_be_too_high(self, client):
+        # Given
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_payload = {
+            "offerId": offer.id,
+            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+            "totalPrice": 1_000_000,
+            "numberOfTickets": 1,
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.post("/collective/stocks/", json=stock_payload)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"totalPrice": ["Le prix est trop élevé."]}
+
     def should_not_accept_payload_with_bookingLimitDatetime_after_beginningDatetime(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory()
