@@ -1,8 +1,10 @@
 from datetime import datetime
+import logging
 
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
+import pcapi.core.educational.utils as educational_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -12,7 +14,7 @@ educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8
 
 
 class Returns200Test:
-    def test_post_collective_request(self, client):
+    def test_post_collective_request(self, client, caplog):
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_redactor = educational_factories.EducationalRedactorFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory()
@@ -26,10 +28,11 @@ class Returns200Test:
         }
 
         # When
-        test_client = client.with_adage_token(
-            email=educational_redactor.email, uai=educational_institution.institutionId
-        )
-        response = test_client.post(f"/adage-iframe/collective/offers-template/{offer_id}/request", json=body)
+        with caplog.at_level(logging.INFO):
+            test_client = client.with_adage_token(
+                email=educational_redactor.email, uai=educational_institution.institutionId
+            )
+            response = test_client.post(f"/adage-iframe/collective/offers-template/{offer_id}/request", json=body)
 
         # Then
         assert response.status_code == 200
@@ -39,6 +42,19 @@ class Returns200Test:
         assert response.json["totalStudents"] == 30
         assert response.json["totalTeachers"] == 2
         assert response.json["comment"] == "Un commentaire sublime que nous avons là"
+
+        record = next(log for log in caplog.records if log.message == "CreateCollectiveOfferRequest")
+        assert record.extra == {
+            "id": response.json["id"],
+            "collective_offer_template_id": offer.id,
+            "phone_number": body["phoneNumber"],
+            "requested_date": None,
+            "total_students": body["totalStudents"],
+            "total_teachers": body["totalTeachers"],
+            "comment": body["comment"],
+            "analyticsSource": "adage",
+            "userId": educational_utils.get_hashed_user_id(educational_redactor.email),
+        }
 
 
 class Returns404Test:
