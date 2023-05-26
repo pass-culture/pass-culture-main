@@ -446,16 +446,22 @@ class ProductOfferCreation(OfferCreationBase):
 
 
 class ProductOfferByEanCreation(serialization.ConfiguredBaseModel):
-    accessibility: Accessibility | None = pydantic.Field(
-        description="Accessibility for people with disabilities. Required when the location type is digital. If left empty, the default accessibility criteria from the physical location is used."
-    )
     if typing.TYPE_CHECKING:
         ean: str = EAN_FIELD
     else:
         ean: pydantic.constr(min_length=13, max_length=13) = EAN_FIELD
     id_at_provider: str | None = ID_AT_PROVIDER_FIELD
+    stock: StockCreation
+
+    class Config:
+        extra = "forbid"
+
+
+class ProductsOfferByEanCreation(serialization.ConfiguredBaseModel):
+    products: list[ProductOfferByEanCreation] = pydantic.Field(
+        description="List of product to create or update", max_items=500
+    )
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
-    stock: StockCreation | None
 
     class Config:
         extra = "forbid"

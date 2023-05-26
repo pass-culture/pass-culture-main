@@ -808,27 +808,45 @@ class PostProductTest:
 class PostProductByEanTest:
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_valid_ean_with_stock(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue_data = {
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": False,
+        }
+        venue, _ = create_offerer_provider_linked_to_venue(venue_data)
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
         )
+        unknown_ean = "1234567897123"
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "ean": product.extraData["ean"],
-                "idAtProvider": "id",
                 "location": {"type": "physical", "venueId": venue.id},
-                "stock": {
-                    "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
-                    "price": 1234,
-                    "quantity": 3,
-                },
+                "products": [
+                    {
+                        "ean": product.extraData["ean"],
+                        "idAtProvider": "id",
+                        "stock": {
+                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    },
+                    {
+                        "ean": unknown_ean,
+                        "stock": {
+                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    },
+                ],
             },
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 204
 
         created_offer = offers_models.Offer.query.one()
         assert created_offer.bookingEmail == venue.bookingEmail
@@ -841,40 +859,16 @@ class PostProductByEanTest:
         assert created_offer.venue == venue
         assert created_offer.subcategoryId == product.subcategoryId
         assert created_offer.withdrawalDetails == venue.withdrawalDetails
+        assert created_offer.audioDisabilityCompliant == venue.audioDisabilityCompliant
+        assert created_offer.mentalDisabilityCompliant == venue.mentalDisabilityCompliant
+        assert created_offer.motorDisabilityCompliant == venue.motorDisabilityCompliant
+        assert created_offer.visualDisabilityCompliant == venue.visualDisabilityCompliant
 
         created_stock = offers_models.Stock.query.one()
         assert created_stock.price == decimal.Decimal("12.34")
         assert created_stock.quantity == 3
         assert created_stock.offer == created_offer
         assert created_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 1, 12, 0, 0)
-
-        assert response.json == {
-            "id": created_offer.id,
-            "idAtProvider": "id",
-            "accessibility": ACCESSIBILITY_FIELDS,
-            "bookingEmail": venue.bookingEmail,
-            "description": product.description,
-            "externalTicketOfficeUrl": None,
-            "image": None,
-            "enableDoubleBookings": False,
-            "location": {"type": "physical", "venueId": venue.id},
-            "name": product.name,
-            "status": "EXPIRED",
-            "itemCollectionDetails": None,
-            "categoryRelatedFields": {
-                "author": None,
-                "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                "ean": product.extraData["ean"],
-                "musicType": None,
-                "performer": None,
-            },
-            "stock": {
-                "bookingLimitDatetime": "2022-01-01T12:00:00Z",
-                "bookedQuantity": 0,
-                "quantity": 3,
-                "price": 1234,
-            },
-        }
 
     @mock.patch("pcapi.tasks.sendinblue_tasks.update_pro_attributes_task")
     @freezegun.freeze_time("2022-01-01 12:00:00")
@@ -892,63 +886,48 @@ class PostProductByEanTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "ean": product.extraData["ean"],
-                "idAtProvider": "id",
+                "products": [
+                    {
+                        "ean": product.extraData["ean"],
+                        "idAtProvider": "id",
+                        "stock": {
+                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    }
+                ],
                 "location": {"type": "physical", "venueId": venue.id},
-                "stock": {
-                    "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
-                    "price": 1234,
-                    "quantity": 3,
-                },
             },
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 204
 
         assert offers_models.Offer.query.count() == 1
         assert offers_models.Stock.query.count() == 1
 
-    def test_venue_accessibility_as_default(self, client):
-        venue_data = {
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": True,
-            "visualDisabilityCompliant": True,
-        }
-        venue, _ = create_offerer_provider_linked_to_venue(venue_data)
+    def test_does_not_create_non_synchronisable_product(self, client):
+        api_key = offerers_factories.ApiKeyFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"}, isGcuCompatible=False)
 
-        product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
-                "ean": product.extraData["ean"],
+                "products": [
+                    {
+                        "ean": product.extraData["ean"],
+                        "idAtProvider": "id",
+                        "stock": {
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    }
+                ],
                 "location": {"type": "physical", "venueId": venue.id},
             },
         )
-
-        assert response.status_code == 200
-        assert response.json["accessibility"] == ACCESSIBILITY_FIELDS
-
-    def test_400_when_no_accessibility_and_virtual_venue(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue(is_virtual=True)
-        product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products/ean",
-            json={
-                "ean": product.extraData["ean"],
-                "location": {"type": "digital", "url": "https://example.com", "venueId": venue.id},
-            },
-        )
-
-        assert response.status_code == 400
-        assert response.json == {"accessibility": ["The accessibility is required when the location type is digital"]}
+        assert offers_models.Offer.query.all() == []
 
     def test_400_when_ean_wrong_format(self, client):
         api_key = offerers_factories.ApiKeyFactory()
@@ -958,16 +937,24 @@ class PostProductByEanTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
-                "ean": product.extraData["ean"],
-                "idAtProvider": "id",
+                "products": [
+                    {
+                        "ean": product.extraData["ean"],
+                        "idAtProvider": "id",
+                        "stock": {
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    }
+                ],
                 "location": {"type": "physical", "venueId": venue.id},
             },
         )
 
         assert response.status_code == 400
-        assert response.json == {"ean": ["ensure this value has at least 13 characters"]}
+        assert response.json == {"products.0.ean": ["ensure this value has at least 13 characters"]}
 
-    def test_400_when_ean_offer_already_exists(self, client):
+    def test_update_offer_when_ean_already_exists(self, client):
         venue, _ = create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
@@ -976,53 +963,97 @@ class PostProductByEanTest:
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
-                "ean": product.extraData["ean"],
+                "products": [
+                    {
+                        "ean": product.extraData["ean"],
+                        "stock": {
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    }
+                ],
                 "location": {"type": "physical", "venueId": venue.id},
             },
         )
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
-                "ean": product.extraData["ean"],
+                "products": [
+                    {
+                        "ean": product.extraData["ean"],
+                        "stock": {
+                            "price": 7890,
+                            "quantity": 3,
+                        },
+                    }
+                ],
                 "location": {"type": "physical", "venueId": venue.id},
             },
         )
 
-        assert response.status_code == 400
-        assert response.json == {
-            "ean": ["Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l’onglet Offres."]
-        }
+        assert offers_models.Offer.query.one()
+        created_stock = offers_models.Stock.query.one()
+        assert created_stock.price == decimal.Decimal("78.90")
+        assert created_stock.quantity == 3
 
-    def test_404_when_ean_not_found(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+    def test_create_and_update_offer(self, client):
+        venue, _ = create_offerer_provider_linked_to_venue()
+        ean_to_update = "1234567890123"
+        ean_to_create = "1234567897123"
+        offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": ean_to_update}
+        )
+        offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": ean_to_create}
+        )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
-                "ean": "1234567890123",
+                "products": [
+                    {
+                        "ean": ean_to_update,
+                        "stock": {
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    },
+                ],
                 "location": {"type": "physical", "venueId": venue.id},
             },
         )
 
-        assert response.status_code == 404
-        assert response.json == {"ean": ["The product is not present in pass Culture's database"]}
-
-    def test_404_when_product_not_allowed(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
-        wrong_subcategory_product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+        client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
-                "ean": wrong_subcategory_product.extraData["ean"],
+                "products": [
+                    {
+                        "ean": ean_to_update,
+                        "stock": {
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    },
+                    {
+                        "ean": ean_to_create,
+                        "stock": {
+                            "price": 9876,
+                            "quantity": 22,
+                        },
+                    },
+                ],
                 "location": {"type": "physical", "venueId": venue.id},
             },
         )
 
-        assert response.status_code == 404
-        assert response.json == {"ean": ["The product is not present in pass Culture's database"]}
+        [updated_offer, created_offer] = offers_models.Offer.query.order_by(offers_models.Offer.id).all()
+        assert updated_offer.extraData["ean"] == ean_to_update
+        assert updated_offer.activeStocks[0].price == decimal.Decimal("12.34")
+        assert updated_offer.activeStocks[0].quantity == 3
+
+        assert created_offer.extraData["ean"] == ean_to_create
+        assert created_offer.activeStocks[0].price == decimal.Decimal("98.76")
+        assert created_offer.activeStocks[0].quantity == 22
 
 
 @pytest.mark.usefixtures("db_session")
