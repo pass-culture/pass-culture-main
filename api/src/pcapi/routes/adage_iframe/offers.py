@@ -5,6 +5,7 @@ from sqlalchemy.orm import exc as orm_exc
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api.categories import get_educational_categories
+import pcapi.core.educational.utils as educational_utils
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
@@ -104,5 +105,19 @@ def create_collective_request(
     redactor = educational_repository.find_redactor_by_email(authenticated_information.email)  # type: ignore [arg-type]
     assert redactor
     collective_request = educational_api_offer.create_offer_request(body, offer, institution, redactor)
+
+    educational_utils.log_information_for_data_purpose(
+        event_name="CreateCollectiveOfferRequest",
+        extra_data={
+            "id": collective_request.id,
+            "collective_offer_template_id": offer.id,
+            "phone_number": body.phone_number,
+            "requested_date": body.requested_date,
+            "total_students": body.total_students,
+            "total_teachers": body.total_teachers,
+            "comment": body.comment,
+        },
+        user_email=authenticated_information.email,
+    )
 
     return serializers.CollectiveRequestResponseModel.from_orm(collective_request)
