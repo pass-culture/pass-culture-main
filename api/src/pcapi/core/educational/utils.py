@@ -60,16 +60,17 @@ def log_information_for_data_purpose(
     )
 
 
-def create_adage_jwt_fake_valid_token() -> str:
+def create_adage_jwt_fake_valid_token(readonly: bool) -> str:
     with open("tests/routes/adage_iframe/private_keys_for_tests/valid_rsa_private_key", "rb") as reader:
         authenticated_informations = {
             "civilite": "M.",
             "nom": "TEST",
             "prenom": "COMPTE",
             "mail": "compte.test@education.gouv.fr",
-            "uai": "0910620E",
             "exp": datetime.utcnow() + timedelta(days=1),
         }
+        if not readonly:
+            authenticated_informations["uai"] = "0910620E"
 
         return jwt.encode(
             authenticated_informations,

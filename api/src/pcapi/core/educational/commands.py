@@ -35,12 +35,13 @@ def reindex_all_collective_offers() -> None:
 
 
 @blueprint.cli.command("generate_fake_adage_token")
-def generate_fake_adage_token() -> None:
+@click.option("--readonly", type=bool, is_flag=True, default=False, help="Generate a readonly token.")
+def generate_fake_adage_token(readonly: bool) -> None:
     """
     TO BE USED IN LOCAL ENV
     """
-    token = create_adage_jwt_fake_valid_token()
-    print(f"Adage localhost URL: http://localhost:3002/?token={token}")
+    token = create_adage_jwt_fake_valid_token(readonly)
+    print(f"Adage localhost URL: http://localhost:3001/adage-iframe?token={token}")
 
 
 @blueprint.cli.command("import_deposit_csv")
