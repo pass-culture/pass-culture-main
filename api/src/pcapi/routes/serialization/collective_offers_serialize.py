@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 import enum
 import typing
@@ -355,6 +356,18 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
 
     class Config:
         orm_mode = True
+        allow_population_by_field_name = True
+
+
+class GetCollectiveOfferRequestResponseModel(BaseModel):
+    email: str
+    requestedDate: date | None
+    totalStudents: int | None
+    totalTeachers: int | None
+    comment: str
+    phoneNumber: str
+
+    class Config:
         allow_population_by_field_name = True
 
 

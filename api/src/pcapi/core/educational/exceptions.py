@@ -83,6 +83,10 @@ class CollectiveOfferNotFound(Exception):
     pass
 
 
+class CollectiveOfferRequestNotFound(Exception):
+    pass
+
+
 class CollectiveOfferTemplateNotFound(Exception):
     pass
 
