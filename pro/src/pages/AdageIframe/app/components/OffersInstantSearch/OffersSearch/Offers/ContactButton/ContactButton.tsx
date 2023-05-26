@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 
+import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { logClickOnOffer } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
@@ -18,6 +19,7 @@ export interface IContactButtonProps {
   position: number
   queryId: string
   userEmail?: string | null
+  userRole: AdageFrontRoles
 }
 
 const ContactButton = ({
@@ -30,6 +32,7 @@ const ContactButton = ({
   position,
   queryId,
   userEmail,
+  userRole,
 }: IContactButtonProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -69,6 +72,7 @@ const ContactButton = ({
           offererName={offererName}
           offerId={offerId}
           userEmail={userEmail}
+          userRole={userRole}
         />
       )}
     </>

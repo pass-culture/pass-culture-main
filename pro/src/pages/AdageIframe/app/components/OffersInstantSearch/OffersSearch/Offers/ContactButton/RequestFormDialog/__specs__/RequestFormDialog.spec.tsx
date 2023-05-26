@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { format } from 'date-fns'
 import React from 'react'
 
+import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import * as useNotification from 'hooks/useNotification'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -17,6 +18,7 @@ const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
       offererName={'Offerer 1'}
       offerId={1}
       userEmail={'contact@example.com'}
+      userRole={AdageFrontRoles.REDACTOR}
       {...props}
     />
   )
@@ -138,5 +140,15 @@ describe('RequestFormDialog', () => {
     expect(
       screen.getByText('Veuillez entrer un numéro de téléphone valide')
     ).toBeInTheDocument()
+  })
+
+  it('should not display form if user is readonly', () => {
+    renderRequestFormDialog({ userRole: AdageFrontRoles.READONLY })
+
+    expect(
+      screen.queryByText(
+        'Si vous le souhaitez, vous pouvez contacter ce partenaire culturel en renseignant les informations ci-dessous.'
+      )
+    ).not.toBeInTheDocument()
   })
 })

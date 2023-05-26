@@ -2,7 +2,11 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
-import { OfferAddressType, StudentLevels } from 'apiClient/adage'
+import {
+  AdageFrontRoles,
+  OfferAddressType,
+  StudentLevels,
+} from 'apiClient/adage'
 import { HydratedCollectiveOffer } from 'pages/AdageIframe/app/types/offers'
 import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -153,9 +157,9 @@ describe('offer', () => {
     }
     offerProps = {
       offer: offerInParis,
-      canPrebookOffers: true,
       queryId: '1',
       position: 1,
+      userRole: AdageFrontRoles.REDACTOR,
     }
   })
 
