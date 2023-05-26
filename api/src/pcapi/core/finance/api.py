@@ -1802,11 +1802,11 @@ def _create_reimbursement_rule(
 ) -> models.CustomReimbursementRule:
     subcategories = subcategories or []
     if not (bool(offerer_id) ^ bool(offer_id)):
-        raise ValueError("Must provider offer or offerer (but not both)")
+        raise ValueError("Must provide offer or offerer (but not both)")
     if not (bool(rate) ^ bool(amount)):
-        raise ValueError("Must provider rate or amount (but not both)")
+        raise ValueError("Must provide rate or amount (but not both)")
     if not (bool(rate) or not bool(offerer_id)):
-        raise ValueError("Rate must be specified only with an offerere (not with an offer)")
+        raise ValueError("Rate must be specified only with an offerer (not with an offer)")
     if not (bool(amount) or not bool(offer_id)):
         raise ValueError("Amount must be specified only with an offer (not with an offerer)")
     if not start_date:
@@ -1829,6 +1829,9 @@ def edit_reimbursement_rule(
     rule: models.CustomReimbursementRule,
     end_date: datetime.datetime,
 ) -> models.CustomReimbursementRule:
+    if rule.timespan.lower <= datetime.datetime.utcnow():
+        error = "Il n'est pas possible de modifier la date de fin lorsque la date de début est dépassée."
+        raise exceptions.WrongDateForReimbursementRule(error)
     # To avoid complexity, we do not allow to edit the end date of a
     # rule that already has one.
     if rule.timespan.upper:

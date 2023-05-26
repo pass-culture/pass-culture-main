@@ -201,10 +201,7 @@ def get_error_message(exception: finance_exceptions.ReimbursementRuleValidationE
     if isinstance(exception, finance_exceptions.ConflictingReimbursementRule):
         msg = str(exception)
         msg += " Identifiant(s) technique(s) : "
-        msg += ", ".join(
-            f'<a href="/pc/back-office/customreimbursementrule/?flt1_0={rule_id}" target="_blank">{rule_id}</a>'
-            for rule_id in exception.conflicts
-        )
+        msg += ", ".join(str(rule_id) for rule_id in exception.conflicts)
         msg += "."
         return markupsafe.Markup(msg)  # pylint: disable=markupsafe-uncontrolled-string
     return str(exception)
