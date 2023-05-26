@@ -79,6 +79,29 @@ export class DefaultService {
   }
 
   /**
+   * get_collective_request <GET>
+   * @param requestId
+   * @returns CollectiveRequestResponseModel OK
+   * @throws ApiError
+   */
+  public getCollectiveRequest(
+    requestId: number,
+  ): CancelablePromise<CollectiveRequestResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/collective/offers-template/request/{request_id}',
+      path: {
+        'request_id': requestId,
+      },
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * get_collective_offer_template <GET>
    * @param offerId
    * @returns CollectiveOfferTemplateResponseModel OK
