@@ -65,5 +65,6 @@ from .users.recredit_to_underage_beneficiary import send_recredit_email_to_under
 from .users.reported_offer_by_user import send_email_reported_offer_by_user
 from .users.reset_password import send_email_already_exists_email
 from .users.reset_password import send_reset_password_email_to_user
+from .users.suspicious_login_email import send_suspicious_login_email
 from .users.ubble.subscription_document_error import send_subscription_document_error_email
 from .users.unsuspension import send_unsuspension_email
