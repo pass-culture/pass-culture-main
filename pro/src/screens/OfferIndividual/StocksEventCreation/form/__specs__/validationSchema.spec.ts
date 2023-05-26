@@ -45,7 +45,7 @@ describe('validationSchema', () => {
       description: 'missing required fields for unique date',
       formValues: {
         ...baseValidForm,
-        recurrenceType: '',
+        recurrenceType: RecurrenceType.UNIQUE,
         startingDate: null,
         endingDate: null,
         beginningTimes: [null],
@@ -56,8 +56,7 @@ describe('validationSchema', () => {
         bookingLimitDateInterval: '',
       },
       expectedErrors: [
-        'recurrenceType must be one of the following values: UNIQUE, DAILY, WEEKLY, MONTHLY',
-        'Veuillez renseigner une date de début',
+        'Veuillez renseigner une date',
         'Veuillez renseigner un horaire',
         '"666 " n’est pas une valeur valide de la liste',
         'Veuillez indiquer un nombre supérieur à 0',
@@ -74,6 +73,18 @@ describe('validationSchema', () => {
         endingDate: null,
       },
       expectedErrors: ['Veuillez renseigner une date de fin'],
+    },
+    {
+      description: 'missing a day value for weekly recurrence',
+      formValues: {
+        ...baseValidForm,
+        recurrenceType: RecurrenceType.WEEKLY,
+        days: [],
+      },
+      expectedErrors: [
+        'Veuillez renseigner une date de fin',
+        'Veuillez renseigner au moins un jour',
+      ],
     },
     {
       description: 'duplicate hours',
