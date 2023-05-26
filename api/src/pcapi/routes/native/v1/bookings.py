@@ -4,6 +4,7 @@ import logging
 from sqlalchemy.orm import joinedload
 
 import pcapi.core.bookings.api as bookings_api
+from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
@@ -194,8 +195,10 @@ def is_ended_booking(booking: Booking) -> bool:
         # consider future events as "ongoing" even if they are used
         return False
 
-    if booking.stock.canHaveActivationCodes and booking.activationCode:
-        # consider digital bookings as special: is_used should be true anyway so
+    if (booking.stock.canHaveActivationCodes and booking.activationCode) or (
+        booking.stock.offer.subcategoryId in FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE and booking.stock.price == 0
+    ):
+        # consider digital bookings and free offer from defined subcategories as special: is_used should be true anyway so
         # let's use displayAsEnded
         return booking.displayAsEnded  # type: ignore [return-value]
 

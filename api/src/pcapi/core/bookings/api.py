@@ -124,6 +124,10 @@ def book_offer(
         if is_activation_code_applicable:
             booking.activationCode = offers_repository.get_available_activation_code(stock)
             booking.mark_as_used()
+        if stock.price == 0 and stock.offer.subcategoryId in [
+            c.id for c in constants.FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE
+        ]:
+            booking.mark_as_used()
 
         stock.dnBookedQuantity += booking.quantity
         is_external_ticket_applicable = providers_repository.is_external_ticket_applicable(stock.offer)
@@ -540,13 +544,31 @@ def get_individual_bookings_from_stock(stock_id: int) -> typing.Generator[Bookin
         yield booking
 
 
-def archive_old_activation_code_bookings() -> None:
-    old_bookings = Booking.query.join(Booking.stock, Stock.offer, Booking.activationCode).filter(
-        offers_models.Offer.isDigital.is_(True),  # type: ignore [attr-defined]
-        offers_models.ActivationCode.id.isnot(None),
-        Booking.dateCreated < datetime.datetime.utcnow() - constants.ARCHIVE_DELAY,
+def archive_old_bookings() -> None:
+    date_condition = Booking.dateCreated < datetime.datetime.utcnow() - constants.ARCHIVE_DELAY
+
+    query_old_booking_ids = (
+        Booking.query.join(Booking.stock, Stock.offer, Booking.activationCode)
+        .filter(date_condition)
+        .filter(
+            offers_models.Offer.isDigital.is_(True),  # type: ignore [attr-defined]
+            offers_models.ActivationCode.id.isnot(None),
+        )
+        .with_entities(Booking.id)
+        .union(
+            Booking.query.join(Booking.stock, Stock.offer)
+            .filter(date_condition)
+            .filter(
+                offers_models.Offer.subcategoryId.in_(
+                    [category.id for category in constants.FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE]
+                ),
+                offers_models.Stock.price == 0,
+            )
+            .with_entities(Booking.id)
+        )
     )
-    number_updated = Booking.query.filter(Booking.id.in_(old_bookings.with_entities(Booking.id))).update(
+
+    number_updated = Booking.query.filter(Booking.id.in_(query_old_booking_ids)).update(
         {"displayAsEnded": True},
         synchronize_session=False,
     )
