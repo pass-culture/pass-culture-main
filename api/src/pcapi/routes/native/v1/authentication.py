@@ -6,6 +6,7 @@ from flask_jwt_extended import jwt_required
 
 from pcapi.connectors import api_recaptcha
 from pcapi.core.external.attributes import api as external_attributes_api
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
@@ -57,6 +58,9 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active():
         if users_api.should_save_login_device_as_trusted_device(body.device_info, user):
             users_api.save_trusted_device(body.device_info, user)
+
+        if users_api.is_suspicious_login(body.device_info, user):
+            transactional_mails.send_suspicious_login_email(user.email)
 
         users_api.update_login_device_history(body.device_info, user)
 
