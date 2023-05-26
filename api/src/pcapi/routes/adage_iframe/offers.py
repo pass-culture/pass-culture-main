@@ -5,6 +5,7 @@ from sqlalchemy.orm import exc as orm_exc
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api.categories import get_educational_categories
+import pcapi.core.educational.models as educational_models
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
@@ -106,3 +107,26 @@ def create_collective_request(
     collective_request = educational_api_offer.create_offer_request(body, offer, institution, redactor)
 
     return serializers.CollectiveRequestResponseModel.from_orm(collective_request)
+
+
+@blueprint.adage_iframe.route("/collective/offers-template/request/<int:request_id>", methods=["GET"])
+@spectree_serialize(
+    response_model=serializers.CollectiveRequestResponseModel, api=blueprint.api, on_error_statuses=[404]
+)
+@adage_jwt_required
+def get_collective_request(
+    request_id: int, authenticated_information: AuthenticatedInformation
+) -> serializers.CollectiveRequestResponseModel:
+    collective_offer_request = educational_models.CollectiveOfferRequest.query.get_or_404(request_id)
+    if collective_offer_request.educationalRedactor.email != authenticated_information.email:
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_REQUEST_ACCESS_DENIED"}, status_code=403)
+
+    return serializers.CollectiveRequestResponseModel(
+        id=collective_offer_request.id,
+        email=authenticated_information.email,
+        phone_number=collective_offer_request.phoneNumber,
+        requested_date=collective_offer_request.requestedDate,
+        total_students=collective_offer_request.totalStudents,
+        total_teachers=collective_offer_request.totalTeachers,
+        comment=collective_offer_request.comment,
+    )
