@@ -153,11 +153,11 @@ export const OffersComponent = ({
         {offers.map((offer, index) => (
           <div key={`${offer.isTemplate ? 'T' : ''}${offer.id}`}>
             <Offer
-              canPrebookOffers={userRole == AdageFrontRoles.REDACTOR}
               offer={offer}
               position={index}
               queryId={queryId}
               userEmail={userEmail}
+              userRole={userRole}
             />
           </div>
         ))}
