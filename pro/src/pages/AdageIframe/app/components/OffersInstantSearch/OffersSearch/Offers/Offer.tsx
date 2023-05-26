@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import React, { useState } from 'react'
 
+import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import DialogBox from 'components/DialogBox/DialogBox'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -27,18 +28,18 @@ import { getOfferVenueAndOffererName } from './utils/getOfferVenueAndOffererName
 
 export interface OfferProps {
   offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
-  canPrebookOffers: boolean
   queryId: string
   position: number
   userEmail?: string | null
+  userRole: AdageFrontRoles
 }
 
 const Offer = ({
   offer,
-  canPrebookOffers,
   queryId,
   position,
   userEmail,
+  userRole,
 }: OfferProps): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(false)
   const [isModalLikeOpen, setIsModalLikeOpen] = useState(false)
@@ -97,10 +98,11 @@ const Offer = ({
               position={position}
               queryId={queryId}
               userEmail={userEmail}
+              userRole={userRole}
             />
           ) : (
             <PrebookingButton
-              canPrebookOffers={canPrebookOffers}
+              canPrebookOffers={userRole == AdageFrontRoles.REDACTOR}
               className={style['offer-prebooking-button']}
               offerId={offer.id}
               queryId={queryId}

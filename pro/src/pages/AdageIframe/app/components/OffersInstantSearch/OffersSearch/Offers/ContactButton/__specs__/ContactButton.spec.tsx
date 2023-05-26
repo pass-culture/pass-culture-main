@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
+import { AdageFrontRoles } from 'apiClient/adage'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ContactButton, { IContactButtonProps } from '../ContactButton'
@@ -32,6 +33,7 @@ describe('ContactButton', () => {
     queryId: 'test',
     venueName: 'Mon lieu',
     offererName: 'Ma structure',
+    userRole: AdageFrontRoles.REDACTOR,
   }
   it('should display modal on click', async () => {
     renderContactButton(defaultProps)
