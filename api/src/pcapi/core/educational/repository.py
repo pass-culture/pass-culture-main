@@ -732,6 +732,22 @@ def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOf
         raise educational_exceptions.CollectiveOfferNotFound()
 
 
+def get_collective_offer_request_by_id(request_id: int) -> educational_models.CollectiveOfferRequest:
+    try:
+        query = educational_models.CollectiveOfferRequest.query.filter(
+            educational_models.CollectiveOfferRequest.id == request_id
+        ).options(
+            sa.orm.joinedload(
+                educational_models.CollectiveOfferRequest.collectiveOfferTemplate,
+                educational_models.CollectiveOfferTemplate.venue,
+            )
+        )
+
+        return query.one()
+    except sa.orm.exc.NoResultFound:
+        raise educational_exceptions.CollectiveOfferRequestNotFound()
+
+
 def get_offerer_ids_from_collective_offers_ids(offers_ids: list[int]) -> set[int]:
     query = db.session.query(offerers_models.Offerer.id)
     query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
