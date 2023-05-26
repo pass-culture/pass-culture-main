@@ -6,7 +6,6 @@ import { NavLink } from 'react-router-dom'
 
 import { CalendarCheckIcon, InstitutionIcon, SearchIcon } from 'icons'
 import Icon from 'ui-kit/Icon/Icon'
-import { REACT_APP_ADAGE_SUIVI_URL } from 'utils/config'
 import { ResultType } from 'utils/types'
 
 import styles from './AdageHeader.module.scss'
@@ -45,7 +44,7 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
           <div className={styles['adage-header-nb-hits']}>{hits.length}</div>
         </NavLink>
         <a
-          href={REACT_APP_ADAGE_SUIVI_URL}
+          href={`${document.referrer}adage/passculture/index`}
           className={styles['adage-header-item']}
           target="_parent"
         >
