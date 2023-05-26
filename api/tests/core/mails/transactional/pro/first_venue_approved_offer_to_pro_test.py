@@ -11,6 +11,7 @@ from pcapi.core.mails.transactional.pro.first_venue_approved_offer_to_pro import
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.settings import PRO_URL
 
 
@@ -35,6 +36,7 @@ class SendinblueSendFirstVenueOfferEmailTest:
             "IS_DIGITAL": False,
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "WITHDRAWAL_PERIOD": 30,
+            "NEEDS_BANK_INFORMATION_REMINDER": True,
         }
 
     def test_get_first_venue_approved_book_offer_correct_email_metadata(self):
@@ -55,6 +57,27 @@ class SendinblueSendFirstVenueOfferEmailTest:
             "IS_DIGITAL": False,
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "WITHDRAWAL_PERIOD": 10,
+            "NEEDS_BANK_INFORMATION_REMINDER": True,
+        }
+
+    def test_get_first_venue_with_reimbursement_point_approved_offer_correct_email_metadata(self):
+        venue = offerers_factories.VenueFactory(name="Mon stade")
+        offerers_factories.VenueReimbursementPointLinkFactory(venue=venue)
+        offer = offers_factories.OfferFactory(name="Ma première offre", venue=venue)
+
+        with assert_num_queries(2):
+            new_offer_validation_email = get_first_venue_approved_offer_email_data(offer)
+
+        assert new_offer_validation_email.template == TransactionalEmail.FIRST_VENUE_APPROVED_OFFER_TO_PRO.value
+        assert new_offer_validation_email.params == {
+            "OFFER_NAME": "Ma première offre",
+            "VENUE_NAME": "Mon stade",
+            "IS_EVENT": False,
+            "IS_THING": True,
+            "IS_DIGITAL": False,
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
+            "WITHDRAWAL_PERIOD": 30,
+            "NEEDS_BANK_INFORMATION_REMINDER": False,
         }
 
     def test_send_offer_approval_email(self):
@@ -80,4 +103,5 @@ class SendinblueSendFirstVenueOfferEmailTest:
             "IS_THING": True,
             "IS_DIGITAL": False,
             "WITHDRAWAL_PERIOD": 30,
+            "NEEDS_BANK_INFORMATION_REMINDER": True,
         }
