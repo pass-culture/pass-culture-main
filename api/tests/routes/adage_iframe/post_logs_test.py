@@ -164,3 +164,35 @@ class PostLogsTest:
             "header_link_name": "search",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
         }
+
+    def test_log_request_form_popin_dismiss(self, client, caplog):
+        # given
+        test_client = client.with_adage_token(email="test@mail.com", uai="EAU123")
+
+        # when
+        with caplog.at_level(logging.INFO):
+            response = test_client.post(
+                "/adage-iframe/logs/request-popin-dismiss",
+                json={
+                    "collectiveOfferTemplateId": 1,
+                    "phoneNumber": "0601020304",
+                    "requestedDate": "2022-12-02",
+                    "totalStudents": 30,
+                    "totalTeachers": 2,
+                    "comment": "La première règle du Fight Club est: il est interdit de parler du Fight Club",
+                },
+            )
+
+        # then
+        assert response.status_code == 204
+        record = [record for record in caplog.records if record.message == "RequestPopinDismiss"][0]
+        assert record.extra == {
+            "analyticsSource": "adage",
+            "collectiveOfferTemplateId": 1,
+            "phoneNumber": "0601020304",
+            "requestedDate": "2022-12-02",
+            "totalStudents": 30,
+            "totalTeachers": 2,
+            "comment": "La première règle du Fight Club est: il est interdit de parler du Fight Club",
+            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+        }

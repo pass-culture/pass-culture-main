@@ -125,3 +125,18 @@ def log_header_link_click(
         extra_data={"header_link_name": body.header_link_name.value},
         user_email=authenticated_information.email,
     )
+
+
+@blueprint.adage_iframe.route("/logs/request-popin-dismiss", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
+def log_request_form_popin_dismiss(
+    authenticated_information: AuthenticatedInformation,
+    body: serialization.CollectiveRequestBody,
+) -> None:
+    educational_utils.log_information_for_data_purpose(
+        event_name="RequestPopinDismiss",
+        extra_data=body.dict(),
+        user_email=authenticated_information.email,
+    )
+    return
