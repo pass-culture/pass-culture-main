@@ -1414,7 +1414,7 @@ class ShouldSaveLoginDeviceAsTrustedDeviceTest:
 
 
 class IsSuspiciousLoginTest:
-    def test_should_be_true_when_user_has_no_trusted_device(self):
+    def test_is_suspicious_when_user_has_no_trusted_device(self):
         user = users_factories.UserFactory(email="py@test.com")
         device_info = account_serialization.TrustedDevice(
             deviceId="2E429592-2446-425F-9A62-D6983F375B3B", os="iOS", source="iPhone 13"
@@ -1423,18 +1423,18 @@ class IsSuspiciousLoginTest:
         assert user.trusted_devices == []
         assert users_api.is_suspicious_login(device_info=device_info, user=user) is True
 
-    def test_should_be_true_when_no_device_info(self):
+    def test_is_suspicious_when_no_device_info(self):
         user = users_factories.UserFactory(email="py@test.com")
 
         assert users_api.is_suspicious_login(device_info=None, user=user) is True
 
-    def test_should_be_true_when_no_device_id(self):
+    def test_is_suspicious_when_no_device_id(self):
         user = users_factories.UserFactory(email="py@test.com")
         device_without_id = account_serialization.TrustedDevice(deviceId="", os="iOS", source="iPhone 13")
 
         assert users_api.is_suspicious_login(device_info=device_without_id, user=user) is True
 
-    def test_should_be_false_when_device_id_matches_at_least_one_trusted_device(self):
+    def test_is_not_suspicious_when_device_is_a_trusted_device(self):
         user = users_factories.UserFactory(email="py@test.com")
         trusted_device = users_factories.TrustedDeviceFactory(user=user)
         users_factories.TrustedDeviceFactory(deviceId="3A44812-5776-235D-8E31-G4361H987A1A", user=user)
@@ -1444,7 +1444,7 @@ class IsSuspiciousLoginTest:
 
         assert users_api.is_suspicious_login(device_info=device_info, user=user) is False
 
-    def test_should_be_true_when_device_id_does_not_any_trusted_device(self):
+    def test_is_suspicious_when_device_is_not_a_trusted_device(self):
         user = users_factories.UserFactory(email="py@test.com")
         users_factories.TrustedDeviceFactory(user=user)
         device_info = account_serialization.TrustedDevice(deviceId="other-device-id", os="iOS", source="iPhone 13")
