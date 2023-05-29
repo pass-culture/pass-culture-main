@@ -28,3 +28,12 @@ class AdageHeaderLink(enum.Enum):
 
 class AdageHeaderLogBody(BaseModel):
     header_link_name: AdageHeaderLink
+
+
+class CollectiveRequestBody(BaseModel):
+    collectiveOfferTemplateId: int
+    phoneNumber: str | None
+    requestedDate: str | None
+    totalStudents: int | None
+    totalTeachers: int | None
+    comment: str
