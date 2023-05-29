@@ -70,7 +70,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
 
 @blueprint.native_v1.route("/refresh_access_token", methods=["POST"])
 @jwt_required(refresh=True)
-@spectree_serialize(response_model=authentication.RefreshResponse, api=blueprint.api)
+@spectree_serialize(response_model=authentication.RefreshResponse, api=blueprint.api, on_error_statuses=[401])
 def refresh() -> authentication.RefreshResponse:
     email = get_jwt_identity()
     user = find_user_by_email(email)
