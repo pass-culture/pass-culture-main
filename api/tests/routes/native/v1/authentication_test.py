@@ -150,8 +150,7 @@ def test_user_logs_in_with_missing_fields(client):
     }
 
 
-@override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-def test_save_login_device_history_on_signin(client):
+class TrustedDeviceFeatureTest:
     data = {
         "identifier": "user@test.com",
         "password": settings.TEST_DEFAULT_PASSWORD,
@@ -161,177 +160,104 @@ def test_save_login_device_history_on_signin(client):
             "os": "iOS",
         },
     }
-    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
 
-    client.post("/native/v1/signin", json=data)
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+    def test_save_login_device_history_on_signin(self, client):
+        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
 
-    login_device = LoginDeviceHistory.query.one()
+        client.post("/native/v1/signin", json=self.data)
 
-    assert login_device.deviceId == data["deviceInfo"]["deviceId"]
-    assert login_device.source == "iPhone 13"
-    assert login_device.os == "iOS"
-    assert login_device.location == None
+        login_device = LoginDeviceHistory.query.one()
 
+        assert login_device.deviceId == self.data["deviceInfo"]["deviceId"]
+        assert login_device.source == "iPhone 13"
+        assert login_device.os == "iOS"
+        assert login_device.location == None
 
-@override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
-def test_should_not_save_login_device_history_when_feature_flag_is_disabled(client):
-    data = {
-        "identifier": "user@test.com",
-        "password": settings.TEST_DEFAULT_PASSWORD,
-        "deviceInfo": {
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
+    def test_should_not_save_login_device_history_when_feature_flag_is_disabled(self, client):
+        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
+
+        client.post("/native/v1/signin", json=self.data)
+
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+    def test_save_login_device_as_trusted_device_on_second_signin_with_same_device(self, client):
+        user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
+
+        client.post("/native/v1/signin", json=self.data)
+        client.post("/native/v1/signin", json=self.data)
+
+        trusted_device = TrustedDevice.query.filter(TrustedDevice.deviceId == self.data["deviceInfo"]["deviceId"]).one()
+        assert user.trusted_devices == [trusted_device]
+
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
+    def test_should_not_save_login_device_as_trusted_device_on_second_signin_when_feature_flag_is_inactive(
+        self,
+        client,
+    ):
+        user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
+
+        client.post("/native/v1/signin", json=self.data)
+        client.post("/native/v1/signin", json=self.data)
+
+        assert TrustedDevice.query.count() == 0
+        assert user.trusted_devices == []
+
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+    def test_should_not_save_login_device_as_trusted_device_on_second_signin_when_using_different_devices(self, client):
+        first_device = {
             "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
             "source": "iPhone 13",
             "os": "iOS",
-        },
-    }
-    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
+        }
+        second_device = {
+            "deviceId": "5F810092-1832-9A32-5B30-P2112F375G3G",
+            "source": "Chrome",
+            "os": "Mac OS",
+        }
+        user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
 
-    client.post("/native/v1/signin", json=data)
+        client.post("/native/v1/signin", json={**self.data, "deviceInfo": first_device})
+        client.post("/native/v1/signin", json={**self.data, "deviceInfo": second_device})
 
-    assert LoginDeviceHistory.query.count() == 0
+        assert TrustedDevice.query.count() == 0
+        assert user.trusted_devices == []
 
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+    def test_should_send_email_when_login_is_suspicious(self, client):
+        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
 
-@override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-def test_save_login_device_as_trusted_device_on_second_signin_with_same_device(client):
-    data = {
-        "identifier": "user@test.com",
-        "password": settings.TEST_DEFAULT_PASSWORD,
-        "deviceInfo": {
-            "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
-            "source": "iPhone 13",
-            "os": "iOS",
-        },
-    }
-    user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
+        client.post("/native/v1/signin", json=self.data)
 
-    client.post("/native/v1/signin", json=data)
-    client.post("/native/v1/signin", json=data)
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
 
-    trusted_device = TrustedDevice.query.filter(TrustedDevice.deviceId == data["deviceInfo"]["deviceId"]).one()
-    assert user.trusted_devices == [trusted_device]
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+    def test_should_not_send_email_when_login_is_not_suspicious(self, client):
+        user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
+        users_factories.TrustedDeviceFactory(user=user)
 
+        client.post("/native/v1/signin", json=self.data)
 
-@override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
-def test_should_not_save_login_device_as_trusted_device_on_second_signin_when_feature_flag_is_inactive(
-    client,
-):
-    data = {
-        "identifier": "user@test.com",
-        "password": settings.TEST_DEFAULT_PASSWORD,
-        "deviceInfo": {
-            "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
-            "source": "iPhone 13",
-            "os": "iOS",
-        },
-    }
-    user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
+        assert len(mails_testing.outbox) == 0
 
-    client.post("/native/v1/signin", json=data)
-    client.post("/native/v1/signin", json=data)
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+    def test_should_only_send_one_email_when_logging_in_twice_with_same_device(self, client):
+        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
 
-    assert TrustedDevice.query.count() == 0
-    assert user.trusted_devices == []
+        client.post("/native/v1/signin", json=self.data)
+        client.post("/native/v1/signin", json=self.data)
 
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
 
-@override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-def test_should_not_save_login_device_as_trusted_device_on_second_signin_when_using_different_devices(client):
-    login_data = {
-        "identifier": "user@test.com",
-        "password": settings.TEST_DEFAULT_PASSWORD,
-    }
-    first_device = {
-        "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
-        "source": "iPhone 13",
-        "os": "iOS",
-    }
-    second_device = {
-        "deviceId": "5F810092-1832-9A32-5B30-P2112F375G3G",
-        "source": "Chrome",
-        "os": "Mac OS",
-    }
-    user = users_factories.UserFactory(email=login_data["identifier"], password=login_data["password"], isActive=True)
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
+    def test_should_not_send_email_when_feature_flag_is_inactive(self, client):
+        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
 
-    client.post("/native/v1/signin", json={**login_data, "deviceInfo": first_device})
-    client.post("/native/v1/signin", json={**login_data, "deviceInfo": second_device})
+        client.post("/native/v1/signin", json=self.data)
 
-    assert TrustedDevice.query.count() == 0
-    assert user.trusted_devices == []
-
-
-@override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-def test_should_send_email_when_login_is_suspicious(client):
-    data = {
-        "identifier": "user@test.com",
-        "password": settings.TEST_DEFAULT_PASSWORD,
-        "deviceInfo": {
-            "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
-            "source": "iPhone 13",
-            "os": "iOS",
-        },
-    }
-    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
-
-    client.post("/native/v1/signin", json=data)
-
-    assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-
-
-@override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-def test_should_not_send_email_when_login_is_not_suspicious(client):
-    data = {
-        "identifier": "user@test.com",
-        "password": settings.TEST_DEFAULT_PASSWORD,
-        "deviceInfo": {
-            "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
-            "source": "iPhone 13",
-            "os": "iOS",
-        },
-    }
-    user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
-    users_factories.TrustedDeviceFactory(user=user)
-
-    client.post("/native/v1/signin", json=data)
-
-    assert len(mails_testing.outbox) == 0
-
-
-@override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-def test_should_only_send_one_email_when_logging_in_twice_with_same_device(client):
-    data = {
-        "identifier": "user@test.com",
-        "password": settings.TEST_DEFAULT_PASSWORD,
-        "deviceInfo": {
-            "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
-            "source": "iPhone 13",
-            "os": "iOS",
-        },
-    }
-    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
-
-    client.post("/native/v1/signin", json=data)
-    client.post("/native/v1/signin", json=data)
-
-    assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-
-
-@override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
-def test_should_not_send_email_when_feature_flag_is_inactive(client):
-    data = {
-        "identifier": "user@test.com",
-        "password": settings.TEST_DEFAULT_PASSWORD,
-        "deviceInfo": {
-            "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
-            "source": "iPhone 13",
-            "os": "iOS",
-        },
-    }
-    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
-
-    client.post("/native/v1/signin", json=data)
-
-    assert len(mails_testing.outbox) == 0
+        assert len(mails_testing.outbox) == 0
 
 
 def test_send_reset_password_email_without_email(client):
