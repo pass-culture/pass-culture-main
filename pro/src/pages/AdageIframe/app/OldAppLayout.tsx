@@ -2,18 +2,16 @@ import './OldAppLayout.scss'
 
 import * as React from 'react'
 
-import { AuthenticatedResponse, VenueResponse } from 'apiClient/adage'
+import { VenueResponse } from 'apiClient/adage'
 import { ReactComponent as Download } from 'icons/ico-other-download.svg'
 import { ReactComponent as Logo } from 'icons/logo-pass-culture-dark.svg'
 
 import { OffersInstantSearch } from './components/OffersInstantSearch/OffersInstantSearch'
 
 export const OldAppLayout = ({
-  user,
   removeVenueFilter,
   venueFilter,
 }: {
-  user: AuthenticatedResponse
   removeVenueFilter: () => void
   venueFilter: VenueResponse | null
 }): JSX.Element => {
@@ -39,7 +37,6 @@ export const OldAppLayout = ({
 
         <OffersInstantSearch
           removeVenueFilter={removeVenueFilter}
-          user={user}
           venueFilter={venueFilter}
         />
       </main>

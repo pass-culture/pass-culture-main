@@ -1,18 +1,15 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 
-import { AdageFrontRoles } from 'apiClient/adage'
 import {
   AlgoliaQueryContextProvider,
   FiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
+import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { AppLayout } from '../AppLayout'
-
-const user = {
-  role: AdageFrontRoles.REDACTOR,
-}
 
 jest.mock('apiClient/api', () => ({
   apiAdage: {
@@ -82,15 +79,13 @@ jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
 
 const renderAppLayout = (initialRoute = '/') => {
   renderWithProviders(
-    <FiltersContextProvider>
-      <AlgoliaQueryContextProvider>
-        <AppLayout
-          user={user}
-          removeVenueFilter={jest.fn()}
-          venueFilter={null}
-        />
-      </AlgoliaQueryContextProvider>
-    </FiltersContextProvider>,
+    <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
+      <FiltersContextProvider>
+        <AlgoliaQueryContextProvider>
+          <AppLayout removeVenueFilter={jest.fn()} venueFilter={null} />
+        </AlgoliaQueryContextProvider>
+      </FiltersContextProvider>
+    </AdageUserContext.Provider>,
 
     { initialRouterEntries: [initialRoute] }
   )

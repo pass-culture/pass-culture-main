@@ -3,27 +3,27 @@ import * as React from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 import { Route, Routes } from 'react-router-dom'
 
-import { AuthenticatedResponse, VenueResponse } from 'apiClient/adage'
+import { VenueResponse } from 'apiClient/adage'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
 } from 'utils/config'
 
+import useAdageUser from '../../hooks/useAdageUser'
 import routesAdage from '../../subRoutesAdage'
 import { AdageHeader } from '../AdageHeader/AdageHeader'
 
 import styles from './AppLayout.module.scss'
 
 export const AppLayout = ({
-  user,
   removeVenueFilter,
   venueFilter,
 }: {
-  user: AuthenticatedResponse
   removeVenueFilter: () => void
   venueFilter: VenueResponse | null
 }): JSX.Element => {
+  const adageUser = useAdageUser()
   return (
     <div>
       <InstantSearch
@@ -34,7 +34,9 @@ export const AppLayout = ({
           attributesToHighlight={[]}
           attributesToRetrieve={[]}
           clickAnalytics
-          facetFilters={[`offer.educationalInstitutionUAICode:${user.uai}`]}
+          facetFilters={[
+            `offer.educationalInstitutionUAICode:${adageUser.uai}`,
+          ]}
           hitsPerPage={8}
         />
         <AdageHeader />
@@ -50,7 +52,6 @@ export const AppLayout = ({
                 path={path}
                 element={
                   <Component
-                    user={user}
                     venueFilter={venueFilter}
                     removeVenueFilter={removeVenueFilter}
                   />

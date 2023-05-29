@@ -2,12 +2,13 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
-import { AdageFrontRoles } from 'apiClient/adage'
+import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import {
   AlgoliaQueryContextProvider,
   FiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
+import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffersSearchComponent, SearchProps } from '../OffersSearch'
@@ -30,28 +31,33 @@ jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
     .mockResolvedValue([{ id: 1, name: 'Architecture' }]),
 }))
 
-const renderOffersSearchComponent = (props: SearchProps) => {
+const renderOffersSearchComponent = (
+  props: SearchProps,
+  user: AuthenticatedResponse
+) => {
   renderWithProviders(
-    <FiltersContextProvider>
-      <AlgoliaQueryContextProvider>
-        <OffersSearchComponent {...props} />
-      </AlgoliaQueryContextProvider>
-    </FiltersContextProvider>
+    <AdageUserContext.Provider value={{ adageUser: user }}>
+      <FiltersContextProvider>
+        <AlgoliaQueryContextProvider>
+          <OffersSearchComponent {...props} />
+        </AlgoliaQueryContextProvider>
+      </FiltersContextProvider>
+    </AdageUserContext.Provider>
   )
 }
 
 describe('offersSearch component', () => {
   let props: SearchProps
+  const user = {
+    role: AdageFrontRoles.REDACTOR,
+    uai: 'uai',
+    departmentCode: '30',
+    institutionName: 'COLLEGE BELLEVUE',
+    institutionCity: 'ALES',
+  }
 
   beforeEach(() => {
     props = {
-      user: {
-        role: AdageFrontRoles.REDACTOR,
-        uai: 'uai',
-        departmentCode: '30',
-        institutionName: 'COLLEGE BELLEVUE',
-        institutionCity: 'ALES',
-      },
       removeVenueFilter: jest.fn(),
       venueFilter: null,
       refine: jest.fn(),
@@ -62,7 +68,7 @@ describe('offersSearch component', () => {
 
   it('should call algolia with requested query', async () => {
     // Given
-    renderOffersSearchComponent(props)
+    renderOffersSearchComponent(props, user)
     const launchSearchButton = screen.getByRole('button', {
       name: 'Lancer la recherche',
     })
@@ -79,7 +85,7 @@ describe('offersSearch component', () => {
   })
 
   it('should uncheck checkbox when user remove department tag', async () => {
-    renderOffersSearchComponent(props)
+    renderOffersSearchComponent(props, user)
     const checkbox = await screen.getByLabelText(
       'Les acteurs qui se déplacent dans mon établissement',
       { exact: false }
@@ -101,7 +107,7 @@ describe('offersSearch component', () => {
   })
 
   it('should display checkbox label with user information', async () => {
-    renderOffersSearchComponent(props)
+    renderOffersSearchComponent(props, user)
 
     await waitFor(() =>
       expect(
@@ -113,15 +119,11 @@ describe('offersSearch component', () => {
   })
 
   it('should not display checkbox', async () => {
-    renderOffersSearchComponent({
-      ...props,
-      user: {
-        role: AdageFrontRoles.REDACTOR,
-        uai: 'uai',
-        departmentCode: null,
-        institutionName: null,
-        institutionCity: null,
-      },
+    renderOffersSearchComponent(props, {
+      ...user,
+      departmentCode: null,
+      institutionName: null,
+      institutionCity: null,
     })
 
     await screen.findByText('Partagé avec mon établissement') // wait that all async re-render as finished
@@ -134,7 +136,7 @@ describe('offersSearch component', () => {
   })
 
   it('should check user department when checking checkbox', async () => {
-    renderOffersSearchComponent(props)
+    renderOffersSearchComponent(props, user)
     const checkbox = screen.getByLabelText(
       'Les acteurs qui se déplacent dans mon établissement',
       { exact: false }
@@ -156,7 +158,7 @@ describe('offersSearch component', () => {
           { id: 'ATELIER_PRATIQUE_ART', categoryId: 'PRATIQUE_ART' },
         ],
       })
-    renderOffersSearchComponent(props)
+    renderOffersSearchComponent(props, user)
 
     const categorieFilter = await screen.findByLabelText('Catégorie')
     await userEvent.type(categorieFilter, 'Cinéma')
@@ -171,7 +173,7 @@ describe('offersSearch component', () => {
   })
 
   it('should close tag on click domains tag', async () => {
-    renderOffersSearchComponent(props)
+    renderOffersSearchComponent(props, user)
 
     const domainFilter = await screen.findByLabelText('Domaine')
     await userEvent.type(domainFilter, 'Architecture')
@@ -186,7 +188,7 @@ describe('offersSearch component', () => {
   })
 
   it('should close tag on click domains tag', async () => {
-    renderOffersSearchComponent(props)
+    renderOffersSearchComponent(props, user)
 
     const domainFilter = await screen.findByLabelText('Domaine')
     await userEvent.type(domainFilter, 'Architecture')
@@ -201,7 +203,7 @@ describe('offersSearch component', () => {
   })
 
   it('should close tag on click school level tag', async () => {
-    renderOffersSearchComponent(props)
+    renderOffersSearchComponent(props, user)
 
     const schoolFilter = await screen.findByLabelText('Niveau scolaire')
     await userEvent.type(schoolFilter, 'Collège - 4e')
@@ -216,7 +218,7 @@ describe('offersSearch component', () => {
   })
 
   it('should uncheck checkbox when user deselect his department', async () => {
-    renderOffersSearchComponent(props)
+    renderOffersSearchComponent(props, user)
     const checkbox = screen.getByLabelText(
       'Les acteurs qui se déplacent dans mon établissement',
       { exact: false }
@@ -238,7 +240,7 @@ describe('offersSearch component', () => {
   })
 
   it('should uncheck checkbox when user adds a department', async () => {
-    renderOffersSearchComponent(props)
+    renderOffersSearchComponent(props, user)
     const checkbox = screen.getByLabelText(
       'Les acteurs qui se déplacent dans mon établissement',
       { exact: false }
@@ -260,7 +262,7 @@ describe('offersSearch component', () => {
   })
 
   it('should deselect all department except user department when user checks the checkbox', async () => {
-    renderOffersSearchComponent(props)
+    renderOffersSearchComponent(props, user)
     const departmentFilter = screen.getByLabelText('Département')
 
     await userEvent.click(departmentFilter)

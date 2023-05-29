@@ -22,6 +22,7 @@ import { LoaderPage } from './components/LoaderPage/LoaderPage'
 import { UnauthenticatedError } from './components/UnauthenticatedError/UnauthenticatedError'
 import { OldAppLayout } from './OldAppLayout'
 import { FacetFiltersContextProvider } from './providers'
+import { AdageUserContext } from './providers/AdageUserContext'
 
 export const App = (): JSX.Element => {
   const [user, setUser] = useState<AuthenticatedResponse | null>()
@@ -90,32 +91,36 @@ export const App = (): JSX.Element => {
     return <LoaderPage />
   }
 
+  if (!user) {
+    return <UnauthenticatedError />
+  }
+
   return (
-    <FacetFiltersContextProvider
-      departmentCode={user?.departmentCode}
-      uai={user?.uai}
-    >
-      {notification && <NotificationComponent notification={notification} />}
-      {user?.role &&
-      [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
-        user.role
-      ) ? (
-        isNewHeaderActive ? (
-          <AppLayout
-            removeVenueFilter={removeVenueFilter}
-            user={user}
-            venueFilter={venueFilter}
-          />
+    <AdageUserContext.Provider value={{ adageUser: user }}>
+      <FacetFiltersContextProvider
+        departmentCode={user?.departmentCode}
+        uai={user?.uai}
+      >
+        {notification && <NotificationComponent notification={notification} />}
+        {user?.role &&
+        [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
+          user.role
+        ) ? (
+          isNewHeaderActive ? (
+            <AppLayout
+              removeVenueFilter={removeVenueFilter}
+              venueFilter={venueFilter}
+            />
+          ) : (
+            <OldAppLayout
+              removeVenueFilter={removeVenueFilter}
+              venueFilter={venueFilter}
+            />
+          )
         ) : (
-          <OldAppLayout
-            removeVenueFilter={removeVenueFilter}
-            user={user}
-            venueFilter={venueFilter}
-          />
-        )
-      ) : (
-        <UnauthenticatedError />
-      )}
-    </FacetFiltersContextProvider>
+          <UnauthenticatedError />
+        )}
+      </FacetFiltersContextProvider>
+    </AdageUserContext.Provider>
   )
 }
