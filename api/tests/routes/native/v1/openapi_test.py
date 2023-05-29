@@ -2730,6 +2730,7 @@ def test_public_api(client):
                             },
                             "description": "OK",
                         },
+                        "401": {"description": "Unauthorized"},
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
