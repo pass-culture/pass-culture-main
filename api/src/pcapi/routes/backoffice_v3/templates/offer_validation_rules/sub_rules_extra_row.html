@@ -18,9 +18,10 @@
                     <li>{{ sub_rule | format_offer_validation_sub_rule }} {{ sub_rule.comparated["comparated"] | format_offer_types }}</li>
                   {% else %}
                     <li>{{ sub_rule | format_offer_validation_sub_rule }}</li>
-                    <ul class="list-unstyled card-columns"
+                    <ul class="card-columns"
                         style="column-count: 5">
-                      {% for word in sub_rule.comparated["comparated"] %}<li>- {{ word }}</li>{% endfor %}
+                      {% set element_filter = sub_rule | get_comparated_format_function(offerer_dict) %}
+                      {% for element in sub_rule.comparated["comparated"] %}<li>{{ element_filter(element) }}</li>{% endfor %}
                     </ul>
                   {% endif %}
                 {% else %}

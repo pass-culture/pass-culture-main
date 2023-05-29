@@ -1,3 +1,4 @@
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 
@@ -33,32 +34,32 @@ def create_industrial_offer_validation_rules() -> None:
         operator=offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
         comparated={"comparated": ["bon", "lot", "go"]},
     )
-
-    offerer_siren_rule = offers_factories.OfferValidationRuleFactory(name="Règle sur les SIREN")
+    offerers_to_reject = offerers_factories.OffererFactory.create_batch(5)
+    offerer_siren_rule = offers_factories.OfferValidationRuleFactory(name="Règle sur les structures")
     offers_factories.OfferValidationSubRuleFactory(
         validationRule=offerer_siren_rule,
         model=offers_models.OfferValidationModel.OFFERER,
-        attribute=offers_models.OfferValidationAttribute.SIREN,
+        attribute=offers_models.OfferValidationAttribute.ID,
         operator=offers_models.OfferValidationRuleOperator.IN,
-        comparated={"comparated": ["777777770", "777777772", "777777774"]},
+        comparated={"comparated": [str(offerer.id) for offerer in offerers_to_reject]},
     )
 
     collective_offer_and_template_siren_rule = offers_factories.OfferValidationRuleFactory(
-        name="Règle sur les SIRET et les offres collectives et vitrines"
+        name="Règle sur les structures et les offres collectives et vitrines"
     )
     offers_factories.OfferValidationSubRuleFactory(
         validationRule=collective_offer_and_template_siren_rule,
         model=offers_models.OfferValidationModel.OFFERER,
-        attribute=offers_models.OfferValidationAttribute.SIREN,
+        attribute=offers_models.OfferValidationAttribute.ID,
         operator=offers_models.OfferValidationRuleOperator.IN,
-        comparated={"comparated": ["777777776", "777777778"]},
+        comparated={"comparated": [str(offerers_to_reject[0].id), str(offerers_to_reject[1].id)]},
     )
     offers_factories.OfferValidationSubRuleFactory(
         validationRule=collective_offer_and_template_siren_rule,
         model=None,
         attribute=offers_models.OfferValidationAttribute.CLASS_NAME,
         operator=offers_models.OfferValidationRuleOperator.IN,
-        comparated={"comparated": ["CollectiveOffer", "CollectiveOfferTemplate"]},
+        comparated={"comparated": ["COLLECTIVE_OFFER", "COLLECTIVE_OFFER_TEMPLATE"]},
     )
 
     cabaret_show_sub_type_offer_rule = offers_factories.OfferValidationRuleFactory(
@@ -68,8 +69,8 @@ def create_industrial_offer_validation_rules() -> None:
         validationRule=cabaret_show_sub_type_offer_rule,
         model=offers_models.OfferValidationModel.OFFER,
         attribute=offers_models.OfferValidationAttribute.SHOW_SUB_TYPE,
-        operator=offers_models.OfferValidationRuleOperator.EQUALS,
-        comparated={"comparated": "1011"},
+        operator=offers_models.OfferValidationRuleOperator.IN,
+        comparated={"comparated": ["1101"]},
     )
 
     offer_max_price_rule = offers_factories.OfferValidationRuleFactory(name="Vérification de prix maximum de l'offre")

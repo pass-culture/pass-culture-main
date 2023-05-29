@@ -1,4 +1,4 @@
-<div class="form-floating {{ field.name }}-container"
+<div class="form-floating {{ field.name }}-container pc-field-{{ field.name }}"
      data-clone-function-name="_tomSelectCloneFunction">
   {% set select_field_id = random_hash() %}
   <select multiple
@@ -18,11 +18,11 @@
          for="{{ select_field_id }}">{{ field.label.text }}</label>
 </div>
 <!-- (Almost) duplicated html for field list field widget -->
-<div class="form-floating {{ field.name }}-container d-none empty-tom-select-form-container"
+<div class="form-floating {{ field.name }}-container pc-field-{{ field.name }} d-none empty-tom-select-form-container"
      data-clone-function-name="_tomSelectCloneFunction">
   {% set select_field_id = random_hash() %}
   <select multiple
-          class="form-select pc-select-field value-element-form"
+          class="form-select pc-select-field value-element-form pc-no-update"
           data-original-name="{{ field.name }}"
           size="2">
     {% for value, label, selected in field.iter_choices() %}
@@ -31,6 +31,6 @@
       </option>
     {% endfor %}
   </select>
-  <label class="pc-select-label label-element-form"
+  <label class="pc-select-label label-element-form pc-no-update"
          data-original-name="{{ field.name }}">{{ field.label.text }}</label>
 </div>

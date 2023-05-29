@@ -6,6 +6,7 @@
  */
 class PcFieldList extends PcAddOn {
 
+  static ID = 'PCFieldListId'
   static PC_FIELD_LIST_CONTAINER_SELECTOR = '[data-field-list-container]'
   static PC_FIELD_LIST_UL_SELECTOR = 'ul.field-list'
   static ADD_BUTTON_SELECTOR = '.field-list-add-btn'
@@ -66,14 +67,14 @@ class PcFieldList extends PcAddOn {
   }
 
   #generateNextElementNumber = ($ul) => {
-    const entriesCount = $ul.dataset
+    const { entriesCount } = $ul.dataset
     const nextFieldNumber = Number(entriesCount) + 1
     $ul.dataset.entriesCount = nextFieldNumber
     return nextFieldNumber
   }
 
   #generateElementName = (originalName, newNumber) => {
-    return originalName.replace(/^(\w+-)\d+(-\w+)?$/, `$1${newNumber}$2`)
+    return originalName ? originalName.replace(/^(\w+-)\d+(-\w+)?$/, `$1${newNumber}$2`) : ""
   }
 
   #filterMaxEntries = ($ul, skipError) => {
@@ -130,11 +131,40 @@ class PcFieldList extends PcAddOn {
     const $li = document.createElement('li')
     const $newEmptyForm = $emptyForm.cloneNode(true)
     $li.append($newEmptyForm, $emptyForm.cloneNode(true), $removeButton) // we keep a clone within the newly added and edited $newEmptyForm form
-    $li.querySelector(PcFieldList.FIELD_ELEMENT_BEARING_VALUE_SELECTOR).classList.add(formFieldClass)
+    // tomSelect code
+    const PcTomSelectFieldAddOn = this.app.addons[this.app.addons.PcTomSelectFieldId.constructor.ID].constructor
+    const emptyTomSelectClass = PcTomSelectFieldAddOn.EMPTY_PC_TOM_SELECT_FIELD_CONTAINER_CLASS
+    const tomSelectClass = this.app.addons[this.app.addons.PcTomSelectFieldId.constructor.ID].constructor.PC_TOM_SELECT_FIELD_CLASS
+    $newEmptyForm.classList.remove(PcFieldList.PC_FORM_FIELD_EMPTY_CONTAINER_CLASS)
+    const $tomSelectEmptys = $li.getElementsByClassName(emptyTomSelectClass)
+    for (let i = 0; i < $tomSelectEmptys.length; i++) {
+      const $tomSelectEmpty = $tomSelectEmptys[i]
+      if ($tomSelectEmpty.closest(`.${PcFieldList.PC_FORM_FIELD_EMPTY_CONTAINER_CLASS}`)) {
+        // ignore tomselect buried in empty form field
+        continue
+      }
+      const $tomSelect = $tomSelectEmpty.previousElementSibling
+      const $newTomSelect = $tomSelectEmpty.cloneNode(true)
+      $tomSelect.after($newTomSelect)
+      $tomSelect.remove()
+      $newTomSelect.querySelector("select").classList.add(tomSelectClass)
+      $newTomSelect.classList.remove(PcFieldList.EMPTY_TOM_SELECT_FORM_CONTAINER_CLASS)
+      $newTomSelect.classList.remove("d-none")
+    }
+    // end of tomSelect code
+    $newEmptyForm.querySelectorAll(".pc-no-update").forEach(($noUpdate) => {
+      $noUpdate.classList.remove('pc-no-update')
+    })
     this.#resetAndRenameElement($li, this.#generateNextElementNumber($ul))
     $ul.insertBefore($li, $ul.querySelector(PcFieldList.ADD_BUTTON_SELECTOR))
+
     $newEmptyForm.classList.remove("d-none")
-    $newEmptyForm.classList.remove(PcFieldList.PC_FORM_FIELD_EMPTY_CONTAINER_CLASS)
+    $newEmptyForm.classList.add(this.app.addons[this.app.addons.PCFormFieldId.constructor.ID].constructor.PC_FORM_FIELD_FIELD_CLASS)
+    app.addons.pcTomSelectField.rebindEvents()
+    $newEmptyForm.querySelectorAll(this.app.addons[this.app.addons.PCFormFieldId.constructor.ID].constructor.PC_REQUIRED_SELECTOR).forEach(($requiredField) => {
+      $requiredField.required = true
+    })
+    app.addons.pcFormField.rebindEvents()
   }
 
   #defaultCloneFunction = ($ul) => {
@@ -171,16 +201,21 @@ class PcFieldList extends PcAddOn {
 
   #defaultResetAndRename = ($li, newNumber) => {
     $li.querySelectorAll(PcFieldList.FIELD_ELEMENT_BEARING_VALUE_SELECTOR).forEach(($valueElement) => {
-      const baseName = $valueElement.dataset.originalName
-      const newName = this.#generateElementName(baseName, newNumber)
-      $valueElement.id = newName
-      $valueElement.name = newName
-      $valueElement.value = $valueElement.dataset.defaultValue ? $valueElement.dataset.defaultValue : ""
+      if (!$valueElement.classList.contains('pc-no-update')) {
+        const baseName = $valueElement.dataset.originalName
+        const newName = this.#generateElementName(baseName, newNumber)
+        $valueElement.id = newName
+        $valueElement.name = newName
+        $valueElement.value = $valueElement.dataset.defaultValue ? $valueElement.dataset.defaultValue : ""
+      }
     })
     $li.querySelectorAll(PcFieldList.FIELD_LABEL_SELECTOR).forEach(($labelElement) => {
-      const baseName = $labelElement.dataset.originalName
-      const newName = this.#generateElementName(baseName, newNumber)
-      $labelElement.htmlFor = newName
+      if (!$labelElement.classList.contains('pc-no-update')) {
+        const baseName = $labelElement.dataset.originalName
+        const newName = this.#generateElementName(baseName, newNumber)
+        $labelElement.htmlFor = newName
+
+      }
     })
   }
 
