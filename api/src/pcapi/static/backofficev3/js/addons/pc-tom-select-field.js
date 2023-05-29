@@ -28,6 +28,7 @@ class PcTomSelectField extends PcAddOn {
   /** Unique identifier of this addon, in order to reference it from another add on */
   static ID = 'PcTomSelectFieldId'
   static PC_TOM_SELECT_FIELD_CLASS = 'pc-tom-select-field'
+  static EMPTY_PC_TOM_SELECT_FIELD_CONTAINER_CLASS = 'empty-tom-select-form-container'
   static SELECT_SELECTOR = `select.${PcTomSelectField.PC_TOM_SELECT_FIELD_CLASS}`
   static SELECT_AUTOCOMPLETE_CLASS = 'pc-tom-select-autocomplete-field'
   static SELECT_SETTINGS = {

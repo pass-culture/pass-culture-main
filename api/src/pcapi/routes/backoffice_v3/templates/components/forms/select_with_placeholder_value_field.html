@@ -1,7 +1,7 @@
-<div class="form-floating">
+<div class="form-floating pc-field-{{ field.name }} pc-select-with-placeholder">
   {% set select_with_placeholder_value_field_id = random_hash() %}
   <select id="{{ select_with_placeholder_value_field_id }}"
-          class="form-select value-element-form"
+          class="form-select value-element-form {% if field.flags.required %}pc-required{% endif %}"
           name="{{ field.name }}"
           data-original-name="{{ field.name }}"
           aria-label="{{ field.name }}"

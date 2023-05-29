@@ -1,10 +1,10 @@
-<div class="form-floating my-3 {% if field.type == "PCIntegerField" or field.type == "PCOptIntegerField" %} d-inline-block {% elif field.type == "PCOptHiddenField" or field.type == "PCPostalCodeHiddenField" or field.type == "PCOptPostalCodeHiddenField" or field.type == "PCHiddenField" %} d-none {% endif %}">
+<div class="form-floating my-3 {% if field.type == "PCIntegerField" or field.type == "PCOptIntegerField" %} d-inline-block {% elif field.type == "PCOptHiddenField" or field.type == "PCPostalCodeHiddenField" or field.type == "PCOptPostalCodeHiddenField" or field.type == "PCHiddenField" %} d-none {% endif %} pc-field-{{ field.name }}">
   {% set string_field_id = random_hash() %}
   <input {% if field.type == "PCIntegerField" or field.type == "PCOptIntegerField" %}type="number"{% else %}type="text"{% endif %}
          id="{{ string_field_id }}"
          name="{{ field.name }}"
          data-original-name="{{ field.name }}"
-         class="form-control value-element-form"
+         class="form-control value-element-form {% if field.flags.required %}pc-required{% endif %}"
          value="{{ field.data | empty_string_if_null }}"
          {% if field.flags.required %}required{% endif %}
          {% if field.flags.pattern %}pattern="{{ field.flags.pattern }}"{% endif %}

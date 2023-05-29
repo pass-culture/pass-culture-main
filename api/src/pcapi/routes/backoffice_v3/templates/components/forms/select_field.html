@@ -1,6 +1,6 @@
-<div class="form-floating dropdown">
+<div class="form-floating dropdown pc-field-{{ field.name }}">
   {% set select_field_id = random_hash() %}
-  <select class="form-select form-control value-element-form"
+  <select class="form-select form-control value-element-form {% if field.flags.required %}pc-required{% endif %}"
           id="{{ select_field_id }}"
           name="{{ field.name }}"
           data-original-name="{{ field.name }}"

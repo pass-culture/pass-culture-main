@@ -1,8 +1,8 @@
-<div class="form-floating input-group{% if field.has_manual_editing %} mt-3{% else %} my-3{% endif %}">
+<div class="form-floating input-group{% if field.has_manual_editing %} mt-3{% else %} my-3{% endif %} pc-field-{{ field.name }}">
   <input
     {% if field.type == "PCIntegerField" %}type="number"{% else %}type="text"{% endif %}
     name="{{ field.name }}"
-    class="form-control{% if not field.has_reset %} rounded-end{% endif %}"
+    class="form-control{% if not field.has_reset %} rounded-end{% endif %} {% if field.required %}pc-required{% endif %}"
     value="{{ field.data | empty_string_if_null }}"
     data-toggle="postal-address-autocomplete"
     data-limit="{{ field.limit }}"

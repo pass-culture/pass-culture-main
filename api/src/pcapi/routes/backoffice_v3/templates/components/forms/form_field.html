@@ -1,8 +1,19 @@
+{% set configuration_name = random_hash() %}
 <div class="pc-form-field-field"
-     data-clone-function-name="_formFieldCloneFunction">
+     data-original-name="{{ field.name }}"
+     data-clone-function-name="_formFieldCloneFunction"
+     data-configuration-class="pc-{{ configuration_name }}"
+     data-base-name="pc-field-{{ field.name }}">
   {% for form_field in field %}{{ form_field }}{% endfor %}
+  <span class="d-none pc-form-field-json-data">{{ field.json_data }}</span>
 </div>
-<!-- (Almost) duplicated html for field list field widget -->
-<div class="pc-form-field-field d-none pc-form-field-empty-container">
+<!-- (Almost) duplicated form field html for field list field widget -->
+<div class="d-none pc-form-field-empty-container"
+     data-original-name="{{ field.name }}"
+     data-clone-function-name="_formFieldCloneFunction"
+     data-configuration-class="pc-{{ configuration_name }}"
+     data-base-name="pc-field-{{ field.name }}">
   {% for form_field in field %}{{ form_field }}{% endfor %}
+  <span class="d-none pc-{{ configuration_name }} plop"
+        data-base-name="{{ field.name }}">{{ field.json_data }}</span>
 </div>
