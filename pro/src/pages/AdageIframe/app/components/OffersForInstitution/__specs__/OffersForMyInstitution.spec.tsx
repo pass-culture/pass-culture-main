@@ -2,6 +2,7 @@ import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
 
 import { AlgoliaQueryContextProvider } from 'pages/AdageIframe/app/providers'
+import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -38,13 +39,14 @@ jest.mock('react-instantsearch-dom', () => {
 
 const renderOffersForMyInstitution = () => {
   renderWithProviders(
-    <AlgoliaQueryContextProvider>
-      <OffersForMyInstitution
-        user={defaultAdageUser}
-        removeVenueFilter={() => {}}
-        venueFilter={null}
-      />
-    </AlgoliaQueryContextProvider>
+    <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
+      <AlgoliaQueryContextProvider>
+        <OffersForMyInstitution
+          removeVenueFilter={() => {}}
+          venueFilter={null}
+        />
+      </AlgoliaQueryContextProvider>
+    </AdageUserContext.Provider>
   )
 }
 

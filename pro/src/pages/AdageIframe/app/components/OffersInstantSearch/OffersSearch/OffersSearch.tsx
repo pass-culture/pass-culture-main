@@ -5,11 +5,12 @@ import * as React from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
-import { AuthenticatedResponse, VenueResponse } from 'apiClient/adage'
+import { VenueResponse } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as InstitutionIcon } from 'icons/ico-institution.svg'
 import { ReactComponent as OffersIcon } from 'icons/ico-offers.svg'
 import { INITIAL_QUERY } from 'pages/AdageIframe/app/constants'
+import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
   AlgoliaQueryContext,
   FacetFiltersContext,
@@ -28,7 +29,6 @@ import { Offers } from './Offers/Offers'
 import { SearchBox } from './SearchBox/SearchBox'
 
 export interface SearchProps extends SearchBoxProvided {
-  user: AuthenticatedResponse
   removeVenueFilter: () => void
   venueFilter: VenueResponse | null
 }
@@ -39,7 +39,6 @@ enum OfferTab {
 }
 
 export const OffersSearchComponent = ({
-  user,
   removeVenueFilter,
   venueFilter,
   refine,
@@ -51,8 +50,8 @@ export const OffersSearchComponent = ({
   const { setFacetFilters } = useContext(FacetFiltersContext)
   const { query, removeQuery, setQueryTag } = useContext(AlgoliaQueryContext)
   const { setFiltersKeys, setHasClickedSearch } = useContext(AnalyticsContext)
-
-  const userUAICode = user.uai
+  const adageUser = useAdageUser()
+  const userUAICode = adageUser.uai
   const uaiCodeAllInstitutionsTab = userUAICode ? ['all', userUAICode] : ['all']
   const uaiCodeShareWithMyInstitutionTab = userUAICode ? [userUAICode] : null
 
@@ -114,8 +113,8 @@ export const OffersSearchComponent = ({
     dispatchCurrentFilters({ type: 'RESET_CURRENT_FILTERS' })
     setFacetFilters(
       activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
-        ? [`offer.educationalInstitutionUAICode:${user.uai}`]
-        : [...getDefaultFacetFilterUAICodeValue(user.uai)]
+        ? [`offer.educationalInstitutionUAICode:${adageUser.uai}`]
+        : [...getDefaultFacetFilterUAICodeValue(adageUser.uai)]
     )
     refine(INITIAL_QUERY)
   }, [activeTab])
@@ -124,16 +123,16 @@ export const OffersSearchComponent = ({
     if (venueFilter?.id) {
       setFacetFilters([
         computeVenueFacetFilter(venueFilter),
-        ...getDefaultFacetFilterUAICodeValue(user.uai),
+        ...getDefaultFacetFilterUAICodeValue(adageUser.uai),
       ])
     }
-  }, [setFacetFilters, venueFilter, user.uai])
+  }, [setFacetFilters, venueFilter, adageUser.uai])
 
   const isNewHeaderActive = useActiveFeature('WIP_ENABLE_NEW_ADAGE_HEADER')
 
   return (
     <>
-      {!!user.uai && !isNewHeaderActive && (
+      {!!adageUser.uai && !isNewHeaderActive && (
         <Tabs selectedKey={activeTab} tabs={tabs} />
       )}
       <SearchBox refine={refine} />
@@ -142,15 +141,15 @@ export const OffersSearchComponent = ({
         handleLaunchSearchButton={handleLaunchSearchButton}
         isLoading={isLoading}
         removeVenueFilter={removeVenueFilter}
-        user={user}
+        user={adageUser}
         venueFilter={venueFilter}
       />
       <div className="search-results">
         <Offers
           handleResetFiltersAndLaunchSearch={handleResetFiltersAndLaunchSearch}
           setIsLoading={setIsLoading}
-          userRole={user.role}
-          userEmail={user.email}
+          userRole={adageUser.role}
+          userEmail={adageUser.email}
         />
       </div>
     </>
