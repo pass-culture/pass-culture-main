@@ -233,7 +233,7 @@ class TrustedDeviceFeatureTest:
         assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
 
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def test_should_not_send_email_when_login_is_not_suspicious(self, client):
+    def test_should_not_send_email_when_logging_in_from_a_trusted_device(self, client):
         user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
         users_factories.TrustedDeviceFactory(user=user)
 
