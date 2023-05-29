@@ -1,25 +1,25 @@
 import React from 'react'
 
-import { AuthenticatedResponse, VenueResponse } from 'apiClient/adage'
+import { VenueResponse } from 'apiClient/adage'
+import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 
 import { Offers } from '../../OffersInstantSearch/OffersSearch/Offers/Offers'
 
 interface OffersInstitutionListProps {
-  user: AuthenticatedResponse
   removeVenueFilter: () => void
   venueFilter: VenueResponse | null
 }
 /* eslint-disable @typescript-eslint/no-unused-vars */
 const OffersInstitutionList = ({
-  user,
   removeVenueFilter,
   venueFilter,
 }: OffersInstitutionListProps): JSX.Element => {
+  const adageUser = useAdageUser()
   return (
     <Offers
       setIsLoading={() => {}}
-      userRole={user.role}
-      userEmail={user.email}
+      userRole={adageUser.role}
+      userEmail={adageUser.email}
       displayStats={false}
     />
   )

@@ -2,7 +2,7 @@ import algoliasearch from 'algoliasearch/lite'
 import React, { useContext } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
-import { AuthenticatedResponse, VenueResponse } from 'apiClient/adage'
+import { VenueResponse } from 'apiClient/adage'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
@@ -27,11 +27,9 @@ const attributesToRetrieve = [
 ]
 
 export const OffersInstantSearch = ({
-  user,
   removeVenueFilter,
   venueFilter,
 }: {
-  user: AuthenticatedResponse
   removeVenueFilter: () => void
   venueFilter: VenueResponse | null
 }): JSX.Element => {
@@ -52,7 +50,6 @@ export const OffersInstantSearch = ({
       <AnalyticsContextProvider>
         <OffersSearch
           removeVenueFilter={removeVenueFilter}
-          user={user}
           venueFilter={venueFilter}
         />
       </AnalyticsContextProvider>

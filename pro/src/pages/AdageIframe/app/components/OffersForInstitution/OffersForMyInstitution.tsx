@@ -2,13 +2,14 @@ import algoliasearch from 'algoliasearch/lite'
 import React from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
-import { AuthenticatedResponse, VenueResponse } from 'apiClient/adage'
+import { VenueResponse } from 'apiClient/adage'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
 } from 'utils/config'
 
+import useAdageUser from '../../hooks/useAdageUser'
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
 
 import OffersInstitutionList from './OffersInstitutionList/OffersInstitutionList'
@@ -25,16 +26,15 @@ const attributesToRetrieve = [
   'offer.interventionArea',
 ]
 interface OffersForMyInstitutionProps {
-  user: AuthenticatedResponse
   removeVenueFilter: () => void
   venueFilter: VenueResponse | null
 }
 
 const OffersForMyInstitution = ({
-  user,
   venueFilter,
   removeVenueFilter,
 }: OffersForMyInstitutionProps): JSX.Element => {
+  const adageUser = useAdageUser()
   return (
     <InstantSearch
       indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
@@ -44,13 +44,12 @@ const OffersForMyInstitution = ({
         attributesToHighlight={[]}
         attributesToRetrieve={attributesToRetrieve}
         clickAnalytics
-        facetFilters={[`offer.educationalInstitutionUAICode:${user.uai}`]}
+        facetFilters={[`offer.educationalInstitutionUAICode:${adageUser.uai}`]}
         hitsPerPage={8}
       />
       <AnalyticsContextProvider>
         <OffersInstitutionList
           removeVenueFilter={removeVenueFilter}
-          user={user}
           venueFilter={venueFilter}
         />
       </AnalyticsContextProvider>
