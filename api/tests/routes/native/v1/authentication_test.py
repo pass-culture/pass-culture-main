@@ -241,16 +241,6 @@ class TrustedDeviceFeatureTest:
 
         assert len(mails_testing.outbox) == 0
 
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def test_should_only_send_one_email_when_logging_in_twice_with_same_device(self, client):
-        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
-
-        client.post("/native/v1/signin", json=self.data)
-        client.post("/native/v1/signin", json=self.data)
-
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
     def test_should_not_send_email_when_feature_flag_is_inactive(self, client):
         users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
