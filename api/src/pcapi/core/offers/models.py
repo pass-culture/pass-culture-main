@@ -723,7 +723,7 @@ class OfferValidationAttribute(enum.Enum):
     CLASS_NAME = "class_name"
     NAME = "name"
     DESCRIPTION = "description"
-    SIREN = "siren"
+    ID = "id"
     CATEGORY = "category"
     SUBCATEGORY_ID = "subcategoryId"
     WITHDRAWAL_DETAILS = "withdrawalDetails"
@@ -731,6 +731,73 @@ class OfferValidationAttribute(enum.Enum):
     PRICE = "price"
     PRICE_DETAIL = "priceDetail"
     SHOW_SUB_TYPE = "showSubType"
+
+
+class OfferValidationSubRuleField(enum.Enum):
+    OFFER_TYPE = {
+        "model": None,
+        "attribute": OfferValidationAttribute.CLASS_NAME,
+    }
+    MAX_PRICE_OFFER = {
+        "model": OfferValidationModel.OFFER,
+        "attribute": OfferValidationAttribute.MAX_PRICE,
+    }
+    PRICE_COLLECTIVE_STOCK = {
+        "model": OfferValidationModel.COLLECTIVE_STOCK,
+        "attribute": OfferValidationAttribute.PRICE,
+    }
+    PRICE_DETAIL_COLLECTIVE_STOCK = {
+        "model": OfferValidationModel.COLLECTIVE_STOCK,
+        "attribute": OfferValidationAttribute.PRICE_DETAIL,
+    }
+    PRICE_DETAIL_COLLECTIVE_OFFER_TEMPLATE = {
+        "model": OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE,
+        "attribute": OfferValidationAttribute.PRICE_DETAIL,
+    }
+    WITHDRAWAL_DETAILS_OFFER = {
+        "model": OfferValidationModel.OFFER,
+        "attribute": OfferValidationAttribute.WITHDRAWAL_DETAILS,
+    }
+    NAME_OFFER = {
+        "model": OfferValidationModel.OFFER,
+        "attribute": OfferValidationAttribute.NAME,
+    }
+    NAME_COLLECTIVE_OFFER = {
+        "model": OfferValidationModel.COLLECTIVE_OFFER,
+        "attribute": OfferValidationAttribute.NAME,
+    }
+    NAME_COLLECTIVE_OFFER_TEMPLATE = {
+        "model": OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE,
+        "attribute": OfferValidationAttribute.NAME,
+    }
+    DESCRIPTION_OFFER = {
+        "model": OfferValidationModel.OFFER,
+        "attribute": OfferValidationAttribute.DESCRIPTION,
+    }
+    DESCRIPTION_COLLECTIVE_OFFER = {
+        "model": OfferValidationModel.COLLECTIVE_OFFER,
+        "attribute": OfferValidationAttribute.DESCRIPTION,
+    }
+    DESCRIPTION_COLLECTIVE_OFFER_TEMPLATE = {
+        "model": OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE,
+        "attribute": OfferValidationAttribute.DESCRIPTION,
+    }
+    SUBCATEGORY_OFFER = {
+        "model": OfferValidationModel.OFFER,
+        "attribute": OfferValidationAttribute.SUBCATEGORY_ID,
+    }
+    CATEGORY_OFFER = {
+        "model": OfferValidationModel.OFFER,
+        "attribute": OfferValidationAttribute.CATEGORY,
+    }
+    SHOW_SUB_TYPE_OFFER = {
+        "model": OfferValidationModel.OFFER,
+        "attribute": OfferValidationAttribute.SHOW_SUB_TYPE,
+    }
+    ID_OFFERER = {
+        "model": OfferValidationModel.OFFERER,
+        "attribute": OfferValidationAttribute.ID,
+    }
 
 
 class OfferValidationSubRule(PcObject, Base, Model):

@@ -137,8 +137,17 @@ def build_form_error_msg(form: FlaskForm) -> str:
     error_msg = "Les données envoyées comportent des erreurs."
     for field in form:
         if field.errors:
-            error_msg += f" {field.label.text}: {', '.join(error for error in field.errors)};"
-
+            for error in field.errors:
+                field_errors = []
+                # form field errors are a dict, where keys are the failing field's name, and
+                # the value is a list of all error messages
+                if isinstance(error, dict):
+                    field_errors += [
+                        ", ".join(error_text for error_text in field_error_list) for field_error_list in error.values()
+                    ]
+                else:
+                    field_errors.append(error)
+            error_msg += f" {field.label.text}: {', '.join(error for error in field_errors)};"
     return error_msg
 
 

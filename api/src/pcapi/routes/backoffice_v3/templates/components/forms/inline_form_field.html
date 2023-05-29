@@ -1,6 +1,6 @@
 {% set search_field_id = random_hash() %}
 <input type="text"
-       class="form-control col-8 value-element-form"
+       class="form-control col-8 value-element-form pc-field-{{ field.name }}"
        id="{{ search_field_id }}"
        name="{{ field.name }}"
        data-original-name="{{ field.name }}"

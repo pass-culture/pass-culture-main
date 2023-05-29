@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import logging
 import random
 import re
 import typing
@@ -13,6 +14,7 @@ import pytz
 
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
@@ -23,10 +25,13 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
+from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice_v3.serialization import accounts as serialization_accounts
 from pcapi.utils import urls
 
+
+logger = logging.getLogger(__name__)
 
 PARIS_TZ = pytz.timezone("Europe/Paris")
 
@@ -307,53 +312,42 @@ def format_modified_info_value(value: typing.Any) -> str:
     return str(value)
 
 
-def format_offer_validation_sub_rule(sub_rule: offers_models.OfferValidationSubRule) -> str:
-    if not sub_rule.model:
-        return "L'offre est du type"
-    match sub_rule.attribute:
-        case offers_models.OfferValidationAttribute.NAME:
-            sub_rule_text = "Le nom "
-        case offers_models.OfferValidationAttribute.DESCRIPTION:
-            sub_rule_text = "La description "
-        case offers_models.OfferValidationAttribute.SIREN:
-            sub_rule_text = "Le SIREN "
-        case offers_models.OfferValidationAttribute.CATEGORY:
-            sub_rule_text = "La catégorie "
-        case offers_models.OfferValidationAttribute.SUBCATEGORY_ID:
-            sub_rule_text = "La sous-catégorie "
-        case offers_models.OfferValidationAttribute.WITHDRAWAL_DETAILS:
-            sub_rule_text = "La modalité de retrait "
-        case offers_models.OfferValidationAttribute.MAX_PRICE:
-            sub_rule_text = "Le prix maximum "
-        case offers_models.OfferValidationAttribute.PRICE:
-            sub_rule_text = "Le prix "
-        case offers_models.OfferValidationAttribute.PRICE_DETAIL:
-            sub_rule_text = "Les détails du prix "
-        case offers_models.OfferValidationAttribute.SHOW_SUB_TYPE:
-            sub_rule_text = "Le sous-type de spectacle "
+def format_offer_validation_sub_rule_field(sub_rule_field: offers_models.OfferValidationSubRuleField) -> str:
+    match sub_rule_field:
+        case offers_models.OfferValidationSubRuleField.OFFER_TYPE:
+            return "Le type de l'offre"
+        case offers_models.OfferValidationSubRuleField.MAX_PRICE_OFFER:
+            return "Le prix max de l'offre individuelle"
+        case offers_models.OfferValidationSubRuleField.PRICE_COLLECTIVE_STOCK:
+            return "Le prix de l'offre collective"
+        case offers_models.OfferValidationSubRuleField.PRICE_DETAIL_COLLECTIVE_STOCK:
+            return "Les détails de paiement de l'offre collective"
+        case offers_models.OfferValidationSubRuleField.PRICE_DETAIL_COLLECTIVE_OFFER_TEMPLATE:
+            return "Les détails de paiement de l'offre collective vitrine"
+        case offers_models.OfferValidationSubRuleField.WITHDRAWAL_DETAILS_OFFER:
+            return "Les modalités de retrait de l'offre individuelle"
+        case offers_models.OfferValidationSubRuleField.NAME_OFFER:
+            return "Le nom de l'offre individuelle"
+        case offers_models.OfferValidationSubRuleField.NAME_COLLECTIVE_OFFER:
+            return "Le nom de l'offre collective"
+        case offers_models.OfferValidationSubRuleField.NAME_COLLECTIVE_OFFER_TEMPLATE:
+            return "Le nom de l'offre collective vitrine"
+        case offers_models.OfferValidationSubRuleField.DESCRIPTION_OFFER:
+            return "La description de l'offre individuelle"
+        case offers_models.OfferValidationSubRuleField.DESCRIPTION_COLLECTIVE_OFFER:
+            return "La description de l'offre collective"
+        case offers_models.OfferValidationSubRuleField.DESCRIPTION_COLLECTIVE_OFFER_TEMPLATE:
+            return "La description de l'offre collective vitrine"
+        case offers_models.OfferValidationSubRuleField.SUBCATEGORY_OFFER:
+            return "La sous-catégorie de l'offre individuelle"
+        case offers_models.OfferValidationSubRuleField.CATEGORY_OFFER:
+            return "La catégorie de l'offre individuelle"
+        case offers_models.OfferValidationSubRuleField.SHOW_SUB_TYPE_OFFER:
+            return "Le sous-type de spectacle de l'offre individuelle"
+        case offers_models.OfferValidationSubRuleField.ID_OFFERER:
+            return "La structure proposant l'offre"
         case _:
-            sub_rule_text = sub_rule.attribute.value
-
-    match sub_rule.model:
-        case offers_models.OfferValidationModel.OFFER:
-            sub_rule_text += "de l'offre individuelle "
-        case offers_models.OfferValidationModel.COLLECTIVE_OFFER:
-            sub_rule_text += "de l'offre collective "
-        case offers_models.OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE:
-            sub_rule_text += "de l'offre collective vitrine "
-        case offers_models.OfferValidationModel.STOCK:
-            sub_rule_text += "du stock de l'offre "
-        case offers_models.OfferValidationModel.COLLECTIVE_STOCK:
-            sub_rule_text += "du stock de l'offre collective "
-        case offers_models.OfferValidationModel.VENUE:
-            sub_rule_text += "du lieu de l'offre "
-        case offers_models.OfferValidationModel.OFFERER:
-            sub_rule_text += "de la structure de l'offre "
-        case _:
-            sub_rule_text += sub_rule.model.value
-
-    sub_rule_text += format_offer_validation_operator(sub_rule.operator)
-    return sub_rule_text
+            return sub_rule_field.value
 
 
 def format_offer_validation_operator(operator: offers_models.OfferValidationRuleOperator) -> str:
@@ -382,11 +376,51 @@ def format_offer_validation_operator(operator: offers_models.OfferValidationRule
             return operator.value
 
 
+def format_offer_validation_sub_rule(sub_rule: offers_models.OfferValidationSubRule) -> str:
+    try:
+        sub_rule_field = offers_models.OfferValidationSubRuleField(
+            {
+                "model": sub_rule.model,
+                "attribute": sub_rule.attribute,
+            }
+        )
+        sub_rule_text = format_offer_validation_sub_rule_field(sub_rule_field)
+    except ValueError:
+        sub_rule_text = f"{sub_rule.model.value if sub_rule.model else ''}.{sub_rule.attribute.value}"
+
+    sub_rule_text += f" {format_offer_validation_operator(sub_rule.operator)}"
+    return sub_rule_text
+
+
+def get_comparated_format_function(
+    sub_rule: offers_models.OfferValidationSubRule,
+    offerer_dict: dict,
+) -> typing.Callable[[typing.Any], typing.Any]:
+    try:
+        if (
+            sub_rule.attribute == offers_models.OfferValidationAttribute.ID
+            and sub_rule.model == offers_models.OfferValidationModel.OFFERER
+        ):
+            return lambda offerer_id: offerer_dict[offerer_id]
+        if sub_rule.attribute == offers_models.OfferValidationAttribute.CATEGORY:
+            return lambda category_id: categories.ALL_CATEGORIES_DICT[category_id].pro_label
+        if sub_rule.attribute == offers_models.OfferValidationAttribute.SUBCATEGORY_ID:
+            return lambda subcategory_id: subcategories_v2.ALL_SUBCATEGORIES_DICT[subcategory_id].pro_label
+        if sub_rule.attribute == offers_models.OfferValidationAttribute.SHOW_SUB_TYPE:
+            return lambda show_sub_type_code: SHOW_SUB_TYPES_LABEL_BY_CODE[int(show_sub_type_code)]
+    except ValueError as err:
+        logger.error(
+            "Unhandled object in the formatter of the offer validation rules list page",
+            extra={"sub_rule_id": sub_rule.id, "error": err},
+        )
+    return lambda x: x
+
+
 def format_offer_types(data: list[str]) -> str:
     types = {
-        "Offer": "Offre individuelle",
-        "CollectiveOffer": "Offre collective",
-        "CollectiveOfferTemplate": "Offre collective vitrine",
+        "OFFER": "Offre individuelle",
+        "COLLECTIVE_OFFER": "Offre collective",
+        "COLLECTIVE_OFFER_TEMPLATE": "Offre collective vitrine",
     }
     return " ou ".join([types[type_name] for type_name in data])
 
@@ -466,6 +500,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_modified_info_value"] = format_modified_info_value
     app.jinja_env.filters["format_offer_validation_sub_rule"] = format_offer_validation_sub_rule
     app.jinja_env.filters["format_offer_validation_operator"] = format_offer_validation_operator
+    app.jinja_env.filters["get_comparated_format_function"] = get_comparated_format_function
     app.jinja_env.filters["format_offer_types"] = format_offer_types
     app.jinja_env.filters["format_website"] = format_website
     app.jinja_env.filters["format_venue_target"] = format_venue_target

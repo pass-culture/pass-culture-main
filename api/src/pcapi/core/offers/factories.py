@@ -248,4 +248,4 @@ class OfferValidationSubRuleFactory(BaseFactory):
     model = models.OfferValidationModel.OFFER
     attribute = models.OfferValidationAttribute.NAME
     operator = models.OfferValidationRuleOperator.CONTAINS
-    comparated = {"comparated": ["suspicious, verboten"]}
+    comparated = {"comparated": ["suspicious", "verboten"]}
