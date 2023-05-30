@@ -695,6 +695,8 @@ def split_email(email: str) -> tuple[str, str]:
 
 class EmailHistoryEventTypeEnum(enum.Enum):
     UPDATE_REQUEST = "UPDATE_REQUEST"
+    CONFIRMATION = "CONFIRMATION"
+    CANCELLATION = "CANCELLATION"
     VALIDATION = "VALIDATION"
     ADMIN_VALIDATION = "ADMIN_VALIDATION"
     ADMIN_UPDATE_REQUEST = "ADMIN_UPDATE_REQUEST"
