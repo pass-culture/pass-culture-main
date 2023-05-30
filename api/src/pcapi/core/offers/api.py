@@ -926,8 +926,8 @@ def reject_inappropriate_products(ean: str) -> bool:
     return True
 
 
-def deactivate_permanently_unavailable_products(isbn: str) -> bool:
-    products = models.Product.query.filter(models.Product.extraData["isbn"].astext == isbn).all()
+def deactivate_permanently_unavailable_products(ean: str) -> bool:
+    products = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).all()
     if not products:
         return False
 
@@ -946,12 +946,12 @@ def deactivate_permanently_unavailable_products(isbn: str) -> bool:
     except Exception as exception:  # pylint: disable=broad-except
         logger.exception(
             "Could not mark product and offers as permanently unavailable: %s",
-            extra={"isbn": isbn, "products": [p.id for p in products], "exc": str(exception)},
+            extra={"ean": ean, "products": [p.id for p in products], "exc": str(exception)},
         )
         return False
     logger.info(
         "Deactivated permanently unavailable products",
-        extra={"isbn": isbn, "products": [p.id for p in products], "offers": offer_ids},
+        extra={"isbn": ean, "products": [p.id for p in products], "offers": offer_ids},
     )
 
     search.async_index_offer_ids(offer_ids)
@@ -1071,10 +1071,10 @@ def import_offer_validation_config(config_as_yaml: str, user: users_models.User)
 
 def _load_product_by_isbn(isbn: str | None) -> models.Product:
     if not isbn:
-        raise exceptions.MissingISBN()
+        raise exceptions.MissingEAN()
     product = models.Product.query.filter(models.Product.extraData["isbn"].astext == isbn).first()
     if product is None or not product.isGcuCompatible:
-        raise exceptions.NotEligibleISBN()
+        raise exceptions.NotEligibleEAN()
     return product
 
 
@@ -1209,9 +1209,9 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         search.async_index_offer_ids([offer.id])
 
 
-def delete_unwanted_existing_product(isbn: str) -> None:
+def delete_unwanted_existing_product(idAtProviders: str) -> None:
     product_has_at_least_one_booking = (
-        models.Product.query.filter_by(idAtProviders=isbn)
+        models.Product.query.filter_by(idAtProviders=idAtProviders)
         .join(models.Offer)
         .join(models.Stock)
         .join(bookings_models.Booking)
@@ -1221,7 +1221,7 @@ def delete_unwanted_existing_product(isbn: str) -> None:
     product = (
         models.Product.query.filter(models.Product.can_be_synchronized)
         .filter_by(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        .filter_by(idAtProviders=isbn)
+        .filter_by(idAtProviders=idAtProviders)
         .one_or_none()
     )
 

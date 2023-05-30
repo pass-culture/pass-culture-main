@@ -89,7 +89,6 @@ class TiteliveThingsTest:
         product = offers_models.Product.query.one()
         assert product.extraData.get("bookFormat") == offers_models.BookFormat.BEAUX_LIVRES.value
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
-        assert product.extraData.get("isbn") == "9782895026310"
         assert product.extraData.get("ean") == "9782895026310"
 
     @pytest.mark.usefixtures("db_session")
@@ -367,7 +366,7 @@ class TiteliveThingsTest:
 
         # Then
         assert len(products) == 1
-        assert product.extraData["isbn"] == "9782895026310"
+        assert product.extraData["ean"] == "9782895026310"
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -471,10 +470,10 @@ class TiteliveThingsTest:
     ):
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
-        book_isbn = "9782895026310"
+        book_ean = "9782895026310"
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[1] = book_isbn
+        DATA_LINE_PARTS[1] = book_ean
         DATA_LINE_PARTS[2] = "xxx"
         DATA_LINE_PARTS[23] = "Xxx"
         data_line = "~".join(DATA_LINE_PARTS)
@@ -486,12 +485,12 @@ class TiteliveThingsTest:
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = ThingProductFactory(
-            idAtProviders=book_isbn,
+            idAtProviders=book_ean,
             name="Presse papier",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
             lastProviderId=titelive_provider.id,
-            extraData={"isbn": book_isbn},
+            extraData={"isbn": book_ean, "ean": book_ean},
         )
         offer = ThingOfferFactory(product=product, venue=venue, isActive=True)
 

@@ -121,7 +121,7 @@ class TiteLiveThings(LocalProvider):
 
         ineligibility_reason = self.get_ineligibility_reason()
         if ineligibility_reason:
-            logger.info("Ignoring isbn=%s because reason=%s", book_unique_identifier, ineligibility_reason)
+            logger.info("Ignoring ean=%s because reason=%s", book_unique_identifier, ineligibility_reason)
             try:
                 offers_api.delete_unwanted_existing_product(book_unique_identifier)
             except offers_exceptions.CannotDeleteProductWithBookings:
@@ -133,17 +133,17 @@ class TiteLiveThings(LocalProvider):
 
         if is_unreleased_book(self.product_infos):
             products = offers_models.Product.query.filter(
-                offers_models.Product.extraData["isbn"].astext == book_unique_identifier
+                offers_models.Product.extraData["ean"].astext == book_unique_identifier
             ).all()
             if len(products) > 0:
                 deactivate_permanently_unavailable_products(book_unique_identifier)
                 logger.info(
-                    "deactivating products and offers with isbn=%s because it has 'xxx' in 'titre' and 'auteurs' fields, which means it is not yet released",
+                    "deactivating products and offers with ean=%s because it has 'xxx' in 'titre' and 'auteurs' fields, which means it is not yet released",
                     book_unique_identifier,
                 )
             else:
                 logger.info(
-                    "Ignoring isbn=%s because it has 'xxx' in 'titre' and 'auteurs' fields, which means it is not yet released",
+                    "Ignoring ean=%s because it has 'xxx' in 'titre' and 'auteurs' fields, which means it is not yet released",
                     book_unique_identifier,
                 )
             return []
@@ -277,7 +277,6 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type: str) -> tup
 def get_infos_from_data_line(elts: list) -> dict:
     infos = {}
     infos["ean13"] = elts[0]
-    infos["isbn"] = elts[1]
     infos["titre"] = elts[2]
     infos["titre_court"] = elts[3]
     infos["code_csr"] = elts[4]
@@ -321,7 +320,6 @@ def get_infos_from_data_line(elts: list) -> dict:
 def get_extra_data_from_infos(infos: dict) -> offers_models.OfferExtraData:
     extra_data = offers_models.OfferExtraData()
     extra_data["author"] = infos["auteurs"]
-    extra_data["isbn"] = infos["ean13"]
     extra_data["ean"] = infos["ean13"]
     if infos["indice_dewey"] != "":
         extra_data["dewey"] = infos["indice_dewey"]
