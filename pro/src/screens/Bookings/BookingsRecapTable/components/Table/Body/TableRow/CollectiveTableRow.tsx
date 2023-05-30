@@ -59,11 +59,16 @@ const CollectiveTableRow = ({
 
   useEffect(() => {
     // We expand row if bookingId match the one in the context
+
     if (bookingId == row.original.bookingId) {
       row.toggleRowExpanded(true)
-      detailsRef.current?.scrollIntoView({
-        behavior: doesUserPreferReducedMotion() ? 'auto' : 'smooth',
-      })
+      setTimeout(
+        () =>
+          detailsRef?.current?.scrollIntoView({
+            behavior: doesUserPreferReducedMotion() ? 'auto' : 'smooth',
+          }),
+        100
+      )
     }
   }, [row, bookingId])
 
