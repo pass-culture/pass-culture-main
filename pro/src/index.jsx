@@ -5,10 +5,10 @@ import { Integrations as TracingIntegrations } from '@sentry/tracing'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import {
-  useLocation,
-  useNavigationType,
   createRoutesFromChildren,
   matchRoutes,
+  useLocation,
+  useNavigationType,
 } from 'react-router-dom'
 import smoothscroll from 'smoothscroll-polyfill'
 
@@ -18,6 +18,7 @@ import {
   SENTRY_SAMPLE_RATE,
   SENTRY_SERVER_URL,
 } from 'utils/config'
+import { initCookieConsent } from 'utils/cookieConsentModal'
 
 import config from '../package.json'
 
@@ -44,6 +45,9 @@ if (SENTRY_SERVER_URL) {
   })
 }
 
+// Initialize cookie consent modal
+initCookieConsent()
+
 // load and initialise hotjar library
 // included in the bundle instead of <script> tag in index.html
 // to avoid the need of 'insafe-inline' in Content Security Policy
@@ -60,7 +64,10 @@ if (SENTRY_SERVER_URL) {
   a = o.getElementsByTagName('head')[0]
   r = o.createElement('script')
   r.async = 1
-  r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv
+  r['data-src'] = t + h._hjSettings.hjid + j + h._hjSettings.hjsv
+  r['type'] = 'opt-in'
+  r['data-type'] = 'application/javascript'
+  r['data-name'] = 'hotjar'
   a.appendChild(r)
 })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=')
 

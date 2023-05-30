@@ -1,7 +1,7 @@
 import { setUser } from '@sentry/browser'
 import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 import { URL_FOR_MAINTENANCE } from 'utils/config'
 import { renderWithProviders } from 'utils/renderWithProviders'
