@@ -4,4 +4,6 @@ export enum OnboardingFormNavigationAction {
   NewOfferer = 'NewOfferer',
   UpdateFromValidation = 'UpdateFromValidation',
   JoinModal = 'JoinModal',
+  WaitingLinkButton = 'WaitingLinkButton',
+  LinkModalActionButton = 'LinkModalActionButton',
 }
