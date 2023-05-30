@@ -111,3 +111,17 @@ def log_fav_offer_button_click(
         user_email=authenticated_information.email,
     )
     return
+
+
+@blueprint.adage_iframe.route("/logs/header-link-click/", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
+def log_header_link_click(
+    authenticated_information: AuthenticatedInformation,
+    body: serialization.AdageHeaderLogBody,
+) -> None:
+    educational_utils.log_information_for_data_purpose(
+        event_name="HeaderLinkClick",
+        extra_data={"header_link_name": body.header_link_name.value},
+        user_email=authenticated_information.email,
+    )

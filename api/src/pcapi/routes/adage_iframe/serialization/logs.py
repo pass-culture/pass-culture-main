@@ -1,3 +1,5 @@
+import enum
+
 from pcapi.routes.serialization import BaseModel
 
 
@@ -16,3 +18,13 @@ class OfferIdBody(BaseModel):
 class SearchBody(BaseModel):
     filters: list[str]
     resultsCount: int
+
+
+class AdageHeaderLink(enum.Enum):
+    SEARCH = "search"
+    MY_INSITUTION_OFFERS = "my_institution_offers"
+    ADAGE_LINK = "adage_link"
+
+
+class AdageHeaderLogBody(BaseModel):
+    header_link_name: AdageHeaderLink
