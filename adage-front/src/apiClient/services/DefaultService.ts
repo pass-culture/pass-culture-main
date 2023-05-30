@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AdageHeaderLogBody } from '../models/AdageHeaderLogBody';
 import type { AuthenticatedResponse } from '../models/AuthenticatedResponse';
 import type { BookCollectiveOfferRequest } from '../models/BookCollectiveOfferRequest';
 import type { BookCollectiveOfferResponse } from '../models/BookCollectiveOfferResponse';
@@ -246,6 +247,28 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/fav-offer/',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * log_header_link_click <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logHeaderLinkClick(
+    requestBody?: AdageHeaderLogBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/header-link-click/',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
