@@ -62,6 +62,7 @@
     "lodash.debounce": "^4.0.8",
     "lodash.invert": "^4.3.0",
     "lodash.isequal": "^4.5.0",
+    "orejime": "^2.2.1",
     "papaparse": "^5.4.1",
     "prop-types": "^15.8.1",
     "re-reselect": "^4.0.1",
@@ -85,6 +86,7 @@
     "reselect": "^4.1.5",
     "search-insights": "^2.6.0",
     "smoothscroll-polyfill": "^0.4.4",
+    "uuidv4": "^6.2.13",
     "yup": "^1.2.0"
   },
   "devDependencies": {
