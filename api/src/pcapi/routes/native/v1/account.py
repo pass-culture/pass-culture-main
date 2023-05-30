@@ -153,7 +153,7 @@ def create_account(body: serializers.AccountRequest) -> None:
             apps_flyer_platform=body.apps_flyer_platform,
         )
 
-        if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active():
+        if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active() and body.trusted_device is not None:
             api.save_trusted_device(device_info=body.trusted_device, user=created_user)
 
     except exceptions.UserAlreadyExistsException:
