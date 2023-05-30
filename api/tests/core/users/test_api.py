@@ -1218,13 +1218,6 @@ class SearchPublicAccountTest:
 
 
 class SaveTrustedDeviceTest:
-    def should_not_save_trusted_device_when_no_info_provided(self):
-        user = users_factories.UserFactory()
-
-        users_api.save_trusted_device(device_info=None, user=user)
-
-        assert users_models.TrustedDevice.query.count() == 0
-
     def should_not_save_trusted_device_when_no_device_id_provided(self):
         user = users_factories.UserFactory()
         device_info = account_serialization.TrustedDevice(
@@ -1287,13 +1280,6 @@ class SaveTrustedDeviceTest:
 
 
 class UpdateLoginDeviceHistoryTest:
-    def should_not_save_login_device_when_no_info_provided(self):
-        user = users_factories.UserFactory()
-
-        users_api.update_login_device_history(device_info=None, user=user)
-
-        assert users_models.LoginDeviceHistory.query.count() == 0
-
     def should_not_save_login_device_when_no_device_id_provided(self):
         user = users_factories.UserFactory()
         device_info = account_serialization.TrustedDevice(
@@ -1374,11 +1360,6 @@ class ShouldSaveLoginDeviceAsTrustedDeviceTest:
     device_info = account_serialization.TrustedDevice(
         deviceId="2E429592-2446-425F-9A62-D6983F375B3B", os="iOS", source="iPhone 13"
     )
-
-    def should_be_false_when_no_device_info(self):
-        user = users_factories.UserFactory()
-
-        assert users_api.should_save_login_device_as_trusted_device(device_info=None, user=user) is False
 
     def should_be_false_when_no_device_id(self):
         user = users_factories.UserFactory()

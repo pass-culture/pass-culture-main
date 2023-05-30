@@ -1201,10 +1201,7 @@ def save_flags(user: models.User, flags: dict) -> None:
                 raise ValueError()
 
 
-def save_trusted_device(device_info: "account_serialization.TrustedDevice | None", user: models.User) -> None:
-    if device_info is None:
-        return
-
+def save_trusted_device(device_info: "account_serialization.TrustedDevice", user: models.User) -> None:
     if not device_info.device_id:
         logger.info(
             "Invalid deviceId was provided for trusted device",
@@ -1226,11 +1223,8 @@ def save_trusted_device(device_info: "account_serialization.TrustedDevice | None
 
 
 def update_login_device_history(
-    device_info: "account_serialization.TrustedDevice | None", user: models.User
+    device_info: "account_serialization.TrustedDevice", user: models.User
 ) -> users_models.LoginDeviceHistory | None:
-    if device_info is None:
-        return None
-
     if not device_info.device_id:
         logger.info(
             "Invalid deviceId was provided for login device",
@@ -1254,9 +1248,9 @@ def update_login_device_history(
 
 
 def should_save_login_device_as_trusted_device(
-    device_info: "account_serialization.TrustedDevice | None", user: models.User
+    device_info: "account_serialization.TrustedDevice", user: models.User
 ) -> bool:
-    if device_info is None or not device_info.device_id:
+    if not device_info.device_id:
         return False
 
     if any(device.deviceId == device_info.device_id for device in user.trusted_devices):
