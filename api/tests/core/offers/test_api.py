@@ -773,7 +773,7 @@ class CreateOfferTest:
 
         venue = offerers_factories.VenueFactory()
 
-        with pytest.raises(exceptions.NotEligibleISBN) as exception_info:
+        with pytest.raises(exceptions.NotEligibleEAN) as exception_info:
             api.create_offer(
                 venue=venue,
                 name="FONDATION T.1",
@@ -785,13 +785,13 @@ class CreateOfferTest:
                 visual_disability_compliant=False,
             )
 
-        assert exception_info.value.errors == {"isbn": ["product not eligible to pass Culture"]}
+        assert exception_info.value.errors == {"ean": ["product not eligible to pass Culture"]}
 
     @override_features(ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION=True)
     def test_create_offer_livre_edition_from_isbn_with_product_not_exists_should_fail(self):
         venue = offerers_factories.VenueFactory()
 
-        with pytest.raises(exceptions.NotEligibleISBN) as exception_info:
+        with pytest.raises(exceptions.NotEligibleEAN) as exception_info:
             api.create_offer(
                 venue=venue,
                 name="FONDATION T.1",
@@ -803,7 +803,7 @@ class CreateOfferTest:
                 visual_disability_compliant=False,
             )
 
-        assert exception_info.value.errors == {"isbn": ["product not eligible to pass Culture"]}
+        assert exception_info.value.errors == {"ean": ["product not eligible to pass Culture"]}
 
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
@@ -1279,10 +1279,10 @@ class DeactivatePermanentlyUnavailableProductTest:
     def test_should_deactivate_permanently_unavailable_product(self, mocked_async_index_offer_ids):
         # Given
         product1 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"isbn": "isbn-de-test"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "isbn-de-test"}
         )
         product2 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"isbn": "isbn-de-test"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "isbn-de-test"}
         )
         factories.OfferFactory(product=product1)
         factories.OfferFactory(product=product1)
@@ -1962,7 +1962,7 @@ class LoadProductByIsbn:
     def test_raise_api_error_if_no_product(self):
         factories.ProductFactory(isGcuCompatible=True)
 
-        with pytest.raises(exceptions.NotEligibleISBN) as exception_info:
+        with pytest.raises(exceptions.NotEligibleEAN) as exception_info:
             api._load_product_by_isbn("2221001649")
 
         assert exception_info.value.errors["isbn"] == ["product not eligible to pass Culture"]
@@ -1971,7 +1971,7 @@ class LoadProductByIsbn:
         isbn = "2221001648"
         factories.ProductFactory(extraData={"isbn": isbn}, isGcuCompatible=False)
 
-        with pytest.raises(exceptions.NotEligibleISBN) as exception_info:
+        with pytest.raises(exceptions.NotEligibleEAN) as exception_info:
             api._load_product_by_isbn(isbn)
 
         assert exception_info.value.errors["isbn"] == ["product not eligible to pass Culture"]
