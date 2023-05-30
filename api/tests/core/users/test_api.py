@@ -1218,15 +1218,15 @@ class SearchPublicAccountTest:
 
 
 class SaveTrustedDeviceTest:
-    def test_should_not_save_trusted_device_when_no_info_provided(self):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_not_save_trusted_device_when_no_info_provided(self):
+        user = users_factories.UserFactory()
 
         users_api.save_trusted_device(device_info=None, user=user)
 
         assert users_models.TrustedDevice.query.count() == 0
 
-    def test_should_not_save_trusted_device_when_no_device_id_provided(self):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_not_save_trusted_device_when_no_device_id_provided(self):
+        user = users_factories.UserFactory()
         device_info = account_serialization.TrustedDevice(
             deviceId="",
             source="iPhone 13",
@@ -1238,7 +1238,7 @@ class SaveTrustedDeviceTest:
         assert users_models.TrustedDevice.query.count() == 0
 
     def test_can_save_trusted_device(self):
-        user = users_factories.UserFactory(email="py@test.com")
+        user = users_factories.UserFactory()
         device_info = account_serialization.TrustedDevice(
             deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
             source="iPhone 13",
@@ -1254,7 +1254,7 @@ class SaveTrustedDeviceTest:
         assert trusted_device.os == "iOS"
 
     def test_can_access_trusted_devices_from_user(self):
-        user = users_factories.UserFactory(email="py@test.com")
+        user = users_factories.UserFactory()
         device_info = account_serialization.TrustedDevice(
             deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
             source="iPhone 13",
@@ -1267,8 +1267,8 @@ class SaveTrustedDeviceTest:
 
         assert user.trusted_devices == [trusted_device]
 
-    def test_should_log_when_no_device_id(self, caplog):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_log_when_no_device_id(self, caplog):
+        user = users_factories.UserFactory()
         device_info = account_serialization.TrustedDevice(
             deviceId="",
             source="iPhone 13",
@@ -1287,15 +1287,15 @@ class SaveTrustedDeviceTest:
 
 
 class UpdateLoginDeviceHistoryTest:
-    def test_should_not_save_login_device_when_no_info_provided(self):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_not_save_login_device_when_no_info_provided(self):
+        user = users_factories.UserFactory()
 
         users_api.update_login_device_history(device_info=None, user=user)
 
         assert users_models.LoginDeviceHistory.query.count() == 0
 
-    def test_should_not_save_login_device_when_no_device_id_provided(self):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_not_save_login_device_when_no_device_id_provided(self):
+        user = users_factories.UserFactory()
         device_info = account_serialization.TrustedDevice(
             deviceId="",
             source="iPhone 13",
@@ -1307,7 +1307,7 @@ class UpdateLoginDeviceHistoryTest:
         assert users_models.LoginDeviceHistory.query.count() == 0
 
     def test_can_save_login_device(self):
-        user = users_factories.UserFactory(email="py@test.com")
+        user = users_factories.UserFactory()
         device_info = account_serialization.TrustedDevice(
             deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
             source="iPhone 13",
@@ -1323,8 +1323,8 @@ class UpdateLoginDeviceHistoryTest:
         assert login_device.os == "iOS"
         assert login_device.location == None
 
-    def test_should_return_login_history(self):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_return_login_history(self):
+        user = users_factories.UserFactory()
         device_info = account_serialization.TrustedDevice(
             deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
             source="iPhone 13",
@@ -1338,7 +1338,7 @@ class UpdateLoginDeviceHistoryTest:
         assert login_history == login_device
 
     def test_can_access_login_device_history_from_user(self):
-        user = users_factories.UserFactory(email="py@test.com")
+        user = users_factories.UserFactory()
         device_info = account_serialization.TrustedDevice(
             deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
             source="iPhone 13",
@@ -1351,8 +1351,8 @@ class UpdateLoginDeviceHistoryTest:
 
         assert user.login_device_history == [login_device]
 
-    def test_should_log_when_no_device_id(self, caplog):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_log_when_no_device_id(self, caplog):
+        user = users_factories.UserFactory()
         device_info = account_serialization.TrustedDevice(
             deviceId="",
             source="iPhone 13",
@@ -1375,52 +1375,52 @@ class ShouldSaveLoginDeviceAsTrustedDeviceTest:
         deviceId="2E429592-2446-425F-9A62-D6983F375B3B", os="iOS", source="iPhone 13"
     )
 
-    def test_should_be_false_when_no_device_info(self):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_be_false_when_no_device_info(self):
+        user = users_factories.UserFactory()
 
         assert users_api.should_save_login_device_as_trusted_device(device_info=None, user=user) is False
 
-    def test_should_be_false_when_no_device_id(self):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_be_false_when_no_device_id(self):
+        user = users_factories.UserFactory()
         device_without_id = account_serialization.TrustedDevice(deviceId="", os="iOS", source="iPhone 13")
 
         assert users_api.should_save_login_device_as_trusted_device(device_info=device_without_id, user=user) is False
 
-    def test_should_be_false_when_no_device_history_for_user(self):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_be_false_when_no_device_history_for_user(self):
+        user = users_factories.UserFactory()
 
         assert users_api.should_save_login_device_as_trusted_device(device_info=self.device_info, user=user) is False
 
-    def test_should_be_true_when_user_has_device_history_matching_device_id(self):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_be_true_when_user_has_device_history_matching_device_id(self):
+        user = users_factories.UserFactory()
         users_factories.LoginDeviceHistoryFactory(deviceId=self.device_info.device_id, user=user)
 
         assert users_api.should_save_login_device_as_trusted_device(device_info=self.device_info, user=user) is True
 
-    def test_should_be_false_when_user_has_device_history_for_different_device(self):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_be_false_when_user_has_device_history_for_different_device(self):
+        user = users_factories.UserFactory()
         users_factories.LoginDeviceHistoryFactory(deviceId=self.device_info.device_id, user=user)
 
         other_device_info = account_serialization.TrustedDevice(deviceId="other_id", os="iOS", source="iPhone 13")
         assert users_api.should_save_login_device_as_trusted_device(device_info=other_device_info, user=user) is False
 
-    def test_should_be_false_when_device_id_matches_different_user(self):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_be_false_when_device_id_matches_different_user(self):
+        user = users_factories.UserFactory()
         second_user = users_factories.UserFactory(email="py2@test.com")
         users_factories.LoginDeviceHistoryFactory(deviceId=self.device_info.device_id, user=second_user)
 
         assert users_api.should_save_login_device_as_trusted_device(device_info=self.device_info, user=user) is False
 
-    def test_should_be_true_when_device_id_matches_multiple_users_including_current_user(self):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_be_true_when_device_id_matches_multiple_users_including_current_user(self):
+        user = users_factories.UserFactory()
         second_user = users_factories.UserFactory(email="py2@test.com")
         users_factories.LoginDeviceHistoryFactory(deviceId=self.device_info.device_id, user=second_user)
         users_factories.LoginDeviceHistoryFactory(deviceId=self.device_info.device_id, user=user)
 
         assert users_api.should_save_login_device_as_trusted_device(device_info=self.device_info, user=user) is True
 
-    def test_should_be_false_when_login_device_is_already_trusted_device(self):
-        user = users_factories.UserFactory(email="py@test.com")
+    def should_be_false_when_login_device_is_already_trusted_device(self):
+        user = users_factories.UserFactory()
         users_factories.TrustedDeviceFactory(deviceId=self.device_info.device_id, user=user)
         users_factories.LoginDeviceHistoryFactory(deviceId=self.device_info.device_id, user=user)
 
