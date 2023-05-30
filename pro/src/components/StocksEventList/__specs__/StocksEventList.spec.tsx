@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -22,18 +22,34 @@ interface IrenderStocksEventList {
   stocks: StocksEvent[]
 }
 
-const renderStocksEventList = ({ stocks }: IrenderStocksEventList) =>
+const renderStocksEventList = ({ stocks }: IrenderStocksEventList) => {
+  const storeOverrides = {
+    features: {
+      list: [
+        {
+          nameKey: 'WIP_RECURRENCE_FILTERS',
+          isActive: true,
+        },
+      ],
+      initialized: true,
+    },
+  }
+
   renderWithProviders(
     <StocksEventList
       stocks={stocks}
       priceCategories={[
-        priceCategoryFactory({ label: 'Label', price: 12.38, id: 1 }),
+        priceCategoryFactory({ label: 'Label', price: 12.5, id: 1 }),
+        priceCategoryFactory({ label: 'Label', price: 5.5, id: 2 }),
+        priceCategoryFactory({ label: 'Label', price: 30.5, id: 3 }),
       ]}
       departmentCode="78"
       setStocks={mockSetSotcks}
       offerId={'AA'}
-    />
+    />,
+    { storeOverrides }
   )
+}
 
 describe('StocksEventList', () => {
   beforeEach(() => {
@@ -54,7 +70,7 @@ describe('StocksEventList', () => {
     expect(screen.getByText('15/10/2021')).toBeInTheDocument()
     expect(screen.getByText('14:00')).toBeInTheDocument()
     expect(screen.getByText('18')).toBeInTheDocument()
-    expect(screen.getByText('12,38 € - Label')).toBeInTheDocument()
+    expect(screen.getByText('12,5 € - Label')).toBeInTheDocument()
     expect(screen.getByText('15/09/2021')).toBeInTheDocument()
   })
 
@@ -68,7 +84,51 @@ describe('StocksEventList', () => {
     expect(screen.getByText('Illimité')).toBeInTheDocument()
   })
 
-  it('should manage checkboxes', async () => {
+  it.only('should sort stocks', async () => {
+    renderStocksEventList({
+      stocks: [
+        individualStockEventListFactory({
+          beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
+          priceCategoryId: 1,
+        }),
+        individualStockEventListFactory({
+          beginningDatetime: new Date('2021-10-14T12:00:00Z').toISOString(),
+          priceCategoryId: 2,
+        }),
+        individualStockEventListFactory({
+          beginningDatetime: new Date('2021-10-13T12:00:00Z').toISOString(),
+          priceCategoryId: 3,
+        }),
+      ],
+    })
+
+    expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 3 rows
+    expect(screen.queryAllByAltText('Trier par ordre croissant')).toHaveLength(
+      5 // Number of sortable columns
+    )
+    within(screen.getAllByRole('row')[1]).getByText('12,5 € - Label')
+    within(screen.getAllByRole('row')[2]).getByText('5,5 € - Label')
+    within(screen.getAllByRole('row')[3]).getByText('30,5 € - Label')
+
+    await userEvent.click(
+      screen.getAllByAltText('Trier par ordre croissant')[2]
+    )
+    within(screen.getAllByRole('row')[1]).getByText('5,5 € - Label')
+    within(screen.getAllByRole('row')[2]).getByText('12,5 € - Label')
+    within(screen.getAllByRole('row')[3]).getByText('30,5 € - Label')
+
+    await userEvent.click(screen.getByAltText('Trier par ordre décroissant'))
+    within(screen.getAllByRole('row')[1]).getByText('30,5 € - Label')
+    within(screen.getAllByRole('row')[2]).getByText('12,5 € - Label')
+    within(screen.getAllByRole('row')[3]).getByText('5,5 € - Label')
+
+    await userEvent.click(screen.getByAltText('Ne plus trier'))
+    within(screen.getAllByRole('row')[1]).getByText('12,5 € - Label')
+    within(screen.getAllByRole('row')[2]).getByText('5,5 € - Label')
+    within(screen.getAllByRole('row')[3]).getByText('30,5 € - Label')
+  })
+
+  it('should change checkbox states', async () => {
     renderStocksEventList({
       stocks: [
         individualStockEventListFactory({ priceCategoryId: 1 }),
@@ -95,7 +155,7 @@ describe('StocksEventList', () => {
     expect(checkboxes[1]).toBeChecked()
     expect(checkboxes[2]).toBeChecked()
 
-    // "all checkbox" uncheck everithing
+    // "all checkbox" uncheck everything
     await userEvent.click(checkboxes[0])
     expect(checkboxes[0]).not.toBeChecked()
     expect(checkboxes[1]).not.toBeChecked()
@@ -109,7 +169,7 @@ describe('StocksEventList', () => {
         individualStockEventListFactory({ priceCategoryId: 1 }),
       ],
     })
-    expect(screen.getAllByText('12,38 € - Label')).toHaveLength(2)
+    expect(screen.getAllByText('12,5 € - Label')).toHaveLength(2)
 
     const checkboxes = screen.getAllByRole('checkbox')
     await userEvent.click(checkboxes[0])
@@ -191,7 +251,7 @@ describe('StocksEventList', () => {
         individualStockEventListFactory({ priceCategoryId: 1 }),
       ],
     })
-    expect(screen.getAllByText('12,38 € - Label')).toHaveLength(2)
+    expect(screen.getAllByText('12,5 € - Label')).toHaveLength(2)
 
     const checkboxes = screen.getAllByRole('checkbox')
     await userEvent.click(checkboxes[0])
@@ -242,6 +302,6 @@ describe('StocksEventList', () => {
 
     // only one line has been removed, last page is full
     expect(screen.getByText('Page 2/2')).toBeInTheDocument()
-    expect(screen.getAllByText('12,38 € - Label')).toHaveLength(STOCKS_PER_PAGE)
+    expect(screen.getAllByText('12,5 € - Label')).toHaveLength(STOCKS_PER_PAGE)
   })
 })
