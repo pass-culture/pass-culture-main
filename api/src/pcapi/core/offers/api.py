@@ -511,16 +511,6 @@ def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: typing.
             )
 
 
-def _get_or_create_price_category(price: decimal.Decimal, offer: models.Offer) -> models.PriceCategory:
-    price_category = next((c for c in offer.priceCategories if c.price == price), None)
-    if not price_category:
-        label = f"Tarif {len(offer.priceCategories) + 1}"
-        return models.PriceCategory(
-            price=price, offer=offer, priceCategoryLabel=get_or_create_label(label, offer.venue)
-        )
-    return price_category
-
-
 def create_stock(
     offer: models.Offer,
     quantity: int | None,
@@ -553,13 +543,6 @@ def create_stock(
             # This should never happen
             raise BadRequest()
 
-    if offer.isEvent and price_category is None:
-        # FIXME: (mageoffray, 2023-31-01)
-        # should be deleted with FF WIP_ENABLE_MULTI_PRICE_STOCKS
-        # If a price_category is sent it means the FF
-        # WIP_ENABLE_MULTI_PRICE_STOCKS is enabled
-        price_category = _get_or_create_price_category(price, offer)
-
     validation.check_required_dates_for_stock(offer, beginning_datetime, booking_limit_datetime)
     validation.check_validation_status(offer)
     validation.check_provider_can_create_stock(offer, creating_provider)
@@ -572,7 +555,7 @@ def create_stock(
         quantity=quantity,
         beginningDatetime=beginning_datetime,
         bookingLimitDatetime=booking_limit_datetime,
-        priceCategory=price_category,
+        priceCategory=price_category,  # type: ignore [arg-type]
     )
     created_activation_codes = []
 
@@ -613,9 +596,6 @@ def edit_stock(
 
     if price is not UNCHANGED and price is not None and price != stock.price:
         modifications["price"] = price
-        if stock.offer.isEvent:
-            price_category = _get_or_create_price_category(price, stock.offer)
-            modifications["priceCategory"] = price_category
         validation.check_stock_price(price, stock.offer)
 
     if price_category is not UNCHANGED and price_category is not None and price_category is not stock.priceCategory:

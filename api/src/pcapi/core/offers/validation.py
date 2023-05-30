@@ -526,7 +526,7 @@ def check_stock_has_price_or_price_category(
     stock: serialization.StockCreationBodyModel | serialization.StockEditionBodyModel,
     existing_price_categories: dict,
 ) -> None:
-    if not FeatureToggle.WIP_ENABLE_MULTI_PRICE_STOCKS.is_active() or offer.isThing:
+    if offer.isThing:
         if stock.price is None:
             raise api_errors.ApiErrors(
                 {"price": ["Le prix est obligatoire pour les offres produit"]},
