@@ -142,3 +142,25 @@ class PostLogsTest:
             "offerId": 1,
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
         }
+
+    def test_log_header_link_click(self, client, caplog):
+        # given
+        test_client = client.with_adage_token(email="test@mail.com", uai="123456")
+
+        # when
+        with caplog.at_level(logging.INFO):
+            response = test_client.post(
+                "/adage-iframe/logs/header-link-click",
+                json={"header_link_name": "search"},
+            )
+
+        # then
+        assert response.status_code == 204
+        record = next(record for record in caplog.records if record.message == "HeaderLinkClick")
+
+        assert record is not None
+        assert record.extra == {
+            "analyticsSource": "adage",
+            "header_link_name": "search",
+            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+        }
