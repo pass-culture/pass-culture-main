@@ -175,7 +175,7 @@ class TrustedDeviceFeatureTest:
         assert login_device.location == None
 
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
-    def test_should_not_save_login_device_history_when_feature_flag_is_disabled(self, client):
+    def should_not_save_login_device_history_when_feature_flag_is_disabled(self, client):
         users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
 
         client.post("/native/v1/signin", json=self.data)
@@ -193,7 +193,7 @@ class TrustedDeviceFeatureTest:
         assert user.trusted_devices == [trusted_device]
 
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
-    def test_should_not_save_login_device_as_trusted_device_on_second_signin_when_feature_flag_is_inactive(
+    def should_not_save_login_device_as_trusted_device_on_second_signin_when_feature_flag_is_inactive(
         self,
         client,
     ):
@@ -206,7 +206,7 @@ class TrustedDeviceFeatureTest:
         assert user.trusted_devices == []
 
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def test_should_not_save_login_device_as_trusted_device_on_second_signin_when_using_different_devices(self, client):
+    def should_not_save_login_device_as_trusted_device_on_second_signin_when_using_different_devices(self, client):
         first_device = {
             "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
             "source": "iPhone 13",
@@ -226,7 +226,7 @@ class TrustedDeviceFeatureTest:
         assert user.trusted_devices == []
 
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def test_should_send_email_when_login_is_suspicious(self, client):
+    def should_send_email_when_login_is_suspicious(self, client):
         users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
 
         client.post("/native/v1/signin", json=self.data)
@@ -238,7 +238,7 @@ class TrustedDeviceFeatureTest:
         assert mails_testing.outbox[0].sent_data["params"]["SOURCE"] == "iPhone 13"
 
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def test_should_not_send_email_when_logging_in_from_a_trusted_device(self, client):
+    def should_not_send_email_when_logging_in_from_a_trusted_device(self, client):
         user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
         users_factories.TrustedDeviceFactory(user=user)
 
@@ -247,7 +247,7 @@ class TrustedDeviceFeatureTest:
         assert len(mails_testing.outbox) == 0
 
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
-    def test_should_not_send_email_when_feature_flag_is_inactive(self, client):
+    def should_not_send_email_when_feature_flag_is_inactive(self, client):
         users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
 
         client.post("/native/v1/signin", json=self.data)
