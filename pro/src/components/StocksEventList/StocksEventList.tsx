@@ -207,12 +207,11 @@ const StocksEventList = ({
             <th
               scope="col"
               className={cn(styles['time-column'], styles['header'])}
-              onClick={() => onHeaderClick(SortingColumn.HOUR)}
             >
               Horaire
               {areFiltersEnabled && (
                 <SortArrow
-                  onClick={() => onHeaderClick(SortingColumn.DATE)}
+                  onClick={() => onHeaderClick(SortingColumn.HOUR)}
                   sortingMode={
                     currentSortingColumn === SortingColumn.HOUR
                       ? currentSortingMode
@@ -221,15 +220,11 @@ const StocksEventList = ({
                 />
               )}
             </th>
-            <th
-              scope="col"
-              className={styles['header']}
-              onClick={() => onHeaderClick(SortingColumn.PRICE_CATEGORY)}
-            >
+            <th scope="col" className={styles['header']}>
               Tarif
               {areFiltersEnabled && (
                 <SortArrow
-                  onClick={() => onHeaderClick(SortingColumn.DATE)}
+                  onClick={() => onHeaderClick(SortingColumn.PRICE_CATEGORY)}
                   sortingMode={
                     currentSortingColumn === SortingColumn.PRICE_CATEGORY
                       ? currentSortingMode
@@ -244,16 +239,15 @@ const StocksEventList = ({
                 styles['booking-limit-date-column'],
                 styles['header']
               )}
-              onClick={() =>
-                onHeaderClick(SortingColumn.BOOKING_LIMIT_DATETIME)
-              }
             >
               Date limite
               <br />
               de réservation
               {areFiltersEnabled && (
                 <SortArrow
-                  onClick={() => onHeaderClick(SortingColumn.DATE)}
+                  onClick={() =>
+                    onHeaderClick(SortingColumn.BOOKING_LIMIT_DATETIME)
+                  }
                   sortingMode={
                     currentSortingColumn ===
                     SortingColumn.BOOKING_LIMIT_DATETIME
@@ -266,12 +260,11 @@ const StocksEventList = ({
             <th
               scope="col"
               className={cn(styles['quantity-column'], styles['header'])}
-              onClick={() => onHeaderClick(SortingColumn.QUANTITY)}
             >
               Places
               {areFiltersEnabled && (
                 <SortArrow
-                  onClick={() => onHeaderClick(SortingColumn.DATE)}
+                  onClick={() => onHeaderClick(SortingColumn.QUANTITY)}
                   sortingMode={
                     currentSortingColumn === SortingColumn.QUANTITY
                       ? currentSortingMode
