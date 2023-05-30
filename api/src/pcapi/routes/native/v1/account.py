@@ -17,10 +17,10 @@ from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions
+from pcapi.core.users.email import repository as email_repository
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import api_errors
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -79,22 +79,22 @@ def update_user_email(user: users_models.User, body: serializers.UserProfileEmai
     try:
         email_api.request_email_update(user, body.email, body.password)
     except exceptions.EmailUpdateTokenExists:
-        raise ApiErrors(
+        raise api_errors.ApiErrors(
             {"code": "TOKEN_EXISTS", "message": "Une demande de modification d'adresse e-mail est déjà en cours"},
             status_code=400,
         )
     except exceptions.EmailUpdateInvalidPassword:
-        raise ApiErrors(
+        raise api_errors.ApiErrors(
             {"code": "INVALID_PASSWORD", "message": "Mot de passe invalide"},
             status_code=400,
         )
     except exceptions.InvalidEmailError:
-        raise ApiErrors(
+        raise api_errors.ApiErrors(
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
             status_code=400,
         )
     except exceptions.EmailUpdateLimitReached:
-        raise ApiErrors(
+        raise api_errors.ApiErrors(
             {"code": "EMAIL_UPDATE_ATTEMPTS_LIMIT", "message": "Trop de tentatives"},
             status_code=400,
         )
@@ -104,6 +104,23 @@ def update_user_email(user: users_models.User, body: serializers.UserProfileEmai
         pass
 
 
+@blueprint.native_v1.route("/profile/email_update/status", methods=["GET"])
+@spectree_serialize(
+    on_success_status=200,
+    api=blueprint.api,
+)
+@authenticated_and_active_user_required
+def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateStatus | None:
+    latest_email_update_event = email_repository.get_email_update_latest_event(user)
+    if not latest_email_update_event:
+        raise api_errors.ResourceNotFoundError
+    return serializers.EmailUpdateStatus(
+        newEmail=latest_email_update_event.newEmail,  # type: ignore [arg-type]
+        expired=(email_api.get_active_token_expiration(user) or datetime.min) < datetime.utcnow(),
+        status=latest_email_update_event.eventType,
+    )
+
+
 @blueprint.native_v1.route("/profile/validate_email", methods=["PUT"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
@@ -111,12 +128,12 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
         payload = serializers.ChangeEmailTokenContent.from_token(body.token)
         api.change_user_email(current_email=payload.current_email, new_email=payload.new_email)
     except pydantic.ValidationError:
-        raise ApiErrors(
+        raise api_errors.ApiErrors(
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
             status_code=400,
         )
     except InvalidTokenError:
-        raise ApiErrors(
+        raise api_errors.ApiErrors(
             {"code": "INVALID_TOKEN", "message": "Token invalide"},
             status_code=400,
         )
@@ -140,7 +157,7 @@ def create_account(body: serializers.AccountRequest) -> None:
         try:
             api_recaptcha.check_native_app_recaptcha_token(body.token)
         except api_recaptcha.ReCaptchaException:
-            raise ApiErrors({"token": "The given token is not valid"})
+            raise api_errors.ApiErrors({"token": "The given token is not valid"})
 
     try:
         created_user = api.create_account(
@@ -161,10 +178,10 @@ def create_account(body: serializers.AccountRequest) -> None:
         try:
             api.handle_create_account_with_existing_email(user)  # type: ignore [arg-type]
         except exceptions.EmailNotSent:
-            raise ApiErrors({"email": ["L'email n'a pas pu être envoyé"]})
+            raise api_errors.ApiErrors({"email": ["L'email n'a pas pu être envoyé"]})
 
     except exceptions.UnderAgeUserException:
-        raise ApiErrors({"dateOfBirth": "The birthdate is invalid"})
+        raise api_errors.ApiErrors({"dateOfBirth": "The birthdate is invalid"})
 
 
 @blueprint.native_v1.route("/resend_email_validation", methods=["POST"])
@@ -179,7 +196,7 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
         else:
             api.request_email_confirmation(user)
     except exceptions.EmailNotSent:
-        raise ApiErrors(
+        raise api_errors.ApiErrors(
             {"code": "EMAIL_NOT_SENT", "general": ["L'email n'a pas pu être envoyé"]},
             status_code=400,
         )
@@ -201,22 +218,22 @@ def send_phone_validation_code(user: users_models.User, body: serializers.SendPh
     except phone_validation_exceptions.SMSSendingLimitReached:
         error = {"code": "TOO_MANY_SMS_SENT", "message": "Nombre de tentatives maximal dépassé"}
         _log_failure_code(body.phoneNumber, error["code"])
-        raise ApiErrors(error, status_code=400)
+        raise api_errors.ApiErrors(error, status_code=400)
 
     except phone_validation_exceptions.UserPhoneNumberAlreadyValidated:
         error = {"code": "PHONE_NUMBER_ALREADY_VALIDATED", "message": "Le numéro de téléphone est déjà validé"}
         _log_failure_code(body.phoneNumber, error["code"])
-        raise ApiErrors(error, status_code=400)
+        raise api_errors.ApiErrors(error, status_code=400)
 
     except phone_validation_exceptions.InvalidCountryCode:
         error = {"code": "INVALID_COUNTRY_CODE", "message": "L'indicatif téléphonique n'est pas accepté"}
         _log_failure_code(body.phoneNumber, error["code"])
-        raise ApiErrors(error, status_code=400)
+        raise api_errors.ApiErrors(error, status_code=400)
 
     except phone_validation_exceptions.InvalidPhoneNumber:
         error = {"code": "INVALID_PHONE_NUMBER", "message": "Le numéro de téléphone est invalide"}
         _log_failure_code(body.phoneNumber, error["code"])
-        raise ApiErrors(error, status_code=400)
+        raise api_errors.ApiErrors(error, status_code=400)
 
     except phone_validation_exceptions.PhoneAlreadyExists:
         error = {
@@ -224,12 +241,14 @@ def send_phone_validation_code(user: users_models.User, body: serializers.SendPh
             "message": "Un compte est déjà associé à ce numéro. Renseigne un autre numéro ou connecte-toi au compte existant.",
         }
         _log_failure_code(body.phoneNumber, error["code"])
-        raise ApiErrors(error, status_code=400)
+        raise api_errors.ApiErrors(error, status_code=400)
 
     except phone_validation_exceptions.PhoneVerificationException:
         error = {"code": "CODE_SENDING_FAILURE", "message": "L'envoi du code a échoué"}
         _log_failure_code(body.phoneNumber, error["code"])
-        raise ApiErrors({"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400)
+        raise api_errors.ApiErrors(
+            {"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400
+        )
 
 
 @blueprint.native_v1.route("/validate_phone_number", methods=["POST"])
@@ -240,19 +259,21 @@ def validate_phone_number(user: users_models.User, body: serializers.ValidatePho
         try:
             phone_validation_api.validate_phone_number(user, body.code)
         except phone_validation_exceptions.PhoneValidationAttemptsLimitReached:
-            raise ApiErrors(
+            raise api_errors.ApiErrors(
                 {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
                 status_code=400,
             )
         except phone_validation_exceptions.ExpiredCode:
-            raise ApiErrors({"message": "Le code saisi a expiré", "code": "EXPIRED_VALIDATION_CODE"}, status_code=400)
+            raise api_errors.ApiErrors(
+                {"message": "Le code saisi a expiré", "code": "EXPIRED_VALIDATION_CODE"}, status_code=400
+            )
         except phone_validation_exceptions.NotValidCode as error:
             if error.remaining_attempts == 0:
-                raise ApiErrors(
+                raise api_errors.ApiErrors(
                     {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
                     status_code=400,
                 )
-            raise ApiErrors(
+            raise api_errors.ApiErrors(
                 {
                     "message": f"Le code est invalide. Saisis le dernier code reçu par SMS. Il te reste {error.remaining_attempts} tentative{'s' if error.remaining_attempts and error.remaining_attempts > 1 else ''}.",
                     "code": "INVALID_VALIDATION_CODE",
@@ -260,11 +281,13 @@ def validate_phone_number(user: users_models.User, body: serializers.ValidatePho
                 status_code=400,
             )
         except phone_validation_exceptions.InvalidPhoneNumber:
-            raise ApiErrors(
+            raise api_errors.ApiErrors(
                 {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
             )
         except phone_validation_exceptions.PhoneVerificationException:
-            raise ApiErrors({"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400)
+            raise api_errors.ApiErrors(
+                {"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400
+            )
 
         is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
         if not is_activated:

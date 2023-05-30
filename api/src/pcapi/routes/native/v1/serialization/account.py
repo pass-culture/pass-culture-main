@@ -239,6 +239,12 @@ class UpdateEmailTokenExpiration(BaseModel):
     expiration: datetime.datetime | None
 
 
+class EmailUpdateStatus(BaseModel):
+    newEmail: str
+    expired: bool
+    status: users_models.EmailHistoryEventTypeEnum
+
+
 class ResendEmailValidationRequest(BaseModel):
     email: str
 

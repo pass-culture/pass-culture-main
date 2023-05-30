@@ -3,6 +3,7 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
+from unittest import mock
 from unittest.mock import patch
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
@@ -35,6 +36,7 @@ from pcapi.core.users import testing as users_testing
 from pcapi.core.users import young_status
 from pcapi.core.users.api import create_phone_validation_token
 import pcapi.core.users.constants as users_constants
+from pcapi.core.users.email import request_email_update
 from pcapi.core.users.email import update as email_update
 from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.models import db
@@ -787,6 +789,58 @@ class UpdateUserEmailTest:
 
         assert response.status_code == 400
         assert response.json["code"] == error_code
+
+
+class GetEMailUpdateStatusTest:
+    old_email = "old@email.com"
+    new_email = "new@email.com"
+
+    def test_can_retrieve_email_update_status(self, client):
+        user = users_factories.UserFactory(email=self.old_email)
+        request_email_update(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
+
+        response = client.with_token(user.email).get("/native/v1/profile/email_update/status")
+
+        assert response.status_code == 200
+        assert response.json["newEmail"] == self.new_email
+        assert response.json["expired"] is False
+        assert response.json["status"] == users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
+
+    def test_with_no_email_update_event(self, client):
+        user = users_factories.UserFactory(email=self.old_email)
+
+        response = client.with_token(user.email).get("/native/v1/profile/email_update/status")
+
+        assert response.status_code == 404
+
+    def test_expired_token_is_reported(self, app, client):
+        user = users_factories.UserFactory(email=self.old_email)
+        request_email_update(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
+
+        with mock.patch.object(app.redis_client, "ttl", return_value=-1):
+            response = client.with_token(user.email).get("/native/v1/profile/email_update/status")
+
+        assert response.status_code == 200
+        assert response.json["newEmail"] == self.new_email
+        assert response.json["expired"] is True
+        assert response.json["status"] == users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
+
+    def test_assume_expired_if_no_token_expiration(self, app, client):
+        user = users_factories.UserFactory(email=self.old_email)
+        request_email_update(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
+
+        redis_key = email_update.get_no_active_token_key(user)
+        redis_value = app.redis_client.get(redis_key)
+        redis_expiration = app.redis_client.ttl(redis_key)
+        app.redis_client.delete(redis_key)
+        response = client.with_token(user.email).get("/native/v1/profile/email_update/status")
+        app.redis_client.set(redis_key, redis_value)
+        app.redis_client.expireat(redis_key, redis_expiration)
+
+        assert response.status_code == 200
+        assert response.json["newEmail"] == self.new_email
+        assert response.json["expired"] is True
+        assert response.json["status"] == users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
 
 
 class ValidateEmailTest:
