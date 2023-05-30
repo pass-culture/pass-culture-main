@@ -10,6 +10,8 @@ export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
 export { AdageFrontRoles } from './models/AdageFrontRoles';
+export { AdageHeaderLink } from './models/AdageHeaderLink';
+export type { AdageHeaderLogBody } from './models/AdageHeaderLogBody';
 export type { AuthenticatedResponse } from './models/AuthenticatedResponse';
 export type { BookCollectiveOfferRequest } from './models/BookCollectiveOfferRequest';
 export type { BookCollectiveOfferResponse } from './models/BookCollectiveOfferResponse';
