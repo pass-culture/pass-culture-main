@@ -15,7 +15,6 @@ from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import dehumanize
@@ -55,7 +54,6 @@ class Returns201Test:
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @patch("pcapi.core.search.async_index_offer_ids")
-    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
     def test_create_event_stocks(self, mocked_async_index_offer_ids, client):
         # Given
         offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
@@ -63,6 +61,10 @@ class Returns201Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
+        first_label = offers_factories.PriceCategoryLabelFactory(label="Tarif 1", venue=offer.venue)
+        second_label = offers_factories.PriceCategoryLabelFactory(label="Tarif 2", venue=offer.venue)
+        first_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=first_label, price=20)
+        second_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=second_label, price=30)
         beginning = datetime.datetime.utcnow() + relativedelta(days=10)
 
         # When
@@ -70,17 +72,17 @@ class Returns201Test:
             "offerId": offer.id,
             "stocks": [
                 {
-                    "price": 20,
+                    "priceCategoryId": first_price_cat.id,
                     "beginningDatetime": serialize(beginning),
                     "bookingLimitDatetime": serialize(beginning),
                 },
                 {
-                    "price": 20,
+                    "priceCategoryId": first_price_cat.id,
                     "beginningDatetime": serialize(beginning),
                     "bookingLimitDatetime": serialize(beginning),
                 },
                 {
-                    "price": 30,
+                    "priceCategoryId": second_price_cat.id,
                     "beginningDatetime": serialize(beginning),
                     "bookingLimitDatetime": serialize(beginning),
                 },
@@ -185,37 +187,6 @@ class Returns201Test:
         assert len(Stock.query.all()) == 1
         assert offers_models.PriceCategory.query.count() == 0
         assert offers_models.PriceCategoryLabel.query.count() == 0
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
-
-    @patch("pcapi.core.search.async_index_offer_ids")
-    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
-    def test_edit_one_event_stock_using_price(self, mocked_async_index_offer_ids, client):
-        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
-        existing_stock = offers_factories.StockFactory(offer=offer, price=10, priceCategory=None)
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
-
-        stock_data = {
-            "offerId": offer.id,
-            "stocks": [
-                {
-                    "id": existing_stock.id,
-                    "price": 20,
-                    "beginningDatetime": serialize(beginning),
-                    "bookingLimitDatetime": serialize(beginning),
-                }
-            ],
-        }
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        created_stock = Stock.query.get(dehumanize(response.json["stocks"][0]["id"]))
-        assert offer.id == created_stock.offerId
-        assert created_stock.price == 20
-        assert len(Stock.query.all()) == 1
-        assert offers_models.PriceCategory.query.count() == 1
-        assert offers_models.PriceCategoryLabel.query.count() == 1
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @patch("pcapi.core.search.async_index_offer_ids")
@@ -384,7 +355,6 @@ class Returns201Test:
             ([offer.id],),
         ]
 
-    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
     def test_sends_email_if_beginning_date_changes_on_edition(self, client):
         # Given
         offerer = offerers_factories.OffererFactory()
@@ -392,7 +362,9 @@ class Returns201Test:
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@postponed.net")
         offer = offers_factories.EventOfferFactory(venue=venue, bookingEmail="offer@bookingemail.fr")
-        existing_stock = offers_factories.StockFactory(offer=offer, price=10)
+        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=venue, label="Tarif 1")
+        price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
+        existing_stock = offers_factories.EventStockFactory(offer=offer, priceCategory=price_cat)
         beginning = datetime.datetime.utcnow() + relativedelta(days=10)
 
         stock_data = {
@@ -400,7 +372,7 @@ class Returns201Test:
             "stocks": [
                 {
                     "id": existing_stock.id,
-                    "price": 2,
+                    "priceCategoryId": price_cat.id,
                     "beginningDatetime": serialize(beginning),
                     "bookingLimitDatetime": serialize(beginning),
                 },
@@ -429,7 +401,6 @@ class Returns201Test:
         assert mails_testing.outbox[1].sent_data["To"] == "beneficiary@bookingEmail.fr"
 
     @mock.patch("pcapi.core.bookings.api.update_cancellation_limit_dates")
-    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
     def should_update_bookings_cancellation_limit_date_on_delayed_event(
         self, mock_update_cancellation_limit_dates, client
     ):
@@ -437,7 +408,12 @@ class Returns201Test:
         event_in_4_days = now + relativedelta(days=4)
         event_reported_in_10_days = now + relativedelta(days=10)
         offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
-        existing_stock = offers_factories.StockFactory(offer=offer, beginningDatetime=event_in_4_days)
+        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
+        price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
+
+        existing_stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=event_in_4_days, priceCategory=price_cat
+        )
         booking = bookings_factories.BookingFactory(stock=existing_stock, dateCreated=now)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -446,7 +422,7 @@ class Returns201Test:
             "stocks": [
                 {
                     "id": existing_stock.id,
-                    "price": 2,
+                    "priceCategoryId": price_cat.id,
                     "beginningDatetime": serialize(event_reported_in_10_days),
                     "bookingLimitDatetime": serialize(existing_stock.bookingLimitDatetime),
                 },
@@ -460,7 +436,6 @@ class Returns201Test:
         assert response.status_code == 201
         mock_update_cancellation_limit_dates.assert_called_once_with([booking], event_reported_in_10_days)
 
-    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
     def should_invalidate_booking_token_when_event_is_reported(self, client):
         # Given
         now = datetime.datetime.utcnow()
@@ -468,7 +443,12 @@ class Returns201Test:
         event_in_4_days = now + relativedelta(days=4)
         event_reported_in_10_days = now + relativedelta(days=10)
         offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
-        existing_stock = offers_factories.StockFactory(offer=offer, beginningDatetime=event_in_4_days)
+        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
+        price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
+
+        existing_stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=event_in_4_days, priceCategory=price_cat
+        )
         booking = bookings_factories.UsedBookingFactory(stock=existing_stock, dateCreated=booking_made_3_days_ago)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -478,7 +458,7 @@ class Returns201Test:
             "stocks": [
                 {
                     "id": existing_stock.id,
-                    "price": 2,
+                    "priceCategoryId": price_cat.id,
                     "beginningDatetime": serialize(event_reported_in_10_days),
                     "bookingLimitDatetime": serialize(existing_stock.bookingLimitDatetime),
                 },
@@ -495,15 +475,19 @@ class Returns201Test:
         assert updated_booking.dateUsed is None
         assert updated_booking.cancellationLimitDate == booking.cancellationLimitDate
 
-    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
     def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self, client):
         # Given
         now = datetime.datetime.utcnow()
-        date_used_in_48_hours = datetime.datetime.utcnow() + relativedelta(days=2)
+        date_used_in_48_hours = now + relativedelta(days=2)
         event_in_3_days = now + relativedelta(days=3)
         event_reported_in_less_48_hours = now + relativedelta(days=1)
         offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
-        existing_stock = offers_factories.StockFactory(offer=offer, beginningDatetime=event_in_3_days)
+        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
+        price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
+
+        existing_stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=event_in_3_days, priceCategory=price_cat, bookingLimitDatetime=now
+        )
         booking = bookings_factories.UsedBookingFactory(
             stock=existing_stock, dateCreated=now, dateUsed=date_used_in_48_hours
         )
@@ -515,7 +499,7 @@ class Returns201Test:
             "stocks": [
                 {
                     "id": existing_stock.id,
-                    "price": 2,
+                    "priceCategoryId": price_cat.id,
                     "beginningDatetime": serialize(event_reported_in_less_48_hours),
                     "bookingLimitDatetime": serialize(existing_stock.bookingLimitDatetime),
                 },
@@ -615,46 +599,6 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
 
         assert response.json["price"] == ["Le prix est obligatoire pour les offres produit"]
-
-    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
-    def when_invalid_quantity_or_price_for_edition_and_creation(self, client):
-        # Given
-        offer = offers_factories.EventOfferFactory()
-        existing_stock = offers_factories.StockFactory(offer=offer, price=10)
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-        booking_limit_datetime = datetime.datetime(2019, 2, 14)
-
-        # When
-        stock_data = {
-            "offerId": offer.id,
-            "stocks": [
-                {
-                    "id": existing_stock.id,
-                    "price": -3,
-                    "beginningDatetime": serialize(booking_limit_datetime),
-                    "bookingLimitDatetime": serialize(booking_limit_datetime),
-                },
-                {
-                    "quantity": -2,
-                    "price": 0,
-                    "beginningDatetime": serialize(booking_limit_datetime),
-                    "bookingLimitDatetime": serialize(booking_limit_datetime),
-                },
-            ],
-        }
-
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json == {"price": ["Le prix doit être positif"]}
-
-        persisted_stock = Stock.query.filter_by(offerId=offer.id)
-        assert persisted_stock.count() == 1
-        assert persisted_stock[0].price == 10
 
     def test_patch_non_approved_offer_fails(self, client):
         pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
@@ -813,7 +757,6 @@ class Returns400Test:
         }
 
     @pytest.mark.parametrize("is_update", [False, True])
-    @override_features(WIP_ENABLE_MULTI_PRICE_STOCKS=False)
     def test_beginning_datetime_after_booking_limit_datetime(self, is_update, client):
         # Given
         offer = offers_factories.EventOfferFactory()
@@ -822,20 +765,23 @@ class Returns400Test:
             offerer=offer.venue.managingOfferer,
         )
 
+        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
+        price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
+
         stock_data = {
             "offerId": offer.id,
             "stocks": [
                 {
                     "beginningDatetime": "2022-06-11T08:00:00Z",
                     "bookingLimitDatetime": "2022-06-12T21:59:59Z",
-                    "price": 15,
+                    "priceCategoryId": price_cat.id,
                     "quantity": 1000,
                 },
             ],
         }
 
         if is_update:
-            stock = offers_factories.StockFactory(offer=offer)
+            stock = offers_factories.EventStockFactory(offer=offer, priceCategory=price_cat)
             stock_data["stocks"][0]["id"] = stock.id
 
         # When

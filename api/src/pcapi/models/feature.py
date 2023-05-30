@@ -106,7 +106,6 @@ class FeatureToggle(enum.Enum):
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY = "Nouveau parcours de creation d'offre optimisé"
     WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
-    WIP_ENABLE_MULTI_PRICE_STOCKS = "Active la fonctionnalité multi-tarif pour les offres individuelles"
     ENABLE_CGR_INTEGRATION = "Active la synchonisation de stocks et la réservation via CGR"
     WIP_ADD_CLG_6_5_COLLECTIVE_OFFER = "Ouverture des offres collectives au 6ème et 5ème"
     WIP_ENABLE_LIKE_IN_ADAGE = "Active la possibilité de liker une offre sur adage"
