@@ -1,5 +1,5 @@
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_size.scss" as size;
+@use "src/styles/mixins/_rem.scss" as rem;
+@use "src/styles/variables/_size.scss" as size;
 
 .select-autocomplete-container {
   box-sizing: border-box;
@@ -17,7 +17,9 @@
 
     span {
       // hide checkbox having 20px of width and 8px of margin-right
-      margin-left: #{rem.torem(calc((-1 * #{size.$checkbox-size}) - #{size.$checkbox-icon-margin}))};
+      margin-left: #{rem.torem(
+          calc((-1 * #{size.$checkbox-size}) - #{size.$checkbox-icon-margin})
+        )};
     }
   }
 }

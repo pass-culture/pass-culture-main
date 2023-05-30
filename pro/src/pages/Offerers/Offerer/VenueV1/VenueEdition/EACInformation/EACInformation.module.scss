@@ -1,4 +1,4 @@
-@use "styles/mixins/_rem.scss" as rem;
+@use "src/styles/mixins/_rem.scss" as rem;
 
 .description {
   padding: rem.torem(4px) 0 rem.torem(32px);

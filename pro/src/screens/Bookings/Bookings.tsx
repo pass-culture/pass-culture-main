@@ -25,7 +25,7 @@ import useNotification from 'hooks/useNotification'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
 import ChoosePreFiltersMessage from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import NoBookingsForPreFiltersMessage from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
+// import NoBookingsForPreFiltersMessage from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Tabs from 'ui-kit/Tabs'
 import Titles from 'ui-kit/Titles/Titles'
@@ -288,7 +288,7 @@ const Bookings = <
         ) : isTableLoading ? (
           <Spinner />
         ) : (
-          <NoBookingsForPreFiltersMessage resetPreFilters={resetPreFilters} />
+          <div />
         )
       ) : hasBooking ? (
         <ChoosePreFiltersMessage />

@@ -16,10 +16,8 @@ import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
 import useNewOfferCreationJourney from '../../hooks/useNewOfferCreationJourney'
 
-import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
 import { OffererStats } from './OffererStats'
-import { ProfileAndSupport } from './ProfileAndSupport'
 import { VenueOfferSteps } from './VenueOfferSteps'
 
 const Homepage = (): JSX.Element => {
@@ -107,12 +105,6 @@ const Homepage = (): JSX.Element => {
     <>
       <div className="homepage">
         <h1>Bienvenue dans l’espace acteurs culturels</h1>
-        <HomepageBreadcrumb
-          activeStep={STEP_ID_OFFERERS}
-          isOffererStatsActive={isOffererStatsActive}
-          profileRef={profileRef}
-          statsRef={statsRef}
-        />
         <section className="h-section">
           <Offerers
             selectedOfferer={selectedOfferer}
@@ -141,7 +133,6 @@ const Homepage = (): JSX.Element => {
           </section>
         )}
         <section className="h-section" ref={profileRef}>
-          <ProfileAndSupport />
           <div className="newsletter">
             <Newsletter />
           </div>

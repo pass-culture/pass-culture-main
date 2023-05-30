@@ -4,7 +4,7 @@
     "plugins": [{ "name": "typescript-plugin-css-modules" }],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "src",
+    "baseUrl": "./src",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
@@ -38,7 +38,8 @@
     "./src/**/*.tsx",
     "./cypress/**/*.ts",
     "cypress.config.ts",
-    "jest.setup.ts"
+    "jest.setup.ts",
+    "vite.config.ts"
   ],
   "exclude": [
     "node_modules",

@@ -37,7 +37,10 @@
     "testcafe-chromium:debug": "NODE_ENV=test testcafe --assertion-timeout 1000 --selector-timeout 5000 -s path=testcafe_screenshots,takeOnFails=true 'chromium' --live --sf",
     "storybook": "yarn copy-assets && NODE_PATH=src start-storybook -p 6006",
     "build-storybook": "yarn copy-assets && NODE_PATH=src build-storybook -o docs-build",
-    "copy-assets": "cp ./src/icons/*.svg ./public/icons/"
+    "copy-assets": "cp ./src/icons/*.svg ./public/icons/",
+    "vite:build": "yarn copy-assets && vite build",
+    "vite:serve": "vite preview",
+    "vite:start": "yarn copy-assets && vite"
   },
   "dependencies": {
     "@firebase/analytics": "^0.10.0",
@@ -120,6 +123,7 @@
     "@types/react-table": "^7.7.14",
     "@typescript-eslint/eslint-plugin": "^5.59.8",
     "@typescript-eslint/parser": "^5.59.8",
+    "@vitejs/plugin-react": "^4.0.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^29.0.5",
     "babel-loader": "^9.1.2",
@@ -148,7 +152,9 @@
     "stylelint-config-standard-scss": "^9.0.0",
     "testcafe": "^2.6.1",
     "typescript": "^4.9.5",
-    "url-loader": "^4.1.1"
+    "url-loader": "^4.1.1",
+    "vite": "^4.3.9",
+    "vite-tsconfig-paths": "^4.2.0"
   },
   "resolutions": {
     "autoprefixer": "10.4.5"

@@ -10,20 +10,20 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#000000" />
     <meta name="version" content="%VERSION%" />
-    <% if (process.env.NODE_ENV==='development' ) { %>
+    <!-- <% if (process.env.NODE_ENV==='development' ) { %> -->
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com https://*.getbeamer.com/ 'sha256-TMqfN40yv4Oy3FCUUn4u+Oh+eomT/tIw0/9GHc52ino='; connect-src 'self' data: https: http: ws://*:3001 wss://*:3001; style-src 'self' https://app.getbeamer.com/styles/beamer-embed.css https://fonts.googleapis.com/css 'unsafe-inline'"
     />
-    <% } else { %>
+    <!-- <% } else { %>
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com https://*.getbeamer.com/ 'sha256-lsVG3dRRjbLAsQIz53z4zymQ5Vw0cFQnOqNnY5sCuSM='; style-src 'self' https://app.getbeamer.com/styles/beamer-embed.css https://fonts.googleapis.com/css 'unsafe-inline'"
     />
-    <% } %>
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <link rel="shortcut icon" href="%PUBLIC_URL%/icon/app-icon-iphone.png" />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/icon/app-icon-iphone.png" />
+    <% } %> -->
+    <link rel="manifest" href="manifest.json" />
+    <link rel="shortcut icon" href="icon/app-icon-iphone.png" />
+    <link rel="apple-touch-icon" href="icon/app-icon-iphone.png" />
     <title>pass Culture Pro</title>
   </head>
 
@@ -32,7 +32,10 @@
     <noscript
       >pass Culture Pro a besoin de JavaScript pour fonctionner.</noscript
     >
-    <% if (process.env.REACT_APP_ENVIRONMENT_NAME==='testing' ) { %>
+
+    <script type="module" src="/index.jsx"></script>
+
+    <!-- <% if (process.env.REACT_APP_ENVIRONMENT_NAME==='testing' ) { %>
     <script>
       var beamer_config = { product_id: 'vjbiYuMS52566' }
     </script>
@@ -41,6 +44,6 @@
       src="https://app.getbeamer.com/js/beamer-embed.js"
       defer="defer"
     ></script>
-    <% } %>
+    <% } %> -->
   </body>
 </html>

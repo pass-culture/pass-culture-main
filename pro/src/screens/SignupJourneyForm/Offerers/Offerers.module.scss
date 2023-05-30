@@ -1,65 +1,65 @@
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
-@use "styles/mixins/_fonts.scss" as fonts;
+@use "src/styles/mixins/_rem.scss" as rem;
+@use "src/styles/variables/_colors.scss" as colors;
+@use "src/styles/mixins/_fonts.scss" as fonts;
 
 $offerers-gap: rem.torem(16px);
 $medium-gap: rem.torem(16px);
 $small-gap: rem.torem(8px);
 
 .existing-offerers-layout {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: $offerers-gap;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $offerers-gap;
 }
 
 .venues-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: colors.$grey-light;
+  padding: $medium-gap;
+  gap: $medium-gap;
+  border-radius: rem.torem(8px);
+  width: 100%;
+
+  & h4,
+  & .offerer-name-accent {
+    font-weight: 500;
+  }
+
+  .venue-list {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    background-color: colors.$grey-light;
-    padding: $medium-gap;
-    gap: $medium-gap;
-    border-radius: rem.torem(8px);
-    width: 100%;
+    gap: $small-gap;
 
-    & h4,
-    & .offerer-name-accent {
-        font-weight: 500;
+    li::before {
+      content: "-";
+      display: inline-block;
+      width: 1em;
+      margin-left: $small-gap;
     }
-
-    .venue-list {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: $small-gap;
-
-        li::before {
-            content: "-";
-            display: inline-block;
-            width: 1em;
-            margin-left: $small-gap;
-          }
-    }
+  }
 }
 
-.title-4 {  
-    @include fonts.title4;
+.title-4 {
+  @include fonts.title4;
 }
 
 .wrong-offerer-title {
-    margin-top: 40px;
-    margin-bottom: $medium-gap;
+  margin-top: 40px;
+  margin-bottom: $medium-gap;
 }
 
 .icon-more-venue {
-    width: rem.torem(32px);
-    height: rem.torem(32px);
-    transform: rotate(180deg);
+  width: rem.torem(32px);
+  height: rem.torem(32px);
+  transform: rotate(180deg);
 
-    &-down {
-      transform: rotate(0deg);
-    }
+  &-down {
+    transform: rotate(0deg);
+  }
 }
 
 .dialog-subtitle {
@@ -72,7 +72,7 @@ $small-gap: rem.torem(8px);
   margin-top: rem.torem(24px);
 }
 
-.dialog-info {  
+.dialog-info {
   padding: 0 rem.torem(85px);
 }
 

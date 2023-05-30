@@ -1,4 +1,4 @@
-@use "styles/mixins/_rem.scss" as rem;
+@use "src/styles/mixins/_rem.scss" as rem;
 
 .title-without-name {
   margin-bottom: rem.torem(54px);

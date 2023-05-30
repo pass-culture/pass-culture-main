@@ -1,6 +1,6 @@
-@use "styles/variables/_colors.scss" as colors;
-@use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_rem.scss" as rem;
+@use "src/styles/variables/_colors.scss" as colors;
+@use "src/styles/mixins/_fonts.scss" as fonts;
+@use "src/styles/mixins/_rem.scss" as rem;
 
 // sass doc: https://sass-lang.com/documentation
 .tutorial-box {
@@ -77,10 +77,9 @@
 
     button {
       margin-left: rem.torem(20px);
-      min-width:
-        rem.torem(
-          103px
-        ); // we use similar width for all button to avoid them moving on click.
+      min-width: rem.torem(
+        103px
+      ); // we use similar width for all button to avoid them moving on click.
     }
   }
 }

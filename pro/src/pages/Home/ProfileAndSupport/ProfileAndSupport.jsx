@@ -7,7 +7,7 @@ import { ReactComponent as EditIcon } from 'icons/ico-pen-black.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { STEP_PROFILE_HASH } from '../HomepageBreadcrumb'
+// import { STEP_PROFILE_HASH } from '../HomepageBreadcrumb'
 
 import Support from './Support'
 

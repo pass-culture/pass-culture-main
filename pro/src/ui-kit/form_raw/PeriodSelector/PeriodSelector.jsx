@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 import React, { useRef } from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
 
-import { FORMAT_DD_MM_YYYY } from 'utils/date'
-
 import InputWithCalendar from './InputWithCalendar'
 
 registerLocale('fr', fr)
@@ -41,7 +39,6 @@ const PeriodSelector = ({
                   data-testid="period-filter-begin-picker"
                 />
               }
-              dateFormat={FORMAT_DD_MM_YYYY}
               disabled={isDisabled}
               dropdownMode="select"
               locale="fr"
@@ -74,7 +71,6 @@ const PeriodSelector = ({
                   data-testid="period-filter-end-picker"
                 />
               }
-              dateFormat={FORMAT_DD_MM_YYYY}
               disabled={isDisabled}
               dropdownMode="select"
               locale="fr"

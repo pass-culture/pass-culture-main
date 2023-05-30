@@ -1,6 +1,6 @@
 import { stringify } from 'query-string'
 
-import { removeWhitespaces } from 'utils/string'
+// import { removeWhitespaces } from 'utils/string'
 
 export const venueCreateOfferLink = (offererId, venueId, isVirtual) =>
   [
@@ -12,8 +12,7 @@ export const venueCreateOfferLink = (offererId, venueId, isVirtual) =>
     }),
   ].join('?')
 
-export const unhumanizeSiret = siret =>
-  removeWhitespaces(siret.replace(/[^[0-9]/g, ''))
+export const unhumanizeSiret = siret => siret
 
 export const humanizeSiret = siret => {
   const normalizedSiret = siret && unhumanizeSiret(siret)

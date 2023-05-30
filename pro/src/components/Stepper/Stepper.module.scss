@@ -1,6 +1,6 @@
-@use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
+@use "src/styles/mixins/_fonts.scss" as fonts;
+@use "src/styles/mixins/_rem.scss" as rem;
+@use "src/styles/variables/_colors.scss" as colors;
 
 $step-label-height: rem.torem(12px);
 $number-size: rem.torem(30px);
@@ -98,9 +98,8 @@ $number-size: rem.torem(30px);
 
         .number {
           .inner {
-            box-shadow:
-              inset $number-size $number-size $number-size
-              colors.$light-purple-with-transparency,
+            box-shadow: inset $number-size $number-size $number-size
+                colors.$light-purple-with-transparency,
               0 0 0 rem.torem(4px) colors.$light-purple-with-transparency;
           }
         }

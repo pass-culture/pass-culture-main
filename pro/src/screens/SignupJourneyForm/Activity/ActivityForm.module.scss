@@ -1,7 +1,7 @@
-@use "styles/variables/_forms.scss" as forms;
-@use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_size.scss" as size;
+@use "src/styles/variables/_forms.scss" as forms;
+@use "src/styles/mixins/_fonts.scss" as fonts;
+@use "src/styles/mixins/_rem.scss" as rem;
+@use "src/styles/variables/_size.scss" as size;
 
 .activity-form-wrapper {
   margin-bottom: rem.torem(14px);
@@ -22,13 +22,13 @@
 }
 
 .delete-button {
-    display: flex;
-    align-content: center;
+  display: flex;
+  align-content: center;
 
-    & svg {
-        width: 24px;
-        height: 24px;
-    }
+  & svg {
+    width: 24px;
+    height: 24px;
+  }
 }
 
 .target-customer-row {

@@ -1,4 +1,4 @@
-import { setUser as setSentryUser } from '@sentry/browser'
+// import { setUser as setSentryUser } from '@sentry/browser'
 import React from 'react'
 import { useSelector } from 'react-redux'
 
@@ -22,9 +22,9 @@ const App = ({ children }: AppProps): JSX.Element | null => {
   usePageTitle()
   useLogNavigation()
 
-  if (currentUser !== null) {
-    setSentryUser({ id: currentUser.id })
-  }
+  // if (currentUser !== null) {
+  //   setSentryUser({ id: currentUser.id })
+  // }
 
   if (isMaintenanceActivated) {
     window.location.href = URL_FOR_MAINTENANCE

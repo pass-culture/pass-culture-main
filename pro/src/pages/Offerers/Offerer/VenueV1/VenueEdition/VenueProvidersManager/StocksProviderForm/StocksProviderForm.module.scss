@@ -1,11 +1,11 @@
-@use "styles/variables/_colors.scss" as colors;
-@use "styles/mixins/_rem.scss" as rem;
+@use "src/styles/variables/_colors.scss" as colors;
+@use "src/styles/mixins/_rem.scss" as rem;
 
 .stocks-provider-form {
-    margin-top: rem.torem(1em);
+  margin-top: rem.torem(1em);
 }
 
 .aide-stock-button {
-    margin-top: rem.torem(32px);
-    color: colors.$black; 
+  margin-top: rem.torem(32px);
+  color: colors.$black;
 }

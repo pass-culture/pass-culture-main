@@ -9,7 +9,7 @@ import useNotification from 'hooks/useNotification'
 import { ReactComponent as CircleArrowIcon } from 'icons/ico-circle-arrow-left.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { addressAndDesignationFromSirenDecorator } from 'ui-kit/form_rff/fields/SirenField'
+// import { addressAndDesignationFromSirenDecorator } from 'ui-kit/form_rff/fields/SirenField'
 import Titles from 'ui-kit/Titles/Titles'
 
 import styles from './OffererCreation.module.scss'
@@ -76,7 +76,7 @@ const OffererCreation = (): JSX.Element => {
               pristine={pristine}
             />
           )}
-          decorators={[addressAndDesignationFromSirenDecorator]}
+          decorators={[]}
           onSubmit={handleSubmit}
         />
       )}

@@ -1,6 +1,6 @@
-@use "styles/variables/_colorsAdageIframe.scss" as colors;
-@use "styles/mixins/_rem.scss" as rem;
-@import "styles";
+@use "src/styles/variables/_colorsAdageIframe.scss" as colors;
+@use "src/styles/mixins/_rem.scss" as rem;
+@use "src/styles";
 
 .multi-select-autocomplete-container {
   width: rem.torem(213px);

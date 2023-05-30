@@ -23,8 +23,8 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByDisplayName } from 'utils/strings'
 
 import OffererCreationLinks from './OffererCreationLinks'
-import OffererDetails from './OffererDetails'
-import VenueCreationLinks from './VenueCreationLinks'
+// import OffererDetails from './OffererDetails'
+// import VenueCreationLinks from './VenueCreationLinks'
 
 const CREATE_OFFERER_SELECT_ID = 'creation'
 
@@ -181,12 +181,6 @@ const Offerers = ({
             </RedirectDialog>
           )}
           <h2 className="h-section-title">Structures et lieux</h2>
-          <OffererDetails
-            handleChangeOfferer={handleChangeOfferer}
-            isUserOffererValidated={isUserOffererValidated}
-            offererOptions={offererOptions}
-            selectedOfferer={selectedOfferer}
-          />
 
           {!isOffererSoftDeleted && (
             <VenueList
@@ -206,20 +200,6 @@ const Offerers = ({
           isOffererSoftDeleted && <SoftDeletedOffererWarning />
       }
       {!userHasOfferers && <OffererCreationLinks />}
-      {creationLinkCondition && (
-        <VenueCreationLinks
-          hasPhysicalVenue={venues.physicalVenues.length > 0}
-          hasVirtualOffers={
-            Boolean(venues.virtualVenue) &&
-            Boolean(selectedOfferer?.hasDigitalVenueAtLeastOneOffer)
-          }
-          offererId={
-            /* istanbul ignore next: DEBT, TO FIX */ selectedOfferer
-              ? selectedOfferer.nonHumanizedId
-              : null
-          }
-        />
-      )}
     </>
   )
 }

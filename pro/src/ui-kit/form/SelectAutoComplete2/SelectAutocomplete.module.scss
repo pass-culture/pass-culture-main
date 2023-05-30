@@ -1,7 +1,7 @@
-@use "styles/variables/_colors.scss" as colors;
-@use "styles/mixins/_a11y.scss" as a11y;
-@use "styles/mixins/_forms.scss" as forms;
-@use "styles/mixins/_rem.scss" as rem;
+@use "src/styles/variables/_colors.scss" as colors;
+@use "src/styles/mixins/_a11y.scss" as a11y;
+@use "src/styles/mixins/_forms.scss" as forms;
+@use "src/styles/mixins/_rem.scss" as rem;
 
 .multi-select-autocomplete-container {
   box-sizing: border-box;

@@ -5,10 +5,6 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { stringify } from 'utils/query-string'
-import {
-  mapApiToBrowser,
-  translateApiParamsToQueryParams,
-} from 'utils/translate'
 
 import { Audience } from '../../shared/types'
 import { TSearchFilters } from '../types'
@@ -24,10 +20,10 @@ const computeOffersUrlForGivenAudience = (
   const { creationMode, status } = offersSearchFilters
   const searchFiltersParams = { ...offersSearchFilters }
   if (status && status !== ALL_STATUS) {
-    searchFiltersParams.status = mapApiToBrowser[status]
+    searchFiltersParams.status = 'all'
   }
   if (creationMode && creationMode !== DEFAULT_CREATION_MODE.id) {
-    searchFiltersParams.creationMode = mapApiToBrowser[creationMode]
+    searchFiltersParams.creationMode = 'all'
   }
 
   if (offersPageNumber !== DEFAULT_PAGE) {
@@ -44,7 +40,7 @@ const computeOffersUrlForGivenAudience = (
     }
   })
 
-  const queryString = stringify(translateApiParamsToQueryParams(newFilters))
+  const queryString = 'all'
   const baseUrl =
     audience === Audience.INDIVIDUAL
       ? INDIVIDUAL_OFFERS_URL

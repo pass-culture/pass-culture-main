@@ -17,7 +17,7 @@ export const initCookieConsent = () => {
     // This is called before saving the cookie.
     // We use it to execute the api call used to log the user consents
     // Still, we do not change the cookie content
-    stringifyCookie: contents => {
+    stringifyCookie: (contents: any) => {
       const nonMandatoryConsents = Object.entries(contents).filter(([app]) => {
         return mandatoryCookies.indexOf(app) === -1
       })
@@ -46,14 +46,14 @@ export const initCookieConsent = () => {
               return app
             }),
         },
-        deviceId: localStorage.getItem('DEVICE_ID'),
+        deviceId: localStorage.getItem('DEVICE_ID') ?? '',
       }
 
       api.cookiesConsent(cookieConsent).then()
 
       return JSON.stringify(contents)
     },
-    parseCookie: cookie => {
+    parseCookie: (cookie: string) => {
       return JSON.parse(cookie)
     },
 
@@ -138,8 +138,7 @@ export const initCookieConsent = () => {
 
   setTimeout(() => {
     Orejime.init(orejimeConfig)
-    let storageId = localStorage.getItem('DEVICE_ID')
-    if (storageId == null) {
+    if (localStorage.getItem('DEVICE_ID') == null) {
       localStorage.setItem('DEVICE_ID', uuidv4())
     }
   })

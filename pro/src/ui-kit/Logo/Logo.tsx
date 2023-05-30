@@ -5,18 +5,16 @@ import { NavLink } from 'react-router-dom'
 
 import { ROOT_PATH } from 'utils/config'
 
-const Logo = ({ className, noLink, onClick, signPage }) => {
+const Logo = ({ className, noLink, onClick, signPage }: any) => {
   let src = `${ROOT_PATH}/icons/logo-pass-culture-header.svg`
   if (signPage) {
     src = `${ROOT_PATH}/icons/logo-pass-culture-white.svg`
   }
 
-  const handleClick = noLink ? e => e.preventDefault() : onClick
-
   return (
     <NavLink
       className={classnames('logo', className, { 'no-link': noLink })}
-      onClick={handleClick}
+      onClick={noLink ? e => e.preventDefault() : onClick}
       to={'/accueil'}
     >
       <img

@@ -11,7 +11,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import Icon from 'ui-kit/Icon/Icon'
 import { IconLinkBox } from 'ui-kit/IconLinkBox'
 
-import { STEP_STATS_HASH } from '../HomepageBreadcrumb'
+// import { STEP_STATS_HASH } from '../HomepageBreadcrumb'
 
 import styles from './OffererStats.module.scss'
 

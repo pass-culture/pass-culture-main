@@ -1,26 +1,26 @@
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors; 
+@use "src/styles/mixins/_rem.scss" as rem;
+@use "src/styles/mixins/_fonts.scss" as fonts;
+@use "src/styles/variables/_colors.scss" as colors;
 
 $confirmed-attachment-gap: rem.torem(32px);
 
 .confirmed-attachment-layout {
-    display: flex;
-    flex-direction: column;
-    gap: $confirmed-attachment-gap;
-    margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: $confirmed-attachment-gap;
+  margin: auto;
 }
 
 .title {
-    @include fonts.title1;
+  @include fonts.title1;
 }
 
 .informations {
-    @include fonts.title4;
-    
-    font-weight: 500;
+  @include fonts.title4;
+
+  font-weight: 500;
 }
 
 .home-button {
-    width: fit-content;
+  width: fit-content;
 }

@@ -1,49 +1,33 @@
 import './styles/index.scss'
-import { init as SentryInit } from '@sentry/browser'
-import * as Sentry from '@sentry/react'
-import { Integrations as TracingIntegrations } from '@sentry/tracing'
+// import { init as SentryInit } from '@sentry/browser'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import {
-  createRoutesFromChildren,
-  matchRoutes,
-  useLocation,
-  useNavigationType,
-} from 'react-router-dom'
 import smoothscroll from 'smoothscroll-polyfill'
 
-import Root from 'Root'
-import {
-  ENVIRONMENT_NAME,
-  SENTRY_SAMPLE_RATE,
-  SENTRY_SERVER_URL,
-} from 'utils/config'
-import { initCookieConsent } from 'utils/cookieConsentModal'
-
-import config from '../package.json'
-
 import { unregister } from './registerServiceWorker'
+import Root from './Root'
+import { initCookieConsent } from './utils/cookieConsentModal'
 
-// Initialize sentry
-if (SENTRY_SERVER_URL) {
-  SentryInit({
-    dsn: SENTRY_SERVER_URL,
-    environment: ENVIRONMENT_NAME,
-    release: config.version,
-    integrations: [
-      new TracingIntegrations.BrowserTracing({
-        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
-          React.useEffect,
-          useLocation,
-          useNavigationType,
-          createRoutesFromChildren,
-          matchRoutes
-        ),
-      }),
-    ],
-    tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
-  })
-}
+// // Initialize sentry
+// if (SENTRY_SERVER_URL) {
+//   SentryInit({
+//     dsn: SENTRY_SERVER_URL,
+//     environment: ENVIRONMENT_NAME,
+//     release: config.version,
+//     integrations: [
+//       new TracingIntegrations.BrowserTracing({
+//         routingInstrumentation: Sentry.reactRouterV6Instrumentation(
+//           React.useEffect,
+//           useLocation,
+//           useNavigationType,
+//           createRoutesFromChildren,
+//           matchRoutes
+//         ),
+//       }),
+//     ],
+//     tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
+//   })
+// }
 
 // Initialize cookie consent modal
 initCookieConsent()

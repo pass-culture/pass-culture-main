@@ -1,14 +1,14 @@
-@use "styles/variables/_colors.scss" as colors;
-@use "./CodeCountrySelect/CountryCodeSelect.module.scss" as
-  countryCodeSelect;
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_forms.scss" as forms;
-@use "styles/mixins/_forms.scss" as formsM;
-@use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_a11y.scss" as a11y;
+@use "src/styles/variables/_colors.scss" as colors;
+@use "./CodeCountrySelect/CountryCodeSelect.module.scss" as countryCodeSelect;
+@use "src/styles/mixins/_rem.scss" as rem;
+@use "src/styles/variables/_forms.scss" as forms;
+@use "src/styles/mixins/_forms.scss" as formsM;
+@use "src/styles/mixins/_fonts.scss" as fonts;
+@use "src/styles/mixins/_a11y.scss" as a11y;
 
 $input-phone-number-padding-left: calc(
-  countryCodeSelect.$input-width + rem.torem(8px) + countryCodeSelect.$focus-border-width
+  countryCodeSelect.$input-width + rem.torem(8px) +
+    countryCodeSelect.$focus-border-width
 );
 
 .phone-number {
@@ -17,7 +17,7 @@ $input-phone-number-padding-left: calc(
 
   &-input {
     padding-left: calc($input-phone-number-padding-left + rem.torem(1px));
-    
+
     &:focus {
       padding-left: $input-phone-number-padding-left;
     }
@@ -36,17 +36,17 @@ $input-phone-number-padding-left: calc(
 
     &-optional {
       @include fonts.small-caption;
-    
+
       color: colors.$grey-dark;
     }
 
     &-footer {
       @include formsM.field-layout-footer;
     }
-  
+
     &-error {
       flex: 1;
-  
+
       svg {
         flex: 0 0 15px;
       }

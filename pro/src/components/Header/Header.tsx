@@ -4,7 +4,6 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import useCurrentUser from 'hooks/useCurrentUser'
 import { CalendarIcon } from 'icons'
 import { ReactComponent as IconDesk } from 'icons/ico-desk.svg'
 import { ReactComponent as IconEuro } from 'icons/ico-euro.svg'
@@ -15,7 +14,6 @@ import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
 import Logo from 'ui-kit/Logo/Logo'
 
 const Header = () => {
-  const { currentUser } = useCurrentUser()
   const navigate = useNavigate()
   const { logEvent } = useAnalytics()
   const location = useLocation()
@@ -31,7 +29,6 @@ const Header = () => {
         <div className="nav-brand">
           <Logo
             className="nav-item"
-            isUserAdmin={currentUser.isAdmin}
             onClick={() => {
               logEvent?.(Events.CLICKED_PRO, { from: location.pathname })
             }}

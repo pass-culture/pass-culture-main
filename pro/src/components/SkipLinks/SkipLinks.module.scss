@@ -1,7 +1,7 @@
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
-@use "styles/variables/_size.scss" as size;
-@use "styles/mixins/_fonts.scss" as fonts;
+@use "src/styles/mixins/_rem.scss" as rem;
+@use "src/styles/variables/_colors.scss" as colors;
+@use "src/styles/variables/_size.scss" as size;
+@use "src/styles/mixins/_fonts.scss" as fonts;
 
 .skip-links {
   height: 0;
@@ -24,10 +24,11 @@
     align-items: center;
     height: rem.torem(32px);
     justify-content: flex-end;
-    
+
     // Align skiplink to passculture logo, add logo margin and padding of a nav item creating more space
     margin-right: calc(
-      size.$nav-brand-margin-right + size.$header-nav-item-padding + rem.torem(4px)
+      size.$nav-brand-margin-right + size.$header-nav-item-padding +
+        rem.torem(4px)
     );
 
     &-button {

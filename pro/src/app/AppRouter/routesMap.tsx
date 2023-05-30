@@ -23,10 +23,10 @@ import Unavailable from 'pages/Errors/Unavailable/Unavailable'
 import Homepage from 'pages/Home/Homepage'
 import { Logout } from 'pages/Logout'
 import LostPassword from 'pages/LostPassword'
-import OffererDetails from 'pages/Offerers/Offerer/OffererDetails/OffererDetails'
+// import OffererDetails from 'pages/Offerers/Offerer/OffererDetails/OffererDetails'
 import CollectiveDataEdition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition'
 import OffererCreation from 'pages/Offerers/OffererCreation'
-import { OffererStats } from 'pages/OffererStats'
+// import { OffererStats } from 'pages/OffererStats'
 import { OfferIndividualWizard } from 'pages/OfferIndividualWizard'
 import OffersRoute from 'pages/Offers'
 import OfferType from 'pages/OfferType'
@@ -158,12 +158,12 @@ const routes: IRoute[] = [
     path: '/structures/creation',
     title: 'Créer une structure',
   },
-  {
-    element: <OffererDetails />,
-    path: '/structures/:offererId',
-    title: 'Détails de la structure',
-    meta: { shouldRedirect: true },
-  },
+  // {
+  //   element: <OffererDetails />,
+  //   path: '/structures/:offererId',
+  //   title: 'Détails de la structure',
+  //   meta: { shouldRedirect: true },
+  // },
   {
     element: <VenueCreation />,
     path: '/structures/:offererId/lieux/creation',
@@ -328,12 +328,12 @@ const routes: IRoute[] = [
     path: '/profil',
     title: 'Profil',
   },
-  {
-    element: <OffererStats />,
-    path: '/statistiques',
-    title: 'Statistiques',
-    featureName: 'ENABLE_OFFERER_STATS',
-  },
+  // {
+  //   element: <OffererStats />,
+  //   path: '/statistiques',
+  //   title: 'Statistiques',
+  //   featureName: 'ENABLE_OFFERER_STATS',
+  // },
   {
     element: <SignupJourneyRoutes />,
     path: '/parcours-inscription/*',

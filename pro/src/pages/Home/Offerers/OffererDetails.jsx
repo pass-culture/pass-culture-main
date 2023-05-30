@@ -12,7 +12,7 @@ import { Banner, Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Select from 'ui-kit/form_raw/Select'
 
-import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
+// import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
 
 import MissingReimbursementPoints from './MissingReimbursementPoints/MissingReimbursementPoints'
 import VenueCreationLinks from './VenueCreationLinks'

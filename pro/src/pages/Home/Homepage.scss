@@ -1,6 +1,6 @@
-@use "styles/variables/_colors.scss" as colors;
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_fonts.scss" as fonts;
+@use "src/styles/variables/_colors.scss" as colors;
+@use "src/styles/mixins/_rem.scss" as rem;
+@use "src/styles/mixins/_fonts.scss" as fonts;
 
 .homepage {
   .pc-breadcrumb {
@@ -155,10 +155,9 @@
 
       .h-card {
         flex: 1 1;
-        margin-left:
-          rem.torem(
-            24px
-          ); // in case it's inside a section-row with multiple cards
+        margin-left: rem.torem(
+          24px
+        ); // in case it's inside a section-row with multiple cards
 
         &:first-child {
           margin-left: 0;
@@ -216,10 +215,9 @@
     }
 
     .h-card-inner {
-      padding-bottom:
-        rem.torem(
-          16px
-        ); // FIXME: remove this fix when venue list card get content.
+      padding-bottom: rem.torem(
+        16px
+      ); // FIXME: remove this fix when venue list card get content.
     }
   }
 }

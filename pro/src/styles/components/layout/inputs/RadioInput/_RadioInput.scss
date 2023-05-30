@@ -1,6 +1,6 @@
-@use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
+@use "src/styles/mixins/_fonts.scss" as fonts;
+@use "src/styles/mixins/_rem.scss" as rem;
+@use "src/styles/variables/_colors.scss" as colors;
 
 input[type="radio"] {
   appearance: none;
@@ -14,44 +14,40 @@ input[type="radio"] {
   width: rem.torem(20px);
 
   &:checked {
-    background:
-      radial-gradient(
-        colors.$grey-dark 0%,
-        colors.$grey-dark 40%,
+    background: radial-gradient(
+      colors.$grey-dark 0%,
+      colors.$grey-dark 40%,
+      transparent 50%,
+      transparent
+    );
+
+    &:hover {
+      background: radial-gradient(
+        colors.$primary 0%,
+        colors.$primary 40%,
         transparent 50%,
         transparent
       );
-
-    &:hover {
-      background:
-        radial-gradient(
-          colors.$primary 0%,
-          colors.$primary 40%,
-          transparent 50%,
-          transparent
-        );
       border-color: colors.$primary;
     }
 
     &:focus {
-      background:
-        radial-gradient(
-          colors.$primary-dark 0%,
-          colors.$primary-dark 40%,
-          transparent 50%,
-          transparent
-        );
+      background: radial-gradient(
+        colors.$primary-dark 0%,
+        colors.$primary-dark 40%,
+        transparent 50%,
+        transparent
+      );
       border-color: colors.$primary-dark;
     }
 
     &:disabled {
-      background:
-        radial-gradient(
-          colors.$grey-medium 0%,
-          colors.$grey-medium 40%,
-          transparent 50%,
-          transparent
-        );
+      background: radial-gradient(
+        colors.$grey-medium 0%,
+        colors.$grey-medium 40%,
+        transparent 50%,
+        transparent
+      );
       border-color: colors.$grey-medium;
       cursor: not-allowed;
       opacity: 1;

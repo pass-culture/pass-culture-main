@@ -2,8 +2,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Icon from 'ui-kit/Icon/Icon'
-
 const InputError = ({ children, name }) => {
   const inputErrorExtraProps = name
     ? {
@@ -12,7 +10,6 @@ const InputError = ({ children, name }) => {
     : {}
   return (
     <span className="it-errors" {...inputErrorExtraProps}>
-      <Icon alt="Une erreur est survenue" svg="ico-notification-error-red" />
       <pre>{children}</pre>
     </span>
   )

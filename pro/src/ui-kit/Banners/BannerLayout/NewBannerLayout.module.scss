@@ -1,6 +1,6 @@
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
-@use "styles/variables/_size.scss" as size;
+@use "src/styles/mixins/_rem.scss" as rem;
+@use "src/styles/variables/_colors.scss" as colors;
+@use "src/styles/variables/_size.scss" as size;
 
 .bi-banner {
   &.attention,
@@ -44,7 +44,9 @@
       &.provider {
         display: flex;
         align-items: center;
-        height: calc(size.$provider-banner-height - rem.torem(1px) * 2);  // banner height minus border height * 2
+        height: calc(
+          size.$provider-banner-height - rem.torem(1px) * 2
+        ); // banner height minus border height * 2
       }
     }
 

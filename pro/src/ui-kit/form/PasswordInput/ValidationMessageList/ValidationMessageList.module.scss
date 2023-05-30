@@ -1,4 +1,4 @@
-@use "styles/mixins/_forms.scss" as forms;
+@use "src/styles/mixins/_forms.scss" as forms;
 
 .password-footer {
   @include forms.field-layout-footer;

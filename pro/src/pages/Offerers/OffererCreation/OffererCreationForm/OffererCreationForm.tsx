@@ -5,7 +5,7 @@ import { FormSpy } from 'react-final-form'
 import { CreateOffererQueryModel } from 'apiClient/v1'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SirenField } from 'ui-kit/form_rff/fields/SirenField'
+// import { SirenField } from 'ui-kit/form_rff/fields/SirenField'
 
 import styles from './OffererCreationForm.module.scss'
 
@@ -47,7 +47,7 @@ const OffererCreationForm = ({
     <form onSubmit={handleSubmit}>
       <div>
         <div className={styles['op-creation-form']}>
-          <SirenField />
+          {/* <SirenField /> */}
           <FormSpy<CreateOffererQueryModel> render={renderName} />
           <FormSpy<CreateOffererQueryModel> render={renderAddress} />
         </div>

@@ -1,8 +1,8 @@
-@use "styles/variables/_colors.scss" as colors;
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_layout.scss" as layout;
-@use "styles/variables/_forms.scss" as forms;
+@use "src/styles/variables/_colors.scss" as colors;
+@use "src/styles/mixins/_rem.scss" as rem;
+@use "src/styles/mixins/_fonts.scss" as fonts;
+@use "src/styles/mixins/_layout.scss" as layout;
+@use "src/styles/variables/_forms.scss" as forms;
 
 .sign-in {
   display: flex;

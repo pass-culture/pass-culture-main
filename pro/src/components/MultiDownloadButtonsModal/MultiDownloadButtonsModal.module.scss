@@ -1,6 +1,6 @@
-@use "styles/variables/_colors.scss" as colors;
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_fonts.scss" as fonts;
+@use "src/styles/variables/_colors.scss" as colors;
+@use "src/styles/mixins/_rem.scss" as rem;
+@use "src/styles/mixins/_fonts.scss" as fonts;
 
 .download-button-box {
   z-index: 0;
@@ -26,7 +26,8 @@
     background: white;
     border-radius: rem.torem(6px);
     border: rem.torem(1px) solid #f1f1f4;
-    box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px) rgb(103 104 107 / 10%);
+    box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
+      rgb(103 104 107 / 10%);
     display: inline-block;
     overflow: hidden;
     padding: rem.torem(12px) 0;

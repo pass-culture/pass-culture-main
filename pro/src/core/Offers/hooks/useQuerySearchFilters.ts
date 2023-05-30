@@ -3,10 +3,6 @@ import { useLocation } from 'react-router-dom'
 
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { parse } from 'utils/query-string'
-import {
-  mapBrowserToApi,
-  translateQueryParamsToApiParams,
-} from 'utils/translate'
 
 import { Audience } from '../../shared/types'
 import { TSearchFilters } from '../types'
@@ -51,11 +47,11 @@ const useQuerySearchFilters = (): [TSearchFilters, number, Audience] => {
     const fieldsWithTranslatedValues = ['statut', 'creation'] as const
     fieldsWithTranslatedValues.forEach(field => {
       if (queryParams[field]) {
-        type mapBrowserToApiKey = keyof typeof mapBrowserToApi
+        type mapBrowserToApiKey = any
         const queryParamsKey: mapBrowserToApiKey = queryParams[
           field
         ] as mapBrowserToApiKey
-        const translatedValue = mapBrowserToApi[queryParamsKey]
+        const translatedValue = 'test'
         translatedFilters[field] = translatedValue
       }
     })

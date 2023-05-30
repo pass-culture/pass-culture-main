@@ -1,14 +1,15 @@
-@use "styles/variables/_colors.scss" as colors;
-@use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_rem.scss" as rem;
+@use "src/styles/variables/_colors.scss" as colors;
+@use "src/styles/mixins/_fonts.scss" as fonts;
+@use "src/styles/mixins/_rem.scss" as rem;
 
 p.tw-icon svg {
   margin-bottom: rem.torem(8px);
   width: rem.torem(30px);
   height: rem.torem(30px);
 
-  &, & path {
-    fill: colors.$black
+  &,
+  & path {
+    fill: colors.$black;
   }
 }
 
@@ -41,12 +42,11 @@ p.tw-icon svg {
   .header-example {
     @include fonts.button;
 
-    background-image:
-      linear-gradient(
-        97deg,
-        colors.$primary,
-        colors.$secondary
-      );
+    background-image: linear-gradient(
+      97deg,
+      colors.$primary,
+      colors.$secondary
+    );
     color: colors.$white;
     display: grid;
     grid-column: 1 / 5;
@@ -89,7 +89,7 @@ p.tw-icon svg {
 }
 
 .tw-description {
-  @include fonts.body
+  @include fonts.body;
 }
 
 .two-columns-section-block {
@@ -99,7 +99,8 @@ p.tw-icon svg {
   justify-content: center;
   align-items: flex-start;
 
-  p, h2 {
+  p,
+  h2 {
     text-align: left;
   }
 
@@ -111,7 +112,7 @@ p.tw-icon svg {
   }
 
   p {
-    @include fonts.body
+    @include fonts.body;
   }
 
   svg {
@@ -119,8 +120,9 @@ p.tw-icon svg {
     height: rem.torem(40px);
     margin-bottom: rem.torem(20px);
 
-    &, & path {
-      fill: colors.$black
+    &,
+    & path {
+      fill: colors.$black;
     }
   }
 }

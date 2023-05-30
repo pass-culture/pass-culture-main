@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 import { Field } from 'react-final-form'
 
-import getRequiredValidate from 'ui-kit/form_rff/utils/getRequiredValidate'
-
 const CheckboxField = ({
   SvgElement,
   className,
@@ -55,14 +53,7 @@ const CheckboxField = ({
     [disabled, labelAligned, renderCheckbox, renderLabelAlignedField]
   )
 
-  return (
-    <Field
-      name={name}
-      render={renderField}
-      type="checkbox"
-      validate={getRequiredValidate(required, 'boolean')}
-    />
-  )
+  return <Field name={name} render={renderField} type="checkbox" />
 }
 
 CheckboxField.defaultProps = {

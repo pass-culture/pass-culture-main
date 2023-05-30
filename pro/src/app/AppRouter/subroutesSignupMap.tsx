@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 import React from 'react'
 
-import SignupConfirmation from 'pages/Signup/SignupConfirmation/SignupConfirmation'
+// import SignupConfirmation from 'pages/Signup/SignupConfirmation/SignupConfirmation'
 import SignupContainer from 'pages/Signup/SignupContainer/SignupContainer'
 import SignUpValidation from 'pages/Signup/SignUpValidation'
 
@@ -15,12 +15,12 @@ export const routesSignup: IRoute[] = [
     path: '/',
     title: 'Créer un compte',
   },
-  {
-    element: <SignupConfirmation />,
-    parentPath: '/inscription',
-    path: '/confirmation',
-    title: 'Confirmation de création de compte',
-  },
+  // {
+  //   element: <SignupConfirmation />,
+  //   parentPath: '/inscription',
+  //   path: '/confirmation',
+  //   title: 'Confirmation de création de compte',
+  // },
   {
     element: <SignUpValidation />,
     parentPath: '/inscription',

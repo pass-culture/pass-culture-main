@@ -1,5 +1,5 @@
-@use "styles/variables/_colors.scss" as colors;
-@use "styles/mixins/_rem.scss" as rem;
+@use "src/styles/variables/_colors.scss" as colors;
+@use "src/styles/mixins/_rem.scss" as rem;
 
 $margin-between-steps: rem.torem(32px);
 $margin-between-content-and-time-line: rem.torem(16px);

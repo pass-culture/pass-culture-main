@@ -1,34 +1,34 @@
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors; 
+@use "src/styles/mixins/_rem.scss" as rem;
+@use "src/styles/mixins/_fonts.scss" as fonts;
+@use "src/styles/variables/_colors.scss" as colors;
 
 $welcome-gap: rem.torem(32px);
 
 .welcome-layout {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    gap: $welcome-gap;
-    margin: auto;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: $welcome-gap;
+  margin: auto;
 }
 
 .title {
-    @include fonts.title1;
+  @include fonts.title1;
 }
 
 .informations {
-    @include fonts.title4;
+  @include fonts.title4;
 
-    font-weight: 400;
+  font-weight: 400;
 }
 
 .continue-button {
-    width: fit-content;
-    margin: auto;
+  width: fit-content;
+  margin: auto;
 }
 
 .caption-informations {
-    @include fonts.caption;
-    
-    color: colors.$grey-dark;
+  @include fonts.caption;
+
+  color: colors.$grey-dark;
 }
