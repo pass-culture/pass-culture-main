@@ -180,6 +180,8 @@ class TrustedDeviceFeatureTest:
 
         client.post("/native/v1/signin", json=self.data)
 
+        assert LoginDeviceHistory.query.count() == 0
+
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def test_save_login_device_as_trusted_device_on_second_signin_with_same_device(self, client):
         user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
