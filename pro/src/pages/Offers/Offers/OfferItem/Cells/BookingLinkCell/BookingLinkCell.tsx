@@ -35,6 +35,7 @@ const BookingLinkCell = ({
     <ListIconButton
       className={styles['button']}
       url={bookingLink}
+      isExternal={false}
       icon={arrowIcon}
       onClick={() =>
         logEvent?.(CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING, {

@@ -27,7 +27,7 @@ const ListIconButton = ({
   hasTooltip,
   onClick,
   url,
-  isExternal = false,
+  isExternal = true,
   ...buttonAttrs
 }: ListIconButtonProps): JSX.Element => {
   const tooltipId = useId()
@@ -44,7 +44,7 @@ const ListIconButton = ({
     </button>
   )
 
-  const link = !isExternal ? (
+  const link = isExternal ? (
     <a className={cn(styles['button'], className)} href={url} onClick={onClick}>
       <SvgIcon src={icon} alt="" className={cn(styles['button-icon'])} />
       <div className={styles['visually-hidden']}>{children}</div>
