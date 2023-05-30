@@ -10,8 +10,8 @@ interface SortArrowProps {
   onClick: () => void
 }
 
-export const SortArrow = ({ sortingMode }: SortArrowProps) => (
-  <button className={styles['sorting-icons']}>
+export const SortArrow = ({ sortingMode, onClick }: SortArrowProps) => (
+  <button className={styles['sorting-icons']} onClick={onClick}>
     {sortingMode !== SortingMode.NONE ? (
       sortingMode === SortingMode.DESC ? (
         <Icon alt="Ne plus trier" svg="ico-arrow-up-r" />
