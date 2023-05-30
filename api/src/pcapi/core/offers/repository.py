@@ -39,7 +39,7 @@ def get_capped_offers_for_filters(
     status: str | None = None,
     venue_id: int | None = None,
     category_id: str | None = None,
-    name_keywords_or_isbn: str | None = None,
+    name_keywords_or_ean: str | None = None,
     creation_mode: str | None = None,
     period_beginning_date: str | None = None,
     period_ending_date: str | None = None,
@@ -51,7 +51,7 @@ def get_capped_offers_for_filters(
         status=status,
         venue_id=venue_id,
         category_id=category_id,
-        name_keywords_or_isbn=name_keywords_or_isbn,
+        name_keywords_or_ean=name_keywords_or_ean,
         creation_mode=creation_mode,
         period_beginning_date=period_beginning_date,  # type: ignore [arg-type]
         period_ending_date=period_ending_date,  # type: ignore [arg-type]
@@ -95,7 +95,7 @@ def get_offers_by_filters(
     status: str | None = None,
     venue_id: int | None = None,
     category_id: str | None = None,
-    name_keywords_or_isbn: str | None = None,
+    name_keywords_or_ean: str | None = None,
     creation_mode: str | None = None,
     period_beginning_date: datetime.datetime | None = None,
     period_ending_date: datetime.datetime | None = None,
@@ -122,15 +122,15 @@ def get_offers_by_filters(
             subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id == category_id
         ]
         query = query.filter(models.Offer.subcategoryId.in_(requested_subcategories))
-    if name_keywords_or_isbn is not None:
-        search = name_keywords_or_isbn
-        if len(name_keywords_or_isbn) > 3:
-            search = "%{}%".format(name_keywords_or_isbn)
+    if name_keywords_or_ean is not None:
+        search = name_keywords_or_ean
+        if len(name_keywords_or_ean) > 3:
+            search = "%{}%".format(name_keywords_or_ean)
         # We should really be using `union` instead of `union_all` here since we don't want duplicates but
         # 1. it's unlikely that a book will contain its ISBN in its name
         # 2. we need to migrate models.Offer.extraData to JSONB in order to use `union`
         query = query.filter(models.Offer.name.ilike(search)).union_all(
-            query.filter(models.Offer.extraData["isbn"].astext == name_keywords_or_isbn)
+            query.filter(models.Offer.extraData["ean"].astext == name_keywords_or_ean)
         )
     if status is not None:
         query = _filter_by_status(query, status)

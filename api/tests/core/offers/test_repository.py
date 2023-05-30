@@ -374,7 +374,7 @@ class GetCappedOffersForFiltersTest:
 
     class NameOrIsbnFilterTest:
         @pytest.mark.usefixtures("db_session")
-        def should_return_offer_which_name_equal_keyword_when_keyword_is_less_or_equal_than_3_letters(self, app):
+        def should_return_offer_which_name_equal_keyword_when_keyword_is_less_or_equal_than_3_letters(self):
             # given
             user_offerer = offerers_factories.UserOffererFactory()
             expected_offer = factories.OfferFactory(name="ocs", venue__managingOfferer=user_offerer.offerer)
@@ -385,7 +385,7 @@ class GetCappedOffersForFiltersTest:
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
-                name_keywords_or_isbn="ocs",
+                name_keywords_or_ean="ocs",
             )
 
             # then
@@ -409,7 +409,7 @@ class GetCappedOffersForFiltersTest:
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
-                name_keywords_or_isbn="seras-tu",
+                name_keywords_or_ean="seras-tu",
             )
 
             # then
@@ -433,7 +433,7 @@ class GetCappedOffersForFiltersTest:
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
-                name_keywords_or_isbn="mon océan",
+                name_keywords_or_ean="mon océan",
             )
 
             # then
@@ -454,7 +454,7 @@ class GetCappedOffersForFiltersTest:
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
-                name_keywords_or_isbn="ocean",
+                name_keywords_or_ean="ocean",
             )
 
             # then
@@ -464,16 +464,16 @@ class GetCappedOffersForFiltersTest:
             assert len(offers.offers) == 1
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_offer_which_isbn_is_equally_to_name_keyword_or_isbn(self, app):
+        def should_return_offer_which_ean_is_equal_to_name_keyword_or_ean(self):
             # given
             user_offerer = offerers_factories.UserOffererFactory()
             expected_offer = factories.OfferFactory(
-                name="seras-tu là", venue__managingOfferer=user_offerer.offerer, extraData={"isbn": "1234567891234"}
+                name="seras-tu là", venue__managingOfferer=user_offerer.offerer, extraData={"ean": "1234567891234"}
             )
             other_offer = factories.OfferFactory(
                 name="François, seras-tu là ?",
                 venue__managingOfferer=user_offerer.offerer,
-                extraData={"isbn": "1234567891235"},
+                extraData={"ean": "1234567891235"},
             )
 
             # when
@@ -481,7 +481,7 @@ class GetCappedOffersForFiltersTest:
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
-                name_keywords_or_isbn="1234567891234",
+                name_keywords_or_ean="1234567891234",
             )
 
             # then

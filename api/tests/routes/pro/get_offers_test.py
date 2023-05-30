@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+import pytest
+
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -9,11 +11,11 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class Returns200Test:
-    def should_filter_by_venue_when_user_is_admin_and_request_specific_venue_with_no_rights_on_it(
-        self, app, db_session
-    ):
-        # Given
+    def should_filter_by_venue_when_user_is_admin_and_request_specific_venue_with_no_rights_on_it(self, client):
         admin = users_factories.AdminFactory()
         offerer = offerers_factories.OffererFactory(name="My Offerer")
         departement_code = "12"
@@ -30,14 +32,11 @@ class Returns200Test:
         )
         offers_factories.ThingOfferFactory(venue=other_venue)
         stock = offers_factories.StockFactory(offer=offer_on_requested_venue)
-        client = TestClient(app.test_client()).with_session_auth(email=admin.email)
-        path = f"/offers?venueId={requested_venue.id}"
 
-        # when
+        client = client.with_session_auth(email=admin.email)
         with assert_no_duplicated_queries():
-            response = client.get(path)
+            response = client.get(f"/offers?venueId={requested_venue.id}")
 
-        # then
         assert response.status_code == 200
         assert response.json == [
             {
@@ -80,9 +79,7 @@ class Returns200Test:
             }
         ]
 
-    def should_filter_by_venue_when_user_is_not_admin_and_request_specific_venue_with_rights_on_it(
-        self, app, db_session
-    ):
+    def should_filter_by_venue_when_user_is_not_admin_and_request_specific_venue_with_rights_on_it(self, client):
         # Given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -93,11 +90,7 @@ class Returns200Test:
         offers_factories.ThingOfferFactory(venue=other_venue)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_session_auth(email=pro.email)
-            .get(f"/offers?venueId={requested_venue.id}")
-        )
+        response = client.with_session_auth(email=pro.email).get(f"/offers?venueId={requested_venue.id}")
 
         # then
         offers = response.json
@@ -105,7 +98,7 @@ class Returns200Test:
         assert len(offers) == 1
 
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def should_filter_offers_by_given_venue_id(self, mocked_list_offers, app, db_session):
+    def should_filter_offers_by_given_venue_id(self, mocked_list_offers, client):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -113,7 +106,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         # when
-        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get(f"/offers?venueId={venue.id}")
+        response = client.with_session_auth(email=pro.email).get(f"/offers?venueId={venue.id}")
 
         # then
         assert response.status_code == 200
@@ -123,7 +116,7 @@ class Returns200Test:
             offerer_id=None,
             venue_id=venue.id,
             category_id=None,
-            name_keywords_or_isbn=None,
+            name_keywords_or_ean=None,
             period_beginning_date=None,
             period_ending_date=None,
             status=None,
@@ -131,14 +124,14 @@ class Returns200Test:
         )
 
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def should_filter_offers_by_given_status(self, mocked_list_offers, app, db_session):
+    def should_filter_offers_by_given_status(self, mocked_list_offers, client):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
-        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get("/offers?status=active")
+        response = client.with_session_auth(email=pro.email).get("/offers?status=active")
 
         # then
         assert response.status_code == 200
@@ -148,7 +141,7 @@ class Returns200Test:
             offerer_id=None,
             venue_id=None,
             category_id=None,
-            name_keywords_or_isbn=None,
+            name_keywords_or_ean=None,
             period_beginning_date=None,
             period_ending_date=None,
             status="active",
@@ -156,7 +149,7 @@ class Returns200Test:
         )
 
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def should_filter_offers_by_given_offerer_id(self, mocked_list_offers, app, db_session):
+    def should_filter_offers_by_given_offerer_id(self, mocked_list_offers, client):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -164,9 +157,7 @@ class Returns200Test:
         offerers_factories.VenueFactory(managingOfferer=offerer)
 
         # when
-        response = (
-            TestClient(app.test_client()).with_session_auth(email=pro.email).get(f"/offers?offererId={offerer.id}")
-        )
+        response = client.with_session_auth(email=pro.email).get(f"/offers?offererId={offerer.id}")
 
         # then
         assert response.status_code == 200
@@ -176,7 +167,7 @@ class Returns200Test:
             offerer_id=offerer.id,
             venue_id=None,
             category_id=None,
-            name_keywords_or_isbn=None,
+            name_keywords_or_ean=None,
             period_beginning_date=None,
             period_ending_date=None,
             status=None,
@@ -184,14 +175,14 @@ class Returns200Test:
         )
 
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def should_filter_offers_by_given_creation_mode(self, mocked_list_offers, app, db_session):
+    def should_filter_offers_by_given_creation_mode(self, mocked_list_offers, client):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
-        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get("/offers?creationMode=imported")
+        response = client.with_session_auth(email=pro.email).get("/offers?creationMode=imported")
 
         # then
         assert response.status_code == 200
@@ -201,7 +192,7 @@ class Returns200Test:
             offerer_id=None,
             venue_id=None,
             category_id=None,
-            name_keywords_or_isbn=None,
+            name_keywords_or_ean=None,
             period_beginning_date=None,
             period_ending_date=None,
             status=None,
@@ -209,18 +200,14 @@ class Returns200Test:
         )
 
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_period_beginning_date(self, mocked_list_offers, app, db_session):
+    def test_results_are_filtered_by_given_period_beginning_date(self, mocked_list_offers, client):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_session_auth(email=pro.email)
-            .get("/offers?periodBeginningDate=2020-10-11T00:00:00Z")
-        )
+        response = client.with_session_auth(email=pro.email).get("/offers?periodBeginningDate=2020-10-11T00:00:00Z")
 
         # then
         assert response.status_code == 200
@@ -230,7 +217,7 @@ class Returns200Test:
             offerer_id=None,
             venue_id=None,
             category_id=None,
-            name_keywords_or_isbn=None,
+            name_keywords_or_ean=None,
             period_beginning_date="2020-10-11T00:00:00Z",
             period_ending_date=None,
             status=None,
@@ -238,18 +225,14 @@ class Returns200Test:
         )
 
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_period_ending_date(self, mocked_list_offers, app, db_session):
+    def test_results_are_filtered_by_given_period_ending_date(self, mocked_list_offers, client):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_session_auth(email=pro.email)
-            .get("/offers?periodEndingDate=2020-10-11T23:59:59Z")
-        )
+        response = client.with_session_auth(email=pro.email).get("/offers?periodEndingDate=2020-10-11T23:59:59Z")
 
         # then
         assert response.status_code == 200
@@ -259,7 +242,7 @@ class Returns200Test:
             offerer_id=None,
             venue_id=None,
             category_id=None,
-            name_keywords_or_isbn=None,
+            name_keywords_or_ean=None,
             period_beginning_date=None,
             period_ending_date="2020-10-11T23:59:59Z",
             status=None,
@@ -284,7 +267,7 @@ class Returns200Test:
             offerer_id=None,
             venue_id=None,
             category_id="LIVRE",
-            name_keywords_or_isbn=None,
+            name_keywords_or_ean=None,
             period_beginning_date=None,
             period_ending_date=None,
             status=None,
