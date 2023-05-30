@@ -56,10 +56,12 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
         raise ApiErrors({"code": "ACCOUNT_DELETED", "general": ["Le compte a été supprimé"]})
 
     if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active():
-        if users_api.should_save_login_device_as_trusted_device(body.device_info, user):
-            users_api.save_trusted_device(body.device_info, user)
+        login_history = None
+        if body.device_info is not None:
+            if users_api.should_save_login_device_as_trusted_device(body.device_info, user):
+                users_api.save_trusted_device(body.device_info, user)
 
-        login_history = users_api.update_login_device_history(body.device_info, user)
+            login_history = users_api.update_login_device_history(body.device_info, user)
 
         if users_api.is_suspicious_login(body.device_info, user):
             transactional_mails.send_suspicious_login_email(user.email, login_history)
