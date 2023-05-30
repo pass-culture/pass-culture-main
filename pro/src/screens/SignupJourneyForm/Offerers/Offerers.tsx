@@ -98,6 +98,26 @@ const Offerers = (): JSX.Element => {
     }
   }
 
+  const doLinkUserToOfferer = () => {
+    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+      from: location.pathname,
+      to: 'LinkModal',
+      used: OnboardingFormNavigationAction.LinkModalActionButton,
+      categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
+    })
+    setShowLinkDialog(true)
+  }
+
+  const cancelLinkUserToOfferer = () => {
+    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+      from: 'LinkModal',
+      to: location.pathname,
+      used: OnboardingFormNavigationAction.LinkModalActionButton,
+      categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
+    })
+    setShowLinkDialog(false)
+  }
+
   return (
     <div className={styles['existing-offerers-layout-wrapper']}>
       <div className={styles['existing-offerers-layout']}>
@@ -143,10 +163,7 @@ const Offerers = (): JSX.Element => {
             </Button>
           )}
         </div>
-        <Button
-          variant={ButtonVariant.SECONDARY}
-          onClick={() => setShowLinkDialog(true)}
-        >
+        <Button variant={ButtonVariant.SECONDARY} onClick={doLinkUserToOfferer}>
           Rejoindre cet espace
         </Button>
       </div>
@@ -175,7 +192,7 @@ const Offerers = (): JSX.Element => {
       {showLinkDialog && (
         <ConfirmDialog
           icon={AddUserIcon}
-          onCancel={() => setShowLinkDialog(false)}
+          onCancel={cancelLinkUserToOfferer}
           title="Êtes-vous sûr de vouloir rejoindre cet espace ?"
           onConfirm={doLinkAccount}
           confirmText="Rejoindre cet espace"
