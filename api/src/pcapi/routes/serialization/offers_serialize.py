@@ -162,7 +162,10 @@ class PatchAllOffersActiveStatusBodyModel(BaseModel):
     is_active: bool
     offerer_id: int | None
     venue_id: int | None
-    name_or_isbn: str | None
+    # We should not use an alias nameOrIsbn, but ListOffersQueryModel is used
+    # by the pro front for individual and collective search and most of the logic
+    # is shared on the offer search page
+    name_or_ean: str | None = Field(alias="nameOrIsbn")
     category_id: str | None
     creation_mode: str | None
     status: str | None
@@ -224,7 +227,10 @@ class ListOffersResponseModel(BaseModel):
 
 
 class ListOffersQueryModel(BaseModel):
-    nameOrIsbn: str | None
+    # We should not use an alias nameOrIsbn, but ListOffersQueryModel is used
+    # by the pro front for individual and collective search and most of the logic
+    # is shared on the offer search page
+    name_or_ean: str | None = Field(alias="nameOrIsbn")
     offerer_id: int | None
     status: str | None
     venue_id: int | None
