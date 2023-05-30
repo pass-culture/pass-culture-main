@@ -249,6 +249,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
 
 
 class CollectiveRequestResponseModel(BaseModel):
+    id: int
     email: str
     phone_number: str | None
     requested_date: date | None
