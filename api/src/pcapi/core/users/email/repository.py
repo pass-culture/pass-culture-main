@@ -1,6 +1,8 @@
 from datetime import datetime
-from datetime import timedelta
 
+from flask_sqlalchemy import BaseQuery
+
+from pcapi.core.users import constants
 from pcapi.core.users.models import EmailHistoryEventTypeEnum
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
@@ -25,14 +27,20 @@ def has_been_validated(entry: UserEmailHistory) -> bool:
     return query.first() is not None
 
 
+def _query_ordered_email_update_entry(user: User) -> BaseQuery:
+    latest_entries = UserEmailHistory.query.filter_by(user=user).order_by(UserEmailHistory.creationDate.desc())
+    return latest_entries
+
+
 def get_latest_pending_email_validation(user: User) -> None | UserEmailHistory:
-    a_day_ago = datetime.utcnow() - timedelta(days=1)
+    creation_date_limit = datetime.utcnow() - constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
     latest_entry = (
-        UserEmailHistory.query.filter_by(user=user)
-        .filter(UserEmailHistory.creationDate >= a_day_ago)
-        .order_by(UserEmailHistory.creationDate.desc())
-        .first()
+        _query_ordered_email_update_entry(user).filter(UserEmailHistory.creationDate >= creation_date_limit).first()
     )
     if not latest_entry or latest_entry.eventType != EmailHistoryEventTypeEnum.UPDATE_REQUEST:
         return None
     return latest_entry
+
+
+def get_email_update_latest_event(user: User) -> UserEmailHistory | None:
+    return _query_ordered_email_update_entry(user).first()

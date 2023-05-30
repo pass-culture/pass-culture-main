@@ -2642,6 +2642,28 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
+            "/native/v1/profile/email_update/status": {
+                "get": {
+                    "description": "",
+                    "operationId": "get_/native/v1/profile/email_update/status",
+                    "parameters": [],
+                    "responses": {
+                        "200": {"description": "OK"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/ValidationError"},
+                                },
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "get_email_update_status <GET>",
+                    "tags": [],
+                },
+            },
             "/native/v1/profile/token_expiration": {
                 "get": {
                     "description": "",
