@@ -51,7 +51,7 @@ class BaseUserFactory(BaseFactory):
         age = 40
 
     email = factory.Faker("email")
-    dateOfBirth = LazyAttribute(lambda o: date.today() - relativedelta(years=o.age))
+    dateOfBirth = LazyAttribute(lambda o: datetime.utcnow().date() - relativedelta(years=o.age))
     isEmailValidated = False
 
     @classmethod
@@ -80,63 +80,11 @@ class BaseUserFactory(BaseFactory):
         instance.clearTextPassword = password
         return instance
 
-
-class BeneficiaryFactory(BaseUserFactory):
-    """
-    Generates a beneficiary as if it had finished the deposit activation process.
-    On top of the base user form, the user went through
-    - email validation
-    - phone number validation
-    - profile completion
-    - identity validation
-    - honor statement
-    - deposit activation (automatic after all the above)
-    """
-
-    class Meta:
-        model = models.User
-
-    class Params:
-        age = 18
-
-    # Email validation
-    isEmailValidated = True
-    # Miscellaneous flags
-    hasSeenProTutorials = True
-    hasSeenProRgs = False
-
-    # Phone number validation
-    phoneNumber = factory.Faker("phone_number", locale="fr_FR")
-    phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-
-    # Profile completion
-    address = factory.Faker("street_address", locale="fr_FR")
-    city = factory.Faker("city", locale="fr_FR")
-    firstName = factory.Faker("first_name", locale="fr_FR")
-    lastName = factory.Faker("last_name", locale="fr_FR")
-    postalCode = factory.Faker("postcode")
-
-    # Identity validation : see below with beneficiaryFraudChecks function
-    validatedBirthDate = LazyAttribute(lambda o: date.today() - relativedelta(years=o.age))
-    idPieceNumber = factory.Faker("ssn", locale="fr_FR")
-
-    # Honor statement : see below with beneficiaryFraudChecks function
-
-    # Deposit activation : see below with deposit function
-    roles = factory.LazyAttribute(
-        lambda o: [models.UserRole.UNDERAGE_BENEFICIARY]
-        if o.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
-        else [models.UserRole.BENEFICIARY]
-    )
-
     @classmethod
-    def _create(
-        cls,
-        model_class: typing.Type[models.User],
-        *args: typing.Any,
-        **kwargs: typing.Any,
-    ) -> models.User:
-        return super()._create(model_class, *args, **kwargs)
+    def beneficiary_fraud_checks(
+        cls, obj: models.User, **kwargs: typing.Any
+    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+        return []
 
     @factory.post_generation
     def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
@@ -145,36 +93,196 @@ class BeneficiaryFactory(BaseUserFactory):
         extracted: fraud_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
     ) -> list[fraud_models.BeneficiaryFraudCheck]:
-        import pcapi.core.fraud.factories as fraud_factories
-
         if not create:
             return []
 
-        # Phone number validation
-        phone_validation_fraud_check = fraud_factories.PhoneValidationFraudCheckFactory(user=obj)
+        return BaseUserFactory.beneficiary_fraud_checks(obj, **kwargs)
 
-        # Profile completion
-        profile_completion_fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(user=obj)
 
-        # Identity validation
+class EmailValidatedUserFactory(BaseUserFactory):
+    """
+    On top of the base user form, the user went through
+    - email validation
+    """
+
+    isEmailValidated = True
+
+
+class PhoneValidatedUserFactory(EmailValidatedUserFactory):
+    """
+    On top of the base user form, the user went through
+    - email validation
+    - phone number validation (if user is at least 18yo)
+    """
+
+    phoneNumber = factory.LazyAttribute(
+        lambda o: "+33612345678" if o.age == users_constants.ELIGIBILITY_AGE_18 else None
+    )
+    phoneValidationStatus = factory.LazyAttribute(
+        lambda o: users_models.PhoneValidationStatusType.VALIDATED
+        if o.age == users_constants.ELIGIBILITY_AGE_18
+        else None
+    )
+
+    @classmethod
+    def beneficiary_fraud_checks(
+        cls, obj: models.User, **kwargs: typing.Any
+    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+        import pcapi.core.fraud.factories as fraud_factories
+
+        fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
+        if obj.age == users_constants.ELIGIBILITY_AGE_18:
+            fraud_checks.append(fraud_factories.PhoneValidationFraudCheckFactory(user=obj))
+        return fraud_checks
+
+    @factory.post_generation
+    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        **kwargs: typing.Any,
+    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+        if not create:
+            return []
+
+        return PhoneValidatedUserFactory.beneficiary_fraud_checks(obj, **kwargs)
+
+
+class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
+    """
+    On top of the base user form, the user went through
+    - email validation
+    - phone number validation
+    - profile completion
+    """
+
+    hasSeenProTutorials = True
+    hasSeenProRgs = True
+
+    address = factory.Faker("street_address", locale="fr_FR")
+    city = factory.Faker("city", locale="fr_FR")
+    firstName = factory.Faker("first_name", locale="fr_FR")
+    lastName = factory.Faker("last_name", locale="fr_FR")
+    postalCode = factory.Faker("postcode")
+
+    @classmethod
+    def beneficiary_fraud_checks(
+        cls, obj: models.User, **kwargs: typing.Any
+    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+        import pcapi.core.fraud.factories as fraud_factories
+
+        fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
+        fraud_checks.append(fraud_factories.ProfileCompletionFraudCheckFactory(user=obj))
+        return fraud_checks
+
+    @factory.post_generation
+    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        **kwargs: typing.Any,
+    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+        if not create:
+            return []
+
+        return ProfileCompletedUserFactory.beneficiary_fraud_checks(obj, **kwargs)
+
+
+class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
+    """
+    On top of the base user form, the user went through
+    - email validation
+    - phone number validation
+    - profile completion
+    - identity validation
+    """
+
+    validatedBirthDate = LazyAttribute(lambda o: datetime.utcnow().date() - relativedelta(years=o.age))
+    idPieceNumber = factory.Faker("ssn", locale="fr_FR")
+
+    @classmethod
+    def beneficiary_fraud_checks(
+        cls, obj: models.User, **kwargs: typing.Any
+    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+        import pcapi.core.fraud.factories as fraud_factories
+
+        fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
         identity_check_type = kwargs.get("type", fraud_models.FraudCheckType.UBBLE)
         identity_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=obj,
             type=identity_check_type,
             status=fraud_models.FraudCheckStatus.OK,
         )
-
-        # Honor statement
-        honor_statement_fraud_check = fraud_factories.HonorStatementFraudCheckFactory(user=obj)
-
-        fraud_checks = [
-            phone_validation_fraud_check,
-            profile_completion_fraud_check,
-            identity_fraud_check,
-            honor_statement_fraud_check,
-        ]
-
+        fraud_checks.append(identity_fraud_check)
         return fraud_checks
+
+    @factory.post_generation
+    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        **kwargs: typing.Any,
+    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+        if not create:
+            return []
+
+        return IdentityValidatedUserFactory.beneficiary_fraud_checks(obj, **kwargs)
+
+
+class HonorStatementValidatedUserFactory(IdentityValidatedUserFactory):
+    """
+    On top of the base user form, the user went through
+    - email validation
+    - phone number validation
+    - profile completion
+    - identity validation
+    - honor statement
+    """
+
+    @classmethod
+    def beneficiary_fraud_checks(
+        cls, obj: models.User, **kwargs: typing.Any
+    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+        import pcapi.core.fraud.factories as fraud_factories
+
+        fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
+        fraud_checks.append(fraud_factories.HonorStatementFraudCheckFactory(user=obj))
+        return fraud_checks
+
+    @factory.post_generation
+    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        **kwargs: typing.Any,
+    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+        if not create:
+            return []
+
+        return HonorStatementValidatedUserFactory.beneficiary_fraud_checks(obj, **kwargs)
+
+
+class BeneficiaryFactory(HonorStatementValidatedUserFactory):
+    """
+    Generates a beneficiary as if it had finished the deposit activation process.
+    On top of the base user form, the user went through
+    - email validation
+    - phone number validation
+    - profile completion
+    - identity validation
+    - honor statement
+    - deposit activation
+    """
+
+    class Params:
+        age = 18
+
+    # Deposit activation : see below with deposit function
+    roles = factory.LazyAttribute(
+        lambda o: [models.UserRole.UNDERAGE_BENEFICIARY]
+        if o.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
+        else [models.UserRole.BENEFICIARY]
+    )
 
     @factory.post_generation
     def deposit(  # pylint: disable=no-self-argument

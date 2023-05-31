@@ -36,7 +36,9 @@ def generate_user() -> utils.BackofficeResponse:
 
     try:
         user_data = users_generator.GenerateUserData(
-            age=form.age.data, is_email_validated=form.is_email_validated.data, is_beneficiary=form.is_beneficiary.data
+            age=form.age.data,
+            step=form.step.data,
+            is_beneficiary=form.is_beneficiary.data,
         )
         user = users_generator.generate_user(user_data=user_data)
     except users_exceptions.UserGenerationForbiddenException:
