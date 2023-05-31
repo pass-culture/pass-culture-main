@@ -4,7 +4,7 @@ import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE
+from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE
 from pcapi.core.offers import factories as offers_factories
 
 from tests.conftest import clean_database
@@ -38,19 +38,19 @@ class ArchiveOldBookingsTest:
 
     @clean_database
     @pytest.mark.parametrize(
-        "subcategory",
-        FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE,
+        "subcategoryId",
+        FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE,
     )
-    def test_old_subcategories_bookings_are_archived(self, app, subcategory):
+    def test_old_subcategories_bookings_are_archived(self, app, subcategoryId):
         # given
         now = datetime.datetime.utcnow()
         recent = now - datetime.timedelta(days=29, hours=23)
         old = now - datetime.timedelta(days=30, hours=1)
         stock_free = offers_factories.StockFactory(
-            offer=offers_factories.OfferFactory(subcategoryId=subcategory.id), price=0
+            offer=offers_factories.OfferFactory(subcategoryId=subcategoryId), price=0
         )
         stock_not_free = offers_factories.StockFactory(
-            offer=offers_factories.OfferFactory(subcategoryId=subcategory.id), price=10
+            offer=offers_factories.OfferFactory(subcategoryId=subcategoryId), price=10
         )
         recent_booking = bookings_factories.BookingFactory(stock=stock_free, dateCreated=recent)
         old_booking = bookings_factories.BookingFactory(stock=stock_free, dateCreated=old)

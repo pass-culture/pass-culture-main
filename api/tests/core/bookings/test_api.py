@@ -19,7 +19,7 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models
 from pcapi.core.bookings.api import cancel_unstored_external_bookings
-from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE
+from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -1215,19 +1215,19 @@ class ArchiveOldBookingsTest:
         assert old_booking.displayAsEnded
 
     @pytest.mark.parametrize(
-        "subcategory",
-        FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE,
+        "subcategoryId",
+        FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE,
     )
-    def test_old_subcategories_bookings_are_archived(self, db_session, subcategory):
+    def test_old_subcategories_bookings_are_archived(self, db_session, subcategoryId):
         # given
         now = datetime.utcnow()
         recent = now - timedelta(days=29, hours=23)
         old = now - timedelta(days=30, hours=1)
         stock_free = offers_factories.StockFactory(
-            offer=offers_factories.OfferFactory(subcategoryId=subcategory.id), price=0
+            offer=offers_factories.OfferFactory(subcategoryId=subcategoryId), price=0
         )
         stock_not_free = offers_factories.StockFactory(
-            offer=offers_factories.OfferFactory(subcategoryId=subcategory.id), price=10
+            offer=offers_factories.OfferFactory(subcategoryId=subcategoryId), price=10
         )
         recent_booking = bookings_factories.BookingFactory(stock=stock_free, dateCreated=recent)
         old_booking = bookings_factories.BookingFactory(stock=stock_free, dateCreated=old)

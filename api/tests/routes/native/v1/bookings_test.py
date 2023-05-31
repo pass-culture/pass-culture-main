@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
-from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE
+from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -113,11 +113,11 @@ class PostBookingTest:
         assert response.json["external_booking"] == "Cette offre n'est plus réservable."
 
     @pytest.mark.parametrize(
-        "subcategory,price",
-        [(category, 0) for category in FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE],
+        "subcategoryId,price",
+        [(subcategoryId, 0) for subcategoryId in FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE],
     )
-    def test_post_free_bookings_from_subcategories_with_archive(self, client, subcategory, price):
-        stock = StockFactory(price=price, offer__subcategoryId=subcategory.id)
+    def test_post_free_bookings_from_subcategories_with_archive(self, client, subcategoryId, price):
+        stock = StockFactory(price=price, offer__subcategoryId=subcategoryId)
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
         client = client.with_token(self.identifier)
