@@ -3,9 +3,11 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import type { Hit } from 'react-instantsearch-core'
 
-import { AdageHeaderLink } from 'apiClient/adage'
+import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
+import { AdageHeaderLink } from 'apiClient/adage/models/AdageHeaderLink'
 import { apiAdage } from 'apiClient/api'
 import * as useNotification from 'hooks/useNotification'
+import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAlgoliaHits,
   defaultEducationalInstitution,
@@ -20,8 +22,15 @@ interface HeaderLinkProps {
   headerLinkName: AdageHeaderLink
 }
 
-const renderAdageHeader = (hits: Hit<ResultType>[] = []) => {
-  renderWithProviders(<AdageHeaderComponent hits={hits} />)
+const renderAdageHeader = (
+  hits: Hit<ResultType>[] = [],
+  user: AuthenticatedResponse
+) => {
+  renderWithProviders(
+    <AdageUserContext.Provider value={{ adageUser: user }}>
+      <AdageHeaderComponent hits={hits} />
+    </AdageUserContext.Provider>
+  )
 }
 
 jest.mock('apiClient/api', () => ({
@@ -33,6 +42,13 @@ jest.mock('apiClient/api', () => ({
 
 describe('AdageHeader', () => {
   const notifyError = jest.fn()
+  const user = {
+    role: AdageFrontRoles.REDACTOR,
+    uai: 'uai',
+    departmentCode: '30',
+    institutionName: 'COLLEGE BELLEVUE',
+    institutionCity: 'ALES',
+  }
 
   beforeEach(() => {
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
@@ -45,7 +61,7 @@ describe('AdageHeader', () => {
   })
 
   it('should render adage header', async () => {
-    renderAdageHeader()
+    renderAdageHeader([], user)
     await waitFor(() =>
       expect(
         apiAdage.getEducationalInstitutionWithBudget
@@ -60,7 +76,7 @@ describe('AdageHeader', () => {
   })
 
   it('should render the number of hits', async () => {
-    renderAdageHeader([defaultAlgoliaHits, defaultAlgoliaHits])
+    renderAdageHeader([defaultAlgoliaHits, defaultAlgoliaHits], user)
     await waitFor(() =>
       expect(screen.getByText('Budget restant')).toBeInTheDocument()
     )
@@ -68,7 +84,7 @@ describe('AdageHeader', () => {
   })
 
   it('should display the institution budget', async () => {
-    renderAdageHeader()
+    renderAdageHeader([], user)
     await waitFor(() =>
       expect(screen.getByText('Budget restant')).toBeInTheDocument()
     )
@@ -81,7 +97,7 @@ describe('AdageHeader', () => {
       .spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
       .mockRejectedValueOnce({})
 
-    renderAdageHeader()
+    renderAdageHeader([], user)
     await waitFor(() =>
       expect(apiAdage.getEducationalInstitutionWithBudget).toHaveBeenCalled()
     )
@@ -103,7 +119,7 @@ describe('AdageHeader', () => {
   it.each(headerLinks)(
     'should log click on header link',
     async (headerLink: HeaderLinkProps) => {
-      renderAdageHeader()
+      renderAdageHeader([], user)
       await waitFor(() =>
         expect(screen.getByText('Budget restant')).toBeInTheDocument()
       )
@@ -117,4 +133,11 @@ describe('AdageHeader', () => {
       })
     }
   )
+  it('should not display budget when user is readonly ', async () => {
+    jest.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
+
+    renderAdageHeader([], { ...user, role: AdageFrontRoles.READONLY })
+
+    expect(apiAdage.getEducationalInstitutionWithBudget).not.toHaveBeenCalled()
+  })
 })
