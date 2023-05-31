@@ -289,6 +289,14 @@ def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemMode
     return ""
 
 
+def format_fraud_action_dict_url(fraud_action_dict: dict) -> str:
+    if fraud_action_dict["type"] == fraud_models.FraudCheckType.UBBLE.value:
+        return f"https://dashboard.ubble.ai/identifications/{fraud_action_dict['techId']}"
+    if fraud_action_dict["type"] == fraud_models.FraudCheckType.DMS.value and fraud_action_dict["technicalDetails"]:
+        return f"https://www.demarches-simplifiees.fr/procedures/{fraud_action_dict['technicalDetails']['procedure_number']}/dossiers/{fraud_action_dict['techId']}"
+    return ""
+
+
 def format_adage_referred(venues: list[offerers_models.Venue]) -> str:
     return f"{len([venue for venue in venues if venue.adageId])}/{len(venues)}"
 
@@ -450,6 +458,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_dms_status"] = format_dms_status
     app.jinja_env.filters["format_graphql_application_status"] = format_graphql_application_status
     app.jinja_env.filters["format_fraud_check_url"] = format_fraud_check_url
+    app.jinja_env.filters["format_fraud_action_dict_url"] = format_fraud_action_dict_url
     app.jinja_env.filters["format_role"] = format_role
     app.jinja_env.filters["format_state"] = format_state
     app.jinja_env.filters["format_reason_label"] = format_reason_label

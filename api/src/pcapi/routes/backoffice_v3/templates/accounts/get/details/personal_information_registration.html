@@ -17,10 +17,10 @@
   </div>
   {% for step in tunnel.steps %}
     {% call macro.build_step_content(step) %}
-      {{ macro.build_idcheck_histories(step.id_check_histories) }}
+      {{ macro.build_idcheck_histories(step.fraud_actions_history) }}
     {% endcall %}
   {% endfor %}
   <div class="row all-id-check-history-container d-none">
-    <div class="col-md-12 well text-center">{{ macro.build_idcheck_histories(id_check_histories_desc) }}</div>
+    <div class="col-md-12 well text-center">{{ macro.build_idcheck_histories(fraud_actions_desc) }}</div>
   </div>
 {% endcall %}

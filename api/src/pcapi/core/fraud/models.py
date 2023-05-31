@@ -593,6 +593,9 @@ class BeneficiaryFraudReview(PcObject, Base, Model):
     authorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
     author: users_models.User = sa.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")
     dateReviewed: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    eligibilityType: users_models.EligibilityType | None = sa.Column(
+        sa.Enum(users_models.EligibilityType, create_constraint=False), nullable=True
+    )
     reason = sa.Column(sa.Text)
     review = sa.Column(sa.Enum(FraudReviewStatus, create_constraint=False))
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)

@@ -694,17 +694,25 @@ def validate_beneficiary(
     reviewer: users_models.User,
     reason: str,
     review: models.FraudReviewStatus,
-    eligibility: users_models.EligibilityType | None,
+    reviewed_eligibility: users_models.EligibilityType | None,
 ) -> models.BeneficiaryFraudReview:
     if not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
         raise DisabledFeatureError("Cannot validate beneficiary because the feature is disabled")
 
-    review = models.BeneficiaryFraudReview(user=user, author=reviewer, reason=reason, review=review)
+    review = models.BeneficiaryFraudReview(
+        user=user,
+        author=reviewer,
+        reason=reason,
+        review=review,
+        eligibilityType=user.eligibility
+        if reviewed_eligibility is None
+        else reviewed_eligibility,  # needed condition to keep flask admin review behavior
+    )
 
     if review.review is not None:
         handler = REVIEW_HANDLERS.get(models.FraudReviewStatus(review.review))
         if handler:
-            handler(user, review, eligibility)
+            handler(user, review, None if user.eligibility is None else reviewed_eligibility)
 
     repository.save(review)
     return review
