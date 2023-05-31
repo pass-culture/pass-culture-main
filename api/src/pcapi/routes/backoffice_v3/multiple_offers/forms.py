@@ -6,24 +6,24 @@ from pcapi.routes.backoffice_v3 import utils as bo_utils
 from ..forms import fields
 
 
-class SearchIsbnForm(FlaskForm):
+class SearchEanForm(FlaskForm):
     class Meta:
         csrf = False
 
-    isbn = fields.PCSearchField("ISBN")
+    ean = fields.PCSearchField("EAN")
 
-    def validate_isbn(self, isbn: fields.PCSearchField) -> fields.PCSearchField:
-        if isbn.data and not bo_utils.is_isbn_valid(isbn.data):
-            raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un ISBN")
-        isbn.data = bo_utils.format_isbn_or_visa(isbn.data)
-        return isbn
-
-
-class HiddenIsbnForm(FlaskForm):
-    isbn = fields.PCHiddenField("ISBN")
+    def validate_ean(self, ean: fields.PCSearchField) -> fields.PCSearchField:
+        if ean.data and not bo_utils.is_ean_valid(ean.data):
+            raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un EAN")
+        ean.data = bo_utils.format_ean_or_visa(ean.data)
+        return ean
 
 
-class OfferCriteriaForm(HiddenIsbnForm):
+class HiddenEanForm(FlaskForm):
+    ean = fields.PCHiddenField("EAN")
+
+
+class OfferCriteriaForm(HiddenEanForm):
     criteria = fields.PCTomSelectField(
         "Tags",
         multiple=True,

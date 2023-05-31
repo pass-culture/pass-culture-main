@@ -1156,11 +1156,11 @@ class AddCriterionToOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_from_isbn(self, mocked_async_index_offer_ids):
         # Given
-        isbn = "2-221-00164-8"
-        product1 = factories.ProductFactory(extraData={"isbn": "2221001648"})
+        ean = "2-221-00164-8"
+        product1 = factories.ProductFactory(extraData={"isbn": "2221001648", "ean": "2221001648"})
         offer11 = factories.OfferFactory(product=product1)
         offer12 = factories.OfferFactory(product=product1)
-        product2 = factories.ProductFactory(extraData={"isbn": "2221001648"})
+        product2 = factories.ProductFactory(extraData={"isbn": "2221001648", "ean": "2221001648"})
         offer21 = factories.OfferFactory(product=product2)
         inactive_offer = factories.OfferFactory(product=product1, isActive=False)
         unmatched_offer = factories.OfferFactory()
@@ -1168,7 +1168,7 @@ class AddCriterionToOffersTest:
         criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
 
         # When
-        is_successful = api.add_criteria_to_offers([criterion1.id, criterion2.id], isbn=isbn)
+        is_successful = api.add_criteria_to_offers([criterion1.id, criterion2.id], ean=ean)
 
         # Then
         assert is_successful is True
@@ -1182,19 +1182,19 @@ class AddCriterionToOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_from_isbn_when_one_has_criteria(self, mocked_async_index_offer_ids):
         # Given
-        isbn = "2221001648"
+        ean = "2221001648"
         criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
         criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
-        product1 = factories.ProductFactory(extraData={"isbn": isbn})
+        product1 = factories.ProductFactory(extraData={"isbn": ean, "ean": ean})
         offer11 = factories.OfferFactory(product=product1, criteria=[criterion1])
         offer12 = factories.OfferFactory(product=product1, criteria=[criterion2])
-        product2 = factories.ProductFactory(extraData={"isbn": isbn})
+        product2 = factories.ProductFactory(extraData={"isbn": ean, "ean": ean})
         offer21 = factories.OfferFactory(product=product2)
         inactive_offer = factories.OfferFactory(product=product1, isActive=False)
         unmatched_offer = factories.OfferFactory()
 
         # When
-        is_successful = api.add_criteria_to_offers([criterion1.id, criterion2.id], isbn=isbn)
+        is_successful = api.add_criteria_to_offers([criterion1.id, criterion2.id], ean=ean)
 
         # Then
         assert is_successful is True
@@ -1234,12 +1234,12 @@ class AddCriterionToOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_when_no_offers_is_found(self, mocked_async_index_offer_ids):
         # Given
-        isbn = "2-221-00164-8"
-        factories.OfferFactory(extraData={"isbn": "2221001647"})
+        ean = "2-221-00164-8"
+        factories.OfferFactory(extraData={"isbn": "2221001647", "ean": "2221001647"})
         criterion = criteria_factories.CriterionFactory(name="Pretty good books")
 
         # When
-        is_successful = api.add_criteria_to_offers([criterion.id], isbn=isbn)
+        is_successful = api.add_criteria_to_offers([criterion.id], ean=ean)
 
         # Then
         assert is_successful is False
@@ -1251,17 +1251,17 @@ class DeactivateInappropriateProductTest:
     def test_should_deactivate_product_with_inappropriate_content(self, mocked_async_index_offer_ids):
         # Given
         product1 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"isbn": "isbn-de-test"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"isbn": "ean-de-test", "ean": "ean-de-test"}
         )
         product2 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"isbn": "isbn-de-test"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"isbn": "ean-de-test", "ean": "ean-de-test"}
         )
         factories.OfferFactory(product=product1)
         factories.OfferFactory(product=product1)
         factories.OfferFactory(product=product2)
 
         # When
-        api.reject_inappropriate_products("isbn-de-test")
+        api.reject_inappropriate_products("ean-de-test")
 
         # Then
         products = models.Product.query.all()

@@ -119,19 +119,8 @@ def random_hash() -> str:
     return format(random.getrandbits(128), "x")
 
 
-# Will be deleted by the end of the PR
-def format_isbn_or_visa(isbn: str) -> str:
-    return isbn.replace("-", "").replace(" ", "")
-
-
 def format_ean_or_visa(ean: str) -> str:
     return ean.replace("-", "").replace(" ", "")
-
-
-# Will be deleted by the end of the PR
-def is_isbn_valid(isbn: str) -> bool:
-    isbn = format_isbn_or_visa(isbn)
-    return isbn.isdigit() and len(isbn) == 13
 
 
 def is_ean_valid(ean: str) -> bool:
