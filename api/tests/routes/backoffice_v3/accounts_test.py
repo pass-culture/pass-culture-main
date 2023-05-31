@@ -31,6 +31,7 @@ from pcapi.repository import repository
 from pcapi.routes.backoffice_v3.accounts import RegistrationStep
 from pcapi.routes.backoffice_v3.accounts import RegistrationStepStatus
 from pcapi.routes.backoffice_v3.accounts import TunnelType
+from pcapi.routes.backoffice_v3.accounts import _get_fraud_reviews_desc
 from pcapi.routes.backoffice_v3.accounts import _get_id_check_histories_desc
 from pcapi.routes.backoffice_v3.accounts import _get_progress
 from pcapi.routes.backoffice_v3.accounts import _get_status
@@ -1813,10 +1814,11 @@ class RegistrationStepTest:
         users_factories.DepositGrantFactory(user=user)
         eligibility_history = get_eligibility_history(user)
         id_check_histories = _get_id_check_histories_desc(eligibility_history)
+        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
 
-        steps = _get_steps_tunnel_age18(user, id_check_histories, item_status_18)
+        steps = _get_steps_tunnel_age18(user, id_check_histories, item_status_18, fraud_reviews_desc)
         steps_description = [
             SubscriptionStep.EMAIL_VALIDATION.value,
             SubscriptionStep.PHONE_VALIDATION.value,
@@ -1837,10 +1839,11 @@ class RegistrationStepTest:
         users_factories.DepositGrantFactory(user=user)
         eligibility_history = get_eligibility_history(user)
         id_check_histories = _get_id_check_histories_desc(eligibility_history)
+        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
 
-        steps = _get_steps_tunnel_underage(user, id_check_histories, item_status_15_17)
+        steps = _get_steps_tunnel_underage(user, id_check_histories, item_status_15_17, fraud_reviews_desc)
         steps_description = [
             SubscriptionStep.EMAIL_VALIDATION.value,
             SubscriptionStep.PROFILE_COMPLETION.value,
@@ -1865,11 +1868,14 @@ class RegistrationStepTest:
         users_factories.DepositGrantFactory(user=user)
         eligibility_history = get_eligibility_history(user)
         id_check_histories = _get_id_check_histories_desc(eligibility_history)
+        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
         item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
 
-        steps = _get_steps_tunnel_underage_age18(user, id_check_histories, item_status_15_17, item_status_18)
+        steps = _get_steps_tunnel_underage_age18(
+            user, id_check_histories, item_status_15_17, item_status_18, fraud_reviews_desc
+        )
         steps_description = [
             SubscriptionStep.EMAIL_VALIDATION.value,
             SubscriptionStep.PROFILE_COMPLETION.value,
@@ -1953,18 +1959,23 @@ class RegistrationStepTest:
         item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
         item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
         id_check_histories = _get_id_check_histories_desc(eligibility_history)
+        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
         tunnel_type = _get_tunnel_type(user)
-        steps = _get_steps_for_tunnel(user, tunnel_type, subscription_item_status, id_check_histories)
+        steps = _get_steps_for_tunnel(
+            user, tunnel_type, subscription_item_status, id_check_histories, fraud_reviews_desc
+        )
 
         if tunnel_type is TunnelType.UNDERAGE:
-            steps_to_compare = _get_steps_tunnel_underage(user, id_check_histories, item_status_15_17)
+            steps_to_compare = _get_steps_tunnel_underage(
+                user, id_check_histories, item_status_15_17, fraud_reviews_desc
+            )
             assert steps != steps_to_compare
         elif tunnel_type is TunnelType.AGE18:
-            steps_to_compare = _get_steps_tunnel_age18(user, id_check_histories, item_status_18)
+            steps_to_compare = _get_steps_tunnel_age18(user, id_check_histories, item_status_18, fraud_reviews_desc)
             assert steps != steps_to_compare
         elif tunnel_type is TunnelType.UNDERAGE_AGE18:
             steps_to_compare = _get_steps_tunnel_underage_age18(
-                user, id_check_histories, item_status_15_17, item_status_18
+                user, id_check_histories, item_status_15_17, item_status_18, fraud_reviews_desc
             )
             assert steps != steps_to_compare
         else:
@@ -1972,6 +1983,40 @@ class RegistrationStepTest:
             assert steps == steps_to_compare
 
         assert len(steps) == len(steps_to_compare)
+
+    def test_fraud_reviews_in_tunnel_steps(self, legit_user):
+        dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1)
+        user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
+            resultContent=fraud_factories.UbbleContentFactory(),
+        )
+
+        fraud_factories.BeneficiaryFraudReviewFactory(
+            user=user,
+            author=legit_user,
+            review=fraud_models.FraudReviewStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        eligibility_history = get_eligibility_history(user)
+        subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
+        id_check_histories = _get_id_check_histories_desc(eligibility_history)
+        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
+        tunnel_type = _get_tunnel_type(user)
+        steps = _get_steps_for_tunnel(
+            user, tunnel_type, subscription_item_status, id_check_histories, fraud_reviews_desc
+        )
+
+        pass18_status_item = next((step for step in steps if step.description == "Pass 18"))
+        assert len(pass18_status_item.fraud_actions_history) == 1
+        assert pass18_status_item.fraud_actions_history[0]["status"] == fraud_models.FraudReviewStatus.OK.value
 
     @pytest.mark.parametrize(
         "dateCreated,dateOfBirth,tunnel_type",
@@ -2034,17 +2079,20 @@ class RegistrationStepTest:
         item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
         item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
         id_check_histories = _get_id_check_histories_desc(eligibility_history)
+        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
 
         if tunnel_type is TunnelType.UNDERAGE:
-            steps = _get_steps_tunnel_underage(user, id_check_histories, item_status_15_17)
+            steps = _get_steps_tunnel_underage(user, id_check_histories, item_status_15_17, fraud_reviews_desc)
             assert steps[3].status["active"] is False
             assert steps[4].status["disabled"] is False
         elif tunnel_type is TunnelType.AGE18:
-            steps = _get_steps_tunnel_age18(user, id_check_histories, item_status_18)
+            steps = _get_steps_tunnel_age18(user, id_check_histories, item_status_18, fraud_reviews_desc)
             assert steps[4].status["active"] is False
             assert steps[5].status["disabled"] is False
         else:
-            steps = _get_steps_tunnel_underage_age18(user, id_check_histories, item_status_15_17, item_status_18)
+            steps = _get_steps_tunnel_underage_age18(
+                user, id_check_histories, item_status_15_17, item_status_18, fraud_reviews_desc
+            )
             assert steps[8].status["active"] is False
             assert steps[9].status["disabled"] is False
 
@@ -2079,10 +2127,11 @@ class RegistrationStepTest:
             status=fraud_models.FraudCheckStatus.OK,
         )
         eligibility_history = get_eligibility_history(user)
-        tunnel = _get_tunnel(user, eligibility_history)
+        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
+        tunnel = _get_tunnel(user, eligibility_history, fraud_reviews_desc)
         assert tunnel["type"] == TunnelType.UNDERAGE
         assert tunnel["progress"] == 75
 
         users_factories.DepositGrantFactory(user=user)
-        tunnel_end = _get_tunnel(user, eligibility_history)
+        tunnel_end = _get_tunnel(user, eligibility_history, fraud_reviews_desc)
         assert tunnel_end["progress"] == 100

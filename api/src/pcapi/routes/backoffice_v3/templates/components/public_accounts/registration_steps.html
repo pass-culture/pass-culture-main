@@ -1,4 +1,4 @@
-{% macro build_idcheck_histories(id_check_histories) %}
+{% macro build_idcheck_histories(fraud_actions) %}
   <div class="table-responsive">
     <table class="table table-hover table-bordered">
       <thead>
@@ -14,91 +14,97 @@
         </tr>
       </thead>
       <tbody>
-        {% if id_check_histories|length == 0 %}
+        {% if fraud_actions|length == 0 %}
           <tr>
             <td colspan="8">Aucune données</td>
           </tr>
         {% else %}
-          {% for id_check_item in id_check_histories if id_check_histories|length > 0 %}
+          {% for fraud_action in fraud_actions %}
             <tr>
               <td>
-                <time datetime="{{ id_check_item.dateCreated }}">{{ id_check_item.dateCreated | format_date_time }}</time>
+                <time datetime="{{ fraud_action['creationDate'] }}">{{ fraud_action['creationDate'] | format_date_time }}</time>
               </td>
-              <td>{{ id_check_item.thirdPartyId }}</td>
+              <td>{{ fraud_action['techId'] }}</td>
               <td>
-                {% if id_check_item | format_fraud_check_url %}
-                  <a href="{{ id_check_item | format_fraud_check_url }}"
+                {% if fraud_action | format_fraud_action_dict_url %}
+                  <a href="{{ fraud_action | format_fraud_action_dict_url }}"
                      target="_blank">
-                    {{ id_check_item.type }}
+                    {{ fraud_action['type'] }}
                     <i class="bi bi-folder"></i>
                   </a>
                 {% else %}
-                  {{ id_check_item.type }}
+                  {{ fraud_action['type'] }}
                 {% endif %}
               </td>
               <td>
-                {% if id_check_item.applicable_eligibilities|length == 0 %}
+                {% if fraud_action['applicableEligibilities']|length == 0 %}
                   <span class="badge rounded-pill bg-secondary px-3 py-2">NA</span>
                 {% else %}
-                  {% for applicable_eligibility in id_check_item.applicable_eligibilities if id_check_item.applicable_eligibilities|length > 0 %}
+                  {% for applicable_eligibility in fraud_action['applicableEligibilities'] %}
                     <span class="badge rounded-pill bg-primary px-3 py-2">{{ applicable_eligibility | i18n_public_account }}</span>
                   {% endfor %}
                 {% endif %}
               </td>
               <td>
-                {% if id_check_item.status == 'ok' %}
+                {% if fraud_action['status'].lower() == 'ok' %}
                   <span class="badge rounded-pill text-bg-success align-middle px-3 py-2">
-                    <i class="bi bi-check-circle"></i> {{ id_check_item.status.upper() }}
+                    <i class="bi bi-check-circle"></i> {{ fraud_action['status'].upper() }}
                   </span>
-                {% elif id_check_item.status == 'ko' %}
+                {% elif fraud_action['status'].lower() == 'ko' %}
                   <span class="badge rounded-pill text-bg-danger align-middle px-3 py-2">
-                    <i class="bi bi-exclamation-circle"></i> {{ id_check_item.status.upper() }}
+                    <i class="bi bi-exclamation-circle"></i> {{ fraud_action['status'].upper() }}
                   </span>
-                {% elif id_check_item.status == 'suspicious' %}
+                {% elif fraud_action['status'].lower() == 'suspicious' %}
                   <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
-                    <i class="bi bi-shield-shaded"></i> {{ id_check_item.status.upper() }}
+                    <i class="bi bi-shield-shaded"></i> {{ fraud_action['status'].upper() }}
                   </span>
-                {% elif id_check_item.status %}
+                {% elif fraud_action['status'].lower() == 'redirected_to_dms' %}
                   <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
-                    <i class="bi bi-exclamation-circle"></i> {{ id_check_item.status.upper() }}
+                    <i class="bi bi-person-circle"></i> {{ fraud_action['status'].upper() }}
+                  </span>
+                {% elif fraud_action['status'] %}
+                  <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
+                    <i class="bi bi-exclamation-circle"></i> {{ fraud_action['status'].upper() }}
                   </span>
                 {% endif %}
               </td>
-              <td>{{ id_check_item.reason | empty_string_if_null | pc_backoffice_public_account_link_in_comment | safe }}</td>
-              <td>{{ id_check_item.reasonCodes | format_string_list }}</td>
+              <td>{{ fraud_action['reason'] | empty_string_if_null | pc_backoffice_public_account_link_in_comment | safe }}</td>
+              <td>{{ fraud_action['errorCode'] | format_string_list }}</td>
               <td>
-                {% set idcheck_history_random_id = random_hash() %}
-                <button class="btn btn-light"
-                        type="button"
-                        data-bs-toggle="modal"
-                        data-bs-target=".technical-details-{{ idcheck_history_random_id }}">
-                  <i class="bi bi-zoom-in"></i>
-                </button>
-                <div class="modal modal-lg fade text-start technical-details-{{ idcheck_history_random_id }}"
-                     tabindex="-1"
-                     aria-labelledby="view-technical-details"
-                     aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title">Détails techniques</h5>
-                      </div>
-                      <div class="modal-body">
-                        <div class="form-floating my-3">
-                          <pre>
-                             <code><br />{{ id_check_item.technicalDetails  | tojson(indent=4) | safe | empty_string_if_null }}</code>
-                          </pre>
+                {% if fraud_action['technicalDetails'] %}
+                  {% set idcheck_history_random_id = random_hash() %}
+                  <button class="btn btn-light"
+                          type="button"
+                          data-bs-toggle="modal"
+                          data-bs-target=".technical-details-{{ idcheck_history_random_id }}">
+                    <i class="bi bi-zoom-in"></i>
+                  </button>
+                  <div class="modal modal-lg fade text-start technical-details-{{ idcheck_history_random_id }}"
+                       tabindex="-1"
+                       aria-labelledby="view-technical-details"
+                       aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Détails techniques</h5>
                         </div>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button"
-                                class="btn btn-outline-primary"
-                                data-bs-dismiss="modal">Fermer</button>
-                      </div>
-                    </form>
+                        <div class="modal-body">
+                          <div class="form-floating my-3">
+                            <pre>
+                             <code><br />{{ fraud_action['technicalDetails']  | tojson(indent=4) | safe | empty_string_if_null }}</code>
+                          </pre>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button"
+                                  class="btn btn-outline-primary"
+                                  data-bs-dismiss="modal">Fermer</button>
+                        </div>
+                      </form>
+                    </div>
                   </div>
                 </div>
-              </div>
+              {% endif %}
             </td>
           </tr>
         {% endfor %}
