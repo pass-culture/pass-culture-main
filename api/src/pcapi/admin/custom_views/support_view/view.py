@@ -226,7 +226,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
                 reviewer=flask_login.current_user,
                 reason=form.data["reason"],
                 review=fraud_models.FraudReviewStatus(form.data["review"]),
-                eligibility=eligibility,
+                reviewed_eligibility=eligibility,
             )
 
         except (DisabledFeatureError, fraud_api.FraudCheckError, fraud_api.EligibilityError) as err:
