@@ -2,6 +2,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React from 'react'
 
 import { AdageFrontRoles } from 'apiClient/adage'
+import { apiAdage } from 'apiClient/api'
 import Dialog from 'components/Dialog/Dialog'
 import FormLayout from 'components/FormLayout'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
@@ -55,6 +56,17 @@ const RequestFormDialog = ({
     notify.success('Votre demande a bien été envoyée')
     closeModal()
   }
+  const closeRequestFormDialog = () => {
+    apiAdage.logRequestFormPopinDismiss({
+      collectiveOfferTemplateId: offerId,
+      comment: formik.values.description,
+      phoneNumber: formik.values.teacherPhone,
+      requestedDate: formik.values.offerDate?.toISOString(),
+      totalStudents: formik.values.nbStudents,
+      totalTeachers: formik.values.nbTeachers,
+    })
+    closeModal()
+  }
 
   const formik = useFormik<RequestFormValues>({
     onSubmit: onSubmit,
@@ -64,7 +76,7 @@ const RequestFormDialog = ({
   return (
     <Dialog
       extraClassNames={styles['dialog-container']}
-      onCancel={closeModal}
+      onCancel={closeRequestFormDialog}
       title="Entrer en contact avec"
       hideIcon
     >
@@ -137,7 +149,7 @@ const RequestFormDialog = ({
                 </FormLayout.Row>
                 <div className={styles['buttons-container']}>
                   <Button
-                    onClick={closeModal}
+                    onClick={closeRequestFormDialog}
                     variant={ButtonVariant.SECONDARY}
                   >
                     Annuler
