@@ -1,8 +1,12 @@
 import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import type { Hit } from 'react-instantsearch-core'
 
-import { EducationalInstitutionWithBudgetResponseModel } from 'apiClient/adage'
+import {
+  AdageHeaderLink,
+  EducationalInstitutionWithBudgetResponseModel,
+} from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import * as useNotification from 'hooks/useNotification'
 import { getEducationalInstitutionWithBudgetAdapter } from 'pages/AdageIframe/app/adapters/getEducationalInstitutionWithBudgetAdapter'
@@ -12,9 +16,20 @@ import { ResultType } from 'utils/types'
 
 import { AdageHeaderComponent } from '../AdageHeader'
 
+interface HeaderLinkProps {
+  headerLinkLabel: string
+  headerLinkName: AdageHeaderLink
+}
+
 const renderAdageHeader = (hits: Hit<ResultType>[] = []) => {
   renderWithProviders(<AdageHeaderComponent hits={hits} />)
 }
+
+jest.mock('apiClient/api', () => ({
+  apiAdage: {
+    logHeaderLinkClick: jest.fn(),
+  },
+}))
 
 describe('AdageHeader', () => {
   const notifyError = jest.fn()
@@ -75,4 +90,27 @@ describe('AdageHeader', () => {
       'Nous avons rencontré un problème lors du chargemement des données'
     )
   })
+
+  const headerLinks: HeaderLinkProps[] = [
+    { headerLinkLabel: 'Rechercher', headerLinkName: AdageHeaderLink.SEARCH },
+    {
+      headerLinkLabel: 'Pour mon établissement 0',
+      headerLinkName: AdageHeaderLink.MY_INSTITUTION_OFFERS,
+    },
+    { headerLinkLabel: 'Suivi', headerLinkName: AdageHeaderLink.ADAGE_LINK },
+  ]
+  it.each(headerLinks)(
+    'should log click on header link',
+    async (headerLink: HeaderLinkProps) => {
+      renderAdageHeader()
+
+      await userEvent.click(
+        screen.getByRole('link', { name: headerLink.headerLinkLabel })
+      )
+      expect(apiAdage.logHeaderLinkClick).toHaveBeenCalledTimes(1)
+      expect(apiAdage.logHeaderLinkClick).toHaveBeenCalledWith({
+        header_link_name: headerLink.headerLinkName,
+      })
+    }
+  )
 })
