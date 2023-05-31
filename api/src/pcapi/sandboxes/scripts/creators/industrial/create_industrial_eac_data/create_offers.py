@@ -96,6 +96,7 @@ def create_offers_base_list(
     offers_intervention_56: bool = True,
     offers_intervention_91: bool = True,
     offers_next_year: bool = True,
+    offers_with_request: bool = True,
 ) -> tuple[list[educational_models.CollectiveOffer], list[educational_models.CollectiveOfferTemplate]]:
     domains_iterator = cycle(domains)
     venue_iterator = cycle(offerer.managedVenues)
@@ -583,6 +584,89 @@ def create_offers_base_list(
             venue=next(venue_iterator),
         )
         add_image_to_offer(template, next(image_iterator))
+        templates.append(template)
+    if offers_with_request:
+        number = next(number_iterator)
+        template = educational_factories.CollectiveOfferTemplateFactory(
+            name=f"offer {number} pour {offerer.name} template request",
+            educational_domains=[next(domains_iterator)],
+            venue=next(venue_iterator),
+        )
+        educational_factories.CollectiveOfferRequestFactory(
+            collectiveOfferTemplate=template,
+            educationalInstitution=next(institution_iterator),
+            educationalRedactor__lastName=f"last name {number} {offerer.name}",
+            educationalRedactor__firstName=f"first name {number} {offerer.name}",
+        )
+        templates.append(template)
+        number = next(number_iterator)
+        template = educational_factories.CollectiveOfferTemplateFactory(
+            name=f"offer {number} pour {offerer.name} template request",
+            educational_domains=[next(domains_iterator)],
+            venue=next(venue_iterator),
+        )
+        educational_factories.CollectiveOfferRequestFactory(
+            collectiveOfferTemplate=template,
+            educationalInstitution=next(institution_iterator),
+            educationalRedactor__lastName=f"last name {number} {offerer.name}",
+            educationalRedactor__firstName=f"first name {number} {offerer.name}",
+            totalStudents=12,
+            totalTeachers=2,
+            phoneNumber="0199000000",
+            requestedDate=datetime.utcnow(),
+        )
+        templates.append(template)
+        number = next(number_iterator)
+        template = educational_factories.CollectiveOfferTemplateFactory(
+            name=f"offer {number} pour {offerer.name} template request",
+            educational_domains=[next(domains_iterator)],
+            venue=next(venue_iterator),
+        )
+        educational_factories.CollectiveOfferRequestFactory(
+            collectiveOfferTemplate=template,
+            educationalInstitution=next(institution_iterator),
+            educationalRedactor__lastName=f"last name {number} {offerer.name}",
+            educationalRedactor__firstName=f"first name {number} {offerer.name}",
+        )
+        templates.append(template)
+        number = next(number_iterator)
+        template = educational_factories.CollectiveOfferTemplateFactory(
+            name=f"offer {number} pour {offerer.name} template request",
+            educational_domains=[next(domains_iterator)],
+            venue=next(venue_iterator),
+        )
+        educational_factories.CollectiveOfferRequestFactory(
+            collectiveOfferTemplate=template,
+            educationalInstitution=next(institution_iterator),
+            educationalRedactor__lastName=f"last name {number} {offerer.name}",
+            educationalRedactor__firstName=f"first name {number} {offerer.name}",
+        )
+        templates.append(template)
+        number = next(number_iterator)
+        template = educational_factories.CollectiveOfferTemplateFactory(
+            name=f"offer {number} pour {offerer.name} template request",
+            educational_domains=[next(domains_iterator)],
+            venue=next(venue_iterator),
+        )
+        educational_factories.CollectiveOfferRequestFactory(
+            collectiveOfferTemplate=template,
+            educationalInstitution=next(institution_iterator),
+            educationalRedactor__lastName=f"last name {number} {offerer.name}",
+            educationalRedactor__firstName=f"first name {number} {offerer.name}",
+        )
+        templates.append(template)
+        number = next(number_iterator)
+        template = educational_factories.CollectiveOfferTemplateFactory(
+            name=f"offer {number} pour {offerer.name} template request",
+            educational_domains=[next(domains_iterator)],
+            venue=next(venue_iterator),
+        )
+        educational_factories.CollectiveOfferRequestFactory(
+            collectiveOfferTemplate=template,
+            educationalInstitution=next(institution_iterator),
+            educationalRedactor__lastName=f"last name {number} {offerer.name}",
+            educationalRedactor__firstName=f"first name {number} {offerer.name}",
+        )
         templates.append(template)
     return offers, templates
 
