@@ -7,15 +7,24 @@
 .stock-event-table {
   width: 100%;
   table-layout: fixed;
+  margin-top: rem.torem(16px);
   margin-bottom: rem.torem(32px);
 }
 
-.header {
-  @include fonts.caption;
+.select-all-container {
+  display: flex;
+  justify-content: space-between;
+}
 
-  text-align: left;
+.header {
   vertical-align: bottom;
+  text-align: left;
   padding-bottom: rem.torem(4px);
+  padding-right: rem.torem(16px);
+}
+
+.header-name {
+  @include fonts.caption;
 }
 
 .data {
@@ -53,7 +62,16 @@ $icon-size: rem.torem(20px);
 }
 
 .date-column {
-  width: rem.torem(160px);
+  width: rem.torem(192px);
+}
+
+.filter-input {
+  margin-top: rem.torem(4px);
+  min-height: rem.torem(24px);
+
+  // Resets the cascading style of <th> otherwise
+  // the font-weight is applied to the datepicker dropdown
+  font-weight: initial;
 }
 
 .date-cell-wrapper {
@@ -63,21 +81,44 @@ $icon-size: rem.torem(20px);
 
 .day {
   width: rem.torem(40px);
-  margin-right: rem.torem(12px);
+  margin-right: rem.torem(8px);
 }
 
 .time-column {
-  width: rem.torem(72px);
+  width: rem.torem(88px);
 }
 
 .booking-limit-date-column {
-  width: rem.torem(120px);
+  width: rem.torem(136px);
 }
 
 .quantity-column {
-  width: rem.torem(100px);
+  width: rem.torem(116px);
 }
 
 .actions-column {
   width: $icon-size;
+}
+
+.filtered-data-row {
+  padding-top: rem.torem(12px);
+  padding-bottom: rem.torem(12px);
+}
+
+.no-data {
+  vertical-align: middle;
+  text-align: center;
+
+  &-icon {
+    color: colors.$grey-medium;
+    width: rem.torem(88px);
+    height: rem.torem(88px);
+    margin-bottom: rem.torem(16px);
+  }
+
+  &-message {
+    @include fonts.title4;
+
+    margin-bottom: rem.torem(16px);
+  }
 }

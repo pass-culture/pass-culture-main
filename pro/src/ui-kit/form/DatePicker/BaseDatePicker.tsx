@@ -1,5 +1,5 @@
 import fr from 'date-fns/locale/fr'
-import React, { createRef } from 'react'
+import React from 'react'
 import ReactDatePicker, { registerLocale } from 'react-datepicker'
 import type { ReactDatePickerProps } from 'react-datepicker'
 
@@ -15,6 +15,7 @@ type Props = Omit<ReactDatePickerProps, 'value'> & {
   filterVariant?: boolean
   openingDateTime?: Date
   value?: Date | null
+  'aria-label'?: string
 }
 
 export const BaseDatePicker = ({
@@ -22,27 +23,24 @@ export const BaseDatePicker = ({
   filterVariant,
   openingDateTime,
   value,
+  'aria-label': ariaLabel,
   ...props
-}: Props): JSX.Element => {
-  const ref = createRef<HTMLInputElement>()
-
-  return (
-    <ReactDatePicker
-      {...props}
-      customInput={
-        <BaseInput
-          rightIcon={() => <CalendarIcon />}
-          hasError={hasError}
-          filterVariant={filterVariant}
-          ref={ref}
-        />
-      }
-      dateFormat={FORMAT_DD_MM_YYYY}
-      dropdownMode="scroll"
-      locale="fr"
-      placeholderText="JJ/MM/AAAA"
-      openToDate={value ? value : openingDateTime}
-      selected={value}
-    />
-  )
-}
+}: Props): JSX.Element => (
+  <ReactDatePicker
+    {...props}
+    customInput={
+      <BaseInput
+        rightIcon={() => <CalendarIcon />}
+        hasError={hasError}
+        filterVariant={filterVariant}
+        aria-label={ariaLabel}
+      />
+    }
+    dateFormat={FORMAT_DD_MM_YYYY}
+    dropdownMode="scroll"
+    locale="fr"
+    placeholderText="JJ/MM/AAAA"
+    openToDate={value ? value : openingDateTime}
+    selected={value}
+  />
+)
