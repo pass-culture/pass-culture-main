@@ -3,14 +3,13 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import type { Hit } from 'react-instantsearch-core'
 
-import {
-  AdageHeaderLink,
-  EducationalInstitutionWithBudgetResponseModel,
-} from 'apiClient/adage'
+import { AdageHeaderLink } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import * as useNotification from 'hooks/useNotification'
-import { getEducationalInstitutionWithBudgetAdapter } from 'pages/AdageIframe/app/adapters/getEducationalInstitutionWithBudgetAdapter'
-import { defaultAlgoliaHits } from 'utils/adageFactories'
+import {
+  defaultAlgoliaHits,
+  defaultEducationalInstitution,
+} from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { ResultType } from 'utils/types'
 
@@ -28,6 +27,7 @@ const renderAdageHeader = (hits: Hit<ResultType>[] = []) => {
 jest.mock('apiClient/api', () => ({
   apiAdage: {
     logHeaderLinkClick: jest.fn(),
+    getEducationalInstitutionWithBudget: jest.fn(),
   },
 }))
 
@@ -39,10 +39,18 @@ describe('AdageHeader', () => {
       ...jest.requireActual('hooks/useNotification'),
       error: notifyError,
     }))
+    jest
+      .spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
+      .mockResolvedValue(defaultEducationalInstitution)
   })
 
-  it('should render adage header', () => {
+  it('should render adage header', async () => {
     renderAdageHeader()
+    await waitFor(() =>
+      expect(
+        apiAdage.getEducationalInstitutionWithBudget
+      ).toHaveBeenCalledTimes(1)
+    )
 
     expect(screen.getByRole('link', { name: 'Rechercher' })).toBeInTheDocument()
     expect(
@@ -51,39 +59,32 @@ describe('AdageHeader', () => {
     expect(screen.getByText('Suivi')).toBeInTheDocument()
   })
 
-  it('should render the number of hits', () => {
+  it('should render the number of hits', async () => {
     renderAdageHeader([defaultAlgoliaHits, defaultAlgoliaHits])
-
+    await waitFor(() =>
+      expect(screen.getByText('Budget restant')).toBeInTheDocument()
+    )
     expect(screen.getByText('2')).toBeInTheDocument()
   })
 
   it('should display the institution budget', async () => {
-    jest
-      .spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
-      .mockResolvedValueOnce({
-        budget: 10000,
-      } as EducationalInstitutionWithBudgetResponseModel)
-
     renderAdageHeader()
-
-    await waitFor(
-      async () => await getEducationalInstitutionWithBudgetAdapter()
+    await waitFor(() =>
+      expect(screen.getByText('Budget restant')).toBeInTheDocument()
     )
 
-    expect(screen.getByText('Budget restant')).toBeInTheDocument()
-    expect(screen.getByText('10,000€')).toBeInTheDocument()
+    expect(screen.getByText('1,000€')).toBeInTheDocument()
   })
 
   it('should return an error when the institution budget could not be retrieved', async () => {
     jest
       .spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
-      .mockRejectedValueOnce('')
+      .mockRejectedValueOnce({})
 
     renderAdageHeader()
-
-    const response = await getEducationalInstitutionWithBudgetAdapter()
-
-    expect(response.isOk).toBeFalsy()
+    await waitFor(() =>
+      expect(apiAdage.getEducationalInstitutionWithBudget).toHaveBeenCalled()
+    )
 
     expect(notifyError).toHaveBeenNthCalledWith(
       1,
@@ -103,6 +104,9 @@ describe('AdageHeader', () => {
     'should log click on header link',
     async (headerLink: HeaderLinkProps) => {
       renderAdageHeader()
+      await waitFor(() =>
+        expect(screen.getByText('Budget restant')).toBeInTheDocument()
+      )
 
       await userEvent.click(
         screen.getByRole('link', { name: headerLink.headerLinkLabel })

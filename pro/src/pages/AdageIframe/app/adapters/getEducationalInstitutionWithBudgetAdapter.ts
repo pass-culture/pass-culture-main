@@ -17,7 +17,6 @@ export const getEducationalInstitutionWithBudgetAdapter: getEducationalInstituti
   async () => {
     try {
       const result = await apiAdage.getEducationalInstitutionWithBudget()
-
       return {
         isOk: true,
         message: null,
