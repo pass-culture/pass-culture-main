@@ -15,6 +15,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
+from pcapi.core.offers.validation import ACCEPTED_THUMBNAIL_FORMATS
 from pcapi.domain.demarches_simplifiees import DMS_TOKEN_PRO_PREFIX
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -430,10 +431,9 @@ class VenueBannerContentModel(BaseModel):
         except Exception:
             raise ValueError("Format de l'image invalide")
 
-        legit_image_types = {"jpg", "jpeg", "png"}
         content_type = image.format.lower()
 
-        if content_type not in legit_image_types:
+        if content_type not in ACCEPTED_THUMBNAIL_FORMATS:
             raise ValueError("Format de l'image invalide")
 
         return values
