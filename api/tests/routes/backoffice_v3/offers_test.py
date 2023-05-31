@@ -62,7 +62,8 @@ def offers_fixture(criteria) -> tuple:
         venue__postalCode="74000",
         venue__departementCode="74",
         product__subcategoryId=subcategories.LIVRE_PAPIER.id,
-        extraData={"isbn": "9781234567890"},
+        # FIXME (mageoffray, 31-05-2023) : temporary duplication, isbn field should be deleted soon
+        extraData={"isbn": "9781234567890", "ean": "9781234567890"},
     )
     offers_factories.StockFactory(quantity=None, offer=offer_with_unlimited_stock)
     offers_factories.StockFactory(offer=offer_with_unlimited_stock)
@@ -174,17 +175,17 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[1]["Nom de l'offre"] == offers[2].name
 
     @pytest.mark.parametrize(
-        "isbn, where",
+        "ean, where",
         [
             ("9781234567890", None),
             (" 978-1234567890", offer_forms.OfferSearchColumn.ALL.name),
-            ("978 1234567890\t", offer_forms.OfferSearchColumn.ISBN.name),
+            ("978 1234567890\t", offer_forms.OfferSearchColumn.EAN.name),
         ],
     )
-    def test_list_offers_by_isbn(self, authenticated_client, offers, isbn, where):
+    def test_list_offers_by_ean(self, authenticated_client, offers, ean, where):
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=isbn, where=where))
+            response = authenticated_client.get(url_for(self.endpoint, q=ean, where=where))
 
         # then
         assert response.status_code == 200
@@ -192,15 +193,15 @@ class ListOffersTest(GetEndpointHelper):
         assert len(rows) == 1
         assert int(rows[0]["ID"]) == offers[2].id
 
-    def test_list_offers_by_invalid_isbn(self, authenticated_client, offers):
+    def test_list_offers_by_invalid_ean(self, authenticated_client, offers):
         # when
         response = authenticated_client.get(
-            url_for(self.endpoint, q="1234567890", where=offer_forms.OfferSearchColumn.ISBN.name)
+            url_for(self.endpoint, q="1234567890", where=offer_forms.OfferSearchColumn.EAN.name)
         )
 
         # then
         assert response.status_code == 400
-        assert "La recherche ne correspond pas au format d'un ISBN" in html_parser.extract_warnings(response.data)
+        assert "La recherche ne correspond pas au format d'un EAN" in html_parser.extract_warnings(response.data)
 
     @pytest.mark.parametrize(
         "visa, where",
