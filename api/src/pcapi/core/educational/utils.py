@@ -1,4 +1,3 @@
-from datetime import date
 from datetime import datetime
 from datetime import timedelta
 import hashlib
@@ -42,14 +41,10 @@ def get_hashed_user_id(email: str) -> str:
     return hashlib.sha256(email.encode("utf-8")).hexdigest()
 
 
-ExtraDataValue = int | str | list[str] | date | None
-ExtraData = dict[str, ExtraDataValue]
-
-
 def log_information_for_data_purpose(
     event_name: str,
     user_email: str | None = None,
-    extra_data: ExtraData | None = None,
+    extra_data: dict | None = None,
 ) -> None:
     if extra_data is None:
         extra_data = {}
