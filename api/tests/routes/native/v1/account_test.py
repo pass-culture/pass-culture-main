@@ -481,7 +481,7 @@ class AccountCreationTest:
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
-    def test_should_not_save_trusted_device_when_feature_flag_is_disabled(
+    def should_not_save_trusted_device_when_feature_flag_is_disabled(
         self, mocked_check_recaptcha_token_is_valid, client
     ):
         data = {
