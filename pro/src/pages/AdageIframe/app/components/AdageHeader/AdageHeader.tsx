@@ -4,6 +4,8 @@ import type { HitsProvided } from 'react-instantsearch-core'
 import { connectHits } from 'react-instantsearch-dom'
 import { NavLink } from 'react-router-dom'
 
+import { AdageHeaderLink } from 'apiClient/adage'
+import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
 import { CalendarCheckIcon, InstitutionIcon, SearchIcon } from 'icons'
 import Icon from 'ui-kit/Icon/Icon'
@@ -37,6 +39,9 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
     getEducationalInstitutionBudget()
   }, [])
 
+  const logAdageLinkClick = (headerLinkName: AdageHeaderLink) => {
+    apiAdage.logHeaderLinkClick({ header_link_name: headerLinkName })
+  }
   return (
     <nav className={styles['adage-header']}>
       <div className={styles['adage-header-brand']}>
@@ -51,6 +56,7 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
               [styles['adage-header-item-active']]: isActive,
             })
           }}
+          onClick={() => logAdageLinkClick(AdageHeaderLink.SEARCH)}
         >
           <SearchIcon className={styles['adage-header-item-icon']} />
           Rechercher
@@ -62,6 +68,9 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
               [styles['adage-header-item-active']]: isActive,
             })
           }}
+          onClick={() =>
+            logAdageLinkClick(AdageHeaderLink.MY_INSTITUTION_OFFERS)
+          }
         >
           <InstitutionIcon className={styles['adage-header-item-icon']} />
           Pour mon établissement
@@ -71,6 +80,7 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
           href={`${document.referrer}adage/passculture/index`}
           className={styles['adage-header-item']}
           target="_parent"
+          onClick={() => logAdageLinkClick(AdageHeaderLink.ADAGE_LINK)}
         >
           <CalendarCheckIcon className={styles['adage-header-item-icon']} />
           Suivi
