@@ -3,8 +3,10 @@
   <input type="date"
          id="{{ date_field_id }}"
          name="{{ field.name }}"
+         data-original-name="{{ field.name }}"
          class="form-control value-element-form"
          value="{{ field.data if field.data else "" }}" />
   <label class="label-element-form"
+         data-original-name="{{ field.name }}"
          for="{{ date_field_id }}">{{ field.label.text }}</label>
 </div>

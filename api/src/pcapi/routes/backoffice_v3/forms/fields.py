@@ -289,3 +289,7 @@ class PCDecimalField(wtforms.DecimalField):
 
 class PCFieldListField(wtforms.FieldList):
     widget = partial(widget, template="components/forms/field_list_field.html")
+
+
+class PCFormField(wtforms.FormField):
+    widget = partial(widget, template="components/forms/form_field.html")

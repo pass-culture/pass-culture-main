@@ -1,0 +1,8 @@
+<div class="pc-form-field-field"
+     data-clone-function-name="_formFieldCloneFunction">
+  {% for form_field in field %}{{ form_field }}{% endfor %}
+</div>
+<!-- (Almost) duplicated html for field list field widget -->
+<div class="pc-form-field-field d-none pc-form-field-empty-container">
+  {% for form_field in field %}{{ form_field }}{% endfor %}
+</div>
