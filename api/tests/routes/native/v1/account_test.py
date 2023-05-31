@@ -464,6 +464,22 @@ class AccountCreationTest:
         assert trusted_device.os == "iOS"
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+    def should_not_save_trusted_device_when_no_device_info(self, mocked_check_recaptcha_token_is_valid, client):
+        data = {
+            "email": "John.doe@example.com",
+            "password": "Aazflrifaoi6@",
+            "birthdate": "1960-12-31",
+            "notifications": True,
+            "token": "gnagna",
+            "marketingEmailSubscription": True,
+        }
+
+        client.post("/native/v1/account", json=data)
+
+        assert users_models.TrustedDevice.query.count() == 0
+
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
     def test_should_not_save_trusted_device_when_feature_flag_is_disabled(
         self, mocked_check_recaptcha_token_is_valid, client
