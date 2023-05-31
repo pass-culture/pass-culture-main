@@ -1,4 +1,6 @@
-import { RecurrenceDays } from './types'
+import { addMonths, endOfMonth } from 'date-fns'
+
+import { MonthlyOption, RecurrenceDays } from './types'
 
 const jsDayToRecurrenceDayMap: Record<number, RecurrenceDays> = {
   // JS .getDay() returns 0 for Sunday, 1 for Monday, etc.
@@ -9,6 +11,14 @@ const jsDayToRecurrenceDayMap: Record<number, RecurrenceDays> = {
   4: RecurrenceDays.THURSDAY,
   5: RecurrenceDays.FRIDAY,
   6: RecurrenceDays.SATURDAY,
+}
+
+export const isLastWeekOfMonth = (date?: Date | null): boolean => {
+  if (!date) {
+    return false
+  }
+
+  return endOfMonth(date).getDate() - date.getDate() < 7
 }
 
 export const getDatesInInterval = (
@@ -31,4 +41,57 @@ export const getDatesInInterval = (
     currentDate.setDate(currentDate.getDate() + 1)
   }
   return dates
+}
+
+export const getDatesWithMonthlyOption = (
+  start: Date,
+  end: Date,
+  option: MonthlyOption
+): Date[] => {
+  const dates = []
+  let currentDate = start
+
+  switch (option) {
+    case MonthlyOption.X_OF_MONTH:
+      while (currentDate <= end) {
+        if (start.getDate() <= endOfMonth(currentDate).getDate()) {
+          currentDate.setDate(start.getDate())
+          dates.push(currentDate)
+        }
+        // Clone date object to avoid mutating old one
+        currentDate = new Date(currentDate)
+        currentDate = addMonths(currentDate, 1)
+      }
+      return dates
+    case MonthlyOption.BY_FIRST_DAY:
+      while (currentDate <= end) {
+        const startWeekOfMonth = Math.floor((start.getDate() - 1) / 7)
+        const currentDateWeekOfMonth = Math.floor(
+          (currentDate.getDate() - 1) / 7
+        )
+        if (
+          currentDateWeekOfMonth === startWeekOfMonth &&
+          currentDate.getDay() === start.getDay()
+        ) {
+          dates.push(currentDate)
+        }
+        // Clone date object to avoid mutating old one
+        currentDate = new Date(currentDate)
+        currentDate.setDate(currentDate.getDate() + 1)
+      }
+      return dates
+    case MonthlyOption.BY_LAST_DAY:
+      while (currentDate <= end) {
+        if (
+          isLastWeekOfMonth(currentDate) &&
+          currentDate.getDay() === start.getDay()
+        ) {
+          dates.push(currentDate)
+        }
+        // Clone date object to avoid mutating old one
+        currentDate = new Date(currentDate)
+        currentDate.setDate(currentDate.getDate() + 1)
+      }
+      return dates
+  }
 }

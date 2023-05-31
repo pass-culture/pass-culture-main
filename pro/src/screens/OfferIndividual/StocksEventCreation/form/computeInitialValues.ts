@@ -20,4 +20,5 @@ export const computeInitialValues = (
     },
   ],
   bookingLimitDateInterval: '',
+  monthlyOption: null,
 })

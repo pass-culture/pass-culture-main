@@ -34,6 +34,7 @@ import {
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { FieldError } from 'ui-kit/form/shared'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
+import { formatLocalTimeDateString } from 'utils/timezone'
 
 import { getPriceCategoryOptions } from '../StocksEventEdition/StocksEventEdition'
 
@@ -41,10 +42,12 @@ import { DayCheckbox } from './DayCheckbox'
 import { computeInitialValues } from './form/computeInitialValues'
 import { INITIAL_QUANTITY_PER_PRICE_CATEGORY } from './form/constants'
 import { onSubmit } from './form/onSubmit'
+import { isLastWeekOfMonth } from './form/recurrenceUtils'
 import {
   RecurrenceDays,
-  RecurrenceFormValues,
   RecurrenceType,
+  RecurrenceFormValues,
+  MonthlyOption,
 } from './form/types'
 import { getValidationSchema } from './form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
@@ -53,6 +56,60 @@ interface Props {
   offer: IOfferIndividual
   onCancel: () => void
   onConfirm: (newStocks: StocksEvent[]) => void
+}
+
+const mapNumberToFrenchOrdinals = (n: number): string => {
+  switch (n) {
+    case 0:
+      return 'premier'
+    case 1:
+      return 'deuxième'
+    case 2:
+      return 'troisième'
+    case 3:
+      return 'quatrième'
+    case 4:
+      return 'cinquième'
+    default:
+      throw new Error("A month couldn't have more than 5 weeks")
+  }
+}
+
+const getMonthlyOptions = (values: RecurrenceFormValues) => {
+  const xOfMonth = values.startingDate ? values.startingDate.getDate() : 1
+
+  const weekOfMonth = values.startingDate
+    ? Math.floor((values.startingDate.getDate() - 1) / 7)
+    : 0
+
+  const lastDayofMonth = isLastWeekOfMonth(values.startingDate)
+
+  const dayName = values.startingDate
+    ? formatLocalTimeDateString(
+        values.startingDate,
+        undefined,
+        'eeeeeeee'
+      ).replace('.', '')
+    : ''
+
+  const options = [
+    {
+      label: `Tous les ${xOfMonth} du mois`,
+      value: MonthlyOption.X_OF_MONTH,
+    },
+    {
+      label: `Le ${mapNumberToFrenchOrdinals(weekOfMonth)} ${dayName} du mois`,
+      value: MonthlyOption.BY_FIRST_DAY,
+    },
+  ]
+  if (lastDayofMonth) {
+    options.push({
+      label: `Le dernier ${dayName} du mois`,
+      value: MonthlyOption.BY_LAST_DAY,
+    })
+  }
+
+  return options
 }
 
 export const RecurrenceForm = ({
@@ -84,6 +141,7 @@ export const RecurrenceForm = ({
     validationSchema: getValidationSchema(priceCategoryOptions),
   })
   const { values, setFieldValue } = formik
+  const monthlyOptions = getMonthlyOptions(values)
 
   const onRecurrenceTypeChange = () => {
     setFieldValue('startingDate', '')
@@ -134,8 +192,6 @@ export const RecurrenceForm = ({
                 name="recurrenceType"
                 value={RecurrenceType.MONTHLY}
                 withBorder
-                disabled
-                className={styles['coming-soon']}
                 onChange={onRecurrenceTypeChange}
               />
             </div>
@@ -194,31 +250,61 @@ export const RecurrenceForm = ({
               </>
             )}
 
-            <FormLayout.Row inline>
-              <DatePicker
-                name="startingDate"
-                label={
-                  values.recurrenceType === RecurrenceType.UNIQUE
-                    ? 'Date de l’évènement'
-                    : 'Du'
-                }
-                className={styles['date-input']}
-                minDateTime={
-                  values.recurrenceType === RecurrenceType.UNIQUE
-                    ? new Date()
-                    : undefined
-                }
-              />
+            {values.recurrenceType !== RecurrenceType.MONTHLY && (
+              <FormLayout.Row inline>
+                <DatePicker
+                  name="startingDate"
+                  label={
+                    values.recurrenceType === RecurrenceType.UNIQUE
+                      ? 'Date de l’évènement'
+                      : 'Du'
+                  }
+                  className={styles['date-input']}
+                  minDateTime={
+                    values.recurrenceType === RecurrenceType.UNIQUE
+                      ? new Date()
+                      : undefined
+                  }
+                />
 
-              {values.recurrenceType !== RecurrenceType.UNIQUE && (
+                {values.recurrenceType !== RecurrenceType.UNIQUE && (
+                  <DatePicker
+                    name="endingDate"
+                    label="Au"
+                    className={styles['date-input']}
+                    minDateTime={new Date()}
+                  />
+                )}
+              </FormLayout.Row>
+            )}
+
+            {values.recurrenceType === RecurrenceType.MONTHLY && (
+              <FormLayout.Row inline>
+                <DatePicker
+                  name="startingDate"
+                  label={'Premier évènement le'}
+                  className={styles['date-input']}
+                />
+
+                <Select
+                  label="Détail de la récurrence"
+                  name="monthlyOption"
+                  options={monthlyOptions}
+                  className={styles['price-category-input']}
+                  defaultOption={{
+                    label: 'Sélectionner une option',
+                    value: '',
+                  }}
+                />
+
                 <DatePicker
                   name="endingDate"
-                  label="Au"
+                  label="Fin de la récurrence"
                   className={styles['date-input']}
                   minDateTime={new Date()}
                 />
-              )}
-            </FormLayout.Row>
+              </FormLayout.Row>
+            )}
           </div>
 
           <div className={styles['section']}>
