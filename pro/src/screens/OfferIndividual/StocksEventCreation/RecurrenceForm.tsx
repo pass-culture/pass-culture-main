@@ -61,7 +61,7 @@ export const RecurrenceForm = ({
   onConfirm,
 }: Props): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const priceCategoryOptions = getPriceCategoryOptions(offer)
+  const priceCategoryOptions = getPriceCategoryOptions(offer.priceCategories)
   const mode = useOfferWizardMode()
 
   const handleSubmit = (values: RecurrenceFormValues) => {

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { PriceCategoryResponseModel } from 'apiClient/v1'
 import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
@@ -84,10 +85,11 @@ export const hasChangesOnStockWithBookings = (
 }
 
 export const getPriceCategoryOptions = (
-  offer: IOfferIndividual
+  priceCategories?: PriceCategoryResponseModel[] | null
 ): SelectOption[] => {
-  const priceCategories = offer.priceCategories
-  priceCategories?.sort((a, b) => {
+  // Clone list to avoid mutation
+  const newPriceCategories = [...(priceCategories ?? [])]
+  newPriceCategories.sort((a, b) => {
     if (a.price === b.price) {
       return a.label.localeCompare(b.label)
     }
@@ -95,7 +97,7 @@ export const getPriceCategoryOptions = (
   })
 
   return (
-    priceCategories?.map(
+    newPriceCategories?.map(
       (priceCategory): SelectOption => ({
         label: `${formatPrice(priceCategory.price)} - ${priceCategory.label}`,
         value: priceCategory.id,
@@ -129,7 +131,7 @@ const StocksEventEdition = ({
   const providerName = offer?.lastProviderName
   const [showStocksEventConfirmModal, setShowStocksEventConfirmModal] =
     useState(false)
-  const priceCategoriesOptions = getPriceCategoryOptions(offer)
+  const priceCategoriesOptions = getPriceCategoryOptions(offer.priceCategories)
 
   let description
   let links
