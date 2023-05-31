@@ -19,6 +19,7 @@ const baseValidForm: RecurrenceFormValues = {
   ],
   quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
   bookingLimitDateInterval: 2,
+  monthlyOption: null,
 }
 
 describe('validationSchema', () => {
@@ -54,6 +55,7 @@ describe('validationSchema', () => {
           { quantity: '', priceCategory: '' },
         ],
         bookingLimitDateInterval: '',
+        monthlyOption: null,
       },
       expectedErrors: [
         'Veuillez renseigner une date',

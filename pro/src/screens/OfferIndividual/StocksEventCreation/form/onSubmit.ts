@@ -4,7 +4,10 @@ import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { serializeBeginningDateTime } from 'screens/OfferIndividual/StocksEventEdition/adapters/serializers'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 
-import { getDatesInInterval } from './recurrenceUtils'
+import {
+  getDatesInInterval,
+  getDatesWithMonthlyOption,
+} from './recurrenceUtils'
 import { RecurrenceFormValues, RecurrenceType } from './types'
 
 export const onSubmit = (
@@ -48,6 +51,21 @@ const getRecurrenceDates = (values: RecurrenceFormValues): Date[] => {
         values.startingDate,
         values.endingDate,
         values.days
+      )
+    }
+    case RecurrenceType.MONTHLY: {
+      /* istanbul ignore next: should be already validated by yup */
+      if (values.startingDate === null || values.endingDate === null) {
+        throw new Error('Starting or ending date is empty')
+      }
+      if (values.monthlyOption === null) {
+        throw new Error('Monthly option is empty')
+      }
+
+      return getDatesWithMonthlyOption(
+        values.startingDate,
+        values.endingDate,
+        values.monthlyOption
       )
     }
 
