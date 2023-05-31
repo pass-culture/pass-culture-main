@@ -275,6 +275,9 @@ class AdminFactory(BaseFactory):
     isEmailValidated = True
     roles = [models.UserRole.ADMIN]
     hasSeenProTutorials = True
+    backoffice_profile = factory.RelatedFactory(
+        "pcapi.core.permissions.factories.BackOfficeUserProfileFactory", factory_related_name="user"
+    )
 
     @classmethod
     def _create(

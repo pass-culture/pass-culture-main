@@ -42,6 +42,7 @@ def login() -> utils.BackofficeResponse:
         if not local_admin:
             local_admin = create_local_admin_user(local_admin_email, "Local", "Admin")
 
+        local_admin.lastConnectionDate = datetime.datetime.utcnow()
         backoffice_api.upsert_roles(local_admin, list(perm_models.Roles))
         db.session.commit()
 
@@ -90,6 +91,7 @@ def authorize() -> utils.BackofficeResponse:
             last_name=google_user["family_name"],
         )
 
+    user.lastConnectionDate = datetime.datetime.utcnow()
     backoffice_api.upsert_roles(user, roles)
     db.session.commit()
 
@@ -132,8 +134,11 @@ def create_local_admin_user(email: str, first_name: str, last_name: str) -> user
         remote_updates=False,
     )
 
-    local_admin.roles = [users_models.UserRole.ADMIN]
+    local_admin.add_admin_role()
     local_admin.firstName = first_name
     local_admin.lastName = last_name
+    local_admin.hasSeenProTutorials = True
+    local_admin.hasSeenProRgs = True
+    local_admin.needsToFillCulturalSurvey = False
 
     return local_admin

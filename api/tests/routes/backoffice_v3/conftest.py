@@ -28,6 +28,7 @@ pytestmark = [
 ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "admin": [
         perm_models.Permissions.MANAGE_PERMISSIONS,
+        perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
         perm_models.Permissions.DELETE_OFFERER_TAG,
         perm_models.Permissions.MANAGE_OFFERER_TAG,
         perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
@@ -93,17 +94,20 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
 @pytest.fixture(scope="function", name="roles_with_permissions")
 def roles_with_permissions_fixture():
     perms_in_db = {perm.name: perm for perm in perm_models.Permission.query.all()}
+    roles = []
 
     for name, perms in ROLE_PERMISSIONS.items():
         role = perm_models.Role(name=name, permissions=[perms_in_db[perm.name] for perm in perms])
+        roles.append(role)
         db.session.add(role)
 
     db.session.commit()
+    return roles
 
 
 @pytest.fixture(scope="function", name="legit_user")
 def legit_user_fixture(roles_with_permissions: None) -> users_models.User:
-    user = users_factories.UserFactory()
+    user = users_factories.UserFactory(firstName="Hercule", lastName="Poirot")
 
     user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, list(perm_models.Roles))

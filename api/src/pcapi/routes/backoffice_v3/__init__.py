@@ -6,7 +6,6 @@ from pcapi import settings
 def install_routes(app: Flask) -> None:
     # pylint: disable=unused-import
     from . import accounts
-    from . import admin
     from . import auth
     from . import autocomplete
     from . import collective_bookings
@@ -27,6 +26,8 @@ def install_routes(app: Flask) -> None:
     from . import tags
     from . import users
     from . import venues
+    from .admin import blueprint as admin_blueprint
+    from .admin import bo_users_blueprint
     from .multiple_offers import blueprint as multiple_offers_blueprint
     from .offer_validation_rules import blueprint as offer_validation_rule_blueprint
     from .pivots import blueprint as pivots_blueprint

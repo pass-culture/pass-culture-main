@@ -1,12 +1,10 @@
 {% extends "layouts/connected.html" %}
-{% from "layouts/connected.html" import MENU_ADMIN_GESTION_DES_ROLES with context %}
-{% set CURRENT_PATH = MENU_ADMIN_GESTION_DES_ROLES %}
 {% block page %}
   <div class="py-4 px-5">
     <h1 class="text-muted mx-3">Admin</h1>
     <div class="container-fluid">
-      {% block roles_management %}
-      {% endblock roles_management %}
+      {% block main_content %}
+      {% endblock main_content %}
     </div>
   </div>
 {% endblock page %}

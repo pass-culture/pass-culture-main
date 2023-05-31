@@ -19,3 +19,10 @@ class RoleFactory(BaseFactory):
 
     name: str = factory.Sequence(lambda n: f"role #{n:04}")
     permissions: list[Permission] = []
+
+
+class BackOfficeUserProfileFactory(BaseFactory):
+    class Meta:
+        model = perm_models.BackOfficeUserProfile
+
+    user = factory.SubFactory("pcapi.core.users.factories.AdminFactory")
