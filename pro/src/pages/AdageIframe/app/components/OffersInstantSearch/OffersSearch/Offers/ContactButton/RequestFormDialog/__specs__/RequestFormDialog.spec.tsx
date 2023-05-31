@@ -27,6 +27,7 @@ const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
 jest.mock('apiClient/api', () => ({
   apiAdage: {
     createCollectiveRequest: jest.fn(),
+    logRequestFormPopinDismiss: jest.fn(),
   },
 }))
 
@@ -150,5 +151,29 @@ describe('RequestFormDialog', () => {
         'Si vous le souhaitez, vous pouvez contacter ce partenaire culturel en renseignant les informations ci-dessous.'
       )
     ).not.toBeInTheDocument()
+  })
+  it('should log event when user close modal', async () => {
+    const mockCloseModal = jest.fn()
+    renderRequestFormDialog({ closeModal: mockCloseModal })
+
+    const descriptionField = screen.getByLabelText(
+      'Que souhaitez vous organiser ?'
+    )
+    await userEvent.type(descriptionField, 'Test description')
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Annuler',
+      })
+    )
+
+    expect(apiAdage.logRequestFormPopinDismiss).toHaveBeenCalledWith({
+      collectiveOfferTemplateId: 1,
+      comment: 'Test description',
+      phoneNumber: undefined,
+      requestedDate: undefined,
+      totalStudents: undefined,
+      totalTeachers: undefined,
+    })
   })
 })
