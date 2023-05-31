@@ -6,7 +6,6 @@ import pytest
 
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE
-from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -291,8 +290,10 @@ class GetBookingsTest:
     def test_get_bookings_returns_stock_price_and_price_category_label(self, client):
         now = datetime.utcnow()
         stock = EventStockFactory()
-        ongoing_booking = BookingFactory(stock=stock, user__deposit__expirationDate=now + timedelta(days=180))
-        BookingFactory(stock=stock, user=ongoing_booking.user, status=BookingStatus.CANCELLED)
+        ongoing_booking = booking_factories.BookingFactory(
+            stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
+        )
+        booking_factories.BookingFactory(stock=stock, user=ongoing_booking.user, status=BookingStatus.CANCELLED)
 
         with assert_no_duplicated_queries():
             response = client.with_token(ongoing_booking.user.email).get("/native/v1/bookings")
@@ -308,6 +309,22 @@ class GetBookingsTest:
             == stock.priceCategory.priceCategoryLabel.label
         )
         assert response.json["ongoing_bookings"][0]["stock"]["price"] == stock.price * 100
+
+    def test_get_free_bookings_in_subcategory(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        ongoing_booking = booking_factories.UsedBookingFactory(
+            user=user, stock=StockFactory(price=0, offer__subcategoryId=subcategories.ABO_MUSEE.id)
+        )
+        ended_booking = booking_factories.UsedBookingFactory(
+            user=user, stock=StockFactory(price=10, offer__subcategoryId=subcategories.ABO_MUSEE.id)
+        )
+
+        with assert_no_duplicated_queries():
+            response = client.with_token(ongoing_booking.user.email).get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        assert response.json["ongoing_bookings"][0]["id"] == ongoing_booking.id
+        assert response.json["ended_bookings"][0]["id"] == ended_booking.id
 
     def test_get_bookings_15_17_user(self, client):
         user = users_factories.UnderageBeneficiaryFactory(email=self.identifier)
