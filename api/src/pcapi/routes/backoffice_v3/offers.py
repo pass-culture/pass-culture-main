@@ -117,15 +117,15 @@ def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer
         search_query = form.q.data
         or_filters = []
 
-        if form.where.data == offer_forms.OfferSearchColumn.ISBN.name or (
-            form.where.data == offer_forms.OfferSearchColumn.ALL.name and utils.is_isbn_valid(search_query)
+        if form.where.data == offer_forms.OfferSearchColumn.EAN.name or (
+            form.where.data == offer_forms.OfferSearchColumn.ALL.name and utils.is_ean_valid(search_query)
         ):
-            or_filters.append(offers_models.Offer.extraData["isbn"].astext == utils.format_isbn_or_visa(search_query))
+            or_filters.append(offers_models.Offer.extraData["ean"].astext == utils.format_ean_or_visa(search_query))
 
         if form.where.data == offer_forms.OfferSearchColumn.VISA.name or (
             form.where.data == offer_forms.OfferSearchColumn.ALL.name and utils.is_visa_valid(search_query)
         ):
-            or_filters.append(offers_models.Offer.extraData["visa"].astext == utils.format_isbn_or_visa(search_query))
+            or_filters.append(offers_models.Offer.extraData["visa"].astext == utils.format_ean_or_visa(search_query))
 
         if form.where.data in (offer_forms.OfferSearchColumn.ALL.name, offer_forms.OfferSearchColumn.ID.name):
             if search_query.isnumeric():
