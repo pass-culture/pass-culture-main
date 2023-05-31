@@ -111,7 +111,6 @@ def create_collective_request(
         extra_data={
             "id": collective_request.id,
             "collective_offer_template_id": offer.id,
-            "phone_number": body.phone_number,
             "requested_date": body.requested_date,
             "total_students": body.total_students,
             "total_teachers": body.total_teachers,

@@ -47,7 +47,6 @@ class Returns200Test:
         assert record.extra == {
             "id": response.json["id"],
             "collective_offer_template_id": offer.id,
-            "phone_number": body["phoneNumber"],
             "requested_date": None,
             "total_students": body["totalStudents"],
             "total_teachers": body["totalTeachers"],
