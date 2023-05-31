@@ -853,16 +853,16 @@ def get_expense_domains(offer: models.Offer) -> list[users_models.ExpenseDomain]
 
 def add_criteria_to_offers(
     criterion_ids: list[int],
-    isbn: str | None = None,
+    ean: str | None = None,
     visa: str | None = None,
 ) -> bool:
-    if not isbn and not visa:
+    if not ean and not visa:
         return False
 
     query = models.Product.query
-    if isbn:
-        isbn = isbn.replace("-", "").replace(" ", "")
-        query = query.filter(models.Product.extraData["isbn"].astext == isbn)
+    if ean:
+        ean = ean.replace("-", "").replace(" ", "")
+        query = query.filter(models.Product.extraData["ean"].astext == ean)
     if visa:
         query = query.filter(models.Product.extraData["visa"].astext == visa)
 
@@ -905,8 +905,8 @@ def add_criteria_to_offers(
     return True
 
 
-def reject_inappropriate_products(isbn: str) -> bool:
-    products = models.Product.query.filter(models.Product.extraData["isbn"].astext == isbn).all()
+def reject_inappropriate_products(ean: str) -> bool:
+    products = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).all()
     if not products:
         return False
 
@@ -933,12 +933,12 @@ def reject_inappropriate_products(isbn: str) -> bool:
     except Exception as exception:  # pylint: disable=broad-except
         logger.exception(
             "Could not mark product and offers as inappropriate: %s",
-            extra={"isbn": isbn, "products": [p.id for p in products], "exc": str(exception)},
+            extra={"isbn": ean, "products": [p.id for p in products], "exc": str(exception)},
         )
         return False
     logger.info(
         "Rejected inappropriate products",
-        extra={"isbn": isbn, "products": [p.id for p in products], "offers": offer_ids},
+        extra={"isbn": ean, "products": [p.id for p in products], "offers": offer_ids},
     )
 
     search.async_index_offer_ids(offer_ids)

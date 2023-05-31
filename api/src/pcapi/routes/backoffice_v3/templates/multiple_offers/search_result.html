@@ -59,7 +59,7 @@
                 {% endif %}
               </p>
               <p>
-                <b>ISBN :</b> {{ isbn }}
+                <b>EAN :</b> {{ ean }}
               </p>
               {% if has_permission("FRAUD_ACTIONS") and (product_compatibility != 'incompatible_products' or approved_active_offers_count + approved_inactive_offers_count + pending_offers_count > 0) %}
                 <div>
