@@ -13,6 +13,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
+from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer_request
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.exceptions import StudentsNotOpenedYet
@@ -786,5 +787,7 @@ def create_offer_request(
     request.email = redactor.email
 
     send_new_request_made_by_redactor_to_pro(request)
+
+    adage_client.notify_redactor_when_collective_request_is_made(serialize_collective_offer_request(request))
 
     return request
