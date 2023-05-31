@@ -50,4 +50,18 @@ Cypress.Commands.add('login', (email: string, password: string) => {
     .click()
 })
 
+Cypress.Commands.add('setFeatureFlags', (features: Feature[]) => {
+  return cy.request({
+    method: 'PATCH',
+    url: 'http://localhost:5001/native/v1/features',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({
+      features,
+    }),
+  })
+})
+
 export {}
