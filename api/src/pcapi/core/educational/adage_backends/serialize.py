@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 
 from pcapi.core.educational import models
@@ -116,3 +117,33 @@ class AdageEducationalInstitution(AdageBaseResponseModel):
     courriel: str | None
     telephone: str | None
     codePostal: str
+
+
+class AdageCollectiveRequest(AdageBaseResponseModel):
+    redactorEmail: str
+    requestPhoneNumber: str | None
+    requestedDate: date | None
+    totalStudents: int | None
+    totalTeachers: int | None
+    offerContactEmail: str
+    offerContactPhoneNumber: str | None
+    offererName: str
+    venueName: str
+    offerName: str
+    comment: str
+
+
+def serialize_collective_offer_request(request: models.CollectiveOfferRequest) -> AdageCollectiveRequest:
+    return AdageCollectiveRequest(
+        redactorEmail=request.educationalRedactor.email,
+        requestPhoneNumber=request._phoneNumber,
+        requestedDate=request.requestedDate,
+        totalStudents=request.totalStudents,
+        totalTeachers=request.totalTeachers,
+        comment=request.comment,
+        offerContactEmail=request.collectiveOfferTemplate.contactEmail,
+        offerContactPhoneNumber=request.collectiveOfferTemplate.contactPhone,
+        offererName=request.collectiveOfferTemplate.venue.managingOfferer.name,
+        venueName=request.collectiveOfferTemplate.venue.name,
+        offerName=request.collectiveOfferTemplate.name,
+    )
