@@ -4,6 +4,7 @@ import {
   AdageFrontRoles,
   AuthenticatedResponse,
   CollectiveOfferTemplateResponseModel,
+  EducationalInstitutionWithBudgetResponseModel,
   OfferAddressType,
 } from 'apiClient/adage'
 
@@ -70,3 +71,14 @@ export const defaultAlgoliaHits: Hit<ResultType> = {
   isTemplate: false,
   __queryID: 'queryId',
 }
+
+export const defaultEducationalInstitution: EducationalInstitutionWithBudgetResponseModel =
+  {
+    budget: 1000,
+    city: 'Paris',
+    id: 1,
+    institutionType: 'COLLEGE',
+    name: 'Mon établissement',
+    phoneNumber: '0123456789',
+    postalCode: '75000',
+  }
