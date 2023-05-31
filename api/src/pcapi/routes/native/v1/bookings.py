@@ -196,7 +196,8 @@ def is_ended_booking(booking: Booking) -> bool:
         return False
 
     if (booking.stock.canHaveActivationCodes and booking.activationCode) or (
-        booking.stock.offer.subcategoryId in FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE and booking.stock.price == 0
+        booking.stock.offer.subcategoryId in [subcategory.id for subcategory in FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE]
+        and booking.stock.price == 0
     ):
         # consider digital bookings and free offer from defined subcategories as special: is_used should be true anyway so
         # let's use displayAsEnded
