@@ -11,10 +11,10 @@ from pcapi.models import feature as feature_models
 import pcapi.notifications.internal.transactional.change_feature_flip as change_feature_flip_internal_message
 from pcapi.repository import repository
 
-from . import blueprint
-from . import utils
-from .forms import admin as admin_forms
-from .forms import empty as empty_forms
+from . import forms
+from .. import blueprint
+from .. import utils
+from ..forms import empty as empty_forms
 
 
 @blueprint.backoffice_v3_web.route("/admin/roles", methods=["GET"])
@@ -26,11 +26,11 @@ def get_roles() -> utils.BackofficeResponse:
     permissions.sort(key=lambda perm: perm.name)
     perm_forms = {}
 
-    admin_forms.EditPermissionForm.setup_form_fields(permissions)
+    forms.EditPermissionForm.setup_form_fields(permissions)
 
     # fill the form with existing data
     for role in roles:
-        perm_form = admin_forms.EditPermissionForm()
+        perm_form = forms.EditPermissionForm()
         perm_form.fill_form(permissions, role)
         perm_forms[role] = perm_form
 
@@ -42,10 +42,10 @@ def get_roles() -> utils.BackofficeResponse:
 def update_role(role_id: int) -> utils.BackofficeResponse:
     permissions = perm_api.list_permissions()
 
-    admin_forms.EditPermissionForm.setup_form_fields(permissions)
+    forms.EditPermissionForm.setup_form_fields(permissions)
 
     new_permissions_ids = []
-    perm_form = admin_forms.EditPermissionForm()
+    perm_form = forms.EditPermissionForm()
 
     if not perm_form.validate():
         flash("Les données envoyées comportent des erreurs", "warning")

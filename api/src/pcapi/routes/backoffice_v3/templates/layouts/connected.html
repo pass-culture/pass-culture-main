@@ -133,6 +133,9 @@
               <div class="nav nav-pills flex-column">
                 {% call menu_section("Admin") %}
                   {% if has_permission("MANAGE_PERMISSIONS") %}{{ menu_section_item("Gestion des rôles", "backoffice_v3_web.get_roles") }}{% endif %}
+                  {% if has_permission("MANAGE_ADMIN_ACCOUNTS") %}
+                    {{ menu_section_item("Utilisateurs BackOffice", "backoffice_v3_web.bo_users.search_bo_users") }}
+                  {% endif %}
                   {% if has_permission("FEATURE_FLIPPING") %}{{ menu_section_item("Feature flipping", "backoffice_v3_web.list_feature_flags") }}{% endif %}
                   {% if get_setting("ENABLE_TEST_USER_GENERATION") %}
                     {{ menu_section_item("Générateur d'utilisateurs de test", "backoffice_v3_web.generate_user") }}

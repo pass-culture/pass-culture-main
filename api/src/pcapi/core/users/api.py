@@ -25,6 +25,7 @@ import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.permissions import models as perm_models
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.email.update as email_update
@@ -1125,10 +1126,14 @@ def search_public_account(search_query: str, order_by: list[str] | None = None) 
     # using the same email as their personal account. So let's include "pro" users who are beneficiaries (doesn't
     # include those who are only in the subscription process).
     public_accounts = (
-        models.User.query.outerjoin(offerers_models.UserOfferer)
+        models.User.query.outerjoin(users_models.User.backoffice_profile)
         .filter(
             sa.or_(
-                offerers_models.UserOfferer.userId.is_(None),
+                sa.and_(
+                    models.User.has_pro_role.is_(False),  # type: ignore [attr-defined]
+                    models.User.has_non_attached_pro_role.is_(False),  # type: ignore [attr-defined]
+                    perm_models.BackOfficeUserProfile.id.is_(None),
+                ),
                 models.User.is_beneficiary.is_(True),  # type: ignore [attr-defined]
             ),
         )
@@ -1149,6 +1154,17 @@ def get_pro_account_base_query(pro_id: int) -> BaseQuery:
     return models.User.query.filter(
         models.User.id == pro_id and (models.User.has_non_attached_pro_role.is_(True) | models.User.has_pro_role.is_(True))  # type: ignore [attr-defined]
     )
+
+
+def search_backoffice_accounts(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
+    bo_accounts = models.User.query.outerjoin(users_models.User.backoffice_profile).filter(
+        perm_models.BackOfficeUserProfile.id.isnot(None),
+    )
+
+    if not search_query:
+        return bo_accounts
+
+    return _filter_user_accounts(bo_accounts, search_query, order_by=order_by)
 
 
 def skip_phone_validation_step(user: models.User) -> None:

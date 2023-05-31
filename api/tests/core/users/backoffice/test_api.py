@@ -40,9 +40,7 @@ def test_update_roles_from_no_profile(permissions, roles) -> None:
 
 
 def test_update_roles_add_one_role(permissions, roles) -> None:
-    user: users_models.User = users_factories.UserFactory(
-        backoffice_profile=perm_models.BackOfficeUserProfile(roles=[roles[1]])
-    )
+    user: users_models.User = users_factories.AdminFactory(backoffice_profile__roles=[roles[1]])
 
     backoffice_api.upsert_roles(user, [perm_models.Roles.SUPPORT_N2, perm_models.Roles.SUPPORT_PRO])
 
@@ -50,9 +48,7 @@ def test_update_roles_add_one_role(permissions, roles) -> None:
 
 
 def test_update_roles_remove_one_role(permissions, roles) -> None:
-    user: users_models.User = users_factories.UserFactory(
-        backoffice_profile=perm_models.BackOfficeUserProfile(roles=[roles[0], roles[1]])
-    )
+    user: users_models.User = users_factories.AdminFactory(backoffice_profile__roles=[roles[0], roles[1]])
 
     backoffice_api.upsert_roles(user, [perm_models.Roles.SUPPORT_N2])
 
@@ -60,9 +56,7 @@ def test_update_roles_remove_one_role(permissions, roles) -> None:
 
 
 def test_update_roles_add_remove_role(permissions, roles) -> None:
-    user: users_models.User = users_factories.UserFactory(
-        backoffice_profile=perm_models.BackOfficeUserProfile(roles=[roles[0], roles[1]])
-    )
+    user: users_models.User = users_factories.AdminFactory(backoffice_profile__roles=[roles[0], roles[1]])
 
     backoffice_api.upsert_roles(user, [perm_models.Roles.SUPPORT_N2, perm_models.Roles.SUPPORT_PRO])
 
@@ -70,9 +64,7 @@ def test_update_roles_add_remove_role(permissions, roles) -> None:
 
 
 def test_update_roles_clear_roles(permissions, roles) -> None:
-    user: users_models.User = users_factories.UserFactory(
-        backoffice_profile=perm_models.BackOfficeUserProfile(roles=[roles[0], roles[1]])
-    )
+    user: users_models.User = users_factories.AdminFactory(backoffice_profile__roles=[roles[0], roles[1]])
 
     backoffice_api.upsert_roles(user, [])
 
@@ -80,9 +72,7 @@ def test_update_roles_clear_roles(permissions, roles) -> None:
 
 
 def test_update_roles_keep_roles(permissions, roles) -> None:
-    user: users_models.User = users_factories.UserFactory(
-        backoffice_profile=perm_models.BackOfficeUserProfile(roles=[roles[1], roles[2]])
-    )
+    user: users_models.User = users_factories.AdminFactory(backoffice_profile__roles=[roles[1], roles[2]])
 
     backoffice_api.upsert_roles(user, [perm_models.Roles.SUPPORT_N2, perm_models.Roles.SUPPORT_PRO])
 
@@ -90,9 +80,7 @@ def test_update_roles_keep_roles(permissions, roles) -> None:
 
 
 def test_fetch_user_with_profile(permissions, roles) -> None:
-    user: users_models.User = users_factories.UserFactory(
-        backoffice_profile=perm_models.BackOfficeUserProfile(roles=[roles[0], roles[1]])
-    )
+    user: users_models.User = users_factories.AdminFactory(backoffice_profile__roles=[roles[0], roles[1]])
 
     user_id = user.id
     with assert_num_queries(1):

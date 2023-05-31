@@ -234,7 +234,7 @@ class PCQuerySelectMultipleField(wtforms_sqlalchemy.fields.QuerySelectMultipleFi
 
 class PCOptSearchField(wtforms.StringField):
     widget = partial(widget, template="components/forms/search_field.html")
-    validators = [validators.Optional()]
+    validators = [validators.Optional(strip_whitespace=True)]
 
     def __init__(self, label: str | None = None, **kwargs: typing.Any):
         super().__init__(label, filters=(sanitize_pc_string,), **kwargs)

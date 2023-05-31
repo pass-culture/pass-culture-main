@@ -76,7 +76,7 @@ def create_bunch_of_accounts():
         phoneNumber="+33756273849",
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
     )
-    pro = users_factories.ProFactory(  # associated with no offerer
+    pro = users_factories.UserFactory(
         firstName="Gérard", lastName="Mentor", email="gm@example.com", phoneNumber="+33246813579"
     )
     random = users_factories.UserFactory(
@@ -421,7 +421,7 @@ class GetPublicAccountTest(GetEndpointHelper):
 
     @pytest.mark.parametrize(
         "index,expected_badge,expected_num_queries",
-        [(0, "Pass 15-17", 3), (1, "Pass 18", 3), (2, "Pro", 4), (3, None, 3)],
+        [(0, "Pass 15-17", 3), (1, "Pass 18", 3), (3, None, 3)],
     )
     def test_get_public_account(self, authenticated_client, index, expected_badge, expected_num_queries):
         # given
@@ -579,17 +579,16 @@ class GetPublicAccountTest(GetEndpointHelper):
 
     def test_get_non_beneficiary_credit(self, authenticated_client):
         # given
-        _, _, pro, random, _ = create_bunch_of_accounts()
+        _, _, _, random, _ = create_bunch_of_accounts()
 
         # when
-        for user, expected_num_queries in ((pro, 4), (random, 3)):
-            user_id = user.id
-            with assert_num_queries(expected_num_queries):  # 2 + user (+ 2 FF)
-                response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+        user_id = random.id
+        with assert_num_queries(3):  # 2 + user
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
 
-                # then
-                assert response.status_code == 200
-            assert "Crédit restant" not in html_parser.content_as_text(response.data)
+            # then
+            assert response.status_code == 200
+        assert "Crédit restant" not in html_parser.content_as_text(response.data)
 
     def test_get_beneficiary_bookings(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()

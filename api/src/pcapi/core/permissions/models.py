@@ -20,6 +20,7 @@ class Permissions(enum.Enum):
     """
 
     MANAGE_PERMISSIONS = "gérer les droits"
+    MANAGE_ADMIN_ACCOUNTS = "gérer les comptes admin"
     FEATURE_FLIPPING = "activer/désactiver les feature flags"
 
     FRAUD_ACTIONS = "actions exclusives à l'équipe Fraude et Conformité"

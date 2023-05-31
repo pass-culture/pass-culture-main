@@ -1,6 +1,12 @@
-{% extends "layouts/accounts.html" %}
-{% block accounts_main_content %}
+{% if layout is defined %}
+  {% extends layout %}
+{% else %}
+  {% extends "layouts/accounts.html" %}
+{% endif %}
+{% block main_content %}
   {% include "accounts/get/general.html" %}
-  {% include "accounts/get/credit.html" %}
+  {% if credit %}
+    {% include "accounts/get/credit.html" %}
+  {% endif %}
   {% include "accounts/get/details.html" %}
-{% endblock accounts_main_content %}
+{% endblock main_content %}
