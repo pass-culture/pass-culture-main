@@ -174,6 +174,14 @@ class TrustedDeviceFeatureTest:
         assert login_device.os == "iOS"
         assert login_device.location == None
 
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+    def should_not_save_login_device_history_on_signin_when_no_device_info(self, client):
+        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
+
+        client.post("/native/v1/signin", json={**self.data, "deviceInfo": None})
+
+        assert LoginDeviceHistory.query.count() == 0
+
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
     def should_not_save_login_device_history_when_feature_flag_is_disabled(self, client):
         users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
