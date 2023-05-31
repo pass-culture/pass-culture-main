@@ -109,4 +109,11 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
         return true
       }),
     bookingLimitDateInterval: yup.number(),
+    monthlyOption: yup
+      .string()
+      .nullable()
+      .when('recurrenceType', {
+        is: RecurrenceType.MONTHLY,
+        then: schema => schema.required('Veuillez choisir une option'),
+      }),
   })

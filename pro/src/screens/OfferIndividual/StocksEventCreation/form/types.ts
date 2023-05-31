@@ -15,6 +15,12 @@ export enum RecurrenceDays {
   SUNDAY = 'sunday',
 }
 
+export enum MonthlyOption {
+  X_OF_MONTH = 'X_OF_MONTH',
+  BY_FIRST_DAY = 'BY_FIRST_DAY',
+  BY_LAST_DAY = 'BY_LAST_DAY',
+}
+
 export type QuantityPerPriceCategoryForm = {
   quantity: number | ''
   priceCategory: string
@@ -28,4 +34,5 @@ export type RecurrenceFormValues = {
   beginningTimes: (Date | null)[]
   quantityPerPriceCategories: QuantityPerPriceCategoryForm[]
   bookingLimitDateInterval: number | ''
+  monthlyOption: MonthlyOption | null
 }
