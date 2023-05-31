@@ -46,7 +46,12 @@ if (SENTRY_SERVER_URL) {
 }
 
 // Initialize cookie consent modal
-initCookieConsent()
+if (
+  process.env.REACT_APP_ENVIRONMENT_NAME !== 'production' &&
+  location.pathname.indexOf('/adage-iframe') === -1
+) {
+  initCookieConsent()
+}
 
 // load and initialise hotjar library
 // included in the bundle instead of <script> tag in index.html
