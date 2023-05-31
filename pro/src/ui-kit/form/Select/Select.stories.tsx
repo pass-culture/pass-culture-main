@@ -39,12 +39,6 @@ SelectInline.args = {
   description: 'super select inline',
 }
 
-export const SelectFilter = Template.bind({})
-SelectFilter.args = {
-  options: mockCategoriesOptions,
-  filterVariant: true,
-}
-
 const SelectInputTemplate: Story<SelectInputProps> = props => (
   <SelectInput {...props} />
 )
@@ -56,4 +50,10 @@ StandeloneSelect.args = {
   options: mockCategoriesOptions,
   disabled: false,
   value: '',
+}
+
+export const SelectFilter = SelectInputTemplate.bind({})
+SelectFilter.args = {
+  options: mockCategoriesOptions,
+  filterVariant: true,
 }

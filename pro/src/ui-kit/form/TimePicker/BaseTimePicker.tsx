@@ -9,31 +9,44 @@ import { BaseInput } from '../shared'
 
 registerLocale('fr', fr)
 
-type Props = ReactDatePickerProps & {
+type Props = Omit<ReactDatePickerProps, 'value'> & {
+  value?: Date | null | ''
   hasError?: boolean
   filterVariant?: boolean
+}
+
+export const isDateValid = (date?: Date | null | ''): date is Date => {
+  return date instanceof Date && !isNaN(date.getTime())
 }
 
 export const BaseTimePicker = ({
   hasError,
   filterVariant,
+  value,
   ...props
-}: Props): JSX.Element => (
-  <ReactDatePicker
-    {...props}
-    customInput={
-      <BaseInput hasError={hasError} filterVariant={filterVariant} />
-    }
-    dateFormat={FORMAT_HH_mm}
-    dropdownMode="scroll"
-    locale="fr"
-    placeholderText="HH:MM"
-    showTimeSelect
-    showTimeSelectOnly
-    timeCaption="Horaire"
-    timeIntervals={15}
-    onKeyDown={event => {
-      !/[0-9:]|Backspace|Tab/.test(event.key) && event.preventDefault()
-    }}
-  />
-)
+}: Props): JSX.Element => {
+  // react-datepicker crashes if the value is not a Date or an InvalidDate
+  // (InvalidDate is the result of new Date('stringthebrowsercantparse'))
+  const selected = isDateValid(value) ? value : null
+
+  return (
+    <ReactDatePicker
+      {...props}
+      customInput={
+        <BaseInput hasError={hasError} filterVariant={filterVariant} />
+      }
+      dateFormat={FORMAT_HH_mm}
+      dropdownMode="scroll"
+      locale="fr"
+      placeholderText="HH:MM"
+      showTimeSelect
+      showTimeSelectOnly
+      timeCaption="Horaire"
+      timeIntervals={15}
+      onKeyDown={event => {
+        !/[0-9:]|Backspace|Tab/.test(event.key) && event.preventDefault()
+      }}
+      selected={selected}
+    />
+  )
+}

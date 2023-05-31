@@ -4,16 +4,12 @@ import React from 'react'
 import { FieldLayout } from '../shared'
 import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
-import { BaseTimePicker } from './BaseTimePicker'
+import { BaseTimePicker, isDateValid } from './BaseTimePicker'
 
 export type TimePickerProps = FieldLayoutBaseProps & {
   disabled?: boolean
   dateTime?: Date
   value?: Date | null | ''
-}
-
-const isDateValid = (date: Date | null): boolean => {
-  return date instanceof Date && !isNaN(date.getTime())
 }
 
 const TimePicker = ({
@@ -32,11 +28,6 @@ const TimePicker = ({
 }: TimePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'text' })
   const showError = meta.touched && !!meta.error
-  const { value, ...otherFieldProps } = field
-
-  // react-datepicker crashes if the value is not a Date or an InvalidDate
-  // (InvalidDate is the result of new Date('stringthebrowsercantparse'))
-  const selected = isDateValid(value) ? value : new Date()
 
   return (
     <FieldLayout
@@ -54,10 +45,9 @@ const TimePicker = ({
       isOptional={isOptional}
     >
       <BaseTimePicker
-        {...otherFieldProps}
+        {...field}
         hasError={meta.touched && !!meta.error}
         filterVariant={filterVariant}
-        selected={selected}
         disabled={disabled}
         onChange={(time: Date | null) => {
           if (isDateValid(time)) {
@@ -65,7 +55,6 @@ const TimePicker = ({
             helpers.setValue(time)
           }
         }}
-        value={isDateValid(value) ? value : ''}
       />
     </FieldLayout>
   )

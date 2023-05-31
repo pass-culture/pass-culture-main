@@ -24,6 +24,7 @@ const SelectInput = ({
   name,
   disabled,
   options,
+  className,
   ...field
 }: SelectInputProps): JSX.Element => (
   <div
@@ -34,7 +35,7 @@ const SelectInput = ({
     <select
       aria-invalid={hasError}
       {...(hasError ? { 'aria-describedby': `error-${name}` } : {})}
-      className={cn(styles['select-input'], {
+      className={cn(styles['select-input'], className, {
         [styles['has-error']]: hasError,
         [styles['has-description']]: hasDescription,
         [styles['select-input-placeholder']]:

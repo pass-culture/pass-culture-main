@@ -62,8 +62,8 @@ const DatePicker = ({
         disabled={disabled}
         maxDate={maxDateTime}
         minDate={minDateTime}
-        openToDate={field.value ? field.value : openingDateTime}
-        selected={field.value}
+        openingDateTime={openingDateTime}
+        value={field.value}
         onChange={date => {
           let newDate = date
           /* istanbul ignore next: DEBT, TO FIX */
