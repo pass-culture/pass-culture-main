@@ -5,6 +5,7 @@
           class="form-select pc-select-field pc-tom-select-field value-element-form"
           id="{{ select_field_id }}"
           name="{{ field.name }}"
+          data-original-name="{{ field.name }}"
           size="2">
     {% for value, label, selected in field.iter_choices() %}
       <option value="{{ value }}" {{ "selected" if selected else "" }}>
@@ -13,6 +14,7 @@
     {% endfor %}
   </select>
   <label class="pc-select-label label-element-form"
+         data-original-name="{{ field.name }}"
          for="{{ select_field_id }}">{{ field.label.text }}</label>
 </div>
 <!-- (Almost) duplicated html for field list field widget -->
@@ -21,6 +23,7 @@
   {% set select_field_id = random_hash() %}
   <select multiple
           class="form-select pc-select-field value-element-form"
+          data-original-name="{{ field.name }}"
           size="2">
     {% for value, label, selected in field.iter_choices() %}
       <option value="{{ value }}" {{ "selected" if selected else "" }}>
@@ -28,5 +31,6 @@
       </option>
     {% endfor %}
   </select>
-  <label class="pc-select-label label-element-form">{{ field.label.text }}</label>
+  <label class="pc-select-label label-element-form"
+         data-original-name="{{ field.name }}">{{ field.label.text }}</label>
 </div>

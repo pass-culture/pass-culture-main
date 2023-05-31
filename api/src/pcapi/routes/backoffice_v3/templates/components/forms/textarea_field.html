@@ -1,12 +1,14 @@
 <div class="form-floating col mb-3">
   {% set textarea_field_id = random_hash() %}
   <textarea name="{{ field.name }}"
+            data-original-name="{{ field.name }}"
             class="form-control h-100 pc-override-custom-textarea-enter"
             rows="{{ field.rows }}"
             {% if field.flags.required %}required{% endif %}
             {% if field.flags.minlength %}minlength="{{ field.flags.minlength }}"{% endif %}
             {% if field.flags.maxlength %}maxlength="{{ field.flags.maxlength }}"{% endif %}>{{ field.data | empty_string_if_null }}</textarea>
   <label class="label-element-form"
+         data-original-name="{{ field.name }}"
          for="{{ textarea_field_id }}">{{ field.label.text }}</label>
   <div class="text-muted text-end">
     <small>Maj+Entrée pour ajouter une nouvelle ligne</small>

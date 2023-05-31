@@ -3,6 +3,7 @@
        class="form-control col-8 value-element-form"
        id="{{ search_field_id }}"
        name="{{ field.name }}"
+       data-original-name="{{ field.name }}"
        value="{{ field.data | empty_string_if_null }}"
        aria-describedby="search-icon"
        placeholder="{{ field.label.text }}" />

@@ -13,6 +13,8 @@ class PcFieldList extends PcAddOn {
   static FIELD_ELEMENT_BEARING_VALUE_SELECTOR = '.value-element-form'
   static FIELD_LABEL_SELECTOR = '.label-element-form'
   static EMPTY_TOM_SELECT_FORM_CONTAINER_CLASS = 'empty-tom-select-form-container'
+  static PC_FORM_FIELD_CLASS = 'pc-form-field-field'
+  static PC_FORM_FIELD_EMPTY_CONTAINER_CLASS = 'pc-form-field-empty-container'
 
   get $$fieldListContainer() {
     return document.querySelectorAll(PcFieldList.PC_FIELD_LIST_CONTAINER_SELECTOR)
@@ -63,11 +65,15 @@ class PcFieldList extends PcAddOn {
     })
   }
 
-  #generateNextElementName = ($ul) => {
-    const { fieldName: baseFieldName, entriesCount } = $ul.dataset
+  #generateNextElementNumber = ($ul) => {
+    const entriesCount = $ul.dataset
     const nextFieldNumber = Number(entriesCount) + 1
     $ul.dataset.entriesCount = nextFieldNumber
-    return `${baseFieldName}-${nextFieldNumber}`
+    return nextFieldNumber
+  }
+
+  #generateElementName = (originalName, newNumber) => {
+    return originalName.replace(/^(\w+-)\d+(-\w+)?$/, `$1${newNumber}$2`)
   }
 
   #filterMaxEntries = ($ul, skipError) => {
@@ -101,7 +107,7 @@ class PcFieldList extends PcAddOn {
     const { cloneFunctionName } = $firstLi.firstElementChild.dataset
     cloneFunctionName ? this[cloneFunctionName]($ul) : this.#defaultCloneFunction($ul)
   }
-  
+
   _tomSelectCloneFunction = ($ul) => {
     const tomSelectClass = this.app.addons[this.app.addons.PcTomSelectFieldId.constructor.ID].constructor.PC_TOM_SELECT_FIELD_CLASS
     const $emptyForm = $ul.querySelector(`.${PcFieldList.EMPTY_TOM_SELECT_FORM_CONTAINER_CLASS}`)
@@ -110,50 +116,72 @@ class PcFieldList extends PcAddOn {
     const $newEmptyForm = $emptyForm.cloneNode(true)
     $li.append($newEmptyForm, $emptyForm.cloneNode(true), $removeButton) // we keep a clone within the newly added and edited $newEmptyForm form
     $li.querySelector(PcFieldList.FIELD_ELEMENT_BEARING_VALUE_SELECTOR).classList.add(tomSelectClass)
-    this.#resetAndRenameElement($li, this.#generateNextElementName($ul))
+    this.#resetAndRenameElement($li, this.#generateNextElementNumber($ul))
     $ul.insertBefore($li, $ul.querySelector(PcFieldList.ADD_BUTTON_SELECTOR))
     app.addons.pcTomSelectField.rebindEvents()
     $newEmptyForm.classList.remove("d-none")
     $newEmptyForm.classList.remove(PcFieldList.EMPTY_TOM_SELECT_FORM_CONTAINER_CLASS)
   }
 
+  _formFieldCloneFunction = ($ul) => {
+    const formFieldClass = PcFieldList.PC_FORM_FIELD_CLASS
+    const $emptyForm = $ul.querySelector(`.${PcFieldList.PC_FORM_FIELD_EMPTY_CONTAINER_CLASS}`)
+    const $removeButton = $ul.querySelector(PcFieldList.REMOVE_BUTTON_SELECTOR).cloneNode(true)
+    const $li = document.createElement('li')
+    const $newEmptyForm = $emptyForm.cloneNode(true)
+    $li.append($newEmptyForm, $emptyForm.cloneNode(true), $removeButton) // we keep a clone within the newly added and edited $newEmptyForm form
+    $li.querySelector(PcFieldList.FIELD_ELEMENT_BEARING_VALUE_SELECTOR).classList.add(formFieldClass)
+    this.#resetAndRenameElement($li, this.#generateNextElementNumber($ul))
+    $ul.insertBefore($li, $ul.querySelector(PcFieldList.ADD_BUTTON_SELECTOR))
+    $newEmptyForm.classList.remove("d-none")
+    $newEmptyForm.classList.remove(PcFieldList.PC_FORM_FIELD_EMPTY_CONTAINER_CLASS)
+  }
+
   #defaultCloneFunction = ($ul) => {
     const firstLi = $ul.firstElementChild
     const $li = firstLi.cloneNode(true)
-    this.#resetAndRenameElement($li, this.#generateNextElementName($ul))
+    this.#resetAndRenameElement($li, this.#generateNextElementNumber($ul))
     $ul.insertBefore($li, $ul.querySelector(PcFieldList.ADD_BUTTON_SELECTOR))
   }
-  
-  
-  #resetAndRenameElement = ($li, newName) => {
+
+
+  #resetAndRenameElement = ($li, newNumber) => {
     const { resetAndRenameFunctionName } = $li.firstElementChild.dataset
     if (resetAndRenameFunctionName) {
-      this[resetAndRenameFunctionName]($li, newName)
+      this[resetAndRenameFunctionName]($li, newNumber)
     } else {
-      this.#defaultResetAndRename($li, newName)
+      this.#defaultResetAndRename($li, newNumber)
     }
   }
 
-  _resetAndRenameCheckbox = ($li, newName) => {
-    const valueElement = $li.querySelector(PcFieldList.FIELD_ELEMENT_BEARING_VALUE_SELECTOR)
-    const label = $li.querySelector(PcFieldList.FIELD_LABEL_SELECTOR)
-    valueElement.id = newName
-    valueElement.name = newName
-    valueElement.checked = valueElement.dataset.defaultValue
-    if (label !== null) {
-      label.htmlFor = newName
-    }
+  _resetAndRenameCheckbox = ($li, newNumber) => {
+    $li.querySelectorAll(PcFieldList.FIELD_ELEMENT_BEARING_VALUE_SELECTOR).forEach(($valueElement) => {
+      const baseName = $valueElement.dataset.originalName
+      const newName = this.#generateElementName(baseName, newNumber)
+      $valueElement.id = newName
+      $valueElement.name = newName
+      $valueElement.checked = $valueElement.dataset.defaultValue
+    })
+    $li.querySelectorAll(PcFieldList.FIELD_LABEL_SELECTOR).forEach(($labelElement) => {
+      const baseName = $labelElement.dataset.originalName
+      const newName = this.#generateElementName(baseName, newNumber)
+      $labelElement.htmlFor = newName
+    })
   }
 
-  #defaultResetAndRename = ($li, newName) => {
-    const valueElement = $li.querySelector(PcFieldList.FIELD_ELEMENT_BEARING_VALUE_SELECTOR)
-    const label = $li.querySelector(PcFieldList.FIELD_LABEL_SELECTOR)
-    valueElement.id = newName
-    valueElement.name = newName
-    valueElement.value = valueElement.dataset.defaultValue ? valueElement.dataset.defaultValue : ""
-    if (label !== null) {
-      label.htmlFor = newName
-    }
+  #defaultResetAndRename = ($li, newNumber) => {
+    $li.querySelectorAll(PcFieldList.FIELD_ELEMENT_BEARING_VALUE_SELECTOR).forEach(($valueElement) => {
+      const baseName = $valueElement.dataset.originalName
+      const newName = this.#generateElementName(baseName, newNumber)
+      $valueElement.id = newName
+      $valueElement.name = newName
+      $valueElement.value = $valueElement.dataset.defaultValue ? $valueElement.dataset.defaultValue : ""
+    })
+    $li.querySelectorAll(PcFieldList.FIELD_LABEL_SELECTOR).forEach(($labelElement) => {
+      const baseName = $labelElement.dataset.originalName
+      const newName = this.#generateElementName(baseName, newNumber)
+      $labelElement.htmlFor = newName
+    })
   }
 
   #onAdd = (event) => {

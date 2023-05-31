@@ -3,6 +3,7 @@
   <input {% if field.type == "PCIntegerField" or field.type == "PCOptIntegerField" %}type="number"{% else %}type="text"{% endif %}
          id="{{ string_field_id }}"
          name="{{ field.name }}"
+         data-original-name="{{ field.name }}"
          class="form-control value-element-form"
          value="{{ field.data | empty_string_if_null }}"
          {% if field.flags.required %}required{% endif %}
@@ -11,5 +12,6 @@
          {% if field.flags.maxlength %}maxlength="{{ field.flags.maxlength }}"{% endif %}
          {% if field.flags.disabled %}disabled{% endif %} />
   <label class="label-element-form"
+         data-original-name="{{ field.name }}"
          for="{{ string_field_id }}">{{ field.label.text }}</label>
 </div>
