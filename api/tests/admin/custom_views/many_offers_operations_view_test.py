@@ -93,16 +93,18 @@ class ManyOffersOperationsViewTest:
 
     @patch("pcapi.core.search.async_index_offer_ids")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_edit_product_offers_criteria_from_isbn(
-        self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app
-    ):
+    def test_edit_product_offers_criteria_from_ean(self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
-        product = offers_factories.ProductFactory(extraData={"isbn": "9783161484100"})
-        offer1 = offers_factories.OfferFactory(product=product, extraData={"isbn": "9783161484100"})
-        offer2 = offers_factories.OfferFactory(product=product, extraData={"isbn": "9783161484100"})
+        product = offers_factories.ProductFactory(extraData={"isbn": "9783161484100", "ean": "9783161484100"})
+        offer1 = offers_factories.OfferFactory(
+            product=product, extraData={"isbn": "9783161484100", "ean": "9783161484100"}
+        )
+        offer2 = offers_factories.OfferFactory(
+            product=product, extraData={"isbn": "9783161484100", "ean": "9783161484100"}
+        )
         inactive_offer = offers_factories.OfferFactory(
-            product=product, extraData={"isbn": "9783161484100"}, isActive=False
+            product=product, extraData={"isbn": "9783161484100", "ean": "9783161484100"}, isActive=False
         )
         unmatched_offer = offers_factories.OfferFactory()
         criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
@@ -227,7 +229,7 @@ class ManyOffersOperationsViewTest:
         offerer = offerers_factories.OffererFactory()
         product_1 = offers_factories.ThingProductFactory(
             description="premier produit inapproprié",
-            extraData={"isbn": "isbn-de-test"},
+            extraData={"isbn": "ean-de-test", "ean": "ean-de-test"},
             isGcuCompatible=not validation_status == OfferValidationStatus.REJECTED,
         )
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -241,7 +243,7 @@ class ManyOffersOperationsViewTest:
 
         # When
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-        response = client.post("/pc/back-office/many_offers_operations/product_gcu_compatibility?isbn=isbn-de-test")
+        response = client.post("/pc/back-office/many_offers_operations/product_gcu_compatibility?isbn=ean-de-test")
 
         # Then
         assert response.status_code == 302

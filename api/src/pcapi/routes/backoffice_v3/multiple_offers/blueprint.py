@@ -46,7 +46,7 @@ def _get_products_compatible_status(products: list[offers_models.Product]) -> st
     return "partially_incompatible_products"
 
 
-def _render_search(search_form: forms.SearchIsbnForm, **kwargs: typing.Any) -> str:
+def _render_search(search_form: forms.SearchEanForm, **kwargs: typing.Any) -> str:
     if kwargs:
         return render_template(
             "multiple_offers/search_result.html", form=search_form, dst=url_for(".search_multiple_offers"), **kwargs
@@ -57,22 +57,22 @@ def _render_search(search_form: forms.SearchIsbnForm, **kwargs: typing.Any) -> s
 
 @multiple_offers_blueprint.route("/", methods=["GET"])
 def multiple_offers_home() -> utils.BackofficeResponse:
-    form = forms.SearchIsbnForm()
+    form = forms.SearchEanForm()
     return _render_search(form)
 
 
 @multiple_offers_blueprint.route("/search", methods=["GET"])
 def search_multiple_offers() -> utils.BackofficeResponse:
-    form = forms.SearchIsbnForm(formdata=utils.get_query_params())
+    form = forms.SearchEanForm(formdata=utils.get_query_params())
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return _render_search(form), 400
 
-    isbn = form.isbn.data
+    ean = form.ean.data
 
     products = (
-        offers_models.Product.query.filter(offers_models.Product.extraData["isbn"].astext == isbn)
+        offers_models.Product.query.filter(offers_models.Product.extraData["ean"].astext == ean)
         .options(
             sa.orm.joinedload(offers_models.Product.offers)
             .load_only(offers_models.Offer.isActive, offers_models.Offer.validation)
@@ -83,7 +83,7 @@ def search_multiple_offers() -> utils.BackofficeResponse:
     )
 
     if not products:
-        flash("Aucun livre n'a été trouvé avec cet ISBN", "error")
+        flash("Aucun livre n'a été trouvé avec cet EAN", "error")
         return _render_search(form)
 
     offers = list(itertools.chain.from_iterable(p.offers for p in products))
@@ -108,11 +108,11 @@ def search_multiple_offers() -> utils.BackofficeResponse:
         approved_inactive_offers_count=approved_inactive_offers_count,
         pending_offers_count=pending_offers_count,
         rejected_offers_count=rejected_offers_count,
-        isbn=isbn,
+        ean=ean,
         product_compatibility=_get_products_compatible_status(products),
-        incompatibility_form=forms.HiddenIsbnForm(isbn=isbn),
+        incompatibility_form=forms.HiddenEanForm(ean=ean),
         current_criteria_on_offers=_get_current_criteria_on_active_offers(offers),
-        offer_criteria_form=forms.OfferCriteriaForm(isbn=isbn),
+        offer_criteria_form=forms.OfferCriteriaForm(ean=ean),
     )
 
 
@@ -122,24 +122,24 @@ def add_criteria_to_offers() -> utils.BackofficeResponse:
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-    elif offers_api.add_criteria_to_offers(form.criteria.data, isbn=form.isbn.data):
+    elif offers_api.add_criteria_to_offers(form.criteria.data, ean=form.ean.data):
         flash("Les offres du produit ont bien été taguées", "success")
     else:
         flash("Une erreur s'est produite lors de l'opération", "warning")
 
-    return redirect(url_for(".search_multiple_offers", isbn=form.isbn.data), code=303)
+    return redirect(url_for(".search_multiple_offers", ean=form.ean.data), code=303)
 
 
 @multiple_offers_blueprint.route("/set-product-gcu-incompatible", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
 def set_product_gcu_incompatible() -> utils.BackofficeResponse:
-    form = forms.HiddenIsbnForm()
+    form = forms.HiddenEanForm()
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-    elif offers_api.reject_inappropriate_products(form.isbn.data):
+    elif offers_api.reject_inappropriate_products(form.ean.data):
         flash("Le produit a été rendu incompatible aux CGU et les offres ont été désactivées", "success")
     else:
         flash("Une erreur s'est produite lors de l'opération", "warning")
 
-    return redirect(url_for(".search_multiple_offers", isbn=form.isbn.data), code=303)
+    return redirect(url_for(".search_multiple_offers", ean=form.ean.data), code=303)

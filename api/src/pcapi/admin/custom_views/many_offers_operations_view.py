@@ -191,7 +191,7 @@ class ManyOffersOperationsView(BaseCustomAdminView):
         form = OfferCriteriaForm(request.form)
         if form.validate():
             is_operation_successful = add_criteria_to_offers(
-                [criterion.id for criterion in form.data["criteria"]], isbn=isbn, visa=visa
+                [criterion.id for criterion in form.data["criteria"]], ean=isbn, visa=visa
             )
             if is_operation_successful:
                 flash("Les offres du produit ont bien été tagguées", "success")
