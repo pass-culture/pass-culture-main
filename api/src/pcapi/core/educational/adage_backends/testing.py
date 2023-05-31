@@ -2,6 +2,7 @@ from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
+from pcapi.core.educational.adage_backends.serialize import AdageCollectiveRequest
 from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.serialization import venues_serialize
@@ -172,3 +173,6 @@ class AdageSpyClient(AdageClient):
     def notify_reimburse_collective_booking(self, data: prebooking.AdageReibursementNotification) -> None:
         api_url = f"{self.base_url}/v1/reservation-remboursement"
         testing.adage_requests.append({"url": api_url, "sent_data": ""})
+
+    def notify_redactor_when_collective_request_is_made(self, data: AdageCollectiveRequest) -> None:
+        testing.adage_requests.append({"url": f"{self.base_url}/v1/offre-vitrine", "sent_data": data})

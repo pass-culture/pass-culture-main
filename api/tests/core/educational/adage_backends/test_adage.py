@@ -1,12 +1,10 @@
 import pytest
 
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.adage_backends.adage import AdageHttpClient
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
+from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer_request
 from pcapi.core.educational.exceptions import AdageException
-from pcapi.core.educational.factories import CollectiveBookingFactory
-from pcapi.core.educational.factories import CollectiveOfferFactory
-from pcapi.core.educational.factories import CollectiveStockFactory
-from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.testing import override_settings
 from pcapi.routes.adage.v1.serialization import prebooking
 
@@ -26,7 +24,7 @@ class AdageHttpClientTest:
     def test_notify_prebooking_success_if_201(self, requests_mock):
         # Given
         adage_client = AdageHttpClient()
-        booking = CollectiveBookingFactory()
+        booking = educational_factories.CollectiveBookingFactory()
         booking_data = prebooking.serialize_collective_booking(booking)
 
         # When
@@ -40,7 +38,7 @@ class AdageHttpClientTest:
     def test_notify_prebooking_success_if_404(self, requests_mock):
         # Given
         adage_client = AdageHttpClient()
-        booking = CollectiveBookingFactory()
+        booking = educational_factories.CollectiveBookingFactory()
         booking_data = prebooking.serialize_collective_booking(booking)
 
         # When
@@ -55,7 +53,7 @@ class AdageHttpClientTest:
     def test_notify_prebooking_raises_if_500(self, requests_mock):
         # Given
         adage_client = AdageHttpClient()
-        booking = CollectiveBookingFactory()
+        booking = educational_factories.CollectiveBookingFactory()
         booking_data = prebooking.serialize_collective_booking(booking)
 
         # When
@@ -67,8 +65,9 @@ class AdageHttpClientTest:
     def test_notify_institution_association_success_if_201(self, requests_mock):
         # Given
         adage_client = AdageHttpClient()
-        offer = CollectiveOfferFactory(
-            institution=EducationalInstitutionFactory(), collectiveStock=CollectiveStockFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            institution=educational_factories.EducationalInstitutionFactory(),
+            collectiveStock=educational_factories.CollectiveStockFactory(),
         )
         offer_data = serialize_collective_offer(offer)
 
@@ -83,8 +82,9 @@ class AdageHttpClientTest:
     def test_notify_institution_association_success_if_404(self, requests_mock):
         # Given
         adage_client = AdageHttpClient()
-        offer = CollectiveOfferFactory(
-            institution=EducationalInstitutionFactory(), collectiveStock=CollectiveStockFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            institution=educational_factories.EducationalInstitutionFactory(),
+            collectiveStock=educational_factories.CollectiveStockFactory(),
         )
         offer_data = serialize_collective_offer(offer)
 
@@ -101,8 +101,9 @@ class AdageHttpClientTest:
     def test_notify_institution_association_raises_if_500(self, requests_mock):
         # Given
         adage_client = AdageHttpClient()
-        offer = CollectiveOfferFactory(
-            institution=EducationalInstitutionFactory(), collectiveStock=CollectiveStockFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            institution=educational_factories.EducationalInstitutionFactory(),
+            collectiveStock=educational_factories.CollectiveStockFactory(),
         )
         offer_data = serialize_collective_offer(offer)
 
@@ -110,3 +111,17 @@ class AdageHttpClientTest:
         requests_mock.post(f"{MOCK_API_URL}/v1/offre-assoc", status_code=500)
         with pytest.raises(AdageException):
             adage_client.notify_institution_association(offer_data)
+
+    @override_settings(ADAGE_API_URL=MOCK_API_URL)
+    def test_redactor_when_collective_request_is_made_success_if_201(self, requests_mock):
+        # Given
+        adage_client = AdageHttpClient()
+        request = educational_factories.CollectiveOfferRequestFactory()
+        request_data = serialize_collective_offer_request(request)
+
+        # When
+        endpoint = requests_mock.post(f"{MOCK_API_URL}/v1/offre-vitrine", status_code=201)
+        adage_client.notify_redactor_when_collective_request_is_made(request_data)
+
+        # Then
+        assert endpoint.called

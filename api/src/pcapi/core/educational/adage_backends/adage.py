@@ -6,9 +6,8 @@ from pydantic import parse_obj_as
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
+from pcapi.core.educational.adage_backends import serialize
 from pcapi.core.educational.adage_backends.base import AdageClient
-from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
-from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.serialization import venues_serialize
 from pcapi.utils import requests
@@ -146,7 +145,7 @@ class AdageHttpClient(AdageClient):
 
         return api_response.json()
 
-    def notify_institution_association(self, data: AdageCollectiveOffer) -> None:
+    def notify_institution_association(self, data: serialize.AdageCollectiveOffer) -> None:
         api_url = f"{self.base_url}/v1/offre-assoc"
         try:
             api_response = requests.post(
@@ -190,7 +189,7 @@ class AdageHttpClient(AdageClient):
 
         return parse_obj_as(venues_serialize.AdageCulturalPartner, response_content[0])
 
-    def get_adage_educational_institutions(self, ansco: str) -> list[AdageEducationalInstitution]:
+    def get_adage_educational_institutions(self, ansco: str) -> list[serialize.AdageEducationalInstitution]:
         template_url = f"{self.base_url}/v1/etablissement-scolaire?ansco={ansco}&page=%s"
         page = 1
         institutions = []
@@ -215,7 +214,7 @@ class AdageHttpClient(AdageClient):
             institutions.extend(response_json)
             page += 1
 
-        return parse_obj_as(list[AdageEducationalInstitution], institutions)
+        return parse_obj_as(list[serialize.AdageEducationalInstitution], institutions)
 
     def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
         api_url = f"{self.base_url}/v1/redacteurs-projets/{uai}"
@@ -267,4 +266,21 @@ class AdageHttpClient(AdageClient):
             ) from exp
 
         if api_response.status_code != 200:
+            raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
+
+    def notify_redactor_when_collective_request_is_made(self, data: serialize.AdageCollectiveRequest) -> None:
+        api_url = f"{self.base_url}/v1/offre-vitrine"
+        try:
+            api_response = requests.post(
+                api_url, headers={self.header_key: self.api_key, "Content-Type": "application/json"}, data=data.json()
+            )
+        except ConnectionError as exp:
+            logger.info("could not connect to adage, error: %s", traceback.format_exc())
+            raise exceptions.AdageException(
+                status_code=502,
+                response_text="Connection Error",
+                message="Cannot establish connection to omogen api",
+            ) from exp
+
+        if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
             raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)

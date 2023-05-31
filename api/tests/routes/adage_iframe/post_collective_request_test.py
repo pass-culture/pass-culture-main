@@ -4,6 +4,7 @@ import logging
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
+import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.educational.utils as educational_utils
 
 
@@ -55,6 +56,20 @@ class Returns200Test:
             "userId": educational_utils.get_hashed_user_id(educational_redactor.email),
         }
 
+        assert len(adage_api_testing.adage_requests) == 1
+        request = adage_api_testing.adage_requests[0]["sent_data"]
+        assert request.redactorEmail == educational_redactor.email
+        assert request.requestPhoneNumber == "+33139980101"
+        assert request.totalStudents == 30
+        assert request.totalTeachers == 2
+        assert request.offerContactEmail == "collectiveofferfactory+contact@example.com"
+        assert request.offerContactPhoneNumber == "+33199006328"
+        assert request.offererName == offer.venue.managingOfferer.name
+        assert request.venueName == offer.venue.name
+        assert request.offerName == offer.name
+        assert request.comment == body["comment"]
+        assert not request.requestedDate
+
 
 class Returns404Test:
     def test_post_collective_request_no_offer_template(self, client):
@@ -78,6 +93,7 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
         assert response.json == {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}
+        assert not adage_api_testing.adage_requests
 
     def test_post_collective_request_no_institution_found(self, client):
         educational_redactor = educational_factories.EducationalRedactorFactory(email="JamesHolden@rocinante.com")
@@ -99,3 +115,4 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
         assert response.json == {"code": "INSTITUTION_NOT_FOUND"}
+        assert not adage_api_testing.adage_requests
