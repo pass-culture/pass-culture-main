@@ -75,6 +75,7 @@ export { GenderEnum } from './models/GenderEnum';
 export type { GenerateOffererApiKeyResponse } from './models/GenerateOffererApiKeyResponse';
 export type { GetCollectiveOfferCollectiveStockResponseModel } from './models/GetCollectiveOfferCollectiveStockResponseModel';
 export type { GetCollectiveOfferManagingOffererResponseModel } from './models/GetCollectiveOfferManagingOffererResponseModel';
+export type { GetCollectiveOfferRequestResponseModel } from './models/GetCollectiveOfferRequestResponseModel';
 export type { GetCollectiveOfferResponseModel } from './models/GetCollectiveOfferResponseModel';
 export type { GetCollectiveOfferTemplateResponseModel } from './models/GetCollectiveOfferTemplateResponseModel';
 export type { GetCollectiveOfferVenueResponseModel } from './models/GetCollectiveOfferVenueResponseModel';
