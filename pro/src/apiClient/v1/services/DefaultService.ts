@@ -29,6 +29,7 @@ import type { EducationalInstitutionsResponseModel } from '../models/Educational
 import type { EducationalRedactors } from '../models/EducationalRedactors';
 import type { FinanceReimbursementPointListResponseModel } from '../models/FinanceReimbursementPointListResponseModel';
 import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApiKeyResponse';
+import type { GetCollectiveOfferRequestResponseModel } from '../models/GetCollectiveOfferRequestResponseModel';
 import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
 import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetCollectiveOfferTemplateResponseModel';
 import type { GetCollectiveVenueResponseModel } from '../models/GetCollectiveVenueResponseModel';
@@ -358,6 +359,28 @@ export class DefaultService {
       url: '/collective/offers-template/active-status',
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_collective_offer_request <GET>
+   * @param requestId
+   * @returns GetCollectiveOfferRequestResponseModel OK
+   * @throws ApiError
+   */
+  public getCollectiveOfferRequest(
+    requestId: number,
+  ): CancelablePromise<GetCollectiveOfferRequestResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/collective/offers-template/request/{request_id}',
+      path: {
+        'request_id': requestId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
