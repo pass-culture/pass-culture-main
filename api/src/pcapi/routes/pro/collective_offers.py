@@ -116,7 +116,7 @@ def get_collective_offer_request(request_id: int) -> collective_offers_serialize
     except educational_exceptions.CollectiveOfferRequestNotFound:
         raise ApiErrors(
             errors={
-                "global": ["Le formulairé demande n'existe pas"],
+                "global": ["Le formulaire demandé n'existe pas"],
             },
             status_code=404,
         )
