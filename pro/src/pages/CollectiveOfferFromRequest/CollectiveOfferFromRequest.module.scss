@@ -1,0 +1,20 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+
+.eac {
+    position: relative;
+  
+    &-heading {
+      margin-bottom: rem.torem(32px);
+    }
+  
+    &-sub-heading {
+      max-width: rem.torem(588px);
+      margin-top: rem.torem(4px);
+      font-weight: 500;
+    }
+
+    &-info {
+        margin-bottom: rem.torem(32px);
+    } 
+}
