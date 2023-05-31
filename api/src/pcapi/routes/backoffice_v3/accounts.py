@@ -188,27 +188,41 @@ def render_public_account_details(
         eligibility_history, [fraud_models.FraudCheckType.UBBLE, fraud_models.FraudCheckType.DMS]
     )
 
-    if not edit_account_form:
-        edit_account_form = account_forms.EditAccountForm(
-            last_name=user.lastName,
-            first_name=user.firstName,
-            email=user.email,
-            birth_date=user.birth_date,
-            phone_number=user.phoneNumber,
-            id_piece_number=user.idPieceNumber,
-            postal_address_autocomplete=f"{user.address}, {user.postalCode} {user.city}"
-            if user.address is not None and user.city is not None and user.postalCode is not None
-            else None,
-            address=user.address,
-            postal_code=user.postalCode,
-            city=user.city,
-        )
-    manual_review_form = account_forms.ManualReviewForm()
+    kwargs = {}
 
-    empty_form = empty_forms.EmptyForm()
+    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
+        if not edit_account_form:
+            edit_account_form = account_forms.EditAccountForm(
+                last_name=user.lastName,
+                first_name=user.firstName,
+                email=user.email,
+                birth_date=user.birth_date,
+                phone_number=user.phoneNumber,
+                id_piece_number=user.idPieceNumber,
+                postal_address_autocomplete=f"{user.address}, {user.postalCode} {user.city}"
+                if user.address is not None and user.city is not None and user.postalCode is not None
+                else None,
+                address=user.address,
+                postal_code=user.postalCode,
+                city=user.city,
+            )
+
+        kwargs.update(
+            {
+                "edit_account_form": edit_account_form,
+                "edit_account_dst": url_for(".update_public_account", user_id=user.id),
+                "manual_review_form": account_forms.ManualReviewForm(),
+                "manual_review_dst": url_for(".review_public_account", user_id=user.id),
+                "resend_email_validation_form": empty_forms.EmptyForm(),
+                "send_validation_code_form": empty_forms.EmptyForm(),
+                "manual_phone_validation_form": empty_forms.EmptyForm(),
+            }
+        )
 
     tunnel = _get_tunnel(user, eligibility_history)
     id_check_histories_desc = _get_id_check_histories_desc(eligibility_history)
+
+    kwargs.update(user_forms.get_toggle_suspension_args(user))
 
     return render_template(
         "accounts/get.html",
@@ -220,15 +234,12 @@ def render_public_account_details(
         duplicate_user_id=duplicate_user_id,
         eligibility_history=eligibility_history,
         latest_fraud_check=latest_fraud_check,
-        edit_account_form=edit_account_form,
-        manual_review_form=manual_review_form,
-        resend_email_validation_form=empty_form,
-        send_validation_code_form=empty_form,
-        manual_phone_validation_form=empty_form,
         comment_form=account_forms.CommentForm(),
+        comment_dst=url_for(".comment_public_account", user_id=user_id),
         bookings=sorted(user.userBookings, key=lambda booking: booking.dateCreated, reverse=True),
         active_tab=request.args.get("active_tab", "registration"),
-        **user_forms.get_toggle_suspension_args(user),
+        show_personal_info=True,
+        **kwargs,
     )
 
 
@@ -689,7 +700,7 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
         return render_public_account_details(user_id, form), 400
 
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
-        snapshot.set("email", old=user.email, new=form.email.data)
+        old_email = user.email
         try:
             email_update.full_email_update_by_admin(user, form.email.data)
         except users_exceptions.EmailExistsError:
@@ -697,6 +708,7 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
             snapshot.log_update(save=True)
             flash("L'email est déjà associé à un autre utilisateur", "warning")
             return render_public_account_details(user_id, form), 400
+        snapshot.set("email", old=old_email, new=form.email.data)
 
         # TODO (prouzet) old email should also be updated, but there is no update_external_user by email
         external_attributes_api.update_external_user(user)

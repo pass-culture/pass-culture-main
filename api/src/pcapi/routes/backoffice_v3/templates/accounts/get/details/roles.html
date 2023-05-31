@@ -1,0 +1,18 @@
+{% if roles %}
+  <table class="table mb-4 get-details-roles-view">
+    <thead>
+      <tr>
+        <th scope="col">Rôle</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for role_name in roles | map(attribute="name") | sort %}
+        <tr>
+          <td>{{ role_name }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="m-5">L'utilisateur n'a aucun rôle ou ne s'est pas connecté au BackOffice depuis l'attribution de rôles</p>
+{% endif %}

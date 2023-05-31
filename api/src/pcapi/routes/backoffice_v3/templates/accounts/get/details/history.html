@@ -1,4 +1,4 @@
 {% from "components/history/view.html" import build_history_view with context %}
-{% call build_history_view(url_for('.comment_public_account', user_id=user.id), comment_form, history, true) %}
+{% call build_history_view(comment_dst, comment_form, history, true) %}
   {{ user.full_name }}
 {% endcall %}

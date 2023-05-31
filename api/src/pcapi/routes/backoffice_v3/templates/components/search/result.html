@@ -11,7 +11,14 @@
 {{ build_result_page_form(form, macro) }}
 <div>
   <div>
-    <p class="lead">{{ rows.total }} résultats</p>
+    <p class="lead">
+      {{ rows.total }}
+      {% if rows.total > 1 %}
+        résultats
+      {% else %}
+        résultat
+      {% endif %}
+    </p>
     <div>
       <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-4">
         {% for row in rows.items %}<div class="col">{{ result_card_switch(row, result_type) }}</div>{% endfor %}

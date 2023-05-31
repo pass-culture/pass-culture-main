@@ -20,20 +20,20 @@
             {% endif %}
           </h5>
           <div class="d-flex row-reverse justify-content-end flex-grow-1">
-            {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
+            {% if edit_account_form %}
               <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end"
                       data-bs-toggle="modal"
-                      data-bs-target="#edit-public-account-modal"
+                      data-bs-target="#edit-account-modal"
                       type="button">Modifier les informations</button>
               <div class="modal modal-lg fade"
-                   id="edit-public-account-modal"
+                   id="edit-account-modal"
                    tabindex="-1"
-                   aria-labelledby="edit-public-account-modal-label"
+                   aria-labelledby="edit-account-modal-label"
                    aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content">
-                    <form action="{{ url_for(".update_public_account", user_id=user.id) }}"
-                          name="{{ url_for(".update_public_account", user_id=user.id) | action_to_name }}"
+                    <form action="{{ edit_account_dst }}"
+                          name="{{ edit_account_dst | action_to_name }}"
                           method="post">
                       <div class="modal-header">
                         <h5 class="modal-title">Modifier les informations</h5>
@@ -57,36 +57,42 @@
         </div>
         <h6 class="card-subtitle text-muted">User ID : {{ user.id }}</h6>
         <div class="d-flex justify-content-start">
-          <div class="d-flex flex-column">
-            <p class="my-1 ">
-              <span class="fw-bold">Date de naissance</span>
-              {% if user.birth_date %}<span>{{ user.birth_date | format_date }} ({{ user.age | empty_string_if_null }} ans)</span>{% endif %}
-            </p>
-            {% if user.dateOfBirth and user.dateOfBirth.date() != user.birth_date %}
+          <div class="d-flex flex-column pe-5">
+            {% if show_personal_info %}
               <p class="my-1 ">
-                <span class="fw-bold">Date de naissance déclarée à l'inscription</span>
-                <span>{{ user.dateOfBirth | format_date }}</span>
+                <span class="fw-bold">Date de naissance</span>
+                {% if user.birth_date %}<span>{{ user.birth_date | format_date }} ({{ user.age | empty_string_if_null }} ans)</span>{% endif %}
+              </p>
+              {% if user.dateOfBirth and user.dateOfBirth.date() != user.birth_date %}
+                <p class="my-1 ">
+                  <span class="fw-bold">Date de naissance déclarée à l'inscription</span>
+                  <span>{{ user.dateOfBirth | format_date }}</span>
+                </p>
+              {% endif %}
+              <p class="mb-1">
+                <span class="fw-bold">Crédité le :</span> {{ user.deposit_activation_date | format_date }}
               </p>
             {% endif %}
-            <p class="mb-1">
-              <span class="fw-bold">Crédité le :</span> {{ user.deposit_activation_date | format_date }}
-            </p>
             <p class="mb-1">
               <span class="fw-bold">Date de création du compte :</span> {{ user.dateCreated | format_date }}
             </p>
             <p class="mb-1">
               <span class="fw-bold">Date de dernière connexion :</span> {{ user.lastConnectionDate | format_date_time }}
             </p>
-            <div class="mb-1">
-              <span class="fw-bold">Adresse</span>
-              <p class="mb-0">{{ user.address }}</p>
-              <p>{{ user.postalCode | empty_string_if_null }}&nbsp;{{ user.city | empty_string_if_null }}</p>
-            </div>
+            {% if show_personal_info %}
+              <div class="mb-1">
+                <span class="fw-bold">Adresse</span>
+                <p class="mb-0">{{ user.address }}</p>
+                <p>{{ user.postalCode | empty_string_if_null }}&nbsp;{{ user.city | empty_string_if_null }}</p>
+              </div>
+            {% endif %}
           </div>
           <div class="d-flex flex-column">
             <div class="mb-1">
-              <span class="fw-bold">Numéro de pièce d'identité</span>
-              <p>{{ user.idPieceNumber | empty_string_if_null }}</p>
+              {% if show_personal_info %}
+                <span class="fw-bold">Numéro de pièce d'identité</span>
+                <p>{{ user.idPieceNumber | empty_string_if_null }}</p>
+              {% endif %}
               <div class="mb-1">
                 <div class="d-flex align-items-center">
                   <span class="fw-bold me-1">E-mail :</span> {{ user.email }}
@@ -94,7 +100,7 @@
                     <i class="bi bi-exclamation-circle-fill text-warning ms-1 fs-4 pc-email-changed-icon"></i>
                   {% endif %}
                 </div>
-                {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
+                {% if resend_email_validation_form %}
                   <form action="{{ url_for('.resend_validation_email', user_id=user.id) }}"
                         name="{{ url_for('.resend_validation_email', user_id=user.id) | action_to_name }}"
                         method="post">
@@ -103,36 +109,40 @@
                   </form>
                 {% endif %}
               </div>
-              <div class="mb-1">
-                <span class="fw-bold">Tél :</span> {{ user.phoneNumber | empty_string_if_null }}
-                {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
-                  <div class="d-flex">
-                    <div class="me-1">
-                      <form action="{{ url_for('.send_validation_code', user_id=user.id) }}"
-                            name="{{ url_for('.send_validation_code', user_id=user.id) | action_to_name }}"
+              {% if show_personal_info %}
+                <div class="mb-1">
+                  <span class="fw-bold">Tél :</span> {{ user.phoneNumber | empty_string_if_null }}
+                  {% if send_validation_code_form %}
+                    <div class="d-flex">
+                      <div class="me-1">
+                        <form action="{{ url_for('.send_validation_code', user_id=user.id) }}"
+                              name="{{ url_for('.send_validation_code', user_id=user.id) | action_to_name }}"
+                              method="post">
+                          {{ send_validation_code_form.csrf_token }}
+                          <button class="btn btn-outline-secondary btn-sm fw-bold mt-1">Envoyer un code de validation</button>
+                        </form>
+                      </div>
+                      <form action="{{ url_for('.manually_validate_phone_number', user_id=user.id) }}"
+                            name="{{ url_for('.manually_validate_phone_number', user_id=user.id) | action_to_name }}"
                             method="post">
-                        {{ send_validation_code_form.csrf_token }}
-                        <button class="btn btn-outline-secondary btn-sm fw-bold mt-1">Envoyer un code de validation</button>
+                        {{ manual_phone_validation_form.csrf_token }}
+                        <button class="btn btn-outline-secondary btn-sm fw-bold mt-1">Valider le numéro de téléphone</button>
                       </form>
                     </div>
-                    <form action="{{ url_for('.manually_validate_phone_number', user_id=user.id) }}"
-                          name="{{ url_for('.manually_validate_phone_number', user_id=user.id) | action_to_name }}"
-                          method="post">
-                      {{ manual_phone_validation_form.csrf_token }}
-                      <button class="btn btn-outline-secondary btn-sm fw-bold mt-1">Valider le numéro de téléphone</button>
-                    </form>
-                  </div>
-                {% endif %}
-              </div>
+                  {% endif %}
+                </div>
+              {% endif %}
             </div>
           </div>
           <div class="d-flex flex-column ms-auto align-items-end justify-content-around">
-            {% if has_permission("SUSPEND_USER") and user.isActive %}
-              <div>{{ build_modal_form("suspend", suspension_dst, suspension_form, "Suspendre le compte", "Confirmer la suspension") }}</div>
-            {% elif has_permission("UNSUSPEND_USER") and not user.isActive %}
-              <div>{{ build_modal_form("unsuspend", suspension_dst, suspension_form, "Réactiver le compte", "Confirmer la réactivation") }}</div>
+            {% if suspension_form %}
+              {% if user.isActive %}
+                <div>{{ build_modal_form("suspend", suspension_dst, suspension_form, "Suspendre le compte", "Confirmer la suspension") }}</div>
+              {% else %}
+                <div>{{ build_modal_form("unsuspend", suspension_dst, suspension_form, "Réactiver le compte", "Confirmer la réactivation") }}</div>
+              {% endif %}
             {% endif %}
-            {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
+            {% if manual_review_form %}
               <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end"
                       data-bs-toggle="modal"
                       data-bs-target="#review-public-account-modal"
@@ -144,8 +154,8 @@
                    aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content">
-                    <form action="{{ url_for(".review_public_account", user_id=user.id) }}"
-                          name="{{ url_for(".review_public_account", user_id=user.id) | action_to_name }}"
+                    <form action="{{ manual_review_dst }}"
+                          name="{{ manual_review_dst | action_to_name }}"
                           method="post">
                       <div class="modal-header">
                         <h5 class="modal-title">Revue manuelle</h5>
