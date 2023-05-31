@@ -124,9 +124,7 @@ def book_offer(
         if is_activation_code_applicable:
             booking.activationCode = offers_repository.get_available_activation_code(stock)
             booking.mark_as_used()
-        if stock.price == 0 and stock.offer.subcategoryId in [
-            c.id for c in constants.FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE
-        ]:
+        if stock.price == 0 and stock.offer.subcategoryId in constants.FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE:
             booking.mark_as_used()
 
         stock.dnBookedQuantity += booking.quantity
@@ -559,9 +557,7 @@ def archive_old_bookings() -> None:
             Booking.query.join(Booking.stock, Stock.offer)
             .filter(date_condition)
             .filter(
-                offers_models.Offer.subcategoryId.in_(
-                    [category.id for category in constants.FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE]
-                ),
+                offers_models.Offer.subcategoryId.in_(constants.FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE),
                 offers_models.Stock.price == 0,
             )
             .with_entities(Booking.id)

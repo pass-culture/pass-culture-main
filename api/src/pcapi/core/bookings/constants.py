@@ -13,11 +13,11 @@ BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY = datetime.timedelta(days=5)
 AUTO_USE_AFTER_EVENT_TIME_DELAY = datetime.timedelta(hours=48)
 REDIS_EXTERNAL_BOOKINGS_NAME = "api:external_bookings:barcodes"
 EXTERNAL_BOOKINGS_MINIMUM_ITEM_AGE_IN_QUEUE = 60
-FREE_OFFER_SUBCATEGORIES_TO_ARCHIVE = [
-    subcategories.ABO_MUSEE,
-    subcategories.CARTE_MUSEE,
-    subcategories.ABO_BIBLIOTHEQUE,
-    subcategories.ABO_MEDIATHEQUE,
+FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE = [
+    subcategories.ABO_MUSEE.id,
+    subcategories.CARTE_MUSEE.id,
+    subcategories.ABO_BIBLIOTHEQUE.id,
+    subcategories.ABO_MEDIATHEQUE.id,
 ]
 
 
