@@ -77,27 +77,67 @@ const sortByQuantity = (
       (sortingMode === SortingMode.ASC ? 1 : -1)
   )
 
-export const sortStocks = (
+export const filterAndSortStocks = (
   stocks: StocksEvent[],
   priceCategories: PriceCategoryResponseModel[],
   sortingColumn: SortingColumn | null,
-  sortingMode: SortingMode
+  sortingMode: SortingMode,
+  filters: {
+    dateFilter: Date | null
+    hourFilter: Date | null
+    priceCategoryFilter: string
+  }
 ): StocksEvent[] => {
+  const { dateFilter, hourFilter, priceCategoryFilter } = filters
+  const filteredStocks = stocks.filter(stock => {
+    const stockDate = new Date(stock.beginningDatetime)
+
+    if (dateFilter !== null) {
+      const isSameDay =
+        stockDate.getFullYear() === dateFilter.getFullYear() &&
+        stockDate.getMonth() === dateFilter.getMonth() &&
+        stockDate.getDate() === dateFilter.getDate()
+
+      if (!isSameDay) {
+        return false
+      }
+    }
+
+    if (hourFilter !== null) {
+      const isSameHour =
+        stockDate.getHours() === hourFilter.getHours() &&
+        stockDate.getMinutes() === hourFilter.getMinutes()
+
+      if (!isSameHour) {
+        return false
+      }
+    }
+
+    if (
+      priceCategoryFilter !== '' &&
+      stock.priceCategoryId !== Number(priceCategoryFilter)
+    ) {
+      return false
+    }
+
+    return true
+  })
+
   if (sortingMode === SortingMode.NONE || sortingColumn === null) {
-    return sortByBeginningDatetime(stocks, SortingMode.ASC)
+    return sortByBeginningDatetime(filteredStocks, SortingMode.ASC)
   }
 
   switch (sortingColumn) {
     case SortingColumn.DATE:
-      return sortByBeginningDatetime(stocks, sortingMode)
+      return sortByBeginningDatetime(filteredStocks, sortingMode)
     case SortingColumn.HOUR:
-      return sortByHour(stocks, sortingMode)
+      return sortByHour(filteredStocks, sortingMode)
     case SortingColumn.PRICE_CATEGORY:
-      return sortByPriceCategory(stocks, priceCategories, sortingMode)
+      return sortByPriceCategory(filteredStocks, priceCategories, sortingMode)
     case SortingColumn.BOOKING_LIMIT_DATETIME:
-      return sortByBookingDatetime(stocks, sortingMode)
+      return sortByBookingDatetime(filteredStocks, sortingMode)
     case SortingColumn.QUANTITY:
-      return sortByQuantity(stocks, sortingMode)
+      return sortByQuantity(filteredStocks, sortingMode)
     default:
       throw new Error('Unknown sorting column')
   }

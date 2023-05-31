@@ -70,7 +70,9 @@ describe('StocksEventList', () => {
     expect(screen.getByText('15/10/2021')).toBeInTheDocument()
     expect(screen.getByText('14:00')).toBeInTheDocument()
     expect(screen.getByText('18')).toBeInTheDocument()
-    expect(screen.getByText('12,5 € - Label')).toBeInTheDocument()
+    expect(
+      screen.getByText('12,5 € - Label', { selector: 'td' })
+    ).toBeInTheDocument()
     expect(screen.getByText('15/09/2021')).toBeInTheDocument()
   })
 
@@ -128,6 +130,47 @@ describe('StocksEventList', () => {
     within(screen.getAllByRole('row')[3]).getByText('30,5 € - Label')
   })
 
+  it('should filter stocks', async () => {
+    const filteredPriceCategoryId = 3
+
+    renderStocksEventList({
+      stocks: [
+        individualStockEventListFactory({
+          beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
+          priceCategoryId: 1,
+        }),
+        individualStockEventListFactory({
+          beginningDatetime: new Date('2021-10-14T13:00:00Z').toISOString(),
+          priceCategoryId: 2,
+        }),
+        individualStockEventListFactory({
+          beginningDatetime: new Date('2021-10-14T12:00:00Z').toISOString(),
+          priceCategoryId: filteredPriceCategoryId,
+        }),
+      ],
+    })
+
+    expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 3 stock rows
+
+    await userEvent.type(
+      screen.getByLabelText('Filtrer par date'),
+      '14/10/2021'
+    )
+    expect(
+      screen.getByText('Résultat de recherche', { exact: false })
+    ).toBeInTheDocument()
+    expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 1 filter result row + 2 stock rows
+
+    await userEvent.type(screen.getByLabelText('Filtrer par horaire'), '12:00')
+    expect(screen.getAllByRole('row')).toHaveLength(3) // 1 header + 1 filter result row + 1 stock rows
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Filtrer par tarif'),
+      String(filteredPriceCategoryId)
+    )
+    expect(screen.getAllByRole('row')).toHaveLength(3) // 1 header + 1 filter result row + 1 stock rows
+  })
+
   it('should change checkbox states', async () => {
     renderStocksEventList({
       stocks: [
@@ -135,31 +178,70 @@ describe('StocksEventList', () => {
         individualStockEventListFactory({ priceCategoryId: 1 }),
       ],
     })
-    const checkboxes = screen.getAllByRole('checkbox')
+    const selectAllCheckbox = screen.getByLabelText('Tout sélectionner')
+    const allCheckboxes = screen.getAllByRole('checkbox')
 
     // "all checkbox" check everithing
-    await userEvent.click(checkboxes[0])
-    expect(checkboxes[0]).toBeChecked()
-    expect(checkboxes[1]).toBeChecked()
-    expect(checkboxes[2]).toBeChecked()
+    await userEvent.click(selectAllCheckbox)
+    expect(selectAllCheckbox).toBeChecked()
+    expect(allCheckboxes[1]).toBeChecked()
+    expect(allCheckboxes[2]).toBeChecked()
 
     // line checkbox uncheck "all checkbox"
-    await userEvent.click(checkboxes[1])
-    expect(checkboxes[0]).not.toBeChecked()
-    expect(checkboxes[1]).not.toBeChecked()
-    expect(checkboxes[2]).toBeChecked()
+    await userEvent.click(allCheckboxes[1])
+    expect(selectAllCheckbox).not.toBeChecked()
+    expect(allCheckboxes[1]).not.toBeChecked()
+    expect(allCheckboxes[2]).toBeChecked()
 
     // line checkbox check "all checkbox"
-    await userEvent.click(checkboxes[1])
-    expect(checkboxes[0]).toBeChecked()
-    expect(checkboxes[1]).toBeChecked()
-    expect(checkboxes[2]).toBeChecked()
+    await userEvent.click(allCheckboxes[1])
+    expect(selectAllCheckbox).toBeChecked()
+    expect(allCheckboxes[1]).toBeChecked()
+    expect(allCheckboxes[2]).toBeChecked()
 
     // "all checkbox" uncheck everything
-    await userEvent.click(checkboxes[0])
-    expect(checkboxes[0]).not.toBeChecked()
-    expect(checkboxes[1]).not.toBeChecked()
-    expect(checkboxes[2]).not.toBeChecked()
+    await userEvent.click(selectAllCheckbox)
+    expect(selectAllCheckbox).not.toBeChecked()
+    expect(allCheckboxes[1]).not.toBeChecked()
+    expect(allCheckboxes[2]).not.toBeChecked()
+  })
+
+  it('should check only filtered lines', async () => {
+    renderStocksEventList({
+      stocks: [
+        individualStockEventListFactory({
+          beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
+          priceCategoryId: 1,
+        }),
+        individualStockEventListFactory({
+          beginningDatetime: new Date('2021-10-14T13:00:00Z').toISOString(),
+          priceCategoryId: 2,
+        }),
+        individualStockEventListFactory({
+          beginningDatetime: new Date('2021-10-14T12:00:00Z').toISOString(),
+          priceCategoryId: 3,
+        }),
+      ],
+    })
+
+    expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 3 stock rows
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Filtrer par tarif'),
+      String(3)
+    )
+    expect(screen.getAllByRole('row')).toHaveLength(3) // 1 header + 1 filter result row + 1 stock rows
+
+    await userEvent.click(screen.getByLabelText('Tout sélectionner'))
+    expect(screen.getByText('1 date sélectionnée')).toBeInTheDocument()
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Filtrer par tarif'),
+      ''
+    )
+    expect(
+      screen.queryByText('date sélectionnée', { exact: false })
+    ).not.toBeInTheDocument()
   })
 
   it('should bulk delete lines when clicking on button on action bar', async () => {
@@ -169,7 +251,9 @@ describe('StocksEventList', () => {
         individualStockEventListFactory({ priceCategoryId: 1 }),
       ],
     })
-    expect(screen.getAllByText('12,5 € - Label')).toHaveLength(2)
+    expect(
+      screen.getAllByText('12,5 € - Label', { selector: 'td' })
+    ).toHaveLength(2)
 
     const checkboxes = screen.getAllByRole('checkbox')
     await userEvent.click(checkboxes[0])
@@ -251,7 +335,9 @@ describe('StocksEventList', () => {
         individualStockEventListFactory({ priceCategoryId: 1 }),
       ],
     })
-    expect(screen.getAllByText('12,5 € - Label')).toHaveLength(2)
+    expect(
+      screen.getAllByText('12,5 € - Label', { selector: 'td' })
+    ).toHaveLength(2)
 
     const checkboxes = screen.getAllByRole('checkbox')
     await userEvent.click(checkboxes[0])
@@ -302,6 +388,8 @@ describe('StocksEventList', () => {
 
     // only one line has been removed, last page is full
     expect(screen.getByText('Page 2/2')).toBeInTheDocument()
-    expect(screen.getAllByText('12,5 € - Label')).toHaveLength(STOCKS_PER_PAGE)
+    expect(
+      screen.getAllByText('12,5 € - Label', { selector: 'td' })
+    ).toHaveLength(STOCKS_PER_PAGE)
   })
 })

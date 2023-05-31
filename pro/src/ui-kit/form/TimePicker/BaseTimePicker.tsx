@@ -13,6 +13,7 @@ type Props = Omit<ReactDatePickerProps, 'value'> & {
   value?: Date | null | ''
   hasError?: boolean
   filterVariant?: boolean
+  'aria-label'?: string
 }
 
 export const isDateValid = (date?: Date | null | ''): date is Date => {
@@ -23,6 +24,7 @@ export const BaseTimePicker = ({
   hasError,
   filterVariant,
   value,
+  'aria-label': ariaLabel,
   ...props
 }: Props): JSX.Element => {
   // react-datepicker crashes if the value is not a Date or an InvalidDate
@@ -33,7 +35,11 @@ export const BaseTimePicker = ({
     <ReactDatePicker
       {...props}
       customInput={
-        <BaseInput hasError={hasError} filterVariant={filterVariant} />
+        <BaseInput
+          hasError={hasError}
+          filterVariant={filterVariant}
+          aria-label={ariaLabel}
+        />
       }
       dateFormat={FORMAT_HH_mm}
       dropdownMode="scroll"
