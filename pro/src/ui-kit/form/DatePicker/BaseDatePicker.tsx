@@ -10,14 +10,18 @@ import { BaseInput } from '../shared'
 
 registerLocale('fr', fr)
 
-type Props = ReactDatePickerProps & {
+type Props = Omit<ReactDatePickerProps, 'value'> & {
   hasError?: boolean
   filterVariant?: boolean
+  openingDateTime?: Date
+  value?: Date | null
 }
 
 export const BaseDatePicker = ({
   hasError,
   filterVariant,
+  openingDateTime,
+  value,
   ...props
 }: Props): JSX.Element => {
   const ref = createRef<HTMLInputElement>()
@@ -37,6 +41,8 @@ export const BaseDatePicker = ({
       dropdownMode="scroll"
       locale="fr"
       placeholderText="JJ/MM/AAAA"
+      openToDate={value ? value : openingDateTime}
+      selected={value}
     />
   )
 }
