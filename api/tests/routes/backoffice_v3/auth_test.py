@@ -76,6 +76,7 @@ class AuthorizePageTest:
         assert "Successful authentication attempt" in caplog.messages
 
         user = users_models.User.query.get(user.id)
+        assert user.has_admin_role
         user_role_names = {role.name for role in user.backoffice_profile.roles}
         expected_role_names = {role.value for role in expected_roles}
 
@@ -108,6 +109,7 @@ class AuthorizePageTest:
 
         user = users_models.User.query.filter(users_models.User.email == email).first()
         assert user is not None
+        assert user.has_admin_role
         assert response.status_code == 302
         assert response.location == url_for("backoffice_v3_web.home", _external=True)
         assert "Successful authentication attempt" in caplog.messages
