@@ -729,6 +729,7 @@ describe('screen | VenueForm', () => {
         },
         description: '',
         isEmailAppliedOnAllOffers: true,
+        isAccessibilityAppliedOnAllOffers: false,
         latitude: 48.635699,
         longitude: -2.006961,
         mentalDisabilityCompliant: true,
