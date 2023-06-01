@@ -242,7 +242,10 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
         updated_roles = self.roles + [role]
 
-        if len(set(updated_roles) & {UserRole.ADMIN, UserRole.BENEFICIARY, UserRole.UNDERAGE_BENEFICIARY}) > 1:
+        if (
+            len(set(updated_roles) & {UserRole.ADMIN, UserRole.BENEFICIARY, UserRole.UNDERAGE_BENEFICIARY}) > 1
+            or len(set(updated_roles) & {UserRole.PRO, UserRole.NON_ATTACHED_PRO}) > 1
+        ):
             msg = "User can't have roles " + " and ".join(r.value for r in updated_roles)
             raise InvalidUserRoleException(msg)
 
@@ -256,8 +259,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         self._add_role(UserRole.BENEFICIARY)
 
     def add_pro_role(self) -> None:
-        self._add_role(UserRole.PRO)
         self.remove_non_attached_pro_role()
+        self._add_role(UserRole.PRO)
 
     def add_non_attached_pro_role(self) -> None:
         self.remove_pro_role()
