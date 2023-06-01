@@ -96,6 +96,8 @@ export const serializeEditVenueBodyModel = (
       isWithdrawalAppliedOnAllOffers: formValues.isWithdrawalAppliedOnAllOffers,
       reimbursementPointId: reimbursementPointId,
       shouldSendMail: shouldSendMail,
+      isAccessibilityAppliedOnAllOffers:
+        formValues.isAccessibilityAppliedOnAllOffers,
     }
   }
 }
