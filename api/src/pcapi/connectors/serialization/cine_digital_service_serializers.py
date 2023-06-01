@@ -223,28 +223,35 @@ class SeatCDS:
             assert isinstance(hardcoded_seatmap, list)
             self.seatNumber: str = hardcoded_seatmap[self.seatRow][self.seatCol]
         else:
+            seat_number_row = self.seatRow
+            seat_number_col = self.seatCol
             if not screen_infos.seatmap_front_to_back:
-                self.seatRow = seat_map.nb_row - seat_location_indices[0] - 1
+                seat_number_row = seat_map.nb_row - seat_location_indices[0] - 1
             if not screen_infos.seatmap_left_to_right:
-                self.seatCol = seat_map.nb_col - seat_location_indices[1] - 1
+                seat_number_col = seat_map.nb_col - seat_location_indices[1] - 1
 
             if screen_infos.seatmap_skip_missing_seats:
+                # Skip missing seats only to count seat column number
                 seat_row_array = seat_map.map[seat_location_indices[0]]
-                seat_col_array = [seat_map.map[i][seat_location_indices[1]] for i in range(seat_map.nb_row)]
                 previous_col_seats = (
                     seat_row_array[: seat_location_indices[1]]
                     if screen_infos.seatmap_left_to_right
                     else seat_row_array[seat_location_indices[1] :]
                 )
-                previous_row_seats = (
-                    seat_col_array[: seat_location_indices[0]]
-                    if screen_infos.seatmap_front_to_back
-                    else seat_col_array[seat_location_indices[0] :]
-                )
-                skipped_col_seats = sum(1 for seat_value in previous_col_seats if seat_value == 0)
-                skipped_row_seats = sum(1 for seat_value in previous_row_seats if seat_value == 0)
-                self.seatCol -= skipped_col_seats
-                self.seatRow -= skipped_row_seats
 
-            seat_letter = chr(ord("A") + self.seatRow)
-            self.seatNumber = f"{seat_letter}_{self.seatCol + 1}"
+                skipped_col_seats = sum(1 for seat_value in previous_col_seats if seat_value == 0)
+                seat_number_col -= skipped_col_seats
+
+            previous_rows = (
+                seat_map.map[: seat_location_indices[0]]
+                if screen_infos.seatmap_front_to_back
+                else seat_map.map[seat_location_indices[0] :]
+            )
+            skipped_rows = 0
+            for row_seats in previous_rows:
+                if all(seat == 0 for seat in row_seats):
+                    skipped_rows += 1
+            seat_number_row -= skipped_rows
+
+            seat_letter = chr(ord("A") + seat_number_row)
+            self.seatNumber = f"{seat_letter}_{seat_number_col + 1}"
