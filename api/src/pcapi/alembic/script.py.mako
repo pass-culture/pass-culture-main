@@ -1,4 +1,7 @@
-"""${message}
+"""FIXME: the comment below appears in the output of `alembic history`.
+Remove this FIXME and make the comment below easily readable.
+
+${message}
 """
 from alembic import op
 import sqlalchemy as sa
