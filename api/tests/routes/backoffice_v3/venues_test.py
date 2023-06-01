@@ -177,6 +177,12 @@ class GetVenueTest(GetEndpointHelper):
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
+    # get session (1 query)
+    # get user with profile and permissions (1 query)
+    # get venue (1 query)
+    # check WIP_ENABLE_NEW_ONBOARDING FF (1 query)
+    expected_num_queries = 4
+
     @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_get_venue(self, authenticated_client, venue):
         venue.publicName = "Le grand Rantanplan 1"
@@ -189,11 +195,7 @@ class GetVenueTest(GetEndpointHelper):
         # count.
         db.session.expire(venue)
 
-        # get session (1 query)
-        # get user with profile and permissions (1 query)
-        # get venue (1 query)
-        # check WIP_ENABLE_NEW_ONBOARDING FF (1 query)
-        with assert_num_queries(4):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -360,6 +362,37 @@ class GetVenueTest(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert f"Statut du dossier DMS Adage : {format_dms_status(state)}" in content
         assert f"{label} : " + (getattr(collectiveDmsApplication, dateKey)).strftime("%d/%m/%Y") in content
+
+    def test_get_virtual_venue(self, authenticated_client):
+        venue = offerers_factories.VirtualVenueFactory()
+
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        # if venue is not removed from the current session, any get
+        # query won't be executed because of this specific testing
+        # environment. this would tamper the real database queries
+        # count.
+        db.session.expire(venue)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert venue.name in response_text
+        assert "Nom d'usage :" not in response_text
+        assert f"Venue ID : {venue.id} " in response_text
+        assert f"E-mail : {venue.bookingEmail} " in response_text
+        assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
+        assert "Peut créer une offre EAC : Non" in response_text
+        assert "Statut dossier DMS Adage :" not in response_text
+        assert "ID Adage" not in response_text
+        assert "Site web : https://my.website.com" in response_text
+        assert "Pas de dossier DMS CB" in response_text
+
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert "Lieu" in badges
+        assert "Suspendu" not in badges
 
 
 class GetVenueStatsDataTest:
