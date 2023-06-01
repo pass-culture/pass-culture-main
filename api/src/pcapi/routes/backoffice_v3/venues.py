@@ -185,8 +185,8 @@ def render_venue_details(
                 latitude=venue.latitude,
                 longitude=venue.longitude,
             )
+            edit_venue_form.siret.flags.disabled = not _can_edit_siret()
         edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
-        edit_venue_form.siret.flags.disabled = not _can_edit_siret()
 
     delete_venue_form = empty_forms.EmptyForm()
 
