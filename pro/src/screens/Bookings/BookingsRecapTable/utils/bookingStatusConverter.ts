@@ -6,7 +6,7 @@ import styles from './BookingStatus.module.scss'
 const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
     id: BOOKING_STATUS.VALIDATED,
-    status: 'validé',
+    status: 'Validée',
     label: 'Réservation validée',
     historyClassName: 'bs-history-validated',
     statusClassName: styles['booking-status-validated'],
@@ -25,7 +25,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   },
   {
     id: BOOKING_STATUS.BOOKED,
-    status: 'réservé',
+    status: 'Réservée',
     label: 'Réservé',
     historyClassName: 'bs-history-booked',
     statusClassName: styles['booking-status-booked'],
@@ -43,7 +43,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   },
   {
     id: BOOKING_STATUS.REIMBURSED,
-    status: 'remboursé',
+    status: 'Remboursée',
     label: 'Remboursée',
     historyClassName: 'bs-history-reimbursed',
     statusClassName: styles['booking-status-reimbursed'],
@@ -52,7 +52,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   },
   {
     id: BOOKING_STATUS.CONFIRMED,
-    status: 'confirmé',
+    status: 'Confirmée',
     label: 'Réservation confirmée',
     historyClassName: 'bs-history-confirmed',
     statusClassName: styles['booking-status-confirmed'],
@@ -64,14 +64,14 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
 const COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
     id: BOOKING_STATUS.VALIDATED,
-    status: 'terminée',
+    status: 'Terminée',
     label: 'Votre évènement a eu lieu',
     statusClassName: styles['booking-status-validated'],
     svgIconFilename: 'ico-status-double-validated',
   },
   {
     id: BOOKING_STATUS.CANCELLED,
-    status: 'annulée',
+    status: 'Annulée',
     label: 'Réservation annulée',
     statusClassName: styles['booking-status-cancelled'],
     icon: 'ico-status-cancelled',
@@ -79,28 +79,28 @@ const COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   },
   {
     id: BOOKING_STATUS.BOOKED,
-    status: 'réservée',
+    status: 'Réservée',
     label: 'Le chef d’établissement scolaire a réservé.',
     statusClassName: styles['booking-status-booked'],
     svgIconFilename: 'ico-status-booked',
   },
   {
     id: BOOKING_STATUS.PENDING,
-    status: 'préréservée',
+    status: 'Préréservée',
     label: 'L’enseignant a préréservé.',
     statusClassName: styles['booking-status-pending'],
     svgIconFilename: 'ico-status-pending-tag',
   },
   {
     id: BOOKING_STATUS.REIMBURSED,
-    status: 'remboursée',
+    status: 'Remboursée',
     label: 'La réservation a été remboursée',
     statusClassName: styles['booking-status-reimbursed'],
     svgIconFilename: 'ico-status-reimbursed',
   },
   {
     id: BOOKING_STATUS.CONFIRMED,
-    status: 'confirmée',
+    status: 'Confirmée',
     label: 'L’établissement scolaire ne peut plus annuler la réservation',
     statusClassName: styles['booking-status-confirmed'],
     svgIconFilename: 'ico-status-validated-white',

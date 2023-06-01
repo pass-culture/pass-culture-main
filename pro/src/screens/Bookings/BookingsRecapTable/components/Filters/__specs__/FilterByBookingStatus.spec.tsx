@@ -123,8 +123,8 @@ describe('components | FilterByBookingStatus', () => {
       expect(checkbox).toHaveLength(2)
       expect(checkbox[0]).toHaveAttribute('checked')
       expect(checkbox[1]).toHaveAttribute('checked')
-      expect(screen.getByText('réservé')).toBeInTheDocument()
-      expect(screen.getByText('validé')).toBeInTheDocument()
+      expect(screen.getByText('Réservée')).toBeInTheDocument()
+      expect(screen.getByText('Validée')).toBeInTheDocument()
     })
 
     it('should add value to filters when unchecking on a checkbox', async () => {
