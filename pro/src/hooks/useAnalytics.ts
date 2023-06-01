@@ -20,7 +20,13 @@ import useUtmQueryParams from 'hooks/useUtmQueryParams'
 
 import useRemoteConfig from './useRemoteConfig'
 
-export const useConfigureFirebase = (currentUserId: string | undefined) => {
+export const useConfigureFirebase = ({
+  currentUserId,
+  isCookieEnabled,
+}: {
+  currentUserId: string | undefined
+  isCookieEnabled: boolean
+}) => {
   const [app, setApp] = useState<firebase.FirebaseApp | undefined>()
   const [isFirebaseSupported, setIsFirebaseSupported] = useState<boolean>(false)
 
@@ -32,11 +38,11 @@ export const useConfigureFirebase = (currentUserId: string | undefined) => {
     async function initializeIfNeeded() {
       setIsFirebaseSupported(await isSupported())
     }
-    initializeIfNeeded()
-  }, [])
+    isCookieEnabled && initializeIfNeeded()
+  }, [isCookieEnabled])
 
   useEffect(() => {
-    if (!app && isFirebaseSupported) {
+    if (isCookieEnabled && !app && isFirebaseSupported) {
       const initializeApp = firebase.initializeApp(firebaseConfig)
       if (!initializeApp) {
         return
@@ -75,13 +81,13 @@ export const useConfigureFirebase = (currentUserId: string | undefined) => {
           )
       })
     }
-  }, [app, isFirebaseSupported])
+  }, [isCookieEnabled, app, isFirebaseSupported])
 
   useEffect(() => {
-    if (app && currentUserId && isFirebaseSupported) {
+    if (isCookieEnabled && app && currentUserId && isFirebaseSupported) {
       setUserId(getAnalytics(app), currentUserId)
     }
-  }, [app, currentUserId])
+  }, [isCookieEnabled, app, currentUserId])
 }
 
 function useAnalytics() {

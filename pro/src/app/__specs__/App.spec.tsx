@@ -19,12 +19,15 @@ jest.mock('hooks/usePageTitle', () => jest.fn())
 
 const renderApp = (storeOverrides: any, url = '/') =>
   renderWithProviders(
-    <App>
-      <Routes>
-        <Route path="/" element={<p>Sub component</p>} />
-        <Route path="/connexion" element={<p>Login page</p>} />
-      </Routes>
-    </App>,
+    <>
+      <div id="root"></div>
+      <App>
+        <Routes>
+          <Route path="/" element={<p>Sub component</p>} />
+          <Route path="/connexion" element={<p>Login page</p>} />
+        </Routes>
+      </App>
+    </>,
     { storeOverrides, initialRouterEntries: [url] }
   )
 
