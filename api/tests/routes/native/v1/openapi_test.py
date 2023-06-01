@@ -545,6 +545,29 @@ def test_public_api(client):
                     "enum": ["underage", "age-18"],
                     "title": "EligibilityType",
                 },
+                "EmailHistoryEventTypeEnum": {
+                    "description": "An enumeration.",
+                    "enum": [
+                        "UPDATE_REQUEST",
+                        "CONFIRMATION",
+                        "CANCELLATION",
+                        "VALIDATION",
+                        "ADMIN_VALIDATION",
+                        "ADMIN_UPDATE_REQUEST",
+                        "ADMIN_UPDATE",
+                    ],
+                    "title": "EmailHistoryEventTypeEnum",
+                },
+                "EmailUpdateStatus": {
+                    "properties": {
+                        "expired": {"title": "Expired", "type": "boolean"},
+                        "newEmail": {"title": "Newemail", "type": "string"},
+                        "status": {"$ref": "#/components/schemas/EmailHistoryEventTypeEnum"},
+                    },
+                    "required": ["newEmail", "expired", "status"],
+                    "title": "EmailUpdateStatus",
+                    "type": "object",
+                },
                 "ExpenseDomain": {
                     "description": "An enumeration.",
                     "enum": ["all", "digital", "physical"],
@@ -2607,7 +2630,12 @@ def test_public_api(client):
                     "operationId": "get_/native/v1/profile/email_update/status",
                     "parameters": [],
                     "responses": {
-                        "200": {"description": "OK"},
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/EmailUpdateStatus"}}
+                            },
+                            "description": "OK",
+                        },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
