@@ -563,13 +563,22 @@ def update_offerer(
 
 def remove_pro_role_and_add_non_attached_pro_role(users: list[users_models.User]) -> None:
     users_with_offerers = (
-        users_models.User.query.outerjoin(models.UserOfferer)
-        .filter(users_models.User.id.in_([user.id for user in users]))
+        users_models.User.query.filter(users_models.User.id.in_([user.id for user in users]))
+        .options(
+            sa.orm.load_only(users_models.User.roles),
+            sa.orm.joinedload(users_models.User.UserOfferers)
+            .load_only(models.UserOfferer.validationStatus)
+            .joinedload(models.UserOfferer.offerer)
+            .load_only(models.Offerer.validationStatus),
+        )
         .all()
     )
 
     for user_with_offerers in users_with_offerers:
-        if not any(user_offerer.isValidated for user_offerer in user_with_offerers.UserOfferers):
+        if not any(
+            user_offerer.isValidated and user_offerer.offerer.isValidated
+            for user_offerer in user_with_offerers.UserOfferers
+        ):
             user_with_offerers.add_non_attached_pro_role()
 
 
@@ -606,9 +615,7 @@ def set_offerer_attachment_pending(
     user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str | None = None
 ) -> None:
     user_offerer.validationStatus = ValidationStatus.PENDING
-    applicants = users_repository.get_users_with_validated_attachment_by_offerer(user_offerer.offerer)
-    for applicant in applicants:
-        applicant.remove_pro_role()
+    remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
     action = history_api.log_action(
         history_models.ActionType.USER_OFFERER_PENDING,
         author_user,
@@ -765,8 +772,7 @@ def set_offerer_pending(
     offerer.isActive = True
 
     applicants = users_repository.get_users_with_validated_attachment_by_offerer(offerer)
-    for applicant in applicants:
-        applicant.remove_pro_role()
+    remove_pro_role_and_add_non_attached_pro_role(applicants)
 
     extra_data = {}
     if tags_to_add or tags_to_remove:
