@@ -43,6 +43,13 @@ const acceptableErrors = [
     error: 'Error: Not implemented: navigation (except hash changes)',
     files: [''],
   },
+  // This is added because `orejim` uses React 17 internally.
+  // We'll wait for the library update to remove this.
+  {
+    error:
+      "Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot",
+    files: [''],
+  },
 ]
 
 const findErrorSourceFile = (...data: any[]) => {

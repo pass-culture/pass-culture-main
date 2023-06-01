@@ -22,9 +22,12 @@ describe('src | AppRouter', () => {
     const store = configureTestStore()
 
     render(
-      <Provider store={store}>
-        <AppRouter routes={[]} />
-      </Provider>
+      <>
+        <div id="root"></div>
+        <Provider store={store}>
+          <AppRouter routes={[]} />
+        </Provider>
+      </>
     )
 
     expect(screen.getByText(/Cette page n’existe pas/)).toBeInTheDocument()
@@ -39,28 +42,31 @@ describe('src | AppRouter', () => {
     })
 
     render(
-      <Provider store={store}>
-        <AppRouter
-          routes={[
-            {
-              path: '/',
-              element: (
-                <p>
-                  Sub component{' '}
-                  <Link to={{ pathname: '/offers' }}>Go to private page</Link>
-                </p>
-              ),
-              meta: { public: true, withoutLayout: true },
-            },
-            {
-              path: '/connexion',
-              element: <p>Login page</p>,
-              meta: { public: true, withoutLayout: true },
-            },
-            { path: '/offers', element: <p>Offers page</p> },
-          ]}
-        />
-      </Provider>
+      <>
+        <div id="root"></div>
+        <Provider store={store}>
+          <AppRouter
+            routes={[
+              {
+                path: '/',
+                element: (
+                  <p>
+                    Sub component{' '}
+                    <Link to={{ pathname: '/offers' }}>Go to private page</Link>
+                  </p>
+                ),
+                meta: { public: true, withoutLayout: true },
+              },
+              {
+                path: '/connexion',
+                element: <p>Login page</p>,
+                meta: { public: true, withoutLayout: true },
+              },
+              { path: '/offers', element: <p>Offers page</p> },
+            ]}
+          />
+        </Provider>
+      </>
     )
 
     await userEvent.click(screen.getByText('Go to private page'))

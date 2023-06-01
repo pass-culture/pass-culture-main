@@ -18,7 +18,6 @@ import {
   SENTRY_SAMPLE_RATE,
   SENTRY_SERVER_URL,
 } from 'utils/config'
-import { initCookieConsent } from 'utils/cookieConsentModal'
 
 import config from '../package.json'
 
@@ -45,14 +44,6 @@ if (SENTRY_SERVER_URL) {
   })
 }
 
-// Initialize cookie consent modal
-if (
-  process.env.REACT_APP_ENVIRONMENT_NAME !== 'production' &&
-  location.pathname.indexOf('/adage-iframe') === -1
-) {
-  initCookieConsent()
-}
-
 // load and initialise hotjar library
 // included in the bundle instead of <script> tag in index.html
 // to avoid the need of 'insafe-inline' in Content Security Policy
@@ -69,7 +60,15 @@ if (
   a = o.getElementsByTagName('head')[0]
   r = o.createElement('script')
   r.async = 1
-  r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv
+  // We do not change hotjar loading in production until it is tested
+  if (process.env.REACT_APP_ENVIRONMENT_NAME !== 'production') {
+    r.setAttribute('data-src', t + h._hjSettings.hjid + j + h._hjSettings.hjsv)
+    r.setAttribute('data-type', 'application/javascript')
+    r.setAttribute('data-name', 'hotjar')
+    r.type = 'opt-in'
+  } else {
+    r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv
+  }
   a.appendChild(r)
 })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=')
 
