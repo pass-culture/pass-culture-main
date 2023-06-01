@@ -65,9 +65,7 @@ describe('RequestFormDialog', () => {
     })
 
     await userEvent.type(descriptionField, 'Test description')
-    await userEvent.click(dateField)
-    const dates = screen.queryAllByText(new Date().getDate())
-    await userEvent.click(dates[dates.length - 1])
+    await userEvent.type(dateField, format(new Date(), 'dd/MM/yyyy'))
 
     const submitButton = screen.getByRole('button', {
       name: 'Envoyer ma demande',
