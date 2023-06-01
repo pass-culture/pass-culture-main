@@ -639,8 +639,8 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         )
         best_seat = cine_digital_service.get_available_seat(show, screen)
         assert len(best_seat) == 1
-        assert best_seat[0].seatRow == 1
-        assert best_seat[0].seatCol == 2
+        assert best_seat[0].seatRow == 3
+        assert best_seat[0].seatCol == 3
         assert best_seat[0].seatNumber == "B_3"
 
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
@@ -667,6 +667,45 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         )
         best_seat = cine_digital_service.get_available_seat(show, screen)
         assert not best_seat
+
+    @patch("pcapi.core.external_bookings.cds.client.get_resource")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_setmap", return_value=None)
+    def test_should_return_correct_seat_number(self, mocked_gat_hardcoded_seatmap, mocked_get_resource):
+        # fmt: off
+        seatmap_json = [
+            [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1],  # A
+            [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1],  # B
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],  # Empty row, No letter
+            [1, 1, 0, 11, 1, 1, 0, 11, 0, 0, 0, 1, 11, 0, 1, 1, 1, 1, 0, 11, 1, 1, 1, 11, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1],  # C
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1],  # ...
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        ]
+        # fmt: on
+
+        screen = cds_serializers.ScreenCDS(
+            id=1,
+            seatmapfronttoback=True,
+            seatmaplefttoright=False,
+            seatmapskipmissingseats=False,
+        )
+        show = create_show_cds(id_=1, screen_id=1)
+
+        mocked_get_resource.return_value = seatmap_json
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+        )
+        best_seat = cine_digital_service.get_available_seat(show, screen)
+        assert best_seat[0].seatRow == 5
+        assert best_seat[0].seatCol == 18
+        assert best_seat[0].seatNumber == "E_16"
 
 
 class CineDigitalServiceGetAvailableDuoSeatTest:
