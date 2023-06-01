@@ -84,11 +84,11 @@ describe('StocksEventList', () => {
     expect(screen.getByText('Illimité')).toBeInTheDocument()
   })
 
-  it.only('should sort stocks', async () => {
+  it('should sort stocks', async () => {
     renderStocksEventList({
       stocks: [
         individualStockEventListFactory({
-          beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
+          beginningDatetime: new Date('2021-10-13T12:00:00Z').toISOString(),
           priceCategoryId: 1,
         }),
         individualStockEventListFactory({
@@ -96,7 +96,7 @@ describe('StocksEventList', () => {
           priceCategoryId: 2,
         }),
         individualStockEventListFactory({
-          beginningDatetime: new Date('2021-10-13T12:00:00Z').toISOString(),
+          beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
           priceCategoryId: 3,
         }),
       ],
