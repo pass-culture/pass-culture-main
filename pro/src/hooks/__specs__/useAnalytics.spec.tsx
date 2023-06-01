@@ -30,18 +30,26 @@ jest.mock('@firebase/remote-config', () => ({
   },
 }))
 
-const FakeApp = (): JSX.Element => {
-  useConfigureFirebase('userId')
+const FakeApp = ({
+  isCookieEnabled,
+}: {
+  isCookieEnabled: boolean
+}): JSX.Element => {
+  useConfigureFirebase({ currentUserId: 'userId', isCookieEnabled })
   return <h1>Fake App</h1>
 }
 
-const renderFakeApp = async () => {
-  return renderWithProviders(<FakeApp />)
+const renderFakeApp = async ({
+  isCookieEnabled,
+}: {
+  isCookieEnabled: boolean
+}) => {
+  return renderWithProviders(<FakeApp isCookieEnabled={isCookieEnabled} />)
 }
 
 describe('useAnalytics', () => {
-  it('should set logEvent and userId', async () => {
-    await renderFakeApp()
+  it('should set logEvent and userId if cookie is set', async () => {
+    await renderFakeApp({ isCookieEnabled: true })
 
     await waitFor(() => {
       expect(firebaseAnalytics.initializeAnalytics).toHaveBeenCalledTimes(1)
@@ -62,6 +70,17 @@ describe('useAnalytics', () => {
         'getAnalyticsReturn',
         'userId'
       )
+    })
+  })
+  it('should not load if cookie is disabled', async () => {
+    await renderFakeApp({ isCookieEnabled: false })
+
+    await waitFor(() => {
+      expect(firebaseAnalytics.initializeAnalytics).not.toHaveBeenCalled()
+
+      expect(firebaseAnalytics.getAnalytics).not.toHaveBeenCalled()
+      expect(firebase.initializeApp).not.toHaveBeenCalled()
+      expect(firebaseAnalytics.setUserId).not.toHaveBeenCalled()
     })
   })
 })

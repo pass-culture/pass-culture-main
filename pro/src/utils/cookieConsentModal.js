@@ -136,11 +136,9 @@ export const initCookieConsent = () => {
     ],
   }
 
-  setTimeout(() => {
-    Orejime.init(orejimeConfig)
-    let storageId = localStorage.getItem('DEVICE_ID')
-    if (storageId == null) {
-      localStorage.setItem('DEVICE_ID', uuidv4())
-    }
-  })
+  let storageId = localStorage.getItem('DEVICE_ID')
+  if (storageId == null) {
+    localStorage.setItem('DEVICE_ID', uuidv4())
+  }
+  return Orejime.init(orejimeConfig)
 }
