@@ -42,6 +42,7 @@ from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 from pcapi.tasks import batch_tasks
 from pcapi.utils.clean_accents import clean_accents
+import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
 import pcapi.utils.phone_number as phone_number_utils
@@ -1291,3 +1292,23 @@ def is_suspicious_login(device_info: "account_serialization.TrustedDevice | None
         return False
 
     return True
+
+
+def create_suspicious_login_email_token(login_info: users_models.LoginDeviceHistory | None, user_id: int) -> str:
+    if login_info is None:
+        return users_utils.encode_jwt_payload(
+            token_payload={
+                "userId": user_id,
+                "dateCreated": datetime.datetime.utcnow().strftime(date_utils.DATE_ISO_FORMAT),
+            }
+        )
+
+    return users_utils.encode_jwt_payload(
+        token_payload={
+            "userId": user_id,
+            "dateCreated": login_info.dateCreated.strftime(date_utils.DATE_ISO_FORMAT),
+            "location": login_info.location,
+            "os": login_info.os,
+            "source": login_info.source,
+        }
+    )
