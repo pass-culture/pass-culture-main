@@ -42,7 +42,7 @@ describe('bookings | bookingsStatusCell', () => {
     renderBookingStatusCell(props)
 
     // Then
-    const title = screen.getByText('validé', { selector: 'span' })
+    const title = screen.getByText('validée', { selector: 'span' })
     expect(title).toBeInTheDocument()
   })
 

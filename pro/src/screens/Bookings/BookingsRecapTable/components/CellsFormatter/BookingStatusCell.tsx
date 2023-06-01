@@ -44,7 +44,7 @@ const BookingStatusCell = ({
           aria-describedby={tooltipId}
         >
           <Icon svg={bookingDisplayInfo?.svgIconFilename} />
-          <span>{bookingDisplayInfo?.status}</span>
+          <span>{bookingDisplayInfo?.status.toLowerCase()}</span>
         </div>
       </Tooltip>
     )
@@ -55,7 +55,7 @@ const BookingStatusCell = ({
   )
   const offerName = bookingRecapInfo.original.stock.offerName
 
-  const statusName = bookingDisplayInfo?.status
+  const statusName = bookingDisplayInfo?.status.toLowerCase()
   const amount = computeBookingAmount(bookingRecapInfo.original.bookingAmount)
   const icon = bookingDisplayInfo?.svgIconFilename
 
