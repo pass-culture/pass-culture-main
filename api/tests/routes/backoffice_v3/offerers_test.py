@@ -1574,6 +1574,7 @@ class ValidateOffererTest(PostEndpointHelper):
         assert user_offerer.offerer.isValidated
         assert user_offerer.offerer.isActive
         assert user_offerer.user.has_pro_role
+        assert not user_offerer.user.has_non_attached_pro_role
 
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.OFFERER_VALIDATED
@@ -1643,7 +1644,7 @@ class RejectOffererTest(PostEndpointHelper):
 
     def test_reject_offerer(self, legit_user, authenticated_client):
         # given
-        user = users_factories.UserFactory()
+        user = users_factories.NonAttachedProFactory()
         offerer = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # deleted when rejected
 
@@ -1659,6 +1660,7 @@ class RejectOffererTest(PostEndpointHelper):
         assert not offerer.isActive
         assert offerer.isRejected
         assert not user.has_pro_role
+        assert user.has_non_attached_pro_role
 
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.OFFERER_REJECTED
@@ -1667,6 +1669,25 @@ class RejectOffererTest(PostEndpointHelper):
         assert action.userId == user.id
         assert action.offererId == offerer.id
         assert action.venueId is None
+
+    def test_reject_offerer_keep_pro_role(self, authenticated_client):
+        # given
+        user = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user)  # already validated
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # deleted when rejected
+
+        # when
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(user)
+        db.session.refresh(offerer)
+        assert offerer.isRejected
+        assert user.has_pro_role
+        assert not user.has_non_attached_pro_role
 
     def test_reject_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
         # when
@@ -1748,6 +1769,45 @@ class SetOffererPendingTest(PostEndpointHelper):
                 "tags": {"old_info": offerer_tags[1].label, "new_info": offerer_tags[2].label},
             }
         }
+
+    def test_set_offerer_pending_keep_pro_role(self, authenticated_client):
+        # given
+        user = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user)  # already validated
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # deleted when rejected
+
+        # when
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(user)
+        db.session.refresh(offerer)
+        assert offerer.isPending
+        assert user.has_pro_role
+        assert not user.has_non_attached_pro_role
+
+    def test_set_offerer_pending_remove_pro_role(self, authenticated_client):
+        # given
+        user = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()  # validated offerer
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # with validated attachment
+        offerers_factories.UserNotValidatedOffererFactory(user=user)  # other pending offerer validation
+        offerers_factories.NotValidatedUserOffererFactory(user=user)  # other pending attachment
+
+        # when
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(user)
+        db.session.refresh(offerer)
+        assert offerer.isPending
+        assert not user.has_pro_role
+        assert user.has_non_attached_pro_role
 
     def test_set_offerer_pending_returns_404_if_offerer_is_not_found(self, authenticated_client):
         # when
@@ -2196,6 +2256,7 @@ class ValidateOffererAttachmentTest(PostEndpointHelper):
         db.session.refresh(user_offerer)
         assert user_offerer.isValidated
         assert user_offerer.user.has_pro_role
+        assert not user_offerer.user.has_non_attached_pro_role
 
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.USER_OFFERER_VALIDATED
@@ -2320,6 +2381,40 @@ class SetOffererAttachmentPendingTest(PostEndpointHelper):
         assert action.offererId == user_offerer.offerer.id
         assert action.venueId is None
         assert action.comment == "En attente de documents"
+
+    def test_set_offerer_attachment_pending_keep_pro_role(self, authenticated_client):
+        # given
+        user = offerers_factories.UserOffererFactory().user  # already validated
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=user)
+
+        # when
+        response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(user_offerer)
+        db.session.refresh(user)
+        assert user_offerer.isPending
+        assert user.has_pro_role
+        assert not user.has_non_attached_pro_role
+
+    def test_set_offerer_attachment_pending_remove_pro_role(self, authenticated_client):
+        # given
+        user_offerer = offerers_factories.UserOffererFactory()
+        offerers_factories.UserNotValidatedOffererFactory(user=user_offerer.user)  # other pending offerer validation
+        offerers_factories.NotValidatedUserOffererFactory(user=user_offerer.user)  # other pending attachment
+
+        # when
+        response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(user_offerer)
+        assert user_offerer.isPending
+        assert not user_offerer.user.has_pro_role
+        assert user_offerer.user.has_non_attached_pro_role
 
 
 class AddUserOffererAndValidateTest(PostEndpointHelper):
