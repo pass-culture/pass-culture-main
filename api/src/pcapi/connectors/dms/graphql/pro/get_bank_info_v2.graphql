@@ -31,49 +31,6 @@ fragment ChampFragment on Champ {
   ... on SiretChamp {
     etablissement {
       siret
-      naf
-      libelleNaf
-      siegeSocial
-      address {
-        cityCode
-        cityName
-        departmentCode
-        departmentName
-        geometry {
-          coordinates
-          type
-        }
-        label
-        postalCode
-        regionCode
-        regionName
-        streetAddress
-        streetName
-        streetNumber
-        type
-      }
-      association {
-        dateCreation
-        dateDeclaration
-        datePublication
-        objet
-        rna
-        titre
-      }
-      entreprise {
-        capitalSocial
-        codeEffectifEntreprise
-        dateCreation
-        formeJuridique
-        formeJuridiqueCode
-        inlineAdresse
-        nom
-        nomCommercial
-        numeroTvaIntracommunautaire
-        prenom
-        raisonSociale
-        siren
-        siretSiegeSocial
       }
     }
   }
