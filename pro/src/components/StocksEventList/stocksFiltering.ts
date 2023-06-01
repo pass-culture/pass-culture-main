@@ -84,7 +84,7 @@ export const sortStocks = (
   sortingMode: SortingMode
 ): StocksEvent[] => {
   if (sortingMode === SortingMode.NONE || sortingColumn === null) {
-    return sortByBeginningDatetime(stocks, SortingMode.DESC)
+    return sortByBeginningDatetime(stocks, SortingMode.ASC)
   }
 
   switch (sortingColumn) {
