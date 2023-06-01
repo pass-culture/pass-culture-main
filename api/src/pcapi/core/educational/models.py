@@ -753,7 +753,7 @@ class EducationalInstitution(PcObject, Base, Model):
 
     institutionId: str = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
 
-    institutionType = sa.Column(sa.String(80), nullable=False)
+    institutionType: str = sa.Column(sa.String(80), nullable=False)
 
     name: str = sa.Column(sa.Text(), nullable=False)
 
