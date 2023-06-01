@@ -108,6 +108,7 @@ def update_user_email(user: users_models.User, body: serializers.UserProfileEmai
 @spectree_serialize(
     on_success_status=200,
     api=blueprint.api,
+    response_model=serializers.EmailUpdateStatus,
 )
 @authenticated_and_active_user_required
 def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateStatus | None:
