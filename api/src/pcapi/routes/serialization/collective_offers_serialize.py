@@ -364,8 +364,8 @@ class GetCollectiveOfferRequestResponseModel(BaseModel):
     requestedDate: date | None
     totalStudents: int | None
     totalTeachers: int | None
+    phoneNumber: str | None
     comment: str
-    phoneNumber: str
 
     class Config:
         allow_population_by_field_name = True
