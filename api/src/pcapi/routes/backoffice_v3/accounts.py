@@ -213,11 +213,13 @@ def render_public_account_details(
                 "edit_account_dst": url_for(".update_public_account", user_id=user.id),
                 "manual_review_form": account_forms.ManualReviewForm(),
                 "manual_review_dst": url_for(".review_public_account", user_id=user.id),
-                "resend_email_validation_form": empty_forms.EmptyForm(),
                 "send_validation_code_form": empty_forms.EmptyForm(),
                 "manual_phone_validation_form": empty_forms.EmptyForm(),
             }
         )
+
+        if not user.isEmailValidated:
+            kwargs["resend_email_validation_form"] = empty_forms.EmptyForm()
 
     tunnel = _get_tunnel(user, eligibility_history)
     id_check_histories_desc = _get_id_check_histories_desc(eligibility_history)
