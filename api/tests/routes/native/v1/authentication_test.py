@@ -244,6 +244,9 @@ class TrustedDeviceFeatureTest:
         assert mails_testing.outbox[0].sent_data["params"]["LOCATION"] == None
         assert mails_testing.outbox[0].sent_data["params"]["OS"] == "iOS"
         assert mails_testing.outbox[0].sent_data["params"]["SOURCE"] == "iPhone 13"
+        assert mails_testing.outbox[0].sent_data["params"]["LOGIN_DATE"]
+        assert mails_testing.outbox[0].sent_data["params"]["LOGIN_TIME"]
+        assert mails_testing.outbox[0].sent_data["params"]["ACCOUNT_SECURING_LINK"]
 
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def should_not_send_email_when_logging_in_from_a_trusted_device(self, client):
