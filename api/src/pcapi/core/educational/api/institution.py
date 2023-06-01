@@ -1,7 +1,9 @@
+from datetime import datetime
 from decimal import Decimal
 import typing
 
 from pcapi.core.educational import adage_backends as adage_client
+from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
@@ -167,3 +169,19 @@ def import_deposit_institution_data(
             db.session.add(deposit)
 
     db.session.commit()
+
+
+def get_current_year_remaining_credit(institution: educational_models.EducationalInstitution) -> Decimal:
+    educational_year = educational_repository.find_educational_year_by_date(datetime.utcnow())
+    assert educational_year is not None
+
+    deposit = educational_repository.find_educational_deposit_by_institution_id_and_year(
+        institution.id, educational_year.adageId
+    )
+    if deposit is None:
+        raise exceptions.EducationalDepositNotFound()
+
+    spent_amount = educational_repository.get_confirmed_collective_bookings_amount(
+        institution.id, educational_year.adageId
+    )
+    return deposit.get_amount() - spent_amount
