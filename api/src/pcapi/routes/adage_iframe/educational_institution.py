@@ -1,8 +1,6 @@
-from datetime import datetime
-
-import sqlalchemy as sa
-
-from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import exceptions
+from pcapi.core.educational import repository
+import pcapi.core.educational.api.institution as api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
@@ -20,23 +18,17 @@ from pcapi.serialization.decorator import spectree_serialize
 def get_educational_institution_with_budget(
     authenticated_information: AuthenticatedInformation,
 ) -> educational_institution.EducationalInstitutionWithBudgetResponseModel:
-    institution_uai = authenticated_information.uai
+    if not authenticated_information.uai:
+        raise ApiErrors({"code": "NOT ALLOWED"}, status_code=403)
 
-    institution = educational_models.EducationalInstitution.query.filter_by(institutionId=institution_uai)
-    institution = institution.options(
-        sa.orm.joinedload(educational_models.EducationalInstitution.deposits, innerjoin=True)
-    )
-    institution = institution.one_or_none()
+    institution = repository.find_educational_institution_by_uai_code(authenticated_information.uai)
+    if not institution:
+        raise ApiErrors({"code": "INSTITUTION NOT FOUND"}, status_code=404)
 
-    for deposit in institution.deposits:
-        if datetime.utcnow().year == deposit.educationalYear.beginningDate.year:
-            amount = deposit.get_amount()
-            break
-    else:
-        raise ApiErrors(
-            {"global": "L'établissement scolaire ne semble pas avoir de budget pour cette année."},
-            status_code=404,
-        )
+    try:
+        remaining_budget = api.get_current_year_remaining_credit(institution)
+    except exceptions.EducationalDepositNotFound:
+        raise ApiErrors({"code": "DEPOSIT_NOT_FOUND"}, status_code=404)
 
     return educational_institution.EducationalInstitutionWithBudgetResponseModel(
         id=institution.id,
@@ -45,5 +37,5 @@ def get_educational_institution_with_budget(
         postalCode=institution.postalCode,
         city=institution.city,
         phoneNumber=institution.phoneNumber,
-        budget=amount,
+        budget=int(remaining_budget),
     )
