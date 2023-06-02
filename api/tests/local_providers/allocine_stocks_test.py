@@ -418,6 +418,53 @@ class UpdateObjectsTest:
         assert len(created_offers) == 1
         assert len(created_products) == 1
 
+    # TODO(rpaoloni): remove this after 2023-07-06
+    # movies ticket during "printemps du cinema" are always at 5€
+    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
+    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+    @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
+    @pytest.mark.usefixtures("db_session")
+    def test_should_be_5_euro_on_printemps_du_cinema(self, mock_call_allocine_api, mock_api_poster):
+        # Given
+        mock_call_allocine_api.return_value = iter(
+            [
+                {
+                    "node": {
+                        "movie": MOVIE_INFO,
+                        "showtimes": [
+                            {
+                                "startsAt": "2023-07-03T10:30:00",
+                                "diffusionVersion": "ORIGINAL",
+                                "projection": ["DIGITAL"],
+                                "experience": None,
+                            },
+                        ],
+                    }
+                }
+            ]
+        )
+
+        venue = offerers_factories.VenueFactory(
+            managingOfferer__siren="775671464",
+            name="Cinema Allocine",
+            siret="77567146400110",
+            bookingEmail="toto@example.com",
+        )
+
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+
+        allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
+
+        # When
+        allocine_stocks_provider.updateObjects()
+
+        # Then
+        created_stocks = offers_models.Stock.query.all()
+
+        assert len(created_stocks) == 1
+        assert created_stocks[0].price == decimal.Decimal("5.00")
+
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")

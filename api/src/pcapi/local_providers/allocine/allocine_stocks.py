@@ -232,6 +232,12 @@ class AllocineStocks(LocalProvider):
                 allocine_stock.price = price
                 allocine_stock.priceCategory.price = price
 
+        # TODO(rpaoloni): remove this after 2023-07-06 (and remove the test)
+        # movies ticket during "printemps du cinema" are always at 5€
+        local_date = parsed_showtimes["startsAt"]
+        if datetime(2023, 7, 2, tzinfo=local_date.tzinfo) < local_date < datetime(2023, 7, 6, tzinfo=local_date.tzinfo):
+            allocine_stock.price = 5.00
+
     def get_or_create_allocine_price_category(
         self, price: decimal.Decimal, allocine_stock: offers_models.Stock
     ) -> offers_models.PriceCategory:
