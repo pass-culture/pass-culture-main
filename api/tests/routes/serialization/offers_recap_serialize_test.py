@@ -26,7 +26,7 @@ def should_return_serialized_offers_with_relevant_informations():
         is_editable=True,
         is_event=False,
         is_thing=True,
-        product_isbn=None,
+        product_ean=None,
         name="Test Book",
         thumb_url="/thumb/url",
         subcategory_id=subcategories.SUPPORT_PHYSIQUE_FILM.id,
