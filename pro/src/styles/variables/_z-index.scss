@@ -1,3 +1,4 @@
 $sticky-bar-z-index: 1;
-$select-options-z-index: 2;  // The sticky action bar z-index was set to 1. We have to set it to 2 so the select result would display over the sticky bar.
+$recurrence-sticky-bar: $sticky-bar-z-index + 1; // This is a sticky bar that should "replace" the form sticky bar by going above it
+$select-options-z-index: 3; // The sticky action bar z-index was set to 1. We have to set it to 2 so the select result would display over the sticky bar.
 $modal-z-index: 10;
