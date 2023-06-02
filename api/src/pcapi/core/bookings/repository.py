@@ -74,7 +74,7 @@ BOOKING_EXPORT_HEADER = [
     "Lieu",
     "Nom de l’offre",
     "Date de l'évènement",
-    "ISBN",
+    "EAN",
     "Nom et prénom du bénéficiaire",
     "Email du bénéficiaire",
     "Téléphone du bénéficiaire",
@@ -478,7 +478,7 @@ def _get_filtered_booking_report(
             Offer.name.label("offerName"),
             Stock.beginningDatetime.label("stockBeginningDatetime"),
             Stock.offerId,
-            Offer.extraData["isbn"].label("isbn"),
+            Offer.extraData["ean"].label("ean"),
             User.firstName.label("beneficiaryFirstName"),
             User.lastName.label("beneficiaryLastName"),
             User.email.label("beneficiaryEmail"),
@@ -541,7 +541,7 @@ def _get_filtered_booking_pro(
             Booking.isConfirmed,
             Offer.name.label("offerName"),
             Offer.id.label("offerId"),
-            Offer.extraData["isbn"].label("offerIsbn"),
+            Offer.extraData["ean"].label("offerEan"),
             User.firstName.label("beneficiaryFirstname"),
             User.lastName.label("beneficiaryLastname"),
             User.email.label("beneficiaryEmail"),
@@ -598,7 +598,7 @@ def _serialize_booking_recap(booking: Booking) -> BookingRecap:
             if booking.stockBeginningDatetime
             else None
         ),
-        offer_isbn=booking.offerIsbn,
+        offer_ean=booking.offerEan,
         stock_identifier=booking.stockId,
     )
 
@@ -634,7 +634,7 @@ def _serialize_csv_report(query: BaseQuery) -> str:
                 booking.venueName,
                 booking.offerName,
                 convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
-                booking.isbn,
+                booking.ean,
                 f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}",
                 booking.beneficiaryEmail,
                 booking.beneficiaryPhoneNumber,
@@ -679,7 +679,7 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
         worksheet.write(
             row, 2, str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking))
         )
-        worksheet.write(row, 3, booking.isbn)
+        worksheet.write(row, 3, booking.ean)
         worksheet.write(row, 4, f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}")
         worksheet.write(row, 5, booking.beneficiaryEmail)
         worksheet.write(row, 6, booking.beneficiaryPhoneNumber)

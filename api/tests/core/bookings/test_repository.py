@@ -590,7 +590,7 @@ class FindByProUserTest:
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"ean": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
@@ -684,7 +684,7 @@ class FindByProUserTest:
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz("America/Cayenne"))
 
-    def test_should_return_booking_isbn_when_information_is_available(self, app: fixture):
+    def test_should_return_booking_ean_when_information_is_available(self, app: fixture):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
@@ -693,7 +693,7 @@ class FindByProUserTest:
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"ean": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         bookings_factories.UsedBookingFactory(
@@ -710,7 +710,7 @@ class FindByProUserTest:
 
         # Then
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert expected_booking_recap.offer_isbn == "9876543234"
+        assert expected_booking_recap.offer_ean == "9876543234"
 
     def test_should_return_only_booking_for_requested_venue(self, app: fixture):
         # Given
@@ -929,7 +929,7 @@ class GetCsvReportTest:
             "Lieu",
             "Nom de l’offre",
             "Date de l'évènement",
-            "ISBN",
+            "EAN",
             "Nom et prénom du bénéficiaire",
             "Email du bénéficiaire",
             "Téléphone du bénéficiaire",
@@ -947,7 +947,7 @@ class GetCsvReportTest:
         assert data_dict["Lieu"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
         assert data_dict["Date de l'évènement"] == ""
-        assert data_dict["ISBN"] == ((offer.extraData or {}).get("isbn") or "")
+        assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
         assert data_dict["Nom et prénom du bénéficiaire"] == " ".join((beneficiary.lastName, beneficiary.firstName))
         assert data_dict["Email du bénéficiaire"] == beneficiary.email
         assert data_dict["Téléphone du bénéficiaire"] == (beneficiary.phoneNumber or "")
@@ -995,7 +995,7 @@ class GetCsvReportTest:
             "Lieu",
             "Nom de l’offre",
             "Date de l'évènement",
-            "ISBN",
+            "EAN",
             "Nom et prénom du bénéficiaire",
             "Email du bénéficiaire",
             "Téléphone du bénéficiaire",
@@ -1013,7 +1013,7 @@ class GetCsvReportTest:
         assert data_dict["Lieu"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
         assert data_dict["Date de l'évènement"] == ""
-        assert data_dict["ISBN"] == ((offer.extraData or {}).get("isbn") or "")
+        assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
         assert data_dict["Nom et prénom du bénéficiaire"] == " ".join((beneficiary.lastName, beneficiary.firstName))
         assert data_dict["Email du bénéficiaire"] == beneficiary.email
         assert data_dict["Téléphone du bénéficiaire"] == (beneficiary.phoneNumber or "")
@@ -1183,7 +1183,7 @@ class GetCsvReportTest:
             "Lieu",
             "Nom de l’offre",
             "Date de l'évènement",
-            "ISBN",
+            "EAN",
             "Nom et prénom du bénéficiaire",
             "Email du bénéficiaire",
             "Téléphone du bénéficiaire",
@@ -1201,7 +1201,7 @@ class GetCsvReportTest:
         assert data_dict["Lieu"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
         assert data_dict["Date de l'évènement"] == str(stock.beginningDatetime.astimezone(tz.gettz("Europe/Paris")))
-        assert data_dict["ISBN"] == ((offer.extraData or {}).get("isbn") or "")
+        assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
         assert data_dict["Nom et prénom du bénéficiaire"] == " ".join((beneficiary.lastName, beneficiary.firstName))
         assert data_dict["Email du bénéficiaire"] == beneficiary.email
         assert data_dict["Téléphone du bénéficiaire"] == (beneficiary.phoneNumber or "")
@@ -1359,7 +1359,7 @@ class GetCsvReportTest:
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"ean": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
@@ -1402,7 +1402,7 @@ class GetCsvReportTest:
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Date et heure de réservation"] == str(booking_date.astimezone(tz.gettz("America/Cayenne")))
 
-    def test_should_return_booking_isbn_when_information_is_available(self, app: fixture):
+    def test_should_return_booking_ean_when_information_is_available(self, app: fixture):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
@@ -1411,7 +1411,7 @@ class GetCsvReportTest:
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"ean": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         bookings_factories.UsedBookingFactory(
@@ -1430,7 +1430,7 @@ class GetCsvReportTest:
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
-        assert data_dict["ISBN"] == "9876543234"
+        assert data_dict["EAN"] == "9876543234"
 
     def test_should_return_booking_with_venue_name_when_public_name_is_not_provided(self, app):
         # Given
@@ -1457,7 +1457,7 @@ class GetCsvReportTest:
         )
         product_book = offers_factories.ThingProductFactory(name="Harry Potter")
         offer_for_book = offers_factories.ThingOfferFactory(
-            venue=venue_for_book, product=product_book, extraData=dict({"isbn": "9876543234"})
+            venue=venue_for_book, product=product_book, extraData=dict({"ean": "9876543234"})
         )
         stock_for_book = offers_factories.ThingStockFactory(offer=offer_for_book, price=0)
         bookings_factories.UsedBookingFactory(
@@ -1518,7 +1518,7 @@ class GetCsvReportTest:
         )
         product_book = offers_factories.ThingProductFactory(name="Harry Potter")
         offer_for_book = offers_factories.ThingOfferFactory(
-            venue=venue_for_book, product=product_book, extraData=dict({"isbn": "9876543234"})
+            venue=venue_for_book, product=product_book, extraData=dict({"ean": "9876543234"})
         )
         stock_for_book = offers_factories.ThingStockFactory(offer=offer_for_book, price=0)
         bookings_factories.UsedBookingFactory(
@@ -1926,7 +1926,7 @@ class GetExcelReportTest:
             "Lieu",
             "Nom de l’offre",
             "Date de l'évènement",
-            "ISBN",
+            "EAN",
             "Nom et prénom du bénéficiaire",
             "Email du bénéficiaire",
             "Téléphone du bénéficiaire",
@@ -1959,8 +1959,8 @@ class GetExcelReportTest:
         assert sheet.cell(row=2, column=2).value == offer.name
         # Date de l'évènement
         assert sheet.cell(row=2, column=3).value == "None"
-        # ISBN
-        assert sheet.cell(row=2, column=4).value == ((offer.extraData or {}).get("isbn") or None)
+        # EAN
+        assert sheet.cell(row=2, column=4).value == ((offer.extraData or {}).get("ean") or None)
         # Nom et prénom du bénéficiaire
         assert sheet.cell(row=2, column=5).value == " ".join((beneficiary.lastName, beneficiary.firstName))
         # Email du bénéficiaire
