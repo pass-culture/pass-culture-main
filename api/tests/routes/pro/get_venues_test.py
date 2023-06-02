@@ -9,18 +9,17 @@ from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
-from tests.conftest import TestClient
+
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@pytest.mark.usefixtures("db_session")
-def test_response_serialization(app):
-    user_offerer = offerers_factories.UserOffererFactory(
-        user__email="user.pro@test.com",
-    )
+def test_response_serialization(client):
+    user_offerer = offerers_factories.UserOffererFactory()
     venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
     # when
-    response = TestClient(app.test_client()).with_session_auth(user_offerer.user.email).get("/venues")
+    client = client.with_session_auth(user_offerer.user.email)
+    response = client.get("/venues")
 
     # then
     assert response.status_code == 200
@@ -49,11 +48,8 @@ def test_response_serialization(app):
     }
 
 
-@pytest.mark.usefixtures("db_session")
-def test_response_missing_reimbursement_point_serialization(app):
-    user_offerer = offerers_factories.UserOffererFactory(
-        user__email="user.pro@test.com",
-    )
+def test_response_missing_reimbursement_point_serialization(client):
+    user_offerer = offerers_factories.UserOffererFactory()
 
     offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, reimbursement_point=None, name="A")
     venue_with_pending_application = offerers_factories.VenueFactory(
@@ -63,7 +59,8 @@ def test_response_missing_reimbursement_point_serialization(app):
     offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, reimbursement_point="self", name="C")
 
     # when
-    response = TestClient(app.test_client()).with_session_auth(user_offerer.user.email).get("/venues")
+    client = client.with_session_auth(user_offerer.user.email)
+    response = client.get("/venues")
 
     # then
     assert response.status_code == 200
@@ -76,11 +73,8 @@ def test_response_missing_reimbursement_point_serialization(app):
     assert response.json["venues"][2]["hasMissingReimbursementPoint"] == False
 
 
-@pytest.mark.usefixtures("db_session")
-def test_response_created_offer_serialization(app):
-    user_offerer = offerers_factories.UserOffererFactory(
-        user__email="user.pro@test.com",
-    )
+def test_response_created_offer_serialization(client):
+    user_offerer = offerers_factories.UserOffererFactory()
 
     venue_with_offer = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
     OfferFactory(venue=venue_with_offer)
@@ -94,7 +88,8 @@ def test_response_created_offer_serialization(app):
     offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
     # when
-    response = TestClient(app.test_client()).with_session_auth(user_offerer.user.email).get("/venues")
+    client = client.with_session_auth(user_offerer.user.email)
+    response = client.get("/venues")
 
     # then
     assert response.status_code == 200
@@ -108,33 +103,7 @@ def test_response_created_offer_serialization(app):
     assert response.json["venues"][3]["hasCreatedOffer"] == False
 
 
-@pytest.mark.usefixtures("db_session")
-def test_default_call(app, requests_mock):
-    user_offerer = offerers_factories.UserOffererFactory(
-        user__email="user.pro@test.com",
-    )
-    offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-
-    # when
-    response = TestClient(app.test_client()).with_session_auth(user_offerer.user.email).get("/venues")
-
-    # then
-    assert response.status_code == 200
-
-
-@pytest.mark.usefixtures("db_session")
-def test_default_admin_call(app):
-    admin_user = users_factories.AdminFactory(email="admin.pro@test.com")
-
-    # when
-    response = TestClient(app.test_client()).with_session_auth(admin_user.email).get("/venues")
-
-    # then
-    assert response.status_code == 200
-
-
-@pytest.mark.usefixtures("db_session")
-def test_admin_call_num_queries(app):
+def test_admin_call(client):
     admin_user = users_factories.AdminFactory(email="admin.pro@test.com")
 
     user_offerers = offerers_factories.UserOffererFactory.create_batch(3)
@@ -143,9 +112,8 @@ def test_admin_call_num_queries(app):
     offerers_factories.VenueFactory(managingOfferer=user_offerers[1].offerer)
     offerers_factories.VenueFactory(managingOfferer=user_offerers[2].offerer)
 
-    client = TestClient(app.test_client()).with_session_auth(admin_user.email)
-
     # when
+    client = client.with_session_auth(admin_user.email)
     with assert_no_duplicated_queries():
         response = client.get("/venues")
 
@@ -154,17 +122,17 @@ def test_admin_call_num_queries(app):
     assert len(response.json["venues"]) == 3
 
 
-@pytest.mark.usefixtures("db_session")
-def test_invalid_offerer_id(app):
-    pro_user = users_factories.ProFactory(email="user.pro@test.com")
+def test_invalid_offerer_id(client):
+    pro_user = users_factories.ProFactory()
     offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
     offerers_factories.VenueFactory(managingOfferer=offerer)
 
-    query_params = ["offererId=666"]
+    params = {"offererId": "666"}
 
     # when
-    response = TestClient(app.test_client()).with_session_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
+    client = client.with_session_auth(pro_user.email)
+    response = client.get("/venues", params)
 
     # then
     assert response.status_code == 200
@@ -173,69 +141,65 @@ def test_invalid_offerer_id(app):
     assert len(response.json["venues"]) == 0
 
 
-@pytest.mark.usefixtures("db_session")
-def test_full_valid_call(app):
-    pro_user = users_factories.ProFactory(email="user.pro@test.com")
+def test_full_valid_call(client):
+    pro_user = users_factories.ProFactory()
     offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
-    query_params = [
-        "validated=true",
-        f"offererId={offerer.id}",
-        "activeOfferersOnly=true",
-    ]
+    params = {
+        "validated": "true",
+        "offererId": str(offerer.id),
+        "activeOfferersOnly": "true",
+    }
 
     # when
-    response = TestClient(app.test_client()).with_session_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
+    client = client.with_session_auth(pro_user.email)
+    response = client.get("/venues", params)
 
     # then
     assert response.status_code == 200
 
 
-@pytest.mark.usefixtures("db_session")
-def test_full_valid_call_with_false(app):
-    pro_user = users_factories.ProFactory(email="user.pro@test.com")
+def test_full_valid_call_with_false(client):
+    pro_user = users_factories.ProFactory()
     offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
-    query_params = [
-        "validated=false",
-        f"offererId={offerer.id}",
-        "activeOfferersOnly=false",
-    ]
+    params = {
+        "validated": "false",
+        "offererId": str(offerer.id),
+        "activeOfferersOnly": "false",
+    }
 
     # when
-    response = TestClient(app.test_client()).with_session_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
+    client = client.with_session_auth(pro_user.email)
+    response = client.get("/venues", params)
 
     # then
     assert response.status_code == 200
 
 
-@pytest.mark.usefixtures("db_session")
-def test_invalid_validated(app):
-    pro_user = users_factories.ProFactory(email="user.pro@test.com")
+def test_invalid_validated(client):
+    pro_user = users_factories.ProFactory()
 
-    query_params = [
-        "validated=toto",
-    ]
+    params = {"validated": "invalid"}
 
     # when
-    response = TestClient(app.test_client()).with_session_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
+    client = client.with_session_auth(pro_user.email)
+    response = client.get("/venues", params)
 
     # then
     assert response.status_code == 400
 
 
-@pytest.mark.usefixtures("db_session")
-def test_invalid_active_offerer_only(app):
-    pro_user = users_factories.ProFactory(email="user.pro@test.com")
+def test_invalid_active_offerer_only(client):
+    pro_user = users_factories.ProFactory()
 
-    query_params = [
-        "activeOfferersOnly=tata",
-    ]
+    params = {"activeOfferersOnly": "invalid"}
 
     # when
-    response = TestClient(app.test_client()).with_session_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
+    client = client.with_session_auth(pro_user.email)
+    response = client.get("/venues", params)
 
     # then
     assert response.status_code == 400
