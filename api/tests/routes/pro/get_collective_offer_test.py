@@ -194,6 +194,7 @@ class GetCollectiveOfferRequestTest:
             totalTeachers=2,
             comment="Some offer request with all information filled",
             phoneNumber="0102030405",
+            dateCreated=date.today(),
         )
 
         offerers_factories.UserOffererFactory(
@@ -205,17 +206,55 @@ class GetCollectiveOfferRequestTest:
             offer_id=request.collectiveOfferTemplateId,
             request_id=request.id,
         )
-        response = client.with_session_auth(email=pro_user.email).get(dst)
+        client = client.with_session_auth(email=pro_user.email)
+
+        # fetch session (1 query)
+        # fetch user (1 query)
+        # fetch collective offer request and related data (1 query)
+        # check whether user has access to offerer (1 query)
+        with testing.assert_num_queries(4):
+            response = client.get(dst)
 
         assert response.status_code == 200
         assert response.json == {
-            "email": redactor.email,
+            "redactor": {
+                "firstName": redactor.firstName,
+                "lastName": redactor.lastName,
+                "email": redactor.email,
+            },
             "requestedDate": request.requestedDate.isoformat(),
             "totalStudents": request.totalStudents,
             "totalTeachers": request.totalTeachers,
             "comment": request.comment,
             "phoneNumber": request.phoneNumber,
+            "institutionId": request.educationalInstitution.institutionId,
+            "dateCreated": request.dateCreated.isoformat(),
         }
+
+    def test_old_request_without_date_created(self, client):
+        """
+        Date created column was added later. Old requests won't have
+        this information. The api response should handle it properly.
+        """
+        pro_user = users_factories.ProFactory()
+        request = educational_factories.CollectiveOfferRequestFactory()
+        offerers_factories.UserOffererFactory(
+            user=pro_user, offerer=request.collectiveOfferTemplate.venue.managingOfferer
+        )
+
+        # force value after creation, otherwise the default value would
+        # be used
+        request.dateCreated = None
+
+        dst = url_for(
+            "Private API.get_collective_offer_request",
+            offer_id=request.collectiveOfferTemplateId,
+            request_id=request.id,
+        )
+        response = client.with_session_auth(email=pro_user.email).get(dst)
+
+        assert response.status_code == 200
+        assert response.json["dateCreated"] is None
 
     def test_user_does_not_have_access_to_the_offer(self, client):
         pro_user = users_factories.ProFactory()

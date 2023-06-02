@@ -125,12 +125,18 @@ def get_collective_offer_request(request_id: int) -> collective_offers_serialize
     check_user_has_access_to_offerer(current_user, offerer_id)
 
     return collective_offers_serialize.GetCollectiveOfferRequestResponseModel(
-        email=collective_offer_request.educationalRedactor.email,
+        redactor=collective_offers_serialize.CollectiveOfferRedactorModel(
+            firstName=collective_offer_request.educationalRedactor.firstName,
+            lastName=collective_offer_request.educationalRedactor.lastName,
+            email=collective_offer_request.educationalRedactor.email,
+        ),
         requestedDate=collective_offer_request.requestedDate,
         totalStudents=collective_offer_request.totalStudents,
         totalTeachers=collective_offer_request.totalTeachers,
         comment=collective_offer_request.comment,
         phoneNumber=collective_offer_request.phoneNumber,  # type: ignore
+        institutionId=collective_offer_request.educationalInstitution.institutionId,
+        dateCreated=collective_offer_request.dateCreated,
     )
 
 

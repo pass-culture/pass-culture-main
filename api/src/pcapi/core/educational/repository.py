@@ -735,10 +735,18 @@ def get_collective_offer_request_by_id(request_id: int) -> educational_models.Co
         query = educational_models.CollectiveOfferRequest.query.filter(
             educational_models.CollectiveOfferRequest.id == request_id
         ).options(
-            sa.orm.joinedload(
-                educational_models.CollectiveOfferRequest.collectiveOfferTemplate,
-                educational_models.CollectiveOfferTemplate.venue,
-            )
+            sa.orm.joinedload(educational_models.CollectiveOfferRequest.collectiveOfferTemplate)
+            .load_only(educational_models.CollectiveOfferTemplate.id)
+            .joinedload(educational_models.CollectiveOfferTemplate.venue)
+            .load_only(offerers_models.Venue.managingOffererId),
+            sa.orm.joinedload(educational_models.CollectiveOfferRequest.educationalRedactor).load_only(
+                educational_models.EducationalRedactor.firstName,
+                educational_models.EducationalRedactor.lastName,
+                educational_models.EducationalRedactor.email,
+            ),
+            sa.orm.joinedload(educational_models.CollectiveOfferRequest.educationalInstitution).load_only(
+                educational_models.EducationalInstitution.institutionId
+            ),
         )
 
         return query.one()
