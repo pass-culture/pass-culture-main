@@ -116,7 +116,8 @@ class BoostStocks(LocalProvider):
             stock.fieldsUpdated = []
 
         if "quantity" not in stock.fieldsUpdated:
-            stock.quantity = self.showtime_details.numberSeatsRemaining
+            booked_quantity = 0 if is_new_stock_to_insert else stock.dnBookedQuantity
+            stock.quantity = self.showtime_details.numberSeatsRemaining + booked_quantity
 
         if "price" not in stock.fieldsUpdated:
             assert self.pcu_pricing  # helps mypy
@@ -126,9 +127,6 @@ class BoostStocks(LocalProvider):
             price_label = self.pcu_pricing.title
             price_category = self.get_or_create_price_category(price, price_label)
             stock.priceCategory = price_category
-
-        if not is_new_stock_to_insert:
-            stock.quantity = self.showtime_details.numberSeatsRemaining + stock.dnBookedQuantity
 
     def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
         if self.last_offer not in self.price_category_lists_by_offer:
