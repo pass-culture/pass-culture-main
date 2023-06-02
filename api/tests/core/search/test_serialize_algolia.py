@@ -39,7 +39,7 @@ def test_serialize_offer():
         description="Un LIVRE qu'il est bien pour le lire",
         extraData={
             "author": "Author",
-            "isbn": "2221001648",
+            "ean": "2221001648",
             "performer": "Performer",
             "speaker": "Speaker",
             "stageDirector": "Stage Director",
@@ -182,7 +182,6 @@ def test_serialize_offer_event():
     (
         [{}, "1"],
         [{"visa": "56070"}, "56070"],
-        [{"isbn": "123456789"}, "123456789"],
         [{"visa": "56070", "diffusionVersion": "VO"}, "56070VO"],
         [{"visa": "56070", "diffusionVersion": "VF"}, "56070VF"],
         [{"ean": "12345678"}, "12345678"],
