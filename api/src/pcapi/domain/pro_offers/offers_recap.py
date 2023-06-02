@@ -46,7 +46,7 @@ class OfferRecap:
         is_editable: bool,
         is_event: bool,
         is_thing: bool,
-        product_isbn: str | None,
+        product_ean: str | None,
         name: str,
         thumb_url: str,
         subcategory_id: str | None,
@@ -67,7 +67,7 @@ class OfferRecap:
         self.is_editable = is_editable
         self.is_event = is_event
         self.is_thing = is_thing
-        self.product_isbn = product_isbn
+        self.product_ean = product_ean
         self.name = name
         self.thumb_url = thumb_url
         self.subcategoryId = subcategory_id
