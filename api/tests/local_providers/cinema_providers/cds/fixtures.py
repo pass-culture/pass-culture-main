@@ -38,6 +38,20 @@ MOVIE_1_SHOW_1 = ShowCDS(
     media=IdObjectCDS(id=123),
 )
 
+MOVIE_1_SHOW_1_SOLD_OUT = ShowCDS(
+    id=1,
+    is_cancelled=False,
+    is_deleted=False,
+    is_disabled_seatmap=False,
+    is_empty_seatmap=False,
+    remaining_place=77,
+    internet_remaining_place=0,
+    showtime=datetime(2022, 6, 20, 11, 00, 00),
+    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
+    screen=IdObjectCDS(id=1),
+    media=IdObjectCDS(id=123),
+)
+
 MOVIE_2_SHOW_1 = ShowCDS(
     id=2,
     is_cancelled=False,

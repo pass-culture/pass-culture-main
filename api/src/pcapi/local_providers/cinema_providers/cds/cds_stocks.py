@@ -147,21 +147,17 @@ class CDSStocks(LocalProvider):
             cds_stock.fieldsUpdated = []
 
         if "quantity" not in cds_stock.fieldsUpdated:
+            booked_quantity = 0 if is_new_stock_to_insert else cds_stock.dnBookedQuantity
             if is_internet_sale_gauge_active:
-                cds_stock.quantity = show.internet_remaining_place
+                quantity = show.internet_remaining_place + booked_quantity
             else:
-                cds_stock.quantity = show.remaining_place
+                quantity = show.remaining_place + booked_quantity
+            cds_stock.quantity = quantity
 
         if "price" not in cds_stock.fieldsUpdated:
             cds_stock.price = show_price
             price_category = self.get_or_create_price_category(show_price, price_label)
             cds_stock.priceCategory = price_category
-
-        if not is_new_stock_to_insert:
-            if is_internet_sale_gauge_active:
-                cds_stock.quantity = show.internet_remaining_place + cds_stock.dnBookedQuantity
-            else:
-                cds_stock.quantity = show.remaining_place + cds_stock.dnBookedQuantity
 
     def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
         if self.last_offer not in self.price_category_lists_by_offer:
