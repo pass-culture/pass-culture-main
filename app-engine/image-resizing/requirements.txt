@@ -1,4 +1,4 @@
-Flask==2.2.2
+Flask==2.2.5
 flask-cors==3.0.10
 appengine-python-standard>=0.2.2
 google-cloud-storage==2.5.0
