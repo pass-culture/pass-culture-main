@@ -724,7 +724,7 @@ LIVRE_PAPIER = Subcategory(
     is_event=False,
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.ISBN.value: ConditionalField(),
+        ExtraDataFieldEnum.EAN.value: ConditionalField(),
     },
     can_expire=True,
     can_be_duo=False,
@@ -745,7 +745,7 @@ LIVRE_NUMERIQUE = Subcategory(
     is_event=False,
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.ISBN.value: ConditionalField(),
+        ExtraDataFieldEnum.EAN.value: ConditionalField(),
     },
     can_expire=False,
     can_be_duo=False,
@@ -788,7 +788,7 @@ LIVRE_AUDIO_PHYSIQUE = Subcategory(
     is_event=False,
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.ISBN.value: ConditionalField(),
+        ExtraDataFieldEnum.EAN.value: ConditionalField(),
     },
     can_expire=True,
     can_be_duo=False,
@@ -1876,7 +1876,7 @@ PERMANENT_SUBCATEGORIES = {
 EXPIRABLE_SUBCATEGORIES = {subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.can_expire}
 EVENT_SUBCATEGORIES = {subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.is_event}
 ACTIVATION_SUBCATEGORIES = (ACTIVATION_EVENT.id, ACTIVATION_THING.id)
-BOOK_WITH_ISBN = (LIVRE_PAPIER.id, LIVRE_AUDIO_PHYSIQUE.id, LIVRE_NUMERIQUE.id)
+BOOK_WITH_EAN = (LIVRE_PAPIER.id, LIVRE_AUDIO_PHYSIQUE.id, LIVRE_NUMERIQUE.id)
 
 COLLECTIVE_SUBCATEGORIES = {
     subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.can_be_educational

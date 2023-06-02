@@ -21,7 +21,10 @@ def get_new_booking_to_pro_email_data(
         event_date = ""
         event_hour = ""
 
-    if subcategories.ExtraDataFieldEnum.EAN.value in offer.subcategory.conditional_fields:
+    if (
+        subcategories.ExtraDataFieldEnum.EAN.value in offer.subcategory.conditional_fields
+        and offer.subcategoryId in subcategories.BOOK_WITH_EAN
+    ):
         ean = offer.extraData.get("ean", "") if offer.extraData is not None else ""
         offer_subcategory = "book"
     else:
@@ -57,7 +60,7 @@ def get_new_booking_to_pro_email_data(
             "IS_THING": offer.isThing,
             "IS_DIGITAL": offer.isDigital,
             "IS_EXTERNAL": booking.isExternal,
-            "EAN": ean,
+            "ISBN": ean,  # TODO: update template varibale to ean
             "OFFER_NAME": offer.name,
             "OFFER_SUBCATEGORY": offer_subcategory,
             "PRICE": "Gratuit" if booking.stock.price == 0 else f"{booking.stock.price} €",

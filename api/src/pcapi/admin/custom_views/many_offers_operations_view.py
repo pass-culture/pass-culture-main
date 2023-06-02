@@ -23,8 +23,8 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 
 
 class SearchForm(SecureForm):
-    isbn = StringField(
-        "ISBN",
+    ean = StringField(
+        "EAN",
     )
     visa = StringField(
         "Visa d'exploitation",
@@ -35,12 +35,12 @@ def _select_criteria() -> list[Criterion]:
     return Criterion.query.all()
 
 
-def _format_isbn(isbn: str) -> str:
-    return isbn.replace("-", "").replace(" ", "")
+def _format_ean(ean: str) -> str:
+    return ean.replace("-", "").replace(" ", "")
 
 
-def _is_isbn_valid(isbn: str) -> bool:
-    return len(_format_isbn(isbn)) == 13
+def _is_ean_valid(ean: str) -> bool:
+    return len(_format_ean(ean)) == 13
 
 
 class OfferCriteriaForm(SecureForm):
@@ -101,33 +101,33 @@ class ManyOffersOperationsView(BaseCustomAdminView):
         form = SearchForm()
         if request.method == "POST":
             form = SearchForm(request.form)
-            isbn = form.isbn.data if form.isbn else None
+            ean = form.ean.data if form.ean else None
             visa = form.visa.data if form.visa else None
-            if isbn:
-                if not _is_isbn_valid(isbn):
-                    flash("L'ISBN doit être composé de 13 caractères", "error")
+            if ean:
+                if not _is_ean_valid(ean):
+                    flash("L'!EAN doit être composé de 13 caractères", "error")
                     return self.render("admin/search_many_offers.html", form=form)
 
-                return redirect(url_for(".edit", isbn=_format_isbn(isbn)))
+                return redirect(url_for(".edit", ean=_format_ean(ean)))
 
             if visa:
                 return redirect(url_for(".edit", visa=visa))
 
-            flash("Veuillez renseigner un ISBN ou un visa d'exploitation", "error")
+            flash("Veuillez renseigner un EAN ou un visa d'exploitation", "error")
 
         return self.render("admin/search_many_offers.html", form=form)
 
     @expose("/edit", methods=["GET"])
     def edit(self) -> Response:
-        isbn = request.args.get("isbn")
+        ean = request.args.get("ean")
         visa = request.args.get("visa")
-        if not isbn and not visa:
-            flash("Veuillez renseigner un ISBN ou un visa d'exploitation", "error")
+        if not ean and not visa:
+            flash("Veuillez renseigner un EAN ou un visa d'exploitation", "error")
             return redirect(url_for(".search"))
 
-        if isbn:
+        if ean:
             products = (
-                offers_models.Product.query.filter(offers_models.Product.extraData["isbn"].astext == isbn)
+                offers_models.Product.query.filter(offers_models.Product.extraData["ean"].astext == ean)
                 .options(joinedload(offers_models.Product.offers).joinedload(Offer.criteria))
                 .all()
             )
@@ -140,7 +140,7 @@ class ManyOffersOperationsView(BaseCustomAdminView):
             )
 
         if not products:
-            flash("Aucun livre n'a été trouvé avec cet ISBN ou ce visa d'exploitation", "error")
+            flash("Aucun livre n'a été trouvé avec cet EAN ou ce visa d'exploitation", "error")
             return redirect(url_for(".search"))
 
         offer_criteria_form = OfferCriteriaForm()
@@ -171,7 +171,7 @@ class ManyOffersOperationsView(BaseCustomAdminView):
             "inactive_offers_number": len(inactive_offers),
             "pending_offers_number": len(pending_offers),
             "rejected_offers_number": len(rejected_offers),
-            "isbn": isbn,
+            "ean": ean,
             "offer_criteria_form": offer_criteria_form,
             "current_criteria_on_offers": current_criteria_on_offers,
             "product_compatibility": _get_products_compatible_status(products),
@@ -182,16 +182,16 @@ class ManyOffersOperationsView(BaseCustomAdminView):
 
     @expose("/add_criteria_to_offers", methods=["POST"])
     def add_criteria_to_offers(self) -> Response:
-        isbn = request.args.get("isbn")
+        ean = request.args.get("ean")
         visa = request.args.get("visa")
-        if not isbn and not visa:
-            flash("Veuillez renseigner un ISBN ou un visa d'exploitation", "error")
+        if not ean and not visa:
+            flash("Veuillez renseigner un EAN ou un visa d'exploitation", "error")
             return redirect(url_for(".search"))
 
         form = OfferCriteriaForm(request.form)
         if form.validate():
             is_operation_successful = add_criteria_to_offers(
-                [criterion.id for criterion in form.data["criteria"]], ean=isbn, visa=visa
+                [criterion.id for criterion in form.data["criteria"]], ean=ean, visa=visa
             )
             if is_operation_successful:
                 flash("Les offres du produit ont bien été tagguées", "success")
@@ -205,12 +205,12 @@ class ManyOffersOperationsView(BaseCustomAdminView):
 
     @expose("/product_gcu_compatibility", methods=["POST"])
     def product_gcu_compatibility(self) -> Response:
-        isbn = request.args.get("isbn")
-        if not isbn:
-            flash("Veuillez renseigner un ISBN", "error")
+        ean = request.args.get("ean")
+        if not ean:
+            flash("Veuillez renseigner un EAN", "error")
             return redirect(url_for(".search"))
 
-        is_operation_successful = reject_inappropriate_products(isbn)
+        is_operation_successful = reject_inappropriate_products(ean)
         if is_operation_successful:
             flash("Le produit a été rendu incompatible aux CGU et les offres ont été désactivées", "success")
         else:
