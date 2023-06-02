@@ -1203,6 +1203,8 @@ class CollectiveOfferRequest(PcObject, Base, Model):
 
     comment: str = sa.Column(sa.Text, nullable=False)
 
+    dateCreated: date = sa.Column(sa.Date, nullable=True, server_default=sa.func.current_date())
+
     educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
 
     educationalRedactor: sa_orm.Mapped["EducationalRedactor"] = relationship(
