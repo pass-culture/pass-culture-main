@@ -166,8 +166,8 @@ def create_offer(
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
     validation.check_is_duo_compliance(is_duo, subcategory)
 
-    if should_retrieve_book_from_isbn(subcategory.id):
-        product = _load_product_by_isbn(formatted_extra_data.get("isbn") if formatted_extra_data else None)
+    if should_retrieve_book_from_ean(subcategory.id):
+        product = _load_product_by_ean(formatted_extra_data.get("ean") if formatted_extra_data else None)
         is_national = bool(is_national) if is_national is not None else product.isNational
     else:
         is_national = True if url else bool(is_national)
@@ -222,10 +222,10 @@ def create_offer(
     return offer
 
 
-def should_retrieve_book_from_isbn(subcategory_id: str) -> bool:
+def should_retrieve_book_from_ean(subcategory_id: str) -> bool:
     return (
         subcategory_id == subcategories.LIVRE_PAPIER.id
-        and FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active()
+        and FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active()  # TODO: rename feature flag when working on the feature
     )
 
 
@@ -913,12 +913,12 @@ def reject_inappropriate_products(ean: str) -> bool:
     except Exception as exception:  # pylint: disable=broad-except
         logger.exception(
             "Could not mark product and offers as inappropriate: %s",
-            extra={"isbn": ean, "products": [p.id for p in products], "exc": str(exception)},
+            extra={"ean": ean, "products": [p.id for p in products], "exc": str(exception)},
         )
         return False
     logger.info(
         "Rejected inappropriate products",
-        extra={"isbn": ean, "products": [p.id for p in products], "offers": offer_ids},
+        extra={"ean": ean, "products": [p.id for p in products], "offers": offer_ids},
     )
 
     search.async_index_offer_ids(offer_ids)
@@ -951,7 +951,7 @@ def deactivate_permanently_unavailable_products(ean: str) -> bool:
         return False
     logger.info(
         "Deactivated permanently unavailable products",
-        extra={"isbn": ean, "products": [p.id for p in products], "offers": offer_ids},
+        extra={"ean": ean, "products": [p.id for p in products], "offers": offer_ids},
     )
 
     search.async_index_offer_ids(offer_ids)
@@ -1069,10 +1069,10 @@ def import_offer_validation_config(config_as_yaml: str, user: users_models.User)
     return config
 
 
-def _load_product_by_isbn(isbn: str | None) -> models.Product:
-    if not isbn:
+def _load_product_by_ean(ean: str | None) -> models.Product:
+    if not ean:
         raise exceptions.MissingEAN()
-    product = models.Product.query.filter(models.Product.extraData["isbn"].astext == isbn).first()
+    product = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).first()
     if product is None or not product.isGcuCompatible:
         raise exceptions.NotEligibleEAN()
     return product
@@ -1209,9 +1209,9 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         search.async_index_offer_ids([offer.id])
 
 
-def delete_unwanted_existing_product(idAtProviders: str) -> None:
+def delete_unwanted_existing_product(ean: str) -> None:
     product_has_at_least_one_booking = (
-        models.Product.query.filter_by(idAtProviders=idAtProviders)
+        models.Product.query.filter_by(idAtProviders=ean)
         .join(models.Offer)
         .join(models.Stock)
         .join(bookings_models.Booking)
@@ -1221,7 +1221,7 @@ def delete_unwanted_existing_product(idAtProviders: str) -> None:
     product = (
         models.Product.query.filter(models.Product.can_be_synchronized)
         .filter_by(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        .filter_by(idAtProviders=idAtProviders)
+        .filter_by(idAtProviders=ean)
         .one_or_none()
     )
 
