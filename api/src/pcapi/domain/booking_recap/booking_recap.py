@@ -44,7 +44,7 @@ class BookingRecap:
         date_used: datetime | None,
         offer_identifier: int,
         offer_name: str,
-        offer_isbn: str | None,
+        offer_ean: str | None,
         redactor_lastname: str | None,
         redactor_firstname: str | None,
         redactor_email: str | None,
@@ -68,7 +68,7 @@ class BookingRecap:
         self.booking_is_external = booking_is_external
         self.offer_identifier = offer_identifier
         self.offer_name = offer_name
-        self.offer_isbn = offer_isbn
+        self.offer_ean = offer_ean
         self.redactor_lastname = redactor_lastname
         self.redactor_firstname = redactor_firstname
         self.redactor_email = redactor_email
