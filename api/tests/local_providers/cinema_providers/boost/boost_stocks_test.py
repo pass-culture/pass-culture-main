@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.offers.models import Offer
@@ -322,9 +323,16 @@ class BoostStocksTest:
         # we received numberSeatsForOnlineSale = 96
         assert created_stock.quantity == 96
 
-        # we manually edit the Stock
-        created_stock.quantity = 100
-        created_stock.dnBookedQuantity = 2
+        # make a duo booking
+        bookings_factories.BookingFactory(stock=created_stock, quantity=2)
+
+        assert created_stock.dnBookedQuantity == 2
+
+        # synchronize with sold out show
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/36683",
+            json=fixtures.ShowtimeDetailsEndpointResponse.SOLD_OUT_SHOWTIME_36683_DATA,
+        )
 
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
@@ -332,8 +340,7 @@ class BoostStocksTest:
         created_stocks = Stock.query.all()
 
         assert len(created_stocks) == 1
-        # we still receive numberSeatsForOnlineSale = 96, so we edit our Stock.quantity to match reality
-        assert created_stocks[0].quantity == 98
+        assert created_stocks[0].quantity == 2
         assert created_stocks[0].dnBookedQuantity == 2
 
     def should_create_product_with_correct_thumb(self, requests_mock):
