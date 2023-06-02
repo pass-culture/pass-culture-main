@@ -301,9 +301,7 @@ def get_paginated_collective_bookings_for_educational_year(
         .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
         .load_only(educational_models.CollectiveOffer.name)
         .joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
-        .load_only(offerers_models.Venue.managingOffererId, offerers_models.Venue.departementCode)
-        .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True)
-        .load_only(offerers_models.Offerer.postalCode)
+        .load_only(offerers_models.Venue.timezone)
     )
     query = query.options(
         sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
