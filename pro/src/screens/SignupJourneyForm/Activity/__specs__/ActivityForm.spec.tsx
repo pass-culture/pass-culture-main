@@ -14,8 +14,8 @@ import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ActivityForm, {
-  IActivityFormProps,
-  IActivityFormValues,
+  ActivityFormProps,
+  ActivityFormValues,
 } from '../ActivityForm'
 import { DEFAULT_ACTIVITY_FORM_VALUES } from '../constants'
 import { validationSchema } from '../validationSchema'
@@ -37,9 +37,9 @@ const renderActivityForm = ({
   props = { venueTypes: venueTypes },
   contextValue,
 }: {
-  initialValues: Partial<IActivityFormValues>
+  initialValues: Partial<ActivityFormValues>
   onSubmit?: () => void
-  props: IActivityFormProps
+  props: ActivityFormProps
   contextValue: ISignupJourneyContext
 }) => {
   const storeOverrides = {
@@ -72,8 +72,8 @@ const renderActivityForm = ({
 describe('screens:SignupJourney::ActivityForm', () => {
   let activity: IActivity
   let contextValue: ISignupJourneyContext
-  let props: IActivityFormProps
-  let initialValues: Partial<IActivityFormValues>
+  let props: ActivityFormProps
+  let initialValues: Partial<ActivityFormValues>
   beforeEach(() => {
     activity = DEFAULT_ACTIVITY_VALUES
     initialValues = DEFAULT_ACTIVITY_FORM_VALUES

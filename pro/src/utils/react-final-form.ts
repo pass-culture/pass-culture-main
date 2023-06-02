@@ -1,17 +1,17 @@
-type TValidator = (value: string) => string | void
-type TAsyncValidator = (value: string) => Promise<string | void>
-type TComposeValidatorsReturn = (string | void) | Promise<string | void>
+type Validator = (value: string) => string | void
+type AsyncValidator = (value: string) => Promise<string | void>
+type ComposeValidatorsReturn = (string | void) | Promise<string | void>
 
 export const composeValidators =
-  (...validators: (TValidator | TAsyncValidator | null | undefined)[]) =>
-  (value: string): TComposeValidatorsReturn => {
+  (...validators: (Validator | AsyncValidator | null | undefined)[]) =>
+  (value: string): ComposeValidatorsReturn => {
     for (const i in validators) {
       const validator = validators[i]
       if (!validator) {
         continue
       }
 
-      const error: TComposeValidatorsReturn = validator(value)
+      const error: ComposeValidatorsReturn = validator(value)
       if (error !== undefined) {
         return error
       }
@@ -55,7 +55,7 @@ export const createValidateRequiredField =
     return error
   }
 
-interface IGetCanSubmitArgs {
+interface GetCanSubmitArgs {
   isLoading: boolean
   dirtySinceLastSubmit: boolean
   hasSubmitErrors: boolean
@@ -63,9 +63,7 @@ interface IGetCanSubmitArgs {
   pristine: boolean
 }
 
-export const getCanSubmit = (
-  config: IGetCanSubmitArgs | undefined
-): boolean => {
+export const getCanSubmit = (config: GetCanSubmitArgs | undefined): boolean => {
   if (config === undefined) {
     throw new Error('getCanSubmit: Missing arguments')
   }
@@ -85,10 +83,3 @@ export const getCanSubmit = (
 
   return canSubmit
 }
-
-export const parseSubmitErrors = (errors: Record<string, string>) =>
-  Object.keys(errors).reduce((acc, key) => {
-    // FIXME -> test with a array or errors
-    const err = errors[key]
-    return { ...acc, [key]: err }
-  }, {})

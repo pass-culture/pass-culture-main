@@ -2,7 +2,7 @@ import { api } from 'apiClient/api'
 import { ApiError, UserEmailValidationResponseModel } from 'apiClient/v1'
 
 type IPayloadFailure = Record<string, string>
-export type GetPendingEmailValidationAdapter = Adapter<
+type GetPendingEmailValidationAdapter = Adapter<
   void,
   UserEmailValidationResponseModel,
   IPayloadFailure

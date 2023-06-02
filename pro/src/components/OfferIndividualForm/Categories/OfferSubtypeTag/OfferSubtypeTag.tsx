@@ -9,18 +9,18 @@ import { ReactComponent as VirtualThingIcon } from 'icons/ico-virtual-thing.svg'
 
 import style from './OfferSubtypeTag.module.scss'
 
-type ITagProps = {
+type TagProps = {
   className?: string
   children: React.ReactNode
 }
 
 // Style could be refactored with offer status tag and the Tag in ui-kit
 // when UIs agree on a common style
-export const Tag = ({ className, children }: ITagProps) => (
+const Tag = ({ className, children }: TagProps) => (
   <span className={cn(style['tag'], className)}>{children}</span>
 )
 
-type IOfferSubtypeTagProps = {
+type OfferSubtypeTagProps = {
   className?: string
   offerSubtype: INDIVIDUAL_OFFER_SUBTYPE
 }
@@ -28,7 +28,7 @@ type IOfferSubtypeTagProps = {
 export const OfferSubtypeTag = ({
   className,
   offerSubtype,
-}: IOfferSubtypeTagProps) => {
+}: OfferSubtypeTagProps) => {
   switch (offerSubtype) {
     case INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT:
       return (

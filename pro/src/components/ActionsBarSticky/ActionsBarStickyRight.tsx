@@ -2,13 +2,13 @@ import React from 'react'
 
 import style from './ActionsBarSticky.module.scss'
 
-export interface IActionsBarStickyRightProps {
+interface ActionsBarStickyRightProps {
   children: React.ReactNode
 }
 
 const Right = ({
   children,
-}: IActionsBarStickyRightProps): JSX.Element | null => {
+}: ActionsBarStickyRightProps): JSX.Element | null => {
   return children ? <div className={style['right']}>{children}</div> : null
 }
 

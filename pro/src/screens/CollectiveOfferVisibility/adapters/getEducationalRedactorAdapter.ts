@@ -4,7 +4,7 @@ import {
   EducationalRedactors,
 } from 'apiClient/v1'
 
-export type GetEducationalRedactorAdapter = Adapter<
+type GetEducationalRedactorAdapter = Adapter<
   EducationalRedactorQueryModel,
   EducationalRedactors,
   null

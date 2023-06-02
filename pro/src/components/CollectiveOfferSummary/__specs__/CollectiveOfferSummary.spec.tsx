@@ -10,7 +10,7 @@ import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferSummary, {
-  ICollectiveOfferSummaryProps,
+  CollectiveOfferSummaryProps,
 } from '../CollectiveOfferSummary'
 
 jest.mock('apiClient/api', () => ({
@@ -21,12 +21,12 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderCollectiveOfferSummary = (props: ICollectiveOfferSummaryProps) => {
+const renderCollectiveOfferSummary = (props: CollectiveOfferSummaryProps) => {
   renderWithProviders(<CollectiveOfferSummary {...props} />)
 }
 
 describe('CollectiveOfferSummary', () => {
-  let props: ICollectiveOfferSummaryProps
+  let props: CollectiveOfferSummaryProps
   beforeEach(() => {
     const offer = collectiveOfferFactory()
     props = {

@@ -6,7 +6,7 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { ReactComponent as PlusIcon } from './assets/plus-icon.svg'
 import style from './ButtonImageAdd.module.scss'
 
-export interface IButtonImageAddProps {
+interface ButtonImageAddProps {
   onClick: () => void
   mode: UploaderModeEnum
 }
@@ -14,7 +14,7 @@ export interface IButtonImageAddProps {
 const ButtonImageAdd = ({
   onClick,
   mode,
-}: IButtonImageAddProps): JSX.Element => (
+}: ButtonImageAddProps): JSX.Element => (
   <button
     className={cn(style['button-image-add'], {
       [style['add-image-venue']]: mode === UploaderModeEnum.VENUE,
