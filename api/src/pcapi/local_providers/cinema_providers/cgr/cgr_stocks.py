@@ -151,7 +151,8 @@ class CGRStocks(LocalProvider):
             stock.fieldsUpdated = []
 
         if "quantity" not in stock.fieldsUpdated:
-            stock.quantity = showtime.NbPlacesRestantes
+            booked_quantity = 0 if is_new_stock_to_insert else stock.dnBookedQuantity
+            stock.quantity = showtime.NbPlacesRestantes + booked_quantity
 
         show_price = decimal.Decimal(str(showtime.PrixUnitaire))
         price_label = showtime.libTarif
@@ -161,9 +162,6 @@ class CGRStocks(LocalProvider):
             price_category = self.get_or_create_price_category(show_price, price_label)
 
             stock.priceCategory = price_category
-
-        if not is_new_stock_to_insert:
-            stock.quantity = showtime.NbPlacesRestantes + stock.dnBookedQuantity
 
     def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
         assert self.last_offer
