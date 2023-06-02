@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
@@ -17,7 +18,6 @@ from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
-from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -537,20 +537,24 @@ class CDSStocksQuantityTest:
         cds_stocks_provider = CDSStocks(venue_provider=cds_venue_provider)
         cds_stocks_provider.updateObjects()
 
-        created_stocks = Stock.query.order_by(Stock.beginningDatetime).all()
+        created_stock = Stock.query.one()
 
-        first_stock = created_stocks[0]
-        first_stock.fieldsUpdated = ["price"]
-        first_stock.quantity = 100
-        first_stock.dnBookedQuantity = 1
+        # make a duo booking
+        bookings_factories.BookingFactory(stock=created_stock, quantity=2)
 
-        repository.save(first_stock)
+        assert created_stock.quantity == 10
+        assert created_stock.dnBookedQuantity == 2
 
-        # When
+        # synchronize with sold out show
+        mocked_shows = [
+            {"show_information": fixtures.MOVIE_1_SHOW_1_SOLD_OUT, "price": 5, "price_label": "pass Culture"}
+        ]
+        mock_get_shows.return_value = mocked_shows
         cds_stocks_provider = CDSStocks(venue_provider=cds_venue_provider)
         cds_stocks_provider.updateObjects()
 
+        created_stock = Stock.query.one()
+
         # Then
-        assert len(created_stocks) == 1
-        assert first_stock.quantity == 11
-        assert first_stock.dnBookedQuantity == 1
+        assert created_stock.quantity == 2
+        assert created_stock.dnBookedQuantity == 2
