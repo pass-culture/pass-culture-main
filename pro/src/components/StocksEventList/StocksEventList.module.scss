@@ -2,6 +2,7 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/variables/_z-index.scss" as zIndex;
 
 .stock-event-table {
   width: 100%;
@@ -35,9 +36,8 @@ $icon-size: rem.torem(20px);
   }
 }
 
-// RomainC: needed because there could be 2 actions bar on this page
 .actions {
-  z-index: 1;
+  z-index: zIndex.$recurrence-sticky-bar;
 }
 
 .table-caption {
