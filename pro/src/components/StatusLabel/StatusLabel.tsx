@@ -12,7 +12,7 @@ import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validate
 
 import style from './StatusLabel.module.scss'
 
-export const OFFER_STATUS_PROPERTIES: Record<
+const OFFER_STATUS_PROPERTIES: Record<
   string,
   {
     className: string

@@ -8,7 +8,7 @@ import style from './ActionsBarSticky.module.scss'
 import Left from './ActionsBarStickyLeft'
 import Right from './ActionsBarStickyRight'
 
-export interface IActionsBarStickyProps {
+interface ActionsBarStickyProps {
   children: React.ReactNode
   className?: string
 }
@@ -16,7 +16,7 @@ export interface IActionsBarStickyProps {
 const ActionsBarSticky = ({
   children,
   className,
-}: IActionsBarStickyProps): JSX.Element => {
+}: ActionsBarStickyProps): JSX.Element => {
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(setIsStickyBarOpen(true))

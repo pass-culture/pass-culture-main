@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from 'react'
 
 import { Target } from 'apiClient/v1'
 import { IAddress } from 'components/Address'
-import { IActivityFormValues } from 'screens/SignupJourneyForm/Activity/ActivityForm'
+import { ActivityFormValues } from 'screens/SignupJourneyForm/Activity/ActivityForm'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { IOffererFormValues } from 'screens/SignupJourneyForm/Offerer/OffererForm'
 
@@ -16,7 +16,7 @@ export interface IOfferer extends IOffererFormValues, IAddress {
   hasVenueWithSiret: boolean
 }
 
-export interface IActivity extends Omit<IActivityFormValues, 'targetCustomer'> {
+export interface IActivity extends Omit<ActivityFormValues, 'targetCustomer'> {
   targetCustomer: Target | undefined | null
 }
 

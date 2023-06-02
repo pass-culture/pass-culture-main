@@ -3,7 +3,7 @@ import React from 'react'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
 
-export interface IModalImageDeleteProps {
+interface ModalImageDeleteProps {
   isLoading: boolean
   onConfirm: () => void
   onDismiss: () => void
@@ -13,7 +13,7 @@ const ModalImageDelete = ({
   isLoading,
   onConfirm,
   onDismiss,
-}: IModalImageDeleteProps): JSX.Element => {
+}: ModalImageDeleteProps): JSX.Element => {
   return (
     <ConfirmDialog
       cancelText="Retour"

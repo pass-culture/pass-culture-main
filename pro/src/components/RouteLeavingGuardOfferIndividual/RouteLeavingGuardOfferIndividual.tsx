@@ -4,7 +4,7 @@ import RouteLeavingGuard, {
   BlockerFunction,
 } from 'components/RouteLeavingGuard'
 
-export interface IRouteLeavingGuardOfferIndividual {
+interface RouteLeavingGuardOfferIndividual {
   tracking?: (p: string) => void
   when: boolean
 }
@@ -12,7 +12,7 @@ export interface IRouteLeavingGuardOfferIndividual {
 const RouteLeavingGuardOfferIndividual = ({
   tracking,
   when,
-}: IRouteLeavingGuardOfferIndividual): JSX.Element => {
+}: RouteLeavingGuardOfferIndividual): JSX.Element => {
   const shouldBlockNavigation: BlockerFunction = () => when
 
   return (

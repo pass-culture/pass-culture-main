@@ -3,13 +3,13 @@ import React from 'react'
 import { GetCollectiveOfferVenueResponseModel } from 'apiClient/v1'
 import { SummaryLayout } from 'components/SummaryLayout'
 
-interface ICollectiveOfferSummaryProps {
+interface CollectiveOfferSummaryProps {
   venue: GetCollectiveOfferVenueResponseModel
 }
 
 const CollectiveOfferVenueSection = ({
   venue,
-}: ICollectiveOfferSummaryProps) => {
+}: CollectiveOfferSummaryProps) => {
   return (
     <SummaryLayout.SubSection title="Lieu de rattachement de votre offre">
       <SummaryLayout.Row

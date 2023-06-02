@@ -10,7 +10,7 @@ import {
 import { DEFAULT_RECAP_VALUE } from '../constants'
 import { formatDuration } from '../utils/formatDuration'
 
-interface ICollectiveOfferSummaryProps {
+interface CollectiveOfferSummaryProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
   categories: EducationalCategories
 }
@@ -18,7 +18,7 @@ interface ICollectiveOfferSummaryProps {
 const CollectiveOfferTypeSection = ({
   offer,
   categories,
-}: ICollectiveOfferSummaryProps) => {
+}: CollectiveOfferSummaryProps) => {
   const subCategory = useMemo(
     () =>
       categories.educationalSubCategories.find(

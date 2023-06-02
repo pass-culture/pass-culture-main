@@ -1,2 +1,2 @@
 export { default as Activity } from './Activity'
-export type { IActivityFormProps } from './ActivityForm'
+export type { ActivityFormProps as IActivityFormProps } from './ActivityForm'

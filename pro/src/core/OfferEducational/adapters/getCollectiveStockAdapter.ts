@@ -2,17 +2,17 @@ import { api } from 'apiClient/api'
 import { CollectiveStockResponseModel } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
-export type IPayloadSuccess = {
+type PayloadSuccess = {
   stock: CollectiveStockResponseModel | null
 }
-export type IPayloadFailure = { stock: null }
+type PayloadFailure = { stock: null }
 type GetCollectiveStockAdapter = Adapter<
   { offerId: string },
-  IPayloadSuccess,
-  IPayloadFailure
+  PayloadSuccess,
+  PayloadFailure
 >
 
-const FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
+const FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
   isOk: false,
   message: GET_DATA_ERROR_MESSAGE,
   payload: { stock: null },

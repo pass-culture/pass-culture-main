@@ -15,7 +15,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar'
 
-import ActivityForm, { IActivityFormValues } from './ActivityForm'
+import ActivityForm, { ActivityFormValues } from './ActivityForm'
 import { DEFAULT_ACTIVITY_FORM_VALUES } from './constants'
 import { validationSchema } from './validationSchema'
 
@@ -32,7 +32,7 @@ const Activity = (): JSX.Element => {
 
   const serializeActivityContext = (
     activity: IActivity
-  ): IActivityFormValues => {
+  ): ActivityFormValues => {
     return {
       ...activity,
       targetCustomer: {
@@ -49,7 +49,7 @@ const Activity = (): JSX.Element => {
   }
 
   const serializeActivityFormToSubmit = (
-    activityForm: IActivityFormValues
+    activityForm: ActivityFormValues
   ): IActivity => {
     const { individual, educational } = activityForm.targetCustomer
     let serializedTargetCustomer
@@ -68,7 +68,7 @@ const Activity = (): JSX.Element => {
     }
   }
 
-  const initialValues: IActivityFormValues = activity
+  const initialValues: ActivityFormValues = activity
     ? serializeActivityContext(activity)
     : DEFAULT_ACTIVITY_FORM_VALUES
 
@@ -80,7 +80,7 @@ const Activity = (): JSX.Element => {
   }
 
   const onSubmitActivity = async (
-    formValues: IActivityFormValues
+    formValues: ActivityFormValues
   ): Promise<void> => {
     setActivity(serializeActivityFormToSubmit(formValues))
     navigate('/parcours-inscription/validation')
