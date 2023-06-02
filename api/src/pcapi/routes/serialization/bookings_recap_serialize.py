@@ -1,6 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
+import pydantic
 from pydantic import root_validator
 
 from pcapi.core.bookings.models import BookingExportType
@@ -38,7 +39,9 @@ class BookingRecapResponseStockModel(BaseModel):
     offer_id: int
     stock_identifier: str
     offer_is_educational: bool
-    offer_isbn: str | None
+    # Field should be called offerEan but it is shared with
+    # collective bookings. We have to adapt the pro front to change name
+    offer_ean: str | None = pydantic.Field(alias="offerIsbn")
     offer_name: str
 
     class Config:
@@ -134,7 +137,7 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapRespons
             "eventBeginningDatetime": isoformat(booking_recap.event_beginning_datetime)
             if booking_recap.event_beginning_datetime
             else None,
-            "offerIsbn": booking_recap.offer_isbn,
+            "offerEan": booking_recap.offer_ean,
             "offerIsEducational": False,
         },
         beneficiary={  # type: ignore [arg-type]
