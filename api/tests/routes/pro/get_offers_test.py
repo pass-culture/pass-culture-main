@@ -28,7 +28,7 @@ class Returns200Test:
         )
         other_venue = offerers_factories.VenueFactory(managingOfferer=offerer, siret="54321987654321")
         offer_on_requested_venue = offers_factories.ThingOfferFactory(
-            venue=requested_venue, extraData={"isbn": "123456789"}, name="My Offer"
+            venue=requested_venue, extraData={"ean": "123456789"}, name="My Offer"
         )
         offers_factories.ThingOfferFactory(venue=other_venue)
         stock = offers_factories.StockFactory(offer=offer_on_requested_venue)
