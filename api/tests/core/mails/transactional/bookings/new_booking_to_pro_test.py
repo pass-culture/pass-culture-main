@@ -80,7 +80,7 @@ class OffererBookingRecapTest:
     def test_with_book(self):
         booking = make_booking(
             stock__offer__name="Le récit de voyage",
-            stock__offer__product__extraData={"isbn": "123456789"},
+            stock__offer__product__extraData={"ean": "123456789"},
             stock__offer__product__name="Le récit de voyage",
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
@@ -104,7 +104,7 @@ class OffererBookingRecapTest:
     def test_non_digital_bookings_can_expire_after_30_days(self):
         booking = make_booking(
             stock__offer__name="Le récit de voyage",
-            stock__offer__product__extraData={"isbn": "123456789"},
+            stock__offer__product__extraData={"ean": "123456789"},
             stock__offer__product__name="Le récit de voyage",
             stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             stock__offer__venue__address=None,
@@ -131,10 +131,10 @@ class OffererBookingRecapTest:
         assert email_data.params == expected
 
     @pytest.mark.usefixtures("db_session")
-    def test_with_book_with_missing_isbn(self):
+    def test_with_book_with_missing_ean(self):
         booking = make_booking(
             stock__offer__name="Le récit de voyage",
-            stock__offer__product__extraData={},  # no ISBN
+            stock__offer__product__extraData={},  # no EAN
             stock__offer__product__name="Le récit de voyage",
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
             stock__offer__venue__address=None,

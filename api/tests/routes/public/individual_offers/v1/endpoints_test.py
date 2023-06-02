@@ -1624,7 +1624,7 @@ class GetProductTest:
         )
 
         assert response.status_code == 200
-        assert response.json["categoryRelatedFields"] == {"author": None, "category": "LIVRE_PAPIER", "isbn": None}
+        assert response.json["categoryRelatedFields"] == {"author": None, "category": "LIVRE_PAPIER", "ean": None}
 
     def test_product_with_not_selectable_category_can_be_retrieved(self, client):
         venue, _ = create_offerer_provider_linked_to_venue()

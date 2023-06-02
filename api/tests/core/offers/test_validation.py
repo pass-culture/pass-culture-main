@@ -482,23 +482,11 @@ class CheckOfferExtraDataTest:
 
         assert error.value.errors["showType"] == ["should be an int or an int string"]
 
-    def test_isbn_already_exists(self):
-        offer = offers_factories.OfferFactory(extraData={"isbn": "1234567891234"})
-
-        with pytest.raises(ApiErrors) as error:
-            validation.check_offer_extra_data(subcategories.LIVRE_PAPIER.id, {"isbn": "1234567891234"}, offer.venue)
-
-        assert error.value.errors["isbn"] == [
-            "Une offre avec cet ISBN existe déjà. Vous pouvez la retrouver dans l’onglet Offres."
-        ]
-
     def test_ean_already_exists(self):
         offer = offers_factories.OfferFactory(extraData={"ean": "1234567891234"})
 
         with pytest.raises(ApiErrors) as error:
-            validation.check_offer_extra_data(
-                subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, {"ean": "1234567891234"}, offer.venue
-            )
+            validation.check_offer_extra_data(subcategories.LIVRE_PAPIER.id, {"ean": "1234567891234"}, offer.venue)
 
         assert error.value.errors["ean"] == [
             "Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l’onglet Offres."

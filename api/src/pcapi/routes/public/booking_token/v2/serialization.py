@@ -6,6 +6,7 @@ import pydantic
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -76,7 +77,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         dateOfBirth=birth_date,
         datetime=(format_into_utc_date(booking.stock.beginningDatetime) if booking.stock.beginningDatetime else ""),
         ean13=(
-            extra_data.get("isbn", "") if booking.stock.offer.subcategoryId in subcategories.BOOK_WITH_ISBN else None
+            extra_data.get("isbn", "") if booking.stock.offer.subcategoryId in subcategories_v2.BOOK_WITH_EAN else None
         ),
         email=booking.email,
         formula=formula,

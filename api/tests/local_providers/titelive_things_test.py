@@ -335,7 +335,7 @@ class TiteliveThingsTest:
         provider_log_error = providers_models.LocalProviderEvent.query.filter_by(
             type=providers_models.LocalProviderEventType.SyncError
         ).one()
-        assert provider_log_error.payload == "Error deleting product with ISBN: 9782895026310"
+        assert provider_log_error.payload == "Error deleting product with EAN: 9782895026310"
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")

@@ -63,7 +63,6 @@ UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER = "xxx"
 class OfferExtraData(typing.TypedDict, total=False):
     author: str | None
     ean: str | None
-    isbn: str | None
     musicSubType: str | None
     musicType: str | None
     performer: str | None
@@ -120,7 +119,6 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     url = sa.Column(sa.String(255), nullable=True)
 
     sa.Index("product_ean_idx", extraData["ean"].astext)
-    sa.Index("product_isbn_idx", extraData["isbn"].astext)
 
     @property
     def subcategory(self) -> subcategories.Subcategory:
@@ -412,7 +410,6 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
     sa.Index("offer_ean_idx", extraData["ean"].astext)
-    sa.Index("offer_isbn_idx", extraData["isbn"].astext)
     sa.Index("offer_visa_idx", extraData["visa"].astext)
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.

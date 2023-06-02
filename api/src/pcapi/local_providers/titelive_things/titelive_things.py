@@ -127,7 +127,7 @@ class TiteLiveThings(LocalProvider):
             except offers_exceptions.CannotDeleteProductWithBookings:
                 self.log_provider_event(
                     providers_models.LocalProviderEventType.SyncError,
-                    f"Error deleting product with ISBN: {self.product_infos['ean13']}",
+                    f"Error deleting product with EAN: {self.product_infos['ean13']}",
                 )
             return []
 
@@ -143,7 +143,7 @@ class TiteLiveThings(LocalProvider):
                 )
             else:
                 logger.info(
-                    "Ignoring ean=%s because it has 'xxx' in 'titre' and 'auteurs' fields, which means it is not yet released",
+                    "Ignoring aen=%s because it has 'xxx' in 'titre' and 'auteurs' fields, which means it is not yet released",
                     book_unique_identifier,
                 )
             return []

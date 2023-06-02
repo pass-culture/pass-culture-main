@@ -727,11 +727,11 @@ class CreateOfferTest:
         assert models.Offer.query.count() == 1
 
     @override_features(ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION=True)
-    def test_create_offer_livre_edition_from_isbn_with_existing_product(self):
+    def test_create_offer_livre_edition_from_ean_with_existing_product(self):
         factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             description="Les prévisions du psychohistorien Hari Seldon sont formelles.",
-            extraData={"isbn": "9782207300893", "author": "Asimov", "bookFormat": "Soft cover"},
+            extraData={"ean": "9782207300893", "author": "Asimov", "bookFormat": "Soft cover"},
             isGcuCompatible=True,
         )
         venue = offerers_factories.VenueFactory()
@@ -740,7 +740,7 @@ class CreateOfferTest:
             venue=venue,
             name="FONDATION T.1",
             subcategory_id=subcategories.LIVRE_PAPIER.id,
-            extra_data={"isbn": "9782207300893", "author": "Isaac Asimov"},
+            extra_data={"ean": "9782207300893", "author": "Isaac Asimov"},
             audio_disability_compliant=True,
             mental_disability_compliant=True,
             motor_disability_compliant=True,
@@ -751,7 +751,6 @@ class CreateOfferTest:
         assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert offer.description == "Les prévisions du psychohistorien Hari Seldon sont formelles."
         assert offer.extraData == {
-            "isbn": "9782207300893",
             "author": "Isaac Asimov",
             "bookFormat": "Soft cover",
             "ean": "9782207300893",
@@ -767,7 +766,7 @@ class CreateOfferTest:
         factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             description="Les prévisions du psychohistorien Hari Seldon sont formelles.",
-            extraData={"isbn": "9782207300893", "author": "Asimov", "bookFormat": "Soft cover"},
+            extraData={"ean": "9782207300893", "author": "Asimov", "bookFormat": "Soft cover"},
             isGcuCompatible=False,
         )
 
@@ -778,7 +777,7 @@ class CreateOfferTest:
                 venue=venue,
                 name="FONDATION T.1",
                 subcategory_id=subcategories.LIVRE_PAPIER.id,
-                extra_data={"isbn": "9782207300893"},
+                extra_data={"ean": "9782207300893"},
                 audio_disability_compliant=True,
                 mental_disability_compliant=True,
                 motor_disability_compliant=True,
@@ -796,7 +795,7 @@ class CreateOfferTest:
                 venue=venue,
                 name="FONDATION T.1",
                 subcategory_id=subcategories.LIVRE_PAPIER.id,
-                extra_data={"isbn": "9782207300893"},
+                extra_data={"ean": "9782207300893"},
                 audio_disability_compliant=True,
                 mental_disability_compliant=True,
                 motor_disability_compliant=True,
@@ -1154,13 +1153,13 @@ class OfferExpenseDomainsTest:
 @pytest.mark.usefixtures("db_session")
 class AddCriterionToOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_add_criteria_from_isbn(self, mocked_async_index_offer_ids):
+    def test_add_criteria_from_ean(self, mocked_async_index_offer_ids):
         # Given
         ean = "2-221-00164-8"
-        product1 = factories.ProductFactory(extraData={"isbn": "2221001648", "ean": "2221001648"})
+        product1 = factories.ProductFactory(extraData={"ean": "2221001648"})
         offer11 = factories.OfferFactory(product=product1)
         offer12 = factories.OfferFactory(product=product1)
-        product2 = factories.ProductFactory(extraData={"isbn": "2221001648", "ean": "2221001648"})
+        product2 = factories.ProductFactory(extraData={"ean": "2221001648"})
         offer21 = factories.OfferFactory(product=product2)
         inactive_offer = factories.OfferFactory(product=product1, isActive=False)
         unmatched_offer = factories.OfferFactory()
@@ -1180,15 +1179,15 @@ class AddCriterionToOffersTest:
         mocked_async_index_offer_ids.called_once_with([offer11.id, offer12.id, offer21.id])
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_add_criteria_from_isbn_when_one_has_criteria(self, mocked_async_index_offer_ids):
+    def test_add_criteria_from_ean_when_one_has_criteria(self, mocked_async_index_offer_ids):
         # Given
         ean = "2221001648"
         criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
         criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
-        product1 = factories.ProductFactory(extraData={"isbn": ean, "ean": ean})
+        product1 = factories.ProductFactory(extraData={"ean": ean})
         offer11 = factories.OfferFactory(product=product1, criteria=[criterion1])
         offer12 = factories.OfferFactory(product=product1, criteria=[criterion2])
-        product2 = factories.ProductFactory(extraData={"isbn": ean, "ean": ean})
+        product2 = factories.ProductFactory(extraData={"ean": ean})
         offer21 = factories.OfferFactory(product=product2)
         inactive_offer = factories.OfferFactory(product=product1, isActive=False)
         unmatched_offer = factories.OfferFactory()
@@ -1235,7 +1234,7 @@ class AddCriterionToOffersTest:
     def test_add_criteria_when_no_offers_is_found(self, mocked_async_index_offer_ids):
         # Given
         ean = "2-221-00164-8"
-        factories.OfferFactory(extraData={"isbn": "2221001647", "ean": "2221001647"})
+        factories.OfferFactory(extraData={"ean": "2221001647"})
         criterion = criteria_factories.CriterionFactory(name="Pretty good books")
 
         # When
@@ -1251,10 +1250,10 @@ class DeactivateInappropriateProductTest:
     def test_should_deactivate_product_with_inappropriate_content(self, mocked_async_index_offer_ids):
         # Given
         product1 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"isbn": "ean-de-test", "ean": "ean-de-test"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
         )
         product2 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"isbn": "ean-de-test", "ean": "ean-de-test"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
         )
         factories.OfferFactory(product=product1)
         factories.OfferFactory(product=product1)
@@ -1279,17 +1278,17 @@ class DeactivatePermanentlyUnavailableProductTest:
     def test_should_deactivate_permanently_unavailable_product(self, mocked_async_index_offer_ids):
         # Given
         product1 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "isbn-de-test"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
         )
         product2 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "isbn-de-test"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
         )
         factories.OfferFactory(product=product1)
         factories.OfferFactory(product=product1)
         factories.OfferFactory(product=product2)
 
         # When
-        api.deactivate_permanently_unavailable_products("isbn-de-test")
+        api.deactivate_permanently_unavailable_products("ean-de-test")
 
         # Then
         products = models.Product.query.all()
