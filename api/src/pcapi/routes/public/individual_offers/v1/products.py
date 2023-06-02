@@ -269,9 +269,7 @@ def _create_offer_from_product(
     provider: providers_models.Provider,
 ) -> offers_models.Offer:
     if product.extraData:
-        offers_validation.check_isbn_or_ean_does_not_exist(
-            product.extraData.get("ean"), product.extraData.get("isbn"), venue
-        )
+        offers_validation.check_ean_does_not_exist(product.extraData.get("ean"), venue)
 
     offer = offers_api.build_new_offer_from_product(venue, product, id_at_provider, provider.id)
 

@@ -21,11 +21,11 @@ def get_new_booking_to_pro_email_data(
         event_date = ""
         event_hour = ""
 
-    if subcategories.ExtraDataFieldEnum.ISBN.value in offer.subcategory.conditional_fields:
-        isbn = offer.extraData.get("isbn", "") if offer.extraData is not None else ""
+    if subcategories.ExtraDataFieldEnum.EAN.value in offer.subcategory.conditional_fields:
+        ean = offer.extraData.get("ean", "") if offer.extraData is not None else ""
         offer_subcategory = "book"
     else:
-        isbn = ""
+        ean = ""
         offer_subcategory = offer.subcategoryId
 
     if booking.stock.canHaveActivationCodes and booking.activationCode:
@@ -57,7 +57,7 @@ def get_new_booking_to_pro_email_data(
             "IS_THING": offer.isThing,
             "IS_DIGITAL": offer.isDigital,
             "IS_EXTERNAL": booking.isExternal,
-            "ISBN": isbn,
+            "EAN": ean,
             "OFFER_NAME": offer.name,
             "OFFER_SUBCATEGORY": offer_subcategory,
             "PRICE": "Gratuit" if booking.stock.price == 0 else f"{booking.stock.price} €",
