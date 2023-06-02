@@ -418,11 +418,7 @@ class VenueListQueryModel(BaseModel):
 
     class Config:
         alias_generator = to_camel
-        # FIXME (dbaty, 2023-04-13): old versions of the frontend send
-        # a `validated_for_user` parameter. Restore the following line
-        # once v237 is deployed (when we can suppose that these old
-        # versions don't exist anymore).
-        # extra = "forbid"
+        extra = "forbid"
 
 
 class VenueBannerContentModel(BaseModel):
