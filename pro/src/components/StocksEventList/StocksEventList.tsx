@@ -13,7 +13,7 @@ import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { TrashFilledIcon } from 'icons'
+import { ResetIcon, TrashFilledIcon } from 'icons'
 import searchIcon from 'icons/search-ico.svg'
 import { getPriceCategoryOptions } from 'screens/OfferIndividual/StocksEventEdition/StocksEventEdition'
 import { Button } from 'ui-kit'
@@ -370,7 +370,21 @@ const StocksEventList = ({
                       {filteredStocks.length !== 1 && 's'}
                     </strong>
                   </div>
-                  <div>{/* wait for it the clear filters button */}</div>
+
+                  <div>
+                    <Button
+                      Icon={ResetIcon}
+                      variant={ButtonVariant.TERNARY}
+                      onClick={() => {
+                        setDateFilter(null)
+                        setHourFilter(null)
+                        setPriceCategoryFilter('')
+                        onFilterChange()
+                      }}
+                    >
+                      Réinitialiser les filtres
+                    </Button>
+                  </div>
                 </div>
               </td>
             </tr>
