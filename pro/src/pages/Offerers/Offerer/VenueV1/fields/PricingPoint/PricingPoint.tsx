@@ -63,7 +63,7 @@ const PricingPoint = ({
     .forEach(venue =>
       pricingPointOptions.push({
         value: venue.nonHumanizedId.toString(),
-        label: `${venue.publicName || venue.name} - ${venue.siret}`,
+        label: `${venue.name} - ${venue.siret}`,
       })
     )
 
