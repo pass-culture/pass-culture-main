@@ -181,7 +181,6 @@ def test_full_valid_call(app):
 
     query_params = [
         "validated=true",
-        "validatedForUser=true",
         f"offererId={offerer.id}",
         "activeOfferersOnly=true",
     ]
@@ -201,7 +200,6 @@ def test_full_valid_call_with_false(app):
 
     query_params = [
         "validated=false",
-        "validatedForUser=false",
         f"offererId={offerer.id}",
         "activeOfferersOnly=false",
     ]
