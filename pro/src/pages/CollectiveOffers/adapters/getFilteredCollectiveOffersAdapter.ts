@@ -23,7 +23,7 @@ const FAILING_RESPONSE: AdapterFailure<IPayload> = {
   },
 }
 
-export const getFilteredCollectiveOffersAdapter: GetFilteredCollectiveOffersAdapter =
+const getFilteredCollectiveOffersAdapter: GetFilteredCollectiveOffersAdapter =
   async apiFilters => {
     try {
       const {

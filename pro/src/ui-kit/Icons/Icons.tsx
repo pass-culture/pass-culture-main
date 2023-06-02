@@ -10,7 +10,7 @@ import { Title } from 'ui-kit/typography'
 
 import styles from './Icons.module.scss'
 
-function fuzzyMatch(pattern: string, str: string) {
+const fuzzyMatch = (pattern: string, str: string) => {
   pattern = '.*' + pattern.toLowerCase().split('').join('.*') + '.*'
   const re = new RegExp(pattern)
   return re.test(str.toLowerCase())

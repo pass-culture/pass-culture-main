@@ -2,7 +2,7 @@ import React, { FunctionComponent, useCallback } from 'react'
 
 import TextInput from 'ui-kit/form_raw/TextInput/TextInput'
 
-export interface CreditInputProps {
+interface CreditInputProps {
   credit: string
   updateCredit: (credit: string) => void
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void

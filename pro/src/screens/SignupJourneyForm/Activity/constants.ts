@@ -1,6 +1,6 @@
-import { IActivityFormValues } from './ActivityForm'
+import { ActivityFormValues } from './ActivityForm'
 
-export const DEFAULT_ACTIVITY_FORM_VALUES: IActivityFormValues = {
+export const DEFAULT_ACTIVITY_FORM_VALUES: ActivityFormValues = {
   venueTypeCode: '',
   socialUrls: [''],
   targetCustomer: {

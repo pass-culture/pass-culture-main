@@ -11,7 +11,7 @@ import ListIconButton from 'ui-kit/ListIconButton'
 import styles from './ActivityForm.module.scss'
 import { activityTargetCustomerCheckboxGroup } from './constants'
 
-export interface IActivityFormValues {
+export interface ActivityFormValues {
   venueTypeCode: string
   socialUrls: string[]
   targetCustomer: {
@@ -20,12 +20,12 @@ export interface IActivityFormValues {
   }
 }
 
-export interface IActivityFormProps {
+export interface ActivityFormProps {
   venueTypes: SelectOption[]
 }
 
-const ActivityForm = ({ venueTypes }: IActivityFormProps): JSX.Element => {
-  const { values } = useFormikContext<IActivityFormValues>()
+const ActivityForm = ({ venueTypes }: ActivityFormProps): JSX.Element => {
+  const { values } = useFormikContext<ActivityFormValues>()
 
   return (
     <FormLayout.Section

@@ -1,5 +1,3 @@
-import type { FormikProps } from 'formik'
-
 export enum RecurrenceType {
   UNIQUE = 'UNIQUE',
   DAILY = 'DAILY',
@@ -31,5 +29,3 @@ export type RecurrenceFormValues = {
   quantityPerPriceCategories: QuantityPerPriceCategoryForm[]
   bookingLimitDateInterval: number | ''
 }
-
-export type PriceCategoriesFormType = FormikProps<RecurrenceFormValues>

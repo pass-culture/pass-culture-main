@@ -20,9 +20,8 @@ import CollectiveOfferStockSection from './components/CollectiveOfferStockSectio
 import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection'
 import CollectiveOfferVenueSection from './components/CollectiveOfferVenueSection'
 import CollectiveOfferVisibilitySection from './components/CollectiveOfferVisibilitySection'
-export { ReactComponent as LogoPassCultureDarkIcon } from 'icons/logo-pass-culture-dark.svg'
 
-export interface ICollectiveOfferSummaryProps {
+export interface CollectiveOfferSummaryProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
   categories: EducationalCategories
   offerEditLink?: string
@@ -36,7 +35,7 @@ const CollectiveOfferSummary = ({
   offerEditLink,
   stockEditLink,
   visibilityEditLink,
-}: ICollectiveOfferSummaryProps) => {
+}: CollectiveOfferSummaryProps) => {
   const offerManuallyCreated = isCollectiveOffer(offer) && !offer.isPublicApi
 
   return (
