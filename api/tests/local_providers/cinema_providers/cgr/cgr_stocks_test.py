@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.providers import factories as providers_factories
@@ -265,18 +266,23 @@ class CGRStocksTest:
         # we received quantity 99
         assert created_stock.quantity == 99
 
-        # we manually edit the Stock
-        created_stock.quantity = 150
-        created_stock.dnBookedQuantity = 2
+        # make a duo booking
+        bookings_factories.BookingFactory(stock=created_stock, quantity=2)
 
+        assert created_stock.dnBookedQuantity == 2
+
+        # synchronize with sold out show
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service",
+            text=fixtures.cgr_response_template([fixtures.FILM_138473_SOLD_OUT]),
+        )
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
         created_stocks = offers_models.Stock.query.all()
 
         assert len(created_stocks) == 1
-        # we still receive quantity = 99, so we edit our Stock.quantity to match reality
-        assert created_stocks[0].quantity == 101
+        assert created_stocks[0].quantity == 2
         assert created_stocks[0].dnBookedQuantity == 2
 
     def should_create_product_with_correct_thumb(self, requests_mock):
