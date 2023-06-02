@@ -359,13 +359,21 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
         allow_population_by_field_name = True
 
 
-class GetCollectiveOfferRequestResponseModel(BaseModel):
+class CollectiveOfferRedactorModel(BaseModel):
+    firstName: str | None
+    lastName: str | None
     email: str
+
+
+class GetCollectiveOfferRequestResponseModel(BaseModel):
+    redactor: CollectiveOfferRedactorModel
     requestedDate: date | None
     totalStudents: int | None
     totalTeachers: int | None
     phoneNumber: str | None
     comment: str
+    institutionId: str
+    dateCreated: date | None
 
     class Config:
         allow_population_by_field_name = True
