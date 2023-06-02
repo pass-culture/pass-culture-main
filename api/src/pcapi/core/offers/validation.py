@@ -437,15 +437,10 @@ def check_offer_extra_data(
             errors.add_error(field, "Ce champ est obligatoire")
 
     try:
-        # FIXME (mageoffray, 2023-11-05): Once every functionnality using isbn uses ean
-        # we will only check ean field. And the duplication can be removed.
         ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
-        isbn = extra_data.get(ExtraDataFieldEnum.ISBN.value)
-        if ean or isbn:
-            _check_ean_or_isbn_field(extra_data, ExtraDataFieldEnum.EAN.value)
-            _check_ean_or_isbn_field(extra_data, ExtraDataFieldEnum.ISBN.value)
-            check_isbn_or_ean_does_not_exist(ean, isbn, venue)
-            duplicate_isbn_in_ean(extra_data, isbn)
+        if ean:
+            _check_ean_field(extra_data, ExtraDataFieldEnum.EAN.value)
+            check_ean_does_not_exist(ean, venue)
     except (exceptions.EanFormatException, exceptions.OfferAlreadyExists) as e:
         errors.add_client_error(e)
 
@@ -461,16 +456,10 @@ def check_offer_extra_data(
         raise errors
 
 
-def duplicate_isbn_in_ean(extra_data: models.OfferExtraData, isbn: str | None) -> None:
-    if isbn:
-        extra_data["ean"] = isbn
-
-
-def check_isbn_or_ean_does_not_exist(ean: str | None, isbn: str | None, venue: offerers_models.Venue) -> None:
-    if repository.has_active_offer_with_ean_or_isbn(ean, isbn, venue):
+def check_ean_does_not_exist(ean: str | None, venue: offerers_models.Venue) -> None:
+    if repository.has_active_offer_with_ean(ean, venue):
         if ean:
             raise exceptions.OfferAlreadyExists("ean")
-        raise exceptions.OfferAlreadyExists("isbn")
 
 
 def _check_value_is_allowed(
@@ -489,7 +478,7 @@ def _check_value_is_allowed(
         raise exceptions.ExtraDataValueNotAllowed(extra_data_field.value, "should be in allowed values")
 
 
-def _check_ean_or_isbn_field(extra_data: models.OfferExtraData, field: str) -> None:
+def _check_ean_field(extra_data: models.OfferExtraData, field: str) -> None:
     value = extra_data.get(field)
     if not value:
         return

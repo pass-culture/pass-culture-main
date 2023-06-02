@@ -165,7 +165,6 @@ NATIVE_CATEGORY_GENRES_TYPES_MAPPING = {
 class ExtraDataFieldEnum(Enum):
     AUTHOR = "author"
     EAN = "ean"
-    ISBN = "isbn"
     MUSIC_SUB_TYPE = "musicSubType"
     MUSIC_TYPE = "musicType"
     PERFORMER = "performer"
