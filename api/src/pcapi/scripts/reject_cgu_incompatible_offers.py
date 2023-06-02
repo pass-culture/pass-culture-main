@@ -11,10 +11,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 def get_ineligible_product_ids() -> Query:
-    """returns ineligible products with an ISBN"""
+    """returns ineligible products with an EAN"""
     return Product.query.filter(
         Product.isGcuCompatible.is_(False),
-        Product.extraData.op("->")("isbn").is_not(None),
+        Product.extraData.op("->")("ean").is_not(None),
     ).options(load_only("id"))
 
 
