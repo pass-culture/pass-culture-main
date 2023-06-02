@@ -389,12 +389,14 @@ def _get_stocks_to_upsert(
         if stock_provider_reference in stocks_by_provider_reference:
             stock = stocks_by_provider_reference[stock_provider_reference]
 
-            # FIXME (dbaty, 2023-04-05): providers sometimes change
-            # the price to zero. I checked a few cases and it does not
-            # seem right.
+            # We sometimes get a price of zero for books that should
+            # not be free (and are not free in our product table).
+            # This happens when the library sets a wrong price in
+            # their own software. In that case, we keep the current
+            # price.
             if not stock_detail.price and stock["price"] != stock_detail.price:
-                logger.error(
-                    "Ignored new stock price that has been changed to zero",
+                logger.info(
+                    "Ignored stock price that has been changed to zero",
                     extra={
                         "provider": provider_id,
                         "stock": stock["id"],
@@ -402,7 +404,7 @@ def _get_stocks_to_upsert(
                         "new_price": stock_detail.price,
                     },
                 )
-                continue
+                stock_detail.price = stock["price"]
 
             update_stock_mapping.append(
                 {

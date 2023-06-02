@@ -342,7 +342,7 @@ class SynchronizeStocksTest:
                 stocks_provider_reference="stock_ref3",
                 venue_reference="venue_ref3",
             ),
-            providers_models.StockDetail(  # existing, now free, will be ignored
+            providers_models.StockDetail(  # existing, now free, update qty, keep price
                 offers_provider_reference="offer_ref4",
                 available_quantity=15,
                 price=0,
@@ -354,7 +354,7 @@ class SynchronizeStocksTest:
 
         stocks_by_provider_reference = {
             "stock_ref1": {"id": 1, "booking_quantity": 3, "price": 18.0, "quantity": 2},
-            "stock_ref4": {"id": 2, "booking_quantity": 3, "price": 18.0, "quantity": 2},
+            "stock_ref4": {"id": 4, "booking_quantity": 3, "price": 18.0, "quantity": 2},
         }
         offers_by_provider_reference = {"offer_ref1": 123, "offer_ref2": 134, "offer_ref4": 123}
         products_by_provider_reference = {
@@ -379,6 +379,13 @@ class SynchronizeStocksTest:
                 "id": 1,
                 "quantity": 15 + 3,
                 "price": 15.78,
+                "rawProviderQuantity": 15,
+                "lastProviderId": 1,
+            },
+            {
+                "id": 4,
+                "quantity": 15 + 3,
+                "price": 18.0,
                 "rawProviderQuantity": 15,
                 "lastProviderId": 1,
             },
