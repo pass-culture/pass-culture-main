@@ -171,6 +171,39 @@ describe('StocksEventList', () => {
     expect(screen.getAllByRole('row')).toHaveLength(3) // 1 header + 1 filter result row + 1 stock rows
   })
 
+  it('should clear filters', async () => {
+    const filteredPriceCategoryId = 3
+
+    renderStocksEventList({
+      stocks: [
+        individualStockEventListFactory({
+          beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
+          priceCategoryId: 1,
+        }),
+        individualStockEventListFactory({
+          beginningDatetime: new Date('2021-10-14T13:00:00Z').toISOString(),
+          priceCategoryId: 2,
+        }),
+        individualStockEventListFactory({
+          beginningDatetime: new Date('2021-10-14T12:00:00Z').toISOString(),
+          priceCategoryId: filteredPriceCategoryId,
+        }),
+      ],
+    })
+
+    await userEvent.type(
+      screen.getByLabelText('Filtrer par date'),
+      '14/10/2021'
+    )
+    expect(screen.getByText('Réinitialiser les filtres')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Réinitialiser les filtres'))
+    expect(
+      screen.queryByText('Réinitialiser les filtres')
+    ).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Filtrer par date')).toHaveValue('')
+  })
+
   it('should change checkbox states', async () => {
     renderStocksEventList({
       stocks: [

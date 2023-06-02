@@ -101,6 +101,8 @@ $icon-size: rem.torem(20px);
 }
 
 .filtered-data-row {
+  display: flex;
+  justify-content: space-between;
   padding-top: rem.torem(12px);
   padding-bottom: rem.torem(12px);
 }
