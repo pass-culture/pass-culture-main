@@ -1974,7 +1974,7 @@ class GetExcelReportTest:
         # Contremarque
         assert sheet.cell(row=2, column=10).value == booking.token
         # Intitulé du tarif
-        assert sheet.cell(row=2, column=11).value == None
+        assert sheet.cell(row=2, column=11).value is None
         # Prix de la réservation
         assert sheet.cell(row=2, column=12).value == booking.amount
         # Statut de la contremarque

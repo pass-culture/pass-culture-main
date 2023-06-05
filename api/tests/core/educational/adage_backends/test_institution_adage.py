@@ -66,7 +66,7 @@ class ReturnSuccessTest:
         assert institution_1.postalCode == adage_institution_1.codePostal
         assert institution_1.email == adage_institution_1.courriel
         assert institution_1.phoneNumber == adage_institution_1.telephone
-        assert institution_1.isActive == True
+        assert institution_1.isActive is True
 
         assert institution_2.institutionId == adage_institution_2.uai
         assert institution_2.name == adage_institution_2.libelle
@@ -75,7 +75,7 @@ class ReturnSuccessTest:
         assert institution_2.postalCode == adage_institution_2.codePostal
         assert institution_2.email == adage_institution_2.courriel
         assert institution_2.phoneNumber == adage_institution_2.telephone
-        assert institution_2.isActive == True
+        assert institution_2.isActive is True
 
         assert institution_3.institutionId == adage_institution_3.uai
         assert institution_3.name == adage_institution_3.libelle
@@ -84,7 +84,7 @@ class ReturnSuccessTest:
         assert institution_3.postalCode == adage_institution_3.codePostal
         assert institution_3.email == adage_institution_3.courriel
         assert institution_3.phoneNumber == adage_institution_3.telephone
-        assert institution_3.isActive == True
+        assert institution_3.isActive is True
 
         assert institution_4.institutionId == adage_institution_4.uai
         assert institution_4.name == adage_institution_4.libelle
@@ -93,7 +93,7 @@ class ReturnSuccessTest:
         assert institution_4.postalCode == adage_institution_4.codePostal
         assert institution_4.email == adage_institution_4.courriel
         assert institution_4.phoneNumber == adage_institution_4.telephone
-        assert institution_4.isActive == True
+        assert institution_4.isActive is True
 
-        assert institution_5.isActive == False
-        assert institution_6.isActive == False
+        assert institution_5.isActive is False
+        assert institution_6.isActive is False

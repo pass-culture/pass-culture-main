@@ -64,11 +64,11 @@ class Returns200Test:
         assert offer.venue == venue
         assert offer.durationMinutes == 60
         assert offer.venue.managingOffererId == offerer.id
-        assert offer.motorDisabilityCompliant == False
-        assert offer.visualDisabilityCompliant == False
-        assert offer.audioDisabilityCompliant == False
-        assert offer.mentalDisabilityCompliant == True
-        assert offer.mentalDisabilityCompliant == True
+        assert offer.motorDisabilityCompliant is False
+        assert offer.visualDisabilityCompliant is False
+        assert offer.audioDisabilityCompliant is False
+        assert offer.mentalDisabilityCompliant is True
+        assert offer.mentalDisabilityCompliant is True
         assert offer.contactEmail == "pouet@example.com"
         assert offer.contactPhone == "01 99 00 25 68"
         assert offer.offerVenue == {

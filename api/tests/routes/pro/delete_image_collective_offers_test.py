@@ -50,7 +50,7 @@ class DeleteImageFromFileTest:
         # then
 
         assert response.status_code == 204
-        assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists() == False
+        assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists() is False
 
     def test_forbidden_offer(self, client):
         # given

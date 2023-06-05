@@ -25,7 +25,7 @@ def check_provider_api(url, siret, token):  # type: ignore [no-untyped-def]
     assert provider_api.is_siret_registered(siret), "L'appel avec uniquement le siret dans l'url doit fonctionner"
 
     stocks = provider_api.stocks(siret, limit=1)
-    assert stocks.get("total") != None, "Le total est manquant."
+    assert stocks.get("total") is not None, "Le total est manquant."
     assert int(stocks.get("total")) > 0, "Le total n'est pas strictement supérieur à 0."
 
     assert "stocks" in stocks, 'La clé "stocks" est manquante.'

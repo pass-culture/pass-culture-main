@@ -57,7 +57,7 @@ class PopulateFromDictTest:
         # Then
         assert user.email == "test@example.com"
         assert user.firstName == "John"
-        assert user.lastName == None
+        assert user.lastName is None
         assert user.postalCode == "93100"
 
     def test_on_pc_object_for_sql_integer_value_with_string_raises_decimal_cast_error(self):

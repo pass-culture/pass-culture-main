@@ -106,12 +106,12 @@ class CollectiveOffersPublicPatchOfferTest:
             "addressType": "school",
             "otherAddress": "",
         }
-        assert offer.audioDisabilityCompliant == True
-        assert offer.mentalDisabilityCompliant == True
-        assert offer.motorDisabilityCompliant == True
-        assert offer.visualDisabilityCompliant == True
-        assert offer.isActive == False
-        assert offer.hasImage == True
+        assert offer.audioDisabilityCompliant is True
+        assert offer.mentalDisabilityCompliant is True
+        assert offer.motorDisabilityCompliant is True
+        assert offer.visualDisabilityCompliant is True
+        assert offer.isActive is False
+        assert offer.hasImage is True
         assert offer.imageCredit == "a great artist"
 
         assert offer.collectiveStock.beginningDatetime == datetime.fromisoformat(payload["beginningDatetime"])
@@ -120,7 +120,7 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.collectiveStock.priceDetail == payload["educationalPriceDetail"]
 
         assert offer.institutionId == educational_institution.id
-        assert educational_institution.isActive == True
+        assert educational_institution.isActive is True
 
     @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
     def test_patch_offer_6_5_only_too_early(self, client):
@@ -221,7 +221,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
         assert offer.institutionId == educational_institution.id
-        assert educational_institution.isActive == True
+        assert educational_institution.isActive is True
 
     def test_patch_private_api_offer(self, client):
         # Given
@@ -275,7 +275,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
         assert offer.institutionId == educational_institution.id
-        assert educational_institution.isActive == True
+        assert educational_institution.isActive is True
 
     def test_patch_offer_uai_and_institution_id(self, client):
         # Given
@@ -303,7 +303,7 @@ class CollectiveOffersPublicPatchOfferTest:
         assert response.status_code == 400
 
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
-        assert offer.institutionId == None
+        assert offer.institutionId is None
 
     def test_patch_offer_invalid_domain(self, client):
         # Given
@@ -541,7 +541,7 @@ class CollectiveOffersPublicPatchOfferTest:
         assert response.status_code == 200
 
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
-        assert offer.hasImage == True
+        assert offer.hasImage is True
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
     def test_add_invalid_image_size(self, client):
@@ -566,7 +566,7 @@ class CollectiveOffersPublicPatchOfferTest:
         assert response.status_code == 400
 
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
-        assert offer.hasImage == False
+        assert offer.hasImage is False
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         assert offer.name != "pouet"
 
@@ -592,7 +592,7 @@ class CollectiveOffersPublicPatchOfferTest:
         assert response.status_code == 400
 
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
-        assert offer.hasImage == False
+        assert offer.hasImage is False
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         assert offer.name != "pouet"
 
@@ -613,7 +613,7 @@ class CollectiveOffersPublicPatchOfferTest:
         assert response.status_code == 200
 
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
-        assert offer.hasImage == True
+        assert offer.hasImage is True
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         # END SETUP
         # actual test
@@ -624,7 +624,7 @@ class CollectiveOffersPublicPatchOfferTest:
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
         assert response.status_code == 200
-        assert offer.hasImage == False
+        assert offer.hasImage is False
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
     def test_patch_offer_invalid_domains(self, client):

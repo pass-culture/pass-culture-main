@@ -76,7 +76,7 @@ class SendinblueSendOfferValidationTest:
 
         # Then
         assert new_offer_validation_email.template == TransactionalEmail.OFFER_REJECTION_TO_PRO.value
-        assert new_offer_validation_email.params["IS_COLLECTIVE_OFFER"] == True
+        assert new_offer_validation_email.params["IS_COLLECTIVE_OFFER"] is True
 
     def test_get_validation_rejection_correct_collective_template_attribute(self):
         # Given
@@ -87,7 +87,7 @@ class SendinblueSendOfferValidationTest:
 
         # Then
         assert new_offer_validation_email.template == TransactionalEmail.OFFER_REJECTION_TO_PRO.value
-        assert new_offer_validation_email.params["IS_COLLECTIVE_OFFER"] == True
+        assert new_offer_validation_email.params["IS_COLLECTIVE_OFFER"] is True
 
     def test_send_offer_rejection_email(
         self,

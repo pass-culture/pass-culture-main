@@ -661,7 +661,7 @@ class DecideEligibilityTest:
         result = fraud_api.decide_eligibility(
             user, dms_content.get_birth_date(), dms_content.get_registration_datetime()
         )
-        assert result == None
+        assert result is None
 
     @freeze_time("2020-01-02")
     def test_19yo_ex_underage_not_eligible(self):
@@ -683,7 +683,7 @@ class DecideEligibilityTest:
         result = fraud_api.decide_eligibility(
             user, dms_content.get_birth_date(), dms_content.get_registration_datetime()
         )
-        assert result == None
+        assert result is None
 
     @freeze_time("2020-01-02")
     def test_18yo_eligible(self):

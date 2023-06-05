@@ -71,9 +71,9 @@ def test_synchronize_adage_ids_on_venues(db_session):
             educational_api_adage.synchronize_adage_ids_on_venues()
 
     assert venue1.adageId == "128028"
-    assert venue1.adageInscriptionDate != None
+    assert venue1.adageInscriptionDate is not None
     assert venue2.adageId == "128029"
-    assert venue2.adageInscriptionDate != None
+    assert venue2.adageInscriptionDate is not None
     assert venue3.adageId is None
     assert venue3.adageInscriptionDate is None
     assert venue4.adageId is None

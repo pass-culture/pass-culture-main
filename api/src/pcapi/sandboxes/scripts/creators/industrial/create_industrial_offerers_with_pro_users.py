@@ -177,7 +177,7 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
         else:
             user_validation_token = "{}{}".format(user_validation_prefix, user_validation_suffix)
 
-        if location_index % VALIDATED_OFFERERS_REMOVE_MODULO == 0 and create_educational_offerer == False:
+        if location_index % VALIDATED_OFFERERS_REMOVE_MODULO == 0 and not create_educational_offerer:
             offerer.validationStatus = ValidationStatus.NEW
         else:
             offerer.validationStatus = ValidationStatus.VALIDATED

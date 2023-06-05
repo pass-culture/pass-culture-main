@@ -304,7 +304,7 @@ def test_update_external_pro_user_attributes_no_offerer_no_venue():
     assert attributes.isPermanent is None
     assert attributes.has_offers is None
     assert attributes.has_bookings is None
-    assert attributes.has_collective_offers == False
+    assert attributes.has_collective_offers is False
 
 
 def test_update_external_pro_booking_email_attributes():

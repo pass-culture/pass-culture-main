@@ -55,7 +55,7 @@ class Returns204Test:
         # Then
         assert response.status_code == 204
         user = User.query.filter_by(email="toto_pro@example.com").first()
-        assert user.needsToFillCulturalSurvey == False
+        assert user.needsToFillCulturalSurvey is False
 
 
 @pytest.mark.usefixtures("db_session")

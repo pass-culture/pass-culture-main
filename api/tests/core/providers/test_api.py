@@ -148,7 +148,7 @@ def test_change_venue_provider():
     # Check venue_provider has change provider and sync date reset
     assert len(venue.venueProviders) == 1
     assert venue.venueProviders[0].providerId == new_provider.id
-    assert venue.venueProviders[0].lastSyncDate == None
+    assert venue.venueProviders[0].lastSyncDate is None
     # Check that the quantity of existing stocks has been reset.
     assert stock.quantity == 1
     assert stock.offer.lastProviderId == new_provider.id

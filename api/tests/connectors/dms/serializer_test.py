@@ -58,7 +58,7 @@ class ParseBeneficiaryInformationTest:
         assert content.email == "jean.valgean@example.com"
         assert content.application_number == 5718303
         assert content.procedure_number == 32
-        assert content.department == None
+        assert content.department is None
         assert content.birth_date == date(2004, 12, 19)
         assert content.phone == "0601010101"
         assert content.postal_code == "92700"
@@ -75,7 +75,7 @@ class ParseBeneficiaryInformationTest:
         assert content.email == "jean.valgean@example.com"
         assert content.application_number == 5742994
         assert content.procedure_number == 32
-        assert content.department == None
+        assert content.department is None
         assert content.birth_date == date(2006, 5, 12)
         assert content.phone == "0601010101"
         assert content.postal_code == "92700"
@@ -118,7 +118,7 @@ class ParseBeneficiaryInformationTest:
     def test_activity_unknown_values(self, mocked_logger):
         raw_data = fixture.make_graphql_application(1, "accepte", activity="invalid")
         content = dms_serializer.parse_beneficiary_information_graphql(dms_models.DmsApplicationResponse(**raw_data))
-        assert content.activity == None
+        assert content.activity is None
         mocked_logger.assert_called_once_with("Unknown activity value for application %s: %s", 1, "invalid")
 
     def test_serializer_is_resilient_to_minor_label_updates(self):

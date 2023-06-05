@@ -32,7 +32,7 @@ class UserTest:
         def test_return_none_if_no_deposits_exists(self):
             user = users_factories.UserFactory()
 
-            assert user.deposit == None
+            assert user.deposit is None
 
         def test_return_expired_deposit_if_only_expired_deposits_exists(self):
             user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))

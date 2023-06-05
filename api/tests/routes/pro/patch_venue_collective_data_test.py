@@ -107,12 +107,12 @@ class Returns200Test:
         assert venue.collectiveDomains == []
         assert venue.collectiveStudents == []
         assert venue.collectiveNetwork == []
-        assert venue.collectiveDescription == None
-        assert venue.collectiveWebsite == None
+        assert venue.collectiveDescription is None
+        assert venue.collectiveWebsite is None
         assert venue.collectiveInterventionArea == []
-        assert venue.venueEducationalStatusId == None
-        assert venue.collectivePhone == None
-        assert venue.collectiveEmail == None
+        assert venue.venueEducationalStatusId is None
+        assert venue.collectivePhone is None
+        assert venue.collectiveEmail is None
 
     def test_should_update_venue_when_specifying_some_data(self, client) -> None:
         # given

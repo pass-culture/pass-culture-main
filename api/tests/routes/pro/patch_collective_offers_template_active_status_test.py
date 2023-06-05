@@ -103,4 +103,4 @@ class Returns403Test:
         # Then
         assert response.status_code == 403
         assert response.json == {"Partner": ["User not in Adage can't edit the offer"]}
-        assert offer1.isActive == False
+        assert offer1.isActive is False

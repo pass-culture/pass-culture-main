@@ -173,9 +173,9 @@ def test_serialize_venue_has_missing_reimbursement_point(client):
 
     response = client.get(f"/offerers/{offerer_id}")
     assert response.status_code == 200
-    assert response.json["managedVenues"][0]["hasMissingReimbursementPoint"] == True
-    assert response.json["managedVenues"][1]["hasMissingReimbursementPoint"] == False
-    assert response.json["managedVenues"][2]["hasMissingReimbursementPoint"] == False
+    assert response.json["managedVenues"][0]["hasMissingReimbursementPoint"] is True
+    assert response.json["managedVenues"][1]["hasMissingReimbursementPoint"] is False
+    assert response.json["managedVenues"][2]["hasMissingReimbursementPoint"] is False
 
 
 def test_serialize_venue_offer_created_flag(client):
@@ -199,7 +199,7 @@ def test_serialize_venue_offer_created_flag(client):
 
     response = client.get(f"/offerers/{offerer_id}")
     assert response.status_code == 200
-    assert response.json["managedVenues"][0]["hasCreatedOffer"] == True
-    assert response.json["managedVenues"][1]["hasCreatedOffer"] == True
-    assert response.json["managedVenues"][2]["hasCreatedOffer"] == True
-    assert response.json["managedVenues"][3]["hasCreatedOffer"] == False
+    assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
+    assert response.json["managedVenues"][1]["hasCreatedOffer"] is True
+    assert response.json["managedVenues"][2]["hasCreatedOffer"] is True
+    assert response.json["managedVenues"][3]["hasCreatedOffer"] is False

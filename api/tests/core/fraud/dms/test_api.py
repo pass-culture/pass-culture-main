@@ -26,7 +26,7 @@ class DmsApiTest:
         assert len(user_fraud_checks) == 1
         assert user_fraud_checks[0] == fraud_check
         assert user_fraud_checks[0].thirdPartyId == str(application_number)
-        assert user_fraud_checks[0].resultContent == None
+        assert user_fraud_checks[0].resultContent is None
 
     def test_get_fraud_check(self):
         user = users_factories.UserFactory()

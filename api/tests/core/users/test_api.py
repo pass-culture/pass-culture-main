@@ -648,7 +648,7 @@ class SetProTutoAsSeenTest:
         users_api.set_pro_tuto_as_seen(user)
 
         # Then
-        assert users_models.User.query.one().hasSeenProTutorials == True
+        assert users_models.User.query.one().hasSeenProTutorials is True
 
 
 @pytest.mark.usefixtures("db_session")
@@ -661,7 +661,7 @@ class SetProRgsAsSeenTest:
         users_api.set_pro_rgs_as_seen(user)
 
         # Then
-        assert users_models.User.query.one().hasSeenProRgs == True
+        assert users_models.User.query.one().hasSeenProRgs is True
 
 
 @pytest.mark.usefixtures("db_session")
@@ -1310,7 +1310,7 @@ class UpdateLoginDeviceHistoryTest:
         assert login_device.deviceId == device_info.device_id
         assert login_device.source == "iPhone 13"
         assert login_device.os == "iOS"
-        assert login_device.location == None
+        assert login_device.location is None
 
     def should_return_login_history(self):
         user = users_factories.UserFactory()

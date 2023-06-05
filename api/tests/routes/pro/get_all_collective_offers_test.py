@@ -40,11 +40,11 @@ class Returns200Test:
         assert response_json[0]["nonHumanizedId"] == offer.id
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == humanize(stock.id)
-        assert response_json[0]["isShowcase"] == False
+        assert response_json[0]["isShowcase"] is False
         assert response_json[0]["educationalInstitution"]["name"] == institution.name
-        assert response_json[0]["imageCredit"] == None
-        assert response_json[0]["imageUrl"] == None
-        assert response_json[0]["isPublicApi"] == False
+        assert response_json[0]["imageCredit"] is None
+        assert response_json[0]["imageUrl"] is None
+        assert response_json[0]["isPublicApi"] is False
 
     def test_one_inactive_offer(self, client):
         # Given
@@ -70,7 +70,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
-        assert response_json[0]["isActive"] == False
+        assert response_json[0]["isActive"] is False
         assert response_json[0]["status"] == "INACTIVE"
 
     def test_get_passed_booking_limit_datetime_not_beginning_datetime(self, app):
@@ -112,7 +112,7 @@ class Returns200Test:
         # Then
         response_json = response.json
         assert response.status_code == 200
-        assert response_json[0]["isPublicApi"] == True
+        assert response_json[0]["isPublicApi"] is True
 
     def test_one_simple_collective_offer_template(self, app):
         # Given
@@ -135,9 +135,9 @@ class Returns200Test:
         assert response_json[0]["nonHumanizedId"] == offer.id
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == ""
-        assert response_json[0]["isShowcase"] == True
-        assert response_json[0]["imageCredit"] == None
-        assert response_json[0]["imageUrl"] == None
+        assert response_json[0]["isShowcase"] is True
+        assert response_json[0]["imageCredit"] is None
+        assert response_json[0]["imageUrl"] is None
 
     def test_mix_collective_offer_and_template(self, app):
         # Given
@@ -174,7 +174,7 @@ class Returns200Test:
         assert response_json[0]["nonHumanizedId"] == template.id
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == ""
-        assert response_json[0]["isShowcase"] == True
+        assert response_json[0]["isShowcase"] is True
         assert response_json[0]["imageCredit"] == "template"
         assert (
             response_json[0]["imageUrl"]
@@ -184,7 +184,7 @@ class Returns200Test:
         assert response_json[1]["nonHumanizedId"] == offer.id
         assert len(response_json[1]["stocks"]) == 1
         assert response_json[1]["stocks"][0]["id"] == humanize(stock.id)
-        assert response_json[1]["isShowcase"] == False
+        assert response_json[1]["isShowcase"] is False
         assert response_json[1]["imageCredit"] == "offer"
         assert response_json[1]["imageUrl"] == f"http://localhost/storage/thumbs/collectiveoffer/{offer.imageId}.jpg"
 
@@ -324,7 +324,7 @@ class Returns200Test:
         assert response_json[0]["nonHumanizedId"] == offer.id
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == humanize(stock.id)
-        assert response_json[0]["isShowcase"] == False
+        assert response_json[0]["isShowcase"] is False
 
     def test_select_only_collective_offer_template(self, app):
         # Given
@@ -353,4 +353,4 @@ class Returns200Test:
         assert response_json[0]["nonHumanizedId"] == template.id
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == ""
-        assert response_json[0]["isShowcase"] == True
+        assert response_json[0]["isShowcase"] is True

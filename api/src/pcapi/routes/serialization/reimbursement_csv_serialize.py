@@ -197,7 +197,7 @@ class ReimbursementDetails:
 
         # Offer type
         self.offer_type = serialize_offer_type_educational_or_individual(
-            offer_is_educational=payment_info.collective_booking_id != None
+            offer_is_educational=payment_info.collective_booking_id is not None
         )
 
     @typing.no_type_check  # see comment for `__init__()` above

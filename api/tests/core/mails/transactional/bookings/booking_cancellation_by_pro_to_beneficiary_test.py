@@ -155,7 +155,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         sendiblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
 
         # Then
-        assert sendiblue_data.params["IS_FREE_OFFER"] == True
+        assert sendiblue_data.params["IS_FREE_OFFER"] is True
         assert sendiblue_data.params["OFFER_PRICE"] == 0.00
 
     def test_should_display_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
@@ -170,5 +170,5 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         sendiblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
 
         # Then
-        assert sendiblue_data.params["IS_FREE_OFFER"] == False
+        assert sendiblue_data.params["IS_FREE_OFFER"] is False
         assert sendiblue_data.params["OFFER_PRICE"] == 20.00

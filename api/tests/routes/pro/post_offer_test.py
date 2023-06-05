@@ -30,7 +30,7 @@ class Returns200Test:
         offer_id = response.json["nonHumanizedId"]
         offer = Offer.query.get(offer_id)
         response_dict = response.json
-        assert offer.isActive == False
+        assert offer.isActive is False
         assert response_dict["venue"]["id"] == humanize(offer.venue.id)
         assert response_dict["name"] == "Celeste"
         assert response_dict["nonHumanizedId"] == offer.id
@@ -69,12 +69,12 @@ class Returns200Test:
         assert offer.venue == venue
         assert offer.product.durationMinutes == 60
         assert offer.product.owningOfferer == offerer
-        assert offer.motorDisabilityCompliant == False
-        assert offer.visualDisabilityCompliant == False
-        assert offer.audioDisabilityCompliant == False
-        assert offer.mentalDisabilityCompliant == True
+        assert offer.motorDisabilityCompliant is False
+        assert offer.visualDisabilityCompliant is False
+        assert offer.audioDisabilityCompliant is False
+        assert offer.mentalDisabilityCompliant is True
         assert offer.validation == OfferValidationStatus.DRAFT
-        assert offer.isActive == False
+        assert offer.isActive is False
 
     def when_creating_new_thing_offer(self, client):
         # Given
@@ -112,10 +112,10 @@ class Returns200Test:
         assert offer.isNational
         assert offer.product.isNational
         assert offer.product.owningOfferer == offerer
-        assert offer.motorDisabilityCompliant == False
-        assert offer.visualDisabilityCompliant == False
-        assert offer.audioDisabilityCompliant == True
-        assert offer.mentalDisabilityCompliant == False
+        assert offer.motorDisabilityCompliant is False
+        assert offer.visualDisabilityCompliant is False
+        assert offer.audioDisabilityCompliant is True
+        assert offer.mentalDisabilityCompliant is False
 
     def test_create_offer_with_ean(self, client):
         venue = offerers_factories.VenueFactory()

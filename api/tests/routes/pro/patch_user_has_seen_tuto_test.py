@@ -13,7 +13,7 @@ def test_mark_as_seen(app):
     response = client.patch("/users/tuto-seen")
 
     assert response.status_code == 204
-    assert user.hasSeenProTutorials == True
+    assert user.hasSeenProTutorials is True
 
 
 @pytest.mark.usefixtures("db_session")
@@ -24,4 +24,4 @@ def test_mark_as_seen_without_auth(app):
     response = client.patch("/users/tuto-seen")
 
     assert response.status_code == 401
-    assert user.hasSeenProTutorials == False
+    assert user.hasSeenProTutorials is False

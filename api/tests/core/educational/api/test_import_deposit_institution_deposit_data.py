@@ -36,10 +36,10 @@ class ImportDepositInstitutionDataTest:
         assert institution.postalCode == "75001"
         assert institution.email == "contact+squall@example.com"
         assert institution.phoneNumber == "0600000000"
-        assert institution.isActive == True
+        assert institution.isActive is True
         assert deposit.amount == Decimal(1250)
         assert deposit.dateCreated - datetime.utcnow() < timedelta(seconds=5)
-        assert deposit.isFinal == False
+        assert deposit.isFinal is False
         assert deposit.ministry == educational_models.Ministry.EDUCATION_NATIONALE
 
     def test_update_institution(self) -> None:
@@ -68,10 +68,10 @@ class ImportDepositInstitutionDataTest:
         assert institution.postalCode == "75001"
         assert institution.email == "contact+squall@example.com"
         assert institution.phoneNumber == "0600000000"
-        assert institution.isActive == True
+        assert institution.isActive is True
         assert deposit.amount == Decimal(1250)
         assert deposit.dateCreated - datetime.utcnow() < timedelta(seconds=5)
-        assert deposit.isFinal == False
+        assert deposit.isFinal is False
         assert deposit.ministry == educational_models.Ministry.EDUCATION_NATIONALE
 
     def test_institution_not_in_adage(self):
@@ -120,9 +120,9 @@ class ImportDepositInstitutionDataTest:
         assert institution.postalCode == "75001"
         assert institution.email == "contact+squall@example.com"
         assert institution.phoneNumber == "0600000000"
-        assert institution.isActive == True
+        assert institution.isActive is True
         assert deposit.amount == Decimal(1250)
-        assert deposit.isFinal == False
+        assert deposit.isFinal is False
         assert deposit.ministry == educational_models.Ministry.EDUCATION_NATIONALE
 
     def test_deposit_alread_in_ministry_keep(self) -> None:
@@ -156,7 +156,7 @@ class ImportDepositInstitutionDataTest:
         assert institution.postalCode == "75001"
         assert institution.email == "contact+squall@example.com"
         assert institution.phoneNumber == "0600000000"
-        assert institution.isActive == True
+        assert institution.isActive is True
         assert deposit.amount == Decimal(1250)
-        assert deposit.isFinal == False
+        assert deposit.isFinal is False
         assert deposit.ministry == educational_models.Ministry.AGRICULTURE

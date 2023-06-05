@@ -501,5 +501,5 @@ class TiteliveThingsTest:
         refreshed_offer = offers_models.Offer.query.get(offer.id)
         refreshed_product = offers_models.Product.query.get(product.id)
         assert refreshed_product.name == "xxx"
-        assert refreshed_offer.isActive == False
+        assert refreshed_offer.isActive is False
         assert refreshed_offer.name == "xxx"

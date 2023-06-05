@@ -95,9 +95,9 @@ class Returns200Test:
         assert booking.educationalInstitution.institutionId == educational_institution.institutionId
         assert booking.educationalYear.adageId == educational_year.adageId
         educational_redactor = booking.educationalRedactor
-        assert educational_redactor.civility == None
-        assert educational_redactor.firstName == None
-        assert educational_redactor.lastName == None
+        assert educational_redactor.civility is None
+        assert educational_redactor.firstName is None
+        assert educational_redactor.lastName is None
         assert educational_redactor.email == "new.email@mail.fr"
 
         assert response.json["bookingId"] == booking.id

@@ -68,9 +68,9 @@ def test_response_missing_reimbursement_point_serialization(client):
     assert "venues" in response.json
     assert len(response.json["venues"]) == 3
 
-    assert response.json["venues"][0]["hasMissingReimbursementPoint"] == True
-    assert response.json["venues"][1]["hasMissingReimbursementPoint"] == False
-    assert response.json["venues"][2]["hasMissingReimbursementPoint"] == False
+    assert response.json["venues"][0]["hasMissingReimbursementPoint"] is True
+    assert response.json["venues"][1]["hasMissingReimbursementPoint"] is False
+    assert response.json["venues"][2]["hasMissingReimbursementPoint"] is False
 
 
 def test_response_created_offer_serialization(client):
@@ -97,10 +97,10 @@ def test_response_created_offer_serialization(client):
     assert "venues" in response.json
     assert len(response.json["venues"]) == 4
 
-    assert response.json["venues"][0]["hasCreatedOffer"] == True
-    assert response.json["venues"][1]["hasCreatedOffer"] == True
-    assert response.json["venues"][2]["hasCreatedOffer"] == True
-    assert response.json["venues"][3]["hasCreatedOffer"] == False
+    assert response.json["venues"][0]["hasCreatedOffer"] is True
+    assert response.json["venues"][1]["hasCreatedOffer"] is True
+    assert response.json["venues"][2]["hasCreatedOffer"] is True
+    assert response.json["venues"][3]["hasCreatedOffer"] is False
 
 
 def test_admin_call(client):

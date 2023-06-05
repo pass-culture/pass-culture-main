@@ -241,7 +241,7 @@ class EditVenueTest:
         content = response.data.decode(response.charset)
         assert "Ce lieu a déjà un point de valorisation" in content
         refreshed_venue = Venue.query.get(venue.id)
-        assert refreshed_venue.siret == None
+        assert refreshed_venue.siret is None
         mocked_async_index_offers_of_venue_ids.assert_not_called()
 
         assert len(external_testing.zendesk_sell_requests) == 0

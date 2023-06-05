@@ -269,7 +269,7 @@ class SaveVenueBankInformationsTest:
             bank_information = BankInformation.query.one()
             assert bank_information.bic == "SOGEFRPP"
             assert bank_information.iban == "FR7630007000111234567890144"
-            assert bank_information.offererId == None
+            assert bank_information.offererId is None
             assert bank_information.venueId == venue_with_accpeted_bank_info.id
             mock_archive_dossier.assert_called_once_with("Q2zzbXAtNzgyODAw")
 
@@ -292,8 +292,8 @@ class SaveVenueBankInformationsTest:
 
             bank_information = BankInformation.query.one()
             assert bank_information.venue == venue_with_accpeted_bank_info
-            assert bank_information.bic == None
-            assert bank_information.iban == None
+            assert bank_information.bic is None
+            assert bank_information.iban is None
             assert bank_information.status == BankInformationStatus.DRAFT
             mock_archive_dossier.assert_not_called()
 

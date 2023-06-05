@@ -1129,7 +1129,7 @@ class ManualPhoneNumberValidationTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
-        assert user.is_phone_validated == True
+        assert user.is_phone_validated is True
         assert response.status_code == 303
         assert history_models.ActionHistory.query.filter(history_models.ActionHistory.user == user).count() == 1
         assert users_models.Token.query.count() == 2
@@ -1266,7 +1266,7 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
         assert len(user.beneficiaryFraudReviews) == 1
 
         fraud_review = user.beneficiaryFraudReviews[0]
-        assert fraud_review.reason == None
+        assert fraud_review.reason is None
 
     def test_missing_identity_fraud_check_filled(self, authenticated_client):
         # not a beneficiary, does not have any identity fraud check

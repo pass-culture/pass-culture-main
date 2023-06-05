@@ -28,7 +28,7 @@ class StartIdentificationTest:
 
         attributes = ubble_mock.last_request.json()["data"]["attributes"]
         assert attributes["identification-form"]["external-user-id"] == 123
-        assert attributes["identification-form"]["phone-number"] == None
+        assert attributes["identification-form"]["phone-number"] is None
 
         assert attributes["reference-data"]["first-name"] == "prenom"
         assert attributes["reference-data"]["last-name"] == "nom"
@@ -114,7 +114,7 @@ class GetContentTest:
         assert record.extra["identification_id"] == identification_id
         assert record.extra["request_type"] == "get-content"
         assert record.extra["error_type"] == "http"
-        assert exc_info.value.is_retryable == False
+        assert exc_info.value.is_retryable is False
 
     def test_get_content_network_error(self, requests_mock, caplog):
         identification_id = "some-id"
@@ -131,7 +131,7 @@ class GetContentTest:
         assert record.extra["identification_id"] == identification_id
         assert record.extra["request_type"] == "get-content"
         assert record.extra["error_type"] == "http"
-        assert exc_info.value.is_retryable == True
+        assert exc_info.value.is_retryable is True
 
 
 class HelperFunctionsTest:

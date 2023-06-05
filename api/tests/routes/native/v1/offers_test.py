@@ -186,13 +186,13 @@ class OffersTest:
             "url": "http://localhost/storage/thumbs/mediations/N4",
             "credit": "street credit",
         }
-        assert response.json["isExpired"] == False
-        assert response.json["isForbiddenToUnderage"] == False
-        assert response.json["isSoldOut"] == False
-        assert response.json["isDuo"] == True
-        assert response.json["isEducational"] == False
-        assert response.json["isDigital"] == False
-        assert response.json["isReleased"] == True
+        assert response.json["isExpired"] is False
+        assert response.json["isForbiddenToUnderage"] is False
+        assert response.json["isSoldOut"] is False
+        assert response.json["isDuo"] is True
+        assert response.json["isEducational"] is False
+        assert response.json["isDigital"] is False
+        assert response.json["isReleased"] is True
         assert response.json["name"] == "l'offre du siècle"
         assert response.json["subcategoryId"] == subcategories.SEANCE_CINE.id
         assert response.json["venue"] == {
@@ -234,7 +234,7 @@ class OffersTest:
         assert response.status_code == 200
         assert not response.json["stocks"][0]["beginningDatetime"]
         assert response.json["stocks"][0]["price"] == 1234
-        assert response.json["stocks"][0]["priceCategoryLabel"] == None
+        assert response.json["stocks"][0]["priceCategoryLabel"] is None
         assert response.json["stocks"][0]["remainingQuantity"] == 1000
         assert response.json["subcategoryId"] == "ABO_MUSEE"
         assert response.json["isEducational"] is False
