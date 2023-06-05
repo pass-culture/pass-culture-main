@@ -3,12 +3,13 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon.tsx'
 import { ROOT_PATH } from 'utils/config'
 
 const Logo = ({ className, noLink, onClick, signPage }) => {
   let src = `${ROOT_PATH}/icons/logo-pass-culture-header.svg`
   if (signPage) {
-    src = `${ROOT_PATH}/icons/logo-pass-culture-white.svg`
+    src = `${ROOT_PATH}/icons/logo-pass-culture-primary.svg`
   }
 
   const handleClick = noLink ? e => e.preventDefault() : onClick
@@ -19,7 +20,9 @@ const Logo = ({ className, noLink, onClick, signPage }) => {
       onClick={handleClick}
       to={'/accueil'}
     >
-      <img
+      <SvgIcon
+        className={signPage && 'sign-height'}
+        viewBox={signPage && '0 0 282 120'}
         alt="Pass Culture pro, l'espace Pass Culture des acteurs culturels"
         src={src}
       />

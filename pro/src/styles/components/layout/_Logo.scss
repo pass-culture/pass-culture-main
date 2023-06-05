@@ -9,19 +9,24 @@ a.logo {
   height: 100%;
   justify-content: center;
 
-  img {
-    height: rem.torem(45px);
+  svg {
+    width: rem.torem(119px);
     margin: rem.torem(-10px) 0;
-    max-height: rem.torem(45px);
+    max-height: rem.torem(40px);
     vertical-align: middle;
+    
+    path {
+      fill: colors.$white;
+    }
   }
 
   &.no-link {
     cursor: inherit;
 
-    img {
-      height: auto;
-      max-height: none;
+    .sign-height {
+      width: rem.torem(282px);
+      max-height: rem.torem(120px);
     }
+
   }
 }
