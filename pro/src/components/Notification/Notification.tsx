@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { NOTIFICATION_TRANSITION_DURATION } from 'core/Notification/constants'
-import useNotification from 'hooks/useNotification'
+import useNotification, { NotificationTypeEnum } from 'hooks/useNotification'
 import {
   isStickyBarOpenSelector,
   notificationSelector,
@@ -59,6 +59,14 @@ const Notification = (): JSX.Element | null => {
   } else if (type === 'information') {
     iconComponent = <InfoIcon />
   }
+
+  const notificationAttribute = {
+    [NotificationTypeEnum.ERROR]: 'alert',
+    [NotificationTypeEnum.SUCCESS]: 'status',
+    [NotificationTypeEnum.PENDING]: 'progressbar',
+    [NotificationTypeEnum.INFORMATION]: 'status',
+  }[type]
+
   if (isInDom) {
     return (
       <div
@@ -78,6 +86,7 @@ const Notification = (): JSX.Element | null => {
               styles['with-sticky-action-bar']
           )
         }
+        role={notificationAttribute ?? 'status'}
       >
         {iconComponent}
         {text}
