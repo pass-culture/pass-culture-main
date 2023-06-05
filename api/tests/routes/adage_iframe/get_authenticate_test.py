@@ -7,6 +7,7 @@ import pytest
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 
 from tests.conftest import TestClient
+from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_default_fake_valid_token
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_invalid_token
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
 
@@ -19,7 +20,7 @@ class Returns200Test:
     }
 
     def _create_adage_valid_token(self, uai_code: Optional[str]) -> ByteString:
-        return create_adage_jwt_fake_valid_token(
+        return create_adage_jwt_default_fake_valid_token(
             civility=self.valid_user.get("civilite"),
             lastname=self.valid_user.get("nom"),
             firstname=self.valid_user.get("prenom"),
