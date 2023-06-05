@@ -88,9 +88,6 @@ enable = [
 # Most cases that cannot be fixed or obviously disabled are test
 # functions. And I believe that they really should be renamed to be
 # less than 120 characters long.
-#
-# FIXME (dbaty, 2020-11-03): we probably could enable back
-# "singleton-comparison".
 disable = [
     "arguments-differ",
     "arguments-renamed",
