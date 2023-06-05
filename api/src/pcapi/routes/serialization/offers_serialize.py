@@ -100,7 +100,7 @@ class PostOfferBodyModel(BaseModel):
 
     @root_validator()
     def validate_isbn(cls, values: dict) -> dict:
-        if offers_api.should_retrieve_book_from_isbn(values.get("subcategory_id", "")):
+        if offers_api.should_retrieve_book_from_ean(values.get("subcategory_id", "")):
             check_offer_isbn_is_valid(values.get("extra_data", {}).get("isbn"))
         return values
 

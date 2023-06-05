@@ -119,6 +119,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     url = sa.Column(sa.String(255), nullable=True)
 
     sa.Index("product_ean_idx", extraData["ean"].astext)
+    sa.Index("product_isbn_idx", extraData["isbn"].astext)
 
     @property
     def subcategory(self) -> subcategories.Subcategory:

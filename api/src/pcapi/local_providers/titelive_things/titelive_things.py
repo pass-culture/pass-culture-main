@@ -143,7 +143,7 @@ class TiteLiveThings(LocalProvider):
                 )
             else:
                 logger.info(
-                    "Ignoring aen=%s because it has 'xxx' in 'titre' and 'auteurs' fields, which means it is not yet released",
+                    "Ignoring ean=%s because it has 'xxx' in 'titre' and 'auteurs' fields, which means it is not yet released",
                     book_unique_identifier,
                 )
             return []
