@@ -1,7 +1,7 @@
 import copy
 
 import flask
-from sqlalchemy import orm as sqla_orm
+import sqlalchemy as sqla
 
 from pcapi import repository
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -103,7 +103,7 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))
-        .filter(offers_models.Offer.isEvent == True)
+        .filter(offers_models.Offer.isEvent)
         .one_or_none()
     )
     if not offer:
@@ -171,7 +171,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))
-        .filter(offers_models.Offer.isEvent == True)
+        .filter(offers_models.Offer.isEvent)
         .one_or_none()
     )
 
@@ -224,7 +224,7 @@ def post_event_price_categories(
     """
     Post price categories.
     """
-    offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent == True).one_or_none()
+    offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent).one_or_none()
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
 
@@ -254,11 +254,11 @@ def patch_event_price_categories(
     """
     event_offer = (
         utils.retrieve_offer_query(event_id)
-        .filter(offers_models.Offer.isEvent == True)
-        .outerjoin(offers_models.Offer.stocks.and_(offers_models.Stock.isEventExpired == False))
-        .options(sqla_orm.contains_eager(offers_models.Offer.stocks))
+        .filter(offers_models.Offer.isEvent)
+        .outerjoin(offers_models.Offer.stocks.and_(sqla.not_(offers_models.Stock.isEventExpired)))
+        .options(sqla.orm.contains_eager(offers_models.Offer.stocks))
         .options(
-            sqla_orm.joinedload(offers_models.Offer.priceCategories).joinedload(
+            sqla.orm.joinedload(offers_models.Offer.priceCategories).joinedload(
                 offers_models.PriceCategory.priceCategoryLabel
             )
         )
@@ -303,8 +303,8 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
     """
     offer = (
         utils.retrieve_offer_query(event_id)
-        .options(sqla_orm.joinedload(offers_models.Offer.priceCategories))
-        .filter(offers_models.Offer.isEvent == True)
+        .options(sqla.orm.joinedload(offers_models.Offer.priceCategories))
+        .filter(offers_models.Offer.isEvent)
         .one_or_none()
     )
     if not offer:
@@ -347,12 +347,13 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
     """
     Get dates of an event. Results are paginated.
     """
-    offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent == True).one_or_none()
+    offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent).one_or_none()
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
 
     stock_id_query = offers_models.Stock.query.filter(
-        offers_models.Stock.offerId == offer.id, offers_models.Stock.isSoftDeleted == False
+        offers_models.Stock.offerId == offer.id,
+        sqla.not_(offers_models.Stock.isSoftDeleted),
     ).with_entities(offers_models.Stock.id)
     total_stock_ids = [stock_id for (stock_id,) in stock_id_query.all()]
 
@@ -368,7 +369,7 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
     stocks = (
         offers_models.Stock.query.filter(offers_models.Stock.id.in_(total_stock_ids[offset : offset + query.limit]))
         .options(
-            sqla_orm.joinedload(offers_models.Stock.priceCategory).joinedload(
+            sqla.orm.joinedload(offers_models.Stock.priceCategory).joinedload(
                 offers_models.PriceCategory.priceCategoryLabel
             )
         )
@@ -399,8 +400,8 @@ def delete_event_date(event_id: int, date_id: int) -> None:
     """
     offer = (
         utils.retrieve_offer_query(event_id)
-        .filter(offers_models.Offer.isEvent == True)
-        .options(sqla_orm.joinedload(offers_models.Offer.stocks))
+        .filter(offers_models.Offer.isEvent)
+        .options(sqla.orm.joinedload(offers_models.Offer.stocks))
         .one_or_none()
     )
     if not offer:
@@ -427,7 +428,7 @@ def patch_event_date(
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))
-        .filter(offers_models.Offer.isEvent == True)
+        .filter(offers_models.Offer.isEvent)
         .one_or_none()
     )
     if not offer:

@@ -173,7 +173,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
     venues = (
         offerers_models.Venue.query.filter_by(bookingEmail=email)
         .join(offerers_models.Offerer)
-        .filter(offerers_models.Offerer.isActive == True)
+        .filter(offerers_models.Offerer.isActive)
         .options(
             load_only(
                 offerers_models.Venue.publicName,

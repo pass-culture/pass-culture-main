@@ -163,12 +163,11 @@ class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):
     def nOffers(self):  # type: ignore [no-untyped-def]
         from pcapi.core.offers.models import Offer
 
-        # pylint: disable=comparison-with-callable
-        return (
-            Offer.query.filter(Offer.venueId == self.venueId, Offer.isActive == True)
-            .filter(Offer.lastProviderId == self.providerId)
-            .count()
-        )
+        return Offer.query.filter_by(
+            venueId=self.venueId,
+            isActive=True,
+            lastProviderId=self.providerId,
+        ).count()
 
 
 class CinemaProviderPivot(PcObject, Base, Model):

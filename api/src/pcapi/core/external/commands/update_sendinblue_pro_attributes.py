@@ -15,7 +15,7 @@ def get_all_booking_emails() -> set[str]:
     rows = (
         db.session.query(Venue.bookingEmail)
         .distinct()
-        .filter(Venue.bookingEmail != None, Venue.bookingEmail != "")
+        .filter(Venue.bookingEmail.isnot(None), Venue.bookingEmail != "")
         .all()
     )
     print(f"{len(rows)} booking emails")

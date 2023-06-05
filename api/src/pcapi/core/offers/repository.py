@@ -287,7 +287,7 @@ def get_collective_offers_by_filters(
                         educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings
                     )
                     .filter(
-                        (educational_models.CollectiveBooking.id == None)
+                        (educational_models.CollectiveBooking.id.is_(None))
                         | (
                             educational_models.CollectiveBooking.status
                             == educational_models.CollectiveBookingStatus.CANCELLED
@@ -740,7 +740,7 @@ def exclude_offers_from_inactive_venue_provider(query: flask_sqlalchemy.BaseQuer
         .filter(
             sa.or_(
                 models.Offer.lastProviderId.is_(None),
-                providers_models.VenueProvider.isActive == True,
+                providers_models.VenueProvider.isActive.is_(True),
                 providers_models.Provider.localClass == providers_constants.PASS_CULTURE_STOCKS_FAKE_CLASS_NAME,
             )
         )

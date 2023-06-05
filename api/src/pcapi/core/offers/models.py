@@ -201,7 +201,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
 
     @hasBookingLimitDatetimePassed.expression  # type: ignore [no-redef]
     def hasBookingLimitDatetimePassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
-        return sa.and_(cls.bookingLimitDatetime != None, cls.bookingLimitDatetime <= sa.func.now())
+        return sa.and_(cls.bookingLimitDatetime.isnot(None), cls.bookingLimitDatetime <= sa.func.now())
 
     # TODO(fseguin, 2021-03-25): replace unlimited by None (also in the front-end)
     @hybrid_property
@@ -218,7 +218,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
 
     @isEventExpired.expression  # type: ignore [no-redef]
     def isEventExpired(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
-        return sa.and_(cls.beginningDatetime != None, cls.beginningDatetime <= sa.func.now())
+        return sa.and_(cls.beginningDatetime.isnot(None), cls.beginningDatetime <= sa.func.now())
 
     @hybrid_property
     def isExpired(self) -> bool:
@@ -503,7 +503,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @isDigital.expression  # type: ignore [no-redef]
     def isDigital(cls) -> bool:  # pylint: disable=no-self-argument
-        return sa.and_(cls.url != None, cls.url != "")
+        return sa.and_(cls.url.isnot(None), cls.url != "")
 
     @property
     def isEditable(self) -> bool:

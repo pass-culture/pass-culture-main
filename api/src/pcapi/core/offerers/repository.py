@@ -206,16 +206,13 @@ def find_relative_venue_by_id(venue_id: int, permanent_only: bool = False) -> li
     query = query.join(aliased_venue, models.Offerer.managedVenues)
     query = query.filter(
         # constraint on retrieved venues
-        models.Venue.isVirtual == False,
+        sqla.not_(models.Venue.isVirtual),
         # constraint on seached venue
-        aliased_venue.isVirtual == False,
+        sqla.not_(aliased_venue.isVirtual),
         aliased_venue.id == venue_id,
     )
     if permanent_only:
-        query = query.filter(
-            models.Venue.isPermanent == True,
-            aliased_venue.isPermanent == True,
-        )
+        query = query.filter(models.Venue.isPermanent, aliased_venue.isPermanent)
     query = query.options(sqla.orm.joinedload(models.Venue.contact))
     query = query.options(sqla.orm.joinedload(models.Venue.venueLabel))
     query = query.options(sqla.orm.joinedload(models.Venue.managingOfferer))
@@ -365,7 +362,7 @@ def offerer_has_venue_with_adage_id(offerer_id: int) -> bool:
     query = db.session.query(models.Venue.id)
     query = query.join(models.Offerer, models.Venue.managingOfferer)
     query = query.filter(
-        models.Venue.adageId != None,
+        models.Venue.adageId.isnot(None),
         models.Venue.adageId != "",
         models.Offerer.id == offerer_id,
     )

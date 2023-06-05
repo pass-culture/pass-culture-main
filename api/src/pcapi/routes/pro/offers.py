@@ -3,7 +3,7 @@ import logging
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
-import sqlalchemy.orm as sqla_orm
+import sqlalchemy as sqla
 
 from pcapi import repository
 from pcapi.core.categories import categories
@@ -203,9 +203,9 @@ def patch_offer(
     offer_id: int, body: offers_serialize.PatchOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     offer = models.Offer.query.options(
-        sqla_orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
-        sqla_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
-        sqla_orm.joinedload(models.Offer.product).joinedload(models.Product.owningOfferer),
+        sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
+        sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
+        sqla.orm.joinedload(models.Offer.product).joinedload(models.Product.owningOfferer),
     ).get(offer_id)
     if not offer:
         raise api_errors.ResourceNotFoundError
@@ -315,16 +315,16 @@ def _get_offer_for_price_categories_upsert(
     offer_id: int, price_category_edition_payload: list[offers_serialize.EditPriceCategoryModel]
 ) -> models.Offer | None:
     return (
-        models.Offer.query.outerjoin(models.Offer.stocks.and_(models.Stock.isEventExpired == False))
+        models.Offer.query.outerjoin(models.Offer.stocks.and_(sqla.not_(models.Stock.isEventExpired)))
         .outerjoin(
             models.Offer.priceCategories.and_(
                 models.PriceCategory.id.in_([price_category.id for price_category in price_category_edition_payload])
             )
         )
         .outerjoin(models.PriceCategoryLabel, models.PriceCategory.priceCategoryLabel)
-        .options(sqla_orm.contains_eager(models.Offer.stocks))
+        .options(sqla.orm.contains_eager(models.Offer.stocks))
         .options(
-            sqla_orm.contains_eager(models.Offer.priceCategories).contains_eager(
+            sqla.orm.contains_eager(models.Offer.priceCategories).contains_eager(
                 models.PriceCategory.priceCategoryLabel
             )
         )

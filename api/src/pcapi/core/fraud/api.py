@@ -236,7 +236,7 @@ def find_duplicate_beneficiary(
     base_query = users_models.User.query.filter(
         (users_models.User.validatedBirthDate == birth_date)
         & matching(users_models.User.firstName, first_name)
-        & (users_models.User.is_beneficiary == True)
+        & (users_models.User.is_beneficiary)
         & (users_models.User.id != excluded_user_id)
     )
 

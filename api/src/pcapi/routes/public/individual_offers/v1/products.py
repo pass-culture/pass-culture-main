@@ -4,7 +4,7 @@ import itertools
 import logging
 
 import flask
-from sqlalchemy import orm as sqla_orm
+import sqlalchemy as sqla
 
 from pcapi import repository
 from pcapi.core import search
@@ -67,7 +67,7 @@ def get_offerer_venues(query: serialization.GetOfferersVenuesQuery) -> serializa
     return serialization.GetOfferersVenuesResponse(__root__=accessible_venues_and_offerer)  # type: ignore [arg-type]
 
 
-def _retrieve_offer_by_ean_query(ean: str) -> sqla_orm.Query:
+def _retrieve_offer_by_ean_query(ean: str) -> sqla.orm.Query:
     return (
         utils._retrieve_offer_tied_to_user_query()
         .filter(offers_models.Offer.extraData["ean"].astext == ean)
@@ -304,7 +304,7 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(product_id))
-        .filter(offers_models.Offer.isEvent == False)
+        .filter(sqla.not_(offers_models.Offer.isEvent))
         .one_or_none()
     )
     if not offer:
@@ -329,7 +329,7 @@ def get_product_by_ean(ean: str) -> serialization.ProductOfferResponse:
 
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(_retrieve_offer_by_ean_query(ean))
-        .filter(offers_models.Offer.isEvent == False)
+        .filter(sqla.not_(offers_models.Offer.isEvent))
         .first()
     )
     if not offer:
@@ -411,7 +411,7 @@ def edit_product(product_id: int, body: serialization.ProductOfferEdition) -> se
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(product_id))
-        .filter(offers_models.Offer.isEvent == False)
+        .filter(sqla.not_(offers_models.Offer.isEvent))
         .one_or_none()
     )
 
