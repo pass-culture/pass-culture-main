@@ -201,7 +201,7 @@ class ListOffersTest(GetEndpointHelper):
 
         # then
         assert response.status_code == 400
-        assert "La recherche ne correspond pas au format d'un EAN" in html_parser.extract_warnings(response.data)
+        assert "La recherche ne correspond pas au format d'un EAN-13" in html_parser.extract_warnings(response.data)
 
     @pytest.mark.parametrize(
         "visa, where",
