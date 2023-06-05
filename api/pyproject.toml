@@ -90,8 +90,7 @@ enable = [
 # less than 120 characters long.
 #
 # FIXME (dbaty, 2020-11-03): we probably could enable back
-# "singleton-comparison". Most cases seem to be variations of:
-#     Model.query.filter_by(Model.boolean_attr == None)
+# "singleton-comparison".
 disable = [
     "arguments-differ",
     "arguments-renamed",

@@ -8,7 +8,7 @@ from pcapi.models import db
 def deactivate_300e_thing_offers() -> None:
     stock_offer_ids = [
         stock[0]
-        for stock in Stock.query.filter(Stock.beginningDatetime == None, Stock.price > 300)
+        for stock in Stock.query.filter(Stock.beginningDatetime.is_(None), Stock.price > 300)
         .with_entities(Stock.offerId)
         .all()
     ]

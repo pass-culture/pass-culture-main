@@ -177,9 +177,7 @@ def find_educational_institution_by_uai_code(uai_code: str) -> educational_model
 
 
 def find_all_educational_institution() -> list[educational_models.EducationalInstitution]:
-    return educational_models.EducationalInstitution.query.filter(
-        educational_models.EducationalInstitution.isActive == True,
-    ).all()
+    return educational_models.EducationalInstitution.query.filter_by(isActive=True).all()
 
 
 def find_educational_deposit_by_institution_id_and_year(
@@ -888,11 +886,11 @@ def get_all_educational_domains_ordered_by_name() -> list[educational_models.Edu
 
 def get_all_educational_institutions(offset: int = 0, limit: int = 0) -> tuple[tuple, int]:
     query = db.session.query(sa.func.count(educational_models.EducationalInstitution.id))
-    query = query.filter(educational_models.EducationalInstitution.isActive == True)
+    query = query.filter(educational_models.EducationalInstitution.isActive)
     total = query.one()[0]
 
     query = educational_models.EducationalInstitution.query
-    query = query.filter(educational_models.EducationalInstitution.isActive == True)
+    query = query.filter(educational_models.EducationalInstitution.isActive)
     query = query.order_by(
         educational_models.EducationalInstitution.name,
         educational_models.EducationalInstitution.id,
@@ -964,7 +962,7 @@ def search_educational_institution(
     return (
         educational_models.EducationalInstitution.query.filter(
             *filters,
-            educational_models.EducationalInstitution.isActive == True,
+            educational_models.EducationalInstitution.isActive,
         )
         .order_by(educational_models.EducationalInstitution.id)
         .limit(limit)

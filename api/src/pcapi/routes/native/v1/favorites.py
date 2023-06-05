@@ -80,10 +80,7 @@ def get_favorites_count(user: User) -> serializers.FavoritesCountResponse:
 
 
 def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favorite]:
-    active_stock_filters = and_(
-        Offer.isActive == True,
-        Stock.isSoftDeleted == False,
-    )
+    active_stock_filters = and_(Offer.isActive.is_(True), Stock.isSoftDeleted.is_(False))
     stock_filters = and_(
         not_(Stock.isEventExpired),
         not_(Stock.hasBookingLimitDatetimePassed),

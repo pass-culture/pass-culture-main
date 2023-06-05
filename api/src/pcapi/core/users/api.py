@@ -409,7 +409,7 @@ def _cancel_bookings_of_user_on_requested_account_suspension(
         bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
         sa.or_(
             datetime.datetime.utcnow() < bookings_models.Booking.cancellationLimitDate,
-            bookings_models.Booking.cancellationLimitDate == None,
+            bookings_models.Booking.cancellationLimitDate.is_(None),
         ),
     ).all()
 

@@ -11,7 +11,7 @@ def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
     venue = (
         offerers_models.Venue.query.filter(
             offerers_models.Venue.siret == siret,
-            offerers_models.Venue.isVirtual == False,
+            sa.not_(offerers_models.Venue.isVirtual),
         )
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
@@ -28,15 +28,15 @@ def get_relative_venues_by_siret(siret: str, permanent_only: bool = False) -> li
     query = query.join(aliased_venue, offerers_models.Offerer.managedVenues)
     query = query.filter(
         # constraint on retrieved venues
-        offerers_models.Venue.isVirtual == False,
+        sa.not_(offerers_models.Venue.isVirtual),
         # constraint on searched venue
-        aliased_venue.isVirtual == False,
+        sa.not_(aliased_venue.isVirtual),
         aliased_venue.siret == siret,
     )
     if permanent_only:
         query = query.filter(
-            offerers_models.Venue.isPermanent == True,
-            aliased_venue.isPermanent == True,
+            offerers_models.Venue.isPermanent,
+            aliased_venue.isPermanent,
         )
     query = query.options(sa.orm.joinedload(offerers_models.Venue.contact))
     query = query.options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
@@ -53,7 +53,7 @@ def get_all_venues(page: int | None, per_page: int | None) -> list[offerers_mode
 
     return (
         offerers_models.Venue.query.filter(
-            offerers_models.Venue.isVirtual == False,
+            sa.not_(offerers_models.Venue.isVirtual),
         )
         .order_by(offerers_models.Venue.id)
         .offset((page - 1) * per_page)
@@ -75,7 +75,7 @@ def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
                 sa.func.unaccent(offerers_models.Venue.name).ilike(f"%{name}%"),
                 sa.func.unaccent(offerers_models.Venue.publicName).ilike(f"%{name}%"),
             ),
-            offerers_models.Venue.isVirtual == False,
+            sa.not_(offerers_models.Venue.isVirtual),
         )
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
@@ -96,9 +96,9 @@ def get_relative_venues_by_name(name: str) -> list[offerers_models.Venue]:
     query = query.join(aliased_venue, offerers_models.Offerer.managedVenues)
     query = query.filter(
         # constraint on retrieved venues
-        offerers_models.Venue.isVirtual == False,
+        sa.not_(offerers_models.Venue.isVirtual),
         # constraint on searched venue
-        aliased_venue.isVirtual == False,
+        sa.not_(aliased_venue.isVirtual),
         or_(
             sa.func.unaccent(aliased_venue.name).ilike(f"%{name}%"),
             sa.func.unaccent(aliased_venue.publicName).ilike(f"%{name}%"),

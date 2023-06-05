@@ -5,6 +5,7 @@ import typing
 
 from dateutil.relativedelta import relativedelta
 from flask_sqlalchemy import BaseQuery
+import sqlalchemy as sa
 from sqlalchemy.sql.functions import func
 
 import pcapi.core.offerers.models as offerers_models
@@ -79,7 +80,9 @@ def get_user_with_valid_token(
     token_value: str, token_types: list[models.TokenType], use_token: bool = True
 ) -> models.User:
     token = models.Token.query.filter(
-        models.Token.value == token_value, models.Token.type.in_(token_types), models.Token.isUsed == False
+        models.Token.value == token_value,
+        models.Token.type.in_(token_types),
+        sa.not_(models.Token.isUsed),
     ).one_or_none()
 
     if not token:
@@ -103,8 +106,8 @@ def get_newly_eligible_age_18_users(since: date) -> list[models.User]:
     eligible_users = (
         models.User.query.outerjoin(offerers_models.UserOfferer)
         .filter(
-            models.User.has_beneficiary_role == False,  # not already beneficiary
-            models.User.has_admin_role == False,  # not an admin
+            sa.not_(models.User.has_beneficiary_role),  # not already beneficiary
+            sa.not_(models.User.has_admin_role),  # not an admin
             offerers_models.UserOfferer.userId.is_(None),  # not a pro
             # less than 19yo
             models.User.birth_date > today - relativedelta(years=(constants.ELIGIBILITY_AGE_18 + 1)),  # type: ignore [operator]
@@ -133,7 +136,7 @@ def get_users_with_validated_attachment_by_offerer(offerer: offerers_models.Offe
 def get_users_with_validated_attachment(offerer: offerers_models.Offerer) -> list[models.User]:
     return (
         models.User.query.join(offerers_models.UserOfferer)
-        .filter(offerers_models.UserOfferer.offererId == offerer.id, offerers_models.UserOfferer.isValidated == True)
+        .filter_by(offererId=offerer.id, isValidated=True)
         .order_by(offerers_models.UserOfferer.id)
         .all()
     )
