@@ -214,4 +214,22 @@
     margin-left: rem.torem(7px);
     margin-top: rem.torem(3px);
   }
+
+  .container {
+    @include fonts.bold;
+    
+    display: flex;
+    position: absolute;
+    height: rem.torem(26px);
+    align-items: center;
+    background: colors.$white;
+    top: 0;
+    left: rem.torem(16px);
+    transform: translateY(-50%);
+    padding: 0 rem.torem(8px);
+  
+    &-title {
+      margin-left: rem.torem(8px);
+    }
+  }
 }
