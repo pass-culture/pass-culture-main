@@ -7,8 +7,7 @@ import { ReactComponent as BulbIcon } from 'icons/ico-bulb.svg'
 import { ReactComponent as IcoClearIcon } from 'icons/ico-clear.svg'
 import Icon from 'ui-kit/Icon/Icon'
 
-import oldStyles from './BannerLayout.module.scss'
-import newStyles from './NewBannerLayout.module.scss'
+import styles from './BannerLayout.module.scss'
 
 export interface IBannerLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
@@ -33,9 +32,6 @@ const BannerLayout = ({
   showTitle = true,
   isProvider = false,
 }: IBannerLayoutProps): JSX.Element => {
-  const isNewStyles = true
-  /* istanbul ignore next: graphic variation */
-  const styles = isNewStyles ? newStyles : oldStyles
   return (
     <div
       className={cn(
@@ -57,10 +53,7 @@ const BannerLayout = ({
           <button onClick={handleOnClick} type="button">
             {
               /* istanbul ignore next: graphic variation */
-              isNewStyles &&
-              type != 'new' &&
-              type != 'light' &&
-              type != 'image' ? (
+              type != 'new' && type != 'light' && type != 'image' ? (
                 <IcoClearIcon
                   title="Masquer le bandeau"
                   className={cn(styles['close-icon-banner'])}
