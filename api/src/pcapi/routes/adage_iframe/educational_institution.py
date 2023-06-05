@@ -3,6 +3,7 @@ from datetime import datetime
 import sqlalchemy as sa
 
 from pcapi.core.educational import models as educational_models
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import educational_institution
@@ -30,6 +31,12 @@ def get_educational_institution_with_budget(
     for deposit in institution.deposits:
         if datetime.utcnow().year == deposit.educationalYear.beginningDate.year:
             amount = deposit.get_amount()
+            break
+    else:
+        raise ApiErrors(
+            {"global": "L'établissement scolaire ne semble pas avoir de budget pour cette année."},
+            status_code=404,
+        )
 
     return educational_institution.EducationalInstitutionWithBudgetResponseModel(
         id=institution.id,
