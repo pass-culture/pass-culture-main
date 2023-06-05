@@ -27,6 +27,9 @@
 
     .icon {
       position: absolute;
+      color: colors.$primary;
+      width: rem.torem(24px);
+      height: rem.torem(24px);
       top: rem.torem(-15px);
       left: rem.torem(23px);
     }
@@ -44,7 +47,9 @@
       &.provider {
         display: flex;
         align-items: center;
-        height: calc(size.$provider-banner-height - rem.torem(1px) * 2);  // banner height minus border height * 2
+        height: calc(
+          size.$provider-banner-height - rem.torem(1px) * 2
+        ); // banner height minus border height * 2
       }
     }
 

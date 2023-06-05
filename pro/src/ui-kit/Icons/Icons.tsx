@@ -28,6 +28,7 @@ const iconList = [
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
+  { src: 'icons/stroke-error.svg' },
 
   // Stroke icons
 
@@ -39,7 +40,6 @@ const iconList = [
   { src: 'icons/ico-arrow-down-r.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-arrow-right.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-arrow-up-r.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-attention.svg', viewBox: '0 0 24 26' },
   { src: 'icons/audio-disability.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-back.svg', viewBox: '0 0 24 17' },
   { src: 'icons/ico-bookings-w.svg', viewBox: '0 0 24 24' },
