@@ -1,11 +1,12 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as AttentionIcon } from 'icons/ico-attention.svg'
 import { ReactComponent as BulbIcon } from 'icons/ico-bulb.svg'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
+import strokeErrorIcon from 'icons/stroke-error.svg'
 import { ButtonLink } from 'ui-kit/Button'
 import type { LinkProps } from 'ui-kit/Button/ButtonLink'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './InfoBox.module.scss'
 
@@ -32,7 +33,11 @@ const InfoBox = ({ type, text, link }: InfoBoxProps): JSX.Element => {
             </>
           ) : (
             <>
-              <AttentionIcon className={styles['info-box-title-icon']} />
+              <SvgIcon
+                src={strokeErrorIcon}
+                alt=""
+                className={styles['info-box-title-icon']}
+              />
               <span>IMPORTANT</span>
             </>
           )}

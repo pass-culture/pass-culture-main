@@ -2,10 +2,11 @@ import cn from 'classnames'
 import React from 'react'
 
 import { ReactComponent as CloseIcon } from 'icons/close-dialog.svg'
-import { ReactComponent as AttentionIcon } from 'icons/ico-attention.svg'
 import { ReactComponent as BulbIcon } from 'icons/ico-bulb.svg'
 import { ReactComponent as IcoClearIcon } from 'icons/ico-clear.svg'
+import strokeErrorIcon from 'icons/stroke-error.svg'
 import Icon from 'ui-kit/Icon/Icon'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BannerLayout.module.scss'
 
@@ -46,7 +47,7 @@ const BannerLayout = ({
         <BulbIcon className={styles['icon']} />
       )}
       {type === 'attention' && showTitle && (
-        <AttentionIcon className={styles['icon']} />
+        <SvgIcon src={strokeErrorIcon} alt="" className={styles['icon']} />
       )}
       <span className={styles['border-cut']}>
         {closable && (
