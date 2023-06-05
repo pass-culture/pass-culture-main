@@ -4,17 +4,6 @@ from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
 from pcapi.core.users.models import User
-from pcapi.utils.email import sanitize_email
-
-
-def _find_user_by_email_query(email: str):  # type: ignore [no-untyped-def]
-    # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
-    # all emails have been sanitized in the database.
-    return User.query.filter(func.lower(User.email) == sanitize_email(email))
-
-
-def count_users_by_email(email: str) -> int:
-    return _find_user_by_email_query(email).count()
 
 
 def find_beneficiary_users_by_email_provider(email_provider: str) -> list[User]:

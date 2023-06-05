@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from sqlalchemy.exc import IntegrityError
+import pytest
 
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
@@ -8,65 +8,32 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.validation.models.user import validate
 
 
+@pytest.mark.usefixtures("db_session")
 class UserAlreadyExistsTest:
-    @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
-    def test_should_return_error_when_email_already_exist_in_database_but_no_id_is_provided(
-        self, mocked_count_users_by_email, app
-    ):
-        # Given
-        user = users_factories.UserFactory.build(id=None)
-        mocked_count_users_by_email.return_value = 1
-        api_errors = ApiErrors()
+    def test_new_user_with_existing_email(self):
+        existing = users_factories.UserFactory()
+        user = users_factories.UserFactory.build(id=None, email=existing.email)
 
-        # When
+        api_errors = ApiErrors()
         api_error = validate(user, api_errors)
 
-        # Then
         assert api_error.errors["email"] == ["Un compte lié à cet e-mail existe déjà"]
 
-    @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
-    def test_should_not_return_error_when_email_already_exist_in_database_but_id_is_provided(
-        self, mocked_count_users_by_email, app
-    ):
-        # Given
-        user = users_factories.UserFactory.build(id=1)
-        mocked_count_users_by_email.return_value = 1
-        api_errors = ApiErrors()
+    def test_new_user_with_different_email(self):
+        users_factories.UserFactory(email="existing@example.com")
+        user = users_factories.UserFactory.build(id=None, email="new@example.com")
 
-        # When
+        api_errors = ApiErrors()
         api_error = validate(user, api_errors)
 
-        # Then
         assert not api_error.errors
 
-    @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
-    def test_should_return_error_when_user_count_raise_error_and_no_id_is_provided(
-        self, mocked_count_users_by_email, app
-    ):
-        # Given
-        user = users_factories.UserFactory.build(id=None)
-        mocked_count_users_by_email.side_effect = IntegrityError("Mock", "mock", "mock")
-        api_errors = ApiErrors()
+    def test_existing_user(self):
+        user = users_factories.UserFactory()
 
-        # When
+        api_errors = ApiErrors()
         api_error = validate(user, api_errors)
 
-        # Then
-        assert api_error.errors["email"] == ["Un compte lié à cet e-mail existe déjà"]
-
-    @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
-    def test_should_not_return_error_when_user_count_raise_error_and_id_is_provided(
-        self, mocked_count_users_by_email, app
-    ):
-        # Given
-        user = users_factories.UserFactory.build(id=1)
-        mocked_count_users_by_email.return_value = IntegrityError("mock", "mock", "mock")
-        api_errors = ApiErrors()
-
-        # When
-        api_error = validate(user, api_errors)
-
-        # Then
         assert not api_error.errors
 
 
@@ -82,11 +49,11 @@ class EmailTest:
         # Then
         assert api_error.errors["email"] == ["L’e-mail doit contenir un @."]
 
-    @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
-    def test_should_not_return_error_message_when_user_email_is_correct(self, mocked_count_users_by_email, app):
+    @patch("pcapi.core.users.repository.find_user_by_email")
+    def test_should_not_return_error_message_when_user_email_is_correct(self, mocked_find_user_by_email):
         # Given
         user = users_factories.UserFactory.build(email="joel@example.com")
-        mocked_count_users_by_email.return_value = 0
+        mocked_find_user_by_email.return_value = None
         api_errors = ApiErrors()
 
         # When
@@ -124,12 +91,12 @@ class PasswordTest:
         # Then
         assert api_error.errors["password"] == ["Tu dois saisir au moins 8 caractères."]
 
-    @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
-    def test_should_not_return_error_message_when_user_password_is_correct(self, mocked_count_users_by_email, app):
+    @patch("pcapi.core.users.repository.find_user_by_email")
+    def test_should_not_return_error_message_when_user_password_is_correct(self, mocked_find_user_by_email):
         # Given
         user = users_factories.UserFactory.build()
         user.setPassword("JoelDupont")
-        mocked_count_users_by_email.return_value = 0
+        mocked_find_user_by_email.return_value = None
         api_errors = ApiErrors()
 
         # When
