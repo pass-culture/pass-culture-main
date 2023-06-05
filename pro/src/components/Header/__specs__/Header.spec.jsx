@@ -61,8 +61,9 @@ describe('navigation menu', () => {
 
       // When
       await userEvent.click(
-        screen.getByAltText(
-          "Pass Culture pro, l'espace Pass Culture des acteurs culturels"
+        screen.toHaveAttribute(
+          'aria-label',
+          "Pass Culture pro, l'espace des acteurs culturels"
         )
       )
 
