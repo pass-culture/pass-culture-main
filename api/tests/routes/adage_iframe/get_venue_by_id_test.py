@@ -4,7 +4,7 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 
-from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
+from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_default_fake_valid_token
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -12,7 +12,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class Returns200Test:
     def _create_adage_valid_token(self) -> ByteString:
-        return create_adage_jwt_fake_valid_token(
+        return create_adage_jwt_default_fake_valid_token(
             civility="Mme.",
             lastname="GRIS",
             firstname="Laurence",
@@ -87,7 +87,7 @@ class Returns200Test:
 
 class ReturnsErrorTest:
     def _create_adage_valid_token(self) -> ByteString:
-        return create_adage_jwt_fake_valid_token(
+        return create_adage_jwt_default_fake_valid_token(
             civility="M.",
             lastname="POINTÉ",
             firstname="Vincent",
