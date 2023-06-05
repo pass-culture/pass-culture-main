@@ -44,10 +44,16 @@ const BannerLayout = ({
       )}
     >
       {type === 'notification-info' && showTitle && (
-        <BulbIcon className={styles['icon']} />
+        <div className={styles['container']}>
+          <BulbIcon className={styles['icon']} />
+          <span className={styles['container-title']}>À SAVOIR</span>
+        </div>
       )}
       {type === 'attention' && showTitle && (
-        <SvgIcon src={strokeErrorIcon} alt="" className={styles['icon']} />
+        <div className={styles['container']}>
+          <SvgIcon src={strokeErrorIcon} alt="" className={styles['icon']} />
+          <span className={styles['container-title']}>IMPORTANT</span>
+        </div>
       )}
       <span className={styles['border-cut']}>
         {closable && (
