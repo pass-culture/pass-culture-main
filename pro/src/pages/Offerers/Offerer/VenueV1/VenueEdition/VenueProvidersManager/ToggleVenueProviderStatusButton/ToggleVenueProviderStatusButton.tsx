@@ -4,9 +4,11 @@ import { api } from 'apiClient/api'
 import { VenueProviderResponse } from 'apiClient/v1'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
+import fullPauseIcon from 'icons/full-pause.svg'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Icon from 'ui-kit/Icon/Icon'
 import { Button } from 'ui-kit/index'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import ToggleVenueProviderStatusDialog from '../ToggleVenueProviderStatusDialog/ToggleVenueProviderStatusDialog'
 import style from '../VenueProviderItem/VenueProviderItem.module.scss'
@@ -55,10 +57,10 @@ const ToggleVenueProviderStatusButton = ({
           onClick={showModal}
           variant={ButtonVariant.TERNARY}
         >
-          <Icon
+          <SvgIcon
+            src={fullPauseIcon}
             alt="Mettre en pause la synchronisation"
             className={style['provider-action-icon']}
-            svg="ico-action-pause"
           />
           Mettre en pause
         </Button>
