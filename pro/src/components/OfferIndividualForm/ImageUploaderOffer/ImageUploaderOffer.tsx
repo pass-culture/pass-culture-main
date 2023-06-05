@@ -23,10 +23,10 @@ const ImageUploaderOffer = ({
   <FormLayout.Section title="Image de l’offre">
     <FormLayout.Row
       sideComponent={
-        <InfoBox
-          type="info"
-          text="Les offres avec une image ont 4 fois plus de chance d’être consultées que celles qui n’en ont pas."
-        />
+        <InfoBox>
+          Les offres avec une image ont 4 fois plus de chance d’être consultées
+          que celles qui n’en ont pas.
+        </InfoBox>
       }
     >
       <ImageUploader

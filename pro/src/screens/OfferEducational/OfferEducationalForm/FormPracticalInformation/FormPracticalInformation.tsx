@@ -180,10 +180,10 @@ const FormPracticalInformation = ({
       {values.eventAddress.addressType !== OfferAddressType.OFFERER_VENUE && (
         <FormLayout.Row
           sideComponent={
-            <InfoBox
-              type="info"
-              text="La zone de mobilité permet d’indiquer aux enseignants sur Adage où vous pouvez vous déplacer en France."
-            />
+            <InfoBox>
+              La zone de mobilité permet d’indiquer aux enseignants sur Adage où
+              vous pouvez vous déplacer en France.
+            </InfoBox>
           }
         >
           <MultiSelectAutocomplete

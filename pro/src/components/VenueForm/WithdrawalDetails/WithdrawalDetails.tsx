@@ -14,8 +14,6 @@ const WithdrawalDetails = ({ isCreatedEntity }: IWithdrawalDetails) => {
       <FormLayout.Row
         sideComponent={
           <InfoBox
-            type="info"
-            text="Indiquez ici tout ce qui peut être utile au jeune pour le retrait de l’offre. Ces indications s’appliqueront par défaut à toutes vos offres. Vous pourrez les modifier à l’échelle de chaque offre."
             link={{
               text: 'En savoir plus',
               to: 'https://aide.passculture.app/hc/fr/articles/4413389597329--Acteurs-Culturels-Quelles-modalit%C3%A9s-de-retrait-indiquer-pour-ma-structure-',
@@ -24,7 +22,11 @@ const WithdrawalDetails = ({ isCreatedEntity }: IWithdrawalDetails) => {
               rel: 'noopener noreferrer',
               'aria-label': 'en savoir plus sur les modalités de retrait',
             }}
-          />
+          >
+            Indiquez ici tout ce qui peut être utile au jeune pour le retrait de
+            l’offre. Ces indications s’appliqueront par défaut à toutes vos
+            offres. Vous pourrez les modifier à l’échelle de chaque offre.
+          </InfoBox>
         }
       >
         <TextArea
