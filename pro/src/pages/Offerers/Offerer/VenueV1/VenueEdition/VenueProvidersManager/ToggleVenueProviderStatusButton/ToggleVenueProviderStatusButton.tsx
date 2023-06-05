@@ -5,8 +5,8 @@ import { VenueProviderResponse } from 'apiClient/v1'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import fullPauseIcon from 'icons/full-pause.svg'
+import fullPlayIcon from 'icons/full-play.svg'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Icon from 'ui-kit/Icon/Icon'
 import { Button } from 'ui-kit/index'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -70,10 +70,10 @@ const ToggleVenueProviderStatusButton = ({
           onClick={showModal}
           variant={ButtonVariant.TERNARY}
         >
-          <Icon
+          <SvgIcon
+            src={fullPlayIcon}
             alt="Réactiver la synchronisation"
             className={style['provider-action-icon']}
-            svg="ico-action-play"
           />
           Réactiver
         </Button>
