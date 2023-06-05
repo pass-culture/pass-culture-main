@@ -15,8 +15,10 @@ export type LinkProps = {
   target?: string
   'aria-label'?: string
   type?: string
+  download?: boolean
 }
-interface IButtonProps extends SharedButtonProps {
+
+interface ButtonLinkProps extends SharedButtonProps {
   link: LinkProps
   children?: React.ReactNode | React.ReactNode[]
   className?: string
@@ -35,7 +37,7 @@ const ButtonLink = ({
   link,
   iconPosition = IconPositionEnum.LEFT,
   hasTooltip = false,
-}: IButtonProps): JSX.Element => {
+}: ButtonLinkProps): JSX.Element => {
   const classNames = cn(
     styles['button'],
     styles[`button-${variant}`],
