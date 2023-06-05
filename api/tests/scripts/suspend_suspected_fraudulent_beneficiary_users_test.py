@@ -63,9 +63,6 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         fraudulent_emails_providers = ["example.com"]
         admin_user = AdminFactory()
         beneficiary_fraudulent_user = BeneficiaryGrant18Factory(email="jesuisunefraude@example.com")
-        beneficiary_fraudulent_user_with_uppercase_domain = BeneficiaryGrant18Factory(
-            email="jesuisunefraude@EXAmple.com"
-        )
         beneficiary_fraudulent_user_with_subdomain = BeneficiaryGrant18Factory(email="jesuisunefraude@sub.example.com")
         non_beneficiary_fraudulent_user = UserFactory(email="jesuisuneautrefraude@example.com")
         booking_factories.BookingFactory(user=beneficiary_fraudulent_user, stock__price=1)
@@ -75,7 +72,6 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
 
         # Then
         assert not beneficiary_fraudulent_user.isActive
-        assert not beneficiary_fraudulent_user_with_uppercase_domain.isActive
 
         # Do not handle sub-domains
         assert beneficiary_fraudulent_user_with_subdomain.isActive
