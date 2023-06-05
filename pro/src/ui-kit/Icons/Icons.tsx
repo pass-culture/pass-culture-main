@@ -25,13 +25,13 @@ const iconList = [
   // Cleaned !
 
   // Full icons
+  { src: 'icons/full-pause.svg' },
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
 
   // Stroke icons
 
   // Not cleaned
   { src: 'icons/user.svg', viewBox: '0 0 49 48' },
-  { src: 'icons/ico-action-pause.svg' },
   { src: 'icons/ico-action-play.svg', viewBox: '0 0 20 20' },
   { src: 'icons/add-activation-code-error.svg', viewBox: '0 0 197 124' },
   { src: 'icons/add-activation-code-light.svg', viewBox: '0 0 32 32' },
