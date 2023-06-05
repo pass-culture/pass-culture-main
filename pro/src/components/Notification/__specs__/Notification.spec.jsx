@@ -17,14 +17,20 @@ describe('src | components | layout | Notification', () => {
       },
     })
 
-  const notificationTypes = ['', 'success', 'error', 'information', 'pending']
+  const notificationTypes = [
+    { type: '', role: 'status' },
+    { type: 'success', role: 'status' },
+    { type: 'error', role: 'alert' },
+    { type: 'information', role: 'status' },
+    { type: 'pending', role: 'progressbar' },
+  ]
   it.each(notificationTypes)(
     'should display given %s text with icon',
-    async type => {
+    async notificationType => {
       // given
       const sentNotification = {
         text: 'Mon petit succès',
-        type,
+        type: notificationType.type,
         version: 2,
       }
 
@@ -35,7 +41,10 @@ describe('src | components | layout | Notification', () => {
       const notification = screen.getByText(sentNotification.text)
       expect(notification).toBeInTheDocument()
       expect(notification).toHaveClass('show')
-      expect(notification).toHaveClass(`is-${type || 'success'}`)
+      expect(notification).toHaveClass(
+        `is-${notificationType.type || 'success'}`
+      )
+      expect(notification).toHaveAttribute('role', notificationType.role)
     }
   )
 
