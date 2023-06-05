@@ -31,7 +31,7 @@ const SignupJourneyRoutes = () => {
       <header className={styles['header']}>
         <div className={styles['header-content']}>
           <img
-            alt="Pass Culture pro, l'espace Pass Culture des acteurs culturels"
+            alt="Pass Culture pro, l'espace des acteurs culturels"
             src={`${ROOT_PATH}/icons/brand-logo-pc-purple.png`}
           />
           <Button

@@ -23,7 +23,7 @@ const Logo = ({ className, noLink, onClick, signPage }) => {
       <SvgIcon
         className={classnames({ 'sign-height': signPage })}
         viewBox={classnames({ '0 0 282 120': signPage })}
-        alt="Pass Culture pro, l'espace Pass Culture des acteurs culturels"
+        alt="Pass Culture pro, l'espace des acteurs culturels"
         src={src}
       />
     </NavLink>
