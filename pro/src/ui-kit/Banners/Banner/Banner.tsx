@@ -1,8 +1,7 @@
 import React, { FunctionComponent, SVGProps } from 'react'
 
 import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
-import oldStyles from 'ui-kit/Banners/BannerLayout/BannerLayout.module.scss'
-import newStyles from 'ui-kit/Banners/BannerLayout/NewBannerLayout.module.scss'
+import styles from 'ui-kit/Banners/BannerLayout/BannerLayout.module.scss'
 import { ButtonLink } from 'ui-kit/Button'
 
 import BannerLayout from '../BannerLayout'
@@ -30,9 +29,7 @@ const Banner = ({
   links = [],
   ...bannerLayoutProps
 }: IBannerProps): JSX.Element => {
-  const isNewStyles = true
   /* istanbul ignore next: DEBT to fix */
-  const styles = isNewStyles ? newStyles : oldStyles
   const getLinkNode = (link: Link) => (
     /* istanbul ignore next: DEBT to fix */
     <ButtonLink
