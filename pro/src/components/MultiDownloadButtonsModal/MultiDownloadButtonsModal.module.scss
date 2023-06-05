@@ -26,7 +26,8 @@
     background: white;
     border-radius: rem.torem(6px);
     border: rem.torem(1px) solid #f1f1f4;
-    box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px) rgb(103 104 107 / 10%);
+    box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
+      rgb(103 104 107 / 10%);
     display: inline-block;
     overflow: hidden;
     padding: rem.torem(12px) 0;
@@ -39,7 +40,7 @@
       background: white;
       border: none;
       display: flex;
-      text-align: left;
+      justify-content: start;
       font-style: normal;
       font-weight: 600;
       font-size: rem.torem(16px);

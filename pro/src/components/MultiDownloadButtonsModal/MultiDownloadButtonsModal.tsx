@@ -4,7 +4,9 @@ import { TPreFilters } from 'core/Bookings'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
-import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
+import { ReactComponent as DownloadSvg } from 'icons/full-download.svg'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { ReactComponent as DropDownIcon } from './assets/dropdown-disclosure-down-w.svg'
 import { ReactComponent as DropUpIcon } from './assets/dropdown-disclosure-up-w.svg'
@@ -60,7 +62,9 @@ const MultiDownloadButtonsModal = ({
       </div>
       {isDownloadModalOptionOpen && (
         <div className={style['download-modal-option']}>
-          <button
+          <Button
+            variant={ButtonVariant.TERNARY}
+            Icon={DownloadSvg}
             className={style['inside-modal-button']}
             onClick={() => {
               logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_XLS, {
@@ -69,12 +73,12 @@ const MultiDownloadButtonsModal = ({
               downloadFunction(filters, 'XLS')
               setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
             }}
-            type="button"
           >
-            <DownloadSvg />
             Microsoft Excel (.xls)
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={ButtonVariant.TERNARY}
+            Icon={DownloadSvg}
             className={style['inside-modal-button']}
             onClick={() => {
               logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_CSV, {
@@ -83,11 +87,9 @@ const MultiDownloadButtonsModal = ({
               downloadFunction(filters, 'CSV')
               setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
             }}
-            type="button"
           >
-            <DownloadSvg />
             Fichier CSV (.csv)
-          </button>
+          </Button>
         </div>
       )}
     </div>

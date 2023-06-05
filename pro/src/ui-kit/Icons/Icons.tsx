@@ -22,6 +22,14 @@ interface IconListItem {
 }
 
 const iconList = [
+  // Cleaned !
+
+  // Full icons
+  { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
+
+  // Stroke icons
+
+  // Not cleaned
   { src: 'icons/user.svg', viewBox: '0 0 49 48' },
   { src: 'icons/ico-action-pause.svg' },
   { src: 'icons/ico-action-play.svg', viewBox: '0 0 20 20' },
@@ -58,8 +66,6 @@ const iconList = [
   { src: 'icons/ico-desk.svg', viewBox: '0 0 49 48' },
   { src: 'icons/ico-deconnect.svg', viewBox: '0 0 25 24' },
   { src: 'icons/ico-double-check.svg' },
-  { src: 'icons/ico-download-filled.svg' },
-  { src: 'icons/ico-download.svg', viewBox: '0 0 20 20' },
   {
     src: 'icons/dropdown-disclosure-down-b-disabled.svg',
     viewBox: '0 0 14 7',

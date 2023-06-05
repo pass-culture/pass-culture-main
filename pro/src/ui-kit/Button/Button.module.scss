@@ -112,6 +112,7 @@
     border-color: transparent;
     padding: 0;
     border: none;
+    border-radius: initial;
     height: auto;
 
     &:hover,
@@ -131,6 +132,8 @@
     }
 
     .button-icon:not(.has-tooltip) {
+      height: rem.torem(20px);
+      width: rem.torem(20px);
       margin-right: rem.torem(8px);
     }
 
@@ -147,7 +150,7 @@
 
   &-quaternary {
     @include fonts.caption;
-    
+
     padding: 0 rem.torem(4px);
     border-radius: rem.torem(4px);
     margin-top: rem.torem(6px);
@@ -165,7 +168,7 @@
         margin-right: rem.torem(4px);
       }
     }
-  
+
     &.button-right {
       .button-icon:not(.button-icon-arrow, .has-tooltip) {
         margin-left: rem.torem(4px);

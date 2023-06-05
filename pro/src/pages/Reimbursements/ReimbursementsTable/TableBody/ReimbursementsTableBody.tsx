@@ -1,7 +1,9 @@
 import React from 'react'
 
 import { InvoiceResponseModel } from 'apiClient/v1'
-import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
+import { ReactComponent as DownloadSvg } from 'icons/full-download.svg'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './ReimbursementsTableBody.module.scss'
 
@@ -24,17 +26,20 @@ const ReimbursementsTableBody = ({ invoices }: ITableBody): JSX.Element => {
             <td className={styles['label']}>{invoice.cashflowLabels[0]}</td>
             <td className={styles['amount']}>{invoice.amount}&nbsp;€</td>
             <td className={styles['invoice']}>
-              <a
-                className="bi-link tertiary-link"
-                download
-                href={invoice.url}
-                rel="noopener noreferrer"
-                target="_blank"
-                aria-label="Télécharger le PDF"
+              <ButtonLink
+                link={{
+                  isExternal: true,
+                  to: invoice.url,
+                  rel: 'noopener noreferrer',
+                  target: '_blank',
+                  'aria-label': 'Télécharger le PDF',
+                  download: true,
+                }}
+                Icon={DownloadSvg}
+                variant={ButtonVariant.TERNARY}
               >
-                <DownloadSvg />
                 PDF
-              </a>
+              </ButtonLink>
             </td>
           </tr>
         )
