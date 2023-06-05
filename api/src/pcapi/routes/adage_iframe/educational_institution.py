@@ -28,6 +28,12 @@ def get_educational_institution_with_budget(
     )
     institution = institution.one_or_none()
 
+    if not institution:
+        raise ApiErrors(
+            {"global": "L'établissement scolaire ne semble pas avoir de budget pour cette année."},
+            status_code=404,
+        )
+
     for deposit in institution.deposits:
         if datetime.utcnow().year == deposit.educationalYear.beginningDate.year:
             amount = deposit.get_amount()

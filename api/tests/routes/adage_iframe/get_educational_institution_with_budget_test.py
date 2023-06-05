@@ -59,3 +59,17 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
         assert response.json == {"global": "L'établissement scolaire ne semble pas avoir de budget pour cette année."}
+
+    def test_get_institution_budget_no_deposit(self, client: Any):
+        # Given
+        institution = educational_factories.EducationalInstitutionFactory(deposits=[])
+
+        educational_redactor = educational_factories.EducationalRedactorFactory()
+
+        # When
+        test_client = client.with_adage_token(email=educational_redactor.email, uai=institution.institutionId)
+        response = test_client.get("/adage-iframe/collective/institution")
+
+        # Then
+        assert response.status_code == 404
+        assert response.json == {"global": "L'établissement scolaire ne semble pas avoir de budget pour cette année."}
