@@ -1,4 +1,5 @@
 from datetime import datetime
+from functools import partial
 from functools import reduce
 
 from flask import flash
@@ -88,6 +89,8 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
             criteria_models.Criterion.id.in_(form.criteria.data)
         )
 
+    if form.order.data:
+        base_query = base_query.order_by(getattr(getattr(offerers_models.Venue, "id"), form.order.data)())
     # +1 to check if there are more results than requested
     return base_query.limit(form.limit.data + 1).all()
 
@@ -224,11 +227,10 @@ def list_venues() -> utils.BackofficeResponse:
 
     autocomplete.prefill_criteria_choices(form.criteria)
 
-    return render_template(
-        "venue/list.html",
-        rows=venues,
-        form=form,
-    )
+    form_url = partial(url_for, ".list_venues", **form.raw_data)
+    date_created_sort_url = form_url(order="desc" if form.order.data == "asc" else "asc")
+
+    return render_template("venue/list.html", rows=venues, form=form, date_created_sort_url=date_created_sort_url)
 
 
 @venue_blueprint.route("/<int:venue_id>", methods=["GET"])
