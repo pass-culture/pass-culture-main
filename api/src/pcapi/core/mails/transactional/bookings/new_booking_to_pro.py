@@ -21,10 +21,7 @@ def get_new_booking_to_pro_email_data(
         event_date = ""
         event_hour = ""
 
-    if (
-        subcategories.ExtraDataFieldEnum.EAN.value in offer.subcategory.conditional_fields
-        and offer.subcategoryId in subcategories.BOOK_WITH_EAN
-    ):
+    if offer.subcategoryId in subcategories.BOOK_WITH_EAN:
         ean = offer.extraData.get("ean", "") if offer.extraData is not None else ""
         offer_subcategory = "book"
     else:

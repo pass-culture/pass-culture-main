@@ -23,15 +23,15 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class ManyOffersOperationsViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_search_product_from_isbn(self, mocked_validate_csrf_token, app):
+    def test_search_product_from_ean(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
         product = offers_factories.ProductFactory(
-            extraData={"isbn": "9783161484100"}, subcategoryId=subcategories.LIVRE_PAPIER.id
+            extraData={"ean": "9783161484100"}, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
-        offers_factories.OfferFactory(product=product, extraData={"isbn": "9783161484100"})
+        offers_factories.OfferFactory(product=product, extraData={"ean": "9783161484100"})
 
-        data = dict(isbn="978-3-16-148410-0")
+        data = dict(ean="978-3-16-148410-0")
 
         # When
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
@@ -41,7 +41,7 @@ class ManyOffersOperationsViewTest:
         assert response.status_code == 302
         assert (
             response.headers["location"]
-            == "http://localhost/pc/back-office/many_offers_operations/edit?isbn=9783161484100"
+            == "http://localhost/pc/back-office/many_offers_operations/edit?ean=9783161484100"
         )
 
         # Check that redirected page is rendered without error
@@ -64,12 +64,12 @@ class ManyOffersOperationsViewTest:
         assert response.headers["location"] == "http://localhost/pc/back-office/many_offers_operations/edit?visa=978148"
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_search_product_from_isbn_with_invalid_isbn(self, mocked_validate_csrf_token, app):
+    def test_search_product_from_ean_with_invalid_ean(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
 
         data = dict(
-            isbn="978-3-16-14840-0",
+            ean="978-3-16-14840-0",
         )
 
         # When
@@ -80,7 +80,7 @@ class ManyOffersOperationsViewTest:
         assert response.status_code == 200
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_search_product_with_no_isbn_nor_visa(self, mocked_validate_csrf_token, app):
+    def test_search_product_with_no_ean_nor_visa(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
 
@@ -96,15 +96,11 @@ class ManyOffersOperationsViewTest:
     def test_edit_product_offers_criteria_from_ean(self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
-        product = offers_factories.ProductFactory(extraData={"isbn": "9783161484100", "ean": "9783161484100"})
-        offer1 = offers_factories.OfferFactory(
-            product=product, extraData={"isbn": "9783161484100", "ean": "9783161484100"}
-        )
-        offer2 = offers_factories.OfferFactory(
-            product=product, extraData={"isbn": "9783161484100", "ean": "9783161484100"}
-        )
+        product = offers_factories.ProductFactory(extraData={"ean": "9783161484100"})
+        offer1 = offers_factories.OfferFactory(product=product, extraData={"ean": "9783161484100"})
+        offer2 = offers_factories.OfferFactory(product=product, extraData={"ean": "9783161484100"})
         inactive_offer = offers_factories.OfferFactory(
-            product=product, extraData={"isbn": "9783161484100", "ean": "9783161484100"}, isActive=False
+            product=product, extraData={"ean": "9783161484100"}, isActive=False
         )
         unmatched_offer = offers_factories.OfferFactory()
         criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
@@ -117,7 +113,7 @@ class ManyOffersOperationsViewTest:
         # When
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post(
-            "/pc/back-office/many_offers_operations/add_criteria_to_offers?isbn=9783161484100", form=data
+            "/pc/back-office/many_offers_operations/add_criteria_to_offers?ean=9783161484100", form=data
         )
 
         # Then
@@ -166,13 +162,13 @@ class ManyOffersOperationsViewTest:
         mocked_async_index_offer_ids.called_once_with([offer1.id, offer2.id])
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_edit_product_offers_criteria_from_isbn_without_offers(self, mocked_validate_csrf_token, app):
+    def test_edit_product_offers_criteria_from_ean_without_offers(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
 
         # When
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-        response = client.get("/pc/back-office/many_offers_operations/edit?isbn=9783161484100")
+        response = client.get("/pc/back-office/many_offers_operations/edit?ean=9783161484100")
 
         # Then
         assert response.status_code == 302
@@ -229,7 +225,7 @@ class ManyOffersOperationsViewTest:
         offerer = offerers_factories.OffererFactory()
         product_1 = offers_factories.ThingProductFactory(
             description="premier produit inapproprié",
-            extraData={"isbn": "ean-de-test", "ean": "ean-de-test"},
+            extraData={"ean": "ean-de-test"},
             isGcuCompatible=not validation_status == OfferValidationStatus.REJECTED,
         )
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -243,7 +239,7 @@ class ManyOffersOperationsViewTest:
 
         # When
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-        response = client.post("/pc/back-office/many_offers_operations/product_gcu_compatibility?isbn=ean-de-test")
+        response = client.post("/pc/back-office/many_offers_operations/product_gcu_compatibility?ean=ean-de-test")
 
         # Then
         assert response.status_code == 302

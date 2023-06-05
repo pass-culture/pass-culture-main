@@ -77,7 +77,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         dateOfBirth=birth_date,
         datetime=(format_into_utc_date(booking.stock.beginningDatetime) if booking.stock.beginningDatetime else ""),
         ean13=(
-            extra_data.get("isbn", "") if booking.stock.offer.subcategoryId in subcategories_v2.BOOK_WITH_EAN else None
+            extra_data.get("ean", "") if booking.stock.offer.subcategoryId in subcategories_v2.BOOK_WITH_EAN else None
         ),
         email=booking.email,
         formula=formula,
