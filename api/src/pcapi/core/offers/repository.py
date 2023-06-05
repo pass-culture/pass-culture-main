@@ -755,10 +755,9 @@ def get_next_product_id_from_database() -> int:
 def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue) -> bool:
     if not ean:
         # We should never be there (an ean or an isbn must be given), in case we are alert sentry.
-        logger.exception("Could not search for an offer without ean")
-    extra_data_filter = models.Offer.extraData["ean"].astext == ean
+        logger.error("Could not search for an offer without ean")
     return db.session.query(
         models.Offer.query.filter(
-            models.Offer.venue == venue, models.Offer.isActive.is_(True), extra_data_filter
+            models.Offer.venue == venue, models.Offer.isActive.is_(True), models.Offer.extraData["ean"].astext == ean
         ).exists()
     ).scalar()

@@ -1209,9 +1209,9 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         search.async_index_offer_ids([offer.id])
 
 
-def delete_unwanted_existing_product(ean: str) -> None:
+def delete_unwanted_existing_product(idAtProviders: str) -> None:
     product_has_at_least_one_booking = (
-        models.Product.query.filter_by(idAtProviders=ean)
+        models.Product.query.filter_by(idAtProviders=idAtProviders)
         .join(models.Offer)
         .join(models.Stock)
         .join(bookings_models.Booking)
@@ -1221,7 +1221,7 @@ def delete_unwanted_existing_product(ean: str) -> None:
     product = (
         models.Product.query.filter(models.Product.can_be_synchronized)
         .filter_by(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        .filter_by(idAtProviders=ean)
+        .filter_by(idAtProviders=idAtProviders)
         .one_or_none()
     )
 

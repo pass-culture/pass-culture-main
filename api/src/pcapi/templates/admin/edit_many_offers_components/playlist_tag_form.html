@@ -1,5 +1,5 @@
 {% if type == 'book' %}
-    {% set form_action = url_for('many_offers_operations.add_criteria_to_offers')+ "?isbn=" + isbn %}
+    {% set form_action = url_for('many_offers_operations.add_criteria_to_offers')+ "?ean=" + ean %}
 {% else %}
     {% set form_action = url_for('many_offers_operations.add_criteria_to_offers')+ "?visa=" + visa %}
 {% endif %}
@@ -36,7 +36,7 @@
                 {% endif %}
             {% endfor %}
             <div>
-                <p>⚠️ {{ active_offers_number }} offres actives associées à {{ "cet ISBN" if type == 'book' else "ce visa d'exploitation" }} seront affectées</p>
+                <p>⚠️ {{ active_offers_number }} offres actives associées à {{ "cet EAN" if type == 'book' else "ce visa d'exploitation" }} seront affectées</p>
                 <input class="btn btn-success" type="submit" value="Tagguer les offres associées au produit">
             </div>
             </form>
