@@ -3,19 +3,23 @@ import enum
 from pcapi.routes.serialization import BaseModel
 
 
-class CatalogViewBody(BaseModel):
+class AdageBaseModel(BaseModel):
+    AdageHeaderFrom: str
+
+
+class CatalogViewBody(AdageBaseModel):
     source: str
 
 
-class StockIdBody(BaseModel):
+class StockIdBody(AdageBaseModel):
     stockId: int
 
 
-class OfferIdBody(BaseModel):
+class OfferIdBody(AdageBaseModel):
     offerId: int
 
 
-class SearchBody(BaseModel):
+class SearchBody(AdageBaseModel):
     filters: list[str]
     resultsCount: int
 
@@ -26,11 +30,11 @@ class AdageHeaderLink(enum.Enum):
     ADAGE_LINK = "adage_link"
 
 
-class AdageHeaderLogBody(BaseModel):
+class AdageHeaderLogBody(AdageBaseModel):
     header_link_name: AdageHeaderLink
 
 
-class CollectiveRequestBody(BaseModel):
+class CollectiveRequestBody(AdageBaseModel):
     collectiveOfferTemplateId: int
     phoneNumber: str | None
     requestedDate: str | None

@@ -11,15 +11,19 @@ class PostLogsTest:
 
         # when
         with caplog.at_level(logging.INFO):
-            response = client.post("/adage-iframe/logs/catalog-view", json={"source": "partnersMap"})
+            response = client.post(
+                "/adage-iframe/logs/catalog-view",
+                json={"source": "partnersMap", "AdageHeaderFrom": "for_my_institution"},
+            )
 
         # then
         assert response.status_code == 204
         assert caplog.records[0].message == "CatalogView"
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
             "source": "partnersMap",
+            "AdageHeaderFrom": "for_my_institution",
+            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
         }
 
     def test_log_search_button(self, client, caplog):
@@ -36,6 +40,7 @@ class PostLogsTest:
                         "departments",
                         "institutionId",
                     ],
+                    "AdageHeaderFrom": "for_my_institution",
                     "resultsCount": 0,
                 },
             )
@@ -50,6 +55,7 @@ class PostLogsTest:
                 "departments",
                 "institutionId",
             ],
+            "AdageHeaderFrom": "for_my_institution",
             "resultsCount": 0,
         }
 
@@ -60,7 +66,10 @@ class PostLogsTest:
 
         # when
         with caplog.at_level(logging.INFO):
-            response = client.post("/adage-iframe/logs/offer-detail", json={"stockId": 1})
+            response = client.post(
+                "/adage-iframe/logs/offer-detail",
+                json={"stockId": 1, "AdageHeaderFrom": "for_my_institution"},
+            )
 
         # then
         assert response.status_code == 204
@@ -68,6 +77,7 @@ class PostLogsTest:
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "stockId": 1,
+            "AdageHeaderFrom": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
         }
 
@@ -78,7 +88,10 @@ class PostLogsTest:
 
         # when
         with caplog.at_level(logging.INFO):
-            response = client.post("/adage-iframe/logs/offer-template-detail", json={"offerId": 1})
+            response = client.post(
+                "/adage-iframe/logs/offer-template-detail",
+                json={"offerId": 1, "AdageHeaderFrom": "for_my_institution"},
+            )
 
         # then
         assert response.status_code == 204
@@ -86,6 +99,7 @@ class PostLogsTest:
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "offerId": 1,
+            "AdageHeaderFrom": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
         }
 
@@ -96,7 +110,10 @@ class PostLogsTest:
 
         # when
         with caplog.at_level(logging.INFO):
-            response = client.post("/adage-iframe/logs/booking-modal-button", json={"stockId": 1})
+            response = client.post(
+                "/adage-iframe/logs/booking-modal-button",
+                json={"stockId": 1, "AdageHeaderFrom": "for_my_institution"},
+            )
 
         # then
         assert response.status_code == 204
@@ -104,6 +121,7 @@ class PostLogsTest:
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "stockId": 1,
+            "AdageHeaderFrom": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
         }
 
@@ -114,7 +132,10 @@ class PostLogsTest:
 
         # when
         with caplog.at_level(logging.INFO):
-            response = client.post("/adage-iframe/logs/offer-template-detail", json={"offerId": 1})
+            response = client.post(
+                "/adage-iframe/logs/offer-template-detail",
+                json={"offerId": 1, "AdageHeaderFrom": "for_my_institution"},
+            )
 
         # then
         assert response.status_code == 204
@@ -122,6 +143,7 @@ class PostLogsTest:
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "offerId": 1,
+            "AdageHeaderFrom": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
         }
 
@@ -132,7 +154,10 @@ class PostLogsTest:
 
         # when
         with caplog.at_level(logging.INFO):
-            response = client.post("/adage-iframe/logs/fav-offer", json={"offerId": 1})
+            response = client.post(
+                "/adage-iframe/logs/fav-offer",
+                json={"offerId": 1, "AdageHeaderFrom": "for_my_institution"},
+            )
 
         # then
         assert response.status_code == 204
@@ -140,6 +165,7 @@ class PostLogsTest:
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "offerId": 1,
+            "AdageHeaderFrom": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
         }
 
@@ -151,7 +177,7 @@ class PostLogsTest:
         with caplog.at_level(logging.INFO):
             response = test_client.post(
                 "/adage-iframe/logs/header-link-click",
-                json={"header_link_name": "search"},
+                json={"header_link_name": "search", "AdageHeaderFrom": "for_my_institution"},
             )
 
         # then
@@ -162,6 +188,7 @@ class PostLogsTest:
         assert record.extra == {
             "analyticsSource": "adage",
             "header_link_name": "search",
+            "AdageHeaderFrom": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
         }
 
@@ -180,6 +207,7 @@ class PostLogsTest:
                     "totalStudents": 30,
                     "totalTeachers": 2,
                     "comment": "La première règle du Fight Club est: il est interdit de parler du Fight Club",
+                    "AdageHeaderFrom": "for_my_institution",
                 },
             )
 
@@ -194,5 +222,6 @@ class PostLogsTest:
             "totalStudents": 30,
             "totalTeachers": 2,
             "comment": "La première règle du Fight Club est: il est interdit de parler du Fight Club",
+            "AdageHeaderFrom": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
         }
