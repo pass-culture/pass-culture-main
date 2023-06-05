@@ -257,10 +257,11 @@ export const PriceCategoriesForm = ({
           >
             <FormLayout.Row
               sideComponent={
-                <InfoBox
-                  type="info"
-                  text="Cette option permet au bénéficiaire de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."
-                />
+                <InfoBox>
+                  Cette option permet au bénéficiaire de venir accompagné. La
+                  seconde place sera délivrée au même tarif que la première,
+                  quel que soit l'accompagnateur.
+                </InfoBox>
               }
             >
               <Checkbox

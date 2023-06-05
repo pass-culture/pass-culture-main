@@ -98,10 +98,11 @@ const SiretOrCommentFields = ({
   useEffect(() => {
     setSideComponent(
       isSiretSelected ? (
-        <InfoBox
-          type="info"
-          text="Le SIRET du lieu doit être lié au SIREN de votre structure. Attention, ce SIRET ne sera plus modifiable et ne pourra plus être utilisé pour un autre lieu."
-        />
+        <InfoBox>
+          Le SIRET du lieu doit être lié au SIREN de votre structure. Attention,
+          ce SIRET ne sera plus modifiable et ne pourra plus être utilisé pour
+          un autre lieu.
+        </InfoBox>
       ) : (
         <></>
       )

@@ -148,8 +148,6 @@ const Categories = ({
         })}
         sideComponent={
           <InfoBox
-            type="info"
-            text="Une sélection précise de vos catégories permettra au grand public de facilement trouver votre offre. Une fois validées, vous ne pourrez pas les modifier."
             link={{
               isExternal: true,
               to: 'https://aide.passculture.app/hc/fr/articles/4411999013265--Acteurs-Culturels-Quelle-cat%C3%A9gorie-et-sous-cat%C3%A9gorie-choisir-lors-de-la-cr%C3%A9ation-d-offres-',
@@ -157,7 +155,11 @@ const Categories = ({
               target: '_blank',
               rel: 'noopener noreferrer',
             }}
-          />
+          >
+            Une sélection précise de vos catégories permettra au grand public de
+            facilement trouver votre offre. Une fois validées, vous ne pourrez
+            pas les modifier.
+          </InfoBox>
         }
       >
         <Select
