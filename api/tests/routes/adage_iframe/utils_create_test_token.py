@@ -11,13 +11,26 @@ from tests.routes.adage_iframe import INVALID_RSA_PRIVATE_KEY_PATH
 from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
 
 
+def create_adage_jwt_default_fake_valid_token(
+    civility: str, lastname: str, firstname: str, email: str, uai: Optional[str]
+) -> ByteString:
+    return create_adage_jwt_fake_valid_token(
+        civility=civility,
+        lastname=lastname,
+        firstname=firstname,
+        email=email,
+        uai=uai,
+        expiration_date=datetime.utcnow() + timedelta(days=1),
+    )
+
+
 def create_adage_jwt_fake_valid_token(
     civility: str,
     lastname: str,
     firstname: str,
     email: str,
     uai: Optional[str],
-    expiration_date: datetime = datetime.utcnow() + timedelta(days=1),
+    expiration_date: datetime,
 ) -> ByteString:
     with open(VALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
         authenticated_informations = {
@@ -45,7 +58,12 @@ def create_adage_valid_token_with_email(
     uai: str = "EAU123",
 ) -> ByteString:
     return create_adage_jwt_fake_valid_token(
-        civility=civility, lastname=lastname, firstname=firstname, email=email, uai=uai
+        civility=civility,
+        lastname=lastname,
+        firstname=firstname,
+        email=email,
+        uai=uai,
+        expiration_date=datetime.utcnow() + timedelta(days=1),
     )
 
 
