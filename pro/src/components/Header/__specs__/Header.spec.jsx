@@ -61,10 +61,9 @@ describe('navigation menu', () => {
 
       // When
       await userEvent.click(
-        screen.toHaveAttribute(
-          'aria-label',
-          "Pass Culture pro, l'espace des acteurs culturels"
-        )
+        screen.getByRole('img', {
+          'aria-label': "Pass Culture pro, l'espace des acteurs culturels",
+        })
       )
 
       // Then
