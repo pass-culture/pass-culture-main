@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 import json
+from operator import attrgetter
 from unittest import mock
 from unittest.mock import patch
 
@@ -151,7 +152,7 @@ class ListVenuesTest(GetEndpointHelper):
         # when
         venue = offerers_factories.VenueFactory(postalCode="82000")
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, regions="Occitanie"))
+            response = authenticated_client.get(url_for(self.endpoint, regions="Occitanie", order="asc"))
 
         # then
         assert response.status_code == 200
@@ -170,6 +171,31 @@ class ListVenuesTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert int(rows[0]["ID"]) == venues[0].id
+
+    @pytest.mark.parametrize(
+        "row_key,order",
+        [
+            ("Date de création", None),
+            ("Date de création", ""),
+            ("Date de création", "asc"),
+            ("Date de création", "desc"),
+        ],
+    )
+    def test_list_venues_by_order(self, authenticated_client, row_key, order):
+        venues = [
+            offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.MOVIE),
+            offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.MOVIE),
+        ]
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, order=order, type=VenueTypeCode.MOVIE.name))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        # Without sort, table is ordered by dateCreated desc
+        venues.sort(key=attrgetter("id"), reverse=(order == "desc"))
+        assert [row[row_key] for row in rows] == [venue.dateCreated.strftime("%d/%m/%Y") for venue in venues]
 
 
 class GetVenueTest(GetEndpointHelper):

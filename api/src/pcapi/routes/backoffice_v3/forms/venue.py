@@ -101,7 +101,7 @@ def _get_all_venue_labels_query() -> sa.orm.Query:
     return offerers_models.VenueLabel.query.order_by(offerers_models.VenueLabel.label)
 
 
-class GetVenuesListForm(FlaskForm):
+class GetVenuesListForm(utils.PCForm):
     class Meta:
         csrf = False
 
@@ -123,6 +123,9 @@ class GetVenuesListForm(FlaskForm):
         default="100",
         coerce=int,
         validators=(wtforms.validators.Optional(),),
+    )
+    order = wtforms.HiddenField(
+        "order", default="desc", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("asc", "desc")))
     )
 
     def is_empty(self) -> bool:
