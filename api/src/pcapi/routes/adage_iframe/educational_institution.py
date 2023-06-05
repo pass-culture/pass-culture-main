@@ -30,7 +30,7 @@ def get_educational_institution_with_budget(
 
     if not institution:
         raise ApiErrors(
-            {"global": "L'établissement scolaire ne semble pas avoir de budget pour cette année."},
+            {"global": "L'établissement scolaire ne semble pas exister."},
             status_code=404,
         )
 

@@ -72,4 +72,4 @@ class Returns404Test:
 
         # Then
         assert response.status_code == 404
-        assert response.json == {"global": "L'établissement scolaire ne semble pas avoir de budget pour cette année."}
+        assert response.json == {"global": "L'établissement scolaire ne semble pas exister."}
