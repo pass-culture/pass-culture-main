@@ -59,7 +59,7 @@
                 {% endif %}
               </p>
               <p>
-                <b>EAN :</b> {{ ean }}
+                <b>EAN-13 :</b> {{ ean }}
               </p>
               {% if has_permission("FRAUD_ACTIONS") and (product_compatibility != 'incompatible_products' or approved_active_offers_count + approved_inactive_offers_count + pending_offers_count > 0) %}
                 <div>
@@ -90,7 +90,7 @@
               <div class="search-results-modal-container">
                 {{ build_modal_form("add-criteria", url_for('.add_criteria_to_offers'), offer_criteria_form,
                 "Tag des offres", "Enregistrer",
-                "⚠️ " + active_offers_count|string + " offres actives associées à cet ISBN seront affectées") }}
+                "⚠️ " + active_offers_count|string + " offres actives associées à cet EAN-13 seront affectées") }}
               </div>
             </div>
           </div>

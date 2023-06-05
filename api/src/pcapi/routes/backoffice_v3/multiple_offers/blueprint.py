@@ -83,7 +83,7 @@ def search_multiple_offers() -> utils.BackofficeResponse:
     )
 
     if not products:
-        flash("Aucun livre n'a été trouvé avec cet EAN", "error")
+        flash("Aucun livre n'a été trouvé avec cet EAN-13", "error")
         return _render_search(form)
 
     offers = list(itertools.chain.from_iterable(p.offers for p in products))
