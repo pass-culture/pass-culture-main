@@ -70,7 +70,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert "En attente : 0 " in left_card
         assert "Rejetées : 0 " in left_card
         assert "compatible avec les CGU : Oui" in left_card
-        assert "EAN : 9783161484100 " in left_card
+        assert "EAN-13 : 9783161484100 " in left_card
 
     def test_search_product_without_offer(self, authenticated_client):
         offers_factories.ThingProductFactory(
@@ -95,7 +95,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert "En attente : 0 " in left_card
         assert "Rejetées : 0 " in left_card
         assert "compatible avec les CGU : Oui" in left_card
-        assert "EAN : 9783161484100 " in left_card
+        assert "EAN-13 : 9783161484100 " in left_card
 
     @pytest.mark.parametrize(
         "first_compatibility,second_compatibility,expected_cgu_display",
@@ -144,7 +144,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
 
         assert "2/3 offres actives ont déjà le tag One criterion " in right_card
         assert "1/3 offre active a déjà le tag Another criterion " in right_card
-        assert "Tag des offres ⚠️ 3 offres actives associées à cet ISBN seront affectées" in right_card
+        assert "Tag des offres ⚠️ 3 offres actives associées à cet EAN-13 seront affectées" in right_card
 
     def test_search_product_from_ean_with_invalid_ean(self, authenticated_client):
         with assert_num_queries(2):

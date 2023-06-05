@@ -10,11 +10,11 @@ class SearchEanForm(FlaskForm):
     class Meta:
         csrf = False
 
-    ean = fields.PCSearchField("EAN")
+    ean = fields.PCSearchField("EAN-13")
 
     def validate_ean(self, ean: fields.PCSearchField) -> fields.PCSearchField:
         if ean.data and not bo_utils.is_ean_valid(ean.data):
-            raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un EAN")
+            raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un EAN-13")
         ean.data = bo_utils.format_ean_or_visa(ean.data)
         return ean
 

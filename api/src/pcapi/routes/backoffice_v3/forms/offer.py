@@ -22,7 +22,7 @@ class OfferSearchColumn(enum.Enum):
     ALL = "Tout"
     ID = "ID de l'offre"
     NAME = "Nom de l'offre"
-    EAN = "EAN"
+    EAN = "EAN-13"
     VISA = "Visa d'exploitation"
 
 
@@ -88,7 +88,7 @@ class GetOffersListForm(OfferMixinForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("ID de l'offre ou liste d'ID, nom, EAN, visa d'exploitation")
+    q = fields.PCOptSearchField("ID de l'offre ou liste d'ID, nom, EAN-13, visa d'exploitation")
     where = fields.PCSelectField(
         "Chercher dans",
         choices=utils.choices_from_enum(OfferSearchColumn),
@@ -116,7 +116,7 @@ class GetOffersListForm(OfferMixinForm):
             if self.where.data == OfferSearchColumn.ID.name and not re.match(r"^[\d\s,;]+$", q.data):
                 raise wtforms.validators.ValidationError("La recherche ne correspond pas à un ID ou une liste d'ID")
             if self.where.data == OfferSearchColumn.EAN.name and not bo_utils.is_ean_valid(q.data):
-                raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un EAN")
+                raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un EAN-13")
             if self.where.data == OfferSearchColumn.VISA.name and not bo_utils.is_visa_valid(q.data):
                 raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un visa")
         return q
