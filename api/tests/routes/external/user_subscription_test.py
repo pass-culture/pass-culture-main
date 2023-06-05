@@ -306,9 +306,9 @@ class DmsWebhookApplicationTest:
         assert content.address == "1 Promenade des Anglais 06000 Nice"
         assert content.application_number == 7654321
         assert content.birth_date == datetime.date(2003, 5, 5)
-        assert content.city == None
+        assert content.city is None
         assert content.civility == users_models.GenderEnum.F
-        assert content.department == None
+        assert content.department is None
         assert content.email == "young@example.com"
         assert content.first_name == "Young"
         assert content.id_piece_number == "9X8Y7654Z"
@@ -498,7 +498,7 @@ class DmsWebhookApplicationTest:
         )
 
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
-        assert message.pop_over_icon == None
+        assert message.pop_over_icon is None
         assert (
             message.user_message
             == "Il semblerait que tes numéro de pièce d'identité et code postal soient erronés. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier."
@@ -624,7 +624,7 @@ class DmsWebhookApplicationTest:
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
-        assert message.pop_over_icon == None
+        assert message.pop_over_icon is None
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
@@ -668,7 +668,7 @@ class DmsWebhookApplicationTest:
         )
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
-        assert message.pop_over_icon == None
+        assert message.pop_over_icon is None
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
@@ -725,7 +725,7 @@ class DmsWebhookApplicationTest:
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
-        assert message.pop_over_icon == None
+        assert message.pop_over_icon is None
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
@@ -771,7 +771,7 @@ class DmsWebhookApplicationTest:
         )
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
-        assert message.pop_over_icon == None
+        assert message.pop_over_icon is None
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message

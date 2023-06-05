@@ -94,8 +94,8 @@ class CollectiveOffersPublicPostOfferTest:
             "addressType": "offererVenue",
             "otherAddress": "",
         }
-        assert offer.isPublicApi == True
-        assert offer.hasImage == True
+        assert offer.isPublicApi is True
+        assert offer.hasImage is True
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
     @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
@@ -214,8 +214,8 @@ class CollectiveOffersPublicPostOfferTest:
             "addressType": "offererVenue",
             "otherAddress": "",
         }
-        assert offer.isPublicApi == True
-        assert offer.hasImage == True
+        assert offer.isPublicApi is True
+        assert offer.hasImage is True
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
     def test_post_offers_with_uai_and_institution_id(self, client):

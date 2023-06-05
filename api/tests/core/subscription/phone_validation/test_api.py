@@ -107,8 +107,8 @@ class SendSMSTest:
         assert send_sms_mock.call_args[0][0].sender == "PassCulture"
         assert send_sms_mock.call_args[0][0].tag == "phone-validation"
         assert send_sms_mock.call_args[0][0].type == "transactional"
-        assert send_sms_mock.call_args[0][0].unicode_enabled == False
-        assert send_sms_mock.call_args[0][0].web_url == None
+        assert send_sms_mock.call_args[0][0].unicode_enabled is False
+        assert send_sms_mock.call_args[0][0].web_url is None
 
         assert user.phoneNumber == "+33600000000"
 

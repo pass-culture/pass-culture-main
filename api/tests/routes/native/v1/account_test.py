@@ -1003,7 +1003,7 @@ class ShowEligibleCardTest:
         date_of_birth = datetime.utcnow() - relativedelta(years=18, days=5)
         date_of_creation = datetime.utcnow()
         user = users_factories.UserFactory(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
-        assert account_serializers.UserProfileResponse._show_eligible_card(user) == False
+        assert account_serializers.UserProfileResponse._show_eligible_card(user) is False
 
 
 class SendPhoneValidationCodeTest:
@@ -1341,7 +1341,7 @@ class ValidatePhoneNumberTest:
         client.with_token(email=user.email)
         response = client.get("/native/v1/phone_validation/remaining_attempts")
 
-        assert response.json["counterResetDatetime"] == None
+        assert response.json["counterResetDatetime"] is None
         assert response.json["remainingAttempts"] == 1
 
         client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33607080900"})

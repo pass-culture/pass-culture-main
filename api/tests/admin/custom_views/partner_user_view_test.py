@@ -74,7 +74,7 @@ class PartnerUserViewTest:
         view.on_model_change(Form(), model=user, is_created=True)
 
         # then
-        assert user.needsToFillCulturalSurvey == False
+        assert user.needsToFillCulturalSurvey is False
 
     @clean_database
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])

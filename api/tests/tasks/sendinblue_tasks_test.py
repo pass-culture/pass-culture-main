@@ -24,7 +24,7 @@ class SendinblueTasksTest:
         assert response.status_code == 204
         assert len(mock_send_transac_email.call_args_list) == 1
         assert mock_send_transac_email.call_args_list[0][0][0].params == {"IMPORTANT_DATA_FOR_TEMPLATE": "Hello there"}
-        assert mock_send_transac_email.call_args_list[0][0][0].tags == None
+        assert mock_send_transac_email.call_args_list[0][0][0].tags is None
         assert mock_send_transac_email.call_args_list[0][0][0].template_id == 1
         assert mock_send_transac_email.call_args_list[0][0][0].to == [{"email": "general-kenobi@coruscant.com"}]
         assert mock_send_transac_email.call_args_list[0][0][0].sender == {
@@ -54,7 +54,7 @@ class SendinblueTasksTest:
         assert response.status_code == 204
         assert len(mock_send_transac_email.call_args_list) == 1
         assert mock_send_transac_email.call_args_list[0][0][0].params == {"IMPORTANT_DATA_FOR_TEMPLATE": "Hello there"}
-        assert mock_send_transac_email.call_args_list[0][0][0].tags == None
+        assert mock_send_transac_email.call_args_list[0][0][0].tags is None
         assert mock_send_transac_email.call_args_list[0][0][0].template_id == 1
         assert mock_send_transac_email.call_args_list[0][0][0].to == [{"email": "general-kenobi@coruscant.com"}]
         assert mock_send_transac_email.call_args_list[0][0][0].sender == {

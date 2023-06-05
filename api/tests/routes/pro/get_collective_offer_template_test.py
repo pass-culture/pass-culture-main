@@ -29,8 +29,8 @@ class Returns200Test:
         assert "stock" not in response_json
         assert "dateCreated" in response_json
         assert "educationalPriceDetail" in response_json
-        assert response_json["imageCredit"] == None
-        assert response_json["imageUrl"] == None
+        assert response_json["imageCredit"] is None
+        assert response_json["imageUrl"] is None
         assert response_json["name"] == offer.name
         assert response_json["nonHumanizedId"] == offer.id
         assert response_json["venue"]["id"] == humanize(offer.venue.id)

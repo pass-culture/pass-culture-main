@@ -431,7 +431,7 @@ class PostProductTest:
 
         created_stock = offers_models.Stock.query.one()
         assert created_stock.price == decimal.Decimal("0.01")
-        assert created_stock.quantity == None
+        assert created_stock.quantity is None
         assert created_stock.offer == created_offer
 
     @pytest.mark.usefixtures("db_session")
@@ -2376,7 +2376,7 @@ class PatchProductTest:
         }
         assert len(product_offer.activeStocks) == 1
         assert product_offer.activeStocks[0] == stock
-        assert product_offer.activeStocks[0].quantity == None
+        assert product_offer.activeStocks[0].quantity is None
 
     def test_remove_stock_booking_limit_datetime(self, client):
         venue, api_key = create_offerer_provider_linked_to_venue()
@@ -2392,11 +2392,11 @@ class PatchProductTest:
             json={"stock": {"bookingLimitDatetime": None}},
         )
         assert response.status_code == 200
-        assert response.json["stock"]["bookingLimitDatetime"] == None
+        assert response.json["stock"]["bookingLimitDatetime"] is None
 
         assert len(product_offer.activeStocks) == 1
         assert product_offer.activeStocks[0] == stock
-        assert product_offer.activeStocks[0].bookingLimitDatetime == None
+        assert product_offer.activeStocks[0].bookingLimitDatetime is None
 
     def test_update_stock_booking_limit_datetime(self, client):
         venue, api_key = create_offerer_provider_linked_to_venue()
@@ -2436,7 +2436,7 @@ class PatchProductTest:
             json={"stock": None},
         )
         assert response.status_code == 200
-        assert response.json["stock"] == None
+        assert response.json["stock"] is None
 
         assert len(product_offer.activeStocks) == 0
         assert confirmed_booking.status == bookings_models.BookingStatus.CANCELLED
@@ -2667,7 +2667,7 @@ class PatchEventTest:
         assert event_offer.withdrawalType == offers_models.WithdrawalTypeEnum.ON_SITE
         assert event_offer.withdrawalDelay == 3600
         assert event_offer.durationMinutes == 40
-        assert event_offer.isDuo == True
+        assert event_offer.isDuo is True
         assert event_offer.bookingEmail == "test@myemail.com"
         assert event_offer.withdrawalDetails == "Here !"
 

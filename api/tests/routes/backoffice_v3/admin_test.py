@@ -145,7 +145,7 @@ class EnableFeatureFlagTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, feature_flag_id=first_feature_flag.id)
         assert response.status_code == 303
 
-        assert first_feature_flag.isActive == True
+        assert first_feature_flag.isActive is True
         response = authenticated_client.get(response.location)
         assert f"Le feature flag {first_feature_flag.name} a été activé" in response.data.decode("utf-8")
 
@@ -171,7 +171,7 @@ class DisableFeatureFlagTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, feature_flag_id=first_feature_flag.id)
         assert response.status_code == 303
 
-        assert first_feature_flag.isActive == False
+        assert first_feature_flag.isActive is False
         response = authenticated_client.get(response.location)
         assert f"Le feature flag {first_feature_flag.name} a été désactivé" in response.data.decode("utf-8")
 

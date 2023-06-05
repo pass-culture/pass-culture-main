@@ -293,4 +293,4 @@ def test_delete_cascade_venue_when_template_has_offer_on_other_venue():
     assert offerers_models.Venue.query.count() == 1
     assert educational_models.CollectiveOffer.query.count() == 1
     assert educational_models.CollectiveOfferTemplate.query.count() == 0
-    assert offer.template == None
+    assert offer.template is None

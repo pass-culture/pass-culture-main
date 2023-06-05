@@ -70,7 +70,7 @@ class UpdateDmsStatusTest:
         assert venue1.collectiveDmsApplications[0].buildDate == datetime(2023, 3, 7, 15, 17, 37)
         assert venue1.collectiveDmsApplications[0].instructionDate == datetime(2023, 4, 8, 15, 17, 37)
         assert venue1.collectiveDmsApplications[0].processingDate == datetime(2023, 4, 9, 15, 19, 37)
-        assert venue1.collectiveDmsApplications[0].userDeletionDate == None
+        assert venue1.collectiveDmsApplications[0].userDeletionDate is None
 
         assert len(venue2.collectiveDmsApplications) == 1
         assert venue2.collectiveDmsApplications[0].state == "en_construction"
@@ -81,14 +81,14 @@ class UpdateDmsStatusTest:
         assert venue2.collectiveDmsApplications[0].depositDate == datetime(2023, 3, 6, 15, 17, 37)
         assert venue2.collectiveDmsApplications[0].expirationDate == datetime(2024, 3, 6, 15, 17, 37)
         assert venue2.collectiveDmsApplications[0].buildDate == datetime(2023, 3, 6, 15, 17, 37)
-        assert venue2.collectiveDmsApplications[0].instructionDate == None
-        assert venue2.collectiveDmsApplications[0].processingDate == None
-        assert venue2.collectiveDmsApplications[0].userDeletionDate == None
+        assert venue2.collectiveDmsApplications[0].instructionDate is None
+        assert venue2.collectiveDmsApplications[0].processingDate is None
+        assert venue2.collectiveDmsApplications[0].userDeletionDate is None
 
         latest_import = dms_models.LatestDmsImport.query.one()
         assert latest_import.procedureId == 123
-        assert latest_import.latestImportDatetime != None
-        assert latest_import.isProcessing == False
+        assert latest_import.latestImportDatetime is not None
+        assert latest_import.isProcessing is False
         assert latest_import.processedApplications == [1, 2]
 
     def test_update_existing_data(self):
@@ -115,7 +115,7 @@ class UpdateDmsStatusTest:
         assert venue.collectiveDmsApplications[0].buildDate == datetime(2023, 3, 7, 15, 17, 37)
         assert venue.collectiveDmsApplications[0].instructionDate == datetime(2023, 4, 8, 15, 17, 37)
         assert venue.collectiveDmsApplications[0].processingDate == datetime(2023, 4, 9, 15, 19, 37)
-        assert venue.collectiveDmsApplications[0].userDeletionDate == None
+        assert venue.collectiveDmsApplications[0].userDeletionDate is None
 
     def test_only_call_from_last_update(self):
         mock = MagicMock()

@@ -205,7 +205,7 @@ class Returns200Test:
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         assert response.status_code == 200
-        assert venue.audioDisabilityCompliant == True
+        assert venue.audioDisabilityCompliant is True
 
         mocked_update_all_venue_offers_accessibility_job.assert_called_once_with(
             venue,

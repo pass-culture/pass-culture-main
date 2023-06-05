@@ -141,7 +141,7 @@ class Returns200Test:
         assert sheet.cell(row=2, column=10).value == "2021-08-11 14:00:00+02:00"
 
         for i in range(1, len(COLLECTIVE_BOOKING_EXPORT_HEADER)):
-            assert sheet.cell(row=3, column=i).value == None
+            assert sheet.cell(row=3, column=i).value is None
 
     def test_one_invisible_date_range_booking(self, app):
         invisible_user_offerer = offerers_factories.UserOffererFactory()

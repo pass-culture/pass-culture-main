@@ -122,7 +122,7 @@ class HasImageMixin:
 
     @hasImage.expression  # type: ignore[no-redef]
     def hasImage(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.imageId != None
+        return cls.imageId is not None
 
     def _get_image_storage_id(self, original: bool = False) -> str:
         original_suffix = "_original" if original else ""

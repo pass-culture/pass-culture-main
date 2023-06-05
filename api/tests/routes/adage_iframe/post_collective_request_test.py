@@ -38,7 +38,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["email"] == educational_redactor.email
         assert response.json["phoneNumber"] == "+33139980101"
-        assert response.json["requestedDate"] == None
+        assert response.json["requestedDate"] is None
         assert response.json["totalStudents"] == 30
         assert response.json["totalTeachers"] == 2
         assert response.json["comment"] == "Un commentaire sublime que nous avons là"

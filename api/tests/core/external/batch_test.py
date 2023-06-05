@@ -65,7 +65,7 @@ class FormatUserAttributesTest:
 
         formatted_attributes = format_user_attributes(attributes)
 
-        assert formatted_attributes["date(u.last_booking_date)"] == None
+        assert formatted_attributes["date(u.last_booking_date)"] is None
         assert "ut.booking_categories" not in formatted_attributes
 
     def test_format_attributes_with_cultural_survey_answers(self):

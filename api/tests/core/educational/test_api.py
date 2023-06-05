@@ -80,7 +80,7 @@ class CreateCollectiveOfferStocksTest:
         assert stock.bookingLimitDatetime == datetime.datetime.fromisoformat("2021-12-05T00:00:00")
         assert stock.price == 1200
         assert stock.numberOfTickets == 35
-        assert stock.stockId == None
+        assert stock.stockId is None
 
         search.index_collective_offers_in_queue()
         assert offer.id in search_testing.search_store["collective-offers"]

@@ -227,7 +227,7 @@ class BankInformationsSQLRepositoryTest:
         assert BankInformationsSQLEntity.query.count() == 1
 
         sql_bank_informations_saved = BankInformationsSQLEntity.query.first()
-        assert sql_bank_informations_saved.offererId == None
+        assert sql_bank_informations_saved.offererId is None
         assert sql_bank_informations_saved.venueId == venue.id
         assert sql_bank_informations_saved.iban == bank_informations_to_save.iban
         assert sql_bank_informations_saved.bic == bank_informations_to_save.bic

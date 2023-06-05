@@ -146,7 +146,7 @@ class OfferThumbUrlTest:
 
     def test_defaults_to_none(self):
         offer = models.Offer()
-        assert offer.thumbUrl == None
+        assert offer.thumbUrl is None
 
 
 class OfferValidationTest:

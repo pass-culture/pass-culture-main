@@ -96,7 +96,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
 
     @property
     def implements_provider_api(self) -> bool:
-        return self.apiUrl != None and not self.offererProvider
+        return self.apiUrl is not None and not self.offererProvider
 
     def getProviderAPI(self) -> ProviderAPI:
         return ProviderAPI(

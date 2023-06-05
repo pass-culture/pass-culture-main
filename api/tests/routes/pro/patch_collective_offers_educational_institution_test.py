@@ -120,7 +120,7 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
         offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
-        assert offer_db.institution == None
+        assert offer_db.institution is None
 
     def test_institution_not_found(self, client: Any) -> None:
         # Given
@@ -136,7 +136,7 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
         offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
-        assert offer_db.institution == None
+        assert offer_db.institution is None
 
 
 @pytest.mark.usefixtures("db_session")
@@ -217,7 +217,7 @@ class Returns403Test:
         # Then
         assert response.status_code == 403
         offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
-        assert offer_db.institution == None
+        assert offer_db.institution is None
 
         assert len(adage_api_testing.adage_requests) == 0
 

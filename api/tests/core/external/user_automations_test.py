@@ -56,7 +56,7 @@ class UserAutomationsTest:
         result = user_automations.users_turned_eighteen_automation()
 
         mock_import_contacts.assert_called_once()
-        assert mock_import_contacts.call_args.args[0].file_url == None
+        assert mock_import_contacts.call_args.args[0].file_url is None
         assert mock_import_contacts.call_args.args[0].file_body in (
             "EMAIL\nfabien+test@example.net\ngerard+test@example.net",
             "EMAIL\ngerard+test@example.net\nfabien+test@example.net",
@@ -68,11 +68,11 @@ class UserAutomationsTest:
             mock_import_contacts.call_args.args[0].notify_url
             == f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_18_IN_1_MONTH_LIST_ID}/1"
         )
-        assert mock_import_contacts.call_args.args[0].new_list == None
-        assert mock_import_contacts.call_args.args[0].email_blacklist == False
-        assert mock_import_contacts.call_args.args[0].sms_blacklist == False
-        assert mock_import_contacts.call_args.args[0].update_existing_contacts == True
-        assert mock_import_contacts.call_args.args[0].empty_contacts_attributes == False
+        assert mock_import_contacts.call_args.args[0].new_list is None
+        assert mock_import_contacts.call_args.args[0].email_blacklist is False
+        assert mock_import_contacts.call_args.args[0].sms_blacklist is False
+        assert mock_import_contacts.call_args.args[0].update_existing_contacts is True
+        assert mock_import_contacts.call_args.args[0].empty_contacts_attributes is False
 
         assert result is True
 
@@ -166,7 +166,7 @@ class UserAutomationsTest:
         body_lines = request_contact_import.file_body.split("\n")
 
         assert isinstance(request_contact_import, RequestContactImport)
-        assert request_contact_import.file_url == None
+        assert request_contact_import.file_url is None
         assert len(body_lines) == 4
         assert body_lines[0] == "EMAIL"
         assert set(body_lines[1:]) == {users[2].email, users[3].email, users[4].email}
@@ -175,11 +175,11 @@ class UserAutomationsTest:
             request_contact_import.notify_url
             == f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_EXPIRATION_M3_ID}/1"
         )
-        assert request_contact_import.new_list == None
-        assert request_contact_import.email_blacklist == False
-        assert request_contact_import.sms_blacklist == False
-        assert request_contact_import.update_existing_contacts == True
-        assert request_contact_import.empty_contacts_attributes == False
+        assert request_contact_import.new_list is None
+        assert request_contact_import.email_blacklist is False
+        assert request_contact_import.sms_blacklist is False
+        assert request_contact_import.update_existing_contacts is True
+        assert request_contact_import.empty_contacts_attributes is False
 
         assert result is True
 
@@ -216,10 +216,10 @@ class UserAutomationsTest:
             mock_import_contacts.call_args.args[0].notify_url
             == f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_AUTOMATION_YOUNG_EX_BENEFICIARY_ID}/1"
         )
-        assert mock_import_contacts.call_args.args[0].new_list == None
-        assert mock_import_contacts.call_args.args[0].sms_blacklist == False
-        assert mock_import_contacts.call_args.args[0].update_existing_contacts == True
-        assert mock_import_contacts.call_args.args[0].empty_contacts_attributes == False
+        assert mock_import_contacts.call_args.args[0].new_list is None
+        assert mock_import_contacts.call_args.args[0].sms_blacklist is False
+        assert mock_import_contacts.call_args.args[0].update_existing_contacts is True
+        assert mock_import_contacts.call_args.args[0].empty_contacts_attributes is False
 
         assert result is True
 

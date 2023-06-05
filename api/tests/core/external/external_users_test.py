@@ -57,7 +57,7 @@ def test_update_external_user():
     assert len(batch_testing.requests) == 2
     assert len(sendinblue_testing.sendinblue_requests) == 1
     assert sendinblue_testing.sendinblue_requests[0].get("email") == "jeanne@example.com"
-    assert sendinblue_testing.sendinblue_requests[0].get("emailBlacklisted") == True
+    assert sendinblue_testing.sendinblue_requests[0].get("emailBlacklisted") is True
 
 
 def test_email_should_not_be_blacklisted_in_sendinblue_by_default():
@@ -71,7 +71,7 @@ def test_email_should_not_be_blacklisted_in_sendinblue_by_default():
 
     assert len(sendinblue_testing.sendinblue_requests) == 1
     assert sendinblue_testing.sendinblue_requests[0].get("email") == "jeanne@example.com"
-    assert sendinblue_testing.sendinblue_requests[0].get("emailBlacklisted") == False
+    assert sendinblue_testing.sendinblue_requests[0].get("emailBlacklisted") is False
 
 
 def test_update_external_pro_user():
@@ -568,7 +568,7 @@ def test_get_bookings_categories_and_subcategories_music_first():
 
 
 def test_get_most_favorite_subcategories_none():
-    assert get_most_favorite_subcategories([]) == None
+    assert get_most_favorite_subcategories([]) is None
 
 
 def test_get_most_favorite_subcategories_one():

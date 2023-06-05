@@ -594,7 +594,7 @@ class RunIntegrationTest:
         response = client.get("/native/v1/subscription/next_step")
 
         assert response.status_code == 200
-        assert response.json["nextSubscriptionStep"] == None
+        assert response.json["nextSubscriptionStep"] is None
         assert users_models.UserRole.BENEFICIARY in user.roles
 
 

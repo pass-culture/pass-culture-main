@@ -362,10 +362,10 @@ class HasImageMixinTest:
             ratio=ratio,
             keep_original=False,
         )
-        assert image.imageCrop == None
+        assert image.imageCrop is None
         assert image.imageId.startswith(str(image.id).zfill(10))
         assert image.imageCredit == credit
-        assert image.imageHasOriginal == False
+        assert image.imageHasOriginal is False
         standardize_image.assert_called_once_with(content=image_data, ratio=ratio, crop_params=crop_data)
         process_original_image.assert_not_called()
         store_public_object.assert_called_once_with(
@@ -416,11 +416,11 @@ class HasImageMixinTest:
             ratio=ratio,
             keep_original=False,
         )
-        assert image.imageCrop == None
+        assert image.imageCrop is None
         assert image.imageCredit == credit
         assert image.imageId != "123"
         assert image.imageId.startswith(str(image.id).zfill(10))
-        assert image.imageHasOriginal == False
+        assert image.imageHasOriginal is False
         standardize_image.assert_called_once_with(content=image_data, ratio=ratio, crop_params=crop_data)
         process_original_image.assert_not_called()
         store_public_object.assert_called_once_with(
@@ -468,7 +468,7 @@ class HasImageMixinTest:
         assert image.imageCrop == crop_data.__dict__
         assert image.imageCredit == credit
         assert image.imageId.startswith(str(image.id).zfill(10))
-        assert image.imageHasOriginal == True
+        assert image.imageHasOriginal is True
         standardize_image.assert_called_once_with(content=image_data, ratio=ratio, crop_params=crop_data)
         process_original_image.assert_called_once_with(content=image_data, resize=False)
         assert store_public_object.call_count == 2
@@ -498,10 +498,10 @@ class HasImageMixinTest:
         image.imageCredit = "toto"
         image.imageHasOriginal = False
         image.delete_image()
-        assert image.imageCrop == None
-        assert image.imageCredit == None
-        assert image.imageHasOriginal == None
-        assert image.imageId == None
+        assert image.imageCrop is None
+        assert image.imageCredit is None
+        assert image.imageHasOriginal is None
+        assert image.imageId is None
         delete_public_object.assert_called_once_with(folder=image.FOLDER, object_id="image/456789.jpg")
 
     @mock.patch("pcapi.core.educational.models.delete_public_object")
@@ -521,10 +521,10 @@ class HasImageMixinTest:
         image.imageCredit = "toto"
         image.imageHasOriginal = True
         image.delete_image()
-        assert image.imageCrop == None
-        assert image.imageCredit == None
-        assert image.imageHasOriginal == None
-        assert image.imageId == None
+        assert image.imageCrop is None
+        assert image.imageCredit is None
+        assert image.imageHasOriginal is None
+        assert image.imageId is None
         assert delete_public_object.call_count == 2
         delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/123456.jpg")
         delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/123456_original.jpg")

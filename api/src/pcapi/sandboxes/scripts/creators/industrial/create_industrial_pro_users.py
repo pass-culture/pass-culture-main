@@ -42,7 +42,7 @@ def create_industrial_pro_users(offerers_by_name: dict) -> dict[str, User]:
             users_by_name["pro{} {}".format(departement_code, pro_count)] = user
             user_offerer = (
                 adage_eligible_offerers[0]
-                if pro_user_config["has_adage_eligible_siren"] == True
+                if pro_user_config["has_adage_eligible_siren"]
                 else adage_not_eligible_offerers[0]
             )
             UserOffererFactory(offerer=user_offerer, user=user)

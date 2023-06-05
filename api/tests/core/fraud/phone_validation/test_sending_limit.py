@@ -29,7 +29,7 @@ def test_get_remaining_sms_sending_attempts(app):
 def test_get_attempt_limitation_expiration_time(app):
     user = users_factories.UserFactory()
 
-    assert sending_limit.get_attempt_limitation_expiration_time(app.redis_client, user) == None
+    assert sending_limit.get_attempt_limitation_expiration_time(app.redis_client, user) is None
 
     sending_limit.update_sent_SMS_counter(app.redis_client, user)
 

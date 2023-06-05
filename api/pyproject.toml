@@ -91,7 +91,6 @@ enable = [
 #
 # FIXME (dbaty, 2020-11-03): we probably could enable back
 # "singleton-comparison". Most cases seem to be variations of:
-#     assert some_boolean == True
 #     Model.query.filter_by(Model.boolean_attr == None)
 disable = [
     "arguments-differ",

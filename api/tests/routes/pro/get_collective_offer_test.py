@@ -36,15 +36,15 @@ class Returns200Test:
         assert "iban" not in response_json["venue"]["managingOfferer"]
         assert "bic" not in response_json["venue"]["managingOfferer"]
         assert "validationStatus" not in response_json["venue"]["managingOfferer"]
-        assert response_json["imageCredit"] == None
-        assert response_json["imageUrl"] == None
+        assert response_json["imageCredit"] is None
+        assert response_json["imageUrl"] is None
         assert "dateCreated" in response_json
         assert "institution" in response.json
-        assert response.json["isVisibilityEditable"] == True
+        assert response.json["isVisibilityEditable"] is True
         assert response_json["nonHumanizedId"] == offer.id
         assert response_json["lastBookingStatus"] is None
         assert response_json["lastBookingId"] is None
-        assert response_json["isPublicApi"] == False
+        assert response_json["isPublicApi"] is False
         assert response_json["teacher"] == {
             "email": offer.teacher.email,
             "firstName": offer.teacher.firstName,
@@ -162,7 +162,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert response.json["status"] == "INACTIVE"
-        assert response.json["isActive"] == False
+        assert response.json["isActive"] is False
 
 
 @pytest.mark.usefixtures("db_session")

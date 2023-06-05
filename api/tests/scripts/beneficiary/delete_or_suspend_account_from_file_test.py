@@ -36,4 +36,4 @@ def test_suspend_user_when_he_has_deposit():
     )
 
     user = User.query.filter(User.email == user_with_deposit.email).one()
-    assert user.isActive == False
+    assert user.isActive is False

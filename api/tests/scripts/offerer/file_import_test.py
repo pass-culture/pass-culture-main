@@ -145,7 +145,7 @@ class FillUserFromTest:
         assert user.firstName == "Philip"
         assert user.email == "pmortimer@bletchley.co.uk"
         assert user.departementCode == "29"
-        assert user.has_beneficiary_role == False
+        assert user.has_beneficiary_role is False
         assert user.has_pro_role
 
     def test_returns_an_user_with_computed_password(self):
@@ -187,7 +187,7 @@ class FillUserFromTest:
         assert user.firstName == "Philip"
         assert user.email == "pmortimer@bletchley.co.uk"
         assert user.departementCode == "29"
-        assert user.has_beneficiary_role == False
+        assert user.has_beneficiary_role is False
         assert user.has_pro_role
         assert user.password != ""
 

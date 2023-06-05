@@ -96,7 +96,7 @@ class Returns204Test:
         # Then
         assert response.status_code == 204
         assert response.data == b""
-        assert response.json == None
+        assert response.json is None
 
     def when_user_not_logged_in_and_give_right_email_and_event_offer_id(self, client):
         # Given
@@ -113,7 +113,7 @@ class Returns204Test:
         # Then
         assert response.status_code == 204
         assert response.data == b""
-        assert response.json == None
+        assert response.json is None
 
     def when_user_not_logged_in_and_give_right_email_and_offer_id_thing(self, client):
         # Given
@@ -127,7 +127,7 @@ class Returns204Test:
         # Then
         assert response.status_code == 204
         assert response.data == b""
-        assert response.json == None
+        assert response.json is None
 
 
 class Returns404Test:

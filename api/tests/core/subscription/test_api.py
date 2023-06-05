@@ -272,7 +272,7 @@ class NextSubscriptionStepTest:
             status=fraud_models.FraudCheckStatus.PENDING,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        assert subscription_api.get_user_subscription_state(user).next_step == None
+        assert subscription_api.get_user_subscription_state(user).next_step is None
 
     def test_next_subscription_step_profile_completion(self):
         user = users_factories.UserFactory(
@@ -387,7 +387,7 @@ class NextSubscriptionStepTest:
             status=fraud_models.FraudCheckStatus.OK,
         )
 
-        assert subscription_api.get_user_subscription_state(user).next_step == None
+        assert subscription_api.get_user_subscription_state(user).next_step is None
 
     @pytest.mark.parametrize(
         "feature_flags,user_age,user_school_type,expected_result",
@@ -1161,7 +1161,7 @@ class GetFirstRegistrationDateTest:
 
         assert (
             subscription_api.get_first_registration_date(user, user.dateOfBirth, users_models.EligibilityType.UNDERAGE)
-            == None
+            is None
         )
 
 

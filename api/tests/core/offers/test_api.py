@@ -481,7 +481,7 @@ class EditStockTest:
         # Then
         edited_stock = models.Stock.query.filter_by(id=existing_stock.id).first()
         assert edited_stock.price == 4
-        assert edited_stock.quantity == None
+        assert edited_stock.quantity is None
 
     def test_does_not_allow_edition_of_beginningDateTime_for_stocks_of_offers_synchronized_with_allocine(self):
         # Given
@@ -982,10 +982,10 @@ class UpdateOfferTest:
 
         offer = models.Offer.query.one()
         assert offer.name == "Old name"
-        assert offer.audioDisabilityCompliant == False
-        assert offer.visualDisabilityCompliant == True
-        assert offer.motorDisabilityCompliant == True
-        assert offer.mentalDisabilityCompliant == False
+        assert offer.audioDisabilityCompliant is False
+        assert offer.visualDisabilityCompliant is True
+        assert offer.motorDisabilityCompliant is True
+        assert offer.mentalDisabilityCompliant is False
 
     def test_forbidden_on_imported_offer_on_other_fields(self):
         provider = providers_factories.APIProviderFactory()
@@ -1006,8 +1006,8 @@ class UpdateOfferTest:
         }
         offer = models.Offer.query.one()
         assert offer.name == "Old name"
-        assert offer.isDuo == False
-        assert offer.audioDisabilityCompliant == True
+        assert offer.isDuo is False
+        assert offer.audioDisabilityCompliant is True
 
     def test_update_non_approved_offer_fails(self):
         pending_offer = factories.OfferFactory(name="Soliloquy", validation=models.OfferValidationStatus.PENDING)

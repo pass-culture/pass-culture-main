@@ -182,8 +182,8 @@ class Returns200Test:
             response = auth_request.get("/venues/%s" % venue_id)
 
         assert response.status_code == 200
-        assert response.json["adageInscriptionDate"] == None
-        assert response.json["hasAdageId"] == False
+        assert response.json["adageInscriptionDate"] is None
+        assert response.json["hasAdageId"] is False
 
     def should_ignore_invalid_banner_metadata(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
