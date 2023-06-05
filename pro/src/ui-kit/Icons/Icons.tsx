@@ -277,29 +277,35 @@ export const Icons = () => {
       </div>
 
       <div className={styles['icon-list']}>
-        {filteredIcons.map(icon => (
-          <div
-            key={icon.src}
-            className={styles['container']}
-            onClick={onClick}
-            data-src={icon.src}
-          >
-            <div className={styles['copy-to-clipboard-wrapper']}>
-              <span className={styles['copy-to-clipboard-name']}>Copié !</span>
+        {filteredIcons.map(icon => {
+          const iconName = icon.src.split('/')[1].split('.')[0]
+
+          return (
+            <div
+              key={icon.src}
+              className={styles['container']}
+              onClick={onClick}
+              data-src={icon.src}
+            >
+              <div className={styles['copy-to-clipboard-wrapper']}>
+                <span className={styles['copy-to-clipboard-name']}>
+                  Copié !
+                </span>
+              </div>
+              <div className={styles['icon-container']}>
+                <SvgIcon
+                  src={icon.src}
+                  alt={icon.src}
+                  viewBox={icon.viewBox}
+                  className={styles['icon']}
+                />
+              </div>
+              <div className={styles['name-container']}>
+                <span className={styles['name']}>{iconName}</span>
+              </div>
             </div>
-            <div className={styles['icon-container']}>
-              <SvgIcon
-                src={icon.src}
-                alt={icon.src}
-                viewBox={icon.viewBox}
-                className={styles['icon']}
-              />
-            </div>
-            <div className={styles['name-container']}>
-              <span className={styles['name']}>{icon.src}</span>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
