@@ -57,14 +57,14 @@ const Informations = ({
         {!isVenueVirtual && (
           <FormLayout.Row
             sideComponent={
-              <InfoBox
-                type="info"
-                text={`À remplir si différent ${
-                  isNewOnboardingActive
-                    ? 'de la raison sociale'
-                    : 'du nom juridique'
-                }. En le remplissant, c’est ce dernier qui sera visible du public.`}
-              />
+              <InfoBox>
+                À remplir si différent{' '}
+                {isNewOnboardingActive
+                  ? 'de la raison sociale'
+                  : 'du nom juridique'}
+                . En le remplissant, c’est ce dernier qui sera visible du
+                public.
+              </InfoBox>
             }
           >
             <TextInput

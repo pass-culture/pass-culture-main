@@ -25,8 +25,6 @@ const Accessibility = ({ isCreatingVenue }: IAccessiblityProps) => {
       <FormLayout.Row
         sideComponent={
           <InfoBox
-            type="info"
-            text="Les modalités d’accessibilité s’appliqueront par défaut à la création de vos offres. Vous pourrez modifier cette information à l’échelle de chaque offre."
             link={{
               text: 'En savoir plus',
               to: 'https://aide.passculture.app/hc/fr/articles/4412007286289--Acteurs-Culturels-Comment-indiquer-les-conditions-d-accessibilit%C3%A9-d-une-offre-sur-le-pass-Culture-',
@@ -35,7 +33,11 @@ const Accessibility = ({ isCreatingVenue }: IAccessiblityProps) => {
               rel: 'noopener noreferrer',
               'aria-label': 'en savoir plus sur les modalités d’accessibilité',
             }}
-          />
+          >
+            Les modalités d’accessibilité s’appliqueront par défaut à la
+            création de vos offres. Vous pourrez modifier cette information à
+            l’échelle de chaque offre.
+          </InfoBox>
         }
       >
         <CheckboxGroup

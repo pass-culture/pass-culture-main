@@ -54,10 +54,10 @@ const Contact = ({
         <FormLayout.Row
           sideComponent={
             isVenueVirtual ? null : (
-              <InfoBox
-                type="info"
-                text="Cette adresse s’appliquera par défaut à toutes vos offres, vous pourrez la modifier à l’échelle de chaque offre."
-              />
+              <InfoBox>
+                Cette adresse s’appliquera par défaut à toutes vos offres, vous
+                pourrez la modifier à l’échelle de chaque offre.
+              </InfoBox>
             )
           }
         >

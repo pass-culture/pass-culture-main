@@ -68,12 +68,6 @@ const UsefulInformations = ({
       <FormLayout.Row
         sideComponent={
           <InfoBox
-            type="info"
-            text={
-              isVenueVirtual
-                ? 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre.'
-                : 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis votre page lieu, elles s’appliqueront par défaut à toutes vos offres.'
-            }
             link={{
               isExternal: true,
               to: 'https://aide.passculture.app/hc/fr/articles/4413389597329--Acteurs-Culturels-Quelles-modalit%C3%A9s-de-retrait-indiquer-pour-ma-structure-',
@@ -82,7 +76,11 @@ const UsefulInformations = ({
               target: '_blank',
               rel: 'noopener noreferrer',
             }}
-          />
+          >
+            {isVenueVirtual
+              ? 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre.'
+              : 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis votre page lieu, elles s’appliqueront par défaut à toutes vos offres.'}
+          </InfoBox>
         }
       >
         <TextArea
@@ -102,12 +100,10 @@ const UsefulInformations = ({
       {isVenueVirtual && (
         <FormLayout.Row
           sideComponent={
-            <InfoBox
-              type="info"
-              text={
-                "Lien vers lequel seront renvoyés les bénéficiaires ayant réservé votre offre sur l'application pass Culture."
-              }
-            />
+            <InfoBox>
+              Lien vers lequel seront renvoyés les bénéficiaires ayant réservé
+              votre offre sur l'application pass Culture.
+            </InfoBox>
           }
         >
           <TextInput

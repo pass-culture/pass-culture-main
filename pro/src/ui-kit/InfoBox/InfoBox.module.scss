@@ -13,6 +13,7 @@
     width: 100%;
     height: rem.torem(2px);
     border-radius: rem.torem(10px);
+    background: colors.$tertiary;
 
     &:first-of-type {
       width: rem.torem(24px);
@@ -22,9 +23,11 @@
 
   &-title {
     background-color: colors.$white;
+    color: colors.$tertiary;
     display: flex;
     align-items: center;
     padding: 0 rem.torem(8px);
+    padding-left: rem.torem(4px);
     font-size: rem.torem(12px);
     flex: none;
 
@@ -35,35 +38,5 @@
 
   &-link {
     margin-top: rem.torem(8px);
-  }
-}
-
-.info {
-  .info-box-title {
-    color: colors.$tertiary;
-    padding-left: rem.torem(4px);
-  }
-
-  .info-box-bar {
-    background: colors.$tertiary;
-  }
-}
-
-.important {
-  .info-box-title,
-  .info-box-link {
-    color: colors.$primary;
-
-    svg {
-      fill: colors.$primary; // FIXME(MathildeDuboille - 25-08-2022): use button link variant when ready
-    }
-  }
-
-  .info-box-link-icon {
-    fill: colors.$primary;
-  }
-
-  .info-box-bar {
-    background: colors.$primary;
   }
 }

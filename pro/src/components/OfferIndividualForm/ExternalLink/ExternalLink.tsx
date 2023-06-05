@@ -12,10 +12,10 @@ const ExternalLink = ({ readOnlyFields }: IExternalLink): JSX.Element => {
     <FormLayout.Section title="Lien pour le grand public">
       <FormLayout.Row
         sideComponent={
-          <InfoBox
-            type="info"
-            text="Ce lien sera affiché au public souhaitant réserver l’offre mais ne disposant pas ou plus de crédit sur l’application."
-          />
+          <InfoBox>
+            Ce lien sera affiché au public souhaitant réserver l’offre mais ne
+            disposant pas ou plus de crédit sur l’application.
+          </InfoBox>
         }
       >
         <TextInput

@@ -55,12 +55,11 @@ const FormParticipants = ({
       <FormLayout.Row
         sideComponent={
           !isCLG6Active ? (
-            <InfoBox
-              type="info"
-              text={`Le pass Culture à destination du public scolaire s’adresse aux élèves de la ${
-                isCLG6Active ? 'sixième' : 'quatrième'
-              } à la terminale des établissements publics et privés sous contrat.`}
-            />
+            <InfoBox>
+              Le pass Culture à destination du public scolaire s’adresse aux
+              élèves de la {isCLG6Active ? 'sixième' : 'quatrième'} à la
+              terminale des établissements publics et privés sous contrat.
+            </InfoBox>
           ) : null
         }
       >
