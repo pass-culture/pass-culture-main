@@ -17,6 +17,7 @@ def log_catalog_view(
         event_name="CatalogView",
         extra_data={
             "source": body.source,
+            "AdageHeaderFrom": body.AdageHeaderFrom,
         },
         user_email=authenticated_information.email,
     )
@@ -47,7 +48,7 @@ def log_offer_details_button_click(
 ) -> None:
     educational_utils.log_information_for_data_purpose(
         event_name="OfferDetailButtonClick",
-        extra_data={"stockId": body.stockId},
+        extra_data={"stockId": body.stockId, "AdageHeaderFrom": body.AdageHeaderFrom},
         user_email=authenticated_information.email,
     )
     return
@@ -62,7 +63,7 @@ def log_offer_template_details_button_click(
 ) -> None:
     educational_utils.log_information_for_data_purpose(
         event_name="TemplateOfferDetailButtonClick",
-        extra_data={"offerId": body.offerId},
+        extra_data={"offerId": body.offerId, "AdageHeaderFrom": body.AdageHeaderFrom},
         user_email=authenticated_information.email,
     )
     return
@@ -77,7 +78,7 @@ def log_booking_modal_button_click(
 ) -> None:
     educational_utils.log_information_for_data_purpose(
         event_name="BookingModalButtonClick",
-        extra_data={"stockId": body.stockId},
+        extra_data={"stockId": body.stockId, "AdageHeaderFrom": body.AdageHeaderFrom},
         user_email=authenticated_information.email,
     )
     return
@@ -92,7 +93,7 @@ def log_contact_modal_button_click(
 ) -> None:
     educational_utils.log_information_for_data_purpose(
         event_name="ContactModalButtonClick",
-        extra_data={"offerId": body.offerId},
+        extra_data={"offerId": body.offerId, "AdageHeaderFrom": body.AdageHeaderFrom},
         user_email=authenticated_information.email,
     )
     return
@@ -107,7 +108,7 @@ def log_fav_offer_button_click(
 ) -> None:
     educational_utils.log_information_for_data_purpose(
         event_name="FavOfferButtonClick",
-        extra_data={"offerId": body.offerId},
+        extra_data={"offerId": body.offerId, "AdageHeaderFrom": body.AdageHeaderFrom},
         user_email=authenticated_information.email,
     )
     return
@@ -122,7 +123,7 @@ def log_header_link_click(
 ) -> None:
     educational_utils.log_information_for_data_purpose(
         event_name="HeaderLinkClick",
-        extra_data={"header_link_name": body.header_link_name.value},
+        extra_data={"header_link_name": body.header_link_name.value, "AdageHeaderFrom": body.AdageHeaderFrom},
         user_email=authenticated_information.email,
     )
 
