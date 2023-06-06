@@ -32,7 +32,6 @@ export const serializeOffers = (
   offers: CollectiveOfferResponseModel[]
 ): Offer[] =>
   offers.map(offer => ({
-    id: offer.id,
     nonHumanizedId: offer.nonHumanizedId,
     // FIX ME: api should send OfferStatus
     status: offer.status as OfferStatus,

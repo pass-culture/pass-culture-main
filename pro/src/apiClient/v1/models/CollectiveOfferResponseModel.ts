@@ -12,7 +12,6 @@ export type CollectiveOfferResponseModel = {
   booking?: CollectiveOffersBookingResponseModel | null;
   educationalInstitution?: EducationalInstitutionResponseModel | null;
   hasBookingLimitDatetimesPassed: boolean;
-  id: string;
   imageCredit?: string | null;
   imageUrl?: string | null;
   interventionArea: Array<string>;
@@ -28,6 +27,5 @@ export type CollectiveOfferResponseModel = {
   subcategoryId: SubcategoryIdEnum;
   templateId?: string | null;
   venue: ListOffersVenueResponseModel;
-  venueId: string;
 };
 
