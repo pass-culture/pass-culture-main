@@ -218,7 +218,6 @@ describe('screens:StocksEventEdition', () => {
           offererName: 'offerer',
           isVirtual: false,
           nonHumanizedId: 1,
-          managingOffererId: '',
         },
         stocks: [],
         isEditable: true,
