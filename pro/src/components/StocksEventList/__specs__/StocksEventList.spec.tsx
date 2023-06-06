@@ -11,18 +11,15 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksEventList, {
-  StocksEvent,
   STOCKS_PER_PAGE,
+  StocksEventListProps,
 } from '../StocksEventList'
 
 const mockLogEvent = jest.fn()
 
 const mockSetSotcks = jest.fn()
-interface IrenderStocksEventList {
-  stocks: StocksEvent[]
-}
 
-const renderStocksEventList = ({ stocks }: IrenderStocksEventList) => {
+const renderStocksEventList = (props: Partial<StocksEventListProps>) => {
   const storeOverrides = {
     features: {
       list: [
@@ -37,7 +34,7 @@ const renderStocksEventList = ({ stocks }: IrenderStocksEventList) => {
 
   renderWithProviders(
     <StocksEventList
-      stocks={stocks}
+      stocks={props.stocks ?? []}
       priceCategories={[
         priceCategoryFactory({ label: 'Label', price: 12.5, id: 1 }),
         priceCategoryFactory({ label: 'Label', price: 5.5, id: 2 }),
