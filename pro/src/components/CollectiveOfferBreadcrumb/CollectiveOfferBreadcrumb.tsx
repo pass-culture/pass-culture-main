@@ -21,6 +21,7 @@ export interface OfferBreadcrumbProps {
   className?: string
   isTemplate: boolean
   haveStock?: boolean
+  requestId?: string | null
 }
 
 const CollectiveOfferBreadcrumb = ({
@@ -31,11 +32,14 @@ const CollectiveOfferBreadcrumb = ({
   offerId = 0,
   className,
   haveStock = false,
+  requestId = null,
 }: OfferBreadcrumbProps): JSX.Element => {
   const stockEditionUrl = useOfferStockEditionURL(true, offerId, true)
   const isEditingExistingOffer = !(isCreatingOffer || isCompletingDraft)
 
   const stepList: { [key: string]: Step } = {}
+
+  const requestIdUrl = requestId ? `?requete=${requestId}` : ''
 
   if (isEditingExistingOffer) {
     stepList[CollectiveOfferBreadcrumbStep.DETAILS] = {
@@ -64,7 +68,7 @@ const CollectiveOfferBreadcrumb = ({
       stepList[CollectiveOfferBreadcrumbStep.STOCKS] = {
         id: CollectiveOfferBreadcrumbStep.STOCKS,
         label: 'Date et prix',
-        url: offerId ? `/offre/${offerId}/collectif/stocks` : '',
+        url: offerId ? `/offre/${offerId}/collectif/stocks${requestIdUrl}` : '',
       }
       stepList[CollectiveOfferBreadcrumbStep.VISIBILITY] = {
         id: CollectiveOfferBreadcrumbStep.VISIBILITY,
@@ -120,7 +124,7 @@ const CollectiveOfferBreadcrumb = ({
         } else {
           stepList[
             CollectiveOfferBreadcrumbStep.DETAILS
-          ].url = `/offre/collectif/${offerId}/creation`
+          ].url = `/offre/collectif/${offerId}/creation${requestIdUrl}`
         }
     }
   }

@@ -16,6 +16,7 @@ export interface ICollectiveOfferLayout {
   isTemplate?: boolean
   isFromTemplate?: boolean
   haveStock?: boolean
+  requestId?: string | null
 }
 
 const CollectiveOfferLayout = ({
@@ -25,6 +26,7 @@ const CollectiveOfferLayout = ({
   haveStock = false,
   isCreation = false,
   isTemplate = false,
+  requestId = null,
 }: ICollectiveOfferLayout): JSX.Element => {
   const location = useLocation()
   const isSummaryPage = location.pathname.includes('recapitulatif')
@@ -82,6 +84,7 @@ const CollectiveOfferLayout = ({
             offerId={breadCrumpProps.offerId}
             isTemplate={isTemplate}
             haveStock={haveStock}
+            requestId={requestId}
           />
         )
       }
