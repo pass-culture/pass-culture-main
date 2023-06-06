@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import Notification from 'components/Notification/Notification'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useLogNavigation from 'hooks/useLogNavigation'
@@ -17,27 +18,28 @@ interface AppProps {
 }
 
 const App = ({ children }: AppProps): JSX.Element | null => {
+  const isCookieBannerEnabled = useActiveFeature('WIP_ENABLE_COOKIES_BANNER')
   const location = useLocation()
   const { currentUser } = useCurrentUser()
   const [consentedToFirebase, setConsentedToFirebase] = useState(false)
   const [isCookieConsentChecked, setIsCookieConsentChecked] = useState(false)
 
   // Initialize cookie consent modal
-  if (
-    process.env.REACT_APP_ENVIRONMENT_NAME !== 'production' &&
-    location.pathname.indexOf('/adage-iframe') === -1 &&
-    !isCookieConsentChecked
-  ) {
+  if (isCookieBannerEnabled && !isCookieConsentChecked) {
     setTimeout(() => {
-      const orejime = initCookieConsent()
-      // Set the consent on consent change
-      orejime.internals.manager.watch({
-        update: ({ consents }: { consents: { firebase: boolean } }) => {
-          setConsentedToFirebase(consents.firebase)
-        },
-      })
-      // Set the consent if the user has already seen the modal
-      setConsentedToFirebase(orejime.internals.manager.consents['firebase'])
+      if (location.pathname.indexOf('/adage-iframe') === -1) {
+        const orejime = initCookieConsent()
+        // Set the consent on consent change
+        orejime.internals.manager.watch({
+          update: ({ consents }: { consents: { firebase: boolean } }) => {
+            setConsentedToFirebase(consents.firebase)
+          },
+        })
+        // Set the consent if the user has already seen the modal
+        setConsentedToFirebase(orejime.internals.manager.consents['firebase'])
+      } else {
+        setConsentedToFirebase(true)
+      }
     })
     setIsCookieConsentChecked(true)
   }
