@@ -7,6 +7,10 @@ import type { BookingOfferType } from './BookingOfferType';
 
 export type GetBookingResponse = {
   bookingId: string;
+  /**
+   * Pour les offres de type événement, date limite d'annulation par le ou la bénéficiaire.
+   */
+  cancellationLimitDate?: string | null;
   dateOfBirth?: string | null;
   datetime: string;
   ean13?: string | null;
