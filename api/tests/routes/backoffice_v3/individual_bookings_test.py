@@ -395,7 +395,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         assert cancelled.status is bookings_models.BookingStatus.USED
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert f"La réservation {cancelled.token} a été validée" in html_parser.extract_alert(redirected_response.data)
+        assert html_parser.extract_alert(redirected_response.data) == f"La réservation {cancelled.token} a été validée"
 
     def test_uncancel_non_cancelled_booking(self, authenticated_client, bookings):
         # give
@@ -412,11 +412,12 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         assert non_cancelled.status == old_status
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert "Impossible de valider une réservation qui n'est pas annulée" in html_parser.extract_alert(
-            redirected_response.data
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Impossible de valider une réservation qui n'est pas annulée"
         )
 
-    def test_uncancel_booking_sql_constraint_error(self, authenticated_client, bookings):
+    def test_uncancel_booking_insufficient_funds(self, authenticated_client, bookings):
         # given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         cancelled_booking = bookings_factories.CancelledBookingFactory(user=beneficiary, stock__price="250")
@@ -432,7 +433,26 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         assert cancelled_booking.status == bookings_models.BookingStatus.CANCELLED
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert "insufficientFunds" in html_parser.extract_alert(redirected_response.data)
+        assert "The user does not have enough credit to book" in html_parser.extract_alert(redirected_response.data)
+
+    def test_uncancel_booking_no_stock(self, authenticated_client, bookings):
+        # given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        cancelled_booking = bookings_factories.CancelledBookingFactory(user=beneficiary, quantity=2, stock__quantity=1)
+
+        # when
+        response = self.post_to_endpoint(authenticated_client, booking_id=cancelled_booking.id)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(cancelled_booking)
+        assert cancelled_booking.status == bookings_models.BookingStatus.CANCELLED
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert 'Number of bookings cannot exceed "stock.quantity"' in html_parser.extract_alert(
+            redirected_response.data
+        )
 
 
 class CancelBookingTest(PostEndpointHelper):
@@ -454,12 +474,41 @@ class CancelBookingTest(PostEndpointHelper):
         assert confirmed.status is bookings_models.BookingStatus.CANCELLED
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert f"La réservation {confirmed.token} a été annulée" in html_parser.extract_alert(redirected_response.data)
+        assert html_parser.extract_alert(redirected_response.data) == f"La réservation {confirmed.token} a été annulée"
 
-    def test_cant_cancel_reimbursed_booking(self, authenticated_client, bookings):
+    def test_cant_cancel_booking_with_pricing_processed(self, authenticated_client, bookings):
+        # given
+        pricing = finance_factories.PricingFactory(status=finance_models.PricingStatus.PROCESSED)
+
+        # when
+        response = self.post_to_endpoint(authenticated_client, booking_id=pricing.bookingId)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(pricing)
+        assert pricing.booking.status == bookings_models.BookingStatus.USED
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Impossible d'annuler une réservation déjà valorisée ou remboursée"
+        )
+
+    @pytest.mark.parametrize(
+        "with_pricing,expected_message",
+        [
+            (False, "Impossible d'annuler une réservation déjà utilisée"),
+            (True, "Impossible d'annuler une réservation déjà valorisée ou remboursée"),
+        ],
+    )
+    def test_cant_cancel_reimbursed_booking(self, authenticated_client, bookings, with_pricing, expected_message):
         # give
         reimbursed = bookings[3]
         old_status = reimbursed.status
+        if with_pricing:
+            finance_factories.PricingFactory(booking=reimbursed, status=finance_models.PricingStatus.INVOICED)
+            finance_factories.PaymentFactory(booking=reimbursed)
 
         # when
         response = self.post_to_endpoint(authenticated_client, booking_id=reimbursed.id)
@@ -471,9 +520,7 @@ class CancelBookingTest(PostEndpointHelper):
         assert reimbursed.status == old_status
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert "Impossible d'annuler une réservation déjà utilisée" in html_parser.extract_alert(
-            redirected_response.data
-        )
+        assert html_parser.extract_alert(redirected_response.data) == expected_message
 
     def test_cant_cancel_cancelled_booking(self, authenticated_client, bookings):
         # give
@@ -490,7 +537,6 @@ class CancelBookingTest(PostEndpointHelper):
         assert cancelled.status == old_status
 
         redirected_response = authenticated_client.get(response.headers["location"])
-
-        assert "Impossible d'annuler une réservation déjà annulée" in html_parser.extract_alert(
-            redirected_response.data
+        assert (
+            html_parser.extract_alert(redirected_response.data) == "Impossible d'annuler une réservation déjà annulée"
         )
