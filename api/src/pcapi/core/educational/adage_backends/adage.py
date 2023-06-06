@@ -253,3 +253,18 @@ class AdageHttpClient(AdageClient):
             raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
 
         return redactors
+
+    def notify_reimburse_collective_booking(self, data: prebooking.AdageReibursementNotification) -> None:
+        api_url = f"{self.base_url}/v1/reservation-remboursement"
+        try:
+            api_response = requests.post(api_url, headers={self.header_key: self.api_key}, data=data.json())
+        except ConnectionError as exp:
+            logger.info("could not connect to adage, error: %s", traceback.format_exc())
+            raise exceptions.AdageException(
+                status_code=502,
+                response_text="Connection Error",
+                message="Cannot establish connection to omogen api",
+            ) from exp
+
+        if api_response.status_code != 200:
+            raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)

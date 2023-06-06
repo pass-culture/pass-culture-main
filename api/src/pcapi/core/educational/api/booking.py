@@ -27,6 +27,7 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
+from pcapi.routes.adage.v1.serialization.prebooking import serialize_reibursement_notification
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.serialization import collective_bookings_serialize
 
@@ -436,3 +437,24 @@ def uncancel_collective_booking_by_id_from_support(
             "collective_booking": collective_booking.id,
         },
     )
+
+
+def notify_reimburse_collective_booking(booking_id: int, reason: str, value: float, details: str) -> None:
+    booking = educational_repository.find_collective_booking_by_id(booking_id)
+    if not booking:
+        print(f"Collective booking {booking_id} not found")
+        return
+    price = booking.collectiveStock.price
+    if value > price:
+        print(f"Collective booking {booking_id} is priced at {price}. We cannot reimburse more than that.")
+        return
+    value = value or price
+    adage_client.notify_reimburse_collective_booking(
+        data=serialize_reibursement_notification(
+            collective_booking=booking,
+            reason=reason,
+            value=value,
+            details=details,
+        ),
+    )
+    return
