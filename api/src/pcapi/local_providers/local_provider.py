@@ -192,7 +192,9 @@ class LocalProvider(Iterator):
 
             for providable_info in providable_infos:
                 chunk_key = providable_info.id_at_providers + "|" + str(providable_info.type.__name__)
-                pc_object = get_existing_pc_obj(providable_info, chunk_to_insert, chunk_to_update)
+                pc_object = get_existing_pc_obj(
+                    providable_info, chunk_to_insert, chunk_to_update, self.venue_provider.venueId
+                )
                 last_update_for_current_provider = get_last_update_for_provider(self.provider.id, pc_object)
 
                 if pc_object is None:

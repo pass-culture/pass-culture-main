@@ -1,5 +1,4 @@
 import datetime
-import typing
 
 import pcapi.core.offers.models as offers_models
 from pcapi.models import Base
@@ -38,20 +37,6 @@ def _filter_matching_pc_object_in_chunk(
 
 def _extract_dict_values_from_chunk(matching_tuples_in_chunk: list[tuple[str, Model]]) -> list[dict]:
     return list(dictify_pc_object(pc_object_item) for pc_object_key, pc_object_item in matching_tuples_in_chunk)
-
-
-def get_existing_object(
-    model_type: typing.Type[offers_models.Product]
-    | typing.Type[offers_models.Offer]
-    | typing.Type[offers_models.Stock],
-    id_at_providers: str,
-) -> offers_models.Product | offers_models.Offer | offers_models.Stock | None:
-    # exception to the ProvidableMixin because Offer no longer extends this class
-    # idAtProviders has been replaced by idAtProvider property
-    if model_type == offers_models.Offer:
-        return model_type.query.filter_by(idAtProvider=id_at_providers).one_or_none()
-
-    return model_type.query.filter_by(idAtProviders=id_at_providers).one_or_none()
 
 
 def get_last_update_for_provider(

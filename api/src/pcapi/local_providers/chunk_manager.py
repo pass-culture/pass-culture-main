@@ -1,19 +1,35 @@
+import typing
+
 import pcapi.core.offers.models as offers_models
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
-from pcapi.repository.providable_queries import get_existing_object
 from pcapi.repository.providable_queries import insert_chunk
 from pcapi.repository.providable_queries import update_chunk
 
 
 def get_existing_pc_obj(
-    providable_info: ProvidableInfo, chunk_to_insert: dict, chunk_to_update: dict
+    providable_info: ProvidableInfo, chunk_to_insert: dict, chunk_to_update: dict, venue_id: int
 ) -> offers_models.Product | offers_models.Offer | offers_models.Stock | None:
     object_in_current_chunk = get_object_from_current_chunks(providable_info, chunk_to_insert, chunk_to_update)
     if object_in_current_chunk is None:
-        return get_existing_object(providable_info.type, providable_info.id_at_providers)
+        return get_existing_object(providable_info.type, providable_info.id_at_providers, venue_id)
 
     return object_in_current_chunk
+
+
+def get_existing_object(
+    model_type: typing.Type[offers_models.Product]
+    | typing.Type[offers_models.Offer]
+    | typing.Type[offers_models.Stock],
+    id_at_providers: str,
+    venue_id: int,
+) -> offers_models.Product | offers_models.Offer | offers_models.Stock | None:
+    # exception to the ProvidableMixin because Offer no longer extends this class
+    # idAtProviders has been replaced by idAtProvider property
+    if model_type == offers_models.Offer:
+        return model_type.query.filter_by(idAtProvider=id_at_providers, venue_id=venue_id).one_or_none()
+
+    return model_type.query.filter_by(idAtProviders=id_at_providers, venue_id=venue_id).one_or_none()
 
 
 def get_object_from_current_chunks(
