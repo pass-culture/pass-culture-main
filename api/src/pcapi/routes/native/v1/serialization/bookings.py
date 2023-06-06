@@ -48,7 +48,11 @@ class BookingVenueResponse(BaseModel):
 
 
 class BookingOfferExtraData(BaseModel):
+    # FIXME (ghaliela, 06-06-2023)
+    # ISBN should be replace by EAN. Until next app force update we need
+    # to keep isbn field
     isbn: str | None
+    ean: str | None
 
 
 class BookingOfferResponse(BaseModel):
@@ -84,6 +88,11 @@ class BookingStockResponse(BaseModel):
     @classmethod
     def from_orm(cls, stock: Stock) -> "BookingStockResponse":
         stock_response = super().from_orm(stock)
+        if stock_response.offer.extraData and stock_response.offer.extraData.ean:
+            # FIXME (ghaliela, 06-06-2023)
+            # ISBN should be replace by EAN. Until next app force update we need
+            # to keep isbn field
+            stock_response.offer.extraData.isbn = stock_response.offer.extraData.ean
         price_category = getattr(stock, "priceCategory", None)
         stock_response.priceCategoryLabel = price_category.priceCategoryLabel.label if price_category else None
         return stock_response
