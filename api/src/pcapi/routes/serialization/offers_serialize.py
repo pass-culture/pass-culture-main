@@ -201,7 +201,6 @@ class ListOffersStockResponseModel(BaseModel):
 
 class ListOffersOfferResponseModel(BaseModel):
     hasBookingLimitDatetimesPassed: bool
-    id: str
     nonHumanizedId: int
     isActive: bool
     isEditable: bool

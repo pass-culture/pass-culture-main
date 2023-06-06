@@ -213,7 +213,6 @@ describe('screens:StocksThing', () => {
       .mockResolvedValue({ offerersNames: [] })
     jest.spyOn(api, 'listOffers').mockResolvedValue([
       {
-        id: 'id',
         nonHumanizedId: 1,
         status: 'ACTIVE',
         isActive: true,

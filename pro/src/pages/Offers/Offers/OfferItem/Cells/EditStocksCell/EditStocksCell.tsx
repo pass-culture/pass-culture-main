@@ -28,7 +28,7 @@ const EditStocksCell = ({
           to: OFFER_WIZARD_STEP_IDS.STOCKS,
           used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_STOCKS,
           isEdition: true,
-          offerId: offer.id,
+          offerId: offer.nonHumanizedId,
           isDraft: false,
         })
       }

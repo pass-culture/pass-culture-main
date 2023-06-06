@@ -56,7 +56,7 @@ const IndividualOfferItem = ({
       used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_THUMB,
       isEdition: true,
       isDraft: isDraft,
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
     })
   }
   return (

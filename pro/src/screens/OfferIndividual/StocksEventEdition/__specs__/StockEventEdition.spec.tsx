@@ -206,7 +206,6 @@ describe('screens:StocksEventEdition', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({} as StocksResponseModel)
     jest.spyOn(api, 'listOffers').mockResolvedValue([
       {
-        id: 'id',
         nonHumanizedId: 1,
         status: 'ACTIVE',
         isActive: true,

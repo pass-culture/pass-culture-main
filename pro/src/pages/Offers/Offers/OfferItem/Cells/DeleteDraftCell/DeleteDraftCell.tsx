@@ -42,7 +42,7 @@ const DeleteDraftCell = ({ offer, refreshOffers }: IDeleteDraftOffers) => {
       logEvent?.(Events.DELETE_DRAFT_OFFER, {
         from: OFFER_FORM_NAVIGATION_IN.OFFERS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TRASH_ICON,
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         isDraft: true,
       })
       refreshOffers()
