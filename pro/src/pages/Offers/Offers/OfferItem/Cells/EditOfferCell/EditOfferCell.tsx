@@ -35,7 +35,7 @@ const EditOfferCell = ({
       used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_PEN,
       isEdition: true,
       isDraft: isDraft,
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
     })
   }
 

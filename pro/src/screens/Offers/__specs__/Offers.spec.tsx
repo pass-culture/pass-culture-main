@@ -622,13 +622,13 @@ describe('screen Offers', () => {
         // Then
         screen.getByText(offers[0].name)
         expect(
-          screen.queryByTestId(`select-offer-${offers[0].id}`)
+          screen.queryByTestId(`select-offer-${offers[0].nonHumanizedId}`)
         ).toBeDisabled()
         expect(
-          screen.queryByTestId(`select-offer-${offers[1].id}`)
+          screen.queryByTestId(`select-offer-${offers[1].nonHumanizedId}`)
         ).toBeDisabled()
         expect(
-          screen.queryByTestId(`select-offer-${offers[2].id}`)
+          screen.queryByTestId(`select-offer-${offers[2].nonHumanizedId}`)
         ).toBeEnabled()
       })
     })
@@ -709,7 +709,9 @@ describe('screen Offers', () => {
       renderWithProviders(<Offers {...props} />, { storeOverrides: store })
 
       // When
-      const checkbox = screen.getByTestId(`select-offer-${offersRecap[0].id}`)
+      const checkbox = screen.getByTestId(
+        `select-offer-${offersRecap[0].nonHumanizedId}`
+      )
       await userEvent.click(checkbox)
 
       // Then
@@ -819,16 +821,16 @@ describe('screen Offers', () => {
         renderOffers({ ...props, offers }, store)
 
         const firstOfferCheckbox = screen.getByTestId(
-          `select-offer-${offers[0].id}`
+          `select-offer-${offers[0].nonHumanizedId}`
         )
         const secondOfferCheckbox = screen.getByTestId(
-          `select-offer-${offers[1].id}`
+          `select-offer-${offers[1].nonHumanizedId}`
         )
         const thirdOfferCheckbox = screen.getByTestId(
-          `select-offer-${offers[2].id}`
+          `select-offer-${offers[2].nonHumanizedId}`
         )
         const fourthOfferCheckbox = screen.getByTestId(
-          `select-offer-${offers[3].id}`
+          `select-offer-${offers[3].nonHumanizedId}`
         )
 
         // When

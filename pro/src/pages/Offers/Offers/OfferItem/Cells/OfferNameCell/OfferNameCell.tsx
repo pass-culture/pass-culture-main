@@ -49,7 +49,7 @@ const OfferNameCell = ({
       used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TITLE,
       isEdition: true,
       isDraft: isDraft,
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
     })
   }
 

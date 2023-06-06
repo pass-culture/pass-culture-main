@@ -34,11 +34,11 @@ const renderOfferItem = (props: OfferItemProps) =>
 describe('src | components | pages | Offers | OfferItem', () => {
   let props: OfferItemProps
   let eventOffer: Offer
+  const offerId = 1
 
   beforeEach(() => {
     eventOffer = {
-      id: 'M4',
-      nonHumanizedId: 1,
+      nonHumanizedId: offerId,
       isActive: true,
       isEditable: true,
       isEvent: true,
@@ -88,7 +88,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           isDraft: false,
           to: 'recapitulatif',
           used: 'OffersThumb',
-          offerId: 'M4',
+          offerId: offerId,
         }
       )
     })
@@ -111,7 +111,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           isDraft: false,
           to: 'stocks',
           used: 'OffersStocks',
-          offerId: 'M4',
+          offerId: offerId,
         }
       )
     })
@@ -132,7 +132,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           isDraft: false,
           to: 'recapitulatif',
           used: 'OffersPen',
-          offerId: 'M4',
+          offerId: offerId,
         }
       )
     })
@@ -157,7 +157,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         isDraft: false,
         to: 'recapitulatif',
         used: 'OffersTitle',
-        offerId: 'M4',
+        offerId: offerId,
       }
     )
   })
@@ -183,7 +183,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           isDraft: true,
           to: 'informations',
           used: 'OffersTitle',
-          offerId: 'M4',
+          offerId: offerId,
         }
       )
     })
@@ -209,7 +209,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         {
           from: 'Offers',
           used: 'OffersTrashicon',
-          offerId: 'M4',
+          offerId: offerId,
           isDraft: true,
         }
       )
