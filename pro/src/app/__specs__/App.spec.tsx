@@ -80,4 +80,27 @@ describe('src | App', () => {
       expect(window.location.href).toEqual(URL_FOR_MAINTENANCE)
     })
   })
+
+  describe('cookies banner', () => {
+    beforeEach(() => {})
+    it('should render the cookie banner when the feature flag is enabled', async () => {
+      store = {
+        features: {
+          list: [
+            {
+              nameKey: 'WIP_ENABLE_COOKIES_BANNER',
+              isActive: true,
+            },
+          ],
+          initialized: true,
+        },
+      }
+      renderApp(store)
+      expect(
+        await screen.findByText(
+          /Nous collectons et traitons vos informations personnelles dans le but suivant/
+        )
+      ).toBeInTheDocument()
+    })
+  })
 })
