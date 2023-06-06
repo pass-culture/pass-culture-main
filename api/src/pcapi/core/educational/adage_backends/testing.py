@@ -168,3 +168,7 @@ class AdageSpyClient(AdageClient):
                 },
             ]
         raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
+
+    def notify_reimburse_collective_booking(self, data: prebooking.AdageReibursementNotification) -> None:
+        api_url = f"{self.base_url}/v1/reservation-remboursement"
+        testing.adage_requests.append({"url": api_url, "sent_data": ""})

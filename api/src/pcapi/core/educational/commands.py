@@ -142,3 +142,34 @@ def import_eac_dms_application() -> None:
     ]
     for procedure_number in procedures:
         import_dms_applications(procedure_number=procedure_number)
+
+
+@blueprint.cli.command("notify_reimburse_collective_booking")
+@click.option(
+    "--booking_id",
+    type=int,
+    help="Id of the collective booking to reimburse",
+    required=True,
+)
+@click.option(
+    "--reason",
+    type=click.Choice(("MISSING_PEOPLE", "MISSING_DATE", "NO_EVENT"), case_sensitive=False),
+    help="Reason of the reibursement.",
+    required=True,
+)
+@click.option(
+    "--value",
+    type=float,
+    default=0.0,
+    help="Value reimbursed. It must be lower than the booking value. If omited it is set to the booking's value.",
+)
+@click.option(
+    "--details",
+    type=str,
+    default="",
+    help="Free text with details about the reibursement.",
+)
+def notify_reimburse_collective_booking(booking_id: int, reason: str, value: float, details: str) -> None:
+    educational_api_booking.notify_reimburse_collective_booking(
+        booking_id=booking_id, reason=reason.upper(), value=value, details=details
+    )
