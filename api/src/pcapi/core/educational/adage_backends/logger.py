@@ -177,3 +177,7 @@ class AdageLoggerClient(AdageClient):
             raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
 
         return response_content
+
+    def notify_reimburse_collective_booking(self, data: prebooking.AdageReibursementNotification) -> None:
+        api_url = f"{self.base_url}/v1/reservation-remboursement"
+        logger.info("Adage has been called at %s", api_url)

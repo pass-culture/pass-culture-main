@@ -261,3 +261,69 @@ def _get_educational_offer_accessibility(offer: educational_models.CollectiveOff
         disability_compliance.append("Visuel")
 
     return ", ".join(disability_compliance) or "Non accessible"
+
+
+class AdageReibursementNotification(EducationalBookingResponse):
+    reimbursementReason: str
+    reimbursedValue: float
+    reimbursementDetails: str
+
+
+def serialize_reibursement_notification(
+    collective_booking: CollectiveBooking, reason: str, value: float, details: str
+) -> AdageReibursementNotification:
+    stock: educational_models.CollectiveStock = collective_booking.collectiveStock
+    offer: educational_models.CollectiveOffer = stock.collectiveOffer
+    domains = offer.domains
+    venue: offerers_models.Venue = offer.venue
+    return AdageReibursementNotification(
+        accessibility=_get_educational_offer_accessibility(offer),
+        address=_get_collective_offer_address(offer),
+        beginningDatetime=stock.beginningDatetime,
+        cancellationDate=collective_booking.cancellationDate,
+        cancellationLimitDate=collective_booking.cancellationLimitDate,
+        city=venue.city,
+        confirmationDate=collective_booking.confirmationDate,
+        confirmationLimitDate=collective_booking.confirmationLimitDate,
+        contact=_get_collective_offer_contact(offer),
+        coordinates={  # type: ignore [arg-type]
+            "latitude": venue.latitude,
+            "longitude": venue.longitude,
+        },
+        creationDate=collective_booking.dateCreated,
+        description=offer.description,
+        durationMinutes=offer.durationMinutes,
+        expirationDate=None,
+        id=collective_booking.id,
+        isDigital=False,
+        venueName=venue.publicName or venue.name,
+        name=offer.name,
+        numberOfTickets=stock.numberOfTickets,
+        participants=[student.value for student in offer.students],
+        priceDetail=stock.priceDetail,
+        postalCode=venue.postalCode,
+        price=stock.price,
+        quantity=1,
+        redactor={  # type: ignore [arg-type]
+            "email": collective_booking.educationalRedactor.email,
+            "redactorFirstName": collective_booking.educationalRedactor.firstName,
+            "redactorLastName": collective_booking.educationalRedactor.lastName,
+            "redactorCivility": collective_booking.educationalRedactor.civility,
+        },
+        UAICode=collective_booking.educationalInstitution.institutionId,
+        yearId=collective_booking.educationalYearId,  # type: ignore [arg-type]
+        status=get_collective_booking_status(collective_booking),  # type: ignore [arg-type]
+        venueTimezone=venue.timezone,  # type: ignore [arg-type]
+        subcategoryLabel=offer.subcategory.app_label,
+        totalAmount=stock.price,
+        url=offer_app_link(offer),
+        withdrawalDetails=None,
+        domain_ids=[domain.id for domain in domains],
+        domain_labels=[domain.name for domain in domains],
+        interventionArea=offer.interventionArea,
+        imageCredit=offer.imageCredit,
+        imageUrl=offer.imageUrl,
+        reimbursementReason=reason,
+        reimbursedValue=value,
+        reimbursementDetails=details,
+    )
