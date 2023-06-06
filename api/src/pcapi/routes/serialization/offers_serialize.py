@@ -184,10 +184,8 @@ class PatchAllOffersActiveStatusResponseModel(BaseModel):
 
 
 class ListOffersStockResponseModel(BaseModel):
-    id: str
     nonHumanizedId: int
     hasBookingLimitDatetimePassed: bool
-    offerId: str
     remainingQuantity: int | str
     beginningDatetime: datetime | None
     bookingQuantity: int | None

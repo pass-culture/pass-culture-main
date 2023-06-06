@@ -52,8 +52,6 @@ class Returns200Test:
                 "status": "ACTIVE",
                 "stocks": [
                     {
-                        "id": humanize(stock.id),
-                        "offerId": humanize(offer_on_requested_venue.id),
                         "hasBookingLimitDatetimePassed": False,
                         "nonHumanizedId": stock.id,
                         "remainingQuantity": 1000,
@@ -67,7 +65,6 @@ class Returns200Test:
                     "departementCode": departement_code,
                     "nonHumanizedId": requested_venue.id,
                     "isVirtual": False,
-                    "managingOffererId": humanize(offerer.id),
                     "name": "My Venue",
                     "offererName": "My Offerer",
                     "publicName": "My public name",
