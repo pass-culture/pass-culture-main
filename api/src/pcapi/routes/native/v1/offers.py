@@ -24,7 +24,7 @@ from .serialization import offers as serializers
 from .serialization import subcategories_v2 as subcategories_v2_serializers
 
 
-# It will break the WebApp v2 proxy in case of endpoint modification. Read https://github.com/pass-culture/pass-culture-app-native/pull/2808/files#r844891000
+# WebApp v2 proxy expects endpoint to be at "/offer/<int:offer_id>". This path MUST NOT be changed. Its reponse can be changed, though.
 @blueprint.native_v1.route("/offer/<int:offer_id>", methods=["GET"])
 @spectree_serialize(response_model=serializers.OfferResponse, api=blueprint.api, on_error_statuses=[404])
 def get_offer(offer_id: str) -> serializers.OfferResponse:
