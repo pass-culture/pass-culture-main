@@ -76,6 +76,10 @@ const StocksEventList = ({
   const [dateFilter, setDateFilter] = useState<Date | null>(null)
   const [hourFilter, setHourFilter] = useState<Date | null>(null)
   const [priceCategoryFilter, setPriceCategoryFilter] = useState('')
+  const onFilterChange = () => {
+    setPage(1)
+    setIsCheckedArray(stocks.map(() => false))
+  }
 
   const [page, setPage] = useState(1)
   const previousPage = useCallback(() => setPage(page => page - 1), [])
@@ -106,11 +110,6 @@ const StocksEventList = ({
     } else {
       setIsCheckedArray(filteredStocks.map(() => true))
     }
-  }
-
-  const onFilterChange = () => {
-    setPage(1)
-    setIsCheckedArray(stocks.map(() => false))
   }
 
   const onDeleteStock = (index: number) => {
@@ -193,6 +192,7 @@ const StocksEventList = ({
         <caption className={styles['table-caption']}>
           Liste des dates et capacités
         </caption>
+
         <thead>
           <tr>
             <th
@@ -234,6 +234,7 @@ const StocksEventList = ({
               className={cn(styles['time-column'], styles['header'])}
             >
               <span className={styles['header-name']}>Horaire</span>
+
               {areFiltersEnabled && (
                 <>
                   <SortArrow
@@ -263,6 +264,7 @@ const StocksEventList = ({
 
             <th scope="col" className={styles['header']}>
               <span className={styles['header-name']}>Tarif</span>
+
               {areFiltersEnabled && (
                 <>
                   <SortArrow
@@ -308,6 +310,7 @@ const StocksEventList = ({
                 <br />
                 de réservation
               </span>
+
               {areFiltersEnabled && (
                 <>
                   <SortArrow
@@ -333,6 +336,7 @@ const StocksEventList = ({
               className={cn(styles['quantity-column'], styles['header'])}
             >
               <span className={styles['header-name']}>Places</span>
+
               {areFiltersEnabled && (
                 <>
                   <SortArrow
@@ -350,6 +354,7 @@ const StocksEventList = ({
                 </>
               )}
             </th>
+
             <th className={cn(styles['actions-column'], styles['header'])} />
           </tr>
         </thead>

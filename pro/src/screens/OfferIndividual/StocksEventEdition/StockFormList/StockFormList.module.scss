@@ -21,6 +21,20 @@
 
   text-align: left;
   padding-bottom: rem.torem(16px);
+  padding-right: rem.torem(16px);
+}
+
+.header-name {
+  @include fonts.caption;
+}
+
+.filter-input {
+  margin-top: rem.torem(4px);
+  min-height: rem.torem(24px);
+
+  // Resets the cascading style of <th> otherwise
+  // the font-weight is applied to the datepicker dropdown
+  font-weight: initial;
 }
 
 .table-body {
@@ -34,6 +48,10 @@
 .head-booking-limit-datetime {
   // force header to break line
   padding-right: rem.torem(4px);
+}
+
+.head-booking-quantity {
+  width: rem.torem(110px);
 }
 
 .field-layout-label {
