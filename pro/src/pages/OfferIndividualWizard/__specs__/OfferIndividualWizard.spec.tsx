@@ -91,7 +91,6 @@ describe('test OfferIndividualWisard', () => {
           offererName: 'offerer',
           isVirtual: false,
           nonHumanizedId: 1,
-          managingOffererId: '',
         },
         stocks: [],
         isEditable: true,
