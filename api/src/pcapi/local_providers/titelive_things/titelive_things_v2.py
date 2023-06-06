@@ -27,10 +27,12 @@ THINGS_FOLDER_ENCODING_TITELIVE = "iso-8859-1"
 NUMBER_OF_ELEMENTS_PER_LINE = 58  # (58 elements from line + \n)
 PAPER_PRESS_TVA = "2,10"
 COLUMN_INDICES = {
-    # "isbn": 1,
-    # "titre_court": 3,
-    # "is_update": 21,
-    # "libelle_csr": 27,
+    # "isbn": 1,   ## Supprimé
+    # "titre_court": 3,  ## Obselète
+    # "is_update": 21,  ## En attente de retour
+    # "libelle_csr": 27,  ## Literature française
+
+    ## Code EDI Fourniseurs commençant par 301
     "ean13": 0,
     "titre": 1,
     "code_csr": 2,
@@ -55,9 +57,9 @@ COLUMN_INDICES = {
     "traducteur": 21,
     "langue_vo": 22,
     "commentaire": 23,
-    "palmares_pro": 24,
+    "classement_top": 24, # palameres_pro
     "has_image": 25,
-    "libelle_serie": 26,
+    "libelle_serie_bd": 26, # libelle_serie
     "is_scolaire": 27,
     "indice_dewey": 28,
     "code_regroupement": 29,
@@ -378,13 +380,12 @@ def get_infos_from_data_line(elts: list) -> dict:
     # infos["libelle_serie_bd"] = elts[26] # libellé série
     # # infos["ref_editeur"] = elts[38] # numéro de catalogue (absent v19)
     # infos["is_scolaire"] = elts[27] # scolaire
-    # infos["n_extraits_mp3"] = elts[46] # compteur mp3
-    # # infos["url_extrait_pdf"] = elts[41] # url feuilleteur (absent v19)
+    # infos["n_extraits_mp3"] = elts[46] # compteur mp3  ## <-
+    # # infos["url_extrait_pdf"] = elts[41] # url feuilleteur (absent v19)  ## <- est-ce utiliser
     # infos["id_auteur"] = elts[47] # id auteur
     # infos["indice_dewey"] = elts[28] # indice dewey
     # infos["code_regroupement"] = elts[29] # code regroupement
     return infos
-
 
 def get_extra_data_from_infos(infos: dict) -> offers_models.OfferExtraData:
     extra_data = offers_models.OfferExtraData()
@@ -416,7 +417,7 @@ def get_extra_data_from_infos(infos: dict) -> offers_models.OfferExtraData:
         extra_data["distributeur"] = infos["distributeur"]
     return extra_data
 
-
+# editeur
 def is_unreleased_book(product_info: dict) -> bool:
     title = product_info.get("titre", "").lower()
     authors = product_info.get("auteurs", "").lower()

@@ -116,7 +116,7 @@ class TiteliveThingsTest:
         DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
         # DATA_LINE_PARTS[COLUMN_INDICES["libelle_csr"]] = "Littérature scolaire"
         DATA_LINE_PARTS[COLUMN_INDICES["is_scolaire"]] = "1"
-        DATA_LINE_PARTS[COLUMN_INDICES["n_extraits_mp3"]] = "0"
+        # DATA_LINE_PARTS[COLUMN_INDICES["n_extraits_mp3"]] = "0"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -208,7 +208,7 @@ class TiteliveThingsTest:
         DATA_LINE_PARTS[COLUMN_INDICES["code_support"]] = "LE"
         # DATA_LINE_PARTS[COLUMN_INDICES["libelle_csr"]] = "Littérature scolaire"
         DATA_LINE_PARTS[COLUMN_INDICES["is_scolaire"]] = "1"
-        DATA_LINE_PARTS[COLUMN_INDICES["n_extraits_mp3"]] = "0"
+        # DATA_LINE_PARTS[COLUMN_INDICES["n_extraits_mp3"]] = "0"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -234,7 +234,7 @@ class TiteliveThingsTest:
         DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
         DATA_LINE_PARTS[COLUMN_INDICES["code_csr"]] = "2704"
         # DATA_LINE_PARTS[COLUMN_INDICES["libelle_csr"]] = "Littérature scolaire"
-        DATA_LINE_PARTS[COLUMN_INDICES["n_extraits_mp3"]] = ""
+        # DATA_LINE_PARTS[COLUMN_INDICES["n_extraits_mp3"]] = ""
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -260,7 +260,7 @@ class TiteliveThingsTest:
         DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
         DATA_LINE_PARTS[COLUMN_INDICES["code_csr"]] = "2704"
         # DATA_LINE_PARTS[COLUMN_INDICES["libelle_csr"]] = "Littérature scolaire"
-        DATA_LINE_PARTS[COLUMN_INDICES["n_extraits_mp3"]] = ""
+        # DATA_LINE_PARTS[COLUMN_INDICES["n_extraits_mp3"]] = ""
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -294,7 +294,7 @@ class TiteliveThingsTest:
         DATA_LINE_PARTS[COLUMN_INDICES["code_csr"]] = "1234"
         DATA_LINE_PARTS[COLUMN_INDICES["code_support"]] = "O"
         # DATA_LINE_PARTS[COLUMN_INDICES["libelle_csr"]] = "Littérature scolaire"
-        DATA_LINE_PARTS[COLUMN_INDICES["n_extraits_mp3"]] = ""
+        # DATA_LINE_PARTS[COLUMN_INDICES["n_extraits_mp3"]] = ""
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -327,7 +327,7 @@ class TiteliveThingsTest:
         data_line_parts[COLUMN_INDICES["code_csr"]] = "1234"
         data_line_parts[COLUMN_INDICES["code_support"]] = "O"
         # data_line_parts[COLUMN_INDICES["libelle_csr"]] = "Littérature scolaire"
-        data_line_parts[COLUMN_INDICES["n_extraits_mp3"]] = ""
+        # data_line_parts[COLUMN_INDICES["n_extraits_mp3"]] = ""
         data_line = "~".join(data_line_parts)
         get_lines_from_thing_file.return_value = iter([data_line])
 

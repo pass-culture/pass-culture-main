@@ -295,7 +295,7 @@ def get_infos_from_data_line(elts: list) -> dict:
     infos["largeur"] = elts[17]
     infos["epaisseur"] = elts[18]
     infos["poids"] = elts[19]
-    infos["is_update"] = elts[21]
+    infos["is_update"] = elts[21] # statut fiche
     infos["auteurs"] = elts[23]
     infos["datetime_created"] = elts[24]
     infos["date_updated"] = elts[25]
@@ -308,7 +308,7 @@ def get_infos_from_data_line(elts: list) -> dict:
     infos["has_image"] = elts[33]
     infos["code_edi_fournisseur"] = elts[34]
     infos["libelle_serie_bd"] = elts[35]
-    infos["ref_editeur"] = elts[38]
+    infos["ref_editeur"] = elts[38] ## Ref Interne
     infos["is_scolaire"] = elts[39]
     infos["n_extraits_mp3"] = elts[40]
     infos["url_extrait_pdf"] = elts[41]
