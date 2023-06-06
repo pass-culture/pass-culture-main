@@ -292,7 +292,7 @@ const routes: IRoute[] = [
   },
   {
     element: <CollectiveOfferFromRequest />,
-    path: '/offre/collectif/creation/:offerId/requete',
+    path: '/offre/collectif/creation/:offerId/requete/:requestId',
     title: 'Détails - Créer une offre réservable',
     meta: { shouldRedirect: true },
   },
