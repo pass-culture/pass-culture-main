@@ -38,7 +38,7 @@ class OffersTest:
     def test_get_event_offer(self, app):
         extra_data = {
             "author": "mandibule",
-            "isbn": "3838",
+            "ean": "3838",
             "musicSubType": "502",
             "musicType": "501",
             "performer": "interprète",
@@ -170,6 +170,7 @@ class OffersTest:
         assert response.json["extraData"] == {
             "author": "mandibule",
             "isbn": "3838",
+            "ean": "3838",
             "durationMinutes": 33,
             "musicSubType": "Acid Jazz",
             "musicType": "Jazz",

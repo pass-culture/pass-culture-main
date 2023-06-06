@@ -824,6 +824,7 @@ def test_public_api(client):
                     "properties": {
                         "author": {"nullable": True, "title": "Author", "type": "string"},
                         "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
+                        "ean": {"nullable": True, "title": "Ean", "type": "string"},
                         "isbn": {"nullable": True, "title": "Isbn", "type": "string"},
                         "musicSubType": {"nullable": True, "title": "Musicsubtype", "type": "string"},
                         "musicType": {"nullable": True, "title": "Musictype", "type": "string"},
