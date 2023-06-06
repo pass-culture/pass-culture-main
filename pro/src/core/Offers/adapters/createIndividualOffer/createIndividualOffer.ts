@@ -8,7 +8,7 @@ import { serializePostOffer } from './serializers'
 
 type TSuccessPayload = { id: string; nonHumanizedId: number }
 type TFailurePayload = { errors: Record<string, string> }
-export type TCreateIndividualOffer = Adapter<
+type TCreateIndividualOffer = Adapter<
   IOfferIndividualFormValues,
   TSuccessPayload,
   TFailurePayload

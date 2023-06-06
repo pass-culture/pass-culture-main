@@ -2,11 +2,11 @@ import * as yup from 'yup'
 
 import { Constraint } from 'components/ConstraintCheck/imageConstraints'
 
-export interface IGetValidationSchemaArgs {
+interface GetValidationSchemaArgs {
   constraints: Constraint[]
 }
 
-const getValidationSchema = ({ constraints }: IGetValidationSchemaArgs) => {
+const getValidationSchema = ({ constraints }: GetValidationSchemaArgs) => {
   return yup.object().shape(
     constraints.reduce((acc: any, constraint: Constraint) => {
       return {

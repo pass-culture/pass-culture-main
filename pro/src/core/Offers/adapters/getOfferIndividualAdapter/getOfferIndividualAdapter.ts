@@ -3,7 +3,7 @@ import { IOfferIndividual } from 'core/Offers/types'
 
 import { serializeOfferApi } from './serializers'
 
-export type GetOfferIndividualAdapter = Adapter<
+type GetOfferIndividualAdapter = Adapter<
   number | undefined,
   IOfferIndividual,
   null

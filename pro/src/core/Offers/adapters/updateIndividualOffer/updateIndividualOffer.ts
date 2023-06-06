@@ -4,7 +4,7 @@ import { PatchOfferBodyModel } from 'apiClient/v1'
 
 type TSuccessPayload = { id: string; nonHumanizedId: number }
 type TFailurePayload = { errors: Record<string, string> }
-export type TUpdateIndividualOffer = Adapter<
+type TUpdateIndividualOffer = Adapter<
   { serializedOffer: PatchOfferBodyModel; offerId: number },
   TSuccessPayload,
   TFailurePayload
