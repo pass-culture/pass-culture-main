@@ -1,6 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .bi-banner {
   &.attention,
@@ -26,7 +27,6 @@
     }
 
     .icon {
-      position: absolute;
       color: colors.$primary;
       width: rem.torem(24px);
       height: rem.torem(24px);
@@ -84,12 +84,6 @@
     border: rem.torem(1px) solid colors.$primary;
     color: colors.$primary;
 
-    &.title {
-      &::before {
-        content: "IMPORTANT";
-      }
-    }
-
     svg,
     a,
     .bi-link {
@@ -104,14 +98,6 @@
   &.notification-info {
     border: rem.torem(1px) solid colors.$tertiary;
     color: colors.$tertiary;
-
-    &.title {
-      &::before {
-        content: "À SAVOIR";
-        padding: 0 rem.torem(8px) 0 rem.torem(36px);
-        left: rem.torem(18px);
-      }
-    }
 
     svg {
       fill: colors.$tertiary;
@@ -220,4 +206,22 @@
 
 .domain-name-banner {
   margin: rem.torem(0) 0 rem.torem(32px) 0;
+}
+
+.container {
+  @include fonts.bold;
+  
+  display: flex;
+  position: absolute;
+  height: rem.torem(26px);
+  align-items: center;
+  background: colors.$white;
+  top: 0;
+  left: rem.torem(16px);
+  transform: translateY(-50%);
+  padding: 0 rem.torem(8px);
+
+  &-title {
+    margin-left: rem.torem(8px);
+  }
 }
