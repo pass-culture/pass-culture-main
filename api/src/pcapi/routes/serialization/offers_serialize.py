@@ -26,7 +26,7 @@ from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
-from pcapi.validation.routes.offers import check_offer_isbn_is_valid
+from pcapi.validation.routes.offers import check_offer_ean_is_valid
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
 
@@ -99,9 +99,9 @@ class PostOfferBodyModel(BaseModel):
         return name
 
     @root_validator()
-    def validate_isbn(cls, values: dict) -> dict:
+    def validate_ean(cls, values: dict) -> dict:
         if offers_api.should_retrieve_book_from_ean(values.get("subcategory_id", "")):
-            check_offer_isbn_is_valid(values.get("extra_data", {}).get("isbn"))
+            check_offer_ean_is_valid(values.get("extra_data", {}).get("ean"))
         return values
 
     class Config:

@@ -40,8 +40,8 @@ def fill_product_ean(start: int, end: int) -> None:
         start_time = time.perf_counter()
         db.session.execute(
             """
-            update product set "jsonData" = jsonb_set("jsonData", '{ean}', "jsonData"->'isbn')
-            where "jsonData"->>'isbn' != ''
+            update product set "jsonData" = jsonb_set("jsonData", '{ean}', "jsonData"->'ean')
+            where "jsonData"->>'ean' != ''
             and id between :start and :end
             """,
             params={"start": i, "end": i + BATCH_SIZE},
@@ -68,8 +68,8 @@ def fill_offer_ean(start: int, end: int) -> None:
         start_time = time.perf_counter()
         db.session.execute(
             """
-            update offer set "jsonData" = jsonb_set("jsonData", '{ean}', "jsonData"->'isbn')
-            where "jsonData"->>'isbn' != ''
+            update offer set "jsonData" = jsonb_set("jsonData", '{ean}', "jsonData"->'ean')
+            where "jsonData"->>'ean' != ''
             and id between :start and :end
             """,
             params={"start": i, "end": i + BATCH_SIZE},
@@ -84,10 +84,10 @@ def fill_offer_ean(start: int, end: int) -> None:
             print(f"BATCH : id from {i} | eta = {eta}")
 
 
-@blueprint.cli.command("delete_offer_isbn")
+@blueprint.cli.command("delete_offer_ean")
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
-def delete_offer_isbn(start: int, end: int) -> None:
+def delete_offer_ean(start: int, end: int) -> None:
     if start > end:
         raise ValueError('"start" must be less than "end"')
 
@@ -112,10 +112,10 @@ def delete_offer_isbn(start: int, end: int) -> None:
             print(f"BATCH : id from {i} | eta = {eta}")
 
 
-@blueprint.cli.command("delete_product_isbn")
+@blueprint.cli.command("delete_product_ean")
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
-def delete_product_isbn(start: int, end: int) -> None:
+def delete_product_ean(start: int, end: int) -> None:
     if start > end:
         raise ValueError('"start" must be less than "end"')
 
@@ -125,7 +125,7 @@ def delete_product_isbn(start: int, end: int) -> None:
         start_time = time.perf_counter()
         db.session.execute(
             """
-            update product set "jsonData" = "jsonData" - 'isbn'::text
+            update product set "jsonData" = "jsonData" - 'ean'::text
             where id between :start and :end
             """,
             params={"start": i, "end": i + BATCH_SIZE},
