@@ -6,11 +6,7 @@ interface Params extends IOnImageUploadArgs {
   offerId: number
 }
 
-export type TCreateThumbnailAdapter = Adapter<
-  Params,
-  IOfferIndividualImage,
-  null
->
+type TCreateThumbnailAdapter = Adapter<Params, IOfferIndividualImage, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,

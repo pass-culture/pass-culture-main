@@ -2,7 +2,6 @@ import { api } from 'apiClient/api'
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { useAdapter } from 'hooks'
 
 import { CATEGORY_STATUS } from '..'
 
@@ -64,8 +63,3 @@ export const getCategoriesAdapter: GetCategoriesAdapter = async () => {
     return FAILING_RESPONSE
   }
 }
-
-const useGetCategories = () =>
-  useAdapter<IPayload, IPayload>(getCategoriesAdapter)
-
-export default useGetCategories

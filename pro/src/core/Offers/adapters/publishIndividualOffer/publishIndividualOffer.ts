@@ -2,7 +2,7 @@ import { api } from 'apiClient/api'
 
 type TSuccessPayload = null
 type TFailurePayload = null
-export type TPublishIndividualOffer = Adapter<
+type TPublishIndividualOffer = Adapter<
   { offerId: number },
   TSuccessPayload,
   TFailurePayload

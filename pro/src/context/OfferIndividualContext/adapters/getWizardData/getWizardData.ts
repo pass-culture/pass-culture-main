@@ -6,7 +6,7 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { getOfferIndividualVenuesAdapter } from 'core/Venue/adapters/getOfferIndividualVenuesAdapter'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
-interface IGetWizardDataArgs {
+interface GetWizardDataArgs {
   offerOffererId?: string
   offerOffererName?: string
   offerer?: TOffererName
@@ -14,7 +14,7 @@ interface IGetWizardDataArgs {
   isAdmin?: boolean
 }
 
-export interface IOfferWizardData {
+interface OfferWizardData {
   offererNames: TOffererName[]
   venueList: TOfferIndividualVenue[]
   categoriesData: {
@@ -23,9 +23,9 @@ export interface IOfferWizardData {
   }
 }
 
-export type TGetOfferIndividualAdapter = Adapter<
-  IGetWizardDataArgs,
-  IOfferWizardData,
+type TGetOfferIndividualAdapter = Adapter<
+  GetWizardDataArgs,
+  OfferWizardData,
   null
 >
 
@@ -42,7 +42,7 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
 }) => {
   const offererId = isAdmin && offerer ? offerer.nonHumanizedId : queryOffererId
 
-  const successPayload: IOfferWizardData = {
+  const successPayload: OfferWizardData = {
     offererNames: [],
     venueList: [],
     categoriesData: {

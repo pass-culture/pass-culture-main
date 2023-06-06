@@ -1,4 +1,3 @@
-export { ReactComponent as ActionPlayIcon } from 'icons/full-play.svg'
 export { ReactComponent as ActivationCodeErrorIcon } from 'icons/add-activation-code-error.svg'
 export { ReactComponent as AddActivationCodeIcon } from 'icons/add-activation-code-light.svg'
 export { ReactComponent as AddUserIcon } from 'icons/add-user.svg'
