@@ -4,10 +4,9 @@ import React from 'react'
 import router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
-import { collectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
+import { defaultCollectifOfferResponseModel } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferFromRequest from '../CollectiveOfferFromRequest'
@@ -18,6 +17,10 @@ jest.mock('apiClient/api', () => ({
   api: {
     getCollectiveOfferTemplate: jest.fn(),
     getCollectiveOfferRequest: jest.fn(),
+    getCategories: jest.fn(),
+    listEducationalDomains: jest.fn(),
+    listEducationalOfferers: jest.fn(),
+    createCollectiveOffer: jest.fn(),
   },
 }))
 
@@ -27,14 +30,12 @@ jest.mock('react-router-dom', () => ({
     offerId: jest.fn(),
     requestId: jest.fn(),
   }),
+  useNavigate: jest.fn(),
 }))
 
-jest.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
-  createOfferFromTemplate: jest.fn(),
-}))
-
-describe('CollectiveOfferCreation', () => {
+describe('CollectiveOfferFromRequest', () => {
   const notifyError = jest.fn()
+  const mockNavigate = jest.fn()
   const institution = {
     city: 'Paris',
     institutionId: '123456',
@@ -48,15 +49,24 @@ describe('CollectiveOfferCreation', () => {
       ...jest.requireActual('hooks/useNotification'),
       error: notifyError,
     }))
-  })
-  it('should display request information', async () => {
-    const offerTemplate = collectiveOfferTemplateFactory()
+
+    jest
+      .spyOn(api, 'getCollectiveOfferTemplate')
+      .mockResolvedValue(defaultCollectifOfferResponseModel)
     jest
       .spyOn(router, 'useParams')
       .mockReturnValue({ offerId: '1', requestId: '2' })
+    jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     jest
-      .spyOn(api, 'getCollectiveOfferTemplate')
-      .mockResolvedValueOnce(offerTemplate)
+      .spyOn(api, 'getCategories')
+      .mockResolvedValue({ categories: [], subcategories: [] })
+    jest
+      .spyOn(api, 'listEducationalOfferers')
+      .mockResolvedValue({ educationalOfferers: [] })
+    jest.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
+    jest.spyOn(api, 'createCollectiveOffer').mockResolvedValue({ id: '1' })
+  })
+  it('should display request information', async () => {
     jest.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce({
       comment: 'Test unit',
       redactor: {
@@ -78,7 +88,7 @@ describe('CollectiveOfferCreation', () => {
 
     expect(screen.getByText('request@example.com')).toBeInTheDocument()
     expect(screen.getByText('Test unit')).toBeInTheDocument()
-    expect(screen.getByText('Offre de test')).toBeInTheDocument()
+    expect(screen.getByText('mon offre')).toBeInTheDocument()
     expect(screen.getByText('20 juin 2030')).toBeInTheDocument()
     expect(
       screen.getByText(/LYCEE POLYVALENT test request clg/)
@@ -95,9 +105,6 @@ describe('CollectiveOfferCreation', () => {
   })
 
   it('should call api and get error', async () => {
-    jest
-      .spyOn(router, 'useParams')
-      .mockReturnValue({ offerId: '1', requestId: '2' })
     jest.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce({
       isOk: false,
       message: 'Une erreur est survenue lors de la récupération de votre offre',
@@ -124,24 +131,16 @@ describe('CollectiveOfferCreation', () => {
   })
 
   it('should create offer on button click', async () => {
-    const offerTemplate = collectiveOfferTemplateFactory()
-
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
-    jest
-      .spyOn(router, 'useParams')
-      .mockReturnValue({ offerId: '1', requestId: '2' })
-    jest
-      .spyOn(api, 'getCollectiveOfferTemplate')
-      .mockResolvedValueOnce(offerTemplate)
+
     jest.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce({
       comment: 'Test unit',
       redactor: { email: 'request@example.com' },
       institution,
     })
-    jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
 
     renderWithProviders(<CollectiveOfferFromRequest />)
 
@@ -152,7 +151,8 @@ describe('CollectiveOfferCreation', () => {
     await userEvent.click(requestButton)
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
-
-    expect(createFromTemplateUtils.createOfferFromTemplate).toHaveBeenCalled()
+    expect(mockNavigate).toHaveBeenCalledWith(
+      '/offre/collectif/1/creation?structure=1&requete=2'
+    )
   })
 })

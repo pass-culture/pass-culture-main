@@ -20,7 +20,8 @@ export const CollectiveOfferCreation = ({
   isTemplate,
 }: OptionalCollectiveOfferFromParamsProps): JSX.Element => {
   const location = useLocation()
-  const { structure: offererId } = queryParamsFromOfferer(location)
+  const { structure: offererId, requete: requestId } =
+    queryParamsFromOfferer(location)
   const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
     offererId,
     offer
@@ -35,6 +36,7 @@ export const CollectiveOfferCreation = ({
       isCreation
       isTemplate={isTemplate}
       isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+      requestId={requestId}
     >
       <OfferEducationalScreen
         categories={offerEducationalFormData.categories}

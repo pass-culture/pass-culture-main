@@ -10,6 +10,7 @@ import {
   EducationalRedactorResponseModel,
   GetCollectiveOfferCollectiveStockResponseModel,
   GetCollectiveOfferManagingOffererResponseModel,
+  GetCollectiveOfferRequestResponseModel,
   GetCollectiveOfferVenueResponseModel,
   GetCollectiveVenueResponseModel,
   GetVenueResponseModel,
@@ -430,4 +431,68 @@ export const defaultVenueResponseModel: GetVenueResponseModel = {
   name: 'Lieu de test',
   nonHumanizedId: 1,
   venueTypeCode: VenueTypeCode.CENTRE_CULTUREL,
+}
+
+export const defaultRequestResponseModel: GetCollectiveOfferRequestResponseModel =
+  {
+    comment: 'comment',
+    institution: {
+      city: 'Paris',
+      institutionId: 'ABC123',
+      institutionType: 'LYCEE',
+      name: 'Sacré coeur',
+      postalCode: '75000',
+    },
+    redactor: {
+      email: 'Jean.Dupont@example.com',
+      firstName: 'Jean',
+      lastName: 'Dupont',
+    },
+  }
+
+export const defaultCollectifOfferResponseModel = {
+  id: 'A1',
+  isActive: true,
+  offerId: 'A1',
+  bookingEmails: [],
+  name: 'mon offre',
+  contactEmail: 'mail@example.com',
+  contactPhone: '0600000000',
+  dateCreated: 'date',
+  description: 'description',
+  domains: [],
+  hasBookingLimitDatetimesPassed: false,
+  interventionArea: [],
+  isCancellable: true,
+  isEditable: true,
+  nonHumanizedId: 1,
+  offerVenue: {
+    addressType: OfferAddressType.OFFERER_VENUE,
+    otherAddress: '',
+    venueId: 12,
+  },
+  status: OfferStatus.ACTIVE,
+  students: [],
+  subcategoryId: SubcategoryIdEnum.CONCERT,
+  venue: {
+    fieldsUpdated: [],
+    id: 'A1',
+    isVirtual: false,
+    nonHumanizedId: 1,
+    managingOfferer: {
+      city: 'Vélizy',
+      nonHumanizedId: 1,
+      dateCreated: 'date',
+      id: '1',
+      isActive: true,
+      isValidated: true,
+      name: 'mon offerer',
+      postalCode: '78sang40',
+      thumbCount: 1,
+    },
+    managingOffererId: 'A1',
+    name: 'mon lieu',
+    thumbCount: 1,
+  },
+  venueId: 'A1',
 }

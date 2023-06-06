@@ -12,7 +12,8 @@ import { postCollectiveOfferImage } from './postCollectiveOfferImage'
 export const createOfferFromTemplate = async (
   navigate: ReturnType<typeof useNavigate>,
   notify: ReturnType<typeof useNotification>,
-  templateOfferId: number
+  templateOfferId: number,
+  requestId?: string
 ) => {
   const offerTemplateResponse = await getCollectiveOfferTemplateAdapter(
     templateOfferId
@@ -51,5 +52,9 @@ export const createOfferFromTemplate = async (
 
   await postCollectiveOfferImage({ initialValues, notify, payload })
 
-  navigate(`/offre/collectif/${payload.id}/creation?structure=${offererId}`)
+  navigate(
+    `/offre/collectif/${payload.id}/creation?structure=${offererId}${
+      requestId ? `&requete=${requestId}` : ''
+    }`
+  )
 }

@@ -4,6 +4,7 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import * as useNotification from 'hooks/useNotification'
+import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import {
   collectiveOfferFactory,
@@ -18,6 +19,7 @@ jest.mock('apiClient/api', () => ({
   api: {
     getCollectiveOffer: jest.fn(),
     getCollectiveOfferTemplate: jest.fn(),
+    getCollectiveOfferRequest: jest.fn(),
   },
 }))
 
@@ -95,6 +97,47 @@ describe('CollectiveOfferStockCreation', () => {
     const response = await getCollectiveOfferTemplateAdapter(
       dehumanizeId(props.offer.templateId) || 0
     )
+    expect(response.isOk).toBeFalsy()
+    await waitFor(() => {
+      expect(notifyError).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it('should render collective offer stock form from requested offer', async () => {
+    const offerTemplate = collectiveOfferTemplateFactory({
+      educationalPriceDetail: 'Details from template',
+    })
+    jest
+      .spyOn(api, 'getCollectiveOfferTemplate')
+      .mockResolvedValue(offerTemplate)
+    renderCollectiveStockCreation(
+      '/offre/A1/collectif/stocks?requete=1',
+      defaultProps
+    )
+    await waitFor(() => {
+      expect(api.getCollectiveOfferRequest).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it('should render collective offer stock form from requested offer failed', async () => {
+    const notifyError = jest.fn()
+    // @ts-expect-error
+    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      error: notifyError,
+    }))
+
+    jest.spyOn(api, 'getCollectiveOfferRequest').mockRejectedValue({
+      isOk: false,
+      message: 'Une erreur est survenue lors de la récupération de votre offre',
+      payload: null,
+    })
+
+    renderCollectiveStockCreation(
+      '/offre/A1/collectif/stocks?requete=1',
+      defaultProps
+    )
+
+    const response = await getOfferRequestInformationsAdapter(1)
     expect(response.isOk).toBeFalsy()
     await waitFor(() => {
       expect(notifyError).toHaveBeenCalledTimes(1)

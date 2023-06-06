@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1/models/GetCollectiveOfferRequestResponseModel'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
@@ -16,7 +17,9 @@ import {
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useNotification from 'hooks/useNotification'
+import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import patchCollectiveStockAdapter from 'pages/CollectiveOfferStockEdition/adapters/patchCollectiveStockAdapter'
+import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
@@ -36,8 +39,23 @@ export const CollectiveOfferStockCreation = ({
   const navigate = useNavigate()
   const location = useLocation()
   const isCreation = !location.pathname.includes('edition')
+  const { requete: requestId } = queryParamsFromOfferer(location)
 
   const [offerTemplate, setOfferTemplate] = useState<CollectiveOfferTemplate>()
+  const [requestInformations, setRequestInformations] =
+    useState<GetCollectiveOfferRequestResponseModel | null>(null)
+
+  const getOfferRequestInformation = async () => {
+    if (requestId) {
+      const { isOk, message, payload } =
+        await getOfferRequestInformationsAdapter(Number(requestId))
+
+      if (!isOk) {
+        return notify.error(message)
+      }
+      setRequestInformations(payload)
+    }
+  }
 
   useEffect(() => {
     const fetchOfferTemplateDetails = async () => {
@@ -54,6 +72,7 @@ export const CollectiveOfferStockCreation = ({
       setOfferTemplate(payload)
     }
     fetchOfferTemplateDetails()
+    getOfferRequestInformation()
   }, [])
 
   if (isCollectiveOfferTemplate(offer)) {
@@ -62,7 +81,11 @@ export const CollectiveOfferStockCreation = ({
     )
   }
 
-  const initialValues = extractInitialStockValues(offer, offerTemplate)
+  const initialValues = extractInitialStockValues(
+    offer,
+    offerTemplate,
+    requestInformations
+  )
 
   const handleSubmitStock = async (
     offer: CollectiveOffer,
@@ -136,6 +159,7 @@ export const CollectiveOfferStockCreation = ({
       isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
       isTemplate={isTemplate}
       isCreation={isCreation}
+      requestId={requestId}
     >
       <OfferEducationalStockScreen
         initialValues={initialValues}

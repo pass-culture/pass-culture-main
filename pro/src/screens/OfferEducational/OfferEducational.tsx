@@ -63,8 +63,12 @@ const OfferEducational = ({
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useCollectiveOfferImageUpload(offer, isTemplate)
 
-  const { structure: offererId, lieu: venueId } =
-    queryParamsFromOfferer(location)
+  const {
+    structure: offererId,
+    lieu: venueId,
+    requete: requestId,
+  } = queryParamsFromOfferer(location)
+
   const baseInitialValues = computeInitialValuesFromOffer(
     categories,
     userOfferers,
@@ -108,11 +112,9 @@ const OfferEducational = ({
     }
 
     const { payload, isOk, message } = await response
-
     if (!isOk) {
       return notify.error(message)
     }
-
     const offerId = offer?.id ?? payload.id
     await handleImageOnSubmit(offerId)
     if (
@@ -125,7 +127,6 @@ const OfferEducational = ({
         imageCredit: imageOffer?.credit,
       })
     }
-
     if (mode === Mode.EDITION && offer !== undefined) {
       return navigate(
         `/offre/${computeURLCollectiveOfferId(
@@ -134,11 +135,11 @@ const OfferEducational = ({
         )}/collectif/recapitulatif`
       )
     }
-
+    const requestIdParams = requestId ? `?requete=${requestId}` : ''
     navigate(
       isTemplate
         ? `/offre/${payload.id}/collectif/vitrine/creation/recapitulatif`
-        : `/offre/${payload.id}/collectif/stocks`
+        : `/offre/${payload.id}/collectif/stocks${requestIdParams}`
     )
   }
 
