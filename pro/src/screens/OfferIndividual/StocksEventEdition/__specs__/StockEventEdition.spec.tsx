@@ -217,7 +217,6 @@ describe('screens:StocksEventEdition', () => {
           name: 'venue',
           offererName: 'offerer',
           isVirtual: false,
-          id: 'venueid',
           nonHumanizedId: 1,
           managingOffererId: '',
         },
@@ -226,7 +225,6 @@ describe('screens:StocksEventEdition', () => {
         isShowcase: false,
         isThing: false,
         subcategoryId: SubcategoryIdEnum.VOD,
-        venueId: 'venueid',
       },
     ])
   })

@@ -65,7 +65,6 @@ class Returns200Test:
                 "subcategoryId": "SUPPORT_PHYSIQUE_FILM",
                 "venue": {
                     "departementCode": departement_code,
-                    "id": humanize(requested_venue.id),
                     "nonHumanizedId": requested_venue.id,
                     "isVirtual": False,
                     "managingOffererId": humanize(offerer.id),
@@ -73,7 +72,6 @@ class Returns200Test:
                     "offererName": "My Offerer",
                     "publicName": "My public name",
                 },
-                "venueId": humanize(requested_venue.id),
                 "isShowcase": False,
             }
         ]

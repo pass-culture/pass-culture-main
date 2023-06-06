@@ -102,7 +102,6 @@ class CollectiveOfferResponseModel(BaseModel):
     isShowcase: bool
     venue: base_serializers.ListOffersVenueResponseModel
     status: str
-    venueId: str
     educationalInstitution: EducationalInstitutionResponseModel | None
     interventionArea: list[str]
     templateId: str | None
@@ -149,7 +148,6 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         thumbUrl=None,
         subcategoryId=offer.subcategoryId,  # type: ignore [arg-type]
         venue=_serialize_venue(offer.venue),  # type: ignore [arg-type]
-        venueId=humanize(offer.venue.id),  # type: ignore [arg-type]
         status=offer.status.name,  # type: ignore [attr-defined]
         isShowcase=is_offer_template,
         offerId=humanize(offer.offerId),

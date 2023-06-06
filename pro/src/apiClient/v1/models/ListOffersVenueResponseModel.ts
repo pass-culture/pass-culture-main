@@ -4,7 +4,6 @@
 
 export type ListOffersVenueResponseModel = {
   departementCode?: string | null;
-  id: string;
   isVirtual: boolean;
   managingOffererId: string;
   name: string;
