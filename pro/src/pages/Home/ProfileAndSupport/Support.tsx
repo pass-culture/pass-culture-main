@@ -2,21 +2,29 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import { ReactComponent as SettingsIcon } from 'icons/full-parameters.svg'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as MailIcon } from 'icons/ico-mail.svg'
-import { ButtonLink } from 'ui-kit'
+import { Button, ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
+import { initCookieConsent } from 'utils/cookieConsentModal'
 
-const Support = () => {
+import styles from './Support.module.scss'
+
+const Support: () => JSX.Element | null = () => {
+  const isCookieBannerEnabled = useActiveFeature('WIP_ENABLE_COOKIES_BANNER')
+
   const { logEvent } = useAnalytics()
   const location = useLocation()
   return (
     <div className="h-support h-card h-card-secondary-hover">
-      <div className="h-card-inner">
+      <div className={styles['card-inner']}>
         <h3 className="h-card-title">Aide et support</h3>
 
-        <div className="h-card-content">
-          <ul className="hs-link-list">
+        <div className={styles['card-content']}>
+          <ul>
             <li>
               <ButtonLink
                 link={{
@@ -92,6 +100,20 @@ const Support = () => {
                 Conditions Générales d’Utilisation
               </ButtonLink>
             </li>
+            {isCookieBannerEnabled && (
+              <li>
+                <Button
+                  variant={ButtonVariant.TERNARY}
+                  Icon={SettingsIcon}
+                  onClick={() => {
+                    /* istanbul ignore next : library should be tested */
+                    initCookieConsent().show()
+                  }}
+                >
+                  Gestion des cookies
+                </Button>
+              </li>
+            )}
           </ul>
         </div>
       </div>
