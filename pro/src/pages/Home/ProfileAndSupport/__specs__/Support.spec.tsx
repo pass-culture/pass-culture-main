@@ -10,8 +10,9 @@ import Support from '../Support'
 
 const mockLogEvent = jest.fn()
 
-const renderSupport = () => {
+const renderSupport = (storeOverrides: any = {}) => {
   return renderWithProviders(<Support />, {
+    storeOverrides,
     initialRouterEntries: ['/accueil'],
   })
 }
@@ -47,6 +48,7 @@ describe('homepage: ProfileAndSupport: Support', () => {
     it('should trigger events when clicking on link', async () => {
       jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
+        setLogEvent: null,
       }))
       renderSupport()
       const contactLink = screen.getByText('Contacter le support')
@@ -80,6 +82,22 @@ describe('homepage: ProfileAndSupport: Support', () => {
         Events.CLICKED_BEST_PRACTICES_STUDIES,
         { from: '/accueil' }
       )
+    })
+
+    it('should be able to see the button to reopen cookies modal', async () => {
+      const store = {
+        features: {
+          list: [
+            {
+              nameKey: 'WIP_ENABLE_COOKIES_BANNER',
+              isActive: true,
+            },
+          ],
+          initialized: true,
+        },
+      }
+      renderSupport(store)
+      expect(await screen.findByText(/Gestion des cookies/)).toBeInTheDocument()
     })
   })
 })

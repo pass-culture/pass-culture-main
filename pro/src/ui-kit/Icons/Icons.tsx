@@ -28,6 +28,7 @@ const iconList = [
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
+  { src: 'icons/full-parameters.svg' },
   { src: 'icons/stroke-error.svg' },
 
   // Stroke icons
