@@ -1,14 +1,9 @@
 import { PriceCategoryResponseModel } from 'apiClient/v1'
+import { SortingMode } from 'hooks/useColumnSorting'
 
 import { StocksEvent } from './StocksEventList'
 
-export enum SortingMode {
-  ASC = 'asc',
-  DESC = 'desc',
-  NONE = 'none',
-}
-
-export enum SortingColumn {
+export enum StocksEventListSortingColumn {
   DATE = 'DATE',
   HOUR = 'HOUR',
   PRICE_CATEGORY = 'PRICE_CATEGORY',
@@ -80,7 +75,7 @@ const sortByQuantity = (
 export const filterAndSortStocks = (
   stocks: StocksEvent[],
   priceCategories: PriceCategoryResponseModel[],
-  sortingColumn: SortingColumn | null,
+  sortingColumn: StocksEventListSortingColumn | null,
   sortingMode: SortingMode,
   filters: {
     dateFilter: Date | null
@@ -128,15 +123,15 @@ export const filterAndSortStocks = (
   }
 
   switch (sortingColumn) {
-    case SortingColumn.DATE:
+    case StocksEventListSortingColumn.DATE:
       return sortByBeginningDatetime(filteredStocks, sortingMode)
-    case SortingColumn.HOUR:
+    case StocksEventListSortingColumn.HOUR:
       return sortByHour(filteredStocks, sortingMode)
-    case SortingColumn.PRICE_CATEGORY:
+    case StocksEventListSortingColumn.PRICE_CATEGORY:
       return sortByPriceCategory(filteredStocks, priceCategories, sortingMode)
-    case SortingColumn.BOOKING_LIMIT_DATETIME:
+    case StocksEventListSortingColumn.BOOKING_LIMIT_DATETIME:
       return sortByBookingDatetime(filteredStocks, sortingMode)
-    case SortingColumn.QUANTITY:
+    case StocksEventListSortingColumn.QUANTITY:
       return sortByQuantity(filteredStocks, sortingMode)
     default:
       throw new Error('Unknown sorting column')

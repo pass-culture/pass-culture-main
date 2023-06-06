@@ -1,9 +1,9 @@
 import React from 'react'
 
+import { SortingMode } from 'hooks/useColumnSorting'
 import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './SortArrow.module.scss'
-import { SortingMode } from './stocksFiltering'
 
 interface SortArrowProps {
   sortingMode: SortingMode
