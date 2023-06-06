@@ -191,6 +191,7 @@ const VenueFormScreen = ({
         logEvent?.(Events.CLICKED_SAVE_VENUE, {
           from: location.pathname,
           saved: savedSuccess,
+          isEdition: !isCreatingVenue,
         })
       })
   }

@@ -169,6 +169,7 @@ describe('venue form trackers', () => {
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_SAVE_VENUE, {
       from: `/structures/AE/lieux/creation`,
       saved: true,
+      isEdition: false,
     })
   })
 
@@ -181,6 +182,7 @@ describe('venue form trackers', () => {
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_SAVE_VENUE, {
       from: `/structures/AE/lieux/creation`,
       saved: false,
+      isEdition: false,
     })
   })
 
