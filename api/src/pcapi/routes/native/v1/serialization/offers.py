@@ -134,7 +134,11 @@ def get_id_converter(labels_by_id: dict, field_name: str) -> Callable[[str | Non
 class OfferExtraData(BaseModel):
     author: str | None
     durationMinutes: int | None
+    # FIXME (mageoffray, 06-06-2023)
+    # ISBN should be replace by EAN. Until next app force update we need
+    # to keep isbn field
     isbn: str | None
+    ean: str | None
     musicSubType: str | None
     musicType: str | None
     performer: str | None
@@ -189,6 +193,11 @@ class OfferResponse(BaseModel):
         result = super().from_orm(offer)
 
         if result.extraData:
+            # FIXME (mageoffray, 06-06-2023)
+            # ISBN should be replace by EAN. Until next app force update we need
+            # to keep isbn field
+            if result.extraData.ean:
+                result.extraData.isbn = result.extraData.ean
             result.extraData.durationMinutes = offer.durationMinutes
         else:
             result.extraData = OfferExtraData(durationMinutes=offer.durationMinutes)  # type: ignore [call-arg]
