@@ -17,9 +17,9 @@ def check_collective_offer_name_length_is_valid(offer_name: str) -> None:
         raise api_error
 
 
-def check_offer_isbn_is_valid(isbn: str | None) -> None:
-    isbn_length = 13
-    if not isbn or not (isbn and isbn.isnumeric() and len(isbn) == isbn_length):
+def check_offer_ean_is_valid(ean: str | None) -> None:
+    ean_length = 13
+    if not ean or not (ean and ean.isnumeric() and len(ean) == ean_length):
         api_errors = ApiErrors()
-        api_errors.add_error("isbn", "Format d’ISBN incorrect. Exemple de format correct : 9782020427852")
+        api_errors.add_error("ean", "Format d’EAN incorrect. Exemple de format correct : 9782020427852")
         raise api_errors

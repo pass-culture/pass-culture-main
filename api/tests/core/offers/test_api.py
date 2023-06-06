@@ -762,7 +762,7 @@ class CreateOfferTest:
         assert models.Product.query.count() == 1
 
     @override_features(ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION=True)
-    def test_create_offer_livre_edition_from_isbn_with_is_not_compatible_gcu_should_fail(self):
+    def test_create_offer_livre_edition_from_ean_with_is_not_compatible_gcu_should_fail(self):
         factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             description="Les prévisions du psychohistorien Hari Seldon sont formelles.",
@@ -787,7 +787,7 @@ class CreateOfferTest:
         assert exception_info.value.errors == {"ean": ["product not eligible to pass Culture"]}
 
     @override_features(ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION=True)
-    def test_create_offer_livre_edition_from_isbn_with_product_not_exists_should_fail(self):
+    def test_create_offer_livre_edition_from_ean_with_product_not_exists_should_fail(self):
         venue = offerers_factories.VenueFactory()
 
         with pytest.raises(exceptions.NotEligibleEAN) as exception_info:
@@ -1949,12 +1949,12 @@ class ResolveOfferValidationRuleTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class LoadProductByIsbn:
+class LoadProductByEan:
     def test_returns_product_if_found_and_is_gcu_compatible(self):
-        isbn = "2221001648"
-        product = factories.ProductFactory(extraData={"isbn": isbn}, isGcuCompatible=True)
+        ean = "2221001648"
+        product = factories.ProductFactory(extraData={"ean": ean}, isGcuCompatible=True)
 
-        result = api._load_product_by_isbn(isbn)
+        result = api._load_product_by_ean(ean)
 
         assert result == product
 
@@ -1962,18 +1962,18 @@ class LoadProductByIsbn:
         factories.ProductFactory(isGcuCompatible=True)
 
         with pytest.raises(exceptions.NotEligibleEAN) as exception_info:
-            api._load_product_by_isbn("2221001649")
+            api._load_product_by_ean("2221001649")
 
-        assert exception_info.value.errors["isbn"] == ["product not eligible to pass Culture"]
+        assert exception_info.value.errors["ean"] == ["product not eligible to pass Culture"]
 
     def test_raise_api_error_if_product_is_not_gcu_compatible(self):
-        isbn = "2221001648"
-        factories.ProductFactory(extraData={"isbn": isbn}, isGcuCompatible=False)
+        ean = "2221001648"
+        factories.ProductFactory(extraData={"ean": ean}, isGcuCompatible=False)
 
         with pytest.raises(exceptions.NotEligibleEAN) as exception_info:
-            api._load_product_by_isbn(isbn)
+            api._load_product_by_ean(ean)
 
-        assert exception_info.value.errors["isbn"] == ["product not eligible to pass Culture"]
+        assert exception_info.value.errors["ean"] == ["product not eligible to pass Culture"]
 
 
 @freeze_time("2020-01-05 10:00:00")

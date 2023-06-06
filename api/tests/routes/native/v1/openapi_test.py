@@ -151,7 +151,10 @@ def test_public_api(client):
                     "type": "object",
                 },
                 "BookingOfferExtraData": {
-                    "properties": {"isbn": {"nullable": True, "title": "Isbn", "type": "string"}},
+                    "properties": {
+                        "ean": {"nullable": True, "title": "Ean", "type": "string"},
+                        "isbn": {"nullable": True, "title": "Isbn", "type": "string"},
+                    },
                     "title": "BookingOfferExtraData",
                     "type": "object",
                 },
