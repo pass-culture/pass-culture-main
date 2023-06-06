@@ -6,7 +6,6 @@ let offerId = 1
 export const collectiveOfferFactory = (customOffer = {}): Offer => {
   const currentId = offerId++
   return {
-    id: `${currentId}`,
     nonHumanizedId: currentId,
     status: OfferStatus.ACTIVE,
     isActive: true,

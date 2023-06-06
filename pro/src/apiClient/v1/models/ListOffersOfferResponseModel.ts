@@ -8,7 +8,6 @@ import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 
 export type ListOffersOfferResponseModel = {
   hasBookingLimitDatetimesPassed: boolean;
-  id: string;
   isActive: boolean;
   isEditable: boolean;
   isEducational: boolean;

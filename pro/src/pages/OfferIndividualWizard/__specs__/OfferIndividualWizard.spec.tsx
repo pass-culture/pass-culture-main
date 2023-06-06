@@ -79,7 +79,6 @@ describe('test OfferIndividualWisard', () => {
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     jest.spyOn(api, 'listOffers').mockResolvedValue([
       {
-        id: 'id',
         nonHumanizedId: 1,
         status: 'ACTIVE',
         isActive: true,

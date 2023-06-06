@@ -13,7 +13,7 @@ describe('offerHasBookingQuantity', () => {
     stock = stockFactories
     offers = [
       { ...offer, stocks: [stock] },
-      { ...offer, id: 'id2', stocks: [stock] },
+      { ...offer, stocks: [stock] },
     ]
   })
 
