@@ -12,6 +12,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
 import { ResetIcon, TrashFilledIcon } from 'icons'
 import searchIcon from 'icons/search-ico.svg'
@@ -30,8 +31,7 @@ import { formatLocalTimeDateString } from 'utils/timezone'
 import { SortArrow } from './SortArrow'
 import styles from './StocksEventList.module.scss'
 import {
-  SortingColumn,
-  SortingMode,
+  StocksEventListSortingColumn,
   filterAndSortStocks,
 } from './stocksFiltering'
 
@@ -45,7 +45,7 @@ export interface StocksEvent {
   quantity: number | null
 }
 
-interface StocksEventListProps {
+export interface StocksEventListProps {
   stocks: StocksEvent[]
   priceCategories: PriceCategoryResponseModel[]
   className?: string
@@ -71,30 +71,11 @@ const StocksEventList = ({
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
   const areFiltersEnabled = useActiveFeature('WIP_RECURRENCE_FILTERS')
 
-  const [currentSortingColumn, setCurrentSortingColumn] =
-    useState<SortingColumn | null>(null)
-  const [currentSortingMode, setCurrentSortingMode] = useState<SortingMode>(
-    SortingMode.NONE
-  )
+  const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
+    useColumnSorting<StocksEventListSortingColumn>()
   const [dateFilter, setDateFilter] = useState<Date | null>(null)
   const [hourFilter, setHourFilter] = useState<Date | null>(null)
   const [priceCategoryFilter, setPriceCategoryFilter] = useState('')
-
-  const onHeaderClick = (headerName: SortingColumn) => {
-    if (currentSortingColumn !== headerName) {
-      setCurrentSortingColumn(headerName)
-      setCurrentSortingMode(SortingMode.ASC)
-      return
-    } else {
-      if (currentSortingMode === SortingMode.ASC) {
-        setCurrentSortingMode(SortingMode.DESC)
-      } else if (currentSortingMode === SortingMode.DESC) {
-        setCurrentSortingMode(SortingMode.NONE)
-      } else {
-        setCurrentSortingMode(SortingMode.ASC)
-      }
-    }
-  }
 
   const [page, setPage] = useState(1)
   const previousPage = useCallback(() => setPage(page => page - 1), [])
@@ -219,12 +200,15 @@ const StocksEventList = ({
               className={cn(styles['date-column'], styles['header'])}
             >
               <span className={styles['header-name']}>Date</span>
+
               {areFiltersEnabled && (
                 <>
                   <SortArrow
-                    onClick={() => onHeaderClick(SortingColumn.DATE)}
+                    onClick={() =>
+                      onColumnHeaderClick(StocksEventListSortingColumn.DATE)
+                    }
                     sortingMode={
-                      currentSortingColumn === SortingColumn.DATE
+                      currentSortingColumn === StocksEventListSortingColumn.DATE
                         ? currentSortingMode
                         : SortingMode.NONE
                     }
@@ -253,9 +237,11 @@ const StocksEventList = ({
               {areFiltersEnabled && (
                 <>
                   <SortArrow
-                    onClick={() => onHeaderClick(SortingColumn.HOUR)}
+                    onClick={() =>
+                      onColumnHeaderClick(StocksEventListSortingColumn.HOUR)
+                    }
                     sortingMode={
-                      currentSortingColumn === SortingColumn.HOUR
+                      currentSortingColumn === StocksEventListSortingColumn.HOUR
                         ? currentSortingMode
                         : SortingMode.NONE
                     }
@@ -280,9 +266,14 @@ const StocksEventList = ({
               {areFiltersEnabled && (
                 <>
                   <SortArrow
-                    onClick={() => onHeaderClick(SortingColumn.PRICE_CATEGORY)}
+                    onClick={() =>
+                      onColumnHeaderClick(
+                        StocksEventListSortingColumn.PRICE_CATEGORY
+                      )
+                    }
                     sortingMode={
-                      currentSortingColumn === SortingColumn.PRICE_CATEGORY
+                      currentSortingColumn ===
+                      StocksEventListSortingColumn.PRICE_CATEGORY
                         ? currentSortingMode
                         : SortingMode.NONE
                     }
@@ -321,11 +312,13 @@ const StocksEventList = ({
                 <>
                   <SortArrow
                     onClick={() =>
-                      onHeaderClick(SortingColumn.BOOKING_LIMIT_DATETIME)
+                      onColumnHeaderClick(
+                        StocksEventListSortingColumn.BOOKING_LIMIT_DATETIME
+                      )
                     }
                     sortingMode={
                       currentSortingColumn ===
-                      SortingColumn.BOOKING_LIMIT_DATETIME
+                      StocksEventListSortingColumn.BOOKING_LIMIT_DATETIME
                         ? currentSortingMode
                         : SortingMode.NONE
                     }
@@ -343,9 +336,12 @@ const StocksEventList = ({
               {areFiltersEnabled && (
                 <>
                   <SortArrow
-                    onClick={() => onHeaderClick(SortingColumn.QUANTITY)}
+                    onClick={() =>
+                      onColumnHeaderClick(StocksEventListSortingColumn.QUANTITY)
+                    }
                     sortingMode={
-                      currentSortingColumn === SortingColumn.QUANTITY
+                      currentSortingColumn ===
+                      StocksEventListSortingColumn.QUANTITY
                         ? currentSortingMode
                         : SortingMode.NONE
                     }

@@ -23,7 +23,7 @@ import styles from './StockFormList.module.scss'
 
 import { IStockEventFormValues, STOCK_EVENT_FORM_DEFAULT_VALUES } from './'
 
-interface IStockFormListProps {
+interface StockFormListProps {
   offer: IOfferIndividual
   onDeleteStock: (
     stockValues: IStockEventFormValues,
@@ -38,7 +38,7 @@ const StockFormList = ({
   offer,
   onDeleteStock,
   priceCategoriesOptions,
-}: IStockFormListProps) => {
+}: StockFormListProps) => {
   const {
     visible: deleteConfirmVisible,
     showModal: deleteConfirmShow,
@@ -125,6 +125,7 @@ const StockFormList = ({
                 <th></th>
               </tr>
             </thead>
+
             <tbody className={styles['table-body']}>
               {stocksPage.map(
                 (stockValues: IStockEventFormValues, indexInPage) => {
