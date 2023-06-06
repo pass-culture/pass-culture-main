@@ -1,3 +1,4 @@
+import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1/models/GetCollectiveOfferRequestResponseModel'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
@@ -9,9 +10,27 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 export const extractInitialStockValues = (
   offer: CollectiveOffer,
-  offerTemplate?: CollectiveOfferTemplate
+  offerTemplate?: CollectiveOfferTemplate,
+  requestInformations?: GetCollectiveOfferRequestResponseModel | null
 ): OfferEducationalStockFormValues => {
   const { collectiveStock } = offer
+
+  if (requestInformations) {
+    const { totalStudents, totalTeachers, requestedDate } = requestInformations
+
+    const numberOfPlaces =
+      totalStudents || totalTeachers
+        ? (totalStudents ?? 0) + (totalTeachers ?? 0)
+        : DEFAULT_EAC_STOCK_FORM_VALUES.numberOfPlaces
+
+    return {
+      ...DEFAULT_EAC_STOCK_FORM_VALUES,
+      numberOfPlaces,
+      eventDate: requestedDate
+        ? new Date(requestedDate)
+        : DEFAULT_EAC_STOCK_FORM_VALUES.eventDate,
+    }
+  }
 
   if (!collectiveStock) {
     if (offerTemplate?.educationalPriceDetail) {

@@ -40,7 +40,7 @@ const CollectiveOfferFromRequest = (): JSX.Element => {
       requestId,
       templateOfferId: offerId,
     })
-    createOfferFromTemplate(navigate, notify, Number(offerId))
+    createOfferFromTemplate(navigate, notify, Number(offerId), requestId)
   }
 
   const fetchOfferTemplateDetails = async () => {
