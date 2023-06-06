@@ -5,14 +5,14 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferBreadcrumb, {
   CollectiveOfferBreadcrumbStep,
-  IOfferBreadcrumb,
+  OfferBreadcrumbProps,
 } from '../CollectiveOfferBreadcrumb'
 
-const renderCollectiveOfferBreadcrumb = (props: IOfferBreadcrumb) =>
+const renderCollectiveOfferBreadcrumb = (props: OfferBreadcrumbProps) =>
   renderWithProviders(<CollectiveOfferBreadcrumb {...props} />)
 
 describe('src | components | CollectiveOfferBreadcrumb', () => {
-  let props: IOfferBreadcrumb
+  let props: OfferBreadcrumbProps
   const offerId = 1
 
   beforeEach(() => {

@@ -12,7 +12,7 @@ export enum CollectiveOfferBreadcrumbStep {
   CONFIRMATION = 'confirmation',
 }
 
-export interface IOfferBreadcrumb {
+export interface OfferBreadcrumbProps {
   activeStep: CollectiveOfferBreadcrumbStep
   isCreatingOffer: boolean
   isCompletingDraft?: boolean
@@ -31,7 +31,7 @@ const CollectiveOfferBreadcrumb = ({
   offerId = 0,
   className,
   haveStock = false,
-}: IOfferBreadcrumb): JSX.Element => {
+}: OfferBreadcrumbProps): JSX.Element => {
   const stockEditionUrl = useOfferStockEditionURL(true, offerId, true)
   const isEditingExistingOffer = !(isCreatingOffer || isCompletingDraft)
 

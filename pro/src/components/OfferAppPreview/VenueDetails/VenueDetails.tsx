@@ -3,7 +3,7 @@ import React from 'react'
 
 import style from './VenueDetails.module.scss'
 
-export interface IVenueDetailsProps {
+interface VenueDetailsProps {
   name: string
   publicName?: string
   address: string
@@ -19,7 +19,7 @@ const VenueDetails = ({
   postalCode,
   city,
   withdrawalDetails,
-}: IVenueDetailsProps): JSX.Element => {
+}: VenueDetailsProps): JSX.Element => {
   const venueName = publicName || name
   const venueAddressString = [venueName, address, postalCode, city]
     .filter(str => Boolean(str))

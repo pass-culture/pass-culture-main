@@ -14,7 +14,7 @@ export enum BreadcrumbStyle {
   STEPPER = 'stepper',
 }
 
-export interface IBreadcrumb {
+export interface BreadcrumbProps {
   activeStep: string
   isDisabled?: boolean
   styleType?: BreadcrumbStyle
@@ -28,7 +28,7 @@ const Breadcrumb = ({
   styleType = BreadcrumbStyle.DEFAULT,
   steps,
   className,
-}: IBreadcrumb): JSX.Element => {
+}: BreadcrumbProps): JSX.Element => {
   const breadcrumbClassName = cn(
     styles['pc-breadcrumb'],
     styles[`bc-${styleType}`]

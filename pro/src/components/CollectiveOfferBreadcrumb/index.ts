@@ -1,2 +1,4 @@
-export { default } from './CollectiveOfferBreadcrumb'
-export * from './CollectiveOfferBreadcrumb'
+export {
+  default,
+  CollectiveOfferBreadcrumbStep,
+} from './CollectiveOfferBreadcrumb'

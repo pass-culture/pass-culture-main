@@ -5,16 +5,16 @@ import React from 'react'
 import type { Step } from 'components/Breadcrumb'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Breadcrumb, { BreadcrumbStyle, IBreadcrumb } from '../Breadcrumb'
+import Breadcrumb, { BreadcrumbStyle, BreadcrumbProps } from '../Breadcrumb'
 
-const renderBreadcrumb = (props: IBreadcrumb) => {
+const renderBreadcrumb = (props: BreadcrumbProps) => {
   renderWithProviders(<Breadcrumb {...props} />)
 }
 
 const onClick = jest.fn()
 
 describe('Breadcrumb', () => {
-  let props: IBreadcrumb
+  let props: BreadcrumbProps
   let steps: Step[]
 
   beforeEach(() => {
