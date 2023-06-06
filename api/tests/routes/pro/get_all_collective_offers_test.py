@@ -36,7 +36,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
-        assert response_json[0]["venueId"] == humanize(venue.id)
+        assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
         assert response_json[0]["id"] == humanize(offer.id)
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == humanize(stock.id)
@@ -131,7 +131,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
-        assert response_json[0]["venueId"] == humanize(venue.id)
+        assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
         assert response_json[0]["id"] == humanize(offer.id)
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == ""
@@ -170,7 +170,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 2
-        assert response_json[0]["venueId"] == humanize(venue.id)
+        assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
         assert response_json[0]["id"] == humanize(template.id)
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == ""
@@ -180,7 +180,7 @@ class Returns200Test:
             response_json[0]["imageUrl"]
             == f"http://localhost/storage/thumbs/collectiveoffertemplate/{template.imageId}.jpg"
         )
-        assert response_json[1]["venueId"] == humanize(venue.id)
+        assert response_json[1]["venue"]["nonHumanizedId"] == venue.id
         assert response_json[1]["id"] == humanize(offer.id)
         assert len(response_json[1]["stocks"]) == 1
         assert response_json[1]["stocks"][0]["id"] == humanize(stock.id)
@@ -320,7 +320,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
-        assert response_json[0]["venueId"] == humanize(venue.id)
+        assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
         assert response_json[0]["id"] == humanize(offer.id)
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == humanize(stock.id)
@@ -349,7 +349,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
-        assert response_json[0]["venueId"] == humanize(venue.id)
+        assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
         assert response_json[0]["id"] == humanize(template.id)
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == ""

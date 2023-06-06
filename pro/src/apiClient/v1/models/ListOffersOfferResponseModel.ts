@@ -22,6 +22,5 @@ export type ListOffersOfferResponseModel = {
   subcategoryId: SubcategoryIdEnum;
   thumbUrl?: string | null;
   venue: ListOffersVenueResponseModel;
-  venueId: string;
 };
 
