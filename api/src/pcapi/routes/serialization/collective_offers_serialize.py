@@ -90,7 +90,6 @@ class CollectiveOffersBookingResponseModel(BaseModel):
 
 class CollectiveOfferResponseModel(BaseModel):
     hasBookingLimitDatetimesPassed: bool
-    id: str
     nonHumanizedId: int
     isActive: bool
     isEditable: bool
@@ -137,7 +136,6 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
 
     return CollectiveOfferResponseModel(  # type: ignore [call-arg]
         hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,  # type: ignore [arg-type]
-        id=humanize(offer.id),  # type: ignore [arg-type]
         nonHumanizedId=offer.id,
         isActive=False if offer.status == OfferStatus.INACTIVE else offer.isActive,
         isEditable=offer.isEditable,
@@ -150,7 +148,6 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         venue=_serialize_venue(offer.venue),  # type: ignore [arg-type]
         status=offer.status.name,  # type: ignore [attr-defined]
         isShowcase=is_offer_template,
-        offerId=humanize(offer.offerId),
         educationalInstitution=EducationalInstitutionResponseModel.from_orm(institution) if institution else None,
         interventionArea=offer.interventionArea,
         templateId=templateId,
