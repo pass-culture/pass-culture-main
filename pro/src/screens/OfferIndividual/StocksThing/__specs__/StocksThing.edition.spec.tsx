@@ -224,7 +224,6 @@ describe('screens:StocksThing', () => {
           name: 'venue',
           offererName: 'offerer',
           isVirtual: false,
-          id: 'venueid',
           nonHumanizedId: 1,
           managingOffererId: '',
         },
@@ -233,7 +232,6 @@ describe('screens:StocksThing', () => {
         isShowcase: false,
         isThing: false,
         subcategoryId: SubcategoryIdEnum.VOD,
-        venueId: 'venueid',
       },
     ])
     jest

@@ -214,7 +214,6 @@ class ListOffersOfferResponseModel(BaseModel):
     subcategoryId: SubcategoryIdEnum
     venue: base_serializers.ListOffersVenueResponseModel
     status: str
-    venueId: str
     isShowcase: bool | None
 
 

@@ -123,7 +123,6 @@ class BaseVenueResponse(BaseModel):
 
 
 class ListOffersVenueResponseModel(BaseModel):
-    id: str
     nonHumanizedId: int
     isVirtual: bool
     managingOffererId: str

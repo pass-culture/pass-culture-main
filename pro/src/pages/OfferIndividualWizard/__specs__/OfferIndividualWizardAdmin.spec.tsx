@@ -78,7 +78,6 @@ describe('OfferIndividualWizard', () => {
           name: 'venue',
           offererName: 'offerer',
           isVirtual: false,
-          id: 'venueid',
           nonHumanizedId: 1,
           managingOffererId: '',
         },
@@ -87,7 +86,6 @@ describe('OfferIndividualWizard', () => {
         isShowcase: false,
         isThing: false,
         subcategoryId: SubcategoryIdEnum.VOD,
-        venueId: 'venueid',
       },
     ])
   })
