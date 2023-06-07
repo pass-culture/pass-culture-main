@@ -4,7 +4,7 @@ import { IOfferer } from '../types'
 
 import { serializeOffererApi } from './serializers'
 
-export type GetOffererAdapter = Adapter<number | undefined, IOfferer, null>
+type GetOffererAdapter = Adapter<number | undefined, IOfferer, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,

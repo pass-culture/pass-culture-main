@@ -3,7 +3,7 @@ import { VenueProviderResponse } from 'apiClient/v1'
 
 import { GET_DATA_ERROR_MESSAGE } from '../../../shared'
 
-export type GetVenueProvidersAdapter = Adapter<
+type GetVenueProvidersAdapter = Adapter<
   number | undefined,
   VenueProviderResponse[],
   VenueProviderResponse[]

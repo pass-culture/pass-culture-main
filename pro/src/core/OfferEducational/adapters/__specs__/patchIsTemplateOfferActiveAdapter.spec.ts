@@ -2,7 +2,7 @@ import { api } from 'apiClient/api'
 import {
   offerAdageActivated,
   offerAdageDeactivate,
-} from 'core/OfferEducational/constants'
+} from 'core/OfferEducational/'
 
 import { patchIsTemplateOfferActiveAdapter } from '../patchIsTemplateOfferActiveAdapter'
 

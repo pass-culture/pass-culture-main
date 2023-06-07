@@ -3,7 +3,7 @@ import * as yup from 'yup'
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
-export const validationSchema = {
+const validationSchema = {
   accessibility: yup.object().when('isVenueVirtual', {
     is: false,
     then: schema =>

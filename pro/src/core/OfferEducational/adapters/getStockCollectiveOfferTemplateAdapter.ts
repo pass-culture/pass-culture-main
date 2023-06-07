@@ -1,15 +1,15 @@
 import { api } from 'apiClient/api'
 
-import { GetStockOfferSuccessPayload } from '../types'
+import { GetStockOfferSuccessPayload } from '../'
 
-type IPayloadFailure = null
+type PayloadFailure = null
 type GetStockCollectiveOfferTemplateAdapter = Adapter<
   number,
   GetStockOfferSuccessPayload,
-  IPayloadFailure
+  PayloadFailure
 >
 
-const FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
+const FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
   isOk: false,
   message: 'Une erreur est survenue lors de la récupération de votre offre',
   payload: null,
