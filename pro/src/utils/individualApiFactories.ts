@@ -34,10 +34,9 @@ export const individualOfferFactory = (
 ): IOfferIndividual => {
   const priceCategory = customPriceCatgory ?? null
   const stock = customStock === null ? null : customStock
-  offerId = offerId++
 
   return {
-    nonHumanizedId: offerId,
+    nonHumanizedId: offerId++,
     venue: customVenue,
     name: "Un sale quart d'heure en 3 minutes",
     description: 'Ça va faire mal',

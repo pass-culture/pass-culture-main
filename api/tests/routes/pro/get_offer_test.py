@@ -193,20 +193,15 @@ class Returns200Test:
                     "beginningDatetime": "2020-10-15T01:00:00Z",
                     "bookingLimitDatetime": "2020-10-15T01:00:00Z",
                     "bookingsQuantity": 0,
-                    "cancellationLimitDate": "2020-10-15T00:00:00Z",
                     "dateCreated": "2020-10-15T00:00:00Z",
                     "dateModified": "2020-10-15T00:00:00Z",
-                    "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
-                    "fieldsUpdated": [],
                     "hasActivationCode": False,
                     "priceCategoryId": stock.priceCategoryId,
                     "nonHumanizedId": stock.id,
-                    "idAtProviders": None,
                     "isBookable": True,
                     "isEventDeletable": True,
                     "isEventExpired": False,
                     "isSoftDeleted": False,
-                    "lastProviderId": None,
                     "price": 10.1,
                     "quantity": 1000,
                     "remainingQuantity": 1000,
@@ -259,7 +254,6 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         data = response.json
-        assert data["stocks"][0]["cancellationLimitDate"] is None
         assert data["subcategoryId"] == "LIVRE_PAPIER"
 
     @freeze_time("2019-10-15 00:00:00")
@@ -281,7 +275,6 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         data = response.json
-        assert data["stocks"][0]["cancellationLimitDate"] is None
         assert data["subcategoryId"] == "ABO_PLATEFORME_MUSIQUE"
         assert data["stocks"][0]["hasActivationCode"] is True
 
