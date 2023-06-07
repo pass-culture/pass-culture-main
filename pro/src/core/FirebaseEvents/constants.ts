@@ -127,3 +127,9 @@ export enum OFFER_FROM_TEMPLATE_ENTRIES {
 }
 
 export const OFFER_FORM_HOMEPAGE = 'OfferFormHomepage'
+
+export enum SynchronizationEvents {
+  CLICKED_SYNCHRONIZE_OFFER = 'hasClickedSynchronizeOffer',
+  CLICKED_IMPORT = 'hasClickedImport',
+  CLICKED_VALIDATE_IMPORT = 'hasClickedValidateImport',
+}

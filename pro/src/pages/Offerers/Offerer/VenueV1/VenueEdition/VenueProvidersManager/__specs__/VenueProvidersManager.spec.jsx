@@ -48,6 +48,9 @@ describe('src | VenueProvidersManager', () => {
       name: 'Le lieu',
       siret: '12345678901234',
       departementCode: '30',
+      managingOfferer: {
+        nonHumanizedId: 17,
+      },
     }
 
     props = {

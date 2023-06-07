@@ -3,6 +3,8 @@ import React, { useCallback, useState } from 'react'
 import { Form } from 'react-final-form'
 import { Tooltip } from 'react-tooltip'
 
+import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import { Banner, CheckboxField } from 'ui-kit'
 import 'react-tooltip/dist/react-tooltip.css'
 import NumberField from 'ui-kit/form_rff/fields/NumberField'
@@ -13,13 +15,14 @@ import './AllocineProviderForm.scss'
 const AllocineProviderForm = ({
   saveVenueProvider,
   providerId,
+  offererId,
   venueId,
   isCreatedEntity,
   initialValues,
   onCancel,
 }) => {
   const [isLoading, setIsLoading] = useState(false)
-
+  const { logEvent } = useAnalytics()
   const handleSubmit = useCallback(
     formValues => {
       const { isDuo = true, price } = formValues
@@ -37,6 +40,11 @@ const AllocineProviderForm = ({
       setIsLoading(true)
 
       saveVenueProvider(payload)
+      logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
+        offererId: offererId,
+        venueId: venueId,
+        providerId: providerId,
+      })
     },
     [saveVenueProvider, providerId, venueId]
   )
@@ -206,6 +214,7 @@ AllocineProviderForm.propTypes = {
   providerId: PropTypes.number.isRequired,
   saveVenueProvider: PropTypes.func.isRequired,
   venueId: PropTypes.number.isRequired,
+  offererId: PropTypes.number.isRequired,
 }
 
 export default AllocineProviderForm

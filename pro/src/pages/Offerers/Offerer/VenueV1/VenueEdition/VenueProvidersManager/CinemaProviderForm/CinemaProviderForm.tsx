@@ -6,6 +6,8 @@ import { Tooltip } from 'react-tooltip'
 
 import 'react-tooltip/dist/react-tooltip.css'
 import FormLayout from 'components/FormLayout'
+import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import { Checkbox, SubmitButton } from 'ui-kit'
 import Icon from 'ui-kit/Icon/Icon'
 
@@ -16,6 +18,7 @@ interface ICinemaProviderFormProps {
   saveVenueProvider: (values: ICinemaProviderFormValues) => void
   providerId: number
   venueId: number
+  offererId: number
   isCreatedEntity?: boolean
   initialValues?: ICinemaProviderFormValues
   onCancel?: () => void
@@ -25,13 +28,15 @@ export const CinemaProviderForm = ({
   saveVenueProvider,
   providerId,
   venueId,
+  offererId,
   isCreatedEntity = false,
   initialValues,
   onCancel,
 }: ICinemaProviderFormProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
+  const { logEvent } = useAnalytics()
 
-  const handleFromSubmit = (values: ICinemaProviderFormValues) => {
+  const handleFormSubmit = (values: ICinemaProviderFormValues) => {
     const payload = {
       providerId,
       venueId,
@@ -42,12 +47,17 @@ export const CinemaProviderForm = ({
     setIsLoading(true)
 
     saveVenueProvider(payload)
+    logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
+      offererId: offererId,
+      venueId: venueId,
+      providerId: providerId,
+    })
   }
   const formik = useFormik({
     initialValues: initialValues
       ? initialValues
       : DEFAULT_CINEMA_PROVIDER_FORM_VALUES,
-    onSubmit: handleFromSubmit,
+    onSubmit: handleFormSubmit,
   })
 
   return (

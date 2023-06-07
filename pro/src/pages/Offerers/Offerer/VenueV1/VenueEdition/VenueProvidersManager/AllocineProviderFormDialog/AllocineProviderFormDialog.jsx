@@ -13,6 +13,7 @@ const AllocineProviderFormDialog = ({
   initialValues,
   providerId,
   venueId,
+  offererId,
 }) => {
   return (
     <DialogBox
@@ -33,6 +34,7 @@ const AllocineProviderFormDialog = ({
         providerId={providerId}
         saveVenueProvider={onConfirm}
         venueId={venueId}
+        offererId={offererId}
       />
     </DialogBox>
   )
@@ -48,6 +50,7 @@ AllocineProviderFormDialog.propTypes = {
   onConfirm: PropTypes.func.isRequired,
   providerId: PropTypes.number.isRequired,
   venueId: PropTypes.number.isRequired,
+  offererId: PropTypes.number.isRequired,
 }
 
 export default AllocineProviderFormDialog
