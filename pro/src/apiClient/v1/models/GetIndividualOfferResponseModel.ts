@@ -21,7 +21,6 @@ export type GetIndividualOfferResponseModel = {
   externalTicketOfficeUrl?: string | null;
   extraData?: any;
   hasBookingLimitDatetimesPassed: boolean;
-  id: string;
   isActive: boolean;
   isDigital: boolean;
   isDuo: boolean;
@@ -31,7 +30,6 @@ export type GetIndividualOfferResponseModel = {
   isNational: boolean;
   isThing: boolean;
   lastProvider?: GetOfferLastProviderResponseModel | null;
-  lastProviderId?: string | null;
   mediaUrls: Array<string>;
   mediations: Array<GetOfferMediationResponseModel>;
   mentalDisabilityCompliant?: boolean | null;

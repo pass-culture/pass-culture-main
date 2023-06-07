@@ -230,7 +230,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
         : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
     })
     navigate(afterSubmitUrl)
     notify.success(getSuccessMessage(mode))
@@ -253,7 +253,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
       })
     }
     navigate(
@@ -358,7 +358,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
           onClickSaveDraft={handleNextStep({ saveDraft: true })}
           step={OFFER_WIZARD_STEP_IDS.TARIFS}
           isDisabled={formik.isSubmitting}
-          offerId={offer.id}
+          offerId={offer.nonHumanizedId}
         />
       </form>
 
@@ -371,7 +371,7 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
             used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
             isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
             isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-            offerId: offer?.id,
+            offerId: offer?.nonHumanizedId,
           })
         }
       />

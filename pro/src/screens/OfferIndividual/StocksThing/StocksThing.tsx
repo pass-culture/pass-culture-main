@@ -237,7 +237,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
       })
     }
     /* istanbul ignore next: DEBT, TO FIX */
@@ -497,7 +497,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
               onClickSaveDraft={handleNextStep({ saveDraft: true })}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
               isDisabled={formik.isSubmitting || isDisabled}
-              offerId={offer.id}
+              offerId={offer.nonHumanizedId}
               shouldTrack={shouldTrack}
               submitAsButton={isFormEmpty()}
             />
@@ -538,7 +538,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
             used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
             isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
             isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-            offerId: offer?.id,
+            offerId: offer?.nonHumanizedId,
           })
         }
       />

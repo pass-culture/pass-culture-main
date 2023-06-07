@@ -65,7 +65,6 @@ export const GetIndividualOfferFactory = (
   const currentOfferId = offerId++
 
   return {
-    id: `OFFER${currentOfferId}`,
     name: `Le nom de l’offre ${currentOfferId}`,
     isActive: true,
     isEditable: true,
@@ -187,7 +186,7 @@ export const bookingRecapFactory = (
     ],
     bookingToken: `TOKEN${bookingId++}`,
     stock: {
-      offerIdentifier: offer.id,
+      offerIdentifier: 'AA',
       offerId: offer.nonHumanizedId,
       offerName: offer.name,
       offerIsEducational: false,

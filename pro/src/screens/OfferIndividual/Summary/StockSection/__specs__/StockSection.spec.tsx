@@ -89,7 +89,6 @@ describe('Summary stock section', () => {
       props = {
         offer: individualOfferFactory(
           {
-            id: 'TEST_OFFER_ID',
             isEvent: false,
             status: OfferStatus.SOLD_OUT,
           },
@@ -122,7 +121,6 @@ describe('Summary stock section', () => {
       props = {
         offer: individualOfferFactory(
           {
-            id: 'TEST_OFFER_ID',
             status: OfferStatus.EXPIRED,
             isEvent: false,
           },
@@ -153,7 +151,6 @@ describe('Summary stock section', () => {
     it('should render no stock warning', async () => {
       props = {
         offer: individualOfferFactory({
-          id: 'TEST_OFFER_ID',
           status: OfferStatus.SOLD_OUT,
           isEvent: false,
           stocks: [],
@@ -184,7 +181,6 @@ describe('Summary stock section', () => {
       props = {
         offer: individualOfferFactory(
           {
-            id: 'TEST_OFFER_ID',
             status: OfferStatus.ACTIVE,
             isEvent: false,
           },
@@ -240,7 +236,6 @@ describe('Summary stock section', () => {
       props = {
         offer: individualOfferFactory(
           {
-            id: 'TEST_OFFER_ID',
             status: OfferStatus.EXPIRED,
           },
           individualStockFactory({
@@ -257,7 +252,6 @@ describe('Summary stock section', () => {
       props = {
         offer: individualOfferFactory(
           {
-            id: 'TEST_OFFER_ID',
             status: OfferStatus.ACTIVE,
           },
           individualStockFactory({
@@ -278,7 +272,6 @@ describe('Summary stock section', () => {
       props = {
         offer: individualOfferFactory(
           {
-            id: 'TEST_OFFER_ID',
             status: OfferStatus.ACTIVE,
             isEvent: true,
             stocks: [
@@ -360,7 +353,6 @@ describe('Summary stock section', () => {
       props = {
         offer: individualOfferFactory(
           {
-            id: 'TEST_OFFER_ID',
             status: OfferStatus.ACTIVE,
             stocks: [
               individualStockFactory({

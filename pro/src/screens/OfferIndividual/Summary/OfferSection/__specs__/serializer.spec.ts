@@ -17,7 +17,6 @@ describe('routes::Summary::serializers', () => {
 
   beforeEach(() => {
     offer = {
-      id: 'AA',
       nonHumanizedId: 12,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
@@ -147,14 +146,12 @@ describe('routes::Summary::serializers', () => {
     )
 
     expect(offerSerialized).toEqual({
-      id: 'AA',
       nonHumanizedId: 12,
       name: 'Offer name',
       description: 'Offer description',
       categoryName: 'Catégorie',
       subCategoryName: 'sub-category proLabel',
       subcategoryId: 'SCID',
-
       venueName: 'Venue name',
       venuePublicName: 'Venue publicName',
       venueDepartmentCode: '75',

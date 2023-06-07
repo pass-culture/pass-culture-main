@@ -58,7 +58,7 @@ const Template: ComponentStory<typeof StocksEventList> = () => (
           }),
         ]}
         setStocks={() => {}}
-        offerId="AA"
+        offerId={1}
         departmentCode="75"
       />
     </Provider>

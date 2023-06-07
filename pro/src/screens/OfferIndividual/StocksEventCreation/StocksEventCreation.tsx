@@ -109,7 +109,7 @@ export const StocksEventCreation = ({
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
       })
     }
     /* istanbul ignore next: DEBT, TO FIX */
@@ -177,7 +177,7 @@ export const StocksEventCreation = ({
             : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
           isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
           isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-          offerId: offer.id,
+          offerId: offer.nonHumanizedId,
         })
         setIsClickingFromActionBar(false)
         notify.success(getSuccessMessage(mode))
@@ -214,7 +214,7 @@ export const StocksEventCreation = ({
           setStocks={setStocks}
           priceCategories={offer.priceCategories}
           departmentCode={offer.venue.departmentCode}
-          offerId={offer.id}
+          offerId={offer.nonHumanizedId}
         />
       )}
 
@@ -239,7 +239,7 @@ export const StocksEventCreation = ({
         onClickPrevious={handlePreviousStep}
         onClickSaveDraft={handleNextStep({ saveDraft: true })}
         step={OFFER_WIZARD_STEP_IDS.STOCKS}
-        offerId={offer.id}
+        offerId={offer.nonHumanizedId}
       />
 
       <RouteLeavingGuardOfferIndividual
@@ -251,7 +251,7 @@ export const StocksEventCreation = ({
             used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
             isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
             isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-            offerId: offer?.id,
+            offerId: offer?.nonHumanizedId,
           })
         }
       />

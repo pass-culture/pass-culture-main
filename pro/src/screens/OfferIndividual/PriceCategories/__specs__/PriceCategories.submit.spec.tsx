@@ -62,7 +62,7 @@ describe('PriceCategories', () => {
   })
 
   it('should notify and submit when clicking on Etape suivante in creation', async () => {
-    renderPriceCategories({ offer: individualOfferFactory({ id: 'AA' }) })
+    renderPriceCategories({ offer: individualOfferFactory() })
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
@@ -82,7 +82,6 @@ describe('PriceCategories', () => {
     const priceCategory = priceCategoryFactory()
     renderPriceCategories({
       offer: individualOfferFactory({
-        id: 'AA',
         priceCategories: [priceCategory],
       }),
     })
@@ -106,7 +105,7 @@ describe('PriceCategories', () => {
 
   it('should notify and submit when clicking on Etape suivante in draft', async () => {
     renderPriceCategories(
-      { offer: individualOfferFactory({ id: 'AA' }) },
+      { offer: individualOfferFactory() },
       generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
@@ -132,7 +131,7 @@ describe('PriceCategories', () => {
 
   it('should notify and submit when clicking on Sauvegarder le brouillon in draft', async () => {
     renderPriceCategories(
-      { offer: individualOfferFactory({ id: 'AA' }) },
+      { offer: individualOfferFactory() },
       generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
@@ -160,7 +159,7 @@ describe('PriceCategories', () => {
     renderPriceCategories(
       {
         offer: individualOfferFactory(
-          { id: 'AA' },
+          undefined,
           individualStockFactory({ priceCategoryId: 666, bookingsQuantity: 0 }),
           undefined,
           priceCategoryFactory({ id: 666 })
@@ -202,7 +201,7 @@ describe('PriceCategories', () => {
     renderPriceCategories(
       {
         offer: individualOfferFactory(
-          { id: 'AA' },
+          undefined,
           individualStockFactory({
             priceCategoryId: 666,
             bookingsQuantity: 17,
@@ -247,7 +246,7 @@ describe('PriceCategories', () => {
     renderPriceCategories(
       {
         offer: individualOfferFactory(
-          { id: 'AA' },
+          undefined,
           individualStockFactory({
             priceCategoryId: 666,
             bookingsQuantity: 17,
@@ -289,7 +288,7 @@ describe('PriceCategories', () => {
 
   it('should notify and submit when clicking on Enregistrer les modifications in edition', async () => {
     renderPriceCategories(
-      { offer: individualOfferFactory({ id: 'AA' }) },
+      { offer: individualOfferFactory() },
       generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
@@ -317,7 +316,7 @@ describe('PriceCategories', () => {
     jest.spyOn(api, 'postPriceCategories').mockRejectedValue({})
 
     renderPriceCategories(
-      { offer: individualOfferFactory({ id: 'AA' }) },
+      { offer: individualOfferFactory() },
       generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,

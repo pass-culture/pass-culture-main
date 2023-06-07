@@ -13,7 +13,6 @@ describe('setFormReadOnlyFields', () => {
 
   beforeEach(() => {
     offer = {
-      id: 'AA',
       nonHumanizedId: 12,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',

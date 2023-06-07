@@ -231,7 +231,6 @@ describe('OfferIndividualForm', () => {
 
   const imageSectionDataset: (Partial<IOfferIndividual> | undefined)[] = [
     {
-      id: 'AA',
       stocks: [],
     },
     undefined,

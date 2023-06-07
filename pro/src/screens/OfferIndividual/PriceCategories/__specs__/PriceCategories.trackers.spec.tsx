@@ -19,6 +19,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import PriceCategories, { IPriceCategories } from '../PriceCategories'
 
 const mockLogEvent = jest.fn()
+const offerId = 1
 
 const renderPriceCategories = (
   props: IPriceCategories,
@@ -27,7 +28,7 @@ const renderPriceCategories = (
       step: OFFER_WIZARD_STEP_IDS.TARIFS,
       mode: OFFER_WIZARD_MODE.CREATION,
     }),
-    { offerId: 'AA' }
+    { offerId: offerId }
   )
 ) =>
   renderWithProviders(
@@ -73,7 +74,9 @@ describe('trackers for PriceCategories', () => {
   })
 
   it('should track when clicking on Etape suivante in creation', async () => {
-    renderPriceCategories({ offer: individualOfferFactory({ id: 'AA' }) })
+    renderPriceCategories({
+      offer: individualOfferFactory({ nonHumanizedId: offerId }),
+    })
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
@@ -90,7 +93,7 @@ describe('trackers for PriceCategories', () => {
         from: 'tarifs',
         isDraft: true,
         isEdition: false,
-        offerId: 'AA',
+        offerId: offerId,
         to: 'stocks',
         used: 'StickyButtons',
       }
@@ -98,7 +101,9 @@ describe('trackers for PriceCategories', () => {
   })
 
   it('should track when clicking on Etape précédente in creation', async () => {
-    renderPriceCategories({ offer: individualOfferFactory({ id: 'AA' }) })
+    renderPriceCategories({
+      offer: individualOfferFactory({ nonHumanizedId: offerId }),
+    })
 
     await userEvent.click(screen.getByText('Étape précédente'))
 
@@ -110,7 +115,7 @@ describe('trackers for PriceCategories', () => {
         from: 'tarifs',
         isDraft: true,
         isEdition: false,
-        offerId: 'AA',
+        offerId: offerId,
         to: 'informations',
         used: 'StickyButtons',
       }
@@ -118,7 +123,9 @@ describe('trackers for PriceCategories', () => {
   })
 
   it('should track when clicking on Sauvegarder le brouillon in creation', async () => {
-    renderPriceCategories({ offer: individualOfferFactory({ id: 'AA' }) })
+    renderPriceCategories({
+      offer: individualOfferFactory({ nonHumanizedId: offerId }),
+    })
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
@@ -135,7 +142,7 @@ describe('trackers for PriceCategories', () => {
         from: 'tarifs',
         isDraft: true,
         isEdition: false,
-        offerId: 'AA',
+        offerId: offerId,
         to: 'tarifs',
         used: 'DraftButtons',
       }
@@ -144,13 +151,13 @@ describe('trackers for PriceCategories', () => {
 
   it('should track when clicking on Etape suivante in draft', async () => {
     renderPriceCategories(
-      { offer: individualOfferFactory({ id: 'AA' }) },
+      { offer: individualOfferFactory({ nonHumanizedId: offerId }) },
       generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.DRAFT,
         }),
-        { offerId: 'AA' }
+        { offerId: offerId }
       )
     )
     await userEvent.type(
@@ -169,7 +176,7 @@ describe('trackers for PriceCategories', () => {
         from: 'tarifs',
         isDraft: true,
         isEdition: true,
-        offerId: 'AA',
+        offerId: offerId,
         to: 'stocks',
         used: 'StickyButtons',
       }
@@ -178,13 +185,13 @@ describe('trackers for PriceCategories', () => {
 
   it('should track when clicking on Etape précédente in draft', async () => {
     renderPriceCategories(
-      { offer: individualOfferFactory({ id: 'AA' }) },
+      { offer: individualOfferFactory({ nonHumanizedId: offerId }) },
       generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.DRAFT,
         }),
-        { offerId: 'AA' }
+        { offerId: offerId }
       )
     )
 
@@ -198,7 +205,7 @@ describe('trackers for PriceCategories', () => {
         from: 'tarifs',
         isDraft: true,
         isEdition: true,
-        offerId: 'AA',
+        offerId: offerId,
         to: 'informations',
         used: 'StickyButtons',
       }
@@ -207,13 +214,13 @@ describe('trackers for PriceCategories', () => {
 
   it('should track when clicking on Sauvegarder le brouillon in draft', async () => {
     renderPriceCategories(
-      { offer: individualOfferFactory({ id: 'AA' }) },
+      { offer: individualOfferFactory({ nonHumanizedId: offerId }) },
       generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.DRAFT,
         }),
-        { offerId: 'AA' }
+        { offerId: offerId }
       )
     )
     await userEvent.type(
@@ -232,7 +239,7 @@ describe('trackers for PriceCategories', () => {
         from: 'tarifs',
         isDraft: true,
         isEdition: true,
-        offerId: 'AA',
+        offerId: offerId,
         to: 'tarifs',
         used: 'DraftButtons',
       }
@@ -241,13 +248,13 @@ describe('trackers for PriceCategories', () => {
 
   it('should track when clicking on Enregistrer les modifications in edition', async () => {
     renderPriceCategories(
-      { offer: individualOfferFactory({ id: 'AA' }) },
+      { offer: individualOfferFactory({ nonHumanizedId: offerId }) },
       generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
-        { offerId: 'AA' }
+        { offerId: offerId }
       )
     )
     await userEvent.type(
@@ -266,7 +273,7 @@ describe('trackers for PriceCategories', () => {
         from: 'tarifs',
         isDraft: false,
         isEdition: true,
-        offerId: 'AA',
+        offerId: offerId,
         to: 'recapitulatif',
         used: 'StickyButtons',
       }
@@ -275,13 +282,13 @@ describe('trackers for PriceCategories', () => {
 
   it('should track when clicking on Annuler et quitter in edition', async () => {
     renderPriceCategories(
-      { offer: individualOfferFactory({ id: 'AA' }) },
+      { offer: individualOfferFactory({ nonHumanizedId: offerId }) },
       generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
-        { offerId: 'AA' }
+        { offerId: offerId }
       )
     )
     await userEvent.click(screen.getByText('Annuler et quitter'))
@@ -294,7 +301,7 @@ describe('trackers for PriceCategories', () => {
         from: 'tarifs',
         isDraft: false,
         isEdition: true,
-        offerId: 'AA',
+        offerId: offerId,
         to: 'Offers',
         used: 'StickyButtons',
       }
@@ -302,7 +309,9 @@ describe('trackers for PriceCategories', () => {
   })
 
   it('should track when clicking from routeLeavingGuard but cancelling', async () => {
-    renderPriceCategories({ offer: individualOfferFactory({ id: 'AA' }) })
+    renderPriceCategories({
+      offer: individualOfferFactory({ nonHumanizedId: offerId }),
+    })
 
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif'),
@@ -322,7 +331,7 @@ describe('trackers for PriceCategories', () => {
         from: 'tarifs',
         isDraft: true,
         isEdition: false,
-        offerId: 'AA',
+        offerId: offerId,
         to: 'informations',
         used: 'RouteLeavingGuard',
       }

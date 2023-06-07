@@ -73,6 +73,7 @@ const renderInformationsScreen = (
     showVenuePopin: {},
     ...contextOverride,
   }
+
   return renderWithProviders(
     <>
       <Routes>
@@ -126,6 +127,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
   const offererId = 1
   const physicalVenueId = 1
   const virtualVenueId = 2
+  const offerId = 12
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
@@ -184,8 +186,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     }
 
     offer = {
-      id: 'BQ',
-      nonHumanizedId: 12,
+      nonHumanizedId: offerId,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
@@ -253,7 +254,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     }
 
     contextOverride = {
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
       offer: offer,
       venueList: [
         venue,
@@ -292,12 +293,10 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((c, s, _v) => [c, s])
     jest.spyOn(api, 'patchOffer').mockResolvedValue({
-      id: 'AE',
-      nonHumanizedId: 1,
+      nonHumanizedId: offerId,
     } as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'postOffer').mockResolvedValue({
-      id: 'AE',
-      nonHumanizedId: 1,
+      nonHumanizedId: offerId,
     } as GetIndividualOfferResponseModel)
     jest
       .spyOn(api, 'getOffer')
@@ -490,6 +489,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
 
   it('should track when submitting offer', async () => {
     renderInformationsScreen(props, contextOverride)
+
     const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.clear(nameField)
     await userEvent.type(nameField, 'Le nom de mon offre édité')
@@ -506,7 +506,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         from: 'informations',
         isDraft: false,
         isEdition: true,
-        offerId: 'AE',
+        offerId: offer.nonHumanizedId,
         to: 'recapitulatif',
         used: 'StickyButtons',
       }
@@ -526,7 +526,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         from: 'informations',
         isDraft: false,
         isEdition: true,
-        offerId: 'BQ',
+        offerId: offer.nonHumanizedId,
         to: 'Offers',
         used: 'StickyButtons',
       }

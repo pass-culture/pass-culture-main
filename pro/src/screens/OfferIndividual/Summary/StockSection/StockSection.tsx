@@ -34,7 +34,7 @@ const StockSection = ({ offer, canBeDuo }: IStockSection): JSX.Element => {
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
     })
   }
 

@@ -288,7 +288,7 @@ describe('navigation and submit', () => {
         from: 'stocks',
         isDraft: true,
         isEdition: false,
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         to: 'tarifs',
         used: 'StickyButtons',
       }
@@ -317,7 +317,7 @@ describe('navigation and submit', () => {
         from: 'stocks',
         isDraft: true,
         isEdition: false,
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         to: 'recapitulatif',
         used: 'StickyButtons',
       }
@@ -347,7 +347,7 @@ describe('navigation and submit', () => {
         from: 'stocks',
         isDraft: true,
         isEdition: false,
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         to: 'stocks',
         used: 'DraftButtons',
       }
@@ -400,7 +400,7 @@ describe('navigation and submit', () => {
         from: 'stocks',
         isDraft: true,
         isEdition: false,
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         to: '/outside',
         used: 'RouteLeavingGuard',
       }

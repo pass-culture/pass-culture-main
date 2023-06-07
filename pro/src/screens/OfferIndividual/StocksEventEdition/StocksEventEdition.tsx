@@ -196,7 +196,7 @@ const StocksEventEdition = ({
           : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: true,
         isDraft: false,
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
       })
       notify.success(getSuccessMessage(mode))
     } else {
@@ -354,7 +354,7 @@ const StocksEventEdition = ({
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: true,
         isDraft: false,
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
       })
     }
     /* istanbul ignore next: DEBT, TO FIX */
@@ -401,7 +401,7 @@ const StocksEventEdition = ({
               onClickPrevious={handlePreviousStep}
               onClickSaveDraft={handleNextStep({ saveDraft: true })}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
-              offerId={offer.id}
+              offerId={offer.nonHumanizedId}
               shouldTrack={shouldTrack}
               submitAsButton={isFormEmpty()}
             />
@@ -418,7 +418,7 @@ const StocksEventEdition = ({
             used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
             isEdition: true,
             isDraft: false,
-            offerId: offer?.id,
+            offerId: offer?.nonHumanizedId,
           })
         }
       />

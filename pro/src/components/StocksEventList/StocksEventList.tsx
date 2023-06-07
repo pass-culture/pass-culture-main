@@ -50,7 +50,7 @@ interface StocksEventListProps {
   priceCategories: PriceCategoryResponseModel[]
   className?: string
   departmentCode: string
-  offerId: string
+  offerId: number
   setStocks: (stocks: StocksEvent[]) => void
 }
 
