@@ -235,3 +235,14 @@ class BlacklistedDomainNameFactory(testing.BaseFactory):
         model = models.BlacklistedDomainName
 
     domain = factory.Faker("domain_name")
+
+
+class ProductWhitelistFactory(testing.BaseFactory):
+    class Meta:
+        model = models.ProductWhitelist
+
+    comment = factory.Sequence("OK {} !".format)
+    title = factory.Sequence("Ducobu #{} !".format)
+    ean = factory.fuzzy.FuzzyText(length=13)
+    dateCreated = factory.LazyFunction(datetime.utcnow)
+    author = factory.SubFactory(users_factories.AdminFactory)

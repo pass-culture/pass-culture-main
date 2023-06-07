@@ -2,6 +2,7 @@ import dataclasses
 import datetime
 import enum
 import typing
+from typing import TYPE_CHECKING
 
 import pydantic
 from pydantic.class_validators import validator
@@ -10,6 +11,7 @@ import pydantic.errors
 import pytz
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+import sqlalchemy.orm as sa_orm
 
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.users import models as users_models
@@ -20,6 +22,10 @@ from pcapi.serialization.utils import to_camel
 
 from .common import models as common_models
 from .ubble import models as ubble_fraud_models
+
+
+if TYPE_CHECKING:
+    from pcapi.core.users.models import User
 
 
 class FraudCheckType(enum.Enum):
@@ -627,3 +633,18 @@ class BlacklistedDomainName(PcObject, Base, Model):
     dateCreated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )
+
+
+class ProductWhitelist(PcObject, Base, Model):
+    """
+    Contains the whitelisted EAN
+    """
+
+    title: str = sa.Column(sa.Text, nullable=False)
+    ean: str = sa.Column(sa.String(length=13), nullable=False, unique=True, index=True)
+    dateCreated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
+    )
+    comment: str = sa.Column(sa.Text, nullable=False)
+    authorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
+    author: sa_orm.Mapped["User"] = sa.orm.relationship("User", foreign_keys=[authorId])
