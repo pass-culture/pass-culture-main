@@ -3,6 +3,8 @@ import './AddVenueProviderButton.scss'
 import PropTypes from 'prop-types'
 import React, { useCallback, useMemo, useState } from 'react'
 
+import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import { MoreCircleIcon } from 'icons'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -13,6 +15,7 @@ import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
 import VenueProviderForm from '../VenueProviderForm/VenueProviderForm'
 
 const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
+  const { logEvent } = useAnalytics()
   const [isCreationMode, setIsCreationMode] = useState(false)
   const [selectedProvider, setSelectedProvider] = useState(
     DEFAULT_PROVIDER_OPTION
@@ -28,7 +31,13 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
     [providers]
   )
 
-  const setCreationMode = useCallback(() => setIsCreationMode(true), [])
+  const setCreationMode = useCallback(() => {
+    logEvent?.(SynchronizationEvents.CLICKED_SYNCHRONIZE_OFFER, {
+      offererId: venue.managingOfferer.nonHumanizedId,
+      venueId: venue.nonHumanizedId,
+    })
+    setIsCreationMode(true)
+  }, [])
 
   const cancelProviderSelection = useCallback(() => {
     setIsCreationMode(false)

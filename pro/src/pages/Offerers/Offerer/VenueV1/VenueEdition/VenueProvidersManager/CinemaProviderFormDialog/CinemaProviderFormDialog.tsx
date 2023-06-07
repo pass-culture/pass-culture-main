@@ -12,6 +12,7 @@ interface ICinemaProviderFormDialogProps {
   initialValues: any
   providerId: number
   venueId: number
+  offererId: number
 }
 
 export const CinemaProviderFormDialog = ({
@@ -20,6 +21,7 @@ export const CinemaProviderFormDialog = ({
   initialValues,
   providerId,
   venueId,
+  offererId,
 }: ICinemaProviderFormDialogProps) => {
   return (
     <DialogBox
@@ -40,6 +42,7 @@ export const CinemaProviderFormDialog = ({
         saveVenueProvider={onConfirm}
         providerId={providerId}
         venueId={venueId}
+        offererId={offererId}
       />
     </DialogBox>
   )

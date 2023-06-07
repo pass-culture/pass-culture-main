@@ -2,6 +2,8 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import { ExternalSiteIcon } from 'icons'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -15,13 +17,20 @@ const StocksProviderForm = ({
   siret,
   venueId,
   hasOffererProvider,
+  offererId,
 }) => {
+  const { logEvent } = useAnalytics()
   const [isCheckingApi, setIsCheckingApi] = useState(false)
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false)
 
   const handleOpenConfirmDialog = useCallback(event => {
     event.preventDefault()
     event.stopPropagation()
+    logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
+      offererId: offererId,
+      venueId: venueId,
+      providerId: providerId,
+    })
     setIsConfirmDialogOpened(true)
   }, [])
 
@@ -40,6 +49,11 @@ const StocksProviderForm = ({
     }
 
     saveVenueProvider(payload)
+    logEvent?.(SynchronizationEvents.CLICKED_VALIDATE_IMPORT, {
+      offererId: offererId,
+      venueId: venueId,
+      providerId: providerId,
+    })
     setIsConfirmDialogOpened(false)
   }, [saveVenueProvider, providerId, siret, venueId])
 
@@ -96,6 +110,7 @@ const StocksProviderForm = ({
 }
 
 StocksProviderForm.propTypes = {
+  offererId: PropTypes.number.isRequired,
   providerId: PropTypes.number.isRequired,
   saveVenueProvider: PropTypes.func.isRequired,
   siret: PropTypes.string.isRequired,

@@ -16,11 +16,13 @@ import { IAllocineProviderParametersValues } from './types'
 interface AllocineProviderParametersProps {
   venueProvider: VenueProviderResponse
   afterVenueProviderEdit: (editedVenueProvider: VenueProviderResponse) => void
+  offererId: number
 }
 
 const AllocineProviderParameters = ({
   venueProvider,
   afterVenueProviderEdit,
+  offererId,
 }: AllocineProviderParametersProps): JSX.Element => {
   const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
   const notification = useNotification()
@@ -112,6 +114,7 @@ const AllocineProviderParameters = ({
           onConfirm={onConfirmDialog}
           providerId={venueProvider.providerId}
           venueId={venueProvider.venueId}
+          offererId={offererId}
         />
       )}
     </div>

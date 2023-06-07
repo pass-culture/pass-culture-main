@@ -6,10 +6,14 @@ import { Tooltip } from 'react-tooltip'
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
+import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import VenueProvidersManager from '../../VenueProvidersManager'
+
+const mockLogEvent = jest.fn()
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
@@ -50,6 +54,9 @@ describe('components | AllocineProviderForm', () => {
       name: 'Le lieu',
       siret: '12345678901234',
       departementCode: '30',
+      managingOfferer: {
+        nonHumanizedId: 36,
+      },
     }
 
     props = {
@@ -60,6 +67,9 @@ describe('components | AllocineProviderForm', () => {
 
     provider = { id: providerId, name: 'Allociné' }
     pcapi.loadProviders.mockResolvedValue([provider])
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
   })
 
   const renderAllocineProviderForm = async () => {
@@ -248,6 +258,41 @@ describe('components | AllocineProviderForm', () => {
         'La synchronisation a bien été initiée.'
       )
       expect(successNotification).toBeInTheDocument()
+    })
+
+    it('should track on import', async () => {
+      // given
+      await renderAllocineProviderForm()
+      const offerImportButton = screen.getByRole('button', {
+        name: 'Importer les offres',
+      })
+      const priceField = screen.getByLabelText('Prix de vente/place', {
+        exact: false,
+      })
+      await userEvent.type(priceField, '10')
+
+      // when
+      await userEvent.click(offerImportButton)
+
+      // then
+      expect(mockLogEvent).toHaveBeenCalledTimes(2)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        SynchronizationEvents.CLICKED_SYNCHRONIZE_OFFER,
+        {
+          offererId: 36,
+          venueId: 1,
+        }
+      )
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        2,
+        SynchronizationEvents.CLICKED_IMPORT,
+        {
+          offererId: 36,
+          venueId: 1,
+          providerId: 2,
+        }
+      )
     })
 
     it('should display an error notification if there is something wrong with the server', async () => {

@@ -5,10 +5,14 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
+import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import VenueProvidersManager from '../../VenueProvidersManager'
+
+const mockLogEvent = jest.fn()
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
@@ -45,6 +49,10 @@ describe('components | CinemaProviderForm', () => {
       name: 'Le lieu',
       siret: '12345678901234',
       departementCode: '30',
+      managingOfferer: {
+        nonHumanizedId: 36,
+      },
+      nonHumanizedId: 47,
     }
 
     props = {
@@ -53,8 +61,11 @@ describe('components | CinemaProviderForm', () => {
 
     api.listVenueProviders.mockResolvedValue({ venue_providers: [] })
 
-    provider = { id: 'providerId', name: 'Ciné Office' }
+    provider = { id: 66, name: 'Ciné Office' }
     pcapi.loadProviders.mockResolvedValue([provider])
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
   })
 
   const renderCinemaProviderForm = async () => {
@@ -63,7 +74,7 @@ describe('components | CinemaProviderForm', () => {
     const importOffersButton = screen.getByText('Synchroniser des offres')
     await userEvent.click(importOffersButton)
     const providersSelect = screen.getByRole('combobox')
-    await userEvent.selectOptions(providersSelect, provider.id)
+    await userEvent.selectOptions(providersSelect, provider.id.toString())
   }
 
   describe('import form cinema provider for the first time', () => {
@@ -120,6 +131,37 @@ describe('components | CinemaProviderForm', () => {
       )
 
       expect(successNotification).toBeInTheDocument()
+    })
+
+    it('should track on import', async () => {
+      // given
+      await renderCinemaProviderForm()
+      const offersImportButton = screen.getByRole('button', {
+        name: 'Importer les offres',
+      })
+
+      // when
+      await userEvent.click(offersImportButton)
+
+      // then
+      expect(mockLogEvent).toHaveBeenCalledTimes(2)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        SynchronizationEvents.CLICKED_SYNCHRONIZE_OFFER,
+        {
+          offererId: 36,
+          venueId: 47,
+        }
+      )
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        2,
+        SynchronizationEvents.CLICKED_IMPORT,
+        {
+          offererId: 36,
+          venueId: 47,
+          providerId: 66,
+        }
+      )
     })
 
     it('should display an error notification if there is something wrong with the server', async () => {
