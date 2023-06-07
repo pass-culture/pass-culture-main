@@ -148,7 +148,6 @@ export const stockFactory = (customStock = {}): GetOfferStockResponseModel => {
     remainingQuantity: 2,
     dateCreated: '2020-04-12T19:31:12Z',
     dateModified: '2020-04-12T19:31:12Z',
-    fieldsUpdated: [],
     hasActivationCode: false,
     isBookable: true,
     isEventDeletable: true,

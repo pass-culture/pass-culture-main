@@ -6,7 +6,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
 
@@ -28,7 +27,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
-        offer_id = dehumanize(response.json["id"])
+        offer_id = response.json["nonHumanizedId"]
         offer = Offer.query.get(offer_id)
         response_dict = response.json
         assert offer.isActive == False
@@ -61,7 +60,7 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 201
-        offer_id = dehumanize(response.json["id"])
+        offer_id = response.json["nonHumanizedId"]
         offer = Offer.query.get(offer_id)
         assert offer.bookingEmail == "offer@example.com"
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
@@ -100,7 +99,7 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 201
-        offer_id = dehumanize(response.json["id"])
+        offer_id = response.json["nonHumanizedId"]
         offer = Offer.query.get(offer_id)
         assert offer.bookingEmail == "offer@example.com"
         assert offer.subcategoryId == subcategories.JEU_EN_LIGNE.id
@@ -138,7 +137,7 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         assert response.status_code == 201
-        offer_id = dehumanize(response.json["id"])
+        offer_id = response.json["nonHumanizedId"]
         offer = Offer.query.get(offer_id)
         assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert offer.venue == venue
@@ -166,7 +165,7 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
-        offer_id = dehumanize(response.json["id"])
+        offer_id = response.json["nonHumanizedId"]
         offer = Offer.query.get(offer_id)
         assert offer.withdrawalDetails == "Veuillez récuperer vos billets à l'accueil :)"
         assert offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET
