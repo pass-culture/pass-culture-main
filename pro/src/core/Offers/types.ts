@@ -102,12 +102,10 @@ export interface IOfferIndividualStock {
   bookingsQuantity: number
   dateCreated: Date
   hasActivationCode: boolean
-  id: string
   isEventDeletable: boolean
   isEventExpired: boolean
   isSoftDeleted: boolean
   nonHumanizedId: number
-  offerId: string
   price: number
   priceCategoryId?: number | null
   quantity?: number | null

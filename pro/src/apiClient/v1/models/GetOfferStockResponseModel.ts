@@ -13,15 +13,12 @@ export type GetOfferStockResponseModel = {
   dateModifiedAtLastProvider?: string | null;
   fieldsUpdated: Array<string>;
   hasActivationCode: boolean;
-  id: string;
   idAtProviders?: string | null;
   isBookable: boolean;
   isEventDeletable: boolean;
   isEventExpired: boolean;
   isSoftDeleted: boolean;
-  lastProviderId?: string | null;
   nonHumanizedId: number;
-  offerId: string;
   price: number;
   priceCategoryId?: number | null;
   quantity?: number | null;

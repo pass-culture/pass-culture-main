@@ -90,7 +90,6 @@ describe('screens:StocksThing::draft', () => {
 
   beforeEach(() => {
     stock = {
-      id: 'STOCK_ID',
       nonHumanizedId: 1,
       quantity: 10,
       price: 10.01,

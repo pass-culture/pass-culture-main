@@ -578,7 +578,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     })
 
     it('should submit when user click onCancel button, but should not send mail', async () => {
-      const individualStock = individualStockFactory({ offerId: 'AA' })
+      const individualStock = individualStockFactory()
       contextOverride.offer = {
         ...offer,
         venueId: virtualVenueId,
@@ -657,7 +657,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     })
 
     it('should not submit when user click on close withdrawal dialog button', async () => {
-      const individualStock = individualStockFactory({ offerId: 'AA' })
+      const individualStock = individualStockFactory()
       contextOverride.offer = {
         ...offer,
         venueId: virtualVenueId,
@@ -741,7 +741,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     it.each(shouldNotOpenConditions)(
       "should not open widthdrawal send mail modal when user doesn't change withdrawal and stocks has bookingQuantity and submit form",
       async condition => {
-        const individualStock = individualStockFactory({ offerId: 'AA' })
+        const individualStock = individualStockFactory()
         if (!condition.hasBookingQuantity) {
           individualStock.bookingsQuantity = 0
         }
@@ -807,7 +807,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     )
 
     it('should not open widthdrawal dialog if offer is not active', async () => {
-      const individualStock = individualStockFactory({ offerId: 'AA' })
+      const individualStock = individualStockFactory()
       contextOverride.offer = {
         ...offer,
         venueId: virtualVenueId,
@@ -888,7 +888,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     it.each(withdrawalChanges)(
       'should open widthdrawal send mail modal when user change withdrawal information and submit',
       async withdrawalInformations => {
-        const individualStock = individualStockFactory({ offerId: 'AA' })
+        const individualStock = individualStockFactory()
         contextOverride.offer = {
           ...offer,
           venueId: virtualVenueId,
