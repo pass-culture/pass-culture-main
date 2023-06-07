@@ -427,7 +427,6 @@ def update_collective_offer_educational_institution(
 
     db.session.commit()
     search.async_index_collective_offer_ids([offer_id])
-
     if educational_institution_id is not None and offer.validation == offer_mixin.OfferValidationStatus.APPROVED:
         adage_client.notify_institution_association(serialize_collective_offer(offer))
 
