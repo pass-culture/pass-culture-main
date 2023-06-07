@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -44,13 +44,13 @@ import {
 } from './StockFormList'
 
 export const hasChangesOnStockWithBookings = (
-  values: { stocks: IStockEventFormValues[] },
-  initialValues: { stocks: IStockEventFormValues[] }
+  submittedStocks: IStockEventFormValues[],
+  initialStocks: IStockEventFormValues[]
 ) => {
-  const initialStocks: Record<
+  const initialStocksById: Record<
     string,
     Partial<IStockEventFormValues>
-  > = initialValues.stocks.reduce(
+  > = initialStocks.reduce(
     (dict: Record<string, Partial<IStockEventFormValues>>, stock) => {
       dict[stock.stockId || 'IStockEventFormValuesnewStock'] = {
         priceCategoryId: stock.priceCategoryId,
@@ -62,7 +62,7 @@ export const hasChangesOnStockWithBookings = (
     {}
   )
 
-  return values.stocks.some(stock => {
+  return submittedStocks.some(stock => {
     if (
       !stock.bookingsQuantity ||
       stock.bookingsQuantity === 0 ||
@@ -70,7 +70,7 @@ export const hasChangesOnStockWithBookings = (
     ) {
       return false
     }
-    const initialStock = initialStocks[stock.stockId]
+    const initialStock = initialStocksById[stock.stockId]
     const fieldsWithWarning: (keyof IStockEventFormValues)[] = [
       'priceCategoryId',
       'beginningDate',
@@ -147,10 +147,19 @@ const StocksEventEdition = ({
     ]
   }
 
+  // As we are using Formik to handle state and sorting/filtering, we need to
+  // keep all the filtered out stocks in a variable somewhere so we don't lose them
+  // This ref is where we keep track of all the filtered out stocks
+  // Ideally it should be in the StockFormList component but it's not possible
+  // because we need to re-integrate the filtered out stocks when we submit the form
+  // We use a ref to prevent re-renreders and we forward it to the StockFormList component
+  const hiddenStocksRef = useRef<IStockEventFormValues[]>([])
+
   const onSubmit = async (formValues: { stocks: IStockEventFormValues[] }) => {
+    const allStocks = [...formValues.stocks, ...hiddenStocksRef.current]
     const changesOnStockWithBookings = hasChangesOnStockWithBookings(
-      formValues,
-      formik.initialValues
+      allStocks,
+      formik.initialValues.stocks
     )
 
     if (!showStocksEventConfirmModal && changesOnStockWithBookings) {
@@ -162,10 +171,7 @@ const StocksEventEdition = ({
 
     const { isOk, payload } = await upsertStocksEventAdapter({
       offerId: offer.nonHumanizedId,
-      stocks: serializeStockEventEdition(
-        formValues.stocks,
-        offer.venue.departmentCode
-      ),
+      stocks: serializeStockEventEdition(allStocks, offer.venue.departmentCode),
     })
 
     /* istanbul ignore next: DEBT, TO FIX */
@@ -224,7 +230,7 @@ const StocksEventEdition = ({
         setOffer && setOffer(response.payload)
       }
 
-      const formStocks = [...formik.values.stocks]
+      const formStocks = [...formik.values.stocks, ...hiddenStocksRef.current]
 
       // When we delete a stock we must remove it from the initial values
       // otherwise it will trigger the routeLeavingGuard
@@ -270,7 +276,8 @@ const StocksEventEdition = ({
   })
 
   const isFormEmpty = () => {
-    return formik.values.stocks.every(val =>
+    const allStockValues = [...formik.values.stocks, ...hiddenStocksRef.current]
+    return allStockValues.every(val =>
       isEqual(val, STOCK_EVENT_FORM_DEFAULT_VALUES)
     )
   }
@@ -319,7 +326,11 @@ const StocksEventEdition = ({
       setIsSubmittingDraft(saveDraft)
       setAfterSubmitUrl(nextStepUrl)
 
-      const hasSavedStock = formik.values.stocks.some(
+      const allStockValues = [
+        ...formik.values.stocks,
+        ...hiddenStocksRef.current,
+      ]
+      const hasSavedStock = allStockValues.some(
         stock => stock.stockId !== undefined
       )
 
@@ -393,6 +404,7 @@ const StocksEventEdition = ({
               offer={offer}
               onDeleteStock={onDeleteStock}
               priceCategoriesOptions={priceCategoriesOptions}
+              hiddenStocksRef={hiddenStocksRef}
             />
 
             <ActionBar
