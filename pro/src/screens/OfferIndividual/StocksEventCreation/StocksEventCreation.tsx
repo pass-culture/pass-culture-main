@@ -77,7 +77,7 @@ export const StocksEventCreation = ({
   const onConfirm = (newStocks: StocksEvent[]) => {
     setIsRecurrenceModalOpen(false)
     const rawStocksToAdd = [...stocks, ...newStocks]
-    // deduplicate stocks in th whole list
+    // deduplicate stocks in the whole list
     const stocksToAdd = rawStocksToAdd.filter((stock1, index) => {
       return (
         rawStocksToAdd.findIndex(
