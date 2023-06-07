@@ -84,21 +84,11 @@ class TransactionalEmail(Enum):
     )
 
     # UBBLE KO REMINDER
-    UBBLE_KO_REMINDER_ID_CHECK_DATA_MATCH = models.Template(
-        id_prod=824, id_not_prod=116, tags=["jeunes_relance_ubble_ko_infos_incorrectes"]
-    )
-    UBBLE_KO_REMINDER_ID_CHECK_EXPIRED = models.Template(
-        id_prod=831, id_not_prod=118, tags=["jeunes_relance_ubble_ko_document_expire"]
-    )
-    UBBLE_KO_REMINDER_ID_CHECK_NOT_AUTHENTIC = models.Template(
-        id_prod=821, id_not_prod=117, tags=["jeunes_relance_ubble_ko_document_non_authentique"]
-    )
-    UBBLE_KO_REMINDER_ID_CHECK_NOT_SUPPORTED = models.Template(
-        id_prod=825, id_not_prod=119, tags=["jeunes_relance_ubble_ko_document_non_supporte"]
-    )
-    UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE = models.Template(
-        id_prod=823, id_not_prod=115, tags=["jeunes_relance_ubble_ko_video_illisible"]
-    )
+    UBBLE_KO_REMINDER_ID_CHECK_DATA_MATCH = models.Template(id_prod=824, id_not_prod=116)
+    UBBLE_KO_REMINDER_ID_CHECK_EXPIRED = models.Template(id_prod=831, id_not_prod=118)
+    UBBLE_KO_REMINDER_ID_CHECK_NOT_AUTHENTIC = models.Template(id_prod=821, id_not_prod=117)
+    UBBLE_KO_REMINDER_ID_CHECK_NOT_SUPPORTED = models.Template(id_prod=825, id_not_prod=119)
+    UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE = models.Template(id_prod=823, id_not_prod=115)
 
     # PRO EMAIL
 
