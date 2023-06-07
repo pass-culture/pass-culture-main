@@ -4,11 +4,13 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { SummaryLayout } from 'components/SummaryLayout'
+import { Events } from 'core/FirebaseEvents/constants'
 import {
   CollectiveOfferTemplate,
   createOfferFromTemplate,
 } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { Button, Title } from 'ui-kit'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -20,6 +22,7 @@ import styles from './CollectiveOfferFromRequest.module.scss'
 const CollectiveOfferFromRequest = (): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
+  const { logEvent } = useAnalytics()
 
   const [informations, setInformations] =
     useState<GetCollectiveOfferRequestResponseModel | null>(null)
@@ -32,6 +35,11 @@ const CollectiveOfferFromRequest = (): JSX.Element => {
   }>()
 
   const handleButtonClick = () => {
+    logEvent?.(Events.CLICKED_CREATE_OFFER_FROM_REQUEST, {
+      from: location.pathname,
+      requestId,
+      templateOfferId: offerId,
+    })
     createOfferFromTemplate(navigate, notify, Number(offerId))
   }
 
