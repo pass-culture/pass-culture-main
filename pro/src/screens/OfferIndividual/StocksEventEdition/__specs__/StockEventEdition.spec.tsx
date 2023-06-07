@@ -302,9 +302,7 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
-    expect(screen.getByText(/Next page/)).toBeInTheDocument()
-    // FIX ME: romain C in reality this is not called...
-    // expect(api.upsertStocks).not.toHaveBeenCalled()
+    expect(api.upsertStocks).not.toHaveBeenCalled()
   })
 
   it("should allow user to delete a stock he just created (and didn't save)", async () => {
@@ -329,8 +327,6 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
-    // FIX ME: romain C in reality this is not called...
-    // expect(api.upsertStocks).not.toHaveBeenCalled()
   })
 
   it('should keep user modifications when deleting a exiting stock', async () => {
@@ -340,8 +336,8 @@ describe('screens:StocksEventEdition', () => {
     apiOffer.stocks = [
       ...apiOffer.stocks,
       {
-        beginningDatetime: '2023-01-20T08:25:31.009799Z',
-        bookingLimitDatetime: '2023-01-20T07:25:31.009799Z',
+        beginningDatetime: '2023-01-25T08:25:31.009799Z',
+        bookingLimitDatetime: '2023-01-25T07:25:31.009799Z',
         bookingsQuantity: 5,
         dateCreated: '2022-05-18T08:25:31.015652Z',
         hasActivationCode: false,

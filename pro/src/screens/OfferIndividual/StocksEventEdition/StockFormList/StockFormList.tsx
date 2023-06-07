@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { isAfter } from 'date-fns'
 import { FieldArray, useFormikContext } from 'formik'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import { StockFormActions } from 'components/StockFormActions'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
@@ -26,7 +26,10 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS } from './constants'
 import styles from './StockFormList.module.scss'
-import { StocksEventFormSortingColumn } from './stocksFiltering'
+import {
+  filterAndSortStocks,
+  StocksEventFormSortingColumn,
+} from './stocksFiltering'
 
 import { IStockEventFormValues, STOCK_EVENT_FORM_DEFAULT_VALUES } from './'
 
@@ -74,6 +77,23 @@ const StockFormList = ({
     setPage(1)
   }
 
+  useEffect(() => {
+    const filteredStocks = filterAndSortStocks(
+      values.stocks,
+      offer.priceCategories ?? [],
+      currentSortingColumn,
+      currentSortingMode,
+      { dateFilter, hourFilter, priceCategoryFilter }
+    )
+    setFieldValue('stocks', filteredStocks)
+  }, [
+    currentSortingColumn,
+    currentSortingMode,
+    dateFilter,
+    hourFilter,
+    priceCategoryFilter,
+  ])
+
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
   const isSynchronized = Boolean(offer.lastProvider)
 
@@ -114,6 +134,7 @@ const StockFormList = ({
             <caption className={styles['caption-table']}>
               Tableau d'édition des stocks
             </caption>
+
             <thead>
               <tr>
                 <th className={styles['table-head']} scope="col">
@@ -378,6 +399,7 @@ const StockFormList = ({
                       Icon: TrashFilledIcon,
                     },
                   ]
+
                   return (
                     <tr className={styles['table-row']} key={index}>
                       <td className={styles['input-date']}>
@@ -395,6 +417,7 @@ const StockFormList = ({
                           hideFooter
                         />
                       </td>
+
                       <td className={styles['input-beginning-time']}>
                         <TimePicker
                           smallLabel
@@ -470,21 +493,20 @@ const StockFormList = ({
                           hideFooter
                         />
                       </td>
-                      {mode === OFFER_WIZARD_MODE.EDITION && (
-                        <td className={styles['field-info-bookings']}>
-                          <TextInput
-                            name={`stocks[${index}]bookingsQuantity`}
-                            value={values.stocks[index].bookingsQuantity || 0}
-                            readOnly
-                            label="Réservations"
-                            isLabelHidden
-                            smallLabel
-                            classNameLabel={styles['field-layout-label']}
-                            className={styles['field-layout-footer']}
-                            hideFooter
-                          />
-                        </td>
-                      )}
+
+                      <td className={styles['field-info-bookings']}>
+                        <TextInput
+                          name={`stocks[${index}]bookingsQuantity`}
+                          value={values.stocks[index].bookingsQuantity || 0}
+                          readOnly
+                          label="Réservations"
+                          isLabelHidden
+                          smallLabel
+                          classNameLabel={styles['field-layout-label']}
+                          className={styles['field-layout-footer']}
+                          hideFooter
+                        />
+                      </td>
 
                       {actions && actions.length > 0 && (
                         <td className={styles['stock-actions']}>
