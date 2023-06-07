@@ -267,7 +267,6 @@ describe('screens:StocksEventEdition', () => {
         activationCodesExpirationDatetime: null,
         isBookable: false,
         dateModified: '2022-05-18T08:25:31.015652Z',
-        fieldsUpdated: [],
       },
     ]
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
@@ -347,7 +346,6 @@ describe('screens:StocksEventEdition', () => {
         activationCodesExpirationDatetime: null,
         isBookable: false,
         dateModified: '2022-05-18T08:25:31.015652Z',
-        fieldsUpdated: [],
       },
     ]
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)

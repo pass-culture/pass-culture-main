@@ -7,13 +7,9 @@ export type GetOfferStockResponseModel = {
   beginningDatetime?: string | null;
   bookingLimitDatetime?: string | null;
   bookingsQuantity: number;
-  cancellationLimitDate?: string | null;
   dateCreated: string;
   dateModified: string;
-  dateModifiedAtLastProvider?: string | null;
-  fieldsUpdated: Array<string>;
   hasActivationCode: boolean;
-  idAtProviders?: string | null;
   isBookable: boolean;
   isEventDeletable: boolean;
   isEventExpired: boolean;

@@ -6,7 +6,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
