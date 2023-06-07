@@ -84,7 +84,7 @@ def _retrieve_offer_by_ean_query(ean: str) -> sqla.orm.Query:
 @api_key_required
 def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse:
     """
-    Create a CD or vinyl product.
+    Create a book, CD or vinyl product.
     """
     venue = utils.retrieve_venue_from_location(body.location)
 
@@ -405,7 +405,7 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
 @api_key_required
 def edit_product(product_id: int, body: serialization.ProductOfferEdition) -> serialization.ProductOfferResponse:
     """
-    Edit a CD or vinyl product.
+    Edit a book, CD or vinyl product.
 
     Leave fields undefined to keep their current value.
     """
