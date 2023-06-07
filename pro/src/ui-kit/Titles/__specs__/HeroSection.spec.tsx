@@ -11,6 +11,7 @@ describe('src | components | layout | Titles', () => {
         const props = {
           subtitle: 'Fake subtitle',
           title: 'Fake title',
+          description: 'Fake description',
         }
 
         // when
@@ -23,6 +24,9 @@ describe('src | components | layout | Titles', () => {
         expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
           'Fake title'
         )
+        expect(
+          screen.queryByText('Fake description', { selector: 'div' })
+        ).toBeInTheDocument()
       })
     })
   })
