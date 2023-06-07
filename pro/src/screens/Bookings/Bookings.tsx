@@ -39,7 +39,7 @@ import { stringify } from '../../utils/query-string'
 import BookingsRecapTable from './BookingsRecapTable'
 import PreFilters from './PreFilters'
 
-interface IBookingsProps {
+interface BookingsProps {
   locationState?: { statuses: string[] }
   audience: Audience
   getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter
@@ -63,7 +63,7 @@ const Bookings = <
   getFilteredBookingsRecapAdapter,
   getUserHasBookingsAdapter,
   getVenuesAdapter,
-}: IBookingsProps): JSX.Element => {
+}: BookingsProps): JSX.Element => {
   const { currentUser: user } = useCurrentUser()
   const notify = useNotification()
   const { logEvent } = useAnalytics()

@@ -5,13 +5,13 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 import { serializeOffers } from './serializers'
 
-export type IPayload = {
+export type Payload = {
   offers: Offer[]
 }
 
-type GetFilteredOffersAdapter = Adapter<TSearchFilters, IPayload, IPayload>
+type GetFilteredOffersAdapter = Adapter<TSearchFilters, Payload, Payload>
 
-const FAILING_RESPONSE: AdapterFailure<IPayload> = {
+const FAILING_RESPONSE: AdapterFailure<Payload> = {
   isOk: false,
   message: GET_DATA_ERROR_MESSAGE,
   payload: {
@@ -55,5 +55,3 @@ export const getFilteredOffersAdapter: GetFilteredOffersAdapter =
       return FAILING_RESPONSE
     }
   }
-
-export default getFilteredOffersAdapter

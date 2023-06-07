@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react'
 
-type TUseAdapterLoading = {
+type UseAdapterLoading = {
   data?: undefined
   isLoading: true
   error?: undefined
 }
 
-type TUseAdapterSuccess<T> = {
+type UseAdapterSuccess<T> = {
   data: T
   isLoading: false
   error?: undefined
 }
 
-export type TUseAdapterFailure<T> = {
+type UseAdapterFailure<T> = {
   data?: undefined
   isLoading: false
   error: {
@@ -26,13 +26,13 @@ const useAdapter = <ISuccessPayload, IFailurePayload>(
     AdapterSuccess<ISuccessPayload> | AdapterFailure<IFailurePayload>
   >
 ):
-  | TUseAdapterLoading
-  | TUseAdapterSuccess<ISuccessPayload>
-  | TUseAdapterFailure<IFailurePayload> => {
+  | UseAdapterLoading
+  | UseAdapterSuccess<ISuccessPayload>
+  | UseAdapterFailure<IFailurePayload> => {
   const [hookResponse, setHookResponse] = useState<
-    | TUseAdapterLoading
-    | TUseAdapterSuccess<ISuccessPayload>
-    | TUseAdapterFailure<IFailurePayload>
+    | UseAdapterLoading
+    | UseAdapterSuccess<ISuccessPayload>
+    | UseAdapterFailure<IFailurePayload>
   >({ isLoading: true })
 
   useEffect(() => {

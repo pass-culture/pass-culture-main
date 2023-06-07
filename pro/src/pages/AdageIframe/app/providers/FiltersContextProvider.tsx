@@ -7,12 +7,12 @@ import {
 import { INITIAL_FILTERS } from '../constants'
 import { Filters } from '../types'
 
-export type FiltersContextType = {
+type FiltersContextType = {
   currentFilters: Filters
   dispatchCurrentFilters: React.Dispatch<FiltersReducerAction>
 }
 
-export const filtersContextInitialValues: FiltersContextType = {
+const filtersContextInitialValues: FiltersContextType = {
   currentFilters: INITIAL_FILTERS,
   dispatchCurrentFilters: () => null,
 }

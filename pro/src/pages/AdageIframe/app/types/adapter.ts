@@ -1,4 +1,4 @@
-export type AdapterSuccess<T> = {
+type AdapterSuccess<T> = {
   isOk: true
   message: string | null
   payload: T

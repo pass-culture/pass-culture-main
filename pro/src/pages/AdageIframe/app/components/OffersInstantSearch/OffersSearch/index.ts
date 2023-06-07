@@ -1,1 +1,0 @@
-export { OffersSearch } from './OffersSearch'

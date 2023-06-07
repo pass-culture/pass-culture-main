@@ -42,5 +42,3 @@ export const getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter =
       return FAILING_RESPONSE
     }
   }
-
-export default getBookingsCSVFileAdapter

@@ -1,4 +1,4 @@
-export { default as getFilteredCollectiveBookingsRecapAdapter } from './getFilteredCollectiveBookingsRecapAdapter'
-export { default as getCollectiveBookingsCSVFileAdapter } from './getCollectiveBookingsCSVFileAdapter'
-export { default as getCollectiveBookingsXLSFileAdapter } from './getCollectiveBookingsXLSFileAdapter'
-export { default as getUserHasCollectiveBookingsAdapter } from './getUserHasCollectiveBookingsAdapter'
+export { getFilteredCollectiveBookingsRecapAdapter } from './getFilteredCollectiveBookingsRecapAdapter'
+export { getCollectiveBookingsCSVFileAdapter } from './getCollectiveBookingsCSVFileAdapter'
+export { getCollectiveBookingsXLSFileAdapter } from './getCollectiveBookingsXLSFileAdapter'
+export { getUserHasCollectiveBookingsAdapter } from './getUserHasCollectiveBookingsAdapter'
