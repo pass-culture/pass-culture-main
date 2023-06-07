@@ -16,9 +16,12 @@ import {
   getCollectiveBookingStatusDisplayInformations,
 } from '../../../utils/bookingStatusConverter'
 
-function getAvailableBookingStatuses<
+const getAvailableBookingStatuses = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
->(audience: Audience, bookingsRecap: T[]) {
+>(
+  audience: Audience,
+  bookingsRecap: T[]
+) => {
   const titleFormatter =
     audience === Audience.INDIVIDUAL
       ? getBookingStatusDisplayInformations

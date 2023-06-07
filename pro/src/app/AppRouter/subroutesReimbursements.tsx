@@ -21,5 +21,3 @@ export const routesReimbursements: IRoute[] = [
     title: 'Détails des remboursements',
   },
 ]
-
-export default routesReimbursements

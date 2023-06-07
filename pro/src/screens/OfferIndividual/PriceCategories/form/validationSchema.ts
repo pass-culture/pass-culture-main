@@ -8,7 +8,7 @@ import {
 } from './constants'
 import { isPriceCategoriesForm, isPriceCategoriesFormValues } from './types'
 
-export const priceCategoryValidationSchema = yup.object().shape({
+const priceCategoryValidationSchema = yup.object().shape({
   label: yup
     .string()
     .required('Veuillez renseigner un intitulé de tarif')

@@ -9,14 +9,15 @@ import DialogBox from '../DialogBox'
 
 import styles from './ReimbursmentPointDialog.module.scss'
 
-export interface IReimbursmentPointDialog {
+interface ReimbursmentPointDialog {
   closeDialog: () => void
   dmsToken: string
 }
+
 const ReimbursmentPointDialog = ({
   closeDialog,
   dmsToken,
-}: IReimbursmentPointDialog) => {
+}: ReimbursmentPointDialog) => {
   const openDmsProcedure = () => {
     window.open(
       REACT_APP_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4,

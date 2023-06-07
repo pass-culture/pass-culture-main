@@ -5,7 +5,7 @@ const CARRIAGE_RETURN = '\n'
 const UNAUTHORIZED_CHARACTERS = /[,;.]/
 const MAX_CODE_DISPLAY = 5
 
-export const csvToRows = (str = '') => {
+const csvToRows = (str = '') => {
   if ((str || '').indexOf(CARRIAGE_RETURN) === -1) {
     return []
   }
