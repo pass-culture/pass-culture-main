@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { isAfter } from 'date-fns'
 import { FieldArray, useFormikContext } from 'formik'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { StockFormActions } from 'components/StockFormActions'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
@@ -12,6 +12,7 @@ import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import { useModal } from 'hooks/useModal'
+import { usePagination } from 'hooks/usePagination'
 import { PlusCircleIcon } from 'icons'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import DialogStockEventDeleteConfirm from 'screens/OfferIndividual/DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'
@@ -97,13 +98,8 @@ const StockFormList = ({
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
   const isSynchronized = Boolean(offer.lastProvider)
 
-  const [page, setPage] = useState(1)
-  const previousPage = useCallback(() => setPage(page => page - 1), [])
-  const nextPage = useCallback(() => setPage(page => page + 1), [])
-  const stocksPage = values.stocks.slice(
-    (page - 1) * STOCKS_PER_PAGE,
-    page * STOCKS_PER_PAGE
-  )
+  const { page, setPage, previousPage, nextPage, currentPageItems, pageCount } =
+    usePagination(values.stocks, STOCKS_PER_PAGE)
 
   return (
     <FieldArray
@@ -328,7 +324,7 @@ const StockFormList = ({
             </thead>
 
             <tbody className={styles['table-body']}>
-              {stocksPage.map(
+              {currentPageItems.map(
                 (stockValues: IStockEventFormValues, indexInPage) => {
                   const index = (page - 1) * STOCKS_PER_PAGE + indexInPage
                   const disableAllStockFields =
@@ -525,7 +521,7 @@ const StockFormList = ({
 
           <Pagination
             currentPage={page}
-            pageCount={Math.ceil(values.stocks.length / STOCKS_PER_PAGE)}
+            pageCount={pageCount}
             onPreviousPageClick={previousPage}
             onNextPageClick={nextPage}
           />
