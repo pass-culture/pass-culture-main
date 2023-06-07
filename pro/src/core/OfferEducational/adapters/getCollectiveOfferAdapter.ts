@@ -3,7 +3,7 @@ import { api } from 'apiClient/api'
 import { CollectiveOffer } from '../types'
 
 type IPayloadFailure = null
-export type GetCollectiveOfferAdapter = Adapter<
+type GetCollectiveOfferAdapter = Adapter<
   number,
   CollectiveOffer,
   IPayloadFailure

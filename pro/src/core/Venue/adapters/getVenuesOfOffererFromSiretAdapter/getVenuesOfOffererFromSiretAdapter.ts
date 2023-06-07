@@ -3,7 +3,7 @@ import { GetVenuesOfOffererFromSiretResponseModel } from 'apiClient/v1'
 
 import { GET_DATA_ERROR_MESSAGE } from '../../../shared'
 
-export type GetVenueOfOffererProvidersAdapter = Adapter<
+type GetVenueOfOffererProvidersAdapter = Adapter<
   string,
   GetVenuesOfOffererFromSiretResponseModel,
   null

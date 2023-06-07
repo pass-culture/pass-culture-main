@@ -4,7 +4,7 @@ import { IProviders } from '../../types'
 
 import { serializeProvidersApi } from './serializers'
 
-export type GetProvidersAdapter = Adapter<
+type GetProvidersAdapter = Adapter<
   number | undefined,
   IProviders[],
   IProviders[]

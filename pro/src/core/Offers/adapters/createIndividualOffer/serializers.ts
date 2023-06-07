@@ -5,7 +5,7 @@ import { IOfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
 /* istanbul ignore next: DEBT, TO FIX */
-export const serializeExtraData = (
+const serializeExtraData = (
   formValues: IOfferIndividualFormValues
 ): IOfferExtraData => {
   const extraData: IOfferExtraData = {}

@@ -3,7 +3,7 @@ import { IVenue } from 'core/Venue/types'
 
 import { serializeVenueApi } from './serializers'
 
-export type GetVenueAdapter = Adapter<number | undefined, IVenue, null>
+type GetVenueAdapter = Adapter<number | undefined, IVenue, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
