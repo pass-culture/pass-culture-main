@@ -45,5 +45,3 @@ export const getCollectiveBookingsCSVFileAdapter: GetBookingsCSVFileAdapter =
       return FAILING_RESPONSE
     }
   }
-
-export default getCollectiveBookingsCSVFileAdapter

@@ -18,7 +18,7 @@ import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByDisplayName } from 'utils/strings'
 
-import { getFilteredOffersAdapter } from './adapters'
+import { getFilteredOffersAdapter } from './adapters/getFilteredOffersAdapter'
 
 const OffersRoute = (): JSX.Element => {
   const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()

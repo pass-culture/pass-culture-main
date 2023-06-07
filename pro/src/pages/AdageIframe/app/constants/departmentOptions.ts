@@ -111,8 +111,8 @@ export const departmentOptions: Option[] = [
 
 export const ALL_FRANCE_OPTION_VALUE = 'all'
 export const MAINLAND_OPTION_VALUE = 'mainland'
-export const ALL_FRANCE_OPTION_LABEL = 'France métropolitaine et d’outre-mer'
-export const MAINLAND_OPTION_LABEL = 'France métropolitaine'
+const ALL_FRANCE_OPTION_LABEL = 'France métropolitaine et d’outre-mer'
+const MAINLAND_OPTION_LABEL = 'France métropolitaine'
 
 export const departmentLabelByValue: Record<string, string> = {
   [ALL_FRANCE_OPTION_VALUE]: ALL_FRANCE_OPTION_LABEL,
