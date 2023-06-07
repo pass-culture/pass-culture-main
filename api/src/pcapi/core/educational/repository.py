@@ -744,9 +744,7 @@ def get_collective_offer_request_by_id(request_id: int) -> educational_models.Co
                 educational_models.EducationalRedactor.lastName,
                 educational_models.EducationalRedactor.email,
             ),
-            sa.orm.joinedload(educational_models.CollectiveOfferRequest.educationalInstitution).load_only(
-                educational_models.EducationalInstitution.institutionId
-            ),
+            sa.orm.joinedload(educational_models.CollectiveOfferRequest.educationalInstitution),
         )
 
         return query.one()
