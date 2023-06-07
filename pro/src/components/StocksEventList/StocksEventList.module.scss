@@ -124,3 +124,7 @@ $icon-size: rem.torem(20px);
     margin-bottom: rem.torem(16px);
   }
 }
+
+.search-result {
+  @include fonts.body-important;
+}
