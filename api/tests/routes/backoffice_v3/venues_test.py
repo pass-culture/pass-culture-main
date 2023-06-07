@@ -1028,6 +1028,24 @@ class UpdateVenueTest(PostEndpointHelper):
 
         assert response.status_code == 400
 
+    def test_update_venue_siret_disabled(self, client, roles_with_permissions, offerer):
+        bo_user = users_factories.AdminFactory()
+        backoffice_api.upsert_roles(bo_user, [perm_models.Roles.SUPPORT_PRO])
+
+        venue = offerers_factories.VenueFactory()
+        original_siret = venue.siret
+
+        data = self._get_current_data(venue)
+        data["public_name"] = "Ma boutique"
+        del data["siret"]
+
+        response = self.post_to_endpoint(client.with_bo_session_auth(bo_user), venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+        db.session.refresh(venue)
+        assert venue.publicName == "Ma boutique"
+        assert venue.siret == original_siret
+
 
 class GetVenueHistoryTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.venue.get_history"
