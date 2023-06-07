@@ -130,7 +130,7 @@ const Offers = ({
   }, [])
 
   const actionLink =
-    isAdmin || !isOffererValidated ? null : (
+    isAdmin || !isOffererValidated ? undefined : (
       <ButtonLink
         variant={ButtonVariant.PRIMARY}
         onClick={() =>
