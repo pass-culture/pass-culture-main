@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
@@ -14,6 +14,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
+import { usePagination } from 'hooks/usePagination'
 import { ResetIcon, TrashFilledIcon } from 'icons'
 import searchIcon from 'icons/search-ico.svg'
 import { getPriceCategoryOptions } from 'screens/OfferIndividual/StocksEventEdition/StocksEventEdition'
@@ -81,9 +82,6 @@ const StocksEventList = ({
     setIsCheckedArray(stocks.map(() => false))
   }
 
-  const [page, setPage] = useState(1)
-  const previousPage = useCallback(() => setPage(page => page - 1), [])
-  const nextPage = useCallback(() => setPage(page => page + 1), [])
   const filteredStocks = filterAndSortStocks(
     stocks,
     priceCategories,
@@ -91,11 +89,9 @@ const StocksEventList = ({
     currentSortingMode,
     { dateFilter, hourFilter, priceCategoryFilter }
   )
-  const stocksPage = filteredStocks.slice(
-    (page - 1) * STOCKS_PER_PAGE,
-    page * STOCKS_PER_PAGE
-  )
-  const pageCount = Math.ceil(filteredStocks.length / STOCKS_PER_PAGE)
+  const { page, setPage, previousPage, nextPage, pageCount, currentPageItems } =
+    usePagination(filteredStocks, STOCKS_PER_PAGE)
+
   const areAllChecked = isCheckedArray.every(isChecked => isChecked)
 
   const handleOnChangeSelected = (index: number) => {
@@ -391,7 +387,7 @@ const StocksEventList = ({
             </tr>
           )}
 
-          {stocksPage.map((stock, index) => {
+          {currentPageItems.map((stock, index) => {
             const beginningDay = formatLocalTimeDateString(
               stock.beginningDatetime,
               departmentCode,
