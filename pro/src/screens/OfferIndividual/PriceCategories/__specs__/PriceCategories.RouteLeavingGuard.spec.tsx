@@ -110,7 +110,7 @@ describe('PriceCategories', () => {
   })
 
   it('should let going to information when clicking on previous step in creation', async () => {
-    renderPriceCategories({ offer: individualOfferFactory({ id: 'AA' }) })
+    renderPriceCategories({ offer: individualOfferFactory() })
 
     await userEvent.click(screen.getByText('Étape précédente'))
 
@@ -120,7 +120,7 @@ describe('PriceCategories', () => {
   })
 
   it('should let going to stock when form has been filled in creation', async () => {
-    renderPriceCategories({ offer: individualOfferFactory({ id: 'AA' }) })
+    renderPriceCategories({ offer: individualOfferFactory() })
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
@@ -136,7 +136,7 @@ describe('PriceCategories', () => {
 
   it('should let going to stock when form has been filled in draft', async () => {
     renderPriceCategories(
-      { offer: individualOfferFactory({ id: 'AA' }) },
+      { offer: individualOfferFactory() },
 
       generatePath(
         getOfferIndividualPath({
@@ -161,7 +161,7 @@ describe('PriceCategories', () => {
 
   it('should stay on the same page when clicking on "Sauvegarder le brouillon" in draft', async () => {
     renderPriceCategories(
-      { offer: individualOfferFactory({ id: 'AA' }) },
+      { offer: individualOfferFactory() },
       generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
@@ -183,7 +183,7 @@ describe('PriceCategories', () => {
 
   it('should let going to recap when form has been filled in edition', async () => {
     renderPriceCategories(
-      { offer: individualOfferFactory({ id: 'AA' }) },
+      { offer: individualOfferFactory() },
       generatePath(
         getOfferIndividualPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,

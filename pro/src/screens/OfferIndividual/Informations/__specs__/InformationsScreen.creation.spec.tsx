@@ -108,6 +108,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   let props: IInformationsProps
   let contextOverride: Partial<IOfferIndividualContext>
   const offererId = 1
+  const offerId = 5
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
@@ -202,8 +203,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'postOffer').mockResolvedValue({
-      id: 'BQ',
-      nonHumanizedId: 12,
+      nonHumanizedId: offerId,
     } as GetIndividualOfferResponseModel)
     jest
       .spyOn(utils, 'filterCategories')
@@ -407,7 +407,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         from: 'informations',
         isDraft: true,
         isEdition: false,
-        offerId: 'BQ',
+        offerId: offerId,
         to: 'stocks',
         used: 'StickyButtons',
       }
@@ -434,7 +434,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         from: 'informations',
         isDraft: true,
         isEdition: false,
-        offerId: 'BQ',
+        offerId: offerId,
         to: 'informations',
         used: 'DraftButtons',
       }

@@ -387,7 +387,6 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     durationMinutes: int | None
     extraData: Any
     hasBookingLimitDatetimesPassed: bool
-    id: str
     isActive: bool
     isDigital: bool
     isDuo: bool
@@ -398,7 +397,6 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     isThing: bool
     nonHumanizedId: int
     lastProvider: GetOfferLastProviderResponseModel | None
-    lastProviderId: str | None
     mediaUrls: list[str]
     mediations: list[GetOfferMediationResponseModel]
     name: str
@@ -413,9 +411,6 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalDetails: str | None
     withdrawalType: offers_models.WithdrawalTypeEnum | None
     status: OfferStatus
-
-    _humanize_id = humanize_field("id")
-    _humanize_last_provider_id = humanize_field("lastProviderId")
 
     class Config:
         orm_mode = True

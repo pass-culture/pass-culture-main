@@ -116,7 +116,6 @@ describe('screens:StocksEventEdition', () => {
 
   beforeEach(() => {
     offer = {
-      id: 'OFFER_ID',
       nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
@@ -211,7 +210,7 @@ describe('screens:StocksEventEdition', () => {
         from: 'stocks',
         isDraft: false,
         isEdition: true,
-        offerId: 'OFFER_ID',
+        offerId: offerId,
         to: '/outside',
         used: 'RouteLeavingGuard',
       }

@@ -87,7 +87,7 @@ const Summary = () => {
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: true,
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
       })
       if (newOfferCreation && showVenuePopin[venueId || '']) {
         setDisplayRedirectDialog(true)
@@ -108,7 +108,7 @@ const Summary = () => {
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
     })
 
     navigate(
@@ -166,7 +166,7 @@ const Summary = () => {
             onClickPrevious={handlePreviousStep}
             step={OFFER_WIZARD_STEP_IDS.SUMMARY}
             isDisabled={isDisabled}
-            offerId={offer.id}
+            offerId={offer.nonHumanizedId}
           />
         </SummaryLayout.Content>
 
@@ -193,7 +193,7 @@ const Summary = () => {
                         used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
                         isEdition: true,
                         isDraft: false,
-                        offerId: offer.id,
+                        offerId: offer.nonHumanizedId,
                       }),
                 }}
                 variant={ButtonVariant.SECONDARY}

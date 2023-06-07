@@ -45,7 +45,7 @@ const renderStocksEventList = ({ stocks }: IrenderStocksEventList) => {
       ]}
       departmentCode="78"
       setStocks={mockSetSotcks}
-      offerId={'AA'}
+      offerId={1}
     />,
     { storeOverrides }
   )
@@ -306,7 +306,7 @@ describe('StocksEventList', () => {
         deletionCount: '2',
         isDraft: false,
         isEdition: true,
-        offerId: 'AA',
+        offerId: 1,
         used: 'StockEventBulkDelete',
         to: 'stocks',
       }
@@ -395,7 +395,7 @@ describe('StocksEventList', () => {
         from: 'stocks',
         isDraft: false,
         isEdition: true,
-        offerId: 'AA',
+        offerId: 1,
         used: 'StockEventDelete',
         to: 'stocks',
       }

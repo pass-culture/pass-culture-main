@@ -86,7 +86,6 @@ describe('updateIndividualOffer', () => {
 
     const nonHumanizedofferId = 1234
     const offer = {
-      id: 'AAAA',
       nonHumanizedId: nonHumanizedofferId,
     } as IOfferIndividual
 
@@ -165,7 +164,6 @@ describe('updateIndividualOffer', () => {
 
     const nonHumanizedofferId = 1234
     const offer = {
-      id: 'AAAA',
       nonHumanizedId: nonHumanizedofferId,
       lastProvider: {
         name: 'provider',

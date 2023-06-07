@@ -205,10 +205,10 @@ const Informations = ({
       Boolean(isOfferSubtypeEvent(offerSubtype))
     )
     if (isOk) {
-      const receivedOfferId = payload.id
-      await handleImageOnSubmit(payload.nonHumanizedId)
+      const receivedOfferId = payload.nonHumanizedId
+      await handleImageOnSubmit(receivedOfferId)
 
-      const response = await getOfferIndividualAdapter(payload.nonHumanizedId)
+      const response = await getOfferIndividualAdapter(receivedOfferId)
       // This do not trigger a visal change, it's complicated to test
       /* istanbul ignore next: DEBT, TO FIX */
       if (response.isOk) {
@@ -218,7 +218,7 @@ const Informations = ({
       navigate(
         getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          offerId: payload.nonHumanizedId,
+          offerId: receivedOfferId,
           mode,
         }),
         { replace: true }
@@ -226,7 +226,7 @@ const Informations = ({
 
       navigate(
         getOfferIndividualUrl({
-          offerId: payload.nonHumanizedId,
+          offerId: receivedOfferId,
           step: nextStep,
           mode,
         })
@@ -275,7 +275,7 @@ const Informations = ({
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-        offerId: offer?.id,
+        offerId: offer?.nonHumanizedId,
       })
     }
     const queryParams = new URLSearchParams(location.search)
@@ -319,7 +319,7 @@ const Informations = ({
               Boolean(offer && isOfferDisabled(offer.status)) ||
               isWithdrawalDialogOpen
             }
-            offerId={offer?.id}
+            offerId={offer?.nonHumanizedId}
             shouldTrack={shouldTrack}
           />
         </form>
@@ -353,7 +353,7 @@ const Informations = ({
             isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
             isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
             // FIX ME: it is always undefined at first creation (not sure it is possible)
-            offerId: offer?.id,
+            offerId: offer?.nonHumanizedId,
           })
         }
       />

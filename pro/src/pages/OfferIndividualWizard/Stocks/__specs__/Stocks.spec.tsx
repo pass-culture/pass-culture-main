@@ -41,10 +41,11 @@ describe('screens:Stocks', () => {
   let storeOverrides: Partial<RootState>
   let contextOverride: Partial<IOfferIndividualContext>
   let offer: Partial<IOfferIndividual>
+  const offerId = 12
 
   beforeEach(() => {
     offer = {
-      id: 'OFFER_ID',
+      nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
       } as IOfferIndividualVenue,
@@ -52,7 +53,7 @@ describe('screens:Stocks', () => {
     }
     storeOverrides = {}
     contextOverride = {
-      offerId: 'OFFER_ID',
+      offerId: offerId,
       offer: offer as IOfferIndividual,
     }
   })

@@ -16,6 +16,8 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { OFFER_WIZARD_STEP_IDS } from '../constants'
 import OfferIndividualBreadcrumb from '../OfferIndividualBreadcrumb'
 
+const offerId = 12
+
 const renderOfferIndividualBreadcrumb = (
   contextOverride: Partial<IOfferIndividualContext> = {},
   url = getOfferIndividualPath({
@@ -120,7 +122,6 @@ describe('test OfferIndividualBreadcrumb', () => {
 
     it('should render steps when offer without stock is given', async () => {
       const offer: Partial<IOfferIndividual> = individualOfferFactory({
-        id: 'AA',
         stocks: [],
         isEvent: false,
       })
@@ -147,7 +148,6 @@ describe('test OfferIndividualBreadcrumb', () => {
 
     it('should render steps when offer and stock are given', async () => {
       const offer: Partial<IOfferIndividual> = individualOfferFactory({
-        id: 'AA',
         isEvent: false,
       })
 
@@ -179,7 +179,7 @@ describe('test OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 
@@ -198,7 +198,7 @@ describe('test OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.STOCKS,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 
@@ -217,7 +217,7 @@ describe('test OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 
@@ -241,7 +241,7 @@ describe('test OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.TARIFS,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 
@@ -268,7 +268,7 @@ describe('test OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.STOCKS,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 
@@ -285,7 +285,7 @@ describe('test OfferIndividualBreadcrumb', () => {
   describe('in edition', () => {
     it('should render default breadcrumb in edition', () => {
       const offer: Partial<IOfferIndividual> = {
-        id: 'AA',
+        nonHumanizedId: offerId,
         stocks: [{ id: 'STOCK_ID' } as IOfferIndividualStock],
       }
 
@@ -299,7 +299,7 @@ describe('test OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
             mode: OFFER_WIZARD_MODE.EDITION,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 
@@ -309,7 +309,7 @@ describe('test OfferIndividualBreadcrumb', () => {
 
     it('should render steps on Information', () => {
       const offer: Partial<IOfferIndividual> = {
-        id: 'AA',
+        nonHumanizedId: offerId,
         stocks: [{ id: 'STOCK_ID' } as IOfferIndividualStock],
       }
 
@@ -324,7 +324,7 @@ describe('test OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
             mode: OFFER_WIZARD_MODE.EDITION,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 
@@ -338,7 +338,7 @@ describe('test OfferIndividualBreadcrumb', () => {
 
     it('should render steps on Stocks', () => {
       const offer: Partial<IOfferIndividual> = {
-        id: 'AA',
+        nonHumanizedId: offerId,
         stocks: [{ id: 'STOCK_ID' } as IOfferIndividualStock],
       }
 
@@ -353,7 +353,7 @@ describe('test OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.STOCKS,
             mode: OFFER_WIZARD_MODE.EDITION,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 

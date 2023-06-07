@@ -54,6 +54,7 @@ const renderTemplate = ({
 }
 
 describe('test OfferIndividualTemplate', () => {
+  const offerId = 1
   it('should render when no offer is given', () => {
     renderTemplate({})
 
@@ -69,8 +70,8 @@ describe('test OfferIndividualTemplate', () => {
   })
   it('should render when offer is given', () => {
     const offer: Partial<IOfferIndividual> = {
-      id: 'AA',
       name: 'Titre de l’offre',
+      nonHumanizedId: offerId,
       stocks: [],
     }
     const contextOverride = {
@@ -92,8 +93,8 @@ describe('test OfferIndividualTemplate', () => {
   })
   it('should render when no offer is given on edition mode', () => {
     const offer: Partial<IOfferIndividual> = {
-      id: 'AA',
       name: 'Titre de l’offre',
+      nonHumanizedId: offerId,
       stocks: [],
     }
     const contextOverride = {
@@ -106,7 +107,7 @@ describe('test OfferIndividualTemplate', () => {
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
-        { offerId: 'AA' }
+        { offerId: offerId }
       ),
     })
 
@@ -135,8 +136,8 @@ describe('test OfferIndividualTemplate', () => {
   describe('Status', () => {
     it('should display status and button in edition', () => {
       const offer: Partial<IOfferIndividual> = {
-        id: 'AA',
         name: 'Titre de l’offre',
+        nonHumanizedId: offerId,
         isActive: true,
         status: OfferStatus.ACTIVE,
         stocks: [],
@@ -151,7 +152,7 @@ describe('test OfferIndividualTemplate', () => {
             step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
             mode: OFFER_WIZARD_MODE.EDITION,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         ),
       })
 
@@ -164,8 +165,8 @@ describe('test OfferIndividualTemplate', () => {
 
     it('should display draft status in draft', () => {
       const offer: Partial<IOfferIndividual> = {
-        id: 'AA',
         name: 'Titre de l’offre',
+        nonHumanizedId: offerId,
         isActive: false,
         status: OfferStatus.DRAFT,
         stocks: [],
@@ -180,7 +181,7 @@ describe('test OfferIndividualTemplate', () => {
             step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
             mode: OFFER_WIZARD_MODE.DRAFT,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         ),
       })
 
@@ -191,8 +192,8 @@ describe('test OfferIndividualTemplate', () => {
 
     it('should display nothing in creation', () => {
       const offer: Partial<IOfferIndividual> = {
-        id: 'AA',
         name: 'Titre de l’offre',
+        nonHumanizedId: offerId,
         isActive: false,
         status: OfferStatus.DRAFT,
         stocks: [],

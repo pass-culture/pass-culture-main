@@ -67,10 +67,11 @@ const renderSummary = (
 
 describe('Summary trackers', () => {
   let customContext: Partial<IOfferIndividualContext>
+  const offerId = 15
 
   beforeEach(() => {
     customContext = {
-      offer: individualOfferFactory({ id: 'AB' }),
+      offer: individualOfferFactory({ nonHumanizedId: offerId }),
     }
 
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -100,7 +101,7 @@ describe('Summary trackers', () => {
           isEdition: true,
           to: 'informations',
           isDraft: false,
-          offerId: 'AB',
+          offerId: offerId,
           used: 'RecapLink',
         }
       )
@@ -124,7 +125,7 @@ describe('Summary trackers', () => {
           to: 'tarifs',
           used: 'RecapLink',
           isDraft: false,
-          offerId: 'AB',
+          offerId: offerId,
         }
       )
     })
@@ -149,7 +150,7 @@ describe('Summary trackers', () => {
           to: 'Offers',
           used: 'StickyButtons',
           isDraft: false,
-          offerId: 'AB',
+          offerId: offerId,
         }
       )
     })
@@ -172,7 +173,7 @@ describe('Summary trackers', () => {
           to: 'AppPreview',
           used: 'SummaryPreview',
           isDraft: false,
-          offerId: 'AB',
+          offerId: offerId,
         }
       )
     })
@@ -181,7 +182,7 @@ describe('Summary trackers', () => {
   describe('On Creation', () => {
     beforeEach(() => {
       customContext.offer = individualOfferFactory({
-        id: 'AB',
+        nonHumanizedId: offerId,
         status: OfferStatus.DRAFT,
       })
       jest
@@ -207,7 +208,7 @@ describe('Summary trackers', () => {
           to: 'informations',
           used: 'RecapLink',
           isDraft: true,
-          offerId: 'AB',
+          offerId: offerId,
         }
       )
     })
@@ -230,7 +231,7 @@ describe('Summary trackers', () => {
           to: 'tarifs',
           used: 'RecapLink',
           isDraft: true,
-          offerId: 'AB',
+          offerId: offerId,
         }
       )
     })
@@ -254,7 +255,7 @@ describe('Summary trackers', () => {
             to: 'stocks',
             used: 'StickyButtons',
             isDraft: true,
-            offerId: 'AB',
+            offerId: offerId,
           }
         )
       })
@@ -277,7 +278,7 @@ describe('Summary trackers', () => {
             to: 'confirmation',
             used: 'StickyButtons',
             isDraft: true,
-            offerId: 'AB',
+            offerId: offerId,
           }
         )
       })
@@ -300,7 +301,7 @@ describe('Summary trackers', () => {
           isEdition: false,
           to: 'stocks',
           used: 'StickyButtons',
-          offerId: 'AB',
+          offerId: offerId,
           isDraft: true,
         }
       )
@@ -324,7 +325,7 @@ describe('Summary trackers', () => {
           to: 'confirmation',
           used: 'StickyButtons',
           isDraft: true,
-          offerId: 'AB',
+          offerId: offerId,
         }
       )
     })
@@ -333,7 +334,7 @@ describe('Summary trackers', () => {
   describe('For Draft offers', () => {
     beforeEach(() => {
       customContext.offer = individualOfferFactory({
-        id: 'AB',
+        nonHumanizedId: offerId,
         status: OfferStatus.DRAFT,
       })
       jest
@@ -359,7 +360,7 @@ describe('Summary trackers', () => {
           to: 'informations',
           used: 'RecapLink',
           isDraft: true,
-          offerId: 'AB',
+          offerId: offerId,
         }
       )
     })
@@ -382,7 +383,7 @@ describe('Summary trackers', () => {
           to: 'tarifs',
           used: 'RecapLink',
           isDraft: true,
-          offerId: 'AB',
+          offerId: offerId,
         }
       )
     })
@@ -405,7 +406,7 @@ describe('Summary trackers', () => {
           to: 'stocks',
           used: 'StickyButtons',
           isDraft: true,
-          offerId: 'AB',
+          offerId: offerId,
         }
       )
     })
@@ -428,7 +429,7 @@ describe('Summary trackers', () => {
           to: 'confirmation',
           used: 'StickyButtons',
           isDraft: true,
-          offerId: 'AB',
+          offerId: offerId,
         }
       )
     })
@@ -453,7 +454,7 @@ describe('Summary trackers', () => {
           to: 'Offers',
           used: 'DraftButtons',
           isDraft: true,
-          offerId: 'AB',
+          offerId: offerId,
         }
       )
     })
@@ -472,7 +473,7 @@ describe('Summary trackers', () => {
       const context = {
         ...defaultContext,
         offer: individualOfferFactory({
-          id: 'AB',
+          nonHumanizedId: offerId,
           status: OfferStatus.DRAFT,
         }),
         venueId: venueId,
