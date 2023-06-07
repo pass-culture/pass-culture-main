@@ -19,4 +19,6 @@ const Root = (): JSX.Element => {
   )
 }
 
+// This is used in the main index.jsx file
+// ts-unused-exports:disable-next-line
 export default Root

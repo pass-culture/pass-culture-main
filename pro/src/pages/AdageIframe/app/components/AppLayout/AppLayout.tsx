@@ -11,7 +11,7 @@ import {
 } from 'utils/config'
 
 import useAdageUser from '../../hooks/useAdageUser'
-import routesAdage from '../../subRoutesAdage'
+import { routesAdage } from '../../subRoutesAdage'
 import { AdageHeader } from '../AdageHeader/AdageHeader'
 
 import styles from './AppLayout.module.scss'

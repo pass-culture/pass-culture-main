@@ -17,5 +17,3 @@ export const routesAdage = [
     title: 'Pour mon établissement',
   },
 ]
-
-export default routesAdage

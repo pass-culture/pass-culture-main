@@ -2,7 +2,7 @@ import { createContext } from 'react'
 
 import { AuthenticatedResponse } from 'apiClient/adage'
 
-export type AdageUserContextType = {
+type AdageUserContextType = {
   adageUser?: AuthenticatedResponse | null
 }
 

@@ -32,7 +32,7 @@ import { WithdrawalDetails } from './WithdrawalDetails'
 
 import { IVenueFormValues } from '.'
 
-export interface IVenueForm {
+interface VenueFormProps {
   isCreatingVenue: boolean
   offerer: IOfferer
   updateIsSiretValued: (isSiretValued: boolean) => void
@@ -56,7 +56,7 @@ const VenueForm = ({
   venue,
   initialIsVirtual = false,
   isNewOnboardingActive,
-}: IVenueForm) => {
+}: VenueFormProps) => {
   const {
     values: { isPermanent },
   } = useFormikContext<IVenueFormValues>()

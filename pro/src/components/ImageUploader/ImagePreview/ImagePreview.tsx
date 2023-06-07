@@ -5,14 +5,14 @@ import { UploaderModeEnum } from '../types'
 
 import style from './ImagePreview.module.scss'
 
-export type IImagePreviewProps = {
+type ImagePreviewProps = {
   imageUrl: string
   children?: never
   alt: string
   mode: UploaderModeEnum
 }
 
-const ImagePreview = ({ imageUrl, alt, mode }: IImagePreviewProps) => (
+const ImagePreview = ({ imageUrl, alt, mode }: ImagePreviewProps) => (
   <img
     alt={alt}
     className={cn(style['image-preview'], {

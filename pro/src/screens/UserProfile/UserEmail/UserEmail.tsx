@@ -9,13 +9,13 @@ import { BoxRounded } from 'ui-kit/BoxRounded'
 
 import { Forms } from '../constants'
 
-export interface IUserEmailInitialValues {
+export interface UserEmailInitialValues {
   email: string
 }
 
-interface IUserEmailProps {
+interface UserEmailProps {
   setCurrentForm: (value: Forms | null) => void
-  initialValues: IUserEmailInitialValues
+  initialValues: UserEmailInitialValues
   showForm: boolean
 }
 
@@ -23,7 +23,7 @@ const UserEmail = ({
   setCurrentForm,
   initialValues,
   showForm = false,
-}: IUserEmailProps) => {
+}: UserEmailProps) => {
   const onClickModify = () => setCurrentForm(Forms.USER_EMAIL)
   const resetForm = () => setCurrentForm(null)
   const [pendingEmailValidation, setPendingEmailValidation] =
