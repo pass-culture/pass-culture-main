@@ -32,6 +32,7 @@ def install_routes(app: Flask) -> None:
     from .offer_validation_rules import blueprint as offer_validation_rule_blueprint
     from .pivots import blueprint as pivots_blueprint
     from .providers import blueprint as providers_blueprint
+    from .titelive import blueprint as titelive_blueprint
 
     if settings.ENABLE_TEST_USER_GENERATION:
         from .user_generation import blueprint as user_generation_blueprint
