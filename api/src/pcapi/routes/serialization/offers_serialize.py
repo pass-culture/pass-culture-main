@@ -253,23 +253,16 @@ class GetOfferStockResponseModel(BaseModel):
     dnBookedQuantity: int = Field(alias="bookingsQuantity")
     fieldsUpdated: list[str]
     hasActivationCode: bool
-    id: str
     idAtProviders: str | None
     isBookable: bool
     isEventDeletable: bool
     isEventExpired: bool
     isSoftDeleted: bool
-    lastProviderId: str | None
     nonHumanizedId: int
-    offerId: str
     price: float
     priceCategoryId: int | None
     quantity: int | None
     remainingQuantity: int | str | None
-
-    _humanize_id = humanize_field("id")
-    _humanize_last_provider_id = humanize_field("lastProviderId")
-    _humanize_offer_id = humanize_field("offerId")
 
     @classmethod
     def from_orm(cls, stock: offers_models.Stock) -> "GetOfferStockResponseModel":

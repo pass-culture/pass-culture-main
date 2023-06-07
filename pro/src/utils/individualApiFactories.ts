@@ -89,9 +89,7 @@ export const individualStockFactory = (
 ): IOfferIndividualStock => {
   const id = stockId++
   return {
-    id: `STOCK${id}`,
     nonHumanizedId: id,
-    offerId: 'OFFER_ID',
     price: 100,
     beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
     bookingLimitDatetime: new Date('2021-09-15T12:00:00Z').toISOString(),

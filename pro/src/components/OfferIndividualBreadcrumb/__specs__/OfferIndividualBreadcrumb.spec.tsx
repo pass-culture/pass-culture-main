@@ -17,6 +17,7 @@ import { OFFER_WIZARD_STEP_IDS } from '../constants'
 import OfferIndividualBreadcrumb from '../OfferIndividualBreadcrumb'
 
 const offerId = 12
+const stockId = 55
 
 const renderOfferIndividualBreadcrumb = (
   contextOverride: Partial<IOfferIndividualContext> = {},
@@ -286,7 +287,7 @@ describe('test OfferIndividualBreadcrumb', () => {
     it('should render default breadcrumb in edition', () => {
       const offer: Partial<IOfferIndividual> = {
         nonHumanizedId: offerId,
-        stocks: [{ id: 'STOCK_ID' } as IOfferIndividualStock],
+        stocks: [{ nonHumanizedId: stockId } as IOfferIndividualStock],
       }
 
       const contextOverride: Partial<IOfferIndividualContext> = {
@@ -310,7 +311,7 @@ describe('test OfferIndividualBreadcrumb', () => {
     it('should render steps on Information', () => {
       const offer: Partial<IOfferIndividual> = {
         nonHumanizedId: offerId,
-        stocks: [{ id: 'STOCK_ID' } as IOfferIndividualStock],
+        stocks: [{ nonHumanizedId: stockId } as IOfferIndividualStock],
       }
 
       const contextOverride: Partial<IOfferIndividualContext> = {
@@ -339,7 +340,7 @@ describe('test OfferIndividualBreadcrumb', () => {
     it('should render steps on Stocks', () => {
       const offer: Partial<IOfferIndividual> = {
         nonHumanizedId: offerId,
-        stocks: [{ id: 'STOCK_ID' } as IOfferIndividualStock],
+        stocks: [{ nonHumanizedId: stockId } as IOfferIndividualStock],
       }
 
       const contextOverride: Partial<IOfferIndividualContext> = {
