@@ -39,6 +39,7 @@ const VenueProviderForm = ({ afterSubmit, provider, venue }) => {
       providerId={provider.id}
       saveVenueProvider={createVenueProvider}
       venueId={venue.nonHumanizedId}
+      offererId={venue.managingOfferer.nonHumanizedId}
     />
   ) : displayCDSProviderForm ? (
     <CinemaProviderForm
@@ -46,6 +47,7 @@ const VenueProviderForm = ({ afterSubmit, provider, venue }) => {
       providerId={provider.id}
       saveVenueProvider={createVenueProvider}
       venueId={venue.nonHumanizedId}
+      offererId={venue.managingOfferer.nonHumanizedId}
     />
   ) : (
     <StocksProviderForm
@@ -54,6 +56,7 @@ const VenueProviderForm = ({ afterSubmit, provider, venue }) => {
       siret={venue.siret}
       venueId={venue.nonHumanizedId}
       hasOffererProvider={provider.hasOffererProvider}
+      offererId={venue.managingOfferer.nonHumanizedId}
     />
   )
 }

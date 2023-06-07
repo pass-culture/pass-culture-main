@@ -14,11 +14,13 @@ import { ICinemaProviderParametersValues } from './types'
 interface CinemaProviderParametersProps {
   venueProvider: VenueProviderResponse
   afterVenueProviderEdit: (editedVenueProvider: VenueProviderResponse) => void
+  offererId: number
 }
 
 const CinemaProviderParameters = ({
   venueProvider,
   afterVenueProviderEdit,
+  offererId,
 }: CinemaProviderParametersProps): JSX.Element => {
   const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
   const notification = useNotification()
@@ -89,6 +91,7 @@ const CinemaProviderParameters = ({
           onConfirm={onConfirmDialog}
           providerId={venueProvider.providerId}
           venueId={venueProvider.venueId}
+          offererId={offererId}
         />
       )}
     </div>

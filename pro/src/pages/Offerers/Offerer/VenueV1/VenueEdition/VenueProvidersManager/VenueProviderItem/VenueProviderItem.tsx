@@ -21,6 +21,7 @@ interface VenueProviderItemV2Props {
   afterSubmit: (editedVenueProvider: VenueProviderResponse) => void
   venueProvider: VenueProviderResponse
   venueDepartmentCode: string
+  offererId: number
 }
 
 const VenueProviderItem = ({
@@ -28,6 +29,7 @@ const VenueProviderItem = ({
   afterSubmit,
   venueProvider,
   venueDepartmentCode,
+  offererId,
 }: VenueProviderItemV2Props): JSX.Element => {
   const { lastSyncDate, nOffers, provider, venueIdAtOfferProvider } =
     venueProvider
@@ -92,12 +94,14 @@ const VenueProviderItem = ({
         <AllocineProviderParameters
           venueProvider={venueProvider}
           afterVenueProviderEdit={afterSubmit}
+          offererId={offererId}
         />
       )}
       {isCinemaProvider(venueProvider.provider) && (
         <CinemaProviderParameters
           venueProvider={venueProvider}
           afterVenueProviderEdit={afterSubmit}
+          offererId={offererId}
         />
       )}
     </li>

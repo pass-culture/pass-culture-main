@@ -5,10 +5,14 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
+import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import VenueProvidersManager from '../../VenueProvidersManager'
+
+const mockLogEvent = jest.fn()
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
@@ -48,6 +52,9 @@ describe('src | StocksProviderForm', () => {
       name: 'Le lieu',
       siret: '12345678901234',
       departementCode: '30',
+      managingOfferer: {
+        nonHumanizedId: 36,
+      },
     }
 
     props = {
@@ -70,10 +77,12 @@ describe('src | StocksProviderForm', () => {
 
     pcapi.loadProviders.mockResolvedValue(providers)
 
-    await renderVenueProvidersManager(props)
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
   })
 
-  const renderStocksProviderForm = async providerId => {
+  const openStocksProviderForm = async providerId => {
     const importOffersButton = screen.getByText('Synchroniser des offres')
     await userEvent.click(importOffersButton)
     const providersSelect = screen.getByRole('combobox')
@@ -81,8 +90,10 @@ describe('src | StocksProviderForm', () => {
   }
 
   it('should display an import button and the venue siret as provider identifier', async () => {
+    await renderVenueProvidersManager(props)
     // when
-    await renderStocksProviderForm(providers[0].id)
+
+    await openStocksProviderForm(providers[0].id)
 
     // then
     expect(
@@ -93,8 +104,10 @@ describe('src | StocksProviderForm', () => {
   })
 
   it('should display an import button but no account identifier', async () => {
+    await renderVenueProvidersManager(props)
+
     // when
-    await renderStocksProviderForm(providers[1].id)
+    await openStocksProviderForm(providers[1].id)
 
     // then
     expect(
@@ -107,8 +120,9 @@ describe('src | StocksProviderForm', () => {
   describe('on form submit', () => {
     it('should display the spinner while waiting for server response', async () => {
       // given
+      await renderVenueProvidersManager(props)
       api.createVenueProvider.mockReturnValue(new Promise(() => {}))
-      await renderStocksProviderForm(providers[0].id)
+      await openStocksProviderForm(providers[0].id)
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
       // when
@@ -146,7 +160,9 @@ describe('src | StocksProviderForm', () => {
         nOffers: 0,
       }
       api.createVenueProvider.mockResolvedValue(createdVenueProvider)
-      await renderStocksProviderForm(providers[0].id)
+      await renderVenueProvidersManager(props)
+
+      await openStocksProviderForm(providers[0].id)
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
       // when
@@ -171,13 +187,71 @@ describe('src | StocksProviderForm', () => {
       ).not.toBeInTheDocument()
     })
 
+    it('should track on import', async () => {
+      // given
+      const createdVenueProvider = {
+        id: venueProviderId,
+        provider: providers[0],
+        providerId: providers[0].id,
+        venueId: props.venue.nonHumanizedId,
+        venueIdAtOfferProvider: props.venue.siret,
+        lastSyncDate: '2018-01-01T00:00:00Z',
+        nOffers: 0,
+      }
+      api.createVenueProvider.mockResolvedValue(createdVenueProvider)
+      await renderVenueProvidersManager(props)
+
+      await openStocksProviderForm(providers[0].id)
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        SynchronizationEvents.CLICKED_SYNCHRONIZE_OFFER,
+        {
+          offererId: 36,
+          venueId: 1,
+        }
+      )
+
+      const submitButton = screen.getByRole('button', { name: 'Importer' })
+      await userEvent.click(submitButton)
+
+      expect(mockLogEvent).toHaveBeenCalledTimes(2)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        2,
+        SynchronizationEvents.CLICKED_IMPORT,
+        {
+          offererId: 36,
+          venueId: 1,
+          providerId: 2,
+        }
+      )
+
+      const confirmImportButton = screen.getByRole('button', {
+        name: 'Continuer',
+      })
+      await userEvent.click(confirmImportButton)
+
+      expect(mockLogEvent).toHaveBeenCalledTimes(3)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        3,
+        SynchronizationEvents.CLICKED_VALIDATE_IMPORT,
+        {
+          offererId: 36,
+          venueId: 1,
+          providerId: 2,
+        }
+      )
+    })
+
     it('should display a notification and unselect provider if there is something wrong with the server', async () => {
       // given
       const apiError = { provider: ['error message'] }
       api.createVenueProvider.mockRejectedValue(
         new ApiError({}, { body: apiError, status: 400 }, '')
       )
-      await renderStocksProviderForm(providers[0].id)
+      await renderVenueProvidersManager(props)
+
+      await openStocksProviderForm(providers[0].id)
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
       // when
