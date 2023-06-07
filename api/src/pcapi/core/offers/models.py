@@ -410,6 +410,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     withdrawalType = sa.Column(sa.Enum(WithdrawalTypeEnum), nullable=True)
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
+    sa.Index("offer_idAtProvider", idAtProvider)
     sa.Index("offer_ean_idx", extraData["ean"].astext)
     sa.Index("offer_visa_idx", extraData["visa"].astext)
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
