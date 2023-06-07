@@ -22,5 +22,3 @@ export const getUserHasCollectiveBookingsAdapter: GetUserHasBookingsAdapter =
       return FAILING_RESPONSE
     }
   }
-
-export default getUserHasCollectiveBookingsAdapter

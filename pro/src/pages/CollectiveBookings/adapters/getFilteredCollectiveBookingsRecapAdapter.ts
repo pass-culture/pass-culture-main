@@ -69,5 +69,3 @@ export const getFilteredCollectiveBookingsRecapAdapter: GetFilteredCollectiveBoo
       return FAILING_RESPONSE
     }
   }
-
-export default getFilteredCollectiveBookingsRecapAdapter

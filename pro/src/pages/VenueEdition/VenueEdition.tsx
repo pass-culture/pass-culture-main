@@ -10,8 +10,10 @@ import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import { useAdapter } from 'hooks'
 import useNotification from 'hooks/useNotification'
-import { getFilteredOffersAdapter } from 'pages/Offers/adapters'
-import { IPayload } from 'pages/Offers/adapters/getFilteredOffersAdapter'
+import {
+  getFilteredOffersAdapter,
+  Payload,
+} from 'pages/Offers/adapters/getFilteredOffersAdapter'
 import { VenueFormScreen } from 'screens/VenueForm'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -66,8 +68,8 @@ const VenueEdition = (): JSX.Element | null => {
   }
 
   const { isLoading: isLoadingVenueOffers, data: venueOffers } = useAdapter<
-    IPayload,
-    IPayload
+    Payload,
+    Payload
   >(() => getFilteredOffersAdapter(apiFilters))
 
   const hasBookingQuantity = offerHasBookingQuantity(venueOffers?.offers)

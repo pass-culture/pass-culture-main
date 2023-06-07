@@ -71,5 +71,3 @@ export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
       return FAILING_RESPONSE
     }
   }
-
-export default getFilteredBookingsRecapAdapter

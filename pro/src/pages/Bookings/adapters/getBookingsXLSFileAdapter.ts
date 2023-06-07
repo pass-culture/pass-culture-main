@@ -50,5 +50,3 @@ export const getBookingsXLSFileAdapter: GetBookingsXLSFileAdapter =
       return FAILING_RESPONSE
     }
   }
-
-export default getBookingsXLSFileAdapter

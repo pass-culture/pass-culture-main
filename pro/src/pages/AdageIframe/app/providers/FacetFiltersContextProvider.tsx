@@ -4,12 +4,12 @@ import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
 
 import { Facets } from '../types'
 
-export type FacetFiltersContextType = {
+type FacetFiltersContextType = {
   facetFilters: Facets
   setFacetFilters: (facets: Facets) => void
 }
 
-export const facetFiltersContextInitialValues: FacetFiltersContextType = {
+const facetFiltersContextInitialValues: FacetFiltersContextType = {
   facetFilters: [],
   setFacetFilters: () => null,
 }

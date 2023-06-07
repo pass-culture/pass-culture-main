@@ -2,7 +2,7 @@ import React, { createContext, ReactNode, useMemo, useState } from 'react'
 
 import { INITIAL_QUERY } from '../constants'
 
-export type AlgoliaQueryContextType = {
+type AlgoliaQueryContextType = {
   query: string
   setQuery: (query: string) => void
   queryTag: string
@@ -10,7 +10,7 @@ export type AlgoliaQueryContextType = {
   removeQuery: () => void
 }
 
-export const alogliaQueryContextInitialValues: AlgoliaQueryContextType = {
+const alogliaQueryContextInitialValues: AlgoliaQueryContextType = {
   query: INITIAL_QUERY,
   setQuery: () => null,
   queryTag: INITIAL_QUERY,

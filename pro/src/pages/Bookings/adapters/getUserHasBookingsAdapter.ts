@@ -8,7 +8,7 @@ const FAILING_RESPONSE: AdapterFailure<boolean> = {
   payload: false,
 }
 
-export const getFilteredBookingsRecapAdapter: GetUserHasBookingsAdapter =
+export const getUserHasBookingsAdapter: GetUserHasBookingsAdapter =
   async () => {
     try {
       const { hasBookings } = await api.getUserHasBookings()
@@ -22,5 +22,3 @@ export const getFilteredBookingsRecapAdapter: GetUserHasBookingsAdapter =
       return FAILING_RESPONSE
     }
   }
-
-export default getFilteredBookingsRecapAdapter
