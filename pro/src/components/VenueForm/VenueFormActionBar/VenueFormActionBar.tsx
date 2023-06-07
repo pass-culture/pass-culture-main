@@ -10,7 +10,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import useNewOfferCreationJourney from '../../../hooks/useNewOfferCreationJourney'
 import { IVenueFormValues } from '../types'
 
-export interface IVenueFormActionBarProps {
+interface VenueFormActionBarProps {
   offererId: string
   isCreatingVenue: boolean
 }
@@ -18,7 +18,7 @@ export interface IVenueFormActionBarProps {
 const VenueFormActionBar = ({
   offererId,
   isCreatingVenue,
-}: IVenueFormActionBarProps) => {
+}: VenueFormActionBarProps) => {
   const { currentUser } = useCurrentUser()
   const { isSubmitting } = useFormikContext<IVenueFormValues>()
 

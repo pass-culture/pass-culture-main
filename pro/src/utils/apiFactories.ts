@@ -42,7 +42,7 @@ export const collectiveOfferFactory = (
   }
 }
 
-export const collectiveStockFactory = (customStock = {}) => {
+const collectiveStockFactory = (customStock = {}) => {
   return {
     bookingsQuantity: 0,
     id: `STOCK${stockId++}`,

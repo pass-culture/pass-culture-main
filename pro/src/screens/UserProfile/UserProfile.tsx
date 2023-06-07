@@ -5,7 +5,7 @@ import { BannerRGS } from 'components/Banner'
 import { IUserIdentityFormValues } from 'components/UserIdentityForm/types'
 
 import { Forms } from './constants'
-import UserEmail, { IUserEmailInitialValues } from './UserEmail/UserEmail'
+import UserEmail, { UserEmailInitialValues } from './UserEmail/UserEmail'
 import { UserIdentity } from './UserIdentity'
 import { UserPassword } from './UserPassword'
 import { UserPhone } from './UserPhone'
@@ -14,7 +14,7 @@ import styles from './UserProfile.module.scss'
 interface IUserProfileProps {
   userIdentityInitialValues: IUserIdentityFormValues
   userPhoneInitialValues: UserPhoneBodyModel
-  userEmailInitialValues: IUserEmailInitialValues
+  userEmailInitialValues: UserEmailInitialValues
 }
 
 const UserProfile = ({

@@ -4,7 +4,7 @@ import { PriceCategoryBody } from 'apiClient/v1'
 
 type TSuccessPayload = Record<string, unknown>
 type TFailurePayload = { errors: Record<string, string>[] }
-export type PostPriceCategoriesAdapter = Adapter<
+type PostPriceCategoriesAdapter = Adapter<
   {
     offerId: number
     requestBody?: PriceCategoryBody

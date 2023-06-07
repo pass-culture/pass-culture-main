@@ -51,7 +51,7 @@ export const serializeBeginningDateTime = (
   return toISOStringWithoutMilliseconds(beginningDateTimeInUTCTimezone)
 }
 
-export const serializeStockEvent = (
+const serializeStockEvent = (
   formValues: IStockEventFormValues,
   departementCode: string
 ): StockCreationBodyModel | StockEditionBodyModel => {

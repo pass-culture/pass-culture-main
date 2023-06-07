@@ -1,18 +1,18 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 
-type TSuccessPayload = Record<string, unknown>
-type TFailurePayload = { errors: Record<string, string>[] }
-export type TDeletePriceCategoryAdapter = Adapter<
+type SuccessPayload = Record<string, unknown>
+type FailurePayload = { errors: Record<string, string>[] }
+type DeletePriceCategoryAdapter = Adapter<
   {
     offerId: number
     priceCategoryId: number
   },
-  TSuccessPayload,
-  TFailurePayload
+  SuccessPayload,
+  FailurePayload
 >
 
-const deletePriceCategoryAdapter: TDeletePriceCategoryAdapter = async ({
+const deletePriceCategoryAdapter: DeletePriceCategoryAdapter = async ({
   offerId,
   priceCategoryId,
 }) => {

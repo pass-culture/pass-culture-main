@@ -18,31 +18,32 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 import styles from './ReimbursementPoint.module.scss'
 
-interface IReimbursementPointV2 {
+interface ReimbursementPointV2 {
   initialVenue: IVenue
   isCreatingVenue?: boolean
   offerer: GetOffererResponseModel
   readOnly: boolean
   venueHasPricingPoint?: boolean
 }
-export type IReimbursementPointOptions = {
+type ReimbursementPointOptions = {
   key: string
   displayName: string
   id: number
 }
-type IReimbursementPoint = {
+type ReimbursementPoint = {
   iban: string
   venueName: string
 }
+
 const ReimbursementPoint = ({
   readOnly = false,
   offerer,
   initialVenue,
   isCreatingVenue = false,
   venueHasPricingPoint,
-}: IReimbursementPointV2) => {
+}: ReimbursementPointV2) => {
   const [reimbursementPointOptions, setReimbursementPointOptions] =
-    useState<Array<IReimbursementPointOptions>>()
+    useState<Array<ReimbursementPointOptions>>()
   const [venueReimbursementPoint, setVenueReimbursementPoint] = useState<any>(
     []
   )
@@ -58,7 +59,7 @@ const ReimbursementPoint = ({
   const [isDmsDialogOpen, setIsDmsDialogOpen] = useState(false)
 
   const reimbursementPointDisplayName = (
-    reimbursementPoint: IReimbursementPoint
+    reimbursementPoint: ReimbursementPoint
   ) =>
     reimbursementPoint
       ? `${reimbursementPoint.venueName} - ${reimbursementPoint.iban}`
