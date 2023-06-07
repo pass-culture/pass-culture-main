@@ -124,6 +124,7 @@ def get_collective_offer_request(request_id: int) -> collective_offers_serialize
     offerer_id = collective_offer_request.collectiveOfferTemplate.venue.managingOffererId
     check_user_has_access_to_offerer(current_user, offerer_id)
 
+    institution = collective_offer_request.educationalInstitution
     return collective_offers_serialize.GetCollectiveOfferRequestResponseModel(
         redactor=collective_offers_serialize.CollectiveOfferRedactorModel(
             firstName=collective_offer_request.educationalRedactor.firstName,
@@ -135,8 +136,14 @@ def get_collective_offer_request(request_id: int) -> collective_offers_serialize
         totalTeachers=collective_offer_request.totalTeachers,
         comment=collective_offer_request.comment,
         phoneNumber=collective_offer_request.phoneNumber,  # type: ignore
-        institutionId=collective_offer_request.educationalInstitution.institutionId,
         dateCreated=collective_offer_request.dateCreated,
+        institution=collective_offers_serialize.CollectiveOfferInstitutionModel(
+            institutionId=institution.institutionId,
+            institutionType=institution.institutionType,
+            name=institution.name,
+            city=institution.city,
+            postalCode=institution.postalCode,
+        ),
     )
 
 

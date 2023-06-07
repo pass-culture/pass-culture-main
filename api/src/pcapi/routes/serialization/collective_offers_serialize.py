@@ -365,6 +365,14 @@ class CollectiveOfferRedactorModel(BaseModel):
     email: str
 
 
+class CollectiveOfferInstitutionModel(BaseModel):
+    institutionId: str
+    institutionType: str
+    name: str
+    city: str
+    postalCode: str
+
+
 class GetCollectiveOfferRequestResponseModel(BaseModel):
     redactor: CollectiveOfferRedactorModel
     requestedDate: date | None
@@ -372,8 +380,8 @@ class GetCollectiveOfferRequestResponseModel(BaseModel):
     totalTeachers: int | None
     phoneNumber: str | None
     comment: str
-    institutionId: str
     dateCreated: date | None
+    institution: CollectiveOfferInstitutionModel
 
     class Config:
         allow_population_by_field_name = True

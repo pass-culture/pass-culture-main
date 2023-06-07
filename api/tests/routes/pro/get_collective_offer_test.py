@@ -227,8 +227,14 @@ class GetCollectiveOfferRequestTest:
             "totalTeachers": request.totalTeachers,
             "comment": request.comment,
             "phoneNumber": request.phoneNumber,
-            "institutionId": request.educationalInstitution.institutionId,
             "dateCreated": request.dateCreated.isoformat(),
+            "institution": {
+                "institutionId": request.educationalInstitution.institutionId,
+                "institutionType": request.educationalInstitution.institutionType,
+                "name": request.educationalInstitution.name,
+                "city": request.educationalInstitution.city,
+                "postalCode": request.educationalInstitution.postalCode,
+            },
         }
 
     def test_old_request_without_date_created(self, client):
