@@ -127,7 +127,7 @@ def get_offers_by_filters(
         if len(name_keywords_or_ean) > 3:
             search = "%{}%".format(name_keywords_or_ean)
         # We should really be using `union` instead of `union_all` here since we don't want duplicates but
-        # 1. it's unlikely that a book will contain its ISBN in its name
+        # 1. it's unlikely that a book will contain its EAN in its name
         # 2. we need to migrate models.Offer.extraData to JSONB in order to use `union`
         query = query.filter(models.Offer.name.ilike(search)).union_all(
             query.filter(models.Offer.extraData["ean"].astext == name_keywords_or_ean)
@@ -211,7 +211,7 @@ def get_collective_offers_by_filters(
         if len(name_keywords) > 3:
             search = "%{}%".format(name_keywords)
         # We should really be using `union` instead of `union_all` here since we don't want duplicates but
-        # 1. it's unlikely that a book will contain its ISBN in its name
+        # 1. it's unlikely that a book will contain its EAN in its name
         # 2. we need to migrate models.Offer.extraData to JSONB in order to use `union`
         query = query.filter(educational_models.CollectiveOffer.name.ilike(search))
     if status is not None:
@@ -380,7 +380,7 @@ def get_collective_offers_template_by_filters(
         if len(name_keywords) > 3:
             search = "%{}%".format(name_keywords)
         # We should really be using `union` instead of `union_all` here since we don't want duplicates but
-        # 1. it's unlikely that a book will contain its ISBN in its name
+        # 1. it's unlikely that a book will contain its EAN in its name
         # 2. we need to migrate models.Offer.extraData to JSONB in order to use `union`
         query = query.filter(educational_models.CollectiveOfferTemplate.name.ilike(search))
     if status is not None:
@@ -754,7 +754,7 @@ def get_next_product_id_from_database() -> int:
 
 def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue) -> bool:
     if not ean:
-        # We should never be there (an ean or an isbn must be given), in case we are alert sentry.
+        # We should never be there (an ean or an ean must be given), in case we are alert sentry.
         logger.error("Could not search for an offer without ean")
     return db.session.query(
         models.Offer.query.filter(
