@@ -36,7 +36,7 @@ export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
       to: OFFER_WIZARD_STEP_IDS.TARIFS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
     })
   }

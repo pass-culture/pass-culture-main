@@ -58,7 +58,7 @@ describe('StockEventSection', () => {
         from: 'recapitulatif',
         isDraft: false,
         isEdition: true,
-        offerId: offer.id,
+        offerId: offer.nonHumanizedId,
         to: 'tarifs',
         used: 'RecapLink',
       }

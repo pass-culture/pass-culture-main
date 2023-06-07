@@ -155,7 +155,6 @@ describe('Summary', () => {
     customContext = {
       offer: individualOfferFactory(
         {
-          id: 'AA',
           isEvent: false,
           name: 'mon offre',
           lastProvider: {
@@ -406,7 +405,7 @@ describe('Summary', () => {
       jest.spyOn(useNewOfferCreationJourney, 'default').mockReturnValue(true)
 
       const context = {
-        offer: individualOfferFactory({ id: 'AA' }),
+        offer: individualOfferFactory(),
         venueId: 1,
         showVenuePopin: {
           1: true,

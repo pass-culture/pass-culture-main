@@ -107,11 +107,11 @@ describe('screens:StocksThing', () => {
   let props: IStocksThingProps
   let contextValue: IOfferIndividualContext
   let offer: Partial<IOfferIndividual>
+  const offerId = 1
 
   beforeEach(() => {
     offer = {
-      id: 'OFFER_ID',
-      nonHumanizedId: 1,
+      nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
       } as IOfferIndividualVenue,
@@ -123,7 +123,7 @@ describe('screens:StocksThing', () => {
       offer: offer as IOfferIndividual,
     }
     contextValue = {
-      offerId: 'OFFER_ID',
+      offerId: offerId,
       offer: offer as IOfferIndividual,
       venueList: [],
       offererNames: [],

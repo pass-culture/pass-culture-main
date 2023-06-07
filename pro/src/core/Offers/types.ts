@@ -169,7 +169,6 @@ export interface IOfferIndividualImage {
 }
 
 export interface IOfferIndividual {
-  id: string
   nonHumanizedId: number
   author: string
   bookingEmail: string

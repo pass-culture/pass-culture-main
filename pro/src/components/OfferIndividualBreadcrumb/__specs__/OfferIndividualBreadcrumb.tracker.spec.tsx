@@ -94,9 +94,9 @@ const renderOfferIndividualBreadcrumb = (
 describe('test tracker OfferIndividualBreadcrumb', () => {
   let offer: Partial<IOfferIndividual>
   let contextOverride: Partial<IOfferIndividualContext>
+  const offerId = 1
   beforeEach(() => {
-    offer = individualOfferFactory({ id: 'AA' })
-
+    offer = individualOfferFactory({ nonHumanizedId: offerId })
     contextOverride = {
       offer: offer as IOfferIndividual,
     }
@@ -118,7 +118,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
           from: 'informations',
           isEdition: false,
           isDraft: true,
-          offerId: 'AA',
+          offerId: offerId,
           to: 'stocks',
           used: 'Breadcrumb',
         }
@@ -133,7 +133,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.STOCKS,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 
@@ -146,7 +146,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
           from: 'stocks',
           isEdition: false,
           isDraft: true,
-          offerId: 'AA',
+          offerId: offerId,
           to: 'recapitulatif',
           used: 'Breadcrumb',
         }
@@ -161,7 +161,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 
@@ -174,7 +174,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
           from: 'recapitulatif',
           isEdition: false,
           isDraft: true,
-          offerId: 'AA',
+          offerId: offerId,
           to: 'informations',
           used: 'Breadcrumb',
         }
@@ -191,7 +191,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
             mode: OFFER_WIZARD_MODE.EDITION,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 
@@ -204,7 +204,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
           from: 'informations',
           isEdition: true,
           isDraft: false,
-          offerId: 'AA',
+          offerId: offerId,
           to: 'stocks',
           used: 'Breadcrumb',
         }
@@ -219,7 +219,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.STOCKS,
             mode: OFFER_WIZARD_MODE.EDITION,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 
@@ -232,7 +232,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
           from: 'stocks',
           isEdition: true,
           isDraft: false,
-          offerId: 'AA',
+          offerId: offerId,
           to: 'informations',
           used: 'Breadcrumb',
         }
@@ -249,7 +249,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
             mode: OFFER_WIZARD_MODE.DRAFT,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 
@@ -262,7 +262,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
           from: 'informations',
           isEdition: true,
           isDraft: true,
-          offerId: 'AA',
+          offerId: offerId,
           to: 'recapitulatif',
           used: 'Breadcrumb',
         }
@@ -277,7 +277,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.STOCKS,
             mode: OFFER_WIZARD_MODE.DRAFT,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 
@@ -290,7 +290,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
           from: 'stocks',
           isEdition: true,
           isDraft: true,
-          offerId: 'AA',
+          offerId: offerId,
           to: 'recapitulatif',
           used: 'Breadcrumb',
         }
@@ -305,7 +305,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.DRAFT,
           }),
-          { offerId: 'AA' }
+          { offerId: offerId }
         )
       )
 
@@ -318,7 +318,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
           from: 'recapitulatif',
           isEdition: true,
           isDraft: true,
-          offerId: 'AA',
+          offerId: offerId,
           to: 'stocks',
           used: 'Breadcrumb',
         }

@@ -68,7 +68,6 @@ describe('screens:StocksThing', () => {
 
   beforeEach(() => {
     offer = {
-      id: 'OFFER_ID',
       nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
@@ -239,7 +238,7 @@ describe('screens:StocksThing', () => {
         from: 'stocks',
         isDraft: true,
         isEdition: false,
-        offerId: 'OFFER_ID',
+        offerId: offerId,
         to: 'informations',
         used: 'StickyButtons',
       }
@@ -263,7 +262,7 @@ describe('screens:StocksThing', () => {
         from: 'stocks',
         isDraft: true,
         isEdition: true,
-        offerId: 'OFFER_ID',
+        offerId: offerId,
         to: 'informations',
         used: 'StickyButtons',
       }
@@ -287,7 +286,7 @@ describe('screens:StocksThing', () => {
         from: 'stocks',
         isDraft: false,
         isEdition: true,
-        offerId: 'OFFER_ID',
+        offerId: offerId,
         to: 'Offers',
         used: 'StickyButtons',
       }

@@ -16,7 +16,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import { getWizardData } from './adapters'
 
 export interface IOfferIndividualContext {
-  offerId: string | null
+  offerId: number | null
   offer: IOfferIndividual | null
   setOffer: ((offer: IOfferIndividual | null) => void) | null
   categories: IOfferCategory[]
@@ -148,7 +148,7 @@ export function OfferIndividualContextProvider({
   return (
     <OfferIndividualContext.Provider
       value={{
-        offerId: offer?.id || null,
+        offerId: offer?.nonHumanizedId || null,
         offer,
         setOffer,
         categories,

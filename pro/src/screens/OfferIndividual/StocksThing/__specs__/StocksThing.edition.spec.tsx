@@ -125,7 +125,6 @@ describe('screens:StocksThing', () => {
       durationMinutes: null,
       extraData: null,
       hasBookingLimitDatetimesPassed: true,
-      id: 'BQ',
       isActive: true,
       isDigital: false,
       isDuo: false,
@@ -140,7 +139,6 @@ describe('screens:StocksThing', () => {
       nonHumanizedId: 12,
       visualDisabilityCompliant: false,
       lastProvider: null,
-      lastProviderId: null,
       mediaUrls: [],
       mediations: [
         {

@@ -128,7 +128,6 @@ describe('screens:StocksEventEdition', () => {
       durationMinutes: null,
       extraData: null,
       hasBookingLimitDatetimesPassed: true,
-      id: 'BQ',
       isActive: true,
       isDigital: false,
       isDuo: false,
@@ -143,7 +142,6 @@ describe('screens:StocksEventEdition', () => {
       nonHumanizedId: 12,
       visualDisabilityCompliant: false,
       lastProvider: null,
-      lastProviderId: null,
       mediaUrls: [],
       mediations: [
         {

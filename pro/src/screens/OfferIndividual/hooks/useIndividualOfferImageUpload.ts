@@ -15,7 +15,6 @@ import { SENT_DATA_ERROR_MESSAGE } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { dehumanizeId } from 'utils/dehumanize'
 
 import { imageFileToDataUrl } from '../Informations/utils/files'
 
@@ -114,9 +113,7 @@ export const useIndividualOfferImageUpload = () => {
       })
     } else {
       try {
-        const dehumanizedId = dehumanizeId(offerId)
-        if (dehumanizedId)
-          await handleImageOnSubmit(dehumanizedId, creationArgs)
+        await handleImageOnSubmit(offerId, creationArgs)
         logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
           from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -147,10 +144,7 @@ export const useIndividualOfferImageUpload = () => {
         offerId: undefined,
       })
     } else {
-      const dehumanizedId = dehumanizeId(offerId)
-      let response
-      if (dehumanizedId) response = await deleteThumbnailAdapter(dehumanizedId)
-      else response = { isOk: false, message: '' }
+      const response = await deleteThumbnailAdapter(offerId)
       if (response.isOk) {
         logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
           from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,

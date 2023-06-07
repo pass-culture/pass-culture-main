@@ -122,12 +122,12 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   let props: IInformationsProps
   let contextOverride: Partial<IOfferIndividualContext>
   let offer: IOfferIndividual
+  const offerId = 12
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
     offer = {
-      id: 'AA',
-      nonHumanizedId: 12,
+      nonHumanizedId: offerId,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
@@ -302,12 +302,10 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'postOffer').mockResolvedValue({
-      id: 'AA',
-      nonHumanizedId: 1,
+      nonHumanizedId: offerId,
     } as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'patchOffer').mockResolvedValue({
-      id: 'AA',
-      nonHumanizedId: 1,
+      nonHumanizedId: offerId,
     } as GetIndividualOfferResponseModel)
     jest
       .spyOn(utils, 'filterCategories')
@@ -434,7 +432,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         from: 'informations',
         isDraft: true,
         isEdition: false,
-        offerId: 'AA',
+        offerId: offerId,
         to: 'informations',
         used: 'DraftButtons',
       }
@@ -453,7 +451,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         from: 'informations',
         isDraft: true,
         isEdition: false,
-        offerId: 'AA',
+        offerId: offerId,
         to: '/outside',
         used: 'RouteLeavingGuard',
       }

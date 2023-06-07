@@ -24,7 +24,7 @@ export interface IActionBarProps {
   onClickSaveDraft?: () => void
   isDisabled: boolean
   step: OFFER_WIZARD_STEP_IDS
-  offerId?: string
+  offerId?: number
   shouldTrack?: boolean
   submitAsButton?: boolean
 }

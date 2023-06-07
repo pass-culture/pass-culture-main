@@ -112,6 +112,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
   const offererId = 1
   const physicalVenueId = 1
   const virtualVenueId = 1
+  const offerId = 12
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
@@ -170,8 +171,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
     }
 
     offer = {
-      id: 'AA',
-      nonHumanizedId: 12,
+      nonHumanizedId: offerId,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
@@ -239,7 +239,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
     }
 
     contextOverride = {
-      offerId: offer.nonHumanizedId.toString(),
+      offerId: offer.nonHumanizedId,
       offer: offer,
       venueList: [
         venue,
@@ -276,12 +276,10 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((c, s, _v) => [c, s])
     jest.spyOn(api, 'patchOffer').mockResolvedValue({
-      id: 'AA',
-      nonHumanizedId: 12,
+      nonHumanizedId: offerId,
     } as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'postOffer').mockResolvedValue({
-      id: 'AA',
-      nonHumanizedId: 12,
+      nonHumanizedId: offerId,
     } as GetIndividualOfferResponseModel)
     jest
       .spyOn(api, 'getOffer')
@@ -350,7 +348,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
         from: 'informations',
         isDraft: true,
         isEdition: true,
-        offerId: 'AA',
+        offerId: offerId,
         to: 'stocks',
         used: 'StickyButtons',
       }
@@ -369,7 +367,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
         from: 'informations',
         isDraft: true,
         isEdition: true,
-        offerId: 'AA',
+        offerId: offerId,
         to: 'informations',
         used: 'DraftButtons',
       }
@@ -389,7 +387,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
         from: 'informations',
         isDraft: true,
         isEdition: true,
-        offerId: 'AA',
+        offerId: offerId,
         to: 'Offers',
         used: 'StickyButtons',
       }

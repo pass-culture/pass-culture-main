@@ -14,9 +14,10 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { RecurrenceForm } from '../RecurrenceForm'
 
 const mockLogEvent = jest.fn()
+const offer = individualOfferFactory({ nonHumanizedId: 1, stocks: [] })
 
 const defaultProps = {
-  offer: individualOfferFactory({ stocks: [] }),
+  offer: offer,
   onCancel: jest.fn(),
   onConfirm: jest.fn(),
 }
@@ -70,7 +71,7 @@ describe('RecurrenceForm', () => {
         from: 'stocks',
         isDraft: false,
         isEdition: true,
-        offerId: '1',
+        offerId: offer.nonHumanizedId,
         to: 'stocks',
         used: 'RecurrencePopin',
         recurrenceType: 'UNIQUE',

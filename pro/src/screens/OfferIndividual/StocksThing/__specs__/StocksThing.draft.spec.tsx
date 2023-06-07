@@ -86,6 +86,7 @@ describe('screens:StocksThing::draft', () => {
   let contextValue: IOfferIndividualContext
   let offer: Partial<IOfferIndividual>
   let stock: Partial<IOfferIndividualStock>
+  const offerId = 1
 
   beforeEach(() => {
     stock = {
@@ -98,7 +99,6 @@ describe('screens:StocksThing::draft', () => {
       isEventDeletable: true,
     }
     offer = {
-      id: 'OFFER_ID',
       nonHumanizedId: 1,
       lastProvider: null,
       venue: {
@@ -110,7 +110,7 @@ describe('screens:StocksThing::draft', () => {
       offer: offer as IOfferIndividual,
     }
     contextValue = {
-      offerId: 'OFFER_ID',
+      offerId: offerId,
       offer: offer as IOfferIndividual,
       venueList: [],
       offererNames: [],

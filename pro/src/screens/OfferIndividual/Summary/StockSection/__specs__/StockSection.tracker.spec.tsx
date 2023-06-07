@@ -34,13 +34,14 @@ const renderStockSection = (props: IStockSection, url = '/recapitulatif') =>
 
 describe('Summary stock section trackers', () => {
   let props: IStockSection
+  const offerId = 1
 
   beforeEach(() => {
     props = {
       offer: individualOfferFactory(
         {
-          id: 'TEST_OFFER_ID',
           status: OfferStatus.ACTIVE,
+          nonHumanizedId: offerId,
         },
         individualStockFactory({
           quantity: 10,
@@ -68,7 +69,7 @@ describe('Summary stock section trackers', () => {
         from: 'recapitulatif',
         isDraft: true,
         isEdition: false,
-        offerId: 'TEST_OFFER_ID',
+        offerId: offerId,
         to: 'stocks',
         used: 'RecapLink',
       }
@@ -88,7 +89,7 @@ describe('Summary stock section trackers', () => {
         from: 'recapitulatif',
         isDraft: false,
         isEdition: true,
-        offerId: 'TEST_OFFER_ID',
+        offerId: offerId,
         to: 'stocks',
         used: 'RecapLink',
       }
@@ -108,7 +109,7 @@ describe('Summary stock section trackers', () => {
         from: 'recapitulatif',
         isDraft: true,
         isEdition: true,
-        offerId: 'TEST_OFFER_ID',
+        offerId: offerId,
         to: 'stocks',
         used: 'RecapLink',
       }
@@ -128,7 +129,7 @@ describe('Summary stock section trackers', () => {
         from: 'recapitulatif',
         isDraft: true,
         isEdition: false,
-        offerId: 'TEST_OFFER_ID',
+        offerId: offerId,
         to: 'stocks',
         used: 'RecapLink',
       }
@@ -147,7 +148,7 @@ describe('Summary stock section trackers', () => {
         from: 'recapitulatif',
         isDraft: false,
         isEdition: true,
-        offerId: 'TEST_OFFER_ID',
+        offerId: offerId,
         to: 'stocks',
         used: 'RecapLink',
       }
