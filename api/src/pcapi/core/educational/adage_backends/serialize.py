@@ -14,6 +14,13 @@ class AdageCollectiveOfferContact(AdageBaseResponseModel):
     phone: str | None
 
 
+class AdageRedactor(AdageBaseResponseModel):
+    email: str | None
+    redactorCivility: str | None
+    redactorFirstName: str | None
+    redactorLastName: str | None
+
+
 class AdageCollectiveOffer(AdageBaseResponseModel):
     UAICode: str
     address: str
@@ -37,7 +44,7 @@ class AdageCollectiveOffer(AdageBaseResponseModel):
     venueTimezone: str
     isDigital: bool
     withdrawalDetails: str | None
-    teacherEmail: str | None
+    redactor: AdageRedactor | None
 
 
 def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> AdageCollectiveOffer:
@@ -71,7 +78,13 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
         venueTimezone=venue.timezone,
         isDigital=False,
         withdrawalDetails=None,
-        teacherEmail=collective_offer.teacher.email if collective_offer.teacher else None,
+        redactor=AdageRedactor(
+            email=collective_offer.teacher.email if collective_offer.teacher else None,
+            redactorCivility=collective_offer.teacher.civility if collective_offer.teacher else None,
+            redactorFirstName=collective_offer.teacher.firstName if collective_offer.teacher else None,
+            redactorLastName=collective_offer.teacher.lastName if collective_offer.teacher else None,
+        )
+        or None,
     )
 
 
