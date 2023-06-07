@@ -1,11 +1,7 @@
 import { api } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
-export type GetVenueLabelsAdapter = Adapter<
-  void,
-  SelectOption[],
-  SelectOption[]
->
+type GetVenueLabelsAdapter = Adapter<void, SelectOption[], SelectOption[]>
 
 const FAILING_RESPONSE: AdapterFailure<SelectOption[]> = {
   isOk: false,

@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 
-import { offerAdageActivated, offerAdageDeactivate } from '../constants'
+import { offerAdageActivated, offerAdageDeactivate } from '../'
 
 type IPayloadSuccess = null
 type IPayloadFailure = null

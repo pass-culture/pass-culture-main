@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { getProviderInfo } from 'core/Providers/utils'
+import { getProviderInfo } from 'core/Providers'
 import Banner from 'ui-kit/Banners/Banner'
 import Icon from 'ui-kit/Icon/Icon'
 

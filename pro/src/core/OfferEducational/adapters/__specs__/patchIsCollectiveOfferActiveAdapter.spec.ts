@@ -5,7 +5,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import {
   offerAdageActivated,
   offerAdageDeactivate,
-} from 'core/OfferEducational/constants'
+} from 'core/OfferEducational/'
 
 import { patchIsCollectiveOfferActiveAdapter } from '../patchIsCollectiveOfferActiveAdapter'
 
