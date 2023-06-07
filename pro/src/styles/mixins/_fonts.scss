@@ -57,7 +57,7 @@ $caption-line-height: rem.torem(16px);
 }
 
 @mixin body-important() {
-  font-size: rem.torem(15px);
+  font-size: $body-font-size;
   font-weight: 500;
 }
 

@@ -362,10 +362,10 @@ const StocksEventList = ({
                 <div className={styles['filtered-data-row']}>
                   <div>
                     Résultat de recherche :{' '}
-                    <strong>
+                    <span className={styles['search-result']}>
                       {filteredStocks.length} occurence
                       {filteredStocks.length !== 1 && 's'}
-                    </strong>
+                    </span>
                   </div>
 
                   <div>

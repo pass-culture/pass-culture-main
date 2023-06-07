@@ -41,6 +41,7 @@ interface StockFormListProps {
     index: number
   ) => Promise<void>
   priceCategoriesOptions: SelectOption[]
+  hiddenStocksRef: React.MutableRefObject<IStockEventFormValues[]>
 }
 
 const STOCKS_PER_PAGE = 20
@@ -49,6 +50,7 @@ const StockFormList = ({
   offer,
   onDeleteStock,
   priceCategoriesOptions,
+  hiddenStocksRef,
 }: StockFormListProps) => {
   const {
     visible: deleteConfirmVisible,
@@ -79,12 +81,16 @@ const StockFormList = ({
   }
 
   useEffect(() => {
+    const allStocks = [...values.stocks, ...hiddenStocksRef.current]
     const filteredStocks = filterAndSortStocks(
-      values.stocks,
+      allStocks,
       offer.priceCategories ?? [],
       currentSortingColumn,
       currentSortingMode,
       { dateFilter, hourFilter, priceCategoryFilter }
+    )
+    hiddenStocksRef.current = allStocks.filter(
+      stock => filteredStocks.indexOf(stock) === -1
     )
     setFieldValue('stocks', filteredStocks)
   }, [
