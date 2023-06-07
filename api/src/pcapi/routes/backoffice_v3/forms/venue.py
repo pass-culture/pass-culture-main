@@ -7,7 +7,9 @@ from wtforms import validators
 
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import VenueTypeCode
+from pcapi.core.permissions import models as perm_models
 from pcapi.routes.backoffice_v3.utils import get_regions_choices
+from pcapi.routes.backoffice_v3.utils import has_current_user_permission
 
 from . import fields
 from . import utils
@@ -65,15 +67,22 @@ class EditVenueForm(EditVirtualVenueForm):
         Change the fields order to avoid having the email and phone
         number (inherited from EditVirtualVenueForm) at the top.
         """
-        super().__init__(*args, **kwargs)
-
         # save venue in order to validate the siret field
         self.venue = venue
+
+        super().__init__(*args, **kwargs)
 
         # self._fields is a collections.OrderedDict
         self._fields.move_to_end("booking_email")
         self._fields.move_to_end("phone_number")
         self._fields.move_to_end("is_permanent")
+
+    def filter_siret(self, raw_siret: str | None) -> str | None:
+        # 'siret' field is disabled when user does not have permission, so it is not sent by the web browser,
+        # force to ensure that is not considered as removed.
+        if raw_siret is None and not has_current_user_permission(perm_models.Permissions.MOVE_SIRET):
+            return self.venue.siret
+        return raw_siret
 
     def validate_siret(self, siret: fields.PCStringField) -> fields.PCStringField:
         if siret.data:
