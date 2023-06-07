@@ -5,11 +5,14 @@ import router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
+import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferFromRequest from '../CollectiveOfferFromRequest'
+
+const mockLogEvent = jest.fn()
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -122,6 +125,11 @@ describe('CollectiveOfferCreation', () => {
 
   it('should create offer on button click', async () => {
     const offerTemplate = collectiveOfferTemplateFactory()
+
+    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
     jest
       .spyOn(router, 'useParams')
       .mockReturnValue({ offerId: '1', requestId: '2' })
@@ -136,11 +144,14 @@ describe('CollectiveOfferCreation', () => {
     jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
 
     renderWithProviders(<CollectiveOfferFromRequest />)
+
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     const requestButton = screen.getByText('Créer l’offre pour l’enseignant')
 
     await userEvent.click(requestButton)
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
 
     expect(createFromTemplateUtils.createOfferFromTemplate).toHaveBeenCalled()
   })

@@ -57,6 +57,7 @@ export enum Events {
   CLICKED_EAC_DMS_TIMELINE = 'hasClickedEacDmsTimeline',
   CLICKED_EAC_DMS_LINK = 'hasClickedEacDmsLink',
   EAC_WRONG_STUDENTS_MODAL_OPEN = 'hasOpenedEacWrongStudentsModal',
+  CLICKED_CREATE_OFFER_FROM_REQUEST = 'hasClickedCreateOfferFromRequest',
 }
 export enum VenueEvents {
   CLICKED_VENUE_ACCORDION_BUTTON = 'hasClickedVenueAccordionButton',
