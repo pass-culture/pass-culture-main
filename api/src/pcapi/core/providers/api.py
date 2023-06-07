@@ -349,7 +349,7 @@ def _build_new_offers_from_stock_details(
             continue
         if stock_detail.venue_reference in existing_offers_by_venue_reference:
             logger.error(
-                "There is already an offer with same (isbn,venueId) but with a different idAtProviders. Update the idAtProviders of offers and stocks attached to venue %s with update_offer_and_stock_id_at_providers method",
+                "There is already an offer with same (ean,venueId) but with a different idAtProviders. Update the idAtProviders of offers and stocks attached to venue %s with update_offer_and_stock_id_at_providers method",
                 venue.id,
                 extra=asdict(stock_detail),
             )
