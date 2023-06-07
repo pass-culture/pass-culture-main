@@ -298,7 +298,12 @@ describe('navigation and submit', () => {
 
   it('should submit and redirect to next page on clik to Étape suivante', async () => {
     const offer = individualOfferFactory({
-      stocks: [individualStockFactory({ id: undefined, priceCategoryId: 1 })],
+      stocks: [
+        individualStockFactory({
+          nonHumanizedId: undefined,
+          priceCategoryId: 1,
+        }),
+      ],
     })
     renderStockEventCreation({ offer })
 
@@ -326,7 +331,12 @@ describe('navigation and submit', () => {
 
   it('should submit and stay to stocks page on clik to Sauvegarder le brouillon', async () => {
     const offer = individualOfferFactory({
-      stocks: [individualStockFactory({ id: undefined, priceCategoryId: 1 })],
+      stocks: [
+        individualStockFactory({
+          nonHumanizedId: undefined,
+          priceCategoryId: 1,
+        }),
+      ],
     })
     renderStockEventCreation({ offer })
 
@@ -358,7 +368,12 @@ describe('navigation and submit', () => {
     jest.spyOn(api, 'upsertStocks').mockRejectedValue({})
 
     const offer = individualOfferFactory({
-      stocks: [individualStockFactory({ id: undefined, priceCategoryId: 1 })],
+      stocks: [
+        individualStockFactory({
+          nonHumanizedId: undefined,
+          priceCategoryId: 1,
+        }),
+      ],
     })
     renderStockEventCreation({ offer })
 
@@ -381,7 +396,12 @@ describe('navigation and submit', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
 
     const offer = individualOfferFactory({
-      stocks: [individualStockFactory({ id: undefined, priceCategoryId: 1 })],
+      stocks: [
+        individualStockFactory({
+          nonHumanizedId: undefined,
+          priceCategoryId: 1,
+        }),
+      ],
     })
     renderStockEventCreation({
       offer,
@@ -458,7 +478,9 @@ describe('deletion', () => {
   it('should delete already created stocks', async () => {
     renderStockEventCreation({
       offer: individualOfferFactory({
-        stocks: [individualStockFactory({ id: 'AA', priceCategoryId: 1 })],
+        stocks: [
+          individualStockFactory({ nonHumanizedId: 12, priceCategoryId: 1 }),
+        ],
       }),
     })
 

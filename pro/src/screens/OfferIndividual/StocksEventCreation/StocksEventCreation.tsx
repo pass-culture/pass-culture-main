@@ -51,7 +51,7 @@ const getInitialStocks = (offer: IOfferIndividual) =>
       throw 'Error: this stock is not a stockEvent'
     }
     return {
-      id: stock.id,
+      id: stock?.nonHumanizedId ? stock.nonHumanizedId.toString() : undefined,
       beginningDatetime: stock.beginningDatetime,
       bookingLimitDatetime: stock.bookingLimitDatetime,
       priceCategoryId: stock.priceCategoryId,
@@ -124,7 +124,12 @@ export const StocksEventCreation = ({
 
   const stocksToCreate = stocks.filter(stock => stock.id === undefined)
   const stocksToDelete = offer.stocks.filter(
-    s => !stocks.find(stock => stock.id === s.id)
+    s =>
+      !stocks.find(
+        stock =>
+          stock.id ===
+          (s?.nonHumanizedId ? s.nonHumanizedId.toString() : undefined)
+      )
   )
 
   const handleNextStep =
