@@ -7,6 +7,11 @@
         <div class="input-group mb-3">
           {% for form_field in form %}
             {% if form_field.type != 'HiddenField' %}{{ form_field }}{% endif %}
+            {% if form_field.errors %}
+              <div class="w-100 my-4">
+                {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
+              </div>
+            {% endif %}
           {% endfor %}
         </div>
         {% for form_field in form %}

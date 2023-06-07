@@ -192,6 +192,10 @@ JWT_ACCESS_TOKEN_EXPIRES = int(os.environ.get("JWT_ACCESS_TOKEN_EXPIRES", 60 * 1
 TITELIVE_FTP_URI = secrets_utils.get("FTP_TITELIVE_URI")
 TITELIVE_FTP_USER = secrets_utils.get("FTP_TITELIVE_USER")
 TITELIVE_FTP_PWD = secrets_utils.get("FTP_TITELIVE_PWD")
+TITELIVE_EPAGINE_API_AUTH_URL = "https://login.epagine.fr/v1"
+TITELIVE_EPAGINE_API_URL = "https://catsearch.epagine.fr/v1"
+TITELIVE_EPAGINE_API_USERNAME = secrets_utils.get("TITELIVE_EPAGINE_API_USERNAME", "")
+TITELIVE_EPAGINE_API_PASSWORD = secrets_utils.get("TITELIVE_EPAGINE_API_PASSWORD", "")
 
 # UBBLE
 UBBLE_API_URL = os.environ.get("UBBLE_API_URL", "https://api.ubble.ai")
