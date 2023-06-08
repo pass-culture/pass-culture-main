@@ -2,6 +2,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { BannerInvisibleSiren } from 'components/Banner'
 import FormLayout from 'components/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
@@ -29,6 +30,7 @@ const Offerer = (): JSX.Element => {
   const navigate = useNavigate()
   const { offerer, setOfferer } = useSignupJourneyContext()
   const [showIsAppUserDialog, setShowIsAppUserDialog] = useState<boolean>(false)
+  const [showInvisibleBanner, setShowInvisibleBanner] = useState<boolean>(false)
 
   const initialValues: IOffererFormValues = offerer
     ? { siret: offerer.siret }
@@ -109,7 +111,9 @@ const Offerer = (): JSX.Element => {
   const formik = useFormik({
     initialValues,
     onSubmit: onSubmitOfferer,
-    validationSchema,
+    validationSchema: validationSchema(showBanner =>
+      setShowInvisibleBanner(showBanner)
+    ),
     enableReinitialize: true,
   })
 
@@ -125,6 +129,9 @@ const Offerer = (): JSX.Element => {
             data-testid="signup-offerer-form"
           >
             <OffererForm />
+            {showInvisibleBanner && (
+              <BannerInvisibleSiren isNewOnboarding={true} />
+            )}
             <Banner
               type="notification-info"
               className={styles['siret-banner']}

@@ -72,7 +72,7 @@ const renderOffererForm = ({
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
-        validationSchema={validationSchema}
+        validationSchema={validationSchema(jest.fn())}
       >
         <Form>
           <OffererForm />
