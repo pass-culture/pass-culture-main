@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
@@ -12,17 +11,23 @@ import { ENV_WORDING } from 'utils/config'
 
 import styles from './ApiKey.module.scss'
 
-/* @debt duplicated "Gaël: regroup buttons within one component"*/
+export interface ApiKeyProps {
+  maxAllowedApiKeys: number
+  offererId: number
+  reloadOfferer: (offererId: number) => void
+  savedApiKeys: string[]
+}
 
+/* @debt duplicated "Gaël: regroup buttons within one component"*/
 const ApiKey = ({
   savedApiKeys,
   maxAllowedApiKeys,
   offererId,
   reloadOfferer,
-}) => {
-  const [newlyGeneratedKeys, setNewlyGeneratedKeys] = useState([])
+}: ApiKeyProps) => {
+  const [newlyGeneratedKeys, setNewlyGeneratedKeys] = useState<string[]>([])
   const [isGeneratingKey, setIsGeneratingKey] = useState(false)
-  const [apiKeyToDelete, setApiKeyToDelete] = useState(null)
+  const [apiKeyToDelete, setApiKeyToDelete] = useState<string | null>(null)
 
   const notification = useNotification()
 
@@ -41,23 +46,22 @@ const ApiKey = ({
     }
   }, [offererId, notification])
 
-  function changeApiKeyToDelete(savedApiKey) {
-    return () => {
-      setApiKeyToDelete(savedApiKey)
-    }
-  }
-
   const confirmApiKeyDeletion = useCallback(async () => {
+    if (!apiKeyToDelete) {
+      return
+    }
+
     try {
       await api.deleteApiKey(apiKeyToDelete)
       reloadOfferer(offererId)
     } catch (e) {
       notification.error("Une erreur s'est produite, veuillez réessayer")
     }
+
     setApiKeyToDelete(null)
   }, [apiKeyToDelete, notification, offererId, reloadOfferer])
 
-  const copyKey = apiKeyToCopy => async () => {
+  const copyKey = (apiKeyToCopy: string) => async () => {
     try {
       await navigator.clipboard.writeText(apiKeyToCopy)
       notification.success('Clé copiée dans le presse-papier !')
@@ -74,6 +78,7 @@ const ApiKey = ({
       <div className={styles['main-list-title']}>
         <h2 className={styles['main-list-title-text']}>Gestion des clés API</h2>
       </div>
+
       <Banner
         links={[
           {
@@ -83,6 +88,7 @@ const ApiKey = ({
         ]}
         type="notification-info"
       />
+
       <div className={styles['title']}>
         <div className={styles['text']}>
           {'API '}
@@ -96,6 +102,7 @@ const ApiKey = ({
           {generatedKeysCount}/{maxAllowedApiKeys}
         </div>
       </div>
+
       <div className={styles['info']}>
         {"Vous pouvez avoir jusqu'à "}
         {maxAllowedApiKeys}
@@ -103,6 +110,7 @@ const ApiKey = ({
         {maxAllowedApiKeys > 1 ? 's' : ''}
         {' API.'}
       </div>
+
       <div className={styles['list']}>
         {savedApiKeys.map(savedApiKey => {
           return (
@@ -113,7 +121,7 @@ const ApiKey = ({
               </span>
               <Button
                 className={styles['action']}
-                onClick={changeApiKeyToDelete(savedApiKey)}
+                onClick={() => setApiKeyToDelete(savedApiKey)}
                 variant={ButtonVariant.TERNARY}
                 Icon={TrashIcon}
               >
@@ -122,6 +130,7 @@ const ApiKey = ({
             </div>
           )
         })}
+
         {newlyGeneratedKeys.map(newKey => {
           return (
             <div className={styles['item']} key={newKey}>
@@ -139,12 +148,14 @@ const ApiKey = ({
           )
         })}
       </div>
+
       {!!newlyGeneratedKeys.length && (
         <Banner>
           Veuillez copier cette clé et la stocker dans un endroit sûr car vous
           ne pourrez plus la visualiser entièrement ici.
         </Banner>
       )}
+
       <Button
         className={styles['generate']}
         isLoading={isGeneratingKey}
@@ -154,11 +165,11 @@ const ApiKey = ({
       >
         Générer une clé API
       </Button>
-      {!!apiKeyToDelete && (
+
+      {apiKeyToDelete !== null && (
         <ConfirmDialog
           extraClassNames={styles['api-key-dialog']}
-          labelledBy="api-key-deletion-dialog"
-          onCancel={changeApiKeyToDelete(null)}
+          onCancel={() => setApiKeyToDelete(null)}
           onConfirm={confirmApiKeyDeletion}
           title="Êtes-vous sûr de vouloir supprimer votre clé API ?"
           confirmText="Confirmer la suppression"
@@ -177,12 +188,6 @@ const ApiKey = ({
       )}
     </div>
   )
-}
-ApiKey.propTypes = {
-  maxAllowedApiKeys: PropTypes.number.isRequired,
-  offererId: PropTypes.number.isRequired,
-  reloadOfferer: PropTypes.func.isRequired,
-  savedApiKeys: PropTypes.arrayOf(PropTypes.string).isRequired,
 }
 
 export default ApiKey

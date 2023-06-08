@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 
+import { GetOffererVenueResponseModel } from 'apiClient/v1'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -15,12 +15,12 @@ import { ButtonLink } from 'ui-kit'
 
 import styles from './VenueItem.module.scss'
 
-const buildLinkIdFromVenue = ({ publicName, name }) => {
-  const nameToFormat = publicName || name
-  return nameToFormat ? nameToFormat.toLowerCase().replace(/\s/g, '-') : ''
+export interface VenueItemProps {
+  venue: GetOffererVenueResponseModel
+  offererId: number
 }
 
-const VenueItem = ({ venue, offererId }) => {
+const VenueItem = ({ venue, offererId }: VenueItemProps) => {
   const { address, city, name, postalCode, publicName, nonHumanizedId } =
     venue || {}
 
@@ -30,9 +30,9 @@ const VenueItem = ({ venue, offererId }) => {
   return (
     <li>
       <IcoVenue className={styles['picto']} />
+
       <div className="list-content">
         <ButtonLink
-          id={`a-${buildLinkIdFromVenue(venue)}`}
           className="name"
           link={{
             to: showPath,
@@ -41,6 +41,7 @@ const VenueItem = ({ venue, offererId }) => {
         >
           {publicName || name}
         </ButtonLink>
+
         <ul>
           <li>
             <Dotdotdot clamp={2} className="has-text-grey">
@@ -71,15 +72,6 @@ const VenueItem = ({ venue, offererId }) => {
       </div>
     </li>
   )
-}
-
-VenueItem.defaultProps = {
-  venue: {},
-}
-
-VenueItem.propTypes = {
-  venue: PropTypes.shape(),
-  offererId: PropTypes.number,
 }
 
 export default VenueItem

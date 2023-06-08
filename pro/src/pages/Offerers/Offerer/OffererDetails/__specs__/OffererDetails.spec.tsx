@@ -2,6 +2,7 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { VenueTypeCode } from 'apiClient/v1'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererDetails from '../OffererDetails'
@@ -20,14 +21,25 @@ jest.mock('react-router-dom', () => ({
 }))
 
 describe('src | components | pages | Offerer | OffererDetails', () => {
-  let props
   const offererId = 1
 
-  api.getOfferer.mockResolvedValue({
+  jest.spyOn(api, 'getOfferer').mockResolvedValue({
     id: 'AA',
     nonHumanizedId: offererId,
     name: 'fake offerer name',
+    city: 'Paris',
+    postalCode: '75000',
     address: 'fake address',
+    dateCreated: '2020-01-01T00:00:00.000Z',
+    fieldsUpdated: ['postalCode', 'city'],
+    apiKey: {
+      maxAllowed: 100,
+      prefixes: [],
+    },
+    hasAvailablePricingPoints: true,
+    hasDigitalVenueAtLeastOneOffer: true,
+    isValidated: true,
+    isActive: true,
     managedVenues: [
       {
         address: '1 fake address',
@@ -37,17 +49,22 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
         city: 'Paris',
         id: 'AA',
         nonHumanizedId: 1,
+        collectiveDmsApplications: [],
+        isVirtual: false,
+        hasAdageId: false,
+        hasCreatedOffer: false,
+        hasMissingReimbursementPoint: false,
+        venueTypeCode: VenueTypeCode.AUTRE,
+        managingOffererId: 'AA',
       },
     ],
   })
 
   describe('render', () => {
     it('should render Venues', async () => {
-      // when
-      renderWithProviders(<OffererDetails {...props} />)
+      renderWithProviders(<OffererDetails />)
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-      // then
       expect(screen.getByText('Lieux')).toBeInTheDocument()
       expect(screen.getByText('fake venue')).toBeInTheDocument()
     })

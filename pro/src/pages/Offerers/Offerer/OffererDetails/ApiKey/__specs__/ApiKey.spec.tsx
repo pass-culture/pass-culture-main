@@ -41,7 +41,7 @@ Object.defineProperty(navigator, 'clipboard', {
   },
 })
 
-describe('src | Offerer | ApiKey', () => {
+describe('ApiKey', () => {
   it('should display api keys and generate new key', () => {
     // when
     renderApiKey()
@@ -121,7 +121,7 @@ describe('src | Offerer | ApiKey', () => {
 
   it('should not delete key on modal dismiss', async () => {
     renderApiKey()
-    const deleteSpy = jest.spyOn(api, 'deleteApiKey').mockReturnValue(null)
+    const deleteSpy = jest.spyOn(api, 'deleteApiKey').mockResolvedValue()
     await userEvent.click(screen.getByText('supprimer'))
 
     // when
@@ -135,7 +135,7 @@ describe('src | Offerer | ApiKey', () => {
 
   it('should delete a key on modal confirm', async () => {
     renderApiKey()
-    const deleteSpy = jest.spyOn(api, 'deleteApiKey').mockReturnValue(null)
+    const deleteSpy = jest.spyOn(api, 'deleteApiKey').mockResolvedValue()
     await userEvent.click(screen.getByText('supprimer'))
 
     // when

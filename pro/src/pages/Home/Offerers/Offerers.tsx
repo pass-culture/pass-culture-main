@@ -28,7 +28,7 @@ import VenueCreationLinks from './VenueCreationLinks'
 
 const CREATE_OFFERER_SELECT_ID = 'creation'
 
-interface IOfferersProps {
+interface OfferersProps {
   receivedOffererNames?: GetOfferersNamesResponseModel | null
   onSelectedOffererChange: (offererId: string) => void
   cancelLoading: () => void
@@ -37,6 +37,7 @@ interface IOfferersProps {
   isUserOffererValidated: boolean
   venues: OffererVenues
 }
+
 const Offerers = ({
   receivedOffererNames,
   onSelectedOffererChange,
@@ -45,7 +46,7 @@ const Offerers = ({
   isLoading,
   isUserOffererValidated,
   venues,
-}: IOfferersProps) => {
+}: OfferersProps) => {
   const [offererOptions, setOffererOptions] = useState<SelectOptionsRFF>([])
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
 
@@ -180,7 +181,9 @@ const Offerers = ({
               <p>Vous pouvez dès à présent créer une offre.</p>
             </RedirectDialog>
           )}
+
           <h2 className="h-section-title">Structures et lieux</h2>
+
           <OffererDetails
             handleChangeOfferer={handleChangeOfferer}
             isUserOffererValidated={isUserOffererValidated}
