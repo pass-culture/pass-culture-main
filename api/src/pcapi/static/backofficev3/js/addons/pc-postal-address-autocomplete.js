@@ -453,39 +453,33 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     const $address = this.#getAddress($autoComplete)
     const $latitude = this.#getLatitude($autoComplete)
     const $longitude = this.#getLongitude($autoComplete)
-    const isManuelEditing = event.target.innerHTML.includes(PcPostalAddressAutocomplete.MANUAL_EDITION_OFF_LABEL)
+    const isManualEditing = event.target.innerHTML.includes(PcPostalAddressAutocomplete.MANUAL_EDITION_OFF_LABEL)
 
-    event.target.innerHTML = isManuelEditing ?
+    event.target.innerHTML = isManualEditing ?
       PcPostalAddressAutocomplete.MANUAL_EDITION_ON_LABEL :
       PcPostalAddressAutocomplete.MANUAL_EDITION_OFF_LABEL
-    $autoCompleteContainer.classList[isManuelEditing ? 'add' : 'remove']('d-none')
+    $autoCompleteContainer.classList[isManualEditing ? 'add' : 'remove']('d-none')
 
 
-    $autoComplete.required = required === false ? required : !isManuelEditing
-    $autoComplete.disabled = isManuelEditing
+    $autoComplete.required = required === false ? required : !isManualEditing
+    $autoComplete.disabled = isManualEditing
 
     if ($postalCode) {
-      $postalCode.parentElement.classList[isManuelEditing ? 'remove' : 'add']('d-none')
+      $postalCode.parentElement.classList[isManualEditing ? 'remove' : 'add']('d-none')
     }
     if ($city) {
-      $city.parentElement.classList[isManuelEditing ? 'remove' : 'add']('d-none')
+      $city.parentElement.classList[isManualEditing ? 'remove' : 'add']('d-none')
     }
     if ($address) {
-      $address.parentElement.classList[isManuelEditing ? 'remove' : 'add']('d-none')
+      $address.parentElement.classList[isManualEditing ? 'remove' : 'add']('d-none')
     }
-    if ($latitude && isManuelEditing) {
-      $latitude.value = ''
-      $latitude.disabled = true
-    } else if ($latitude && !isManuelEditing) {
-      $latitude.disabled = false
+    if ($latitude) {
+      $latitude.parentElement.classList[isManualEditing ? 'remove' : 'add']('d-none')
     }
-    if ($longitude && isManuelEditing) {
-      $longitude.value = ''
-      $longitude.disabled = true
-    } else if ($longitude && !isManuelEditing) {
-      $longitude.disabled = false
+    if ($longitude) {
+      $longitude.parentElement.classList[isManualEditing ? 'remove' : 'add']('d-none')
     }
-    if (!isManuelEditing) {
+    if (!isManualEditing) {
       this.#resetForm($autoComplete)
     }
   }
