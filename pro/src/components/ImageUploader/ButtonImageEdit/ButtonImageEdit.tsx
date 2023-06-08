@@ -15,21 +15,28 @@ export interface ButtonImageEditProps {
   onImageUpload: (values: OnImageUploadArgs) => Promise<void>
   initialValues?: UploadImageValues
   mode: UploaderModeEnum
+  onClickButtonImage?: () => void
 }
 
 const ButtonImageEdit = ({
   mode,
   initialValues = {},
   onImageUpload,
+  onClickButtonImage,
 }: ButtonImageEditProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { imageUrl, originalImageUrl } = initialValues
+
+  const onClickButtonImageAdd = () => {
+    onClickButtonImage && onClickButtonImage()
+    setIsModalOpen(true)
+  }
 
   return (
     <>
       {imageUrl || originalImageUrl ? (
         <Button
-          onClick={() => setIsModalOpen(true)}
+          onClick={onClickButtonImageAdd}
           variant={ButtonVariant.TERNARY}
           alt="Modifier l’image"
           icon={fullEditIcon}
@@ -37,7 +44,7 @@ const ButtonImageEdit = ({
           Modifier
         </Button>
       ) : (
-        <ButtonImageAdd mode={mode} onClick={() => setIsModalOpen(true)} />
+        <ButtonImageAdd mode={mode} onClick={onClickButtonImageAdd} />
       )}
 
       {isModalOpen && (
