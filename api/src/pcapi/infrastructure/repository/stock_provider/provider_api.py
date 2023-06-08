@@ -102,6 +102,8 @@ class ProviderAPI:
 
         api_responses["stocks"] = validated_stock_responses
         batch_log_size = 1_000
+        if not validated_stock_responses:
+            logger.info("Got no stocks from Provider API", extra={"siret": siret})
         for i in range(0, len(validated_stock_responses), batch_log_size):
             log = f"Got stocks from Provider API (partial log: one log per batch of {batch_log_size})"
             logger.info(
