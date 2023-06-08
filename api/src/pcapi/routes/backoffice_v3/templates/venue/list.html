@@ -43,6 +43,7 @@
               {% endif %}
               <th scope="col">ID</th>
               <th scope="col">Nom</th>
+              <th scope="col">Nom d'usage</th>
               <th scope="col">Structure</th>
               <th scope="col">Lieu permanent</th>
               <th scope="col">Label</th>
@@ -74,6 +75,7 @@
                 {% endif %}
                 <td>{{ venue.id }}</td>
                 <td>{{ links.build_venue_name_to_details_link(venue) }}</td>
+                <td>{{ venue.publicName }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(venue.managingOfferer) }}</td>
                 <td>
                   {% if venue.isPermanent %}<span class="visually-hidden">Lieu permanent</span><i class="bi bi-check-circle-fill"></i>{% endif %}
