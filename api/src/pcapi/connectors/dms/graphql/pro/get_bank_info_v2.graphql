@@ -31,7 +31,6 @@ fragment ChampFragment on Champ {
   ... on SiretChamp {
     etablissement {
       siret
-      }
     }
   }
 }
