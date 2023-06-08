@@ -717,8 +717,8 @@ class UpdateVenueTest(PostEndpointHelper):
             "booking_email": venue.bookingEmail + ".update",
             "phone_number": "+33102030456",
             "is_permanent": True,
-            "latitude": "48.87056",
-            "longitude": "2.34767",
+            "latitude": "63.82850",
+            "longitude": "20.25473",
         }
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
@@ -737,8 +737,8 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.bookingEmail == data["booking_email"]
         assert venue.contact.phone_number == data["phone_number"]
         assert venue.isPermanent == data["is_permanent"]
-        assert venue.latitude == Decimal("48.87056")
-        assert venue.longitude == Decimal("2.34767")
+        assert venue.latitude == Decimal("63.82850")
+        assert venue.longitude == Decimal("20.25473")
 
         # should not have been updated or erased
         assert venue.contact.email == contact_email
@@ -752,6 +752,8 @@ class UpdateVenueTest(PostEndpointHelper):
         assert update_snapshot["city"]["new_info"] == data["city"]
         assert update_snapshot["address"]["new_info"] == data["address"]
         assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
+        assert update_snapshot["latitude"]["new_info"] == data["latitude"]
+        assert update_snapshot["longitude"]["new_info"] == data["longitude"]
 
     def test_update_venue_contact_only(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
