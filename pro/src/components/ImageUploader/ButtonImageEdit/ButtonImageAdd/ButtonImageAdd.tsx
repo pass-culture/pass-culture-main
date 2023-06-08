@@ -25,6 +25,7 @@ const ButtonImageAdd = ({
     })}
     onClick={onClick}
     type="button"
+    data-testid="add-image-button"
   >
     <SvgIcon src={strokeMoreIcon} alt="" className={style['icon']} />
     <span className={style['label']}>
