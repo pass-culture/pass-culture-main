@@ -128,6 +128,10 @@ describe('screens:SignupJourney::Offerer', () => {
     ).not.toBeInTheDocument()
 
     expect(
+      screen.queryByText('Modifier la visibilité de mon SIRET')
+    ).not.toBeInTheDocument()
+
+    expect(
       await screen.getByText(
         "Vous êtes un équipement d’une collectivité ou d'un établissement public ?"
       )
@@ -264,6 +268,45 @@ describe('screens:SignupJourney::Offerer', () => {
     await waitFor(() => {
       expect(screen.getByText('Une erreur est survenue')).toBeInTheDocument()
     })
+  })
+
+  it('should display BannerInvisibleSiren on error 400 with specific message', async () => {
+    jest.spyOn(api, 'getSiretInfo').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: 400,
+          body: {
+            global: [
+              'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.',
+            ],
+          },
+        } as ApiResult,
+        ''
+      )
+    )
+    renderOffererScreen(contextValue)
+
+    expect(
+      screen.queryByText('Modifier la visibilité de mon SIRET')
+    ).not.toBeInTheDocument()
+
+    await userEvent.type(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      '12345678933367'
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.getByLabelText('Numéro de SIRET à 14 chiffres')
+      ).toHaveValue('123 456 789 33367')
+    })
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    expect(api.getSiretInfo).toHaveBeenCalled()
+    expect(
+      screen.getByText('Modifier la visibilité de mon SIRET')
+    ).toBeInTheDocument()
   })
 
   it('should not display MaybeAppUserDialog component on submit with valid apeCode', async () => {
