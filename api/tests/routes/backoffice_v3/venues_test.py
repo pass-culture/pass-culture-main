@@ -115,6 +115,7 @@ class ListVenuesTest(GetEndpointHelper):
         assert len(rows) == 1
         assert int(rows[0]["ID"]) == venues[0].id
         assert rows[0]["Nom"] == venues[0].name
+        assert rows[0]["Nom d'usage"] == venues[0].publicName
         assert rows[0]["Structure"] == venues[0].managingOfferer.name
         assert rows[0]["Lieu permanent"] == "Lieu permanent"
         assert rows[0]["Label"] == venues[0].venueLabel.label

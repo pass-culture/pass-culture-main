@@ -59,6 +59,7 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
         sa.orm.load_only(
             offerers_models.Venue.id,
             offerers_models.Venue.name,
+            offerers_models.Venue.publicName,
             offerers_models.Venue.dateCreated,
             offerers_models.Venue.postalCode,
             offerers_models.Venue.departementCode,
