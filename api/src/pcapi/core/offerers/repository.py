@@ -12,7 +12,7 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.finance.models import BankInformation
 from pcapi.core.finance.models import BankInformationStatus
-from pcapi.core.offers.models import Offer
+import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.users.models as users_models
 from pcapi.models import db
@@ -73,7 +73,10 @@ def get_ids_of_venues_with_offers(offererIds: list[int]) -> Iterable[int]:
         db.session.query(models.Venue.id)
         .filter(models.Venue.managingOffererId.in_(offererIds))
         .filter(
-            Offer.query.filter(Offer.venueId == models.Venue.id, Offer.validation != OfferValidationStatus.DRAFT)
+            offers_models.Offer.query.filter(
+                offers_models.Offer.venueId == models.Venue.id,
+                offers_models.Offer.validation != OfferValidationStatus.DRAFT,
+            )
             .limit(1)
             .exists()
         )
@@ -252,11 +255,11 @@ def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_va
     offerers_ids_with_no_offers_subquery = (
         sqla.select(models.Venue.managingOffererId)
         .filter(models.Venue.managingOffererId.in_(validated_x_days_ago_with_physical_venue_offerers_ids_subquery))
-        .outerjoin(Offer, models.Venue.id == Offer.venueId)
+        .outerjoin(offers_models.Offer, models.Venue.id == offers_models.Offer.venueId)
         .outerjoin(CollectiveOffer, models.Venue.id == CollectiveOffer.venueId)
         .outerjoin(CollectiveOfferTemplate, models.Venue.id == CollectiveOfferTemplate.venueId)
         .group_by(models.Venue.managingOffererId)
-        .having(sqla.func.count(Offer.id) == 0)
+        .having(sqla.func.count(offers_models.Offer.id) == 0)
         .having(sqla.func.count(CollectiveOffer.id) == 0)
         .having(sqla.func.count(CollectiveOfferTemplate.id) == 0)
     )
@@ -268,16 +271,16 @@ def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_va
 
 def has_digital_venue_with_at_least_one_offer(offerer_id: int) -> bool:
     return db.session.query(
-        models.Venue.query.join(Offer, models.Venue.id == Offer.venueId)
+        models.Venue.query.join(offers_models.Offer, models.Venue.id == offers_models.Offer.venueId)
         .filter(models.Venue.managingOffererId == offerer_id)
         .filter(models.Venue.isVirtual.is_(True))
-        .filter(Offer.status != OfferValidationStatus.DRAFT.name)
+        .filter(offers_models.Offer.status != OfferValidationStatus.DRAFT.name)
         .exists()
     ).scalar()
 
 
 def get_by_offer_id(offer_id: int) -> models.Offerer:
-    offerer = models.Offerer.query.join(models.Venue).join(Offer).filter_by(id=offer_id).one_or_none()
+    offerer = models.Offerer.query.join(models.Venue).join(offers_models.Offer).filter_by(id=offer_id).one_or_none()
     if not offerer:
         raise exceptions.CannotFindOffererForOfferId()
     return offerer
@@ -348,8 +351,9 @@ def find_siren_by_offerer_id(offerer_id: int) -> str:
 def venues_have_offers(*venues: models.Venue) -> bool:
     """At least one venue which has email as bookingEmail has at least one active offer"""
     return db.session.query(
-        Offer.query.filter(
-            Offer.venueId.in_([venue.id for venue in venues]), Offer.status == OfferStatus.ACTIVE.name
+        offers_models.Offer.query.filter(
+            offers_models.Offer.venueId.in_([venue.id for venue in venues]),
+            offers_models.Offer.status == OfferStatus.ACTIVE.name,
         ).exists()
     ).scalar()
 
@@ -405,8 +409,8 @@ def find_offerers_validated_3_days_ago_with_no_venues() -> list[models.Offerer]:
 
     subquery_get_digital_venues_with_offers = (
         db.session.query(models.Venue.managingOffererId)
-        .join(Offer)
-        .where(models.Venue.isVirtual, Offer.venueId == models.Venue.id)
+        .join(offers_models.Offer)
+        .where(models.Venue.isVirtual, offers_models.Offer.venueId == models.Venue.id)
     )
     # when offerer is created, a digital venue is created by default
     # query should return all offerers validated 3 days ago with only digital venue without offers
