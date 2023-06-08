@@ -139,7 +139,7 @@
     "pnp-webpack-plugin": "^1.7.0",
     "prepend-file": "^2.0.0",
     "prettier": "^2.8.8",
-    "sass": "^1.62.1",
+    "sass": "^1.63.2",
     "serve": "^14.2.0",
     "source-map-explorer": "^2.5.0",
     "storybook": "^6.5.16",
