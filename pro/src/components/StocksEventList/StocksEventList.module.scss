@@ -99,32 +99,3 @@ $icon-size: rem.torem(20px);
 .actions-column {
   width: $icon-size;
 }
-
-.filtered-data-row {
-  display: flex;
-  justify-content: space-between;
-  padding-top: rem.torem(12px);
-  padding-bottom: rem.torem(12px);
-}
-
-.no-data {
-  vertical-align: middle;
-  text-align: center;
-
-  &-icon {
-    color: colors.$grey-medium;
-    width: rem.torem(88px);
-    height: rem.torem(88px);
-    margin-bottom: rem.torem(16px);
-  }
-
-  &-message {
-    @include fonts.title4;
-
-    margin-bottom: rem.torem(16px);
-  }
-}
-
-.search-result {
-  @include fonts.body-important;
-}
