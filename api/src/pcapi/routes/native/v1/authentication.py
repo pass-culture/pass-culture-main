@@ -65,7 +65,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
 
         if users_api.is_suspicious_login(body.device_info, user):
             token = users_api.create_suspicious_login_email_token(login_history, user.id)
-            transactional_mails.send_suspicious_login_email(user.email, login_history, token)
+            transactional_mails.send_suspicious_login_email(user, login_history, token)
 
     users_api.update_last_connection_date(user)
     return authentication.SigninResponse(
