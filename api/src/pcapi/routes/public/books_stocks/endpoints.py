@@ -14,28 +14,15 @@ from . import serialization
 logger = logging.getLogger(__name__)
 
 
+# This api allow to update stocks for a venue
+# DEPRECATED: use individual offer api instead
 @blueprints.v2_prefixed_public_api.route("/venue/<int:venue_id>/stocks", methods=["POST"])
 @spectree_serialize(
     on_success_status=204,
     on_error_statuses=[401, 404],
-    api=blueprints.v2_prefixed_public_api_schema,
-    tags=["API Stocks"],
 )
 @api_key_required
 def update_stocks(venue_id: int, body: serialization.UpdateVenueStocksBodyModel) -> None:
-    # in French, to be used by Swagger for the API documentation
-    """Mise à jour des stocks d'un lieu enregistré auprès du pass Culture.
-
-    Seuls les livres, préalablement présents dans le catalogue du pass Culture seront pris en compte, tous les autres stocks
-    seront filtrés.
-
-    Les stocks sont référencés par leur isbn au format EAN13.
-
-    Le champ "available" représente la quantité de stocks disponible en librairie.
-    Le champ "price" correspond au prix en euros.
-
-    Le paramètre {venue_id} correspond à un lieu qui doit être attaché à la structure à laquelle la clé d'API utilisée est reliée.
-    """
     offerer_id = current_api_key.offererId
     venue = Venue.query.join(Offerer).filter(Venue.id == venue_id, Offerer.id == offerer_id).first_or_404()
 
