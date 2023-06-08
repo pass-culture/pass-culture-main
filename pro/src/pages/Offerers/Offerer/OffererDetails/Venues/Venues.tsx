@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
+import { GetOffererVenueResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -10,16 +10,23 @@ import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import VenueItem from './VenueItem/VenueItem'
 
-const Venues = ({ venues, offererId }) => {
+interface VenuesProps {
+  venues: GetOffererVenueResponseModel[]
+  offererId: number
+}
+
+const Venues = ({ venues, offererId }: VenuesProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${offererId}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
 
   const { logEvent } = useAnalytics()
+
   return (
     <div className="section op-content-section">
       <h2 className="main-list-title">Lieux</h2>
+
       <ul className="main-list venues-list">
         {venues.map(venue => (
           <VenueItem
@@ -29,6 +36,7 @@ const Venues = ({ venues, offererId }) => {
           />
         ))}
       </ul>
+
       <div className="has-text-centered">
         <ButtonLink
           link={{
@@ -47,10 +55,6 @@ const Venues = ({ venues, offererId }) => {
       </div>
     </div>
   )
-}
-Venues.propTypes = {
-  offererId: PropTypes.number.isRequired,
-  venues: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default Venues

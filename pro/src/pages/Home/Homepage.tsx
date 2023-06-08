@@ -108,12 +108,14 @@ const Homepage = (): JSX.Element => {
     <>
       <div className="homepage">
         <h1>Bienvenue dans l’espace acteurs culturels</h1>
+
         <HomepageBreadcrumb
           activeStep={STEP_ID_OFFERERS}
           isOffererStatsActive={isOffererStatsActive}
           profileRef={profileRef}
           statsRef={statsRef}
         />
+
         <section className="h-section">
           <Offerers
             selectedOfferer={selectedOfferer}
@@ -125,6 +127,7 @@ const Homepage = (): JSX.Element => {
             venues={venues}
           />
         </section>
+
         {isUserOffererValidated &&
           withNewOfferCreationJourney &&
           !currentUser.isAdmin &&
@@ -136,11 +139,13 @@ const Homepage = (): JSX.Element => {
               />
             </section>
           )}
+
         {isOffererStatsActive && (
           <section className="h-section" ref={statsRef}>
             <OffererStats />
           </section>
         )}
+
         <section className="h-section" ref={profileRef}>
           <ProfileAndSupport />
           <div className="newsletter">
