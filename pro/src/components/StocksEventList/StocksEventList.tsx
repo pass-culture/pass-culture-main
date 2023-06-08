@@ -15,8 +15,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
 import { usePagination } from 'hooks/usePagination'
-import { ResetIcon, TrashFilledIcon } from 'icons'
-import searchIcon from 'icons/search-ico.svg'
+import { TrashFilledIcon } from 'icons'
 import { getPriceCategoryOptions } from 'screens/OfferIndividual/StocksEventEdition/StocksEventEdition'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -25,10 +24,11 @@ import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { BaseCheckbox } from 'ui-kit/form/shared'
 import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { Pagination } from 'ui-kit/Pagination'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatPrice } from 'utils/formatPrice'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
+import { FilterResultsRow } from './FilterResultsRow'
+import { NoResultsRow } from './NoResultsRow'
 import { SortArrow } from './SortArrow'
 import styles from './StocksEventList.module.scss'
 import {
@@ -169,6 +169,9 @@ const StocksEventList = ({
       : '1 date sélectionnée'
 
   const isAtLeastOneStockChecked = isCheckedArray.some(e => e)
+  const areFiltersActive = Boolean(
+    dateFilter || hourFilter || priceCategoryFilter
+  )
 
   return (
     <div className={className}>
@@ -356,35 +359,17 @@ const StocksEventList = ({
         </thead>
 
         <tbody>
-          {filteredStocks.length !== stocks.length && (
-            <tr>
-              <td colSpan={6}>
-                <div className={styles['filtered-data-row']}>
-                  <div>
-                    Résultat de recherche :{' '}
-                    <span className={styles['search-result']}>
-                      {filteredStocks.length} occurence
-                      {filteredStocks.length !== 1 && 's'}
-                    </span>
-                  </div>
-
-                  <div>
-                    <Button
-                      Icon={ResetIcon}
-                      variant={ButtonVariant.TERNARY}
-                      onClick={() => {
-                        setDateFilter(null)
-                        setHourFilter(null)
-                        setPriceCategoryFilter('')
-                        onFilterChange()
-                      }}
-                    >
-                      Réinitialiser les filtres
-                    </Button>
-                  </div>
-                </div>
-              </td>
-            </tr>
+          {areFiltersActive && (
+            <FilterResultsRow
+              colSpan={6}
+              onFiltersReset={() => {
+                setDateFilter(null)
+                setHourFilter(null)
+                setPriceCategoryFilter('')
+                onFilterChange()
+              }}
+              resultsCount={filteredStocks.length}
+            />
           )}
 
           {currentPageItems.map((stock, index) => {
@@ -465,25 +450,7 @@ const StocksEventList = ({
             )
           })}
 
-          {filteredStocks.length === 0 && (
-            <tr>
-              <td colSpan={6} className={styles['no-data']}>
-                <SvgIcon
-                  src={searchIcon}
-                  alt=""
-                  className={styles['no-data-icon']}
-                  viewBox="0 0 20 20"
-                />
-                <div className={styles['no-data-message']}>
-                  Aucune occurence trouvée
-                </div>
-                <div className={styles['no-data-help']}>
-                  Vous pouvez modifier vos filtres pour lancer une nouvelle
-                  recherche
-                </div>
-              </td>
-            </tr>
-          )}
+          {filteredStocks.length === 0 && <NoResultsRow colSpan={6} />}
         </tbody>
       </table>
 
