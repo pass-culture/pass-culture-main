@@ -17,20 +17,27 @@ export interface IButtonImageEditProps {
   onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
   initialValues?: IUploadImageValues
   mode: UploaderModeEnum
+  onClickButtonImage?: () => void
 }
 
 const ButtonImageEdit = ({
   mode,
   initialValues = {},
   onImageUpload,
+  onClickButtonImage,
 }: IButtonImageEditProps): JSX.Element => {
   const { visible, showModal, hideModal } = useModal()
   const { imageUrl, originalImageUrl } = initialValues
 
+  const onClickButtonImageAdd = () => {
+    onClickButtonImage && onClickButtonImage()
+    showModal()
+  }
+
   return (
     <>
       {imageUrl || originalImageUrl ? (
-        <Button onClick={showModal} variant={ButtonVariant.TERNARY}>
+        <Button onClick={onClickButtonImageAdd} variant={ButtonVariant.TERNARY}>
           <Icon
             alt="Modifier l’image"
             className={styles['icon-modify-image']}
@@ -39,7 +46,7 @@ const ButtonImageEdit = ({
           Modifier
         </Button>
       ) : (
-        <ButtonImageAdd mode={mode} onClick={showModal} />
+        <ButtonImageAdd mode={mode} onClick={onClickButtonImageAdd} />
       )}
       {!!visible && (
         <ModalImageEdit

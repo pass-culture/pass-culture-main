@@ -7,6 +7,8 @@ import { ImageUploader } from 'components/ImageUploader'
 import { IUploadImageValues } from 'components/ImageUploader/ButtonImageEdit'
 import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
+import { Events } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
 
@@ -50,6 +52,7 @@ const buildInitialValues = (
 
 /* istanbul ignore next: DEBT, TO FIX */
 const ImageUploaderVenue = () => {
+  const { logEvent } = useAnalytics()
   const notify = useNotification()
   const {
     setFieldValue,
@@ -98,6 +101,13 @@ const ImageUploaderVenue = () => {
     }
   }
 
+  const logButtonAddClick = () => {
+    logEvent?.(Events.CLICKED_ADD_IMAGE, {
+      venueId: venueId,
+      imageType: UploaderModeEnum.VENUE,
+    })
+  }
+
   return (
     <FormLayout.Section
       title="Ajouter une image"
@@ -110,6 +120,7 @@ const ImageUploaderVenue = () => {
           onImageDelete={handleOnImageDelete}
           initialValues={buildInitialValues(bannerUrl, bannerMeta || undefined)}
           mode={UploaderModeEnum.VENUE}
+          onClickButtonImageAdd={logButtonAddClick}
         />
       </FormLayout.Row>
     </FormLayout.Section>

@@ -24,6 +24,7 @@ const ButtonImageAdd = ({
     })}
     onClick={onClick}
     type="button"
+    data-testid="add-image-button"
   >
     <PlusIcon className={style['icon']} />
     <span className={style['label']}>
