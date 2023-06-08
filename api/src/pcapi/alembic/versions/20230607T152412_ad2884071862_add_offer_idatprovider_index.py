@@ -15,6 +15,7 @@ def upgrade() -> None:
     # # We need to commit the transaction, because `CREATE INDEX
     # # CONCURRENTLY` cannot run inside a transaction.
     op.execute("COMMIT")
+    op.execute("""SET SESSION statement_timeout = '300s'""")
     op.execute("""CREATE INDEX CONCURRENTLY IF NOT EXISTS "offer_idAtProvider" ON offer ("idAtProvider")""")
 
 
