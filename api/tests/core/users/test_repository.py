@@ -1,16 +1,20 @@
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 
 from freezegun import freeze_time
 import pytest
 
 from pcapi import settings
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.users import exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import repository
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
+from pcapi.repository.repository import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -129,3 +133,67 @@ class GetApplicantOfOffererUnderValidationTest:
         # Then
         assert len(applicants_found) == 1
         assert applicants_found[0].id == applicant.id
+
+
+class GetEmailsWithoutActiveOffersTest:
+    fourty_days_ago = date.today() - timedelta(days=40)
+
+    def test_get_emails_without_active_offers(self):
+        event_user_offerer = offerers_factories.UserOffererFactory()
+        expired_event_offer = offers_factories.EventOfferFactory(venue__managingOfferer=event_user_offerer.offerer)
+        expired_event_stock = offers_factories.EventStockFactory(offer=expired_event_offer, quantity=0)
+        expired_event_stock.dateModified = self.fourty_days_ago
+
+        product_user_offerer = offerers_factories.UserOffererFactory()
+        expired_product_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=product_user_offerer.offerer)
+        expired_product_stock = offers_factories.ThingStockFactory(offer=expired_product_offer, quantity=0)
+        expired_product_stock.dateModified = self.fourty_days_ago
+
+        db.session.add_all([expired_event_stock, expired_product_stock])
+
+        # stocks that expired today, should not be returned
+        ignored_user_offerer = offerers_factories.UserOffererFactory()
+        _too_recent_event_stock = offers_factories.EventStockFactory(
+            quantity=0, offer__venue__managingOfferer=ignored_user_offerer.offerer
+        )
+        _too_recent_product_stock = offers_factories.ThingStockFactory(
+            quantity=0, offer__venue__managingOfferer=ignored_user_offerer.offerer
+        )
+
+        with assert_no_duplicated_queries():
+            mail_tuples = repository.get_emails_without_active_offers(self.fourty_days_ago)
+
+        assert len(mail_tuples) == 2
+        assert (
+            event_user_offerer.user.email,
+            expired_event_offer.canExpire,
+            expired_event_offer.isEvent,
+        ) in mail_tuples
+        assert (
+            product_user_offerer.user.email,
+            expired_product_offer.canExpire,
+            expired_product_offer.isEvent,
+        ) in mail_tuples
+
+        mails = [mail_tuple[0] for mail_tuple in mail_tuples]
+        assert ignored_user_offerer.user.email not in mails
+
+    def test_get_emails_with_active_offer(self):
+        ignored_user_offerer = offerers_factories.UserOffererFactory()
+        active_event_offer = offers_factories.EventOfferFactory(venue__managingOfferer=ignored_user_offerer.offerer)
+        expired_event_stock = offers_factories.EventStockFactory(offer=active_event_offer, quantity=0)
+        expired_event_stock.dateModified = self.fourty_days_ago
+
+        active_product_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=ignored_user_offerer.offerer)
+        expired_product_stock = offers_factories.ThingStockFactory(offer=active_product_offer, quantity=0)
+        expired_product_stock.dateModified = self.fourty_days_ago
+
+        db.session.add_all([expired_event_stock, expired_product_stock])
+
+        offers_factories.EventStockFactory(offer=active_event_offer)
+        offers_factories.ThingStockFactory(offer=active_product_offer)
+
+        with assert_no_duplicated_queries():
+            venues_for_mail = repository.get_emails_without_active_offers(self.fourty_days_ago)
+
+        assert not venues_for_mail

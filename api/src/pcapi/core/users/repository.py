@@ -9,6 +9,7 @@ import sqlalchemy as sa
 from sqlalchemy.sql.functions import func
 
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.models as offers_models
 from pcapi.repository import repository
 from pcapi.utils import crypto
 import pcapi.utils.email as email_utils
@@ -145,3 +146,69 @@ def get_users_with_validated_attachment(offerer: offerers_models.Offerer) -> lis
 def get_and_lock_user(userId: int) -> models.User:
     user = models.User.query.filter(models.User.id == userId).populate_existing().with_for_update().one_or_none()
     return user
+
+
+def get_emails_without_active_offers(since_date: date) -> list[tuple[str, bool, bool]]:
+    """
+    Returns emails whose last active offer expired since_date.
+    The additional tuple fields are the properties of the last active offer needed for pro reminder mails.
+    """
+    offer_id_query = repository.db.session.query(offers_models.Stock.offerId.distinct()).filter(
+        sa.cast(offers_models.Stock.dateModified, sa.Date) == since_date
+    )
+    offer_ids = [offer_id for offer_id, in offer_id_query]
+
+    offer_with_stock_ranked_stmt_alias = (
+        sa.select(
+            offers_models.Offer.venueId,
+            offers_models.Offer.canExpire,
+            offers_models.Offer.isEvent,
+            offers_models.Stock.dateModified,
+            sa.func.row_number()
+            .over(partition_by=offers_models.Offer.venueId, order_by=offers_models.Stock.dateModified.desc())
+            .label("date_modification_rank"),
+        )
+        .join(offers_models.Offer.stocks.and_(offers_models.Stock.isSoftDeleted.is_(False)))
+        .filter(offers_models.Offer.id.in_(offer_ids))
+        .alias()
+    )
+    venues_with_stock_last_modified_at_date_stmt_alias = (
+        sa.select(
+            offer_with_stock_ranked_stmt_alias.c.venueId,
+            offer_with_stock_ranked_stmt_alias.c.canExpire,
+            offer_with_stock_ranked_stmt_alias.c.isEvent,
+        )
+        .filter(
+            sa.cast(offer_with_stock_ranked_stmt_alias.c.dateModified, sa.Date) == since_date,
+            offer_with_stock_ranked_stmt_alias.c.date_modification_rank == 1,
+        )
+        .alias()
+    )
+
+    has_active_offer_criterion = (
+        offers_models.Offer.query.filter(
+            offers_models.Offer.venueId == offerers_models.Venue.id,
+            offers_models.Offer.isSoldOut.is_(False),  # type: ignore [attr-defined]
+            offers_models.Offer.hasBookingLimitDatetimesPassed.is_(False),  # type: ignore [attr-defined]
+        )
+        .limit(1)
+        .exists()
+    )
+    emails_without_active_offers_since_date_query = (
+        repository.db.session.query(
+            models.User.email,
+            venues_with_stock_last_modified_at_date_stmt_alias.c.canExpire,
+            venues_with_stock_last_modified_at_date_stmt_alias.c.isEvent,
+        )
+        .select_from(venues_with_stock_last_modified_at_date_stmt_alias)
+        .join(
+            offerers_models.Venue,
+            venues_with_stock_last_modified_at_date_stmt_alias.c.venueId == offerers_models.Venue.id,
+        )
+        .join(offerers_models.Venue.managingOfferer)
+        .join(offerers_models.Offerer.UserOfferers)
+        .join(offerers_models.UserOfferer.user)
+        .filter(has_active_offer_criterion.is_(False))
+    )
+
+    return emails_without_active_offers_since_date_query.all()
