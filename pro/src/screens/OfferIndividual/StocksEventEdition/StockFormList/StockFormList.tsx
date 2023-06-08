@@ -4,6 +4,8 @@ import { FieldArray, useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
 import { StockFormActions } from 'components/StockFormActions'
+import { FilterResultsRow } from 'components/StocksEventList/FilterResultsRow'
+import { NoResultsRow } from 'components/StocksEventList/NoResultsRow'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
@@ -79,6 +81,9 @@ const StockFormList = ({
   const onFilterChange = () => {
     setPage(1)
   }
+  const areFiltersActive = Boolean(
+    dateFilter || hourFilter || priceCategoryFilter
+  )
 
   useEffect(() => {
     const allStocks = [...values.stocks, ...hiddenStocksRef.current]
@@ -330,6 +335,19 @@ const StockFormList = ({
             </thead>
 
             <tbody className={styles['table-body']}>
+              {areFiltersActive && (
+                <FilterResultsRow
+                  colSpan={7}
+                  onFiltersReset={() => {
+                    setDateFilter(null)
+                    setHourFilter(null)
+                    setPriceCategoryFilter('')
+                    onFilterChange()
+                  }}
+                  resultsCount={values.stocks.length}
+                />
+              )}
+
               {currentPageItems.map(
                 (stockValues: IStockEventFormValues, indexInPage) => {
                   const index = (page - 1) * STOCKS_PER_PAGE + indexInPage
@@ -522,6 +540,8 @@ const StockFormList = ({
                   )
                 }
               )}
+
+              {values.stocks.length === 0 && <NoResultsRow colSpan={7} />}
             </tbody>
           </table>
 
