@@ -521,29 +521,6 @@ def test_public_api(client, app):
                     "title": "PostCollectiveOfferBodyModel",
                     "type": "object",
                 },
-                "UpdateVenueStockBodyModel": {
-                    "description": "Available stock quantity for a book",
-                    "properties": {
-                        "available": {"minimum": 0, "title": "Available", "type": "integer"},
-                        "price": {"exclusiveMinimum": 0, "title": "Price", "type": "number"},
-                        "ref": {"description": "Format: EAN13", "title": "ISBN", "type": "string"},
-                    },
-                    "required": ["ref", "available", "price"],
-                    "title": "Stock",
-                    "type": "object",
-                },
-                "UpdateVenueStocksBodyModel": {
-                    "properties": {
-                        "stocks": {
-                            "items": {"$ref": "#/components/schemas/UpdateVenueStockBodyModel"},
-                            "title": "Stocks",
-                            "type": "array",
-                        }
-                    },
-                    "required": ["stocks"],
-                    "title": "Venue's stocks update body",
-                    "type": "object",
-                },
                 "ValidationError": {
                     "description": "Model of a validation error response.",
                     "items": {"$ref": "#/components/schemas/ValidationErrorElement"},
@@ -1207,43 +1184,8 @@ def test_public_api(client, app):
                     "tags": ["API offres collectives BETA"],
                 }
             },
-            "/v2/venue/{venue_id}/stocks": {
-                "post": {
-                    "description": 'Seuls les livres, préalablement présents dans le catalogue du pass Culture seront pris en compte, tous les autres stocks seront filtrés. Les stocks sont référencés par leur isbn au format EAN13. Le champ "available" représente la quantité de stocks disponible en librairie. Le champ "price" correspond au prix en euros. Le paramètre {venue_id} correspond à un lieu qui doit être attaché à la structure à laquelle la clé d\'API utilisée est reliée.',
-                    "operationId": "UpdateStocks",
-                    "parameters": [
-                        {
-                            "description": "",
-                            "in": "path",
-                            "name": "venue_id",
-                            "required": True,
-                            "schema": {"format": "int32", "type": "integer"},
-                        }
-                    ],
-                    "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/UpdateVenueStocksBodyModel"}}
-                        }
-                    },
-                    "responses": {
-                        "204": {"description": "No Content"},
-                        "401": {"description": "Unauthorized"},
-                        "403": {"description": "Forbidden"},
-                        "404": {"description": "Not Found"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"ApiKeyAuth": []}],
-                    "summary": "Mise à jour des stocks d'un lieu enregistré auprès du pass Culture.",
-                    "tags": ["API Stocks"],
-                }
-            },
         },
         "security": [],
         "servers": [{"url": settings.API_URL}],
-        "tags": [{"name": "API offres collectives BETA"}, {"name": "API Contremarque"}, {"name": "API Stocks"}],
+        "tags": [{"name": "API offres collectives BETA"}, {"name": "API Contremarque"}],
     }
