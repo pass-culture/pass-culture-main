@@ -291,7 +291,7 @@ const VenueFormScreen = ({
         {isWithdrawalUpdatedMailActive && isWithdrawalDialogOpen && (
           <ConfirmDialog
             cancelText="Ne pas envoyer"
-            confirmText="Envoyer un e-mail"
+            confirmText="Envoyer un email"
             leftButtonAction={handleCancelWithdrawalDialog}
             onCancel={() => setIsWithdrawalDialogOpen(false)}
             onConfirm={handleConfirmWithdrawalDialog}

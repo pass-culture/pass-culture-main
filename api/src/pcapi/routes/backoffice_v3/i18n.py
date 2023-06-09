@@ -38,7 +38,7 @@ def i18n_public_account(term: str) -> str:
 def i18n_subscription_type(term: str) -> str:
     match term.lower():
         case "email-validation":
-            return "Validation E-mail"
+            return "Validation Email"
         case "phone-validation":
             return "Validation N° téléphone"
         case "user-profiling":
@@ -72,9 +72,9 @@ def i18n_column_name(term: str) -> str:
         case "address":
             return "Adresse"
         case "bookingemail":
-            return "E-mail"
+            return "Email"
         case "contact.email":
-            return "E-mail de contact"
+            return "Email de contact"
         case "contact.phone_number":
             return "Numéro de téléphone de contact"
         case "ispermanent":

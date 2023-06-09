@@ -143,7 +143,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       venueSelect,
       venueList[0].nonHumanizedId.toString()
     )
-    const withEmail = screen.getByLabelText('Envoi par e-mail')
+    const withEmail = screen.getByLabelText('Envoi par email')
     await userEvent.click(withEmail)
 
     await userEvent.click(await screen.findByText('Submit'))

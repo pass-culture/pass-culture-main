@@ -2004,7 +2004,7 @@ class GenerateAndStoreInvoiceTest:
         )
 
         # We're not interested in the invoice itself. We just want to
-        # check that the function does not fail and that the e-mail is
+        # check that the function does not fail and that the email is
         # sent.
         api.generate_and_store_invoice(
             reimbursement_point_id=reimbursement_point.id,

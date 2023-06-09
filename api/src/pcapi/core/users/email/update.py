@@ -150,7 +150,7 @@ def check_user_password(user: models.User, password: str) -> None:
         # 1. log the error
         # 2. raise the same error as above, so the end client
         # can't guess what happened.
-        logger.error("Unvalidated account tried to change their e-mail", extra={"user": user.id})
+        logger.error("Unvalidated account tried to change their email", extra={"user": user.id})
         raise exceptions.EmailUpdateInvalidPassword() from exc
 
 

@@ -66,7 +66,7 @@
             <div class="col-4">
               <div class="fs-6">
                 <p class="mb-1">
-                  <span class="fw-bold">E-mail :</span> {{ user.email }}
+                  <span class="fw-bold">Email :</span> {{ user.email }}
                 </p>
                 <p class="mb-1">
                   <span class="fw-bold">Tél :</span> {{ user.phoneNumber | empty_string_if_null }}
@@ -90,7 +90,7 @@
                 </p>
                 {% if not user.isEmailValidated and has_permission("MANAGE_PRO_ENTITY") %}
                   <p class="mb-1">
-                    {{ build_modal_form("validate-email", url_for("backoffice_v3_web.pro_user.validate_pro_user_email", user_id=user.id), empty_form, "Valider l'adresse e-mail", "Confirmer la validation de l'adresse e-mail", "Vous êtes sur le point de valider l'adresse e-mail, êtes-vous sûr ?") }}
+                    {{ build_modal_form("validate-email", url_for("backoffice_v3_web.pro_user.validate_pro_user_email", user_id=user.id), empty_form, "Valider l'adresse email", "Confirmer la validation de l'adresse email", "Vous êtes sur le point de valider l'adresse email, êtes-vous sûr ?") }}
                   </p>
                 {% endif %}
               </div>

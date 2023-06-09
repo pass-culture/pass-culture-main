@@ -130,7 +130,7 @@ const CollectiveOfferFromRequest = (): JSX.Element => {
             description={informations?.phoneNumber ?? '-'}
           />
           <SummaryLayout.Row
-            title="E-mail"
+            title="Email"
             description={informations?.redactor.email}
           />
         </div>

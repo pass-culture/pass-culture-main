@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class LoggerBackend(BaseBackend):
-    """A backend that logs e-mail instead of sending it.
+    """A backend that logs email instead of sending it.
     It should be used for local development, and on testing/staging
     when performing load tests when we don't want to overload Sendinblue.
     """
@@ -27,7 +27,7 @@ class LoggerBackend(BaseBackend):
         if bcc_recipients:
             bcc_recipients = ", ".join(bcc_recipients)
         sent_data = asdict(data)
-        logger.info("An e-mail would be sent via Sendinblue to=%s, bcc=%s: %s", recipients, bcc_recipients, sent_data)
+        logger.info("An email would be sent via Sendinblue to=%s, bcc=%s: %s", recipients, bcc_recipients, sent_data)
         result = models.MailResult(sent_data=sent_data, successful=True)
 
         return result

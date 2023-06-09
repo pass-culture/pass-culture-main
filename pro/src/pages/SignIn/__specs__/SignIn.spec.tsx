@@ -88,7 +88,7 @@ describe('src | components | pages | SignIn', () => {
     renderSignIn()
 
     // Then
-    expect(screen.getByLabelText('Adresse e-mail')).toBeInTheDocument()
+    expect(screen.getByLabelText('Adresse email')).toBeInTheDocument()
     expect(screen.getByLabelText('Mot de passe')).toBeInTheDocument()
     expect(screen.getByText('Se connecter')).toBeInTheDocument()
     expect(screen.getByText('Créer un compte')).toBeInTheDocument()
@@ -192,7 +192,7 @@ describe('src | components | pages | SignIn', () => {
   it('should call submit prop when user clicks on "Se connecter"', async () => {
     renderSignIn()
 
-    const email = screen.getByLabelText('Adresse e-mail')
+    const email = screen.getByLabelText('Adresse email')
     await userEvent.type(email, 'MonPetitEmail@exemple.com')
     const password = screen.getByLabelText('Mot de passe')
     await userEvent.type(password, 'MCSolar85')
@@ -227,7 +227,7 @@ describe('src | components | pages | SignIn', () => {
   it('should display an error message when login failed', async () => {
     renderSignIn()
 
-    const email = screen.getByLabelText('Adresse e-mail')
+    const email = screen.getByLabelText('Adresse email')
     await userEvent.type(email, 'MonPetitEmail@exemple.com')
     const password = screen.getByLabelText('Mot de passe')
     await userEvent.type(password, 'MCSolar85')
@@ -258,7 +258,7 @@ describe('src | components | pages | SignIn', () => {
   it('should display an error message when login rate limit exceeded', async () => {
     renderSignIn()
 
-    const email = screen.getByLabelText('Adresse e-mail')
+    const email = screen.getByLabelText('Adresse email')
     await userEvent.type(email, 'MonPetitEmail@exemple.com')
     const password = screen.getByLabelText('Mot de passe')
     await userEvent.type(password, 'MCSolar85')
@@ -346,7 +346,7 @@ describe('src | components | pages | SignIn', () => {
 
       renderSignIn({ ...featureOverride })
 
-      const email = screen.getByLabelText('Adresse e-mail')
+      const email = screen.getByLabelText('Adresse email')
       await userEvent.type(email, 'MonPetitEmail@exemple.com')
 
       const password = screen.getByLabelText('Mot de passe')
@@ -380,7 +380,7 @@ describe('src | components | pages | SignIn', () => {
 
       renderSignIn({ ...featureOverride })
 
-      const email = screen.getByLabelText('Adresse e-mail')
+      const email = screen.getByLabelText('Adresse email')
       await userEvent.type(email, 'MonPetitEmail@exemple.com')
 
       const password = screen.getByLabelText('Mot de passe')
@@ -415,7 +415,7 @@ describe('src | components | pages | SignIn', () => {
 
       renderSignIn({ ...featureOverride }, ['/connexion?de=%2Foffres'])
 
-      const email = screen.getByLabelText('Adresse e-mail')
+      const email = screen.getByLabelText('Adresse email')
       await userEvent.type(email, 'MonPetitEmail@exemple.com')
 
       const password = screen.getByLabelText('Mot de passe')

@@ -92,8 +92,8 @@ const UsefulInformations = ({
           disabled={readOnlyFields.includes('withdrawalDetails')}
           placeholder={
             isVenueVirtual
-              ? 'Exemples : une création de compte, un code d’accès spécifique, une communication par e-mail...'
-              : 'Exemples : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par e-mail...'
+              ? 'Exemples : une création de compte, un code d’accès spécifique, une communication par email...'
+              : 'Exemples : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par email...'
           }
         />
       </FormLayout.Row>

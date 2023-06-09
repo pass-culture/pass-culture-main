@@ -807,7 +807,7 @@ describe('screen | VenueForm', () => {
         )
       ).toBeInTheDocument()
 
-      const sendMailButton = await screen.findByText('Envoyer un e-mail')
+      const sendMailButton = await screen.findByText('Envoyer un email')
       await userEvent.click(sendMailButton)
       expect(
         screen.queryByText(

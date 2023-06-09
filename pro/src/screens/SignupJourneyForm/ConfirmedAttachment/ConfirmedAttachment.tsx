@@ -26,7 +26,7 @@ const ConfirmedAttachment = (): JSX.Element => {
     <div className={styles['confirmed-attachment-layout']}>
       <div className={styles['title']}>Votre demande a été prise en compte</div>
       <div className={styles['informations']}>
-        Un e-mail vous sera envoyé lors de la validation de votre demande. Vous
+        Un email vous sera envoyé lors de la validation de votre demande. Vous
         aurez alors accès à l’ensemble des fonctionnalités du pass Culture Pro.
       </div>
       <ButtonLink

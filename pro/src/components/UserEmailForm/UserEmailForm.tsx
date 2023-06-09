@@ -53,7 +53,7 @@ const UserEmailForm = ({
     <>
       <BoxFormLayout.RequiredMessage />
       <BoxFormLayout.FormHeader
-        textSecondary="Adresse e-mail actuelle"
+        textSecondary="Adresse email actuelle"
         textPrimary={currentUser.email}
       />
       <BoxFormLayout.Fields>
@@ -62,7 +62,7 @@ const UserEmailForm = ({
             <FormLayout>
               <FormLayout.Row>
                 <TextInput
-                  label="Nouvelle adresse e-mail"
+                  label="Nouvelle adresse email"
                   name="email"
                   placeholder="email@exemple.com"
                 />
@@ -70,7 +70,7 @@ const UserEmailForm = ({
               <FormLayout.Row>
                 <PasswordInput
                   name="password"
-                  label="Mot de passe (requis pour modifier votre e-mail)"
+                  label="Mot de passe (requis pour modifier votre email)"
                 />
               </FormLayout.Row>
             </FormLayout>

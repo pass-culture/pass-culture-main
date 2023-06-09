@@ -78,7 +78,7 @@ const SignupForm = (): JSX.Element => {
             <EmailSpellCheckInput
               name="email"
               placeholder="email@exemple.com"
-              label="Adresse e-mail"
+              label="Adresse email"
             />
           </FormLayout.Row>
           <FormLayout.Row>
@@ -113,7 +113,7 @@ const SignupForm = (): JSX.Element => {
           <FormLayout.Row>
             <Checkbox
               hideFooter
-              label="J’accepte d’être contacté par e-mail pour recevoir les
+              label="J’accepte d’être contacté par email pour recevoir les
                       nouveautés du pass Culture et contribuer à son
                       amélioration (facultatif)"
               name="contactOk"

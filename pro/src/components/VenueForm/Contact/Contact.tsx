@@ -35,7 +35,7 @@ const Contact = ({
             <FormLayout.Row>
               <TextInput
                 name="email"
-                label="Adresse e-mail"
+                label="Adresse email"
                 placeholder="email@exemple.com"
                 isOptional
               />
@@ -63,7 +63,7 @@ const Contact = ({
         >
           <TextInput
             name="bookingEmail"
-            label="Adresse e-mail"
+            label="Adresse email"
             type="email"
             placeholder="email@exemple.com"
             isOptional={isVenueVirtual}

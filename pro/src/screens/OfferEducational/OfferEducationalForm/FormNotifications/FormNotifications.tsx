@@ -40,7 +40,7 @@ const FormNotifications = ({
               disabled={values.notificationEmails.length >= 5}
               className={styles['add-notification-button']}
             >
-              Ajouter un e-mail de notification
+              Ajouter un email de notification
             </Button>
           </>
         )}

@@ -63,7 +63,7 @@ describe('Contacts', () => {
 
     expect(screen.queryByText('Contact')).not.toBeInTheDocument()
 
-    expect(screen.getByLabelText(/Adresse e-mail/)).toBeDisabled()
+    expect(screen.getByLabelText(/Adresse email/)).toBeDisabled()
 
     expect(
       screen.queryByText(

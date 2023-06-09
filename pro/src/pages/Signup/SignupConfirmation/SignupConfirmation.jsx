@@ -15,9 +15,8 @@ const SignupConfirmation = () => (
               Votre compte est en cours de création.
             </div>
             <div className={styles['confirmation-text']}>
-              <span>Vous allez recevoir un lien de confirmation</span> par
-              e-mail : cliquez sur ce lien pour confirmer la création de votre
-              compte.
+              <span>Vous allez recevoir un lien de confirmation</span> par email
+              : cliquez sur ce lien pour confirmer la création de votre compte.
             </div>
           </div>
           <div className={styles['information-text flex-left']}>
@@ -26,7 +25,7 @@ const SignupConfirmation = () => (
               src={`${ROOT_PATH}/icons/picto-info-grey.svg`}
             />
             <p>
-              Si vous ne recevez pas d’e-mail de notre part d’ici 5 minutes,
+              Si vous ne recevez pas d’email de notre part d’ici 5 minutes,
               vérifiez que le message n’est pas dans le dossier
               {' "'}
               indésirables

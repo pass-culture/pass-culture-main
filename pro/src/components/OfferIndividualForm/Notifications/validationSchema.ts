@@ -5,8 +5,8 @@ const validationSchema = {
     is: (receiveNotificationEmails: boolean) => receiveNotificationEmails,
     then: schema =>
       schema
-        .required('Veuillez renseigner une adresse e-mail')
-        .email('Veuillez renseigner un e-mail valide'),
+        .required('Veuillez renseigner une adresse email')
+        .email('Veuillez renseigner un email valide'),
   }),
 }
 

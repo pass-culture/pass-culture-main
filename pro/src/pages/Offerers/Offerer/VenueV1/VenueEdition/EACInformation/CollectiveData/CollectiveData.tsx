@@ -120,7 +120,7 @@ const CollectiveData = ({
       {venue.collectiveEmail && (
         <div className={styles['collective-data-row']}>
           <Title className={styles['collective-data-title']} level={4}>
-            E-mail :{' '}
+            Email :{' '}
           </Title>
           {venue.collectiveEmail}
         </div>

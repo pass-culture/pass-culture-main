@@ -945,7 +945,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
 
         if (withdrawalInformations.withdrawalType) {
           const withdrawalTypeField = await screen.findByLabelText(
-            'Envoi par e-mail'
+            'Envoi par email'
           )
           await userEvent.click(withdrawalTypeField)
           expectedBody.withdrawalType = WithdrawalTypeEnum.BY_EMAIL
@@ -970,7 +970,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           screen.queryByText('There is the summary route content')
         ).not.toBeInTheDocument()
 
-        const sendMailButton = await screen.findByText('Envoyer un e-mail')
+        const sendMailButton = await screen.findByText('Envoyer un email')
         await userEvent.click(sendMailButton)
 
         expect(

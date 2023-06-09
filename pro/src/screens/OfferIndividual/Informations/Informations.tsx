@@ -328,7 +328,7 @@ const Informations = ({
       {isWithdrawalUpdatedMailActive && isWithdrawalDialogOpen && (
         <ConfirmDialog
           cancelText="Ne pas envoyer"
-          confirmText="Envoyer un e-mail"
+          confirmText="Envoyer un email"
           leftButtonAction={handleNextStep({ saveDraft: true })}
           onCancel={() => {
             setIsWithdrawalDialogOpen(false)

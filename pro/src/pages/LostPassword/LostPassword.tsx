@@ -74,7 +74,7 @@ const ResetPassword = (): JSX.Element => {
                 <Hero
                   linkLabel="Revenir à l’accueil"
                   linkTo="/"
-                  text="Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe."
+                  text="Vous allez recevoir par email les instructions pour définir un nouveau mot de passe."
                   title="Merci !"
                 />
               ) : (

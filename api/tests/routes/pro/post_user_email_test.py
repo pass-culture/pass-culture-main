@@ -95,7 +95,7 @@ class ProUpdateEmailTest:
             },
         )
         assert response.status_code == 400
-        assert response.json == {"email": ["Un compte lié à cet e-mail existe déjà"]}
+        assert response.json == {"email": ["Un compte lié à cet email existe déjà"]}
         assert pro.email == self.origin_email
         assert not mails_testing.outbox
 

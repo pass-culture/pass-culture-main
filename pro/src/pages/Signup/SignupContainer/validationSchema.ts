@@ -6,8 +6,8 @@ export const validationSchema = (newOnboardingActive: boolean) =>
     email: yup
       .string()
       .max(120)
-      .email('Veuillez renseigner un e-mail valide')
-      .required('Veuillez renseigner une adresse e-mail'),
+      .email('Veuillez renseigner un email valide')
+      .required('Veuillez renseigner une adresse email'),
     password: yup.string().required('Veuillez renseigner un mot de passe'),
     lastName: yup.string().max(128).required('Veuillez renseigner votre nom'),
     firstName: yup
