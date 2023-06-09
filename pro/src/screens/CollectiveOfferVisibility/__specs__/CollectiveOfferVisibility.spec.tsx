@@ -10,6 +10,7 @@ import {
 } from 'apiClient/v1'
 import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
 import * as useNotification from 'hooks/useNotification'
+import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -20,7 +21,28 @@ import CollectiveOfferVisibility, {
 jest.mock('apiClient/api', () => ({
   api: {
     getAutocompleteEducationalRedactorsForUai: jest.fn(),
+    getCollectiveOfferRequest: jest.fn(),
   },
+}))
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: () => ({
+    offerId: jest.fn(),
+    requestId: jest.fn(),
+  }),
+  useNavigate: jest.fn(),
+}))
+
+jest.mock('core/OfferEducational/utils/extractInitialVisibilityValues', () => ({
+  __esModule: true,
+  extractInitialVisibilityValues: jest.fn(() => ({
+    institution: '',
+    'search-institution': 'METIER ROBERT DOISNEAU - CORBEIL-ESSONNES',
+    teacher: 'compte.test@education.gouv.fr',
+    visibility: 'one',
+    'search-teacher': 'Reda Khteur',
+  })),
 }))
 
 const institutions: EducationalInstitutionResponseModel[] = [
@@ -48,6 +70,14 @@ const institutions: EducationalInstitutionResponseModel[] = [
     city: 'Bordeaux',
     phoneNumber: '',
     institutionId: 'ABCDEF13',
+  },
+  {
+    id: 43,
+    name: 'METIER ROBERT DOISNEAU',
+    postalCode: '91000',
+    city: 'CORBEIL-ESSONNES',
+    phoneNumber: '',
+    institutionId: 'AZERTY13',
   },
 ]
 
@@ -131,7 +161,7 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should display details on selected institution', async () => {
-    const spyPatch = jest.fn().mockResolvedValue({ isOk: true })
+    const spyPatch = jest.fn().mockResolvedValueOnce({ isOk: true })
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
     await userEvent.click(
       screen.getByLabelText(/Un établissement en particulier/)
@@ -157,7 +187,7 @@ describe('CollectiveOfferVisibility', () => {
   it('should save selected institution and call onSuccess props', async () => {
     const spyPatch = jest
       .fn()
-      .mockResolvedValue({ isOk: true, payload: { institutions: [] } })
+      .mockResolvedValueOnce({ isOk: true, payload: { institutions: [] } })
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
     await userEvent.click(
       screen.getByLabelText(/Un établissement en particulier/)
@@ -281,7 +311,7 @@ describe('CollectiveOfferVisibility', () => {
     })
 
     it('should hide banner when clicking on trash icon', async () => {
-      const spyPatch = jest.fn().mockResolvedValue({
+      const spyPatch = jest.fn().mockResolvedValueOnce({
         isOk: true,
         payload: { teacherEmail: 'maria.sklodowska@example.com' },
       })
@@ -305,7 +335,7 @@ describe('CollectiveOfferVisibility', () => {
 
       jest
         .spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
-        .mockResolvedValue([
+        .mockResolvedValueOnce([
           {
             email: 'maria.sklodowska@example.com',
             gender: 'Mme.',
@@ -323,6 +353,83 @@ describe('CollectiveOfferVisibility', () => {
       expect(
         await screen.queryByText(/MARIA SKLODOWSKA/)
       ).not.toBeInTheDocument()
+    })
+
+    it('should prefill form with requested information', async () => {
+      jest.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce({
+        comment: 'Test unit',
+        redactor: {
+          email: 'compte.test@education.gouv.fr',
+          firstName: 'Reda',
+          lastName: 'Khteur',
+        },
+        institution: {
+          city: 'CORBEIL-ESSONNES',
+          institutionId: '123456',
+          institutionType: 'LYCEE POLYVALENT',
+          name: 'METIER ROBERT DOISNEAU',
+          postalCode: '91000',
+        },
+      })
+
+      jest
+        .spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
+        .mockResolvedValueOnce([
+          {
+            email: 'compte.test@education.gouv.fr',
+            gender: 'Mr.',
+            name: 'REDA',
+            surname: 'KHTEUR',
+          },
+        ])
+
+      renderVisibilityStep({
+        ...props,
+        requestId: '1',
+        mode: Mode.CREATION,
+        initialValues: DEFAULT_VISIBILITY_FORM_VALUES,
+      })
+
+      expect(
+        screen.getByLabelText(/Un établissement en particulier/)
+      ).toBeChecked()
+      expect(
+        await screen.findByText(/METIER ROBERT DOISNEAU/)
+      ).toBeInTheDocument()
+      expect(
+        await screen.findByText(/91000 CORBEIL-ESSONNES/)
+      ).toBeInTheDocument()
+      expect(await screen.findByText(/AZERTY13/)).toBeInTheDocument()
+      expect(await screen.findByText(/KHTEUR REDA/)).toBeInTheDocument()
+    })
+
+    it('should display error message on api error getting requested info', async () => {
+      const notifyError = jest.fn()
+
+      jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+        ...jest.requireActual('hooks/useNotification'),
+        error: notifyError,
+      }))
+
+      jest.spyOn(api, 'getCollectiveOfferRequest').mockRejectedValue({
+        isOk: false,
+        message:
+          'Une erreur est survenue lors de la récupération de votre offre',
+        payload: null,
+      })
+
+      renderVisibilityStep({
+        ...props,
+        requestId: '1',
+        mode: Mode.CREATION,
+        initialValues: DEFAULT_VISIBILITY_FORM_VALUES,
+      })
+
+      const response = await getOfferRequestInformationsAdapter(1)
+      expect(response.isOk).toBeFalsy()
+      await waitFor(() => {
+        expect(notifyError).toHaveBeenCalledTimes(1)
+      })
     })
   })
 })

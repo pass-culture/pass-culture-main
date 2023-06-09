@@ -1,5 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
+import router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
@@ -14,6 +15,13 @@ jest.mock('apiClient/api', () => ({
     getCollectiveOffer: jest.fn(),
     getCollectiveOfferTemplate: jest.fn(),
   },
+}))
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: () => ({
+    requestId: jest.fn(),
+  }),
 }))
 
 const renderCollectiveOfferSummaryCreation = async (
@@ -52,5 +60,18 @@ describe('CollectiveOfferSummaryCreation', () => {
         name: 'Détails de l’offre',
       })
     ).toBeInTheDocument()
+  })
+
+  it('should have requete parameter in the link for previous step when requete is present in the URL', async () => {
+    jest.spyOn(router, 'useParams').mockReturnValue({ requete: '1' })
+    await renderCollectiveOfferSummaryCreation(
+      '/offre/A1/collectif/creation/recapitulatif',
+      defaultProps
+    )
+
+    const previousStepLink = screen.getByText('Étape précédente')
+    expect(previousStepLink.getAttribute('href')).toBe(
+      '/offre/1/collectif/visibilite?requete=1'
+    )
   })
 })
