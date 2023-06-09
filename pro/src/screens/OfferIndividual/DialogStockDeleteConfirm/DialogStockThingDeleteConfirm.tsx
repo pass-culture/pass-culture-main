@@ -27,7 +27,7 @@ const DialogStockThingDeleteConfirm = ({
       </p>
       <p>
         L’ensemble des utilisateurs concernés sera automatiquement averti par
-        e-mail.
+        email.
       </p>
     </ConfirmDialog>
   )

@@ -83,7 +83,7 @@ jest.mock('hooks/useNotification')
 
 const waitForLoader = () =>
   waitFor(() => {
-    expect(screen.getByLabelText(/E-mail/)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Email/)).toBeInTheDocument()
   })
 
 const renderCollectiveDataEdition = () =>
@@ -161,7 +161,7 @@ describe('CollectiveDataEdition', () => {
       const studentsField = screen.getByLabelText(/Public cible/)
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Numéro de téléphone/)
-      const emailField = screen.getByLabelText(/E-mail/)
+      const emailField = screen.getByLabelText(/Email/)
       const domainsField = screen.getByLabelText(
         /Domaine artistique et culturel/
       )
@@ -228,7 +228,7 @@ describe('CollectiveDataEdition', () => {
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Numéro de téléphone/)
-      const emailField = screen.getByLabelText(/E-mail/)
+      const emailField = screen.getByLabelText(/Email/)
       const title = screen.getByText('Présentation pour les enseignants')
 
       await userEvent.type(websiteField, 'wrong url')
@@ -246,7 +246,7 @@ describe('CollectiveDataEdition', () => {
         )
       ).toBeInTheDocument()
       expect(
-        screen.queryByText('Veuillez renseigner un e-mail valide')
+        screen.queryByText('Veuillez renseigner un email valide')
       ).toBeInTheDocument()
     })
 
@@ -257,7 +257,7 @@ describe('CollectiveDataEdition', () => {
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Numéro de téléphone/)
-      const emailField = screen.getByLabelText(/E-mail/)
+      const emailField = screen.getByLabelText(/Email/)
       const title = screen.getByText('Présentation pour les enseignants')
 
       await userEvent.type(websiteField, 'https://mon-site.com')
@@ -268,7 +268,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitFor(() =>
         expect(
-          screen.queryByText('Veuillez renseigner un e-mail valide')
+          screen.queryByText('Veuillez renseigner un email valide')
         ).not.toBeInTheDocument()
       )
       expect(
@@ -288,7 +288,7 @@ describe('CollectiveDataEdition', () => {
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Numéro de téléphone/)
-      const emailField = screen.getByLabelText(/E-mail/)
+      const emailField = screen.getByLabelText(/Email/)
       const title = screen.getByText('Présentation pour les enseignants')
 
       await userEvent.click(websiteField)
@@ -298,7 +298,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitFor(() =>
         expect(
-          screen.queryByText('Veuillez renseigner un e-mail valide')
+          screen.queryByText('Veuillez renseigner un email valide')
         ).not.toBeInTheDocument()
       )
       expect(
@@ -437,7 +437,7 @@ describe('CollectiveDataEdition', () => {
       renderCollectiveDataEdition()
       await waitForLoader()
 
-      const emailField = screen.getByLabelText(/E-mail/)
+      const emailField = screen.getByLabelText(/Email/)
       await userEvent.type(emailField, 'email@domain.com')
 
       const submitButton = screen.getByRole('button', { name: 'Enregistrer' })
@@ -456,7 +456,7 @@ describe('CollectiveDataEdition', () => {
     renderCollectiveDataEdition()
     await waitForLoader()
 
-    const emailField = screen.getByLabelText(/E-mail/)
+    const emailField = screen.getByLabelText(/Email/)
     await userEvent.type(emailField, 'email@domain.com')
 
     const submitButton = screen.getByRole('button', { name: 'Enregistrer' })
@@ -491,7 +491,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitForLoader()
 
-      const emailField = screen.getByLabelText(/E-mail/)
+      const emailField = screen.getByLabelText(/Email/)
 
       const statusField = screen.getByLabelText(/Statut/)
 

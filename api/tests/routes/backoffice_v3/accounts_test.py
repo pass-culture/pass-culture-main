@@ -109,7 +109,7 @@ def create_bunch_of_accounts():
 def assert_user_equals(result_card_text: str, expected_user: users_models.User):
     assert f"{expected_user.firstName} {expected_user.lastName} " in result_card_text
     assert f"User ID : {expected_user.id} " in result_card_text
-    assert f"E-mail : {expected_user.email} " in result_card_text
+    assert f"Email : {expected_user.email} " in result_card_text
     if expected_user.phoneNumber:
         assert f"Tél : {expected_user.phoneNumber} " in result_card_text
     if users_models.UserRole.BENEFICIARY in expected_user.roles:
@@ -439,7 +439,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert response.status_code == 200
         content = html_parser.content_as_text(response.data)
         assert f"User ID : {user.id} " in content
-        assert f"E-mail : {user.email} " in content
+        assert f"Email : {user.email} " in content
         assert f"Tél : {user.phoneNumber} " in content
         if user.dateOfBirth:
             assert f"Date de naissance {user.dateOfBirth.strftime('%d/%m/%Y')}" in content
@@ -627,8 +627,8 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert f"Utilisée le : {datetime.date.today().strftime('%d/%m/%Y')}" in text
         assert f"Annulée le : {datetime.date.today().strftime('%d/%m/%Y')}" in text
         assert "Motif d'annulation : Annulée par le bénéficiaire" in text
-        assert f"E-mail du pro : {b1.venue.bookingEmail}" in text  # extra row for bookings[1]
-        assert f"E-mail du pro : {b2.venue.bookingEmail}" in text  # extra row for bookings[0]
+        assert f"Email du pro : {b1.venue.bookingEmail}" in text  # extra row for bookings[1]
+        assert f"Email du pro : {b2.venue.bookingEmail}" in text  # extra row for bookings[0]
 
     def test_get_beneficiary_bookings_empty(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()

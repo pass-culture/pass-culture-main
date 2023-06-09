@@ -36,14 +36,14 @@ const Template: Story<Props> = () => {
                   <FormLayout>
                     <FormLayout.Row>
                       <TextInput
-                        label="Nouvelle adresse e-mail"
+                        label="Nouvelle adresse email"
                         name="email"
                         placeholder="email@exemple.com"
                       />
                     </FormLayout.Row>
                     <FormLayout.Row>
                       <TextInput
-                        label="Mot de passe (requis pour modifier votre e-mail)"
+                        label="Mot de passe (requis pour modifier votre email)"
                         name="password"
                         type="password"
                       />
@@ -72,7 +72,7 @@ const Template: Story<Props> = () => {
           <>
             <BoxFormLayout.Header
               subtitle={'Je suis le sous-titre'}
-              title="Adresse e-mail"
+              title="Adresse email"
             />
           </>
         )}

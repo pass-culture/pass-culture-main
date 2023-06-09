@@ -166,7 +166,7 @@ const OffererDetails = ({
                   par les équipes du pass Culture
                 </strong>
                 <br />
-                Un e-mail vous sera envoyé lors de la validation de votre
+                Un email vous sera envoyé lors de la validation de votre
                 rattachement. Vous aurez alors accès à l’ensemble des
                 fonctionnalités du pass Culture Pro.
               </Banner>

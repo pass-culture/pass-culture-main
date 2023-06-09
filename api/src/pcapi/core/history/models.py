@@ -39,7 +39,7 @@ class ActionType(enum.Enum):
     USER_SUSPENDED = "Compte suspendu"
     USER_UNSUSPENDED = "Compte réactivé"
     USER_PHONE_VALIDATED = "Validation manuelle du numéro de téléphone"
-    USER_EMAIL_VALIDATED = "Validation manuelle de l'e-mail"
+    USER_EMAIL_VALIDATED = "Validation manuelle de l'email"
     # Fraud and compliance actions:
     BLACKLIST_DOMAIN_NAME = "Blacklist d'un nom de domaine"
     REMOVE_BLACKLISTED_DOMAIN_NAME = "Suppression d'un nom de domaine banni"

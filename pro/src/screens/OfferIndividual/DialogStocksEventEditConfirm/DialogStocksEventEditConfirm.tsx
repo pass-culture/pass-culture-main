@@ -21,7 +21,7 @@ const DialogStocksEventEditConfirm = ({
     >
       <p>
         Si vous avez changé la date ou l'heure de l'évènement, les bénéficiaires
-        ayant déjà réservé en seront automatiquement informés par e-mail.
+        ayant déjà réservé en seront automatiquement informés par email.
       </p>
       <p>
         Ils disposeront alors à nouveau de 48h pour annuler leur réservation.

@@ -136,7 +136,7 @@ describe('Signup', () => {
       // then it should have an email field
       expect(
         screen.getByRole('textbox', {
-          name: /Adresse e-mail/,
+          name: /Adresse email/,
         })
       ).toBeInTheDocument()
       // and a password field
@@ -181,7 +181,7 @@ describe('Signup', () => {
           const { unmount } = renderSignUp(store)
           await userEvent.type(
             screen.getByRole('textbox', {
-              name: /Adresse e-mail/,
+              name: /Adresse email/,
             }),
             'test@example.com'
           )
@@ -260,7 +260,7 @@ describe('Signup', () => {
         })
         await userEvent.type(
           screen.getByRole('textbox', {
-            name: /Adresse e-mail/,
+            name: /Adresse email/,
           }),
           'test@example.com'
         )
@@ -342,7 +342,7 @@ describe('Signup', () => {
         })
 
         await userEvent.type(
-          screen.getByLabelText('Adresse e-mail'),
+          screen.getByLabelText('Adresse email'),
           'test@example.com'
         )
         await userEvent.type(
@@ -429,7 +429,7 @@ describe('Signup', () => {
         })
         await userEvent.type(
           screen.getByRole('textbox', {
-            name: /Adresse e-mail/,
+            name: /Adresse email/,
           }),
           'test@example.com'
         )

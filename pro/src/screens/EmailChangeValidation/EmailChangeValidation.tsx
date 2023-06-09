@@ -24,7 +24,7 @@ const EmailChangeValidation = ({
               <div>
                 <h1>Et voilà !</h1>
                 <h2>
-                  Merci d’avoir confirmé votre changement d’adresse e-mail.
+                  Merci d’avoir confirmé votre changement d’adresse email.
                 </h2>
                 <ButtonLink
                   variant={ButtonVariant.PRIMARY}
@@ -40,10 +40,10 @@ const EmailChangeValidation = ({
               <div>
                 <h1>Votre lien a expiré !</h1>
                 <h2>
-                  Votre adresse e-mail n’a pas été modifiée car le lien reçu par
+                  Votre adresse email n’a pas été modifiée car le lien reçu par
                   mail expire 24 heures après sa récéption.
                 </h2>
-                <h2>Connectez-vous avec votre ancienne adresse e-mail.</h2>
+                <h2>Connectez-vous avec votre ancienne adresse email.</h2>
                 <ButtonLink
                   variant={ButtonVariant.PRIMARY}
                   link={{ to: '/', isExternal: false }}

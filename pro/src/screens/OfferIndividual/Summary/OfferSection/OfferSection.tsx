@@ -263,7 +263,7 @@ const OfferSummary = ({
 
       <SummaryLayout.SubSection title="Notifications des réservations">
         <SummaryLayout.Row
-          title="E-mail auquel envoyer les notifications"
+          title="Email auquel envoyer les notifications"
           description={
             /* istanbul ignore next: DEBT, TO FIX */
             offerData.bookingEmail || ' - '

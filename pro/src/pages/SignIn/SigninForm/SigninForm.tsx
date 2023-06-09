@@ -94,7 +94,7 @@ const SigninForm = (): JSX.Element => {
               <div className={styles['signin-form']}>
                 <FormLayout.Row>
                   <TextInput
-                    label="Adresse e-mail"
+                    label="Adresse email"
                     name="email"
                     placeholder="email@exemple.com"
                   />

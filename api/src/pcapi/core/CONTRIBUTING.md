@@ -18,7 +18,7 @@ SQL Alchemy définis dans les fichiers `models.py`.
 ### Standards
 
 Ces fonctions doivent contenir uniquement des requêtes vers la base de données qui retournent soit des tuples de données
-"primitives" (e.g. une liste d'adresses e-mail), soit des instances de modèles SQL Alchemy. On pourra aussi avoir des
+"primitives" (e.g. une liste d'adresses email), soit des instances de modèles SQL Alchemy. On pourra aussi avoir des
 fonctions qui retournent des "morceaux" de queries, c'est-à-dire des fonctions (privées) qui construisent des queries
 qui ne sont pas déclenchées (i.e. qui n'ont pas de `.all()` ou `.first()`).
 On utilisera des indications de type dans les signatures des fonctions pour indiquer quelles sont les données attendues

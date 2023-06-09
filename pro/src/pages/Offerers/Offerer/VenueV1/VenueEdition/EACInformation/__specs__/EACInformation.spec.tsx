@@ -54,7 +54,7 @@ describe('EACInformation', () => {
 
       renderWithProviders(<EACInformation venue={venue} offererId="O1" />)
 
-      expect(await screen.findByText(/E-mail/)).toBeInTheDocument()
+      expect(await screen.findByText(/Email/)).toBeInTheDocument()
       expect(
         screen.getByRole('link', { name: 'Modifier mes informations' })
       ).toBeInTheDocument()
@@ -75,7 +75,7 @@ describe('EACInformation', () => {
       } as unknown as GetVenueResponseModel // we only test for used fields
       renderWithProviders(<EACInformation venue={venue} offererId="O1" />)
 
-      expect(screen.queryByText(/E-mail/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/Email/)).not.toBeInTheDocument()
       const link = screen.getByRole('link', {
         name: 'Renseigner mes informations',
       })

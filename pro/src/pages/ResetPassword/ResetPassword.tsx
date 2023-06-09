@@ -64,7 +64,7 @@ const ResetPassword = (): JSX.Element => {
               <Hero
                 linkLabel="Recevoir un nouveau lien"
                 linkTo="/demande-mot-de-passe"
-                text="Le lien pour réinitialiser votre mot de passe a expiré. Veuillez recommencer la procédure pour recevoir un nouveau lien par e-mail."
+                text="Le lien pour réinitialiser votre mot de passe a expiré. Veuillez recommencer la procédure pour recevoir un nouveau lien par email."
                 title="Ce lien a expiré !"
               />
             )}

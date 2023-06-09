@@ -10,7 +10,7 @@ from .base import BaseBackend
 
 
 class TestingBackend(BaseBackend):
-    """A backend that stores e-mail in a global Python list that is
+    """A backend that stores email in a global Python list that is
     accessible from tests.
     """
 

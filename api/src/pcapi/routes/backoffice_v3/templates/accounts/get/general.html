@@ -95,7 +95,7 @@
               {% endif %}
               <div class="mb-1">
                 <div class="d-flex align-items-center">
-                  <span class="fw-bold me-1">E-mail :</span> {{ user.email }}
+                  <span class="fw-bold me-1">Email :</span> {{ user.email }}
                   {% if user.email_history | length > 0 %}<i class="bi bi-bag-check-fill text-warning ms-1 fs-4 pc-email-changed-icon"></i>{% endif %}
                 </div>
                 {% if resend_email_validation_form %}

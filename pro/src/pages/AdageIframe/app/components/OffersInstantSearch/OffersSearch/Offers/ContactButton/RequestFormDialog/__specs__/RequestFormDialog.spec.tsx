@@ -41,7 +41,7 @@ describe('RequestFormDialog', () => {
   it('should display user email', () => {
     renderRequestFormDialog()
 
-    expect(screen.getByLabelText('E-Mail')).toHaveValue('contact@example.com')
+    expect(screen.getByLabelText('Email')).toHaveValue('contact@example.com')
   })
 
   it('should submit valid form and close modal on submit', async () => {

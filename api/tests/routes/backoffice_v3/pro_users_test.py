@@ -36,7 +36,7 @@ class GetProUserTest(GetEndpointHelper):
 
     class EmailValidationButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
-        button_label = "Valider l&#39;adresse e-mail"
+        button_label = "Valider l&#39;adresse email"
 
         @property
         def path(self):
@@ -297,7 +297,7 @@ class ValidateProEmailTest(PostEndpointHelper):
         assert pro_user.isEmailValidated
 
         response_redirect = authenticated_client.get(response.location)
-        assert f"L&#39;e-mail {pro_user.email} est validé !" in response_redirect.data.decode("utf-8")
+        assert f"L&#39;email {pro_user.email} est validé !" in response_redirect.data.decode("utf-8")
         assert len(mails_testing.outbox) == 1
         assert (
             mails_testing.outbox[0].sent_data["template"]["id_not_prod"] == TransactionalEmail.WELCOME_TO_PRO.value.id
@@ -315,7 +315,7 @@ class ValidateProEmailTest(PostEndpointHelper):
         assert pro_user.isEmailValidated
 
         response_redirect = authenticated_client.get(response.location)
-        assert f"L&#39;e-mail {pro_user.email} est validé !" in response_redirect.data.decode("utf-8")
+        assert f"L&#39;email {pro_user.email} est validé !" in response_redirect.data.decode("utf-8")
         assert len(mails_testing.outbox) == 0
 
     @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
@@ -329,5 +329,5 @@ class ValidateProEmailTest(PostEndpointHelper):
         assert pro_user.isEmailValidated
 
         response_redirect = authenticated_client.get(response.location)
-        assert f"L&#39;e-mail {pro_user.email} est déjà validé !" in response_redirect.data.decode("utf-8")
+        assert f"L&#39;email {pro_user.email} est déjà validé !" in response_redirect.data.decode("utf-8")
         assert len(mails_testing.outbox) == 0

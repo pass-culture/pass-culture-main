@@ -312,7 +312,7 @@ const CollectiveDataForm = ({
             <FormLayout.Row>
               <TextInput
                 name="collectiveEmail"
-                label="E-mail"
+                label="Email"
                 placeholder="email@exemple.com"
                 isOptional
                 className={styles.row}

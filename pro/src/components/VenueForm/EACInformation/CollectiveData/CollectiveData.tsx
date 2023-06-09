@@ -124,7 +124,7 @@ const CollectiveData = ({ venue }: { venue: IVenue }): JSX.Element => {
 
       {venue.collectiveEmail && (
         <div className={styles['collective-data-row']}>
-          <dt className={styles['collective-data-term']}>E-mail :</dt>
+          <dt className={styles['collective-data-term']}>Email :</dt>
           <dd className={styles['collective-data-description']}>
             {venue.collectiveEmail}
           </dd>

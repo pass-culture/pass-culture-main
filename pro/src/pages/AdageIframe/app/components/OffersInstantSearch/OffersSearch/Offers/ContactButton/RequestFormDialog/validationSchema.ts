@@ -16,8 +16,8 @@ export const validationSchema = () =>
     teacherEmail: yup
       .string()
       .max(120)
-      .email('Veuillez renseigner un e-mail valide')
-      .required('Veuillez renseigner une adresse e-mail'),
+      .email('Veuillez renseigner un email valide')
+      .required('Veuillez renseigner une adresse email'),
     teacherPhone: yup.string().test({
       name: 'is-phone-valid',
       message: 'Veuillez entrer un numéro de téléphone valide',

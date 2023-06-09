@@ -50,7 +50,7 @@ const OfferIndividualConfirmation = ({
               Cette vérification pourra prendre jusqu’à 72h. Vous ne pouvez pas
               effectuer de modification pour l’instant.{' '}
             </b>
-            Vous recevrez un e-mail de confirmation une fois votre offre validée
+            Vous recevrez un email de confirmation une fois votre offre validée
             et disponible à la réservation.
           </p>
         ) : (

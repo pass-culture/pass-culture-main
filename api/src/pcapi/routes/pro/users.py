@@ -131,19 +131,19 @@ def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
     try:
         email_api.request_email_update_from_pro(user, body.email, body.password)
     except users_exceptions.EmailUpdateTokenExists as exc:
-        errors.add_error("email", "Une demande de modification d'adresse e-mail est déjà en cours")
+        errors.add_error("email", "Une demande de modification d'adresse email est déjà en cours")
         raise errors from exc
     except users_exceptions.EmailUpdateInvalidPassword as exc:
         errors.add_error("password", "Votre mot de passe est incorrect")
         raise errors from exc
     except users_exceptions.InvalidEmailError as exc:
-        errors.add_error("email", "Votre adresse e-mail est invalide")
+        errors.add_error("email", "Votre adresse email est invalide")
         raise errors from exc
     except users_exceptions.EmailUpdateLimitReached as exc:
         errors.add_error("email", "Trop de tentatives, réessayez dans 24 heures")
         raise errors from exc
     except users_exceptions.EmailExistsError as exc:
-        errors.add_error("email", "Un compte lié à cet e-mail existe déjà")
+        errors.add_error("email", "Un compte lié à cet email existe déjà")
         raise errors from exc
 
 
