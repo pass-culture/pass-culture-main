@@ -20,6 +20,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.factories import UserFactory
+from pcapi.models.offer_mixin import OfferValidationStatus
 import pcapi.notifications.push.testing as notifications_testing
 
 from tests.conftest import TestClient
@@ -294,6 +295,16 @@ class OffersTest:
 
         assert response.status_code == 404
 
+    @pytest.mark.parametrize(
+        "validation", [OfferValidationStatus.DRAFT, OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED]
+    )
+    def test_get_non_approved_offer(self, client, validation):
+        offer = offers_factories.OfferFactory(validation=validation)
+
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v1/offer/{offer.id}")
+            assert response.status_code == 404
+
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
     def test_get_cds_synchonized_offer(self, mocked_get_shows_stock, app):
@@ -472,6 +483,18 @@ class SendOfferWebAppLinkTest:
             assert response.status_code == 404
         assert not mails_testing.outbox
 
+    @pytest.mark.parametrize(
+        "validation", [OfferValidationStatus.DRAFT, OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED]
+    )
+    def test_send_non_approved_offer_webapp_link_by_email(self, app, validation):
+        _, test_client = create_user_and_test_client(app)
+        offer_id = offers_factories.OfferFactory(validation=validation).id
+
+        with assert_no_duplicated_queries():
+            response = test_client.post(f"/native/v1/send_offer_webapp_link_by_email/{offer_id}")
+            assert response.status_code == 404
+        assert not mails_testing.outbox
+
     def send_request(self, client):
         offer_id = offers_factories.OfferFactory().id
         user = users_factories.BeneficiaryGrant18Factory()
@@ -519,6 +542,19 @@ class SendOfferLinkNotificationTest:
 
         with assert_no_duplicated_queries():
             response = test_client.post("/native/v1/send_offer_link_by_push/9999999999")
+            assert response.status_code == 404
+
+        assert len(notifications_testing.requests) == 0
+
+    @pytest.mark.parametrize(
+        "validation", [OfferValidationStatus.DRAFT, OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED]
+    )
+    def test_send_non_approved_offer_link_notification(self, app, validation):
+        _, test_client = create_user_and_test_client(app)
+        offer_id = offers_factories.OfferFactory(validation=validation).id
+
+        with assert_no_duplicated_queries():
+            response = test_client.post(f"/native/v1/send_offer_link_by_push/{offer_id}")
             assert response.status_code == 404
 
         assert len(notifications_testing.requests) == 0
@@ -644,6 +680,19 @@ class ReportOfferTest:
                 "value is not a valid enumeration member; permitted: 'IMPROPER', 'PRICE_TOO_HIGH', 'INAPPROPRIATE', 'OTHER'"
             ]
 
+        assert OfferReport.query.count() == 0  # no new report
+        assert not mails_testing.outbox
+
+    @pytest.mark.parametrize(
+        "validation", [OfferValidationStatus.DRAFT, OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED]
+    )
+    def test_report_non_approved_offer(self, app, validation):
+        _, test_client = create_user_and_test_client(app)
+        offer = offers_factories.ThingOfferFactory(validation=validation)
+
+        response = test_client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "PRICE_TOO_HIGH"})
+
+        assert response.status_code == 404
         assert OfferReport.query.count() == 0  # no new report
         assert not mails_testing.outbox
 
