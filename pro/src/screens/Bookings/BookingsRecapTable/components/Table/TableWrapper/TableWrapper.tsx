@@ -94,6 +94,7 @@ const TableWrapper = <
     <div className={styles['bookings-table-wrapper']}>
       <table className={styles['bookings-table']} {...getTableProps()}>
         <TableHead headerGroups={headerGroups} />
+
         <TableBody
           page={page}
           prepareRow={prepareRow}

@@ -1,7 +1,10 @@
+import cn from 'classnames'
 import React from 'react'
 
 import { SortingMode } from 'hooks/useColumnSorting'
-import Icon from 'ui-kit/Icon/Icon'
+import fullDownIcon from 'icons/full-down.svg'
+import fullUpIcon from 'icons/full-up.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SortArrow.module.scss'
 
@@ -14,12 +17,23 @@ export const SortArrow = ({ sortingMode, onClick }: SortArrowProps) => (
   <button type="button" className={styles['sorting-icons']} onClick={onClick}>
     {sortingMode !== SortingMode.NONE ? (
       sortingMode === SortingMode.DESC ? (
-        <Icon alt="Ne plus trier" svg="ico-arrow-up-r" />
+        <SvgIcon
+          className={styles['sort-icon']}
+          src={fullUpIcon}
+          alt="Ne plus trier"
+        />
       ) : (
-        <Icon alt="Trier par ordre décroissant" svg="ico-arrow-down-r" />
+        <SvgIcon
+          className={styles['sort-icon']}
+          src={fullDownIcon}
+          alt="Trier par ordre décroissant"
+        />
       )
     ) : (
-      <Icon alt="Trier par ordre croissant" svg="ico-unfold" />
+      <div className={cn(styles['sort-icon'], styles['both-icons'])}>
+        <SvgIcon src={fullUpIcon} alt="Trier par ordre croissant" />
+        <SvgIcon src={fullDownIcon} alt="" />
+      </div>
     )}
   </button>
 )
