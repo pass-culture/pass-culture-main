@@ -10,7 +10,7 @@ import { Divider } from 'ui-kit'
 
 import style from './ModalImageUploadBrowser.module.scss'
 
-interface IModalImageUploadBrowserProps {
+interface ModalImageUploadBrowserProps {
   onImageClientUpload: (values: IImageUploadBrowserFormValues) => void
   mode: UploaderModeEnum
 }
@@ -18,7 +18,7 @@ interface IModalImageUploadBrowserProps {
 const ModalImageUploadBrowser = ({
   onImageClientUpload,
   mode,
-}: IModalImageUploadBrowserProps) => {
+}: ModalImageUploadBrowserProps) => {
   const [hiddenAdvices, setHiddenAdvices] = useState(true)
 
   const advicesDescription = {
@@ -32,16 +32,21 @@ const ModalImageUploadBrowser = ({
     [UploaderModeEnum.OFFER_COLLECTIVE]: 'portrait',
     [UploaderModeEnum.VENUE]: 'landscape',
   }[mode]
+
   return (
     <section className={style['modal-upload-browser']}>
       <header>
         <h1 className={style['header']}>Ajouter une image</h1>
       </header>
+
       <PreferredOrientation
         orientation={orientation as 'portrait' | 'landscape'}
       />
+
       <ImageUploadBrowserForm onSubmit={onImageClientUpload} mode={mode} />
+
       <Divider className={style['horizontal-rule']} size="large" />
+
       <Advices
         hidden={hiddenAdvices}
         setHidden={setHiddenAdvices}
