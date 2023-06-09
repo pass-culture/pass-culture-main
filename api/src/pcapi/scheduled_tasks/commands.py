@@ -424,3 +424,9 @@ def _send_notification_favorites_not_booked() -> None:
         except Exception:  # pylint: disable=broad-except
             log_extra = {"offer": row.offer_id, "users": row.user_ids, "count": len(row.user_ids)}
             logger.error("Favorites not booked: failed to send notification", extra=log_extra)
+
+
+@blueprint.cli.command("send_wake_up_mail_after_last_active_offer")
+@log_cron_with_transaction
+def send_wake_up_mail_after_last_active_offer() -> None:
+    transactional_mails.send_wake_up_after_inactivity_to_pros()

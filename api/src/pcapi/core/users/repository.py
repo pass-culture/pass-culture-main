@@ -153,8 +153,8 @@ def get_emails_without_active_offers(since_date: date) -> list[tuple[str, bool, 
     Returns emails whose last active offer expired since_date.
     The additional tuple fields are the properties of the last active offer needed for pro reminder mails.
     """
-    offer_id_query = repository.db.session.query(offers_models.Stock.offerId.distinct()).filter(
-        sa.cast(offers_models.Stock.dateModified, sa.Date) == since_date
+    offer_id_query = repository.db.session.query(offers_models.Offer.id).filter(
+        offers_models.Offer.isReleased.is_(True), sa.cast(offers_models.Stock.dateModified, sa.Date) == since_date
     )
     offer_ids = [offer_id for offer_id, in offer_id_query]
 

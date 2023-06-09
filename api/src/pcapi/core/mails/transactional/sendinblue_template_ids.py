@@ -162,3 +162,4 @@ class TransactionalEmail(Enum):
     VENUE_NEEDS_PICTURE = models.TemplatePro(id_prod=782, id_not_prod=113, tags=["pro_lieu_permanent"])
     VENUE_SYNC_DISABLED = models.TemplatePro(id_prod=883, id_not_prod=122, tags=["pro_pause_synchro"])
     VENUE_SYNC_DELETED = models.TemplatePro(id_prod=865, id_not_prod=123, tags=["pro_suppression_synchro"])
+    WAKE_UP_AFTER_INACTIVITY = models.TemplatePro(id_prod=932, id_not_prod=131, tags=["pro_inactivite"])

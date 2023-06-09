@@ -46,6 +46,7 @@ from .pro.reset_password_to_pro import send_reset_password_email_to_connected_pr
 from .pro.reset_password_to_pro import send_reset_password_email_to_pro
 from .pro.venue_provider_deleted import send_venue_provider_deleted_email
 from .pro.venue_provider_disabled import send_venue_provider_disabled_email
+from .pro.wake_up_after_inactivity_to_pro import send_wake_up_after_inactivity_to_pros
 from .pro.welcome_to_pro import send_welcome_to_pro_email
 from .send_transactional_email import send_transactional_email
 from .users.accepted_as_beneficiary import send_accepted_as_beneficiary_email
