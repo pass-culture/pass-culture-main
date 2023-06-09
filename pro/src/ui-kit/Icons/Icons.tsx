@@ -23,19 +23,20 @@ interface IconListItem {
 
 const iconList = [
   // Cleaned !
+  // Those icons are put in the order of the design library here:
+  // https://www.figma.com/file/AEXCkb4KbUyPmB4BRFa88s/PRO---Library?type=design&node-id=8059-111986&t=sLfFXFbaXGFLjdhX-0
 
   // Full icons
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
-  { src: 'icons/full-parameters.svg' },
+  { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/stroke-error.svg' },
 
   // Stroke icons
 
   // Not cleaned
   { src: 'icons/user.svg', viewBox: '0 0 49 48' },
-  { src: 'icons/add-activation-code-error.svg', viewBox: '0 0 197 124' },
   { src: 'icons/add-activation-code-light.svg', viewBox: '0 0 32 32' },
   { src: 'icons/arrow-down.svg', viewBox: '0 0 32 32' },
   { src: 'icons/ico-arrow-down-r.svg', viewBox: '0 0 24 24' },
@@ -324,7 +325,8 @@ export const Icons = () => {
 
       <div className={styles['icon-list']}>
         {filteredIcons.map(icon => {
-          const iconName = icon.src.split('/')[1].split('.')[0]
+          const fileNameParts = icon.src.split('/')
+          const iconName = fileNameParts[fileNameParts.length - 1].split('.')[0]
 
           return (
             <div
