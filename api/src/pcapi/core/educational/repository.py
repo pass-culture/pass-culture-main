@@ -812,7 +812,10 @@ def get_collective_offer_by_offer_id(offer_id: int) -> educational_models.Collec
 
 def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
     return (
-        educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == offer_id)
+        educational_models.CollectiveOffer.query.filter(
+            educational_models.CollectiveOffer.id == offer_id,
+            educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+        )
         .options(
             sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
                 educational_models.CollectiveStock.collectiveBookings
@@ -836,7 +839,8 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.Co
 def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
     return (
         educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer_id
+            educational_models.CollectiveOfferTemplate.id == offer_id,
+            educational_models.CollectiveOfferTemplate.validation == offer_mixin.OfferValidationStatus.APPROVED,
         )
         .options(
             sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue)
