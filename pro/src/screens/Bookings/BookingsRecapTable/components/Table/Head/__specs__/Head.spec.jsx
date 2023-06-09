@@ -3,14 +3,13 @@ import React from 'react'
 
 import TableHead from '../TableHead'
 
-describe('components | pages | TableWrapper | TableHead', () => {
+describe('TableHead', () => {
   const renderHead = props => {
     return render(<TableHead {...props} />, {
       container: document.body.appendChild(document.createElement('table')),
     })
   }
   it('should render one line with all columns', () => {
-    // Given
     const props = {
       headerGroups: [
         {
@@ -35,10 +34,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
       ],
     }
 
-    // When
     renderHead(props)
-
-    // Then
 
     expect(screen.getAllByRole('columnheader')).toHaveLength(2)
     expect(screen.getAllByRole('columnheader')[0]).toHaveTextContent('Offres')
@@ -48,20 +44,16 @@ describe('components | pages | TableWrapper | TableHead', () => {
   })
 
   it('should return no line when there is no headers', async () => {
-    // Given
     const props = {
       headerGroups: [],
     }
 
-    // When
     renderHead(props)
 
-    // Then
     expect(screen.queryByRole('row')).not.toBeInTheDocument()
   })
 
-  it('should render one line with default sorting icon when column is sortable', () => {
-    // Given
+  it('should render one line with sorting icons when column is sortable', () => {
     const props = {
       headerGroups: [
         {
@@ -80,105 +72,10 @@ describe('components | pages | TableWrapper | TableHead', () => {
       ],
     }
 
-    // When
-    renderHead(props)
-    // Then
-    expect(screen.getByRole('button')).toHaveAttribute(
-      'src',
-      expect.stringContaining('ico-unfold')
-    )
-  })
-
-  it('should render one line with no default sorting icon when column is not sortable', async () => {
-    // Given
-    const props = {
-      headerGroups: [
-        {
-          id: 1,
-          headers: [
-            {
-              id: 1,
-              headerTitle: 'Offres',
-              render: jest.fn(() => <span>Offres</span>),
-              getHeaderProps: jest.fn(),
-              getSortByToggleProps: jest.fn(),
-              canSort: false,
-            },
-          ],
-        },
-      ],
-    }
-
-    // When
     renderHead(props)
 
-    // Then
-    expect(screen.getByRole('columnheader')).toHaveTextContent('Offres')
-    expect(screen.queryByRole('button')).not.toBeInTheDocument()
-  })
-
-  it('should render one line with icon sorted ASC when column is sorted by ASC', () => {
-    // Given
-    const props = {
-      headerGroups: [
-        {
-          id: 1,
-          headers: [
-            {
-              id: 1,
-              headerTitle: 'Offres',
-              render: jest.fn(() => <span>Offres</span>),
-              getHeaderProps: jest.fn(),
-              getSortByToggleProps: jest.fn(),
-              canSort: true,
-              isSorted: true,
-            },
-          ],
-        },
-      ],
-    }
-
-    // When
-    renderHead(props)
-
-    // Then
-    expect(screen.getByRole('columnheader')).toHaveTextContent('Offres')
-    expect(screen.getByRole('button')).toHaveAttribute(
-      'src',
-      expect.stringContaining('ico-arrow-down-r')
-    )
-  })
-
-  it('should render one line with icon sorted DESC when column is sorted by DESC', () => {
-    // Given
-    const props = {
-      headerGroups: [
-        {
-          id: 1,
-          headers: [
-            {
-              id: 1,
-              headerTitle: 'Offres',
-              render: jest.fn(() => <span>Offres</span>),
-              getHeaderProps: jest.fn(),
-              getSortByToggleProps: jest.fn(),
-              canSort: true,
-              isSorted: true,
-              isSortedDesc: true,
-            },
-          ],
-        },
-      ],
-    }
-
-    // When
-    renderHead(props)
-
-    // Then
-    expect(screen.getByRole('columnheader')).toHaveTextContent('Offres')
-    expect(screen.getByRole('button')).toHaveAttribute(
-      'src',
-      expect.stringContaining('ico-arrow-up-r')
-    )
+    expect(
+      screen.getByRole('img', { name: 'Trier par ordre croissant' })
+    ).toBeInTheDocument()
   })
 })

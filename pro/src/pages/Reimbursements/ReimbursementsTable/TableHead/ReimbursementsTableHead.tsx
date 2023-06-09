@@ -1,6 +1,7 @@
 import React from 'react'
 
-import Icon from 'ui-kit/Icon/Icon'
+import { SortArrow } from 'components/StocksEventList/SortArrow'
+import { SortingMode } from 'hooks/useColumnSorting'
 
 type ColumnOptionType = {
   title: string
@@ -8,7 +9,7 @@ type ColumnOptionType = {
   selfDirection: string
 }
 
-interface IReimbursementsTableHead {
+interface ReimbursementsTableHead {
   columns: ColumnOptionType[]
   sortBy: (sortBy: string) => void
 }
@@ -16,7 +17,7 @@ interface IReimbursementsTableHead {
 const ReimbursementsTableHead = ({
   columns,
   sortBy,
-}: IReimbursementsTableHead): JSX.Element => {
+}: ReimbursementsTableHead): JSX.Element => {
   const changeDirection = (columnOption: ColumnOptionType) => {
     if (columnOption.selfDirection === 'None') {
       return
@@ -51,32 +52,24 @@ const ReimbursementsTableHead = ({
     <thead>
       <tr>
         {columns.map(column => {
-          const ico =
+          const sortingMode =
             column.selfDirection === 'default'
-              ? { label: 'trier par ordre croissant', type: 'ico-unfold' }
+              ? SortingMode.NONE
               : column.selfDirection === 'desc'
-              ? {
-                  label: 'annuler le tri sur cette colonne',
-                  type: 'ico-arrow-up-r',
-                }
-              : {
-                  label: 'trier par ordre décroissant',
-                  type: 'ico-arrow-down-r',
-                }
+              ? SortingMode.DESC
+              : SortingMode.ASC
+
           return column.selfDirection !== 'None' ? (
             <th key={column.title}>
-              <button
-                onClick={() => {
-                  sortAndChangeColumnDirection(column)
-                }}
-                title={ico.label}
-                type="button"
-              >
-                {column.title}
-                {column.selfDirection !== 'None' && (
-                  <Icon alt={ico.label} png="" svg={ico.type} />
-                )}
-              </button>
+              {column.title}&nbsp;
+              {column.selfDirection !== 'None' && (
+                <SortArrow
+                  sortingMode={sortingMode}
+                  onClick={() => {
+                    sortAndChangeColumnDirection(column)
+                  }}
+                />
+              )}
             </th>
           ) : (
             <th key={column.title}>{column.title}</th>

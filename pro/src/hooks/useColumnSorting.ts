@@ -18,14 +18,17 @@ export const useColumnSorting = <SortingColumn>() => {
       if (currentSortingColumn !== headerName) {
         setCurrentSortingColumn(headerName)
         setCurrentSortingMode(SortingMode.ASC)
-        return
+        return SortingMode.ASC
       } else {
         if (currentSortingMode === SortingMode.ASC) {
           setCurrentSortingMode(SortingMode.DESC)
+          return SortingMode.DESC
         } else if (currentSortingMode === SortingMode.DESC) {
           setCurrentSortingMode(SortingMode.NONE)
+          return SortingMode.NONE
         } else {
           setCurrentSortingMode(SortingMode.ASC)
+          return SortingMode.ASC
         }
       }
     },
