@@ -15,7 +15,7 @@ const validationSchema = {
         return phone ? isPhoneValid(phone) : true
       },
     }),
-  email: yup.string().nullable().email('Veuillez renseigner un e-mail valide'),
+  email: yup.string().nullable().email('Veuillez renseigner un email valide'),
   webSite: yup
     .string()
     .nullable()
@@ -30,10 +30,10 @@ const validationSchema = {
   isVenueVirtual: yup.boolean(),
   bookingEmail: yup
     .string()
-    .email('Veuillez renseigner un e-mail valide')
+    .email('Veuillez renseigner un email valide')
     .when('isVenueVirtual', {
       is: false,
-      then: schema => schema.required('Veuillez renseigner une adresse e-mail'),
+      then: schema => schema.required('Veuillez renseigner une adresse email'),
     }),
 }
 

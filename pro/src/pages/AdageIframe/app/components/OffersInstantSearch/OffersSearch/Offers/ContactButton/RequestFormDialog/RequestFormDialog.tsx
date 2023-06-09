@@ -103,7 +103,7 @@ const RequestFormDialog = ({
             >
               <FormLayout>
                 <FormLayout.Row>
-                  <TextInput label="E-Mail" name="teacherEmail" disabled />
+                  <TextInput label="Email" name="teacherEmail" disabled />
                 </FormLayout.Row>
                 <div className={styles['form-row']}>
                   <FormLayout.Row>

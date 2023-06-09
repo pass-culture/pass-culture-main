@@ -13,7 +13,7 @@ export const ticketWithdrawalTypeRadios = [
     value: WithdrawalTypeEnum.NO_TICKET,
   },
   {
-    label: 'Envoi par e-mail',
+    label: 'Envoi par email',
     value: WithdrawalTypeEnum.BY_EMAIL,
   },
   {

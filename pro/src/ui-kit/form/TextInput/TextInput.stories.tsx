@@ -24,4 +24,4 @@ const Template: Story<TextInputProps> = props => (
 
 export const WithoutLabel = Template.bind({})
 export const WithLabel = Template.bind({})
-WithLabel.args = { label: 'E-mail' }
+WithLabel.args = { label: 'Email' }

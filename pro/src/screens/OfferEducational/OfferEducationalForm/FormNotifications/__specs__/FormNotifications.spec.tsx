@@ -19,8 +19,8 @@ const renderFormNotifications = (
       is: true,
       then: schema =>
         schema
-          .required('Veuillez renseigner une adresse e-mail')
-          .email('Veuillez renseigner un e-mail valide'),
+          .required('Veuillez renseigner une adresse email')
+          .email('Veuillez renseigner un email valide'),
     }),
   })
 
@@ -55,10 +55,10 @@ describe('FormNotifications', () => {
     }
     renderFormNotifications(initialValues, onSubmit)
     const mailInputs = screen.getAllByRole('textbox', {
-      name: 'E-mail auquel envoyer les notifications',
+      name: 'Email auquel envoyer les notifications',
     })
     const addInputButton = screen.getByRole('button', {
-      name: 'Ajouter un e-mail de notification',
+      name: 'Ajouter un email de notification',
     })
     expect(mailInputs.length).toEqual(1)
     await userEvent.click(addInputButton)
@@ -66,7 +66,7 @@ describe('FormNotifications', () => {
     await waitFor(() => {
       expect(
         screen.getAllByRole('textbox', {
-          name: 'E-mail auquel envoyer les notifications',
+          name: 'Email auquel envoyer les notifications',
         }).length
       ).toEqual(2)
     })
@@ -78,7 +78,7 @@ describe('FormNotifications', () => {
     }
     renderFormNotifications(initialValues, onSubmit)
     let mailInputs = await screen.getAllByRole('textbox', {
-      name: 'E-mail auquel envoyer les notifications',
+      name: 'Email auquel envoyer les notifications',
     })
     const removeInputIcon = await screen.getByRole('button', {
       name: "Supprimer l'email",
@@ -86,7 +86,7 @@ describe('FormNotifications', () => {
     expect(mailInputs.length).toEqual(2)
     await userEvent.click(removeInputIcon)
     mailInputs = await screen.getAllByRole('textbox', {
-      name: 'E-mail auquel envoyer les notifications',
+      name: 'Email auquel envoyer les notifications',
     })
     expect(mailInputs.length).toEqual(1)
   })

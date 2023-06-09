@@ -14,7 +14,7 @@ const CollectiveOfferContactSection = ({
   return (
     <SummaryLayout.SubSection title="Contact">
       <SummaryLayout.Row title="Téléphone" description={phone} />
-      <SummaryLayout.Row title="E-mail" description={email} />
+      <SummaryLayout.Row title="Email" description={email} />
     </SummaryLayout.SubSection>
   )
 }

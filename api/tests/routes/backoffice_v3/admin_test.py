@@ -188,7 +188,7 @@ class DisableFeatureFlagTest(PostEndpointHelper):
 def assert_user_equals(result_card_text: str, expected_user: users_models.User):
     assert f"{expected_user.firstName} {expected_user.lastName} " in result_card_text
     assert f"User ID : {expected_user.id} " in result_card_text
-    assert f"E-mail : {expected_user.email} " in result_card_text
+    assert f"Email : {expected_user.email} " in result_card_text
     if users_models.UserRole.ADMIN in expected_user.roles:
         assert "Admin " in result_card_text
     if not expected_user.isActive:
@@ -281,7 +281,7 @@ class GetBoUserTest(GetEndpointHelper):
         assert "Admin" in content
         assert "Suspendu" not in content
         assert f"User ID : {user.id} " in content
-        assert f"E-mail : {user.email} " in content
+        assert f"Email : {user.email} " in content
         assert f"Date de création du compte : {user.dateCreated.strftime('%d/%m/%Y')}" in content
         assert (
             f"Date de dernière connexion : {user.lastConnectionDate.strftime('%d/%m/%Y') if user.lastConnectionDate else ''}"

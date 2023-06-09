@@ -53,7 +53,7 @@ describe('CollectiveData', () => {
     ).toBeInTheDocument()
     expect(await screen.findByText(/Public cible/)).toBeInTheDocument()
     expect(await screen.findByText(/Statut/)).toBeInTheDocument()
-    expect(await screen.findByText(/E-mail/)).toBeInTheDocument()
+    expect(await screen.findByText(/Email/)).toBeInTheDocument()
     expect(await screen.findByText(/Téléphone :/)).toBeInTheDocument()
     expect(
       await screen.findByText(/URL de votre site web :/)

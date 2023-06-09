@@ -91,7 +91,7 @@ const ProfileAndSupport = () => {
                   <span className="h-dl-description">{user.firstName}</span>
                 </li>
                 <li className="h-dl-row">
-                  <span className="h-dl-title">E-mail :</span>
+                  <span className="h-dl-title">Email :</span>
                   <span className="h-dl-description">{user.email}</span>
                 </li>
                 <li className="h-dl-row">

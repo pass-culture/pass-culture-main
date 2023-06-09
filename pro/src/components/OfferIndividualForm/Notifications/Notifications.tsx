@@ -37,7 +37,7 @@ const Notifications = ({
     <FormLayout.Section title="Notifications">
       <FormLayout.Row>
         <Checkbox
-          label="Être notifié par e-mail des réservations"
+          label="Être notifié par email des réservations"
           name="receiveNotificationEmails"
           value=""
           hideFooter={receiveNotificationEmails}
@@ -48,7 +48,7 @@ const Notifications = ({
       {receiveNotificationEmails && (
         <FormLayout.Row>
           <TextInput
-            label="E-mail auquel envoyer les notifications"
+            label="Email auquel envoyer les notifications"
             maxLength={90}
             name="bookingEmail"
             placeholder="email@exemple.com"

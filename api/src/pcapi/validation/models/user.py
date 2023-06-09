@@ -12,7 +12,7 @@ def validate(user: User, api_errors: ApiErrors) -> ApiErrors:
     user_with_this_email = users_repository.find_user_by_email(user.email)
 
     if user_with_this_email and user_with_this_email.id != user.id:
-        api_errors.add_error("email", "Un compte lié à cet e-mail existe déjà")
+        api_errors.add_error("email", "Un compte lié à cet email existe déjà")
     if user.email:
         api_errors.check_email("email", user.email)
     if user.has_admin_role and user.is_beneficiary:

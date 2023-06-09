@@ -17,7 +17,7 @@ class UserAlreadyExistsTest:
         api_errors = ApiErrors()
         api_error = validate(user, api_errors)
 
-        assert api_error.errors["email"] == ["Un compte lié à cet e-mail existe déjà"]
+        assert api_error.errors["email"] == ["Un compte lié à cet email existe déjà"]
 
     def test_new_user_with_different_email(self):
         users_factories.UserFactory(email="existing@example.com")
@@ -47,7 +47,7 @@ class EmailTest:
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors["email"] == ["L’e-mail doit contenir un @."]
+        assert api_error.errors["email"] == ["L’email doit contenir un @."]
 
     @patch("pcapi.core.users.repository.find_user_by_email")
     def test_should_not_return_error_message_when_user_email_is_correct(self, mocked_find_user_by_email):

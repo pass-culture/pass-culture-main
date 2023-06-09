@@ -145,7 +145,7 @@ const routes: IRoute[] = [
   {
     element: <EmailChangeValidation />,
     path: '/email_validation',
-    title: 'Valider l’adresse e-mail',
+    title: 'Valider l’adresse email',
     meta: {
       public: true,
       layoutConfig: {

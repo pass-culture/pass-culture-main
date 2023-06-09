@@ -23,13 +23,13 @@ const ChangePasswordRequestForm = ({
     <div className={styles['hero-body']}>
       <h1>Mot de passe oublié ?</h1>
       <p>
-        Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre
+        Indiquez ci-dessous l’adresse email avec laquelle vous avez créé votre
         compte.
       </p>
 
       <form noValidate onSubmit={onSubmit}>
         <TextInput
-          label="Adresse e-mail"
+          label="Adresse email"
           name="email"
           onChange={onChange}
           placeholder="email@exemple.com"

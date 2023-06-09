@@ -151,8 +151,8 @@ def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
 def validate_pro_user_email(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
     if user.isEmailValidated:
-        flash(f"L'e-mail {user.email} est déjà validé !", "warning")
+        flash(f"L'email {user.email} est déjà validé !", "warning")
     else:
         users_api.validate_pro_user_email(user=user, author_user=current_user)
-        flash(f"L'e-mail {user.email} est validé !", "success")
+        flash(f"L'email {user.email} est validé !", "success")
     return redirect(url_for("backoffice_v3_web.pro_user.get", user_id=user_id), code=303)

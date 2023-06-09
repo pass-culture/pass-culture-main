@@ -34,7 +34,7 @@ class SearchProTest(search_helpers.SearchHelper):
 def assert_user_equals(result_card_text: str, expected_user: users_models.User):
     assert f"{expected_user.firstName} {expected_user.lastName} " in result_card_text
     assert f"User ID : {expected_user.id} " in result_card_text
-    assert f"E-mail : {expected_user.email} " in result_card_text
+    assert f"Email : {expected_user.email} " in result_card_text
     if expected_user.phoneNumber:
         assert f"Tél : {expected_user.phoneNumber} " in result_card_text
     assert "Pro " in result_card_text
@@ -59,7 +59,7 @@ def assert_venue_equals(result_card_text: str, expected_venue: offerers_models.V
     assert f"{expected_venue.name.upper()} " in result_card_text
     assert f"Venue ID : {expected_venue.id} " in result_card_text
     assert f"SIRET : {expected_venue.siret} " in result_card_text
-    assert f"E-mail : {expected_venue.bookingEmail} " in result_card_text
+    assert f"Email : {expected_venue.bookingEmail} " in result_card_text
     if expected_venue.contact:
         assert f"Tél : {expected_venue.contact.phone_number} " in result_card_text
     if expected_venue.isPermanent:

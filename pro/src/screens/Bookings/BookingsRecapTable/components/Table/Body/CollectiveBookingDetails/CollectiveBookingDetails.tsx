@@ -78,7 +78,7 @@ const CollectiveBookingDetails = ({
                 <dt>
                   <Icon
                     className={styles['contact-detail-icon']}
-                    alt="E-Mail"
+                    alt="Email"
                     svg="ico-mail"
                   />
                 </dt>

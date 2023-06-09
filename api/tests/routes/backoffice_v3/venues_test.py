@@ -234,7 +234,7 @@ class GetVenueTest(GetEndpointHelper):
         assert "Région : Île-de-France " in response_text
         assert f"Ville : {venue.city} " in response_text
         assert f"Code postal : {venue.postalCode} " in response_text
-        assert f"E-mail : {venue.bookingEmail} " in response_text
+        assert f"Email : {venue.bookingEmail} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
         assert "Peut créer une offre EAC : Non" in response_text
         assert "Statut dossier DMS Adage :" not in response_text
@@ -277,7 +277,7 @@ class GetVenueTest(GetEndpointHelper):
         # then
         assert response.status_code == 200
         response_text = html_parser.content_as_text(response.data)
-        assert f"E-mail : {venue_with_no_contact.bookingEmail}" in response_text
+        assert f"Email : {venue_with_no_contact.bookingEmail}" in response_text
         assert "Numéro de téléphone :" not in response_text
 
     def test_get_venue_with_self_reimbursement_point(
@@ -409,7 +409,7 @@ class GetVenueTest(GetEndpointHelper):
         assert venue.name in response_text
         assert "Nom d'usage :" not in response_text
         assert f"Venue ID : {venue.id} " in response_text
-        assert f"E-mail : {venue.bookingEmail} " in response_text
+        assert f"Email : {venue.bookingEmail} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
         assert "Peut créer une offre EAC : Non" in response_text
         assert "Statut dossier DMS Adage :" not in response_text

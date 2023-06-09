@@ -16,7 +16,7 @@ def send(
     data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
     bcc_recipients: Iterable[str] = None,
 ) -> bool:
-    """Try to send an e-mail and return whether it was successful."""
+    """Try to send an email and return whether it was successful."""
     if isinstance(recipients, str):
         if settings.IS_RUNNING_TESTS:
             raise ValueError("Recipients should be a sequence, not a single string.")
