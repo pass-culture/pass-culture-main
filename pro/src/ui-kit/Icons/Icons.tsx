@@ -31,6 +31,8 @@ const iconList = [
   { src: 'icons/full-play.svg' },
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
+  { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
+  { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>
 
   // Stroke icons
   { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
@@ -38,7 +40,6 @@ const iconList = [
   { src: 'icons/stroke-code.svg' },
 
   // Not cleaned
-  { src: 'icons/arrow-down.svg', viewBox: '0 0 32 32' },
   { src: 'icons/ico-arrow-down-r.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-arrow-right.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-arrow-up-r.svg', viewBox: '0 0 24 24' },
