@@ -7,10 +7,10 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice_v3.utils import get_regions_choices
 
-from . import fields
-from . import utils
 from ..filters import format_graphql_application_status
-from .empty import BatchForm
+from ..forms import fields
+from ..forms import utils
+from ..forms.empty import BatchForm
 
 
 TAG_NAME_REGEX = r"^[^\s]+$"
