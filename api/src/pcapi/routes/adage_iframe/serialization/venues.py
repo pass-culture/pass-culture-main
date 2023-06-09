@@ -12,6 +12,7 @@ class VenueResponse(BaseModel):
     name: str
     relative: list[int]
     bannerUrl: str | None
+    bannerMeta: dict | None
 
     class Config:
         orm_mode = True
