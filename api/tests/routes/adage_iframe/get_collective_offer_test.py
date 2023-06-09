@@ -7,6 +7,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.models import offer_mixin
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
@@ -212,6 +213,27 @@ class Returns404Test:
 
         # When
         response = client.get("/adage-iframe/collective/offers/0")
+
+        # Then
+        assert response.status_code == 404
+
+    @pytest.mark.parametrize(
+        "validation",
+        [
+            offer_mixin.OfferValidationStatus.DRAFT,
+            offer_mixin.OfferValidationStatus.PENDING,
+            offer_mixin.OfferValidationStatus.REJECTED,
+        ],
+    )
+    def test_should_return_404_when_collective_offer_template_is_not_approved(self, client, validation):
+        # Given
+        offer = educational_factories.CollectiveOfferFactory(validation=validation)
+
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
+        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
+
+        # When
+        response = client.get(f"/adage-iframe/collective/offers/{offer.id}")
 
         # Then
         assert response.status_code == 404
