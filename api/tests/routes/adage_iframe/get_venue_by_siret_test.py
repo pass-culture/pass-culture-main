@@ -22,7 +22,10 @@ class Returns200Test:
 
     def test_return_venue_with_publicName_of_given_siret(self, client):
         # Given
-        requested_venue = offerers_factories.VenueFactory(publicName="Un petit surnom")
+        requested_venue = offerers_factories.VenueFactory(
+            publicName="Un petit surnom",
+            bannerUrl="http://example.com/image_cropped.png",
+        )
         offerers_factories.VenueFactory(managingOfferer=requested_venue.managingOfferer, isPermanent=True)
         offerers_factories.VenueFactory()
         valid_encoded_token = self._create_adage_valid_token()
@@ -39,6 +42,7 @@ class Returns200Test:
             "name": requested_venue.name,
             "publicName": requested_venue.publicName,
             "relative": [],
+            "bannerUrl": "http://example.com/image_cropped.png",
         }
 
     def test_return_venue_without_publicName_of_given_siret(self, client):
@@ -60,6 +64,7 @@ class Returns200Test:
             "name": requested_venue.name,
             "publicName": None,
             "relative": [],
+            "bannerUrl": None,
         }
 
     def test_return_relative_venue(self, client):
@@ -81,6 +86,7 @@ class Returns200Test:
             "name": requested_venue.name,
             "publicName": requested_venue.publicName,
             "relative": [venue2.id],
+            "bannerUrl": None,
         }
 
 
