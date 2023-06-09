@@ -54,7 +54,7 @@ const ReimbursmentPointDialog = ({
           onClick={openDmsProcedure}
           Icon={ExternalLinkIcon}
         >
-          Continuer sur Démarches Simplifées
+          Continuer sur Démarches Simplifiées
         </Button>
       </div>
     </DialogBox>
