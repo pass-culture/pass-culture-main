@@ -25,7 +25,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.routes.backoffice_v3 import offerers
+from pcapi.routes.backoffice_v3.offerers import offerer_blueprint
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -432,7 +432,7 @@ class GetOffererStatsDataTest:
         # get active/inactive stats (1 query)
         # get total revenue (1 query)
         with assert_num_queries(2):
-            data = offerers.get_stats_data(offerer_id)
+            data = offerer_blueprint.get_stats_data(offerer_id)
 
         stats = data.stats
 
@@ -457,7 +457,7 @@ class GetOffererStatsDataTest:
         # get active/inactive stats (1 query)
         # get total revenue (1 query)
         with assert_num_queries(2):
-            data = offerers.get_stats_data(offerer_id)
+            data = offerer_blueprint.get_stats_data(offerer_id)
 
         stats = data.stats
 
@@ -482,7 +482,7 @@ class GetOffererStatsDataTest:
         # get active/inactive stats (1 query)
         # get total revenue (1 query)
         with assert_num_queries(2):
-            data = offerers.get_stats_data(offerer_id)
+            data = offerer_blueprint.get_stats_data(offerer_id)
 
         stats = data.stats
 
@@ -506,7 +506,7 @@ class GetOffererStatsDataTest:
         # get active/inactive stats (1 query)
         # get total revenue (1 query)
         with assert_num_queries(2):
-            data = offerers.get_stats_data(offerer_id)
+            data = offerer_blueprint.get_stats_data(offerer_id)
 
         stats = data.stats
 
@@ -530,7 +530,7 @@ class GetOffererStatsDataTest:
         # get active/inactive stats (1 query)
         # get total revenue (1 query)
         with assert_num_queries(2):
-            data = offerers.get_stats_data(offerer_id)
+            data = offerer_blueprint.get_stats_data(offerer_id)
 
         stats = data.stats
 
@@ -549,7 +549,7 @@ class GetOffererStatsDataTest:
         # get active/inactive stats (1 query)
         # get total revenue (1 query)
         with assert_num_queries(2):
-            data = offerers.get_stats_data(offerer_id)
+            data = offerer_blueprint.get_stats_data(offerer_id)
 
         stats = data.stats
 

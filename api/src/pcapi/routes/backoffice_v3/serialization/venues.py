@@ -2,7 +2,9 @@ import datetime
 
 from pcapi.routes.serialization import BaseModel
 
-from .offerers import OffersStats
+# imported here to avoid import from offerers in venues blueprint
+from ..offerers.serialization import BaseOffersStats  # pylint: disable=unused-import
+from ..offerers.serialization import OffersStats
 
 
 class LastOfferSyncStats(BaseModel):
