@@ -1,7 +1,7 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import UserIcon from 'icons/user.svg'
+import strokeUserIcon from 'icons/stroke-user.svg'
 
 import { SvgIcon, SvgIconProps } from './SvgIcon'
 
@@ -16,6 +16,6 @@ const Template: Story<SvgIconProps> = args => {
 
 export const Default = Template.bind({})
 Default.args = {
-  src: UserIcon,
+  src: strokeUserIcon,
   alt: 'A user',
 }
