@@ -23,7 +23,7 @@ import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserVa
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import { ReactComponent as UserIcon } from 'icons/user.svg'
+import { ReactComponent as strokeUserIcon } from 'icons/stroke-user.svg'
 import ActionsBar from 'pages/Offers/Offers/ActionsBar'
 import OffersContainer from 'pages/Offers/Offers/Offers'
 import { ButtonLink } from 'ui-kit'
@@ -267,7 +267,7 @@ const Offers = ({
               currentPageNumber
             ),
             key: 'individual',
-            Icon: UserIcon,
+            Icon: strokeUserIcon,
           },
           {
             label: 'Offres collectives',
