@@ -11,6 +11,7 @@ class VenueResponse(BaseModel):
     publicName: str | None
     name: str
     relative: list[int]
+    bannerUrl: str | None
 
     class Config:
         orm_mode = True
