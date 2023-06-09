@@ -1,7 +1,8 @@
-import React, { Fragment, useCallback, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 
 import DialogBox from 'components/DialogBox'
-import { ReactComponent as AddActivationCodeIcon } from 'icons/add-activation-code-light.svg'
+import strokeCodeIcon from 'icons/stroke-code.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import {
   checkAndParseUploadedFile,
@@ -13,7 +14,7 @@ import AddActivationCodeForm from './AddActivationCodeForm'
 
 const ACTIVATION_CODES_UPLOAD_ID = 'ACTIVATION_CODES_UPLOAD_ID'
 
-interface IActivationCodeFormProps {
+interface ActivationCodeFormProps {
   onCancel: () => void
   onSubmit: (activationCodes: string[]) => void
   today: Date
@@ -25,7 +26,7 @@ const ActivationCodeFormDialog = ({
   onSubmit,
   today,
   minExpirationDate,
-}: IActivationCodeFormProps) => {
+}: ActivationCodeFormProps) => {
   const [errorMessage, setErrorMessage] = useState('')
   const [unsavedActivationCodes, setUnsavedActivationCodes] =
     useState<string[]>()
@@ -37,8 +38,8 @@ const ActivationCodeFormDialog = ({
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       setIsFileInputDisabled(true)
 
-      // @ts-expect-error next-line
-      const currentFile = e.currentTarget.files[0]
+      const currentFile =
+        e.currentTarget.files !== null ? e.currentTarget.files[0] : null
       if (currentFile == null) {
         setIsFileInputDisabled(false)
         return
@@ -81,34 +82,36 @@ const ActivationCodeFormDialog = ({
       labelledBy={ACTIVATION_CODES_UPLOAD_ID}
       extraClassNames={styles['activation-codes-upload']}
     >
-      <Fragment>
-        <h4
-          className={styles['activation-codes-upload-title']}
-          id={ACTIVATION_CODES_UPLOAD_ID}
-        >
-          Ajouter des codes d’activation
-        </h4>
-        <AddActivationCodeIcon
-          aria-hidden
-          className={styles['activation-codes-upload-icon']}
+      <h4
+        className={styles['activation-codes-upload-title']}
+        id={ACTIVATION_CODES_UPLOAD_ID}
+      >
+        Ajouter des codes d’activation
+      </h4>
+
+      <SvgIcon
+        src={strokeCodeIcon}
+        alt=""
+        className={styles['activation-codes-upload-icon']}
+      />
+
+      {hasNoActivationCodes && (
+        <AddActivationCodeForm
+          submitFile={submitFile}
+          errorMessage={errorMessage}
+          isFileInputDisabled={isFileInputDisabled}
         />
-        {hasNoActivationCodes && (
-          <AddActivationCodeForm
-            submitFile={submitFile}
-            errorMessage={errorMessage}
-            isFileInputDisabled={isFileInputDisabled}
-          />
-        )}
-        {!hasNoActivationCodes && (
-          <AddActivationCodeConfirmationForm
-            unsavedActivationCodes={unsavedActivationCodes}
-            clearActivationCodes={onCancel}
-            submitActivationCodes={() => onSubmit(unsavedActivationCodes)}
-            today={today}
-            minExpirationDate={minExpirationDate}
-          />
-        )}
-      </Fragment>
+      )}
+
+      {!hasNoActivationCodes && (
+        <AddActivationCodeConfirmationForm
+          unsavedActivationCodes={unsavedActivationCodes}
+          clearActivationCodes={onCancel}
+          submitActivationCodes={() => onSubmit(unsavedActivationCodes)}
+          today={today}
+          minExpirationDate={minExpirationDate}
+        />
+      )}
     </DialogBox>
   )
 }

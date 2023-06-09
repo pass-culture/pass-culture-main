@@ -31,13 +31,13 @@ const iconList = [
   { src: 'icons/full-play.svg' },
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
-  { src: 'icons/stroke-error.svg' },
 
   // Stroke icons
+  { src: 'icons/stroke-error.svg' },
+  { src: 'icons/stroke-code.svg' },
 
   // Not cleaned
   { src: 'icons/user.svg', viewBox: '0 0 49 48' },
-  { src: 'icons/add-activation-code-light.svg', viewBox: '0 0 32 32' },
   { src: 'icons/arrow-down.svg', viewBox: '0 0 32 32' },
   { src: 'icons/ico-arrow-down-r.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-arrow-right.svg', viewBox: '0 0 24 24' },
