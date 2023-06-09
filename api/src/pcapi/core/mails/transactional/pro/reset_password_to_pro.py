@@ -28,11 +28,7 @@ def send_reset_password_email_to_pro(user: users_models.User, token: users_model
 
 
 def get_reset_password_from_connected_pro_email_data(user: users_models.User) -> models.TransactionalEmailData:
-    departmentCode = user.departementCode
-    if departmentCode:
-        now = utc_datetime_to_department_timezone(datetime.utcnow(), departmentCode)
-    else:
-        now = utc_datetime_to_department_timezone(datetime.utcnow(), "75")
+    now = utc_datetime_to_department_timezone(datetime.utcnow(), user.departementCode)
 
     return models.TransactionalEmailData(
         template=TransactionalEmail.RESET_PASSWORD_TO_CONNECTED_PRO.value,
