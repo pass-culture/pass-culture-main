@@ -37,7 +37,7 @@ class DMSGraphQLClient:
             headers={"Authorization": f"Bearer {settings.DMS_TOKEN}"},
             retries=3,
         )
-        self.client = gql.Client(transport=transport, fetch_schema_from_transport=not settings.IS_RUNNING_TESTS)
+        self.client = gql.Client(transport=transport)
 
     def build_query(self, query_name: str) -> str:
         return (GRAPHQL_DIRECTORY / f"{query_name}.graphql").read_text()
