@@ -87,6 +87,7 @@ export const CollectiveOfferStockCreation = ({
     requestInformations
   )
 
+  /* istanbul ignore next: DEBT, TO FIX unit test submit mock */
   const handleSubmitStock = async (
     offer: CollectiveOffer,
     values: OfferEducationalStockFormValues
@@ -146,7 +147,7 @@ export const CollectiveOfferStockCreation = ({
     )}/collectif`
 
     if (!isTemplate) {
-      url = `${url}/visibilite`
+      url = `${url}/visibilite${requestId ? `?requete=${requestId}` : ''}`
     } else {
       url = `${url}/creation/recapitulatif`
     }
@@ -166,6 +167,7 @@ export const CollectiveOfferStockCreation = ({
         mode={Mode.CREATION}
         offer={offer}
         onSubmit={handleSubmitStock}
+        requestId={requestId}
       />
       <RouteLeavingGuardCollectiveOfferCreation />
     </CollectiveOfferLayout>

@@ -12,6 +12,7 @@ import {
   isCollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
+import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 import {
   MandatoryCollectiveOfferFromParamsProps,
@@ -30,6 +31,7 @@ export const CollectiveOfferVisibility = ({
   const location = useLocation()
   const isCreation = !location.pathname.includes('edition')
 
+  const { requete: requestId } = queryParamsFromOfferer(location)
   const [institutions, setInstitutions] = useState<
     EducationalInstitutionResponseModel[]
   >([])
@@ -70,6 +72,7 @@ export const CollectiveOfferVisibility = ({
       isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
       isTemplate={isTemplate}
       isCreation={isCreation}
+      requestId={requestId}
     >
       <CollectiveOfferVisibilityScreen
         mode={Mode.CREATION}
@@ -79,6 +82,7 @@ export const CollectiveOfferVisibility = ({
         institutions={institutions}
         isLoadingInstitutions={isLoadingInstitutions}
         offer={offer}
+        requestId={requestId}
       />
       <RouteLeavingGuardCollectiveOfferCreation />
     </CollectiveOfferLayout>

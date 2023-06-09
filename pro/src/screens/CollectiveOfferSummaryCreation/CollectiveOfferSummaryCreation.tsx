@@ -1,5 +1,5 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
@@ -31,6 +31,8 @@ const CollectiveOfferSummaryCreation = ({
   const notify = useNotification()
   const navigate = useNavigate()
 
+  const { requete: requestId } = useParams()
+
   const publishOffer = async () => {
     const confirmationUrl = offer.isTemplate
       ? `/offre/${offer.nonHumanizedId}/collectif/vitrine/confirmation`
@@ -59,7 +61,9 @@ const CollectiveOfferSummaryCreation = ({
   }
   const backRedirectionUrl = offer.isTemplate
     ? `/offre/collectif/vitrine/${offer.nonHumanizedId}/creation`
-    : `/offre/${offer.nonHumanizedId}/collectif/visibilite`
+    : `/offre/${offer.nonHumanizedId}/collectif/visibilite${
+        requestId ? `?requete=${requestId}` : ''
+      }`
 
   return (
     <div className={styles['summary']}>
