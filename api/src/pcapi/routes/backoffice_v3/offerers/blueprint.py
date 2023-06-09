@@ -31,11 +31,12 @@ from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_of
 from pcapi.utils import date as date_utils
 import pcapi.utils.regions as regions_utils
 
-from . import search_utils
-from . import utils
-from .forms import empty as empty_forms
-from .forms import offerer as offerer_forms
-from .serialization import offerers as serialization
+from . import forms as offerer_forms
+from . import queries
+from . import serialization
+from .. import search_utils
+from .. import utils
+from ..forms import empty as empty_forms
 
 
 offerer_blueprint = utils.child_backoffice_blueprint(
@@ -466,7 +467,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
     if not form.status.data:
         form.status.data = [ValidationStatus.NEW.value, ValidationStatus.PENDING.value]
 
-    offerers = offerers_api.list_offerers_to_be_validated(
+    offerers = queries.list_offerers_to_be_validated(
         form.q.data,
         form.regions.data,
         form.tags.data,
@@ -780,7 +781,7 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
     if not form.status.data:
         form.status.data = [ValidationStatus.NEW.value, ValidationStatus.PENDING.value]
 
-    users_offerers = offerers_api.list_users_offerers_to_be_validated(
+    users_offerers = queries.list_users_offerers_to_be_validated(
         form.q.data,
         form.regions.data,
         form.tags.data,

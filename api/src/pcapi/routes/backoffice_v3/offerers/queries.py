@@ -1,0 +1,298 @@
+"""
+# Queries are very specific to backoffice routes, so they are not part of pcapi.core.offerers.api
+"""
+
+from datetime import datetime
+import re
+import typing
+
+import sqlalchemy as sa
+
+from pcapi.connectors.dms.models import GraphQLApplicationStates
+from pcapi.core.educational import models as educational_models
+import pcapi.core.history.models as history_models
+from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import models as offerers_models
+import pcapi.core.users.models as users_models
+from pcapi.models import db
+from pcapi.models.api_errors import ApiErrors
+from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.utils.clean_accents import clean_accents
+import pcapi.utils.email as email_utils
+from pcapi.utils.regions import get_department_codes_for_region
+
+
+def _apply_query_filters(
+    query: sa.orm.Query,
+    q: str | None,  # search query
+    regions: list[str] | None,
+    tags: list[offerers_models.OffererTag] | None,
+    status: list[ValidationStatus] | None,
+    dms_adage_status: list[GraphQLApplicationStates] | None,
+    from_datetime: datetime | None,
+    to_datetime: datetime | None,
+    cls: typing.Type[offerers_models.Offerer | offerers_models.UserOfferer],
+    offerer_id_column: sa.orm.InstrumentedAttribute,
+) -> sa.orm.Query:
+    if q:
+        sanitized_q = email_utils.sanitize_email(q)
+
+        if sanitized_q.isnumeric():
+            num_digits = len(sanitized_q)
+            # for dmsToken containing digits only
+            if num_digits == 12:
+                query = query.join(offerers_models.Venue).filter(offerers_models.Venue.dmsToken == sanitized_q)
+            elif num_digits == 9:
+                query = query.filter(offerers_models.Offerer.siren == sanitized_q)
+            elif num_digits == 5:
+                query = query.filter(offerers_models.Offerer.postalCode == sanitized_q)
+            elif num_digits in (2, 3):
+                query = query.filter(offerers_models.Offerer.departementCode == sanitized_q)
+            else:
+                raise ApiErrors(
+                    {
+                        "q": [
+                            "Le nombre de chiffres ne correspond pas à un SIREN, code postal, département ou ID DMS CB"
+                        ]
+                    },
+                    status_code=400,
+                )
+        elif email_utils.is_valid_email(sanitized_q):
+            query = query.filter(users_models.User.email == sanitized_q)
+        # We theoretically can have venues which name is 12 letters between a and f
+        # But it never happened in the database, and it's costly to handle
+        elif dms_token_term := re.match(offerers_api.DMS_TOKEN_REGEX, q):
+            query = query.join(offerers_models.Venue).filter(
+                offerers_models.Venue.dmsToken == dms_token_term.group(1).lower()
+            )
+        else:
+            name_query = "%{}%".format(clean_accents(q))
+            query = query.filter(
+                sa.or_(
+                    sa.func.unaccent(offerers_models.Offerer.name).ilike(name_query),
+                    sa.func.unaccent(offerers_models.Offerer.city).ilike(name_query),
+                    sa.func.unaccent(
+                        sa.func.concat(users_models.User.firstName, " ", users_models.User.lastName)
+                    ).ilike(name_query),
+                )
+            )
+
+    if status:
+        query = query.filter(cls.validationStatus.in_(status))  # type: ignore [attr-defined]
+
+    if dms_adage_status:
+        query = (
+            query.join(offerers_models.Venue)
+            .join(educational_models.CollectiveDmsApplication)
+            .filter(
+                educational_models.CollectiveDmsApplication.state.in_(
+                    [GraphQLApplicationStates[str(state)].value for state in dms_adage_status]
+                )
+            )
+        )
+
+    if tags:
+        tagged_offerers = (
+            sa.select(offerers_models.Offerer.id, sa.func.array_agg(offerers_models.OffererTag.id).label("tags"))
+            .join(
+                offerers_models.OffererTagMapping,
+                offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
+            )
+            .join(
+                offerers_models.OffererTag,
+                offerers_models.OffererTag.id == offerers_models.OffererTagMapping.tagId,
+            )
+            .group_by(
+                offerers_models.Offerer.id,
+            )
+            .cte()
+        )
+
+        query = query.join(tagged_offerers, tagged_offerers.c.id == offerer_id_column).filter(
+            sa.and_(*(tagged_offerers.c.tags.any(tag.id) for tag in tags))
+        )
+
+    if from_datetime:
+        query = query.filter(cls.dateCreated >= from_datetime)
+
+    if to_datetime:
+        query = query.filter(cls.dateCreated <= to_datetime)
+
+    if regions:
+        department_codes: list[str] = []
+        for region in regions:
+            department_codes += get_department_codes_for_region(region)
+        query = query.filter(offerers_models.Offerer.departementCode.in_(department_codes))  # type: ignore [attr-defined]
+
+    return query
+
+
+def list_offerers_to_be_validated(
+    q: str | None,  # search query
+    regions: list[str] | None = None,
+    tags: list[offerers_models.OffererTag] | None = None,
+    status: list[ValidationStatus] | None = None,
+    dms_adage_status: list[GraphQLApplicationStates] | None = None,
+    from_datetime: datetime | None = None,
+    to_datetime: datetime | None = None,
+) -> sa.orm.Query:
+    # Aggregate tags as a json dictionary returned in a single row (joinedload would fetch 1 result row per tag)
+    # For a single offerer, column value is like:
+    # [{'name': 'top-acteur', 'label': 'Top Acteur'}, {'name': 'culture-scientifique', 'label': 'Culture scientifique'}]
+    tags_subquery = (
+        sa.select(
+            sa.func.jsonb_agg(
+                sa.func.jsonb_build_object(
+                    "name",
+                    offerers_models.OffererTag.name,
+                    "label",
+                    offerers_models.OffererTag.label,
+                )
+            )
+        )
+        .select_from(offerers_models.OffererTag)
+        .join(offerers_models.OffererTagMapping)
+        .filter(offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id)
+        .join(offerers_models.OffererTagCategoryMapping)
+        .join(offerers_models.OffererTagCategory)
+        .filter(offerers_models.OffererTagCategory.name == "homologation")
+        .correlate(offerers_models.Offerer)
+        .scalar_subquery()
+    )
+
+    # Fetch only the single last comment to avoid loading the full history (joinedload would fetch 1 row per action)
+    # This replaces lookup for last comment in offerer.action_history after joining with all actions
+    last_comment_subquery = (
+        db.session.query(history_models.ActionHistory.comment)
+        .filter(
+            history_models.ActionHistory.offererId == offerers_models.Offerer.id,
+            history_models.ActionHistory.comment.isnot(None),
+            history_models.ActionHistory.actionType.in_(
+                [
+                    history_models.ActionType.OFFERER_NEW,
+                    history_models.ActionType.OFFERER_PENDING,
+                    history_models.ActionType.OFFERER_VALIDATED,
+                    history_models.ActionType.OFFERER_REJECTED,
+                    history_models.ActionType.COMMENT,
+                ]
+            ),
+            history_models.ActionHistory.userId.is_(None),
+        )
+        .order_by(history_models.ActionHistory.actionDate.desc())
+        .limit(1)
+        .correlate(offerers_models.Offerer)
+        .scalar_subquery()
+    )
+
+    # Ensure that we join with a single user, not on all attached users (would also multiply the number of rows)
+    # Same as User.first_user: the oldest entry in the table
+    creator_user_offerer_id = (
+        db.session.query(offerers_models.UserOfferer.id)
+        .filter(
+            offerers_models.UserOfferer.offererId == offerers_models.Offerer.id,
+        )
+        .order_by(offerers_models.UserOfferer.id.asc())
+        .limit(1)
+        .correlate(offerers_models.Offerer)
+        .scalar_subquery()
+    )
+
+    # Aggregate venues with DMS applications, as a json dictionary returned in a single row
+    # For a single offerer, column value is like:
+    # [{'id': 40, 'name': 'accepted_dms eac_with_two_adage_venues', 'siret': '42883745400057', 'state': 'accepte'},
+    # {'id': 41, 'name': 'rejected_dms eac_with_two_adage_venues', 'siret': '42883745400058', 'state': 'refuse'}]
+    dms_applications_subquery = (
+        sa.select(
+            sa.func.jsonb_agg(
+                sa.func.jsonb_build_object(
+                    "id",
+                    offerers_models.Venue.id,
+                    "siret",
+                    offerers_models.Venue.siret,
+                    "name",
+                    offerers_models.Venue.name,
+                    "state",
+                    offerers_models.Venue.dms_adage_status,
+                )
+            )
+        )
+        .select_from(offerers_models.Venue)
+        .filter(
+            offerers_models.Venue.managingOffererId == offerers_models.Offerer.id,
+            offerers_models.Venue.dms_adage_status.isnot(None),  # type: ignore [attr-defined]
+        )
+        .correlate(offerers_models.Offerer)
+        .scalar_subquery()
+    )
+
+    query = (
+        db.session.query(
+            offerers_models.Offerer,
+            tags_subquery.label("tags"),
+            last_comment_subquery.label("last_comment"),
+            users_models.User.id.label("creator_id"),
+            users_models.User.full_name.label("creator_name"),  # type: ignore [attr-defined]
+            users_models.User.email.label("creator_email"),
+            dms_applications_subquery.label("dms_venues"),
+        )
+        .outerjoin(offerers_models.UserOfferer, offerers_models.UserOfferer.id == creator_user_offerer_id)
+        .outerjoin(users_models.User, offerers_models.UserOfferer.user)
+    )
+
+    query = _apply_query_filters(
+        query,
+        q,
+        regions,
+        tags,
+        status,
+        dms_adage_status,
+        from_datetime,
+        to_datetime,
+        offerers_models.Offerer,
+        offerers_models.Offerer.id,
+    )
+
+    return query.distinct()
+
+
+# TODO (prouzet) refactor request so that only only one row is returned for every candidate (same as above).
+# multiple joinedload causes too many rows fetched by postgresql.
+def list_users_offerers_to_be_validated(
+    q: str | None,  # search query
+    regions: list[str] | None = None,
+    tags: list[offerers_models.OffererTag] | None = None,
+    status: list[ValidationStatus] | None = None,
+    offerer_status: list[ValidationStatus] | None = None,
+    from_datetime: datetime | None = None,
+    to_datetime: datetime | None = None,
+) -> sa.orm.Query:
+    query = (
+        offerers_models.UserOfferer.query.options(
+            sa.orm.joinedload(offerers_models.UserOfferer.user),
+            sa.orm.joinedload(offerers_models.UserOfferer.offerer)
+            .joinedload(offerers_models.Offerer.action_history)
+            .joinedload(history_models.ActionHistory.authorUser),
+            sa.orm.joinedload(offerers_models.UserOfferer.offerer).joinedload(offerers_models.Offerer.UserOfferers),
+            sa.orm.joinedload(offerers_models.UserOfferer.offerer)
+            .joinedload(offerers_models.Offerer.UserOfferers)
+            .joinedload(offerers_models.UserOfferer.user),
+        )
+        .join(users_models.User)
+        .join(offerers_models.Offerer)
+    )
+
+    if offerer_status:
+        query = query.filter(offerers_models.Offerer.validationStatus.in_(offerer_status))
+
+    return _apply_query_filters(
+        query,
+        q,
+        regions,
+        tags,
+        status,
+        None,  # no dms_adage_status for UserOfferer
+        from_datetime,
+        to_datetime,
+        offerers_models.UserOfferer,
+        offerers_models.UserOfferer.offererId,
+    )
