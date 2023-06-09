@@ -8,11 +8,12 @@ import { ReactComponent as DateIcon } from 'icons/ico-date.svg'
 import { ReactComponent as EuroIcon } from 'icons/ico-euro.svg'
 import { ReactComponent as SubcategoryIcon } from 'icons/ico-subcategory.svg'
 import { ReactComponent as LocationIcon } from 'icons/location.svg'
-import { ReactComponent as UserIcon } from 'icons/user.svg'
+import strokeUserIcon from 'icons/stroke-user.svg'
 import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
 } from 'pages/AdageIframe/app/types/offers'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
@@ -112,7 +113,11 @@ const OfferSummary = ({
         )}
         {numberOfTickets && (
           <li className="offer-summary-item">
-            <UserIcon className="offer-summary-item-icon" />
+            <SvgIcon
+              src={strokeUserIcon}
+              alt=""
+              className="offer-summary-item-icon"
+            />
             Jusqu’à {numberOfTickets} places
           </li>
         )}

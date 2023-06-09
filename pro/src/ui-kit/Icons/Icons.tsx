@@ -33,11 +33,11 @@ const iconList = [
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
 
   // Stroke icons
+  { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
   { src: 'icons/stroke-error.svg' },
   { src: 'icons/stroke-code.svg' },
 
   // Not cleaned
-  { src: 'icons/user.svg', viewBox: '0 0 49 48' },
   { src: 'icons/arrow-down.svg', viewBox: '0 0 32 32' },
   { src: 'icons/ico-arrow-down-r.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-arrow-right.svg', viewBox: '0 0 24 24' },
