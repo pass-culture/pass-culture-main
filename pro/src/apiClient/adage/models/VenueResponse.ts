@@ -3,6 +3,7 @@
 /* eslint-disable */
 
 export type VenueResponse = {
+  bannerMeta?: Record<string, any> | null;
   bannerUrl?: string | null;
   id: number;
   name: string;
