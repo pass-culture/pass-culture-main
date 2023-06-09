@@ -10,6 +10,7 @@ from flask import url_for
 from flask_login import current_user
 import gql.transport.exceptions as gql_exceptions
 from markupsafe import Markup
+import requests.exceptions
 import sqlalchemy as sa
 import urllib3.exceptions
 from werkzeug.exceptions import NotFound
@@ -128,7 +129,12 @@ def get_dms_stats(dms_application_id: int | None) -> serialization.VenueDmsStats
 
     try:
         dms_stats = DMSGraphQLClient().get_bank_info_status(dms_application_id)
-    except (gql_exceptions.TransportError, gql_exceptions.TransportQueryError, urllib3.exceptions.HTTPError):
+    except (
+        gql_exceptions.TransportError,
+        gql_exceptions.TransportQueryError,
+        urllib3.exceptions.HTTPError,
+        requests.exceptions.RequestException,
+    ):
         return None
 
     return serialization.VenueDmsStats(
