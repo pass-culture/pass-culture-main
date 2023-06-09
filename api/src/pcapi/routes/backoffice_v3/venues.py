@@ -40,7 +40,6 @@ from . import autocomplete
 from . import utils
 from .forms import empty as empty_forms
 from .forms import venue as forms
-from .serialization import offerers as offerers_serialization
 from .serialization import venues as serialization
 
 
@@ -254,7 +253,7 @@ def get_stats_data(venue_id: int) -> serialization.VenueStats:
         raise NotFound()
 
     stats = serialization.VenueOffersStats(
-        active=offerers_serialization.BaseOffersStats(
+        active=serialization.BaseOffersStats(
             individual=offers_stats.individual_offers.get("active", 0) if offers_stats.individual_offers else 0,
             collective=sum(
                 [
@@ -265,7 +264,7 @@ def get_stats_data(venue_id: int) -> serialization.VenueStats:
                 ]
             ),
         ),
-        inactive=offerers_serialization.BaseOffersStats(
+        inactive=serialization.BaseOffersStats(
             individual=offers_stats.individual_offers.get("inactive", 0) if offers_stats.individual_offers else 0,
             collective=sum(
                 [
