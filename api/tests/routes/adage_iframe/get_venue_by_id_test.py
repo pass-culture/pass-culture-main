@@ -40,6 +40,7 @@ class Returns200Test:
             "publicName": requested_venue.publicName,
             "relative": [],
             "bannerUrl": None,
+            "bannerMeta": None,
         }
 
     def test_return_venue_without_publicName_of_given_id(self, client):
@@ -62,6 +63,7 @@ class Returns200Test:
             "publicName": None,
             "relative": [],
             "bannerUrl": None,
+            "bannerMeta": None,
         }
 
     def test_relative_venue(self, client):
@@ -70,6 +72,11 @@ class Returns200Test:
             publicName=None,
             isPermanent=True,
             bannerUrl="http://example.com/image_cropped.png",
+            bannerMeta={
+                "image_credit": "test",
+                "random": "content",
+                "should": "be_ignored",
+            },
         )
         venue2 = offerers_factories.VenueFactory(managingOfferer=requested_venue.managingOfferer, isPermanent=True)
         venue3 = offerers_factories.VenueFactory(managingOfferer=requested_venue.managingOfferer, isPermanent=False)
@@ -89,6 +96,11 @@ class Returns200Test:
             "publicName": None,
             "relative": [venue2.id, venue3.id],
             "bannerUrl": "http://example.com/image_cropped.png",
+            "bannerMeta": {
+                "image_credit": "test",
+                "random": "content",
+                "should": "be_ignored",
+            },
         }
 
 
