@@ -15,6 +15,8 @@ from pcapi.core.offers.models import Stock
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.workers import push_notification_job
@@ -39,7 +41,7 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         )
         .options(joinedload(Offer.mediations))
         .options(joinedload(Offer.product).load_only(Product.id, Product.thumbCount))
-        .filter(Offer.id == offer_id)
+        .filter(Offer.id == offer_id, Offer.validation == OfferValidationStatus.APPROVED)
         .first_or_404()
     )
 
@@ -54,6 +56,9 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
 @authenticated_and_active_user_required
 def report_offer(user: User, offer_id: int, body: serializers.OfferReportRequest) -> None:
     offer = Offer.query.get_or_404(offer_id)
+    # filter in the query above would cause one more db query reported by assert_num_queries
+    if offer.validation != OfferValidationStatus.APPROVED:
+        raise ResourceNotFoundError()
 
     try:
         api.report_offer(user, offer, body.reason, body.custom_reason)
@@ -83,7 +88,11 @@ def send_offer_app_link(user: User, offer_id: int) -> None:
     On iOS native app, users cannot book numeric offers with price > 0, so
     give them webapp link.
     """
-    offer = Offer.query.options(joinedload(Offer.venue)).filter(Offer.id == offer_id).first_or_404()
+    offer = (
+        Offer.query.options(joinedload(Offer.venue))
+        .filter(Offer.id == offer_id, Offer.validation == OfferValidationStatus.APPROVED)
+        .first_or_404()
+    )
     transactional_mails.send_offer_link_to_ios_user_email(user, offer)
 
 
@@ -91,7 +100,9 @@ def send_offer_app_link(user: User, offer_id: int) -> None:
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 def send_offer_link_by_push(user: User, offer_id: int) -> None:
-    Offer.query.get_or_404(offer_id)
+    offer = Offer.query.get_or_404(offer_id)
+    if offer.validation != OfferValidationStatus.APPROVED:
+        raise ResourceNotFoundError()
     push_notification_job.send_offer_link_by_push_job.delay(user.id, offer_id)
 
 
