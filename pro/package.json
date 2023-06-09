@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@firebase/analytics": "^0.10.0",
-    "@firebase/app": "^0.9.11",
+    "@firebase/app": "^0.9.12",
     "@firebase/remote-config": "0.4.4",
     "@reach/dialog": "^0.18.0",
     "@reach/menu-button": "^0.18.0",
