@@ -1,9 +1,10 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import {
   EducationalInstitutionResponseModel,
   EducationalRedactor,
+  GetCollectiveOfferRequestResponseModel,
 } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
@@ -18,6 +19,7 @@ import {
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import useNotification from 'hooks/useNotification'
 import { TrashFilledIcon } from 'icons'
+import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import {
   Banner,
@@ -52,6 +54,7 @@ export interface CollectiveOfferVisibilityProps {
   isLoadingInstitutions: boolean
   offer: CollectiveOffer
   reloadCollectiveOffer?: () => void
+  requestId?: string | null
 }
 interface InstitutionOption extends SelectOption {
   postalCode?: string
@@ -77,12 +80,30 @@ const CollectiveOfferVisibility = ({
   isLoadingInstitutions,
   offer,
   reloadCollectiveOffer,
+  requestId = '',
 }: CollectiveOfferVisibilityProps) => {
   const notify = useNotification()
 
   const [teachersOptions, setTeachersOptions] = useState<TeacherOption[]>([])
-
   const [buttonPressed, setButtonPressed] = useState(false)
+  const [requestInformations, setRequestInformations] =
+    useState<GetCollectiveOfferRequestResponseModel | null>(null)
+
+  const getOfferRequestInformation = async () => {
+    const { isOk, message, payload } = await getOfferRequestInformationsAdapter(
+      Number(requestId)
+    )
+
+    if (!isOk) {
+      return notify.error(message)
+    }
+
+    setRequestInformations(payload)
+  }
+
+  useEffect(() => {
+    requestId && getOfferRequestInformation()
+  }, [])
 
   const onSubmit = async (values: VisibilityFormValues) => {
     setButtonPressed(true)
@@ -106,15 +127,22 @@ const CollectiveOfferVisibility = ({
     })
   }
 
+  initialValues = requestId
+    ? extractInitialVisibilityValues(null, null, requestInformations)
+    : initialValues
+
   const formik = useFormik<VisibilityFormValues>({
     initialValues,
     onSubmit,
     validationSchema,
+    enableReinitialize: true,
   })
 
-  const selectedTeacher: TeacherOption | null =
-    teachersOptions?.find(teacher => teacher.value === formik.values.teacher) ??
-    null
+  const selectedTeacher: TeacherOption | null = requestId
+    ? teachersOptions[0]
+    : teachersOptions?.find(
+        teacher => teacher.value === formik.values.teacher
+      ) ?? null
 
   const institutionsOptions: InstitutionOption[] = institutions
     .map(({ name, id, city, postalCode, institutionType, institutionId }) => ({
@@ -134,12 +162,16 @@ const CollectiveOfferVisibility = ({
         .includes(formik.values['search-institution'].toLowerCase())
     )
 
-  const selectedInstitution: InstitutionOption | null =
-    institutionsOptions?.find(
-      institution => institution?.value === formik.values.institution
-    ) ?? null
+  const selectedInstitution: InstitutionOption | null = requestId
+    ? institutionsOptions[0]
+    : institutionsOptions?.find(
+        institution => institution?.value === formik.values.institution
+      ) ?? null
 
   const onChangeTeacher = async () => {
+    if (requestId) {
+      formik.setFieldValue('institution', selectedInstitution?.value)
+    }
     if (
       !(
         formik.values['search-teacher'] &&
@@ -179,7 +211,6 @@ const CollectiveOfferVisibility = ({
     formik.setFieldValue('search-teacher', '')
     formik.setFieldValue('teacher', '')
   }
-
   const noInstitutionSelected =
     formik.values.visibility === 'one' && formik.values.institution.length === 0
   const nextStepDisabled =
@@ -326,7 +357,9 @@ const CollectiveOfferVisibility = ({
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
                   link={{
-                    to: `/offre/${offer.id}/collectif/stocks`,
+                    to: `/offre/${offer.id}/collectif/stocks${
+                      requestId ? `?requete=${requestId}` : ''
+                    }`,
                     isExternal: false,
                   }}
                 >

@@ -1,7 +1,4 @@
-import {
-  GetCollectiveOfferCollectiveStockResponseModel,
-  GetCollectiveOfferRequestResponseModel,
-} from 'apiClient/v1'
+import { GetCollectiveOfferCollectiveStockResponseModel } from 'apiClient/v1'
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'core/OfferEducational/constants'
 import {
   CollectiveOffer,

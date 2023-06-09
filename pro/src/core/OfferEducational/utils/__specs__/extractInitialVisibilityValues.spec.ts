@@ -1,4 +1,7 @@
-import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import {
+  EducationalInstitutionResponseModel,
+  GetCollectiveOfferRequestResponseModel,
+} from 'apiClient/v1'
 
 import { extractInitialVisibilityValues } from '../extractInitialVisibilityValues'
 
@@ -51,6 +54,33 @@ describe('extractInitialVisibilityValues', () => {
       'search-institution': 'Collège Bellevue - Alès',
       visibility: 'one',
       'search-teacher': `${teacher.firstName} ${teacher.lastName}`,
+      teacher: 'reda.khteur@example.com',
+    })
+  })
+
+  it('should return teacher details when institution and teacher are defined from requested informations', () => {
+    const requestInformations: GetCollectiveOfferRequestResponseModel = {
+      comment: '',
+      institution: {
+        name: 'Collège Bellevue',
+        city: 'Alès',
+        postalCode: '30100',
+        institutionId: 'ABCDEF11',
+        institutionType: 'COLLEGE',
+      },
+      redactor: {
+        firstName: 'Reda',
+        lastName: 'Khteur',
+        email: 'reda.khteur@example.com',
+      },
+    }
+    expect(
+      extractInitialVisibilityValues(null, null, requestInformations)
+    ).toStrictEqual({
+      institution: '',
+      'search-institution': 'Collège Bellevue - Alès',
+      visibility: 'one',
+      'search-teacher': `Reda Khteur`,
       teacher: 'reda.khteur@example.com',
     })
   })

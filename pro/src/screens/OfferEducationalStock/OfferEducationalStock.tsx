@@ -45,6 +45,7 @@ export interface IOfferEducationalStockProps<
   onSubmit: (offer: T, values: OfferEducationalStockFormValues) => Promise<void>
   mode: Mode
   reloadCollectiveOffer?: () => void
+  requestId?: string | null
 }
 
 const OfferEducationalStock = <
@@ -55,6 +56,7 @@ const OfferEducationalStock = <
   onSubmit,
   mode,
   reloadCollectiveOffer,
+  requestId = '',
 }: IOfferEducationalStockProps<T>): JSX.Element => {
   const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
@@ -226,7 +228,9 @@ const OfferEducationalStock = <
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
                   link={{
-                    to: `/offre/collectif/${offer.id}/creation`,
+                    to: `/offre/collectif/${offer.id}/creation${
+                      requestId ? `?requete=${requestId}` : ''
+                    }`,
                     isExternal: false,
                   }}
                 >

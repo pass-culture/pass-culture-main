@@ -74,7 +74,9 @@ const CollectiveOfferBreadcrumb = ({
         id: CollectiveOfferBreadcrumbStep.VISIBILITY,
         label: 'Visibilité',
         url:
-          offerId && haveStock ? `/offre/${offerId}/collectif/visibilite` : '',
+          offerId && haveStock
+            ? `/offre/${offerId}/collectif/visibilite${requestIdUrl}`
+            : '',
       }
     }
     stepList[CollectiveOfferBreadcrumbStep.SUMMARY] = {
