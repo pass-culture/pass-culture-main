@@ -13,14 +13,18 @@
   background: none;
   border: none;
   padding: 0;
+}
 
-  & > img {
-    display: block;
-    left: 50%;
-    max-height: rem.torem(20px);
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%) translateX(-50%);
-    width: auto;
-  }
+.sort-icon {
+  display: block;
+  left: 50%;
+  width: rem.torem(10px);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) translateX(-50%);
+}
+
+.both-icons {
+  display: flex;
+  flex-direction: column;
 }
