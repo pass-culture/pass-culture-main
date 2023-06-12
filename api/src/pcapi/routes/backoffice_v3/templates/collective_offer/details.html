@@ -1,0 +1,68 @@
+{% import "components/links.html" as links %}
+{% extends "layouts/standard.html" %}
+{% block main_content %}
+  <div class="row row-cols-1 g-4 py-3">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-body">
+          <div class="row justify-content-start align-items-center">
+            <div class="col d-flex align-items-center justify-content-start">
+              <h2 class="card-title mb-3 text-primary">{{ offer.name }}</h2>
+            </div>
+            <div class="col-2"></div>
+          </div>
+          <p class="card-subtitle text-muted mb-3 h5">CollectiveOffer ID : {{ offer.id }}</p>
+          <div class="row pt-3">
+            <div class="col-4">
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">Catégorie :</span> {{ offer.category.pro_label }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Scous catégorie :</span> {{ offer.subcategory.pro_label }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Date de création :</span> {{ offer.dateCreated | format_date }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Date de l'evenement :</span>
+                  {% if offer.collectiveStock %}{{ offer.collectiveStock.beginningDatetime | format_date }}{% endif %}
+                </p>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">État :</span> {{ offer.status | format_offer_status }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Conformité :</span> {{ offer.validation | format_offer_validation_status }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Prix :</span>
+                  {% if offer.collectiveStock %}{{ offer.collectiveStock.price }}€{% endif %}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Places :</span>
+                  {% if offer.collectiveStock %}{{ offer.collectiveStock.numberOfTickets }}{% endif %}
+                </p>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">Structure :</span> {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
+                </p>
+              </div>
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">Lieu :</span> {{ links.build_venue_name_to_details_link(offer.venue) }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock main_content %}

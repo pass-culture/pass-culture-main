@@ -9,8 +9,8 @@ import sqlalchemy as sa
 
 from pcapi.core import search
 from pcapi.core.categories import subcategories
+from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
-import pcapi.core.educational.adage_backends as adage_client
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
@@ -320,3 +320,12 @@ def batch_reject_collective_offers() -> utils.BackofficeResponse:
 
     _batch_validate_or_reject_collective_offers(OfferValidationStatus.REJECTED, form.object_ids_list)
     return redirect(request.referrer or url_for("backoffice_v3_web.collective_offer.list_collective_offers"), 303)
+
+
+@list_collective_offers_blueprint.route("/<int:collective_offer_id>/details", methods=["GET"])
+def collective_offer_details(collective_offer_id: int) -> utils.BackofficeResponse:
+    offer = educational_models.CollectiveOffer.query.get_or_404(collective_offer_id)
+    return render_template(
+        "collective_offer/details.html",
+        offer=offer,
+    )
