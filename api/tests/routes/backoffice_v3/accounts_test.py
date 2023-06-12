@@ -1204,7 +1204,7 @@ class SendValidationCodeTest(PostEndpointHelper):
 class UpdatePublicAccountReviewTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.public_accounts.review_public_account"
     endpoint_kwargs = {"user_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+    needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
 
     def test_add_new_fraud_review_to_account(self, authenticated_client, legit_user):
         user = users_factories.UserFactory()

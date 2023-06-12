@@ -24,7 +24,7 @@ titelive_blueprint = utils.child_backoffice_blueprint(
     "titelive",
     __name__,
     url_prefix="/pro/titelive",
-    permission=perm_models.Permissions.FRAUD_ACTIONS,
+    permission=perm_models.Permissions.PRO_FRAUD_ACTIONS,
 )
 
 

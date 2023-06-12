@@ -135,7 +135,7 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/suspend", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
     form = offerer_forms.SuspendOffererForm()
@@ -154,7 +154,7 @@ def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/unsuspend", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
     form = offerer_forms.SuspendOffererForm()
