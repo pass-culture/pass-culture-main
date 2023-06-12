@@ -1,10 +1,19 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import TableHead from '../TableHead'
+import {
+  BookingRecapResponseModel,
+  CollectiveBookingResponseModel,
+} from 'apiClient/v1'
+
+import TableHead, { TableHeadProps } from '../TableHead'
 
 describe('TableHead', () => {
-  const renderHead = props => {
+  const renderHead = <
+    T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  >(
+    props: TableHeadProps<T>
+  ) => {
     return render(<TableHead {...props} />, {
       container: document.body.appendChild(document.createElement('table')),
     })
@@ -34,6 +43,8 @@ describe('TableHead', () => {
       ],
     }
 
+    // @ts-expect-error we do not mock all react table props,
+    // this code should be refactored to remove react-table so I don't do it now
     renderHead(props)
 
     expect(screen.getAllByRole('columnheader')).toHaveLength(2)
@@ -72,6 +83,8 @@ describe('TableHead', () => {
       ],
     }
 
+    // @ts-expect-error we do not mock all react table props,
+    // this code should be refactored to remove react-table so I don't do it now
     renderHead(props)
 
     expect(

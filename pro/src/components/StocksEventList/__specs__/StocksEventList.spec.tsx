@@ -102,7 +102,9 @@ describe('StocksEventList', () => {
     })
 
     expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 3 rows
-    expect(screen.queryAllByAltText('Trier par ordre croissant')).toHaveLength(
+    expect(
+      screen.queryAllByRole('img', { name: 'Trier par ordre croissant' })
+    ).toHaveLength(
       5 // Number of sortable columns
     )
     within(screen.getAllByRole('row')[1]).getByText('12,5 € - Label')
@@ -110,18 +112,20 @@ describe('StocksEventList', () => {
     within(screen.getAllByRole('row')[3]).getByText('30,5 € - Label')
 
     await userEvent.click(
-      screen.getAllByAltText('Trier par ordre croissant')[2]
+      screen.getAllByRole('img', { name: 'Trier par ordre croissant' })[2]
     )
     within(screen.getAllByRole('row')[1]).getByText('5,5 € - Label')
     within(screen.getAllByRole('row')[2]).getByText('12,5 € - Label')
     within(screen.getAllByRole('row')[3]).getByText('30,5 € - Label')
 
-    await userEvent.click(screen.getByAltText('Trier par ordre décroissant'))
+    await userEvent.click(
+      screen.getByRole('img', { name: 'Trier par ordre décroissant' })
+    )
     within(screen.getAllByRole('row')[1]).getByText('30,5 € - Label')
     within(screen.getAllByRole('row')[2]).getByText('12,5 € - Label')
     within(screen.getAllByRole('row')[3]).getByText('5,5 € - Label')
 
-    await userEvent.click(screen.getByAltText('Ne plus trier'))
+    await userEvent.click(screen.getByRole('img', { name: 'Ne plus trier' }))
     within(screen.getAllByRole('row')[1]).getByText('12,5 € - Label')
     within(screen.getAllByRole('row')[2]).getByText('5,5 € - Label')
     within(screen.getAllByRole('row')[3]).getByText('30,5 € - Label')
