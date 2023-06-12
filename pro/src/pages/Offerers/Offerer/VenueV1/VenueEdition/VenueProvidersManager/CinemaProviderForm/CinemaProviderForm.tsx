@@ -8,7 +8,8 @@ import 'react-tooltip/dist/react-tooltip.css'
 import FormLayout from 'components/FormLayout'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { Checkbox, SubmitButton } from 'ui-kit'
+import { Button, Checkbox, SubmitButton } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import Icon from 'ui-kit/Icon/Icon'
 
 import { DEFAULT_CINEMA_PROVIDER_FORM_VALUES } from './constants'
@@ -92,7 +93,7 @@ export const CinemaProviderForm = ({
               {isCreatedEntity ? (
                 <div className="cpf-provider-import-button">
                   <SubmitButton
-                    className="primary-button"
+                    variant={ButtonVariant.PRIMARY}
                     isLoading={formik.isSubmitting}
                     onClick={formik.handleSubmit}
                   >
@@ -101,15 +102,15 @@ export const CinemaProviderForm = ({
                 </div>
               ) : (
                 <div className="actions">
-                  <button
-                    className="secondary-button"
+                  <Button
+                    variant={ButtonVariant.SECONDARY}
                     onClick={onCancel}
                     type="button"
                   >
                     Annuler
-                  </button>
+                  </Button>
                   <SubmitButton
-                    className="primary-button"
+                    variant={ButtonVariant.PRIMARY}
                     isLoading={formik.isSubmitting}
                   >
                     Modifier

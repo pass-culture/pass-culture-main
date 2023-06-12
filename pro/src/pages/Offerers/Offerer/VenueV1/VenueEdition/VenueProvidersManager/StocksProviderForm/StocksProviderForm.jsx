@@ -72,10 +72,10 @@ const StocksProviderForm = ({
         )}
         <div className="provider-import-button-container">
           <Button
-            variant={ButtonVariant.SECONDARY}
+            variant={ButtonVariant.PRIMARY}
             onClick={handleOpenConfirmDialog}
           >
-            Importer
+            Importer les offres
           </Button>
         </div>
       </div>
