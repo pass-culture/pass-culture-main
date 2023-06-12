@@ -81,9 +81,9 @@
             </tr>
           </thead>
           <tbody>
-            {% for user_offerer in rows.items %}
+            {% for item in rows.items %}
+              {% set user_offerer = item.UserOfferer %}
               {% set offerer = user_offerer.offerer %}
-              {% set owner = offerer.first_user %}
               <tr>
                 <td>
                   <input type="checkbox"
@@ -128,26 +128,27 @@
                 <td>{{ build_user_offerer_status_badge(user_offerer) }}</td>
                 <td>{{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>
-                  {{ get_last_comment_func(offerer, user_offerer.userId) | empty_string_if_null | replace("\n", "
+                  {{ item.last_comment | empty_string_if_null | replace("\n", "
                   <br />
                   "|safe) }}
                 </td>
                 <td>{{ user_offerer.user.phoneNumber | empty_string_if_null }}</td>
-                <td>{{ links.build_offerer_name_to_details_link(user_offerer.offerer) }}</td>
+                <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
                 <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
-                <td>{{ (owner and owner.email) | empty_string_if_null }}</td>
+                <td>{{ item.creator_email | empty_string_if_null }}</td>
                 <td>{{ links.build_siren_to_external_link(offerer) }}</td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
-        {% for user_offerer in rows.items %}
+        {% for item in rows.items %}
+          {% set user_offerer_id = item.UserOfferer.id %}
           {{ build_lazy_modal(
-          url_for("backoffice_v3_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer.id),
-          "reject-modal-" + user_offerer.id|string) }}
+          url_for("backoffice_v3_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer_id),
+          "reject-modal-" + user_offerer_id|string) }}
           {{ build_lazy_modal(
-          url_for("backoffice_v3_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer.id),
-          "pending-modal-" + user_offerer.id|string) }}
+          url_for("backoffice_v3_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer_id),
+          "pending-modal-" + user_offerer_id|string) }}
         {% endfor %}
         {{ build_lazy_modal(url_for("backoffice_v3_web.validation.get_batch_reject_user_offerer_form"), "batch-reject-modal", "true") }}
         {{ build_lazy_modal(url_for("backoffice_v3_web.validation.get_batch_user_offerer_pending_form"), "batch-pending-modal", "true") }}
