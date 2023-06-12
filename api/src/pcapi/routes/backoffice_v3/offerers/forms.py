@@ -144,7 +144,7 @@ class UserOffererValidationListForm(utils.PCForm):
     per_page = fields.PCSelectField(
         "Par page",
         choices=(("10", "10"), ("25", "25"), ("50", "50"), ("100", "100")),
-        default="25",
+        default="100",
         validators=(wtforms.validators.Optional(),),
     )
     order = wtforms.HiddenField(
