@@ -27,7 +27,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
-from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models import offer_mixin
 from pcapi.routes.backoffice_v3.serialization import accounts as serialization_accounts
 from pcapi.utils import urls
 
@@ -209,16 +209,36 @@ def format_booking_status(
             return status.value
 
 
-def format_offer_validation_status(status: OfferValidationStatus) -> str:
+def format_offer_validation_status(status: offer_mixin.OfferValidationStatus) -> str:
     match status:
-        case OfferValidationStatus.DRAFT:
+        case offer_mixin.OfferValidationStatus.DRAFT:
             return "Nouvelle"
-        case OfferValidationStatus.PENDING:
+        case offer_mixin.OfferValidationStatus.PENDING:
             return "En attente"
-        case OfferValidationStatus.APPROVED:
+        case offer_mixin.OfferValidationStatus.APPROVED:
             return "Validée"
-        case OfferValidationStatus.REJECTED:
+        case offer_mixin.OfferValidationStatus.REJECTED:
             return "Rejetée"
+        case _:
+            return status.value
+
+
+def format_offer_status(status: offer_mixin.OfferStatus) -> str:
+    match status:
+        case offer_mixin.OfferStatus.DRAFT:
+            return "Brouillon"
+        case offer_mixin.OfferStatus.ACTIVE:
+            return "Active"
+        case offer_mixin.OfferStatus.PENDING:
+            return "Pré-réservée"
+        case offer_mixin.OfferStatus.EXPIRED:
+            return "Expirée"
+        case offer_mixin.OfferStatus.REJECTED:
+            return "Rejetée"
+        case offer_mixin.OfferStatus.SOLD_OUT:
+            return "Épuisée"
+        case offer_mixin.OfferStatus.INACTIVE:
+            return "Inactive"
         case _:
             return status.value
 
@@ -502,6 +522,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_timespan"] = format_timespan
     app.jinja_env.filters["format_deposit_type"] = format_deposit_type
     app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status
+    app.jinja_env.filters["format_offer_status"] = format_offer_status
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_subcategories"] = format_subcategories
     app.jinja_env.filters["format_criteria"] = format_criteria
