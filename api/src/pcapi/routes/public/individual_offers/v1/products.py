@@ -67,10 +67,10 @@ def get_offerer_venues(query: serialization.GetOfferersVenuesQuery) -> serializa
     return serialization.GetOfferersVenuesResponse(__root__=accessible_venues_and_offerer)  # type: ignore [arg-type]
 
 
-def _retrieve_offer_by_ean_query(ean: str) -> sqla.orm.Query:
+def _retrieve_offer_by_eans_query(eans: list[str]) -> sqla.orm.Query:
     return (
         utils._retrieve_offer_tied_to_user_query()
-        .filter(offers_models.Offer.extraData["ean"].astext == ean)
+        .filter(offers_models.Offer.extraData["ean"].astext.in_(eans))
         .order_by(offers_models.Offer.id.desc())
     )
 
@@ -313,29 +313,29 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     return serialization.ProductOfferResponse.build_product_offer(offer)
 
 
-@blueprint.v1_blueprint.route("/products/ean/<string:ean>", methods=["GET"])
+@blueprint.v1_blueprint.route("/products/ean", methods=["GET"])
 @spectree_serialize(
     api=blueprint.v1_product_schema,
     tags=[constants.PRODUCT_EAN_OFFER_TAG],
-    response_model=serialization.ProductOfferResponse,
+    response_model=serialization.ProductOffersByEanResponse,
 )
 @api_key_required
-def get_product_by_ean(ean: str) -> serialization.ProductOfferResponse:
+def get_product_by_ean(query: serialization.GetProductsListByEansQuery) -> serialization.ProductOffersByEanResponse:
     """
-    Get a product offer using its European Article Number (EAN-13).
+        Get bulk product offers using their European Article Number (EAN-13).
     """
-    if len(ean) != 13:
-        raise api_errors.ApiErrors({"ean": ["Only 13 characters EAN are accepted"]})
-
-    offer: offers_models.Offer | None = (
-        utils.retrieve_offer_relations_query(_retrieve_offer_by_ean_query(ean))
+    offers: list[offers_models.Offer] | None = (
+        utils.retrieve_offer_relations_query(_retrieve_offer_by_eans_query(query.eans))  # type: ignore [arg-type]
         .filter(sqla.not_(offers_models.Offer.isEvent))
-        .first()
+        .all()
     )
-    if not offer:
-        raise api_errors.ApiErrors({"ean": ["The product offer could not be found"]}, status_code=404)
 
-    return serialization.ProductOfferResponse.build_product_offer(offer)
+    if not offers:
+        return serialization.ProductOffersByEanResponse(products=[])
+
+    return serialization.ProductOffersByEanResponse(
+        products=[serialization.ProductOfferResponse.build_product_offer(offer) for offer in offers]
+    )
 
 
 @blueprint.v1_blueprint.route("/products", methods=["GET"])
