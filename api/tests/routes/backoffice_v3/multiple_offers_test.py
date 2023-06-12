@@ -201,7 +201,7 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
 
 
 class SetProductGcuIncompatibleButtonTest(button_helpers.ButtonHelper):
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
     button_label = "Rendre le livre et les offres associées incompatibles avec les CGU"
 
     @property
@@ -213,7 +213,7 @@ class SetProductGcuIncompatibleButtonTest(button_helpers.ButtonHelper):
 class SetProductGcuIncompatibleTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.multiple_offers.set_product_gcu_incompatible"
     endpoint_kwargs = {"ean": "9781234567890"}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     @pytest.mark.parametrize(
         "validation_status",

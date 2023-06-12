@@ -237,7 +237,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 class ValidateCollectiveOfferTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.collective_offer.validate_collective_offer"
     endpoint_kwargs = {"collective_offer_id": 1}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_validate_collective_offer(self, legit_user, authenticated_client):
         collective_offer_to_validate = educational_factories.CollectiveOfferFactory(
@@ -294,7 +294,7 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
 class ValidateCollectiveOfferFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.collective_offer.get_validate_collective_offer_form"
     endpoint_kwargs = {"collective_offer_id": 1}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_validate_form_test(self, legit_user, authenticated_client):
         collective_offer = educational_factories.CollectiveOfferFactory()
@@ -309,7 +309,7 @@ class ValidateCollectiveOfferFormTest(GetEndpointHelper):
 class RejectCollectiveOfferTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.collective_offer.reject_collective_offer"
     endpoint_kwargs = {"collective_offer_id": 1}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_reject_collective_offer(self, legit_user, authenticated_client):
         collective_offer_to_reject = educational_factories.CollectiveOfferFactory(
@@ -362,7 +362,7 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
 class RejectCollectiveOfferFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.collective_offer.get_reject_collective_offer_form"
     endpoint_kwargs = {"collective_offer_id": 1}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_reject_form_test(self, legit_user, authenticated_client):
         collective_offer = educational_factories.CollectiveOfferFactory()
@@ -376,7 +376,7 @@ class RejectCollectiveOfferFormTest(GetEndpointHelper):
 
 class BatchCollectiveOffersValidateTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.collective_offer.batch_validate_collective_offers"
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_batch_validate_collective_offers(self, legit_user, authenticated_client):
         collective_offers = educational_factories.CollectiveOfferFactory.create_batch(
@@ -427,7 +427,7 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
 
 class BatchCollectiveOffersRejectTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.collective_offer.batch_reject_collective_offers"
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_batch_reject_offers(self, legit_user, authenticated_client):
         collective_offers = educational_factories.CollectiveOfferFactory.create_batch(
@@ -479,7 +479,7 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
 
 class GetBatchCollectiveOffersApproveFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.collective_offer.get_batch_validate_collective_offers_form"
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_batch_collective_offers_approve_form(self, legit_user, authenticated_client):
         # when
@@ -492,7 +492,7 @@ class GetBatchCollectiveOffersApproveFormTest(GetEndpointHelper):
 
 class GetBatchCollectiveOffersRejectFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.collective_offer.get_batch_reject_collective_offers_form"
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_batch_collective_offers_reject_form(self, legit_user, authenticated_client):
         # when

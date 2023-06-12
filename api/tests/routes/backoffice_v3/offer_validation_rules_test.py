@@ -19,7 +19,7 @@ pytestmark = [
 
 class ListTagsTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.offer_validation_rules.list_rules"
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_list_rules(self, authenticated_client):
         rule = offers_factories.OfferValidationRuleFactory(

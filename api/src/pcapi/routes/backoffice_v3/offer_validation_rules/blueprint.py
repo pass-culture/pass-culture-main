@@ -15,7 +15,7 @@ offer_validation_rules_blueprint = utils.child_backoffice_blueprint(
     "offer_validation_rules",
     __name__,
     url_prefix="/offer-validation-rules",
-    permission=perm_models.Permissions.FRAUD_ACTIONS,
+    permission=perm_models.Permissions.PRO_FRAUD_ACTIONS,
 )
 
 

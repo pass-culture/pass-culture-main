@@ -50,7 +50,7 @@
                   </div>
                 </div>
               {% endif %}
-              {% if has_permission("FRAUD_ACTIONS") %}
+              {% if has_permission("PRO_FRAUD_ACTIONS") %}
                 {% if offerer.isActive %}
                   {{ build_modal_form("suspend", url_for("backoffice_v3_web.offerer.suspend_offerer", offerer_id=offerer.id),
                   suspension_form, "Suspendre la structure", "Confirmer la suspension") }}

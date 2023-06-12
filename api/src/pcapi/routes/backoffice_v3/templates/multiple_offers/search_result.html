@@ -61,7 +61,7 @@
               <p>
                 <b>EAN-13 :</b> {{ ean }}
               </p>
-              {% if has_permission("FRAUD_ACTIONS") and (product_compatibility != 'incompatible_products' or approved_active_offers_count + approved_inactive_offers_count + pending_offers_count > 0) %}
+              {% if has_permission("PRO_FRAUD_ACTIONS") and (product_compatibility != 'incompatible_products' or approved_active_offers_count + approved_inactive_offers_count + pending_offers_count > 0) %}
                 <div>
                   {{ build_modal_form("set-gcu-incompatible", url_for('.set_product_gcu_incompatible'), incompatibility_form,
                   "Rendre le livre et les offres associées incompatibles avec les CGU", "Confirmer",

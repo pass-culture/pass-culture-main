@@ -160,7 +160,7 @@ class GetOffererTest(GetEndpointHelper):
 class SuspendOffererTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offerer.suspend_offerer"
     endpoint_kwargs = {"offerer_id": 1}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_suspend_offerer(self, legit_user, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -206,7 +206,7 @@ class SuspendOffererTest(PostEndpointHelper):
 class UnsuspendOffererTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offerer.unsuspend_offerer"
     endpoint_kwargs = {"offerer_id": 1}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_unsuspend_offerer(self, legit_user, authenticated_client):
         offerer = offerers_factories.OffererFactory(isActive=False)

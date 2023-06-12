@@ -239,7 +239,7 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/validate", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_validate_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     return render_template(
@@ -253,7 +253,7 @@ def get_batch_validate_offers_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-validate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_validate_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
@@ -266,7 +266,7 @@ def batch_validate_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/reject", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_reject_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     return render_template(
@@ -280,7 +280,7 @@ def get_batch_reject_offers_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-reject", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_reject_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
@@ -386,7 +386,7 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
 
@@ -406,7 +406,7 @@ def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def validate_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_validate_offers([offer_id])
     flash("L'offre a été validée avec succès", "success")
@@ -414,7 +414,7 @@ def validate_offer(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
 
@@ -434,7 +434,7 @@ def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def reject_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_reject_offers([offer_id])
     flash("L'offre a été rejetée avec succès", "success")

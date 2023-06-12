@@ -131,7 +131,7 @@ def add_criteria_to_offers() -> utils.BackofficeResponse:
 
 
 @multiple_offers_blueprint.route("/set-product-gcu-incompatible", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def set_product_gcu_incompatible() -> utils.BackofficeResponse:
     form = forms.HiddenEanForm()
 

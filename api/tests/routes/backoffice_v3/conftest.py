@@ -32,7 +32,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.DELETE_OFFERER_TAG,
         perm_models.Permissions.MANAGE_OFFERER_TAG,
         perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
-        perm_models.Permissions.FRAUD_ACTIONS,
+        perm_models.Permissions.PRO_FRAUD_ACTIONS,
+        perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
     ],
     "support-N1": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
@@ -56,7 +57,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_PROVIDERS,
     ],
     "fraude-conformite": [
-        perm_models.Permissions.FRAUD_ACTIONS,
+        perm_models.Permissions.PRO_FRAUD_ACTIONS,
+        perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.SUSPEND_USER,
         perm_models.Permissions.UNSUSPEND_USER,

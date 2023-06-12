@@ -13,7 +13,7 @@
             {{ rows | length }}{{ "+" if rows | length > 100 else "" }}
             résultat{{ "s" if rows | length > 1 else "" }}
           </p>
-          {% if has_permission("FRAUD_ACTIONS") %}
+          {% if has_permission("PRO_FRAUD_ACTIONS") %}
             <div class="btn-group btn-group-sm"
                  data-toggle="pc-batch-confirm-btn-group"
                  data-toggle-id="table-container-individual-offer-fraud-btn-group"
@@ -107,7 +107,7 @@
                              data-bs-target="#edit-offer-modal-{{ offer.id }}">Modifier</a>
                         </li>
                       {% endif %}
-                      {% if has_permission("FRAUD_ACTIONS") %}
+                      {% if has_permission("PRO_FRAUD_ACTIONS") %}
                         <li class="dropdown-item">
                           <a class="btn btn-sm d-block w-100 text-start px-3"
                              data-bs-toggle="modal"
