@@ -97,7 +97,7 @@ describe('src | StocksProviderForm', () => {
 
     // then
     expect(
-      screen.queryByRole('button', { name: 'Importer' })
+      screen.queryByRole('button', { name: 'Importer les offres' })
     ).toBeInTheDocument()
     expect(screen.queryByText('Compte')).toBeInTheDocument()
     expect(screen.queryByText(props.venue.siret)).toBeInTheDocument()
@@ -111,7 +111,7 @@ describe('src | StocksProviderForm', () => {
 
     // then
     expect(
-      screen.queryByRole('button', { name: 'Importer' })
+      screen.queryByRole('button', { name: 'Importer les offres' })
     ).toBeInTheDocument()
     expect(screen.queryByText('Compte')).not.toBeInTheDocument()
     expect(screen.queryByText(props.venue.siret)).not.toBeInTheDocument()
@@ -123,7 +123,9 @@ describe('src | StocksProviderForm', () => {
       await renderVenueProvidersManager(props)
       api.createVenueProvider.mockReturnValue(new Promise(() => {}))
       await openStocksProviderForm(providers[0].id)
-      const submitButton = screen.getByRole('button', { name: 'Importer' })
+      const submitButton = screen.getByRole('button', {
+        name: 'Importer les offres',
+      })
 
       // when
       await userEvent.click(submitButton)
@@ -163,7 +165,9 @@ describe('src | StocksProviderForm', () => {
       await renderVenueProvidersManager(props)
 
       await openStocksProviderForm(providers[0].id)
-      const submitButton = screen.getByRole('button', { name: 'Importer' })
+      const submitButton = screen.getByRole('button', {
+        name: 'Importer les offres',
+      })
 
       // when
       await userEvent.click(submitButton)
@@ -212,7 +216,9 @@ describe('src | StocksProviderForm', () => {
         }
       )
 
-      const submitButton = screen.getByRole('button', { name: 'Importer' })
+      const submitButton = screen.getByRole('button', {
+        name: 'Importer les offres',
+      })
       await userEvent.click(submitButton)
 
       expect(mockLogEvent).toHaveBeenCalledTimes(2)
@@ -252,7 +258,9 @@ describe('src | StocksProviderForm', () => {
       await renderVenueProvidersManager(props)
 
       await openStocksProviderForm(providers[0].id)
-      const submitButton = screen.getByRole('button', { name: 'Importer' })
+      const submitButton = screen.getByRole('button', {
+        name: 'Importer les offres',
+      })
 
       // when
       await userEvent.click(submitButton)

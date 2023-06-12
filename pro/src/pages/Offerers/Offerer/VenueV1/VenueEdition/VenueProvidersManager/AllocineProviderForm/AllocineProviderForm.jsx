@@ -5,8 +5,9 @@ import { Tooltip } from 'react-tooltip'
 
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { Banner, CheckboxField } from 'ui-kit'
+import { Banner, Button, SubmitButton, CheckboxField } from 'ui-kit'
 import 'react-tooltip/dist/react-tooltip.css'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import NumberField from 'ui-kit/form_rff/fields/NumberField'
 import Icon from 'ui-kit/Icon/Icon'
 import { getCanSubmit } from 'utils/react-final-form'
@@ -150,32 +151,31 @@ const AllocineProviderForm = ({
               </Banner>
               {isCreatedEntity ? (
                 <div className="apf-provider-import-button-section">
-                  <button
-                    className="primary-button"
+                  <SubmitButton
+                    variant={ButtonVariant.PRIMARY}
                     disabled={!canSubmit}
                     onClick={formProps.handleSubmit}
-                    type="submit"
                   >
                     Importer les offres
-                  </button>
+                  </SubmitButton>
                 </div>
               ) : (
                 <div className="actions">
-                  <button
-                    className="secondary-button"
+                  <Button
+                    variant={ButtonVariant.SECONDARY}
                     onClick={onCancel}
                     type="button"
                   >
                     Annuler
-                  </button>
-                  <button
-                    className="primary-button"
+                  </Button>
+                  <Button
+                    variant={ButtonVariant.PRIMARY}
                     disabled={!canSubmit}
                     onClick={formProps.handleSubmit}
                     type="submit"
                   >
                     Modifier
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
