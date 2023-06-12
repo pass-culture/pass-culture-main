@@ -119,7 +119,7 @@ def get_confirmed_collective_bookings_amount_for_ministry(
     query = query.join(educational_models.EducationalDeposit, educational_models.EducationalInstitution.deposits)
     query = query.filter(
         educational_models.CollectiveBooking.educationalYearId == educational_year_id,
-        ~educational_models.CollectiveBooking.status.in_(
+        educational_models.CollectiveBooking.status.not_in(
             [educational_models.CollectiveBookingStatus.CANCELLED, educational_models.CollectiveBookingStatus.PENDING]
         ),
         educational_models.EducationalDeposit.ministry == ministry,
@@ -136,7 +136,7 @@ def get_confirmed_collective_bookings_amount(
     query = query.filter(
         educational_models.CollectiveBooking.educationalInstitutionId == educational_institution_id,
         educational_models.CollectiveBooking.educationalYearId == educational_year_id,
-        ~educational_models.CollectiveBooking.status.in_(
+        educational_models.CollectiveBooking.status.not_in(
             [educational_models.CollectiveBookingStatus.CANCELLED, educational_models.CollectiveBookingStatus.PENDING]
         ),
     )

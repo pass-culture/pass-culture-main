@@ -409,7 +409,7 @@ def _filter_by_creation_mode(query: flask_sqlalchemy.BaseQuery, creation_mode: s
     if creation_mode == MANUAL_CREATION_MODE:
         query = query.filter(models.Offer.lastProviderId.is_(None))
     if creation_mode == IMPORTED_CREATION_MODE:
-        query = query.filter(~models.Offer.lastProviderId.is_(None))
+        query = query.filter(models.Offer.lastProviderId.isnot(None))
 
     return query
 

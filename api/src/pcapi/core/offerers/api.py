@@ -1121,7 +1121,7 @@ def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:
             sa.case(
                 (
                     offerers_models.VenueReimbursementPointLink.id.is_(None)
-                    | ~offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow()),
+                    | sa.not_(offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow())),
                     "ko",
                 ),
                 else_="ok",
