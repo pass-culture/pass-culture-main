@@ -40,6 +40,14 @@ CORS(
     supports_credentials=True,
 )
 
+v1_bookings_blueprint = Blueprint("v1_bookings_blueprint", __name__, url_prefix="/v1")
+v1_bookings_blueprint.before_request(check_api_is_enabled)
+CORS(
+    v1_bookings_blueprint,
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=True,
+)
+
 # FIXME (mageoffray, 2023-05-19)
 # For a short period of time we want to move event documentation
 # out of the main path.
@@ -58,3 +66,10 @@ v1_product_schema = IndividualApiSpectree(
     version="1.0",
 )
 v1_product_schema.register(v1_blueprint)
+
+v1_bookings_schema = IndividualApiSpectree(
+    title="Bookings API",
+    PATH="/",
+    version="1.0",
+)
+v1_bookings_schema.register(v1_bookings_blueprint)
