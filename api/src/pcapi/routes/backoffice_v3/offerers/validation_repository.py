@@ -127,19 +127,11 @@ def _apply_query_filters(
     return query
 
 
-def list_offerers_to_be_validated(
-    q: str | None,  # search query
-    regions: list[str] | None = None,
-    tags: list[offerers_models.OffererTag] | None = None,
-    status: list[ValidationStatus] | None = None,
-    dms_adage_status: list[GraphQLApplicationStates] | None = None,
-    from_datetime: datetime | None = None,
-    to_datetime: datetime | None = None,
-) -> sa.orm.Query:
+def _get_tags_subquery() -> sa.sql.selectable.ScalarSelect:
     # Aggregate tags as a json dictionary returned in a single row (joinedload would fetch 1 result row per tag)
     # For a single offerer, column value is like:
     # [{'name': 'top-acteur', 'label': 'Top Acteur'}, {'name': 'culture-scientifique', 'label': 'Culture scientifique'}]
-    tags_subquery = (
+    return (
         sa.select(
             sa.func.jsonb_agg(
                 sa.func.jsonb_build_object(
@@ -160,6 +152,16 @@ def list_offerers_to_be_validated(
         .scalar_subquery()
     )
 
+
+def list_offerers_to_be_validated(
+    q: str | None,  # search query
+    regions: list[str] | None = None,
+    tags: list[offerers_models.OffererTag] | None = None,
+    status: list[ValidationStatus] | None = None,
+    dms_adage_status: list[GraphQLApplicationStates] | None = None,
+    from_datetime: datetime | None = None,
+    to_datetime: datetime | None = None,
+) -> sa.orm.Query:
     # Fetch only the single last comment to avoid loading the full history (joinedload would fetch 1 row per action)
     # This replaces lookup for last comment in offerer.action_history after joining with all actions
     last_comment_subquery = (
@@ -228,7 +230,7 @@ def list_offerers_to_be_validated(
     query = (
         db.session.query(
             offerers_models.Offerer,
-            tags_subquery.label("tags"),
+            _get_tags_subquery().label("tags"),
             last_comment_subquery.label("last_comment"),
             users_models.User.id.label("creator_id"),
             users_models.User.full_name.label("creator_name"),  # type: ignore [attr-defined]
@@ -255,8 +257,6 @@ def list_offerers_to_be_validated(
     return query.distinct()
 
 
-# TODO (prouzet) refactor request so that only only one row is returned for every candidate (same as above).
-# multiple joinedload causes too many rows fetched by postgresql.
 def list_users_offerers_to_be_validated(
     q: str | None,  # search query
     regions: list[str] | None = None,
@@ -266,19 +266,55 @@ def list_users_offerers_to_be_validated(
     from_datetime: datetime | None = None,
     to_datetime: datetime | None = None,
 ) -> sa.orm.Query:
-    query = (
-        offerers_models.UserOfferer.query.options(
-            sa.orm.joinedload(offerers_models.UserOfferer.user),
-            sa.orm.joinedload(offerers_models.UserOfferer.offerer)
-            .joinedload(offerers_models.Offerer.action_history)
-            .joinedload(history_models.ActionHistory.authorUser),
-            sa.orm.joinedload(offerers_models.UserOfferer.offerer).joinedload(offerers_models.Offerer.UserOfferers),
-            sa.orm.joinedload(offerers_models.UserOfferer.offerer)
-            .joinedload(offerers_models.Offerer.UserOfferers)
-            .joinedload(offerers_models.UserOfferer.user),
+    # Fetch only the single last comment to avoid loading the full history (joinedload would fetch 1 row per action)
+    last_comment_subquery = (
+        db.session.query(history_models.ActionHistory.comment)
+        .filter(
+            history_models.ActionHistory.offererId == offerers_models.Offerer.id,
+            history_models.ActionHistory.userId == users_models.User.id,
+            history_models.ActionHistory.comment.isnot(None),
+            history_models.ActionHistory.actionType.in_(
+                [
+                    history_models.ActionType.USER_OFFERER_NEW,
+                    history_models.ActionType.USER_OFFERER_PENDING,
+                    history_models.ActionType.USER_OFFERER_VALIDATED,
+                    history_models.ActionType.USER_OFFERER_REJECTED,
+                    history_models.ActionType.COMMENT,
+                ]
+            ),
         )
-        .join(users_models.User)
-        .join(offerers_models.Offerer)
+        .order_by(history_models.ActionHistory.actionDate.desc())
+        .limit(1)
+        .correlate(offerers_models.Offerer, users_models.User)
+        .scalar_subquery()
+    )
+
+    # Fetch a single user email from attachments instead of joinedloading with all UserOfferers and Users
+    creator_email_subquery = (
+        db.session.query(users_models.User.email)
+        .select_from(offerers_models.UserOfferer)
+        .join(offerers_models.UserOfferer.user)
+        .filter(offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
+        .order_by(offerers_models.UserOfferer.id.asc())
+        .limit(1)
+        .correlate(offerers_models.Offerer)
+        .scalar_subquery()
+    )
+
+    query = (
+        db.session.query(
+            offerers_models.UserOfferer,
+            _get_tags_subquery().label("tags"),
+            last_comment_subquery.label("last_comment"),
+            creator_email_subquery.label("creator_email"),
+        )
+        .options(
+            # 1-1 relationship so joinedload will not increase the number of SQL rows
+            sa.orm.joinedload(offerers_models.UserOfferer.user),
+            sa.orm.joinedload(offerers_models.UserOfferer.offerer),
+        )
+        .join(offerers_models.UserOfferer.user)
+        .join(offerers_models.UserOfferer.offerer)
     )
 
     if offerer_status:
