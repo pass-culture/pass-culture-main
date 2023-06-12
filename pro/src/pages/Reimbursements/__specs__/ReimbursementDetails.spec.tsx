@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { InvoiceResponseModel, VenueListItemResponseModel } from 'apiClient/v1'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ReimbursementsDetails from '../ReimbursementsDetails/ReimbursementsDetails'
@@ -21,7 +22,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const BASE_VENUES = [
+const BASE_VENUES: VenueListItemResponseModel[] = [
   {
     id: 'VENUE1',
     managingOffererId: 'MO1',
@@ -31,6 +32,9 @@ const BASE_VENUES = [
     isVirtual: false,
     bookingEmail: 'fake@email.com',
     withdrawalDetails: '',
+    hasCreatedOffer: true,
+    hasMissingReimbursementPoint: false,
+    nonHumanizedId: 1,
   },
   {
     id: 'VENUE2',
@@ -41,23 +45,26 @@ const BASE_VENUES = [
     isVirtual: true,
     bookingEmail: '',
     withdrawalDetails: '',
+    hasCreatedOffer: true,
+    hasMissingReimbursementPoint: false,
+    nonHumanizedId: 2,
   },
 ]
 
-const BASE_INVOICES = [
+const BASE_INVOICES: InvoiceResponseModel[] = [
   {
-    id: 'INVOICE1',
     date: '13-01-2022',
     reference: 'ABC',
     amount: 100,
     url: 'url1',
+    cashflowLabels: [],
   },
   {
-    id: 'INVOICE2',
     date: '13-01-2022',
     reference: 'DEF',
     amount: 100,
     url: 'url2',
+    cashflowLabels: [],
   },
 ]
 

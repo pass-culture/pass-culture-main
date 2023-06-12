@@ -1,4 +1,8 @@
-import { screen, waitFor } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -88,10 +92,8 @@ describe('reimbursementsWithFilters', () => {
   it('shoud render a table with invoices', async () => {
     renderReimbursementsInvoices()
 
-    const button = screen.queryByRole('link', {
-      name: /Lancer la recherche/i,
-    })
-    await userEvent.click(button)
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
     expect(api.getInvoices).toBeCalledWith(
       '2020-11-15',
       '2020-12-15',
@@ -139,10 +141,8 @@ describe('reimbursementsWithFilters', () => {
 
   it('should reorder invoices on order buttons click', async () => {
     renderReimbursementsInvoices()
-    const button = screen.queryByRole('link', {
-      name: /Lancer la recherche/i,
-    })
-    await userEvent.click(button)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const reimbursementCells = await screen.findAllByRole('cell')
     await waitFor(() => {
@@ -150,7 +150,9 @@ describe('reimbursementsWithFilters', () => {
     })
     expect(reimbursementCells[9].innerHTML).toContain('VIR4')
     expect(reimbursementCells[15].innerHTML).toContain('VIR7')
-    const orderButton = screen.getByText('N° de virement')
+    const orderButton = screen.getAllByRole('img', {
+      name: 'Trier par ordre croissant',
+    })[3]
     await userEvent.click(orderButton)
 
     let refreshedCells = screen.queryAllByRole('cell')

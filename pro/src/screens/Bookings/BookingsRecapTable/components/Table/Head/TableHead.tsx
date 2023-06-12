@@ -12,7 +12,7 @@ import styles from './TableHead.module.scss'
 
 const IS_MULTI_SORT_ACTIVATED = false
 
-interface TableHeadProps<
+export interface TableHeadProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 > {
   headerGroups: TableInstance<T>['headerGroups']
