@@ -88,7 +88,7 @@
                   {% if has_permission("MULTIPLE_OFFERS_ACTIONS") %}
                     {{ menu_section_item("Opérations sur plusieurs offres", "backoffice_v3_web.multiple_offers.multiple_offers_home") }}
                   {% endif %}
-                  {% if has_permission("FRAUD_ACTIONS") %}
+                  {% if has_permission("PRO_FRAUD_ACTIONS") %}
                     {{ menu_section_item("Recherche EAN via Tite Live", "backoffice_v3_web.titelive.search_titelive") }}
                   {% endif %}
                   {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
@@ -124,11 +124,15 @@
                 </div>
                 <hr />
               {% endif %}
-              {% if has_permission("FRAUD_ACTIONS") %}
+              {% if has_permission("PRO_FRAUD_ACTIONS") or has_permission("BENEFICIARY_FRAUD_ACTIONS") %}
                 <div class="nav nav-pills flex-column">
                   {% call menu_section("Fraude et conformité") %}
-                    {{ menu_section_item("Règles de validation d'offres", "backoffice_v3_web.offer_validation_rules.list_rules") }}
-                    {{ menu_section_item("Suspension de comptes jeunes", "backoffice_v3_web.fraud.list_blacklisted_domain_names") }}
+                    {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                      {{ menu_section_item("Règles de validation d'offres", "backoffice_v3_web.offer_validation_rules.list_rules") }}
+                    {% endif %}
+                    {% if has_permission("BENEFICIARY_FRAUD_ACTIONS") %}
+                      {{ menu_section_item("Suspension de comptes jeunes", "backoffice_v3_web.fraud.list_blacklisted_domain_names") }}
+                    {% endif %}
                   {% endcall %}
                 </div>
                 <hr />

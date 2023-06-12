@@ -140,7 +140,7 @@ def list_collective_offers() -> utils.BackofficeResponse:
 
 
 @list_collective_offers_blueprint.route("/<int:collective_offer_id>/validate", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_validate_collective_offer_form(collective_offer_id: int) -> utils.BackofficeResponse:
     collective_offer = educational_models.CollectiveOffer.query.get_or_404(collective_offer_id)
 
@@ -159,7 +159,7 @@ def get_validate_collective_offer_form(collective_offer_id: int) -> utils.Backof
 
 
 @list_collective_offers_blueprint.route("/<int:collective_offer_id>/validate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def validate_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
     _batch_validate_or_reject_collective_offers(OfferValidationStatus.APPROVED, [collective_offer_id])
     return redirect(request.referrer or url_for("backoffice_v3_web.collective_offer.list_collective_offers"), 303)
@@ -243,7 +243,7 @@ def _batch_validate_or_reject_collective_offers(
 
 
 @list_collective_offers_blueprint.route("/<int:collective_offer_id>/reject", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_reject_collective_offer_form(collective_offer_id: int) -> utils.BackofficeResponse:
     collective_offer = educational_models.CollectiveOffer.query.get_or_404(collective_offer_id)
 
@@ -262,14 +262,14 @@ def get_reject_collective_offer_form(collective_offer_id: int) -> utils.Backoffi
 
 
 @list_collective_offers_blueprint.route("/<int:collective_offer_id>/reject", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def reject_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
     _batch_validate_or_reject_collective_offers(OfferValidationStatus.REJECTED, [collective_offer_id])
     return redirect(request.referrer or url_for("backoffice_v3_web.collective_offer.list_collective_offers"), 303)
 
 
 @list_collective_offers_blueprint.route("/batch/validate", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_validate_collective_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     return render_template(
@@ -283,7 +283,7 @@ def get_batch_validate_collective_offers_form() -> utils.BackofficeResponse:
 
 
 @list_collective_offers_blueprint.route("/batch/reject", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_reject_collective_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     return render_template(
@@ -297,7 +297,7 @@ def get_batch_reject_collective_offers_form() -> utils.BackofficeResponse:
 
 
 @list_collective_offers_blueprint.route("/batch/validate", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_validate_collective_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
 
@@ -310,7 +310,7 @@ def batch_validate_collective_offers() -> utils.BackofficeResponse:
 
 
 @list_collective_offers_blueprint.route("/batch/reject", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_reject_collective_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
 

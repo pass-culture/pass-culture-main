@@ -27,7 +27,7 @@ fraud_blueprint = utils.child_backoffice_blueprint(
     "fraud",
     __name__,
     url_prefix="/fraud",
-    permission=perm_models.Permissions.FRAUD_ACTIONS,
+    permission=perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
 )
 
 

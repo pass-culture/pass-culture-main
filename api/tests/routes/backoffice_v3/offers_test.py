@@ -561,7 +561,7 @@ class BatchEditOfferTest(PostEndpointHelper):
 class ValidateOfferTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offer.validate_offer"
     endpoint_kwargs = {"offer_id": 1}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_validate_offer(self, legit_user, authenticated_client):
         offer_to_validate = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.REJECTED)
@@ -588,7 +588,7 @@ class ValidateOfferTest(PostEndpointHelper):
 class GetValidateOfferFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.offer.get_validate_offer_form"
     endpoint_kwargs = {"offer_id": 1}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_validate_form_test(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory()
@@ -603,7 +603,7 @@ class GetValidateOfferFormTest(GetEndpointHelper):
 class RejectOfferTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offer.reject_offer"
     endpoint_kwargs = {"offer_id": 1}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_reject_offer(self, legit_user, authenticated_client):
         offer_to_reject = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.APPROVED)
@@ -630,7 +630,7 @@ class RejectOfferTest(PostEndpointHelper):
 class GetRejectOfferFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.offer.get_reject_offer_form"
     endpoint_kwargs = {"offer_id": 1}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_edit_form_test(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory()
@@ -644,7 +644,7 @@ class GetRejectOfferFormTest(GetEndpointHelper):
 
 class BatchOfferValidateTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offer.batch_validate_offers"
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_batch_validate_offers(self, legit_user, authenticated_client):
         offers = offers_factories.OfferFactory.create_batch(3, validation=offers_models.OfferValidationStatus.DRAFT)
@@ -662,7 +662,7 @@ class BatchOfferValidateTest(PostEndpointHelper):
 
 class BatchOfferRejectTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offer.batch_reject_offers"
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_batch_reject_offers(self, legit_user, authenticated_client):
         beneficiary = users_factories.BeneficiaryGrant18Factory()

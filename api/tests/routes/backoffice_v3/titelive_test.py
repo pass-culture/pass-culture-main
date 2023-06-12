@@ -24,7 +24,7 @@ pytestmark = [
 class SearchEanTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.titelive.search_titelive"
     endpoint_kwargs = {"ean": "9782070455379"}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_search_ean_initial(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint))
@@ -92,7 +92,7 @@ class SearchEanTest(GetEndpointHelper):
 class ProductBlackListFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.titelive.get_add_product_whitelist_confirmation_form"
     endpoint_kwargs = {"ean": "9782070455379", "title": "Immortelle randonnée ; Compostelle malgré moi"}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_search_form(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
@@ -102,7 +102,7 @@ class ProductBlackListFormTest(GetEndpointHelper):
 class AddProductWhitelistTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.titelive.add_product_whitelist"
     endpoint_kwargs = {"ean": "9782070455379", "title": "Immortelle randonnée ; Compostelle malgré moi"}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
     form_data = {"comment": "OK!"}
 
     @patch("pcapi.routes.backoffice_v3.titelive.blueprint.get_by_ean13")
@@ -150,7 +150,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
 class DeleteProductWhitelistTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.titelive.delete_product_whitelist"
     endpoint_kwargs = {"ean": "9782070455379"}
-    needed_permission = perm_models.Permissions.FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     @patch("pcapi.routes.backoffice_v3.titelive.blueprint.get_by_ean13")
     def test_delete_product_whitelist(self, mock_get_by_ean13, authenticated_client):

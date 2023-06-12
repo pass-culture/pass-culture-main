@@ -883,7 +883,7 @@ def send_validation_code(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/review", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+@utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
 def review_public_account(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
 

@@ -65,7 +65,7 @@ def home() -> utils.BackofficeResponse:
 
     data = {}
 
-    if utils.has_current_user_permission(perm_models.Permissions.FRAUD_ACTIONS):
+    if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         data.update(_get_pending_offers_stats())
 
     return render_template("home/home.html", **data)
