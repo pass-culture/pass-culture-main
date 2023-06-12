@@ -15,13 +15,13 @@ import Icon from 'ui-kit/Icon/Icon'
 import { DEFAULT_CINEMA_PROVIDER_FORM_VALUES } from './constants'
 import { ICinemaProviderFormValues } from './types'
 
-interface ICinemaProviderFormProps {
+export interface ICinemaProviderFormProps {
   saveVenueProvider: (values: ICinemaProviderFormValues) => void
   providerId: number
   venueId: number
   offererId: number
   isCreatedEntity?: boolean
-  initialValues?: ICinemaProviderFormValues
+  initialValues: ICinemaProviderFormValues
   onCancel?: () => void
 }
 
