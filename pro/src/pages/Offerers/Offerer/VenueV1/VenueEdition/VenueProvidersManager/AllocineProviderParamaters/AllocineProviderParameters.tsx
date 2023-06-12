@@ -70,7 +70,7 @@ const AllocineProviderParameters = ({
   const initialValues = {
     price: venueProvider.price,
     quantity: venueProvider.quantity,
-    isDuo: venueProvider.isDuo,
+    isDuo: venueProvider.isDuo ?? true,
   }
 
   return (

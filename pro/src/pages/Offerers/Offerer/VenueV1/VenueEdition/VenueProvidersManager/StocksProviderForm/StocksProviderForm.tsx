@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
@@ -11,6 +10,21 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 import styles from './StocksProviderForm.module.scss'
 
+interface PayloadProps {
+  providerId: number
+  venueIdAtOfferProvider: string
+  venueId: number
+}
+
+export interface StocksProviderFormProps {
+  offererId: number
+  providerId: number
+  saveVenueProvider: (payload: PayloadProps) => void
+  siret: string
+  venueId: number
+  hasOffererProvider: boolean
+}
+
 const StocksProviderForm = ({
   saveVenueProvider,
   providerId,
@@ -18,21 +32,24 @@ const StocksProviderForm = ({
   venueId,
   hasOffererProvider,
   offererId,
-}) => {
+}: StocksProviderFormProps) => {
   const { logEvent } = useAnalytics()
   const [isCheckingApi, setIsCheckingApi] = useState(false)
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false)
 
-  const handleOpenConfirmDialog = useCallback(event => {
-    event.preventDefault()
-    event.stopPropagation()
-    logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
-      offererId: offererId,
-      venueId: venueId,
-      providerId: providerId,
-    })
-    setIsConfirmDialogOpened(true)
-  }, [])
+  const handleOpenConfirmDialog = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+      logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
+        offererId: offererId,
+        venueId: venueId,
+        providerId: providerId,
+      })
+      setIsConfirmDialogOpened(true)
+    },
+    []
+  )
 
   const handleCloseConfirmDialog = useCallback(() => {
     /* istanbul ignore next: DEBT, TO FIX */
@@ -42,7 +59,7 @@ const StocksProviderForm = ({
   const handleFormSubmit = useCallback(() => {
     setIsCheckingApi(true)
 
-    const payload = {
+    const payload: PayloadProps = {
       providerId,
       venueIdAtOfferProvider: siret,
       venueId,
@@ -99,7 +116,7 @@ const StocksProviderForm = ({
               isExternal: true,
               to: 'https://aide.passculture.app/hc/fr/articles/4411999024401--Acteurs-Culturels-Quels-sont-les-livres-%C3%A9ligibles-au-pass-Culture-',
             }}
-            variant="quaternary"
+            variant={ButtonVariant.QUATERNARY}
           >
             Notre FAQ vous décrira les règles précisément.
           </ButtonLink>
@@ -107,15 +124,6 @@ const StocksProviderForm = ({
       )}
     </>
   )
-}
-
-StocksProviderForm.propTypes = {
-  offererId: PropTypes.number.isRequired,
-  providerId: PropTypes.number.isRequired,
-  saveVenueProvider: PropTypes.func.isRequired,
-  siret: PropTypes.string.isRequired,
-  venueId: PropTypes.number.isRequired,
-  hasOffererProvider: PropTypes.bool.isRequired,
 }
 
 export default StocksProviderForm

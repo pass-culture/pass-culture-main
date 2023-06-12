@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 import { Form } from 'react-final-form'
+import type { FormRenderProps } from 'react-final-form'
 import { Tooltip } from 'react-tooltip'
 
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
@@ -13,19 +13,46 @@ import Icon from 'ui-kit/Icon/Icon'
 import { getCanSubmit } from 'utils/react-final-form'
 import './AllocineProviderForm.scss'
 
+interface formProps {
+  isLoading: boolean
+  dirtySinceLastSubmit: boolean
+  hasSubmitErrors: boolean
+  hasValidationErrors: boolean
+  pristine: boolean
+  handleSubmit: () => void
+}
+
+interface formValuesProps {
+  isDuo: boolean
+  price?: number
+  quantity: string | number | null
+  isActive?: boolean
+}
+export type initialValuesProps = formProps & formValuesProps
+
+export interface AllocineProviderFormProps {
+  saveVenueProvider: (payload?: formValuesProps) => void
+  providerId: number
+  offererId: number
+  venueId: number
+  isCreatedEntity?: boolean
+  onCancel: () => void
+  initialValues: initialValuesProps
+}
+
 const AllocineProviderForm = ({
   saveVenueProvider,
   providerId,
   offererId,
   venueId,
-  isCreatedEntity,
-  initialValues,
   onCancel,
-}) => {
+  initialValues,
+  isCreatedEntity = false,
+}: AllocineProviderFormProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
   const handleSubmit = useCallback(
-    formValues => {
+    (formValues: formValuesProps) => {
       const { isDuo = true, price } = formValues
       const quantity = formValues.quantity !== '' ? formValues.quantity : null
 
@@ -50,14 +77,16 @@ const AllocineProviderForm = ({
     [saveVenueProvider, providerId, venueId]
   )
 
-  const required = useCallback(value => {
+  const required = useCallback((value: number | undefined) => {
     return typeof value === 'number' ? undefined : 'Ce champ est obligatoire'
   }, [])
 
   const renderForm = useCallback(
-    formProps => {
+    (
+      formProps: FormRenderProps<formValuesProps, formProps>
+    ): React.ReactNode => {
       const canSubmit = getCanSubmit({
-        isLoading: formProps.isLoading,
+        isLoading: isLoading,
         dirtySinceLastSubmit: formProps.dirtySinceLastSubmit,
         hasSubmitErrors: formProps.hasSubmitErrors,
         hasValidationErrors: formProps.hasValidationErrors,
@@ -89,7 +118,7 @@ const AllocineProviderForm = ({
                   </label>
                 </div>
                 <NumberField
-                  onKeyPress={e =>
+                  onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) =>
                     (e.key === 'e' || e.key === 'E') && e.preventDefault()
                   }
                   className="field-text price-field"
@@ -168,14 +197,13 @@ const AllocineProviderForm = ({
                   >
                     Annuler
                   </Button>
-                  <Button
+                  <SubmitButton
                     variant={ButtonVariant.PRIMARY}
                     disabled={!canSubmit}
                     onClick={formProps.handleSubmit}
-                    type="submit"
                   >
                     Modifier
-                  </Button>
+                  </SubmitButton>
                 </div>
               )}
             </div>
@@ -193,28 +221,6 @@ const AllocineProviderForm = ({
       render={renderForm}
     />
   )
-}
-
-AllocineProviderForm.defaultProps = {
-  initialValues: {
-    isDuo: true,
-  },
-  isCreatedEntity: false,
-  onCancel: () => {},
-}
-
-AllocineProviderForm.propTypes = {
-  initialValues: PropTypes.shape({
-    isDuo: PropTypes.bool,
-    price: PropTypes.number,
-    quantity: PropTypes.number,
-  }),
-  isCreatedEntity: PropTypes.bool,
-  onCancel: PropTypes.func,
-  providerId: PropTypes.number.isRequired,
-  saveVenueProvider: PropTypes.func.isRequired,
-  venueId: PropTypes.number.isRequired,
-  offererId: PropTypes.number.isRequired,
 }
 
 export default AllocineProviderForm
