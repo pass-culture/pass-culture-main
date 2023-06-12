@@ -15,7 +15,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   },
   {
     id: BOOKING_STATUS.CANCELLED,
-    status: 'annulé',
+    status: 'Annulée',
     label: 'Réservation annulée',
     historyClassName: 'bs-history-cancelled',
     statusClassName: styles['booking-status-cancelled'],
