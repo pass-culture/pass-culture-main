@@ -9,7 +9,6 @@ import { Newsletter } from 'components/Newsletter'
 import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
-import useCurrentUser from 'hooks/useCurrentUser'
 import useRemoteConfig from 'hooks/useRemoteConfig'
 import { INITIAL_OFFERER_VENUES } from 'pages/Home/OffererVenues'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
@@ -35,9 +34,6 @@ const Homepage = (): JSX.Element => {
   const [hasNoVenueVisible, setHasNoVenueVisible] = useState(false)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
   const [venues, setVenues] = useState(INITIAL_OFFERER_VENUES)
-
-  const { currentUser } = useCurrentUser()
-
   const { remoteConfigData } = useRemoteConfig()
 
   useEffect(() => {
@@ -130,7 +126,6 @@ const Homepage = (): JSX.Element => {
 
         {isUserOffererValidated &&
           withNewOfferCreationJourney &&
-          !currentUser.isAdmin &&
           hasNoVenueVisible && (
             <section className="step-section">
               <VenueOfferSteps
