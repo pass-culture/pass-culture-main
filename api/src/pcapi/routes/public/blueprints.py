@@ -11,6 +11,7 @@ from .individual_offers import blueprint
 
 public_blueprint = Blueprint("public_blueprint", __name__, url_prefix="/public")
 public_blueprint.register_blueprint(blueprint.individual_offers_blueprint)
+public_blueprint.register_blueprint(blueprint.individual_bookings_blueprint)
 
 
 v2_prefixed_public_api = Blueprint("pro_public_api_v2", __name__, url_prefix="/v2")
