@@ -857,6 +857,10 @@ class ProductOffersResponse(serialization.ConfiguredBaseModel):
     pagination: Pagination
 
 
+class ProductOffersByEanResponse(serialization.ConfiguredBaseModel):
+    products: typing.List[ProductOfferResponse]
+
+
 class EventOffersResponse(serialization.ConfiguredBaseModel):
     events: typing.List[EventOfferResponse]
     pagination: Pagination
@@ -943,3 +947,25 @@ class GetOfferersVenuesResponse(serialization.BaseModel):
 
 class GetOfferersVenuesQuery(serialization.ConfiguredBaseModel):
     siren: str | None = pydantic.Field(example="123456789")
+
+
+class GetProductsListByEansQuery(serialization.ConfiguredBaseModel):
+    eans: str | None = pydantic.Field(example="0123456789123,0123456789124")
+
+    @pydantic.validator("eans")
+    def validate_ean_list(cls, eans: str) -> list[str]:
+        """The ean list must contain at least one element, at most 100
+        An ean must be a 13 digit integer"""
+        ean_list = eans.split(",")
+        if len(ean_list) > 100:
+            raise ValueError("Too many EANs")
+        if len(ean_list) == 0:
+            raise ValueError("EAN list must not be empty")
+        for ean in ean_list:
+            if not ean.isdigit():
+                raise ValueError("EAN must be an integer")
+            if int(ean) < 0:
+                raise ValueError("EAN must be positive") 
+            if len(ean) != 13:
+                raise ValueError("Only 13 characters EAN are accepted")
+        return ean_list
