@@ -99,7 +99,7 @@ def synchronize_adage_ids_on_venues() -> None:
             filtered_cultural_partner_by_ids[cultural_partner.venueId] = cultural_partner
 
     deactivated_venues: list[offerers_models.Venue] = offerers_models.Venue.query.filter(
-        ~offerers_models.Venue.id.in_(filtered_cultural_partner_by_ids.keys()),
+        offerers_models.Venue.id.not_in(filtered_cultural_partner_by_ids.keys()),
         offerers_models.Venue.adageId.is_not(None),
     ).all()
 

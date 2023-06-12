@@ -27,7 +27,7 @@ def get_inactive_venues_emails() -> Iterable[str]:
         offers_models.Offer.validation == OfferValidationStatus.APPROVED,
     ).exists()
 
-    venue_has_no_booking_within_the_last_90_days_subquery = ~(
+    venue_has_no_booking_within_the_last_90_days_subquery = sa.not_(
         offers_models.Offer.query.filter(
             offers_models.Offer.venueId == offerers_models.Venue.id,
             offers_models.Offer.isActive.is_(True),

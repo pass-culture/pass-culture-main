@@ -245,7 +245,7 @@ def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_va
         .join(models.Venue, models.Offerer.id == models.Venue.managingOffererId)
         .filter(models.Offerer.isValidated)
         .filter(sqla.cast(models.Offerer.dateValidated, sqla.Date) == (date.today() - timedelta(days=days)))
-        .filter(~models.Venue.isVirtual)
+        .filter(sqla.not_(models.Venue.isVirtual))
         .distinct()
     )
 
@@ -399,7 +399,9 @@ def get_venue_by_id(venue_id: int) -> models.Venue:
 
 
 def find_offerers_validated_3_days_ago_with_no_venues() -> list[models.Offerer]:
-    subquery_get_physical_venues = db.session.query(models.Venue.managingOffererId).where((~models.Venue.isVirtual))
+    subquery_get_physical_venues = db.session.query(models.Venue.managingOffererId).where(
+        sqla.not_(models.Venue.isVirtual)
+    )
 
     subquery_get_digital_venues_with_offers = (
         db.session.query(models.Venue.managingOffererId)

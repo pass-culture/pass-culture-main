@@ -215,7 +215,7 @@ def _get_sent_pricings_for_collective_bookings(
             # to the same bookings as the original invoices they
             # complement. We don't want these bookings to be listed
             # twice.
-            ~models.Invoice.reference.like("%.2"),
+            models.Invoice.reference.notlike("%.2"),
         )
         .join(
             educational_models.EducationalRedactor,
@@ -307,7 +307,7 @@ def _get_sent_pricings_for_individual_bookings(
             # to the same bookings as the original invoices they
             # complement. We don't want these bookings to be listed
             # twice.
-            ~models.Invoice.reference.like("%.2"),
+            models.Invoice.reference.notlike("%.2"),
         )
         .join(bookings_models.Booking.offerer)
         .join(bookings_models.Booking.stock)
