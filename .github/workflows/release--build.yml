@@ -24,6 +24,16 @@ jobs:
       CHANNEL: "${{ github.event.inputs.releaseNumber }}.0.0"
       EXPIRES: "30d"
   
+  create-pro-integration-release:
+    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    secrets:
+      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      ENV: integration
+      CHANNEL: "${{ github.event.inputs.releaseNumber }}.0.0"
+      EXPIRES: "30d"
+  
   create-pro-production-release:
     uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
     secrets:
