@@ -176,6 +176,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     priceCategory: sa_orm.Mapped["PriceCategory | None"] = sa.orm.relationship("PriceCategory", back_populates="stocks")
     quantity = sa.Column(sa.Integer, nullable=True)
     rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
+    features = sa.Column(postgresql.ARRAY(sa.Text), nullable=False, server_default=sa.text("'{}'::text[]"))
 
     @property
     def isBookable(self) -> bool:
