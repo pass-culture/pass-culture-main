@@ -1209,6 +1209,20 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         search.async_index_offer_ids([offer.id])
 
 
+def whitelist_existing_product(idAtProviders: str) -> None:
+    product = (
+        models.Product.query.filter(models.Product.can_be_synchronized == False)
+        .filter_by(idAtProviders=idAtProviders)
+        .one_or_none()
+    )
+    if not product:
+        return
+
+    product.isGcuCompatible = True
+    product.isSynchronizationCompatible = True
+    repository.save(product)
+
+
 def delete_unwanted_existing_product(idAtProviders: str) -> None:
     product_has_at_least_one_booking = (
         models.Product.query.filter_by(idAtProviders=idAtProviders)

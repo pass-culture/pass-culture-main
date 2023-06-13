@@ -106,6 +106,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
     form_data = {"comment": "OK!"}
 
     @patch("pcapi.routes.backoffice_v3.titelive.blueprint.get_by_ean13")
+    @patch("pcapi.routes.backoffice_v3.titelive.blueprint.whitelist_existing_product")
     @pytest.mark.parametrize(
         "form_data",
         [
@@ -113,7 +114,9 @@ class AddProductWhitelistTest(PostEndpointHelper):
             {"comment": ""},
         ],
     )
-    def test_add_product_whitelist(self, mock_get_by_ean13, authenticated_client, form_data):
+    def test_add_product_whitelist(
+        self, mock_whitelist_existing_product, mock_get_by_ean13, authenticated_client, form_data
+    ):
         mock_get_by_ean13.return_value = EAN_SEARCH_FIXTURE
         assert not fraud_models.ProductWhitelist.query.filter(
             fraud_models.ProductWhitelist.ean == self.endpoint_kwargs["ean"]
@@ -130,9 +133,13 @@ class AddProductWhitelistTest(PostEndpointHelper):
         assert "a été ajouté dans la whitelist" in alert
         assert product_whitelist.comment == form_data["comment"]
         assert product_whitelist.ean == self.endpoint_kwargs["ean"]
+        mock_whitelist_existing_product.assert_called_with(self.endpoint_kwargs["ean"])
 
     @patch("pcapi.routes.backoffice_v3.titelive.blueprint.get_by_ean13")
-    def test_add_product_whitelist_already_whitelisted(self, mock_get_by_ean13, authenticated_client):
+    @patch("pcapi.routes.backoffice_v3.titelive.blueprint.whitelist_existing_product")
+    def test_add_product_whitelist_already_whitelisted(
+        self, mock_whitelist_existing_product, mock_get_by_ean13, authenticated_client
+    ):
         mock_get_by_ean13.return_value = EAN_SEARCH_FIXTURE
         ProductWhitelistFactory(ean=self.endpoint_kwargs["ean"])
         assert fraud_models.ProductWhitelist.query.filter(
@@ -145,6 +152,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
         alert = html_parser.extract_alert(response_redirect.data)
 
         assert "est déjà dans la whitelist" in alert
+        mock_whitelist_existing_product.assert_not_called()
 
 
 class DeleteProductWhitelistTest(GetEndpointHelper):
@@ -153,7 +161,10 @@ class DeleteProductWhitelistTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.FRAUD_ACTIONS
 
     @patch("pcapi.routes.backoffice_v3.titelive.blueprint.get_by_ean13")
-    def test_delete_product_whitelist(self, mock_get_by_ean13, authenticated_client):
+    @patch("pcapi.routes.backoffice_v3.titelive.blueprint.delete_unwanted_existing_product")
+    def test_delete_product_whitelist(
+        self, mock_delete_unwanted_existing_product, mock_get_by_ean13, authenticated_client
+    ):
         mock_get_by_ean13.return_value = EAN_SEARCH_FIXTURE
         ProductWhitelistFactory(ean=self.endpoint_kwargs["ean"])
         response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
@@ -163,9 +174,13 @@ class DeleteProductWhitelistTest(GetEndpointHelper):
         alert = html_parser.extract_alert(response_redirect.data)
 
         assert "a été supprimé de la whitelist" in alert
+        mock_delete_unwanted_existing_product.assert_called_with(self.endpoint_kwargs["ean"])
 
     @patch("pcapi.routes.backoffice_v3.titelive.blueprint.get_by_ean13")
-    def test_delete_product_whitelist_not_in_whitelist(self, mock_get_by_ean13, authenticated_client):
+    @patch("pcapi.routes.backoffice_v3.titelive.blueprint.delete_unwanted_existing_product")
+    def test_delete_product_whitelist_not_in_whitelist(
+        self, mock_delete_unwanted_existing_product, mock_get_by_ean13, authenticated_client
+    ):
         mock_get_by_ean13.return_value = EAN_SEARCH_FIXTURE
         response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
 
@@ -174,3 +189,4 @@ class DeleteProductWhitelistTest(GetEndpointHelper):
         alert = html_parser.extract_alert(response_redirect.data)
 
         assert "n'existe pas dans la whitelist" in alert
+        mock_delete_unwanted_existing_product.assert_not_called()
