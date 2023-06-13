@@ -42,6 +42,7 @@ const iconList = [
   // Stroke icons
   { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
   { src: 'icons/stroke-error.svg' },
+  { src: 'icons/stroke-thing.svg' },
   { src: 'icons/stroke-code.svg' },
   { src: 'icons/stroke-accessibility-ear.svg' },
 
@@ -176,7 +177,6 @@ const iconList = [
   { src: 'icons/ico-success.svg', viewBox: '0 0 88 88' },
   { src: 'icons/ico-tag.svg', viewBox: '0 0 33 33' },
   { src: 'icons/ico-template-offer.svg' },
-  { src: 'icons/ico-thing.svg' },
   { src: 'icons/ticket-cross.svg', viewBox: '0 0 100 80' },
   { src: 'icons/ico-trash.svg' },
   { src: 'icons/ico-trophee.svg', viewBox: '0 0 24 25' },
