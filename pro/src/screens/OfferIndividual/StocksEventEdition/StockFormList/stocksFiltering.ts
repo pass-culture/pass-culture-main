@@ -6,7 +6,7 @@ import {
   sortColumnByNumber,
 } from 'hooks/useColumnSorting'
 
-import { IStockEventFormValues } from './types'
+import { StockEventFormValues } from './types'
 
 export enum StocksEventFormSortingColumn {
   DATE = 'DATE',
@@ -18,7 +18,7 @@ export enum StocksEventFormSortingColumn {
 }
 
 export const filterAndSortStocks = (
-  stocks: IStockEventFormValues[],
+  stocks: StockEventFormValues[],
   priceCategories: PriceCategoryResponseModel[],
   sortingColumn: StocksEventFormSortingColumn | null,
   sortingMode: SortingMode,
@@ -27,7 +27,7 @@ export const filterAndSortStocks = (
     hourFilter: Date | null
     priceCategoryFilter: string
   }
-): IStockEventFormValues[] => {
+): StockEventFormValues[] => {
   const { dateFilter, hourFilter, priceCategoryFilter } = filters
   const filteredStocks = stocks.filter(stock => {
     const stockDate = stock.beginningDate

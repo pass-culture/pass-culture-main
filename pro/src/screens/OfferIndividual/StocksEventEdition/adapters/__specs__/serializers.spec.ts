@@ -1,6 +1,6 @@
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
 import {
-  IStockEventFormValues,
+  StockEventFormValues,
   STOCK_EVENT_FORM_DEFAULT_VALUES,
 } from 'screens/OfferIndividual/StocksEventEdition/StockFormList'
 import { stockEventFactory } from 'screens/OfferIndividual/StocksEventEdition/StockFormList/stockEventFactory'
@@ -15,7 +15,7 @@ jest.mock('utils/date', () => ({
 }))
 
 describe('screens::StockEvent::serializers:serializeStockEventEdition', () => {
-  let formValuesList: IStockEventFormValues[]
+  let formValuesList: StockEventFormValues[]
   let departementCode: string
 
   beforeEach(() => {
@@ -59,7 +59,7 @@ describe('screens::StockEvent::serializers:serializeStockEventEdition', () => {
 
     const serializedData = serializeStockEventEdition(
       [
-        ...formValuesList.map((formValues: IStockEventFormValues) => ({
+        ...formValuesList.map((formValues: StockEventFormValues) => ({
           ...formValues,
           bookingLimitDatetime: null,
         })),
@@ -80,7 +80,7 @@ describe('screens::StockEvent::serializers:serializeStockEventEdition', () => {
 
     const serializedData = serializeStockEventEdition(
       [
-        ...formValuesList.map((formValues: IStockEventFormValues) => ({
+        ...formValuesList.map((formValues: StockEventFormValues) => ({
           ...formValues,
           stockId: 1,
           beginningDate: new Date('2022-10-11T00:00:00.0200'),
