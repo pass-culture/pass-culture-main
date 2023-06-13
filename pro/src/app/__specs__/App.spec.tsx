@@ -98,7 +98,7 @@ describe('src | App', () => {
       renderApp(store)
       expect(
         await screen.findByText(
-          /Nous collectons et traitons vos informations personnelles dans le but suivant/
+          /Nous utilisons des cookies et traceurs afin d’analyser l'utilisation de la plateforme et vous proposer la meilleure expérience possible/
         )
       ).toBeInTheDocument()
     })

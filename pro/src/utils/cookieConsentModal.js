@@ -62,23 +62,42 @@ export const initCookieConsent = () => {
         purposes: {
           needed: 'Essentiel',
           personalization: 'Personnalisation',
-          perfs: 'Performance',
-          market: 'Marketing',
+          performance: 'Performance',
+          marketing: 'Marketing',
         },
+        consentNotice: {
+          title: 'Respect de votre vie privée',
+          description:
+            "Nous utilisons des cookies et traceurs afin d’analyser l'utilisation de la plateforme et vous proposer la meilleure expérience possible. Vous pouvez accepter ou refuser l’activation de leur suivi. À tout moment, vous pouvez consulter et modifier vos choix à partir de la page « Gérer les cookies » dans la rubrique « Aide et support ».",
+          learnMore: 'Choisir les cookies',
+        },
+        consentModal: {
+          title: 'Gestion des cookies',
+          description:
+            'Un cookie est un fichier texte déposé sur votre appareil lors de votre visite sur la plateforme. Nous utilisons les données collectées par ces cookies et traceurs afin de vous proposer la meilleure expérience possible. Vous pouvez accepter ou refuser l’activation de leur suivi. \n' +
+            '\n' +
+            'Votre choix est conservé pendant 6 mois. À tout moment, vous pouvez consulter et modifier vos préférences à partir de la page « Gérer les cookies » dans la rubrique \n' +
+            '« Aide et support ».',
+        },
+        acceptTitle: 'Tout accepter',
+        accept: 'Tout accepter',
+        decline: 'Tout refuser',
+        save: 'Enregistrer mes choix',
         firebase: {
           description:
-            'Suivre les actions des utilisateurs afin d’améliorer leurs parcours et faciliter leur expérience. Mettre à jour facilement les codes de suivi et les balises afin de mesurer et analyser le comportement des utilisateurs. Collecter et analyser les données des utilisateurs.',
+            'Ces cookies permettent d’établir des statistiques de fréquentation et de navigation afin d’améliorer votre parcours. Ils permettent par exemple de mesurer la pertinence d’une nouvelle fonctionnalité.',
         },
         hotjar: {
           description:
-            'Analyser les comportements des utilisateurs afin d’identifier les points de friction',
+            'Ces cookies permettent d’analyser vos interactions avec la plateforme de façon anonyme afin d’identifier des points de friction. Ils permettent par exemple de recueillir vos avis grâce à des sondages.',
         },
         sentry: {
-          description: 'Analyser les erreurs pour aider au débogguage',
+          description:
+            'Ces cookies sont nécessaires au fonctionnement de la plateforme et ne peuvent être désactivés. Ils permettent par exemple de remonter les erreurs techniques.',
         },
         beamer: {
           description:
-            'Informer les utilisateurs des dernières nouveautés et fonctionnalités grâce à un centre de notifications',
+            'Ces cookies permettent de vous accompagner de façon personnalisée sur la plateforme grâce à un centre de notifications. Ils permettent par exemple de vous informer des dernières nouveautés et fonctionnalités.',
         },
       },
     },
@@ -94,12 +113,12 @@ export const initCookieConsent = () => {
         name: 'hotjar',
         title: 'Hotjar',
         cookies: /_hs.*/,
-        purposes: ['perfs'],
+        purposes: ['performance'],
       },
       {
         name: 'beamer',
         title: 'Beamer',
-        purposes: ['market'],
+        purposes: ['marketing'],
         cookies: /_BEAMER.*/,
       },
       {
@@ -114,23 +133,22 @@ export const initCookieConsent = () => {
     categories: [
       {
         name: 'needed',
-        title: 'Essentiel',
+        title: 'Cookies essentiels',
         apps: ['sentry'],
       },
       {
         name: 'personalization',
-        title: 'Personnalisation',
+        title: 'Cookies de statistiques',
         apps: ['firebase'],
       },
       {
-        name: 'perfs',
-        title: 'Performance',
+        name: 'performance',
+        title: 'Cookies de performance',
         apps: ['hotjar'],
       },
       {
-        name: 'market',
-        title: 'Marketing',
-
+        name: 'marketing',
+        title: 'Cookies de personnalisation ',
         apps: ['beamer'],
       },
     ],
