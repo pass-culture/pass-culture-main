@@ -5,6 +5,7 @@ import pytest
 from pcapi.connectors.cgr.exceptions import CGRAPIException
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.external_bookings.cgr.client as cgr_client
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 
@@ -16,7 +17,8 @@ from tests.local_providers.cinema_providers.cgr import fixtures
 class BookTicketTest:
     def test_should_book_one_ticket(self, requests_mock, app):
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
-        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1, amount=5.5)
+        showtime_stock = offers_factories.EventStockFactory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1, amount=5.5, stock=showtime_stock)
         venue_id = booking.venueId
         cinema_details = providers_factories.CGRCinemaDetailsFactory(
             cinemaUrl="http://cgr-cinema-0.example.com/web_service"
@@ -42,6 +44,10 @@ class BookTicketTest:
         assert "<pEmail>beneficiary@example.com</pEmail>" in post_adapter.last_request.text
         assert "<pPUTTC>5.50</pPUTTC>" in post_adapter.last_request.text
         assert "<pIDSeances>177182</pIDSeances>" in post_adapter.last_request.text
+        assert (
+            f"<pDateLimiteAnnul>{booking.cancellationLimitDate.isoformat()}</pDateLimiteAnnul>"
+            in post_adapter.last_request.text
+        )
         redis_external_bookings = app.redis_client.lrange("api:external_bookings:barcodes", 0, -1)
         assert len(redis_external_bookings) == 1
         external_booking_info = json.loads(redis_external_bookings[0])
@@ -51,7 +57,8 @@ class BookTicketTest:
 
     def test_should_book_one_ticket_when_placement_is_disabled(self, requests_mock):
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
-        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1, amount=5.5)
+        showtime_stock = offers_factories.EventStockFactory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1, amount=5.5, stock=showtime_stock)
         cinema_details = providers_factories.CGRCinemaDetailsFactory(
             cinemaUrl="http://cgr-cinema-0.example.com/web_service"
         )
@@ -76,10 +83,15 @@ class BookTicketTest:
         assert "<pEmail>beneficiary@example.com</pEmail>" in post_adapter.last_request.text
         assert "<pPUTTC>5.50</pPUTTC>" in post_adapter.last_request.text
         assert "<pIDSeances>177182</pIDSeances>" in post_adapter.last_request.text
+        assert (
+            f"<pDateLimiteAnnul>{booking.cancellationLimitDate.isoformat()}</pDateLimiteAnnul>"
+            in post_adapter.last_request.text
+        )
 
     def test_should_book_two_tickets(self, requests_mock):
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
-        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2, amount=5.5)
+        showtime_stock = offers_factories.EventStockFactory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2, amount=5.5, stock=showtime_stock)
         cinema_details = providers_factories.CGRCinemaDetailsFactory(
             cinemaUrl="http://cgr-cinema-0.example.com/web_service"
         )
@@ -106,10 +118,15 @@ class BookTicketTest:
         assert "<pEmail>beneficiary@example.com</pEmail>" in post_adapter.last_request.text
         assert "<pPUTTC>5.50</pPUTTC>" in post_adapter.last_request.text
         assert "<pIDSeances>177182</pIDSeances>" in post_adapter.last_request.text
+        assert (
+            f"<pDateLimiteAnnul>{booking.cancellationLimitDate.isoformat()}</pDateLimiteAnnul>"
+            in post_adapter.last_request.text
+        )
 
     def test_should_book_two_tickets_when_placement_is_disabled(self, requests_mock):
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
-        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2, amount=5.5)
+        showtime_stock = offers_factories.EventStockFactory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2, amount=5.5, stock=showtime_stock)
         cinema_details = providers_factories.CGRCinemaDetailsFactory(
             cinemaUrl="http://cgr-cinema-0.example.com/web_service"
         )
@@ -137,6 +154,10 @@ class BookTicketTest:
         assert "<pEmail>beneficiary@example.com</pEmail>" in post_adapter.last_request.text
         assert "<pPUTTC>5.50</pPUTTC>" in post_adapter.last_request.text
         assert "<pIDSeances>177182</pIDSeances>" in post_adapter.last_request.text
+        assert (
+            f"<pDateLimiteAnnul>{booking.cancellationLimitDate.isoformat()}</pDateLimiteAnnul>"
+            in post_adapter.last_request.text
+        )
 
 
 @pytest.mark.usefixtures("db_session")

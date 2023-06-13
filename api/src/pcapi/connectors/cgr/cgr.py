@@ -61,6 +61,7 @@ def reservation_pass_culture(
         pPrenom=body.pPrenom,
         pEmail=body.pEmail,
         pToken=body.pToken,
+        pDateLimiteAnnul=body.pDateLimiteAnnul,
     )
     response = json.loads(response)
     _check_response_is_ok(response, "ReservationPassCulture")
