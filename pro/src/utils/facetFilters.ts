@@ -1,6 +1,9 @@
+import { VenueResponse } from 'apiClient/adage'
+
 export const getDefaultFacetFilterUAICodeValue = (
   uai?: string | null,
-  departmentCode?: string | null
+  departmentCode?: string | null,
+  venueFilter?: VenueResponse | null
 ) => {
   const institutionIdFilters = ['offer.educationalInstitutionUAICode:all']
 
@@ -8,7 +11,7 @@ export const getDefaultFacetFilterUAICodeValue = (
     institutionIdFilters.push(`offer.educationalInstitutionUAICode:${uai}`)
   }
 
-  return departmentCode
+  return departmentCode && !venueFilter
     ? [[`venue.departmentCode:${departmentCode}`], institutionIdFilters]
     : [institutionIdFilters]
 }
