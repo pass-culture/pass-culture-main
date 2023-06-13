@@ -149,6 +149,7 @@ class PricingLineCategory(enum.Enum):
 
 class PricingLogReason(enum.Enum):
     MARK_AS_UNUSED = "mark as unused"
+    CHANGE_AMOUNT = "change amount"
 
 
 class Frequency(enum.Enum):

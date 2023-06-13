@@ -39,10 +39,9 @@
      target="_blank"
      title="{{ hint }} associées au lieu"><i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
-{% macro build_colletive_offer_details_link(offer) %}
-  <a href="{{ url_for('backoffice_v3_web.collective_offer.collective_offer_details', collective_offer_id=offer.id) }}"
+{% macro build_collective_offer_details_link(offer) %}
+  <a href="{{ url_for('backoffice_v3_web.collective_offer.get_collective_offer_details', collective_offer_id=offer.id) }}"
      class="link-primary"
-     target="_blank"
      title="Page de l'offre">{{ offer.id }}</i></a>
 {% endmacro %}
 {# ----- PC Pro links ----- #}
