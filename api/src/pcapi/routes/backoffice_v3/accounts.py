@@ -787,7 +787,7 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
         return render_public_account_details(user_id, form), 400
 
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
-        old_email = user.email
+        # Do not log email change in snapshot, since it is already logged in user_email_history table
         try:
             email_update.full_email_update_by_admin(user, form.email.data)
         except users_exceptions.EmailExistsError:
@@ -795,7 +795,6 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
             snapshot.log_update(save=True)
             flash("L'email est déjà associé à un autre utilisateur", "warning")
             return render_public_account_details(user_id, form), 400
-        snapshot.set("email", old=old_email, new=form.email.data)
 
         # TODO (prouzet) old email should also be updated, but there is no update_external_user by email
         external_attributes_api.update_external_user(user)

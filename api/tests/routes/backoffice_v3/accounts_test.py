@@ -882,6 +882,12 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert user_to_edit.postalCode == expected_new_postal_code
         assert user_to_edit.city == expected_city
 
+        assert len(user_to_edit.email_history) == 1
+        history = user_to_edit.email_history[0]
+        assert history.oldEmail == old_email
+        assert history.newEmail == expected_new_email
+        assert history.eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
+
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
@@ -890,7 +896,6 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert action.offererId is None
         assert action.venueId is None
         assert action.extraData["modified_info"] == {
-            "email": {"new_info": expected_new_email, "old_info": old_email},
             "phoneNumber": {"new_info": "+33836656565", "old_info": "None"},
             "postalCode": {"new_info": expected_new_postal_code, "old_info": "None"},
         }
@@ -941,6 +946,12 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert user.departementCode == base_form["postal_code"][:2]
         assert user.city == base_form["city"]
 
+        assert len(user_to_edit.email_history) == 1
+        history = user_to_edit.email_history[0]
+        assert history.oldEmail == "ed@example.com"
+        assert history.newEmail == "mc@example.com"
+        assert history.eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
+
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
@@ -951,7 +962,6 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert action.extraData["modified_info"] == {
             "firstName": {"new_info": "Comte", "old_info": "Edmond"},
             "lastName": {"new_info": "de Monte-Cristo", "old_info": "Dantès"},
-            "email": {"new_info": "mc@example.com", "old_info": "ed@example.com"},
             "validatedBirthDate": {
                 "new_info": base_form["birth_date"].isoformat(),
                 "old_info": date_of_birth.date().isoformat(),
