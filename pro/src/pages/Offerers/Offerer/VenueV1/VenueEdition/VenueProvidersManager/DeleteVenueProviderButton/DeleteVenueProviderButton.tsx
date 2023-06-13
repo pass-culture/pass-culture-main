@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -19,7 +18,7 @@ const DeleteVenueProviderButton = ({
   venueProviderId,
   afterDelete,
 }: DeleteVenueProviderButtonProps): JSX.Element => {
-  const { visible, showModal, hideModal } = useModal()
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const notification = useNotification()
 
@@ -34,15 +33,16 @@ const DeleteVenueProviderButton = ({
         'Une erreur est survenue. Merci de réessayer plus tard.'
       )
     } finally {
-      hideModal()
+      setIsModalOpen(false)
       setIsLoading(false)
     }
-  }, [notification, hideModal])
+  }, [notification])
+
   return (
     <>
       <Button
         className={style['provider-action-button']}
-        onClick={showModal}
+        onClick={() => setIsModalOpen(true)}
         variant={ButtonVariant.TERNARY}
       >
         <TrashFilledIcon
@@ -51,10 +51,11 @@ const DeleteVenueProviderButton = ({
         />
         Supprimer
       </Button>
-      {visible && (
+
+      {isModalOpen && (
         <DeleteVenueProviderDialog
           onConfirm={tryToDeleteVenueProvider}
-          onCancel={hideModal}
+          onCancel={() => setIsModalOpen(false)}
           isLoading={isLoading}
         />
       )}

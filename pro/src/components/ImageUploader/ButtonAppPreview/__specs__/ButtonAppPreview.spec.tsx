@@ -5,18 +5,18 @@ import React from 'react'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { RootState } from 'store/reducers'
 
-import ButtonAppPreview, { IButtonAppPreviewProps } from '../ButtonAppPreview'
+import ButtonAppPreview, { ButtonAppPreviewProps } from '../ButtonAppPreview'
 
 interface IRenderButtonAppPreviewProps {
   storeOverride?: Partial<RootState>
-  props: IButtonAppPreviewProps
+  props: ButtonAppPreviewProps
 }
 const renderButtonAppPreview = ({ props }: IRenderButtonAppPreviewProps) => {
   return render(<ButtonAppPreview {...props} />)
 }
 
 describe('ButtonAppPreview', () => {
-  let props: IButtonAppPreviewProps
+  let props: ButtonAppPreviewProps
 
   beforeEach(() => {
     props = {

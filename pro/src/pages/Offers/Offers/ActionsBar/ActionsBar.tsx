@@ -1,10 +1,9 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
-import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
 import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
@@ -23,7 +22,7 @@ import { updateOffersActiveStatusAdapter } from './adapters/updateOffersActiveSt
 import DeactivationConfirmDialog from './ConfirmDialog/DeactivationConfirmDialog'
 import DeleteConfirmDialog from './ConfirmDialog/DeleteConfirmDialog'
 
-export interface IActionBarProps {
+export interface ActionBarProps {
   areAllOffersSelected: boolean
   clearSelectedOfferIds: () => void
   nbSelectedOffers: number
@@ -81,19 +80,11 @@ const ActionsBar = ({
   audience,
   getUpdateOffersStatusMessage,
   canDeleteOffers,
-}: IActionBarProps): JSX.Element => {
+}: ActionBarProps): JSX.Element => {
   const searchFilters = useSelector(searchFiltersSelector)
   const notify = useNotification()
-  const {
-    visible: isConfirmDialogOpen,
-    showModal: showConfirmDialog,
-    hideModal: hideConfirmDialog,
-  } = useModal()
-  const {
-    visible: isDeleteDialogOpen,
-    showModal: showDeleteDialog,
-    hideModal: hideDeleteDialog,
-  } = useModal()
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   const handleClose = useCallback(() => {
     clearSelectedOfferIds()
@@ -144,7 +135,7 @@ const ActionsBar = ({
 
   const handleDeactivate = useCallback(() => {
     handleUpdateOffersStatus(false)
-    hideConfirmDialog()
+    setIsConfirmDialogOpen(false)
   }, [handleUpdateOffersStatus])
 
   const computeSelectedOffersLabel = () => {
@@ -171,7 +162,7 @@ const ActionsBar = ({
       refreshOffers()
       clearSelectedOfferIds()
     }
-    hideDeleteDialog()
+    setIsDeleteDialogOpen(false)
   }, [selectedOfferIds, nbSelectedOffers])
 
   const handleOpenDeleteDialog = () => {
@@ -179,7 +170,7 @@ const ActionsBar = ({
       notify.error('Seuls les brouillons peuvent être supprimés')
       return
     }
-    showDeleteDialog()
+    setIsDeleteDialogOpen(true)
   }
 
   const Left = () => <span>{computeSelectedOffersLabel()}</span>
@@ -189,7 +180,10 @@ const ActionsBar = ({
       <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
         Annuler
       </Button>
-      <Button onClick={() => showConfirmDialog()} Icon={StatusInactiveIcon}>
+      <Button
+        onClick={() => setIsConfirmDialogOpen(true)}
+        Icon={StatusInactiveIcon}
+      >
         Désactiver
       </Button>
       {audience == Audience.INDIVIDUAL && (
@@ -210,17 +204,19 @@ const ActionsBar = ({
           areAllOffersSelected={areAllOffersSelected}
           nbSelectedOffers={nbSelectedOffers}
           onConfirm={handleDeactivate}
-          onCancel={hideConfirmDialog}
+          onCancel={() => setIsConfirmDialogOpen(false)}
           audience={audience}
         />
       )}
+
       {isDeleteDialogOpen && (
         <DeleteConfirmDialog
-          onCancel={hideDeleteDialog}
+          onCancel={() => setIsDeleteDialogOpen(false)}
           nbSelectedOffers={nbSelectedOffers}
           handleDelete={handleDelete}
         />
       )}
+
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <Left />

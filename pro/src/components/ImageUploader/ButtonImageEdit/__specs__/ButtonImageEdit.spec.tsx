@@ -6,13 +6,13 @@ import * as apiHelpers from 'apiClient/helpers'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ButtonImageEdit, { IButtonImageEditProps } from '../ButtonImageEdit'
+import ButtonImageEdit, { ButtonImageEditProps } from '../ButtonImageEdit'
 
-const renderButtonImageEdit = (props: IButtonImageEditProps) =>
+const renderButtonImageEdit = (props: ButtonImageEditProps) =>
   renderWithProviders(<ButtonImageEdit {...props} />)
 
 describe('test ButtonImageEdit', () => {
-  let props: IButtonImageEditProps
+  let props: ButtonImageEditProps
   beforeEach(() => {
     props = {
       mode: UploaderModeEnum.OFFER,

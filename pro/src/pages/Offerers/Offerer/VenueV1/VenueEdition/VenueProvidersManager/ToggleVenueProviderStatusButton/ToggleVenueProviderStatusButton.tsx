@@ -2,7 +2,6 @@ import React, { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { VenueProviderResponse } from 'apiClient/v1'
-import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import fullPauseIcon from 'icons/full-pause.svg'
 import fullPlayIcon from 'icons/full-play.svg'
@@ -22,7 +21,7 @@ const ToggleVenueProviderStatusButton = ({
   venueProvider,
   afterEdit,
 }: ToggleVenueProviderStatusButtonProps) => {
-  const { visible, showModal, hideModal } = useModal()
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const notification = useNotification()
 
@@ -44,17 +43,17 @@ const ToggleVenueProviderStatusButton = ({
         )
       })
       .finally(() => {
-        hideModal()
+        setIsModalOpen(false)
         setIsLoading(false)
       })
-  }, [notification, hideModal, venueProvider])
+  }, [notification, venueProvider])
 
   return (
     <>
       {venueProvider.isActive ? (
         <Button
           className={style['provider-action-button']}
-          onClick={showModal}
+          onClick={() => setIsModalOpen(true)}
           variant={ButtonVariant.TERNARY}
         >
           <SvgIcon
@@ -67,7 +66,7 @@ const ToggleVenueProviderStatusButton = ({
       ) : (
         <Button
           className={style['provider-action-button']}
-          onClick={showModal}
+          onClick={() => setIsModalOpen(true)}
           variant={ButtonVariant.TERNARY}
         >
           <SvgIcon
@@ -78,9 +77,10 @@ const ToggleVenueProviderStatusButton = ({
           Réactiver
         </Button>
       )}
-      {visible && (
+
+      {isModalOpen && (
         <ToggleVenueProviderStatusDialog
-          onCancel={hideModal}
+          onCancel={() => setIsModalOpen(false)}
           onConfirm={updateVenueProviderStatus}
           isLoading={isLoading}
           isActive={venueProvider.isActive}

@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -29,7 +29,6 @@ import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
-import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
 import { EuroIcon, TicketPlusFullIcon, TrashFilledIcon } from 'icons'
 import { Checkbox, DatePicker, InfoBox, TextInput } from 'ui-kit'
@@ -81,16 +80,10 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     subCategory => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
-  const {
-    visible: activationCodeFormVisible,
-    showModal: activationCodeFormShow,
-    hideModal: activationCodeFormHide,
-  } = useModal()
-  const {
-    visible: deleteConfirmVisible,
-    showModal: deleteConfirmShow,
-    hideModal: deleteConfirmHide,
-  } = useModal()
+  const [isActivationCodeFormVisible, setIsActivationCodeFormVisible] =
+    useState(false)
+  const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false)
+
   /* istanbul ignore next: DEBT, TO FIX */
   const isDisabled = isOfferDisabled(offer.status)
   const providerName = offer?.lastProviderName
@@ -268,7 +261,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     } catch {
       notify.error('Une erreur est survenue lors de la suppression du stock.')
     }
-    deleteConfirmHide()
+    setIsDeleteConfirmVisible(false)
   }
 
   const onChangeQuantity = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -305,7 +298,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
           formik.values.stockId !== undefined &&
           parseInt(formik.values.bookingsQuantity) > 0
         ) {
-          deleteConfirmShow()
+          setIsDeleteConfirmVisible(true)
         } else {
           onConfirmDeleteStock()
         }
@@ -333,7 +326,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     }
 
     actions.push({
-      callback: activationCodeFormShow,
+      callback: () => setIsActivationCodeFormVisible(true),
       label: "Ajouter des codes d'activation",
       disabled: isDisabled,
       Icon: TicketPlusFullIcon,
@@ -354,14 +347,11 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     ]
   }
 
-  const submitActivationCodes = useCallback(
-    (activationCodes: string[]) => {
-      formik.setFieldValue('quantity', activationCodes?.length, true)
-      formik.setFieldValue('activationCodes', activationCodes)
-      activationCodeFormHide()
-    },
-    [activationCodeFormHide]
-  )
+  const submitActivationCodes = (activationCodes: string[]) => {
+    formik.setFieldValue('quantity', activationCodes?.length, true)
+    formik.setFieldValue('activationCodes', activationCodes)
+    setIsActivationCodeFormVisible(false)
+  }
 
   const readOnlyFields = setFormReadOnlyFields(offer, formik.values)
   const showExpirationDate =
@@ -371,16 +361,17 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
 
   return (
     <FormikProvider value={formik}>
-      {deleteConfirmVisible && (
+      {isDeleteConfirmVisible && (
         <DialogStockThingDeleteConfirm
           onConfirm={onConfirmDeleteStock}
-          onCancel={deleteConfirmHide}
+          onCancel={() => setIsDeleteConfirmVisible(false)}
         />
       )}
-      {activationCodeFormVisible && (
+
+      {isActivationCodeFormVisible && (
         <ActivationCodeFormDialog
           onSubmit={submitActivationCodes}
-          onCancel={activationCodeFormHide}
+          onCancel={() => setIsActivationCodeFormVisible(false)}
           today={today}
           minExpirationDate={formik.values.bookingLimitDatetime}
         />
@@ -504,6 +495,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
           </form>
         </div>
       </FormLayout>
+
       {canBeDuo && (
         <FormLayout small>
           <FormLayout.Section

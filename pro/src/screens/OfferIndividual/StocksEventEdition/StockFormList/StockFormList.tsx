@@ -13,7 +13,6 @@ import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
-import { useModal } from 'hooks/useModal'
 import { usePagination } from 'hooks/usePagination'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import DialogStockEventDeleteConfirm from 'screens/OfferIndividual/DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'
@@ -52,11 +51,7 @@ const StockFormList = ({
   priceCategoriesOptions,
   hiddenStocksRef,
 }: StockFormListProps) => {
-  const {
-    visible: deleteConfirmVisible,
-    showModal: deleteConfirmShow,
-    hideModal: deleteConfirmHide,
-  } = useModal()
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const mode = useOfferWizardMode()
   const [deletingStockData, setDeletingStockData] = useState<{
     deletingStock: StockEventFormValues
@@ -376,7 +371,7 @@ const StockFormList = ({
                               deletingStock: stockValues,
                               deletingIndex: index,
                             })
-                            deleteConfirmShow()
+                            setIsModalOpen(true)
                           } else {
                             /* istanbul ignore next: DEBT, TO FIX */
                             onDeleteStock(stockValues, index)
@@ -530,7 +525,7 @@ const StockFormList = ({
             onNextPageClick={nextPage}
           />
 
-          {deleteConfirmVisible && (
+          {isModalOpen && (
             <DialogStockEventDeleteConfirm
               /* istanbul ignore next: DEBT, TO FIX */
               onConfirm={async () => {
@@ -540,9 +535,9 @@ const StockFormList = ({
                   deletingStock.stockId &&
                     onDeleteStock(deletingStock, deletingIndex)
                 }
-                deleteConfirmHide()
+                setIsModalOpen(false)
               }}
-              onCancel={deleteConfirmHide}
+              onCancel={() => setIsModalOpen(false)}
             />
           )}
         </>
