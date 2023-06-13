@@ -84,10 +84,6 @@ enable = [
     "use-symbolic-message-instead",
     "useless-suppression",
 ]
-# FIXME (dbaty, 2020-11-03): we should enable back "line-too-long".
-# Most cases that cannot be fixed or obviously disabled are test
-# functions. And I believe that they really should be renamed to be
-# less than 120 characters long.
 disable = [
     "arguments-differ",
     "arguments-renamed",
