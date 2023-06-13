@@ -17,10 +17,11 @@
   line-height: rem.torem(22px);
   margin-bottom: rem.torem(16px);
 
-  & > svg {
+  & .icon-info-phone {
     vertical-align: middle;
+    color: colors.$black;
     margin-right: rem.torem(8px);
-    fill: colors.$black;
+    width: rem.torem(24px);
   }
 }
 
