@@ -79,10 +79,10 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
         isDigital=False,
         withdrawalDetails=None,
         redactor=AdageRedactor(
-            email=collective_offer.teacher.email if collective_offer.teacher else None,
-            redactorCivility=collective_offer.teacher.civility if collective_offer.teacher else None,
-            redactorFirstName=collective_offer.teacher.firstName if collective_offer.teacher else None,
-            redactorLastName=collective_offer.teacher.lastName if collective_offer.teacher else None,
+            email=collective_offer.teacher.email if collective_offer.teacher else "Non renseigné",
+            redactorCivility=collective_offer.teacher.civility if collective_offer.teacher else "Non renseigné",
+            redactorFirstName=collective_offer.teacher.firstName if collective_offer.teacher else "Non renseigné",
+            redactorLastName=collective_offer.teacher.lastName if collective_offer.teacher else "Non renseigné",
         )
         or None,
     )
