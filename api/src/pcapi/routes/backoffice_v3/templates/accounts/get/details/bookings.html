@@ -25,7 +25,9 @@
           </td>
           <td>{{ booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
           <td>{{ booking.status | format_booking_status_long | safe }}</td>
-          <td>{{ booking.token | empty_string_if_null }}</td>
+          <td>
+            {% if booking.token %}{{ links.build_booking_token_to_booking_details_link(booking.token) }}{% endif %}
+          </td>
         </tr>
         <tr class="collapse accordion-collapse pc-booking-{{ booking.id }}"
             data-bs-parent=".table">
