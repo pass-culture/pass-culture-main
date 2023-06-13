@@ -1,5 +1,6 @@
 {% import "components/links.html" as links %}
 {% extends "layouts/standard.html" %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% block main_content %}
   <div class="row row-cols-1 g-4 py-3">
     <div class="col">
@@ -7,56 +8,65 @@
         <div class="card-body">
           <div class="row justify-content-start align-items-center">
             <div class="col d-flex align-items-center justify-content-start">
-              <h2 class="card-title mb-3 text-primary">{{ offer.name }}</h2>
+              <h2 class="card-title mb-3 text-primary">{{ collective_offer.name }}</h2>
+              {% if is_collective_offer_price_editable and has_permission("MANAGE_PROVIDERS") %}
+                <div class="d-flex row-reverse justify-content-end flex-grow-1">
+                  <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end"
+                          data-bs-toggle="modal"
+                          data-bs-target="#update-collective-offer-price"
+                          type="button">Ajuster le prix de l'offre</button>
+                  {{ build_lazy_modal(url_for("backoffice_v3_web.collective_offer.get_collective_offer_price_form", collective_offer_id=collective_offer.id), "update-collective-offer-price") }}
+                </div>
+              {% endif %}
             </div>
             <div class="col-2"></div>
           </div>
-          <p class="card-subtitle text-muted mb-3 h5">CollectiveOffer ID : {{ offer.id }}</p>
+          <p class="card-subtitle text-muted mb-3 h5">CollectiveOffer ID : {{ collective_offer.id }}</p>
           <div class="row pt-3">
             <div class="col-4">
               <div class="fs-6">
                 <p class="mb-1">
-                  <span class="fw-bold">Catégorie :</span> {{ offer.category.pro_label }}
+                  <span class="fw-bold">Catégorie :</span> {{ collective_offer.category.pro_label }}
                 </p>
                 <p class="mb-1">
-                  <span class="fw-bold">Scous catégorie :</span> {{ offer.subcategory.pro_label }}
+                  <span class="fw-bold">Sous-catégorie :</span> {{ collective_offer.subcategory.pro_label }}
                 </p>
                 <p class="mb-1">
-                  <span class="fw-bold">Date de création :</span> {{ offer.dateCreated | format_date }}
+                  <span class="fw-bold">Date de création :</span> {{ collective_offer.dateCreated | format_date }}
                 </p>
                 <p class="mb-1">
-                  <span class="fw-bold">Date de l'evenement :</span>
-                  {% if offer.collectiveStock %}{{ offer.collectiveStock.beginningDatetime | format_date }}{% endif %}
+                  <span class="fw-bold">Date de l'événement :</span>
+                  {% if collective_offer.collectiveStock %}{{ collective_offer.collectiveStock.beginningDatetime | format_date }}{% endif %}
                 </p>
               </div>
             </div>
             <div class="col-4">
               <div class="fs-6">
                 <p class="mb-1">
-                  <span class="fw-bold">État :</span> {{ offer.status | format_offer_status }}
+                  <span class="fw-bold">État :</span> {{ collective_offer.status | format_offer_status }}
                 </p>
                 <p class="mb-1">
-                  <span class="fw-bold">Conformité :</span> {{ offer.validation | format_offer_validation_status }}
+                  <span class="fw-bold">Conformité :</span> {{ collective_offer.validation | format_offer_validation_status }}
                 </p>
                 <p class="mb-1">
                   <span class="fw-bold">Prix :</span>
-                  {% if offer.collectiveStock %}{{ offer.collectiveStock.price }}€{% endif %}
+                  {% if collective_offer.collectiveStock %}{{ collective_offer.collectiveStock.price | format_amount }}{% endif %}
                 </p>
                 <p class="mb-1">
                   <span class="fw-bold">Places :</span>
-                  {% if offer.collectiveStock %}{{ offer.collectiveStock.numberOfTickets }}{% endif %}
+                  {% if collective_offer.collectiveStock %}{{ collective_offer.collectiveStock.numberOfTickets }}{% endif %}
                 </p>
               </div>
             </div>
             <div class="col-4">
               <div class="fs-6">
                 <p class="mb-1">
-                  <span class="fw-bold">Structure :</span> {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
+                  <span class="fw-bold">Structure :</span> {{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}
                 </p>
               </div>
               <div class="fs-6">
                 <p class="mb-1">
-                  <span class="fw-bold">Lieu :</span> {{ links.build_venue_name_to_details_link(offer.venue) }}
+                  <span class="fw-bold">Lieu :</span> {{ links.build_venue_name_to_details_link(collective_offer.venue) }}
                 </p>
               </div>
             </div>

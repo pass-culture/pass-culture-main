@@ -5,6 +5,10 @@ import pcapi.core.offers.models as offers_models
 from . import models
 
 
+# lock to forbid the backoffice any write access to the pricing while the script is running
+REDIS_GENERATE_CASHFLOW_LOCK = "pc:finance:generate_cashflow_lock"
+REDIS_GENERATE_CASHFLOW_LOCK_TIMEOUT = 60 * 60 * 24  # 24h
+
 GRANT_18_VALIDITY_IN_YEARS = 2
 
 GRANTED_DEPOSIT_AMOUNT_15 = decimal.Decimal(20)
