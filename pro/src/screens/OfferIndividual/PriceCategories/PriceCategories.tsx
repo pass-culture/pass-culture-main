@@ -40,7 +40,6 @@ export interface IPriceCategories {
 export enum POPIN_TYPE {
   PRICE = 'price',
   PRICE_WITH_BOOKING = 'priceWithBooking',
-  LABEL_WITH_BOOKING = 'labelWithBooking',
 }
 
 const hasFieldChange = (
@@ -145,8 +144,6 @@ export const getPopinType = (
       )
     ) {
       return POPIN_TYPE.PRICE_WITH_BOOKING
-    } else {
-      return POPIN_TYPE.LABEL_WITH_BOOKING
     }
   } else if (
     // if there are only stocks with no bookings there is a special popin for price
@@ -331,15 +328,6 @@ const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
           Le tarif restera inchangé pour les personnes ayant déjà réservé cette
           offre.
         </ConfirmDialog>
-      )}
-      {popinType === POPIN_TYPE.LABEL_WITH_BOOKING && (
-        <ConfirmDialog
-          onCancel={() => setPopinType(null)}
-          onConfirm={formik.submitForm}
-          title="L’intitulé de ce tarif restera inchangé pour les personnes ayant déjà réservé cette offre."
-          confirmText="Confirmer la modification"
-          cancelText="Annuler"
-        />
       )}
 
       <form onSubmit={formik.handleSubmit}>

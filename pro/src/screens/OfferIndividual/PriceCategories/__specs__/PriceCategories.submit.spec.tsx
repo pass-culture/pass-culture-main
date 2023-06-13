@@ -242,50 +242,6 @@ describe('PriceCategories', () => {
     expect(api.postPriceCategories).toHaveBeenCalled()
   })
 
-  it('should display label modification popin with booking', async () => {
-    renderPriceCategories(
-      {
-        offer: individualOfferFactory(
-          undefined,
-          individualStockFactory({
-            priceCategoryId: 666,
-            bookingsQuantity: 17,
-          }),
-          undefined,
-          priceCategoryFactory({ id: 666 })
-        ),
-      },
-      generatePath(
-        getOfferIndividualPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        }),
-        { offerId: 'AA' }
-      )
-    )
-    await userEvent.click(screen.getByText('Ajouter un tarif'))
-
-    await userEvent.type(
-      screen.getAllByLabelText('Intitulé du tarif')[0],
-      'NEW !'
-    )
-    await userEvent.type(
-      screen.getAllByLabelText('Intitulé du tarif')[1],
-      'a label'
-    )
-    await userEvent.type(screen.getAllByLabelText('Prix par personne')[1], '1')
-    await userEvent.click(screen.getByText('Étape suivante'))
-    expect(
-      await screen.findByText(
-        'L’intitulé de ce tarif restera inchangé pour les personnes ayant déjà réservé cette offre.'
-      )
-    ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Confirmer la modification'))
-
-    expect(api.patchOffer).toHaveBeenCalled()
-    expect(api.postPriceCategories).toHaveBeenCalled()
-  })
-
   it('should notify and submit when clicking on Enregistrer les modifications in edition', async () => {
     renderPriceCategories(
       { offer: individualOfferFactory() },
