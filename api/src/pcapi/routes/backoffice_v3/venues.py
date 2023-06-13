@@ -39,8 +39,10 @@ from pcapi.utils.string import to_camelcase
 from . import autocomplete
 from . import utils
 from .forms import empty as empty_forms
+from .forms import search as search_forms
 from .forms import venue as forms
 from .serialization import venues as serialization
+from .serialization.search import TypeOptions
 
 
 venue_blueprint = utils.child_backoffice_blueprint(
@@ -202,6 +204,8 @@ def render_venue_details(
 
     return render_template(
         "venue/get.html",
+        search_form=search_forms.ProSearchForm(pro_type=TypeOptions.VENUE.value),
+        search_dst=url_for("backoffice_v3_web.search_pro"),
         venue=venue,
         edit_venue_form=edit_venue_form,
         region=region,

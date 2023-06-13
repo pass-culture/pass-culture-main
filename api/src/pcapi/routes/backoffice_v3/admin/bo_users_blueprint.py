@@ -63,8 +63,8 @@ def search_bo_users() -> utils.BackofficeResponse:
 
     return render_template(
         "admin/bo_users.html",
-        form=form,
-        dst=url_for(".search_bo_users"),
+        search_form=form,
+        search_dst=url_for(".search_bo_users"),
         next_pages_urls=next_pages_urls,
         get_link_to_detail=get_admin_account_link,
         rows=paginated_rows,
@@ -112,6 +112,8 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
     return render_template(
         "accounts/get.html",
         layout="layouts/admin.html",
+        search_form=forms.BOUserSearchForm(),
+        search_dst=url_for(".search_bo_users"),
         user=user,
         edit_account_form=edit_form,
         edit_account_dst=url_for(".update_bo_user", user_id=user.id),

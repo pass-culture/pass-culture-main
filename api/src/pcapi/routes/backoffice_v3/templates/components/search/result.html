@@ -1,4 +1,3 @@
-{% from "components/search/result_form.html" import build_result_page_form %}
 {% macro result_card_switch(row, result_type="public_account") %}
   {% if result_type == "offerer" %}
     {% include "components/search/result_card_offerer.html" %}
@@ -8,7 +7,6 @@
     {% include "components/search/result_card.html" %}
   {% endif %}
 {% endmacro %}
-{{ build_result_page_form(form, macro) }}
 <div>
   <div>
     <p class="lead">

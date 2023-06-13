@@ -1,14 +1,14 @@
 {% extends "layouts/connected.html" %}
+{% from "components/search/result_form.html" import build_result_page_form %}
 {% from "layouts/connected.html" import MENU_AC_LISTE_ACTEURS_CULTURELS with context %}
 {% set CURRENT_PATH = MENU_AC_LISTE_ACTEURS_CULTURELS %}
 {% block page %}
   <div class="py-4 px-5">
     <div class="d-flex justify-content-between mx-3">
       <h1 class="text-muted">Acteurs culturels</h1>
-      {% block pro_extra_header %}
-      {% endblock pro_extra_header %}
     </div>
     <div class="container-fluid">
+      {% if search_form %}{{ build_result_page_form(search_form, search_dst) }}{% endif %}
       {% block pro_main_content %}
       {% endblock pro_main_content %}
     </div>
