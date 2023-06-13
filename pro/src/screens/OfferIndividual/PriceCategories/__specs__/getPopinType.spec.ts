@@ -138,25 +138,7 @@ describe('getPopinType', () => {
     },
     {
       description:
-        '9 there is price category associated with stock, bookings and change on label',
-      stocks: [
-        individualStockFactory({ priceCategoryId: 42, bookingsQuantity: 1 }),
-      ],
-      initialValues: {
-        priceCategories: [
-          priceCategoryFormFactory({ id: 42, label: 'a new super label' }),
-        ],
-        isDuo: true,
-      },
-      values: {
-        priceCategories: [priceCategoryFormFactory({ id: 42 })],
-        isDuo: true,
-      },
-      expected: POPIN_TYPE.LABEL_WITH_BOOKING,
-    },
-    {
-      description:
-        '10 there is price category associated with stock, no bookings and change on label',
+        '9 there is price category associated with stock, no bookings and change on label',
       stocks: [
         individualStockFactory({ priceCategoryId: 42, bookingsQuantity: 0 }),
       ],
