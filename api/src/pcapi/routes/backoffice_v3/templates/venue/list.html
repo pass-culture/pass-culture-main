@@ -75,7 +75,7 @@
                 {% endif %}
                 <td>{{ venue.id }}</td>
                 <td>{{ links.build_venue_name_to_details_link(venue) }}</td>
-                <td>{{ venue.publicName }}</td>
+                <td>{{ venue.publicName | empty_string_if_null }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(venue.managingOfferer) }}</td>
                 <td>
                   {% if venue.isPermanent %}<span class="visually-hidden">Lieu permanent</span><i class="bi bi-check-circle-fill"></i>{% endif %}
