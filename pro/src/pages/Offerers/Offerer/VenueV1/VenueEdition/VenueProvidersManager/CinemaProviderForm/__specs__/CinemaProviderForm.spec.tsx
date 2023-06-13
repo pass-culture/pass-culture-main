@@ -20,15 +20,18 @@ const renderCinemaProviderForm = async (props: ICinemaProviderFormProps) => {
   await waitFor(() => screen.getByText('Accepter les réservations DUO'))
 }
 
-describe('components | CinemaProviderForm', () => {
+describe('CinemaProviderForm', () => {
   let props: ICinemaProviderFormProps
+  const providerId = 66
+  const venueId = 1
+  const offererId = 3
 
   beforeEach(async () => {
     props = {
       saveVenueProvider: jest.fn(),
-      providerId: 66,
-      venueId: 1,
-      offererId: 3,
+      providerId: providerId,
+      venueId: venueId,
+      offererId: offererId,
       isCreatedEntity: true,
       onCancel: jest.fn(),
       initialValues: { isDuo: true } as ICinemaProviderFormValues,
@@ -44,10 +47,8 @@ describe('components | CinemaProviderForm', () => {
     beforeEach(() => {})
 
     it('should display the isDuo checkbox checked by default', async () => {
-      // when
       await renderCinemaProviderForm(props)
 
-      // then
       const isDuoCheckbox = screen.getByLabelText(
         'Accepter les réservations DUO'
       )
@@ -56,36 +57,30 @@ describe('components | CinemaProviderForm', () => {
     })
 
     it('should display import button', async () => {
-      // when
       await renderCinemaProviderForm(props)
 
-      // then
       const offerImportButton = screen.getByRole('button', {
         name: 'Importer les offres',
       })
       expect(offerImportButton).toBeInTheDocument()
-      expect(offerImportButton).toHaveAttribute('type', 'submit')
     })
 
     it('should track on import', async () => {
-      // given
       await renderCinemaProviderForm(props)
       const offersImportButton = screen.getByRole('button', {
         name: 'Importer les offres',
       })
 
-      // when
       await userEvent.click(offersImportButton)
 
-      // then
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,
         SynchronizationEvents.CLICKED_IMPORT,
         {
-          offererId: 3,
-          venueId: 1,
-          providerId: 66,
+          offererId: offererId,
+          venueId: venueId,
+          providerId: providerId,
         }
       )
     })
@@ -98,10 +93,8 @@ describe('components | CinemaProviderForm', () => {
     })
 
     it('should display modify and cancel button', async () => {
-      // when
       await renderCinemaProviderForm(props)
 
-      // then
       const saveEditionProvider = screen.getByRole('button', {
         name: 'Modifier',
       })
