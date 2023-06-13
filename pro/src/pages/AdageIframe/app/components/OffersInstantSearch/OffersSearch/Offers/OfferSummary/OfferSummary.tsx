@@ -3,11 +3,11 @@ import './OfferSummary.scss'
 import React from 'react'
 
 import { OfferAddressType } from 'apiClient/adage'
-import { ReactComponent as BuildingIcon } from 'icons/building.svg'
 import { ReactComponent as DateIcon } from 'icons/ico-date.svg'
 import { ReactComponent as EuroIcon } from 'icons/ico-euro.svg'
 import { ReactComponent as SubcategoryIcon } from 'icons/ico-subcategory.svg'
 import { ReactComponent as LocationIcon } from 'icons/location.svg'
+import BuildingIcon from 'icons/stroke-building.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import {
   HydratedCollectiveOffer,
@@ -129,7 +129,11 @@ const OfferSummary = ({
         )}
         {studentsLabel && (
           <li className="offer-summary-item">
-            <BuildingIcon className="offer-summary-item-icon" />
+            <SvgIcon
+              src={BuildingIcon}
+              alt=""
+              className="offer-summary-item-icon"
+            />
             {studentsLabel}
           </li>
         )}
