@@ -8,7 +8,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import AllocineProviderForm, {
   AllocineProviderFormProps,
-  initialValuesProps,
+  InitialValuesProps,
 } from '../AllocineProviderForm'
 
 const mockLogEvent = jest.fn()
@@ -34,7 +34,7 @@ describe('AllocineProviderForm', () => {
       providerId: providerId,
       offererId: offererId,
       onCancel: jest.fn(),
-      initialValues: { isDuo: true } as initialValuesProps,
+      initialValues: { isDuo: true } as InitialValuesProps,
       isCreatedEntity: true,
     }
 

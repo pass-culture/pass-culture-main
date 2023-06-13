@@ -15,7 +15,7 @@ import Icon from 'ui-kit/Icon/Icon'
 import { DEFAULT_CINEMA_PROVIDER_FORM_VALUES } from './constants'
 import { ICinemaProviderFormValues } from './types'
 
-export interface ICinemaProviderFormProps {
+export interface CinemaProviderFormProps {
   saveVenueProvider: (values: ICinemaProviderFormValues) => void
   providerId: number
   venueId: number
@@ -33,7 +33,7 @@ export const CinemaProviderForm = ({
   isCreatedEntity = false,
   initialValues,
   onCancel,
-}: ICinemaProviderFormProps): JSX.Element => {
+}: CinemaProviderFormProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
 
