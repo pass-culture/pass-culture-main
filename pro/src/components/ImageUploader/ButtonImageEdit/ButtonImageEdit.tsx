@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-import { useModal } from 'hooks/useModal'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Icon from 'ui-kit/Icon/Icon'
@@ -13,7 +12,7 @@ import { ModalImageEdit } from './ModalImageEdit'
 import { IOnImageUploadArgs } from './ModalImageEdit/ModalImageEdit'
 import { IUploadImageValues } from './types'
 
-export interface IButtonImageEditProps {
+export interface ButtonImageEditProps {
   onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
   initialValues?: IUploadImageValues
   mode: UploaderModeEnum
@@ -23,14 +22,17 @@ const ButtonImageEdit = ({
   mode,
   initialValues = {},
   onImageUpload,
-}: IButtonImageEditProps): JSX.Element => {
-  const { visible, showModal, hideModal } = useModal()
+}: ButtonImageEditProps): JSX.Element => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const { imageUrl, originalImageUrl } = initialValues
 
   return (
     <>
       {imageUrl || originalImageUrl ? (
-        <Button onClick={showModal} variant={ButtonVariant.TERNARY}>
+        <Button
+          onClick={() => setIsModalOpen(true)}
+          variant={ButtonVariant.TERNARY}
+        >
           <Icon
             alt="Modifier l’image"
             className={styles['icon-modify-image']}
@@ -39,12 +41,13 @@ const ButtonImageEdit = ({
           Modifier
         </Button>
       ) : (
-        <ButtonImageAdd mode={mode} onClick={showModal} />
+        <ButtonImageAdd mode={mode} onClick={() => setIsModalOpen(true)} />
       )}
-      {!!visible && (
+
+      {isModalOpen && (
         <ModalImageEdit
           mode={mode}
-          onDismiss={hideModal}
+          onDismiss={() => setIsModalOpen(false)}
           onImageUpload={onImageUpload}
           initialValues={initialValues}
         />
