@@ -47,6 +47,9 @@ const iconList = [
   { src: 'icons/stroke-code.svg' },
   { src: 'icons/stroke-accessibility-ear.svg' },
 
+  // Shadow icons
+  { src: 'icons/shadow-tips.svg', viewBox: '0 0 22 26' },
+
   // Not cleaned
   { src: 'icons/ico-calendar-big.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-calendar-disabled.svg', viewBox: '0 0 24 24' },
