@@ -2060,6 +2060,21 @@ class DeleteUnwantedExistingProductTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class WhitelistExistingProductTest:
+    def test_modify_product_if_existing_and_not_cgcompatible_nor_synchronizable(self):
+        isbn = "1111111111111"
+        product = factories.ProductFactory(
+            idAtProviders=isbn,
+            isGcuCompatible=False,
+            isSynchronizationCompatible=False,
+        )
+        api.whitelist_existing_product(isbn)
+        assert models.Product.query.one() == product
+        assert product.isGcuCompatible
+        assert product.isSynchronizationCompatible
+
+
+@pytest.mark.usefixtures("db_session")
 class DeleteDraftOffersTest:
     def test_delete_draft_with_mediation_offer_criterion_activation_code_and_stocks(self, client):
         criterion = criteria_factories.CriterionFactory()

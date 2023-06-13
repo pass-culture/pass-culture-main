@@ -9,6 +9,8 @@ from sqlalchemy import orm
 
 from pcapi.connectors.titelive import get_by_ean13
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.offers.api import delete_unwanted_existing_product
+from pcapi.core.offers.api import whitelist_existing_product
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -97,6 +99,7 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
 
         db.session.add(product_whitelist)
         db.session.commit()
+        whitelist_existing_product(ean)
     except sa.exc.IntegrityError:
         db.session.rollback()
         flash(f'L\'EAN "{ean}" est déjà dans la whitelist', "warning")
@@ -117,6 +120,7 @@ def delete_product_whitelist(ean: str) -> utils.BackofficeResponse:
         else:
             db.session.delete(product_whitelist)
             db.session.commit()
+            delete_unwanted_existing_product(ean)
     except sa.exc.IntegrityError:
         db.session.rollback()
         flash("Impossible de supprimer l'EAN de la whitelist", "danger")

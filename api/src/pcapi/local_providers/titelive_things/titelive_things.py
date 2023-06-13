@@ -6,6 +6,7 @@ import re
 from pcapi.connectors.ftp_titelive import connect_to_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
 from pcapi.core.categories import subcategories
+import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.api import deactivate_permanently_unavailable_products
 import pcapi.core.offers.exceptions as offers_exceptions
@@ -95,6 +96,9 @@ class TiteLiveThings(LocalProvider):
         self.data_lines = None
         self.products_file = None
         self.product_extra_data = offers_models.OfferExtraData()
+        self.product_whitelist_eans = {
+            ean for ean, in fraud_models.ProductWhitelist.query.with_entities(fraud_models.ProductWhitelist.ean).all()
+        }
 
     def __next__(self) -> list[ProvidableInfo] | None:
         if self.data_lines is None:
@@ -120,16 +124,24 @@ class TiteLiveThings(LocalProvider):
         book_unique_identifier = self.product_infos["ean13"]
 
         ineligibility_reason = self.get_ineligibility_reason()
+
         if ineligibility_reason:
-            logger.info("Ignoring ean=%s because reason=%s", book_unique_identifier, ineligibility_reason)
-            try:
-                offers_api.delete_unwanted_existing_product(book_unique_identifier)
-            except offers_exceptions.CannotDeleteProductWithBookings:
-                self.log_provider_event(
-                    providers_models.LocalProviderEventType.SyncError,
-                    f"Error deleting product with EAN: {self.product_infos['ean13']}",
+            if book_unique_identifier in self.product_whitelist_eans:
+                logger.info(
+                    "Allowing ean=%s even if ineligible reason=%s as it is a whitelisted product",
+                    book_unique_identifier,
+                    ineligibility_reason,
                 )
-            return []
+            else:
+                logger.info("Ignoring ean=%s because reason=%s", book_unique_identifier, ineligibility_reason)
+                try:
+                    offers_api.delete_unwanted_existing_product(book_unique_identifier)
+                except offers_exceptions.CannotDeleteProductWithBookings:
+                    self.log_provider_event(
+                        providers_models.LocalProviderEventType.SyncError,
+                        f"Error deleting product with EAN: {self.product_infos['ean13']}",
+                    )
+                return []
 
         if is_unreleased_book(self.product_infos):
             products = offers_models.Product.query.filter(

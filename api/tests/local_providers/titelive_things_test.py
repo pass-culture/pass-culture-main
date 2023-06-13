@@ -5,6 +5,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
+import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ThingOfferFactory
@@ -115,6 +116,32 @@ class TiteliveThingsTest:
 
         # Then
         assert offers_models.Product.query.count() == 0
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_create_product_when_product_is_a_school_book_but_in_product_whitelist(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
+    ):
+        fraud_factories.ProductWhitelistFactory(ean=BASE_DATA_LINE_PARTS[0])
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
+        DATA_LINE_PARTS[2] = "livre scolaire"
+        DATA_LINE_PARTS[27] = "Littérature scolaire"
+        DATA_LINE_PARTS[39] = "1"
+        DATA_LINE_PARTS[40] = "0"
+        data_line = "~".join(DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        providers_factories.TiteLiveThingsProviderFactory()
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        assert offers_models.Product.query.count() == 1
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
