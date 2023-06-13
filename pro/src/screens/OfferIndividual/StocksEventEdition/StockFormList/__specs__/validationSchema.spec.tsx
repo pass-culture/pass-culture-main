@@ -1,7 +1,7 @@
 import { getYupValidationSchemaErrors } from 'utils/yupValidationTestHelpers'
 
 import { stockEventFactory } from '../stockEventFactory'
-import { IStockEventFormValues } from '../types'
+import { StockEventFormValues } from '../types'
 import { getValidationSchema } from '../validationSchema'
 
 jest.mock('utils/date', () => ({
@@ -12,7 +12,7 @@ jest.mock('utils/date', () => ({
 describe('validationSchema', () => {
   const cases: {
     description: string
-    formValues: { stocks: Partial<IStockEventFormValues>[] }
+    formValues: { stocks: Partial<StockEventFormValues>[] }
     expectedErrors: string[]
   }[] = [
     {

@@ -34,16 +34,16 @@ import {
   StocksEventFormSortingColumn,
 } from './stocksFiltering'
 
-import { IStockEventFormValues, STOCK_EVENT_FORM_DEFAULT_VALUES } from './'
+import { StockEventFormValues, STOCK_EVENT_FORM_DEFAULT_VALUES } from './'
 
 interface StockFormListProps {
   offer: IOfferIndividual
   onDeleteStock: (
-    stockValues: IStockEventFormValues,
+    stockValues: StockEventFormValues,
     index: number
   ) => Promise<void>
   priceCategoriesOptions: SelectOption[]
-  hiddenStocksRef: React.MutableRefObject<IStockEventFormValues[]>
+  hiddenStocksRef: React.MutableRefObject<StockEventFormValues[]>
 }
 
 const STOCKS_PER_PAGE = 20
@@ -61,11 +61,11 @@ const StockFormList = ({
   } = useModal()
   const mode = useOfferWizardMode()
   const [deletingStockData, setDeletingStockData] = useState<{
-    deletingStock: IStockEventFormValues
+    deletingStock: StockEventFormValues
     deletingIndex: number
   } | null>(null)
   const { values, setFieldValue, setTouched } = useFormikContext<{
-    stocks: IStockEventFormValues[]
+    stocks: StockEventFormValues[]
   }>()
   const today = getLocalDepartementDateTimeFromUtc(
     getToday(),
@@ -349,7 +349,7 @@ const StockFormList = ({
               )}
 
               {currentPageItems.map(
-                (stockValues: IStockEventFormValues, indexInPage) => {
+                (stockValues: StockEventFormValues, indexInPage) => {
                   const index = (page - 1) * STOCKS_PER_PAGE + indexInPage
                   const disableAllStockFields =
                     isSynchronized &&

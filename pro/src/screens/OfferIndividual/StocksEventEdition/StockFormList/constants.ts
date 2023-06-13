@@ -1,12 +1,12 @@
-import { IStockEventFormValues, IStockEventFormHiddenValues } from './types'
+import { StockEventFormValues, StockEventFormHiddenValues } from './types'
 
-const STOCK_EVENT_FORM_DEFAULT_HIDDEN_VALUES: IStockEventFormHiddenValues = {
+const STOCK_EVENT_FORM_DEFAULT_HIDDEN_VALUES: StockEventFormHiddenValues = {
   stockId: undefined,
   isDeletable: true,
   readOnlyFields: [],
 }
 
-export const STOCK_EVENT_FORM_DEFAULT_VALUES: IStockEventFormValues = {
+export const STOCK_EVENT_FORM_DEFAULT_VALUES: StockEventFormValues = {
   beginningDate: null,
   beginningTime: null,
   remainingQuantity: '',
@@ -17,14 +17,14 @@ export const STOCK_EVENT_FORM_DEFAULT_VALUES: IStockEventFormValues = {
 }
 
 // 'price','quantity','bookingLimitDatetime', are editable
-export const STOCK_EVENT_ALLOCINE_READ_ONLY_FIELDS: (keyof IStockEventFormValues)[] =
+export const STOCK_EVENT_ALLOCINE_READ_ONLY_FIELDS: (keyof StockEventFormValues)[] =
   ['beginningDate', 'beginningTime']
 
 // 'quantity','bookingLimitDatetime' are editable
-export const STOCK_EVENT_CINEMA_PROVIDER_READ_ONLY_FIELDS: (keyof IStockEventFormValues)[] =
+export const STOCK_EVENT_CINEMA_PROVIDER_READ_ONLY_FIELDS: (keyof StockEventFormValues)[] =
   ['beginningDate', 'beginningTime', 'priceCategoryId']
 
-export const STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS: (keyof IStockEventFormValues)[] =
+export const STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS: (keyof StockEventFormValues)[] =
   [
     'beginningDate',
     'beginningTime',

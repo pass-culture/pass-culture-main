@@ -2,7 +2,7 @@ import { set } from 'date-fns'
 import endOfDay from 'date-fns/endOfDay'
 
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
-import { IStockEventFormValues } from 'screens/OfferIndividual/StocksEventEdition/StockFormList'
+import { StockEventFormValues } from 'screens/OfferIndividual/StocksEventEdition/StockFormList'
 import { getToday, toISOStringWithoutMilliseconds } from 'utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
 
@@ -52,7 +52,7 @@ export const serializeBeginningDateTime = (
 }
 
 const serializeStockEvent = (
-  formValues: IStockEventFormValues,
+  formValues: StockEventFormValues,
   departementCode: string
 ): StockCreationBodyModel | StockEditionBodyModel => {
   if (!(formValues.beginningDate instanceof Date)) {
@@ -96,7 +96,7 @@ const serializeStockEvent = (
 }
 
 export const serializeStockEventEdition = (
-  formValuesList: IStockEventFormValues[],
+  formValuesList: StockEventFormValues[],
   departementCode: string
 ): StockCreationBodyModel[] | StockEditionBodyModel[] => {
   const today = getToday()
@@ -111,7 +111,7 @@ export const serializeStockEventEdition = (
           : null
       return beginingDatetime === null || beginingDatetime >= today
     })
-    .map((formValues: IStockEventFormValues) =>
+    .map((formValues: StockEventFormValues) =>
       serializeStockEvent(formValues, departementCode)
     )
 }
