@@ -13,7 +13,7 @@ import Icon from 'ui-kit/Icon/Icon'
 import { getCanSubmit } from 'utils/react-final-form'
 import './AllocineProviderForm.scss'
 
-interface formProps {
+interface FormProps {
   isLoading: boolean
   dirtySinceLastSubmit: boolean
   hasSubmitErrors: boolean
@@ -22,22 +22,22 @@ interface formProps {
   handleSubmit: () => void
 }
 
-interface formValuesProps {
+interface FormValuesProps {
   isDuo: boolean
   price?: number
   quantity: string | number | null
   isActive?: boolean
 }
-export type initialValuesProps = formProps & formValuesProps
+export type InitialValuesProps = FormProps & FormValuesProps
 
 export interface AllocineProviderFormProps {
-  saveVenueProvider: (payload?: formValuesProps) => void
+  saveVenueProvider: (payload?: FormValuesProps) => void
   providerId: number
   offererId: number
   venueId: number
   isCreatedEntity?: boolean
   onCancel: () => void
-  initialValues: initialValuesProps
+  initialValues: InitialValuesProps
 }
 
 const AllocineProviderForm = ({
@@ -51,39 +51,37 @@ const AllocineProviderForm = ({
 }: AllocineProviderFormProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
-  const handleSubmit = useCallback(
-    (formValues: formValuesProps) => {
-      const { isDuo = true, price } = formValues
-      const quantity = formValues.quantity !== '' ? formValues.quantity : null
 
-      const payload = {
-        quantity,
-        isDuo,
-        price,
-        providerId,
-        venueId,
-        isActive: initialValues.isActive,
-      }
+  const handleSubmit = (formValues: FormValuesProps) => {
+    const { isDuo = true, price } = formValues
+    const quantity = formValues.quantity !== '' ? formValues.quantity : null
 
-      setIsLoading(true)
+    const payload = {
+      quantity,
+      isDuo,
+      price,
+      providerId,
+      venueId,
+      isActive: initialValues.isActive,
+    }
 
-      saveVenueProvider(payload)
-      logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
-        offererId: offererId,
-        venueId: venueId,
-        providerId: providerId,
-      })
-    },
-    [saveVenueProvider, providerId, venueId]
-  )
+    setIsLoading(true)
 
-  const required = useCallback((value: number | undefined) => {
+    saveVenueProvider(payload)
+    logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
+      offererId: offererId,
+      venueId: venueId,
+      providerId: providerId,
+    })
+  }
+
+  const required = (value: number | undefined) => {
     return typeof value === 'number' ? undefined : 'Ce champ est obligatoire'
-  }, [])
+  }
 
   const renderForm = useCallback(
     (
-      formProps: FormRenderProps<formValuesProps, formProps>
+      formProps: FormRenderProps<FormValuesProps, FormProps>
     ): React.ReactNode => {
       const canSubmit = getCanSubmit({
         isLoading: isLoading,

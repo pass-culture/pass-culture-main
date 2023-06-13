@@ -8,20 +8,20 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   CinemaProviderForm,
-  ICinemaProviderFormProps,
+  CinemaProviderFormProps,
 } from '../CinemaProviderForm'
 import { ICinemaProviderFormValues } from '../types'
 
 const mockLogEvent = jest.fn()
 
-const renderCinemaProviderForm = async (props: ICinemaProviderFormProps) => {
+const renderCinemaProviderForm = async (props: CinemaProviderFormProps) => {
   renderWithProviders(<CinemaProviderForm {...props} />)
 
   await waitFor(() => screen.getByText('Accepter les réservations DUO'))
 }
 
 describe('CinemaProviderForm', () => {
-  let props: ICinemaProviderFormProps
+  let props: CinemaProviderFormProps
   const providerId = 66
   const venueId = 1
   const offererId = 3

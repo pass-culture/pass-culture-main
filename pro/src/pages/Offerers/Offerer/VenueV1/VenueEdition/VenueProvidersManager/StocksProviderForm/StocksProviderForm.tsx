@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
@@ -37,26 +37,25 @@ const StocksProviderForm = ({
   const [isCheckingApi, setIsCheckingApi] = useState(false)
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false)
 
-  const handleOpenConfirmDialog = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      event.preventDefault()
-      event.stopPropagation()
-      logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
-        offererId: offererId,
-        venueId: venueId,
-        providerId: providerId,
-      })
-      setIsConfirmDialogOpened(true)
-    },
-    []
-  )
+  const handleOpenConfirmDialog = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault()
+    event.stopPropagation()
+    logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
+      offererId: offererId,
+      venueId: venueId,
+      providerId: providerId,
+    })
+    setIsConfirmDialogOpened(true)
+  }
 
-  const handleCloseConfirmDialog = useCallback(() => {
+  const handleCloseConfirmDialog = () => {
     /* istanbul ignore next: DEBT, TO FIX */
     setIsConfirmDialogOpened(false)
-  }, [])
+  }
 
-  const handleFormSubmit = useCallback(() => {
+  const handleFormSubmit = () => {
     setIsCheckingApi(true)
 
     const payload: PayloadProps = {
@@ -72,7 +71,7 @@ const StocksProviderForm = ({
       providerId: providerId,
     })
     setIsConfirmDialogOpened(false)
-  }, [saveVenueProvider, providerId, siret, venueId])
+  }
 
   if (isCheckingApi) {
     return <Spinner message="Vérification de votre rattachement" />
