@@ -7,6 +7,12 @@ class Returns200Test:
             name="a beautiful name",
             siret=None,
             comment="no siret",
+            bannerUrl="http://example.com/image_cropped.png",
+            bannerMeta={
+                "image_credit": "test",
+                "random": "content",
+                "should": "be_ignored",
+            },
         )
 
         client.with_eac_token()
@@ -43,6 +49,12 @@ class Returns200Test:
                     "isPermanent": venue1.isPermanent,
                     "isAdmin": False,
                     "offerer": {"id": venue1.managingOfferer.id, "name": venue1.managingOfferer.name},
+                    "bannerUrl": "http://example.com/image_cropped.png",
+                    "bannerMeta": {
+                        "image_credit": "test",
+                        "random": "content",
+                        "should": "be_ignored",
+                    },
                 }
             ]
         }

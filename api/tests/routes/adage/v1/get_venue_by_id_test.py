@@ -11,7 +11,14 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class Returns200Test:
     def test_get_venue_by_id(self, client: Any) -> None:
-        venue = offerer_factories.CollectiveVenueFactory()
+        venue = offerer_factories.CollectiveVenueFactory(
+            bannerUrl="http://example.com/image_cropped.png",
+            bannerMeta={
+                "image_credit": "test",
+                "random": "content",
+                "should": "be_ignored",
+            },
+        )
 
         client.with_eac_token()
         response = client.get(f"/adage/v1/venues/id/{venue.id}")
@@ -45,6 +52,12 @@ class Returns200Test:
             "isPermanent": venue.isPermanent,
             "isAdmin": False,
             "offerer": {"id": venue.managingOfferer.id, "name": venue.managingOfferer.name},
+            "bannerUrl": "http://example.com/image_cropped.png",
+            "bannerMeta": {
+                "image_credit": "test",
+                "random": "content",
+                "should": "be_ignored",
+            },
         }
 
     def test_get_relative_venues_by_id(self, client: Any) -> None:
@@ -53,6 +66,12 @@ class Returns200Test:
             isPermanent=True,
             managingOfferer=offerer,
             name="azerty",
+            bannerUrl="http://example.com/image_cropped.png",
+            bannerMeta={
+                "image_credit": "test",
+                "random": "content",
+                "should": "be_ignored",
+            },
         )
         venue2 = offerer_factories.CollectiveVenueFactory(
             isPermanent=False,
@@ -98,6 +117,12 @@ class Returns200Test:
                     "siren": venue1.managingOfferer.siren,
                     "isAdmin": False,
                     "offerer": {"id": venue1.managingOfferer.id, "name": venue1.managingOfferer.name},
+                    "bannerUrl": "http://example.com/image_cropped.png",
+                    "bannerMeta": {
+                        "image_credit": "test",
+                        "random": "content",
+                        "should": "be_ignored",
+                    },
                 },
                 {
                     "id": venue2.id,
@@ -127,6 +152,8 @@ class Returns200Test:
                     "siren": venue2.managingOfferer.siren,
                     "isAdmin": True,
                     "offerer": {"id": venue2.managingOfferer.id, "name": venue2.managingOfferer.name},
+                    "bannerUrl": None,
+                    "bannerMeta": None,
                 },
             ]
         }
