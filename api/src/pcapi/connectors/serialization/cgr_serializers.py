@@ -51,6 +51,7 @@ class ReservationPassCultureBody(BaseModel):
     pPrenom: str
     pEmail: str
     pToken: str
+    pDateLimiteAnnul: datetime.datetime
 
 
 class ReservationPassCultureResponse(BaseModel):

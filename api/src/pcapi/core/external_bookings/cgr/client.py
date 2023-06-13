@@ -32,6 +32,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
     ) -> list[external_bookings_models.Ticket]:
+        assert booking.cancellationLimitDate  # for typing; a movie screening is always an event
         book_show_body = cgr_serializers.ReservationPassCultureBody(
             pIDSeances=show_id,
             pNumCinema=self.cgr_cinema_details.numCinema,
@@ -41,6 +42,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             pPrenom=beneficiary.firstName if beneficiary.firstName else "",
             pEmail=beneficiary.email,
             pToken=booking.token,
+            pDateLimiteAnnul=booking.cancellationLimitDate,
         )
         response = reservation_pass_culture(self.cgr_cinema_details, book_show_body)
         logger.info("Booked CGR Ticket", extra={"barcode": response.QrCode, "seat_number": response.Placement})
