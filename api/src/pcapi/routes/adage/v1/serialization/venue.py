@@ -68,6 +68,8 @@ class VenueModel(BaseModel):
     isPermanent: bool | None
     isAdmin: bool | None
     offerer: OffererModel
+    bannerUrl: str | None
+    bannerMeta: dict | None
 
     @classmethod
     def from_orm(cls, venue: Venue) -> "VenueModel":
