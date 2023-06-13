@@ -15,11 +15,9 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import { useModal } from 'hooks/useModal'
 import { usePagination } from 'hooks/usePagination'
-import { PlusCircleIcon } from 'icons'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import DialogStockEventDeleteConfirm from 'screens/OfferIndividual/DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'
-import { Button, DatePicker, Select, TextInput, TimePicker } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { DatePicker, Select, TextInput, TimePicker } from 'ui-kit'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
@@ -117,26 +115,6 @@ const StockFormList = ({
       name="stocks"
       render={arrayHelpers => (
         <>
-          <div className={styles['button-row']}>
-            <Button
-              variant={ButtonVariant.TERNARY}
-              Icon={PlusCircleIcon}
-              onClick={() =>
-                arrayHelpers.unshift({
-                  ...STOCK_EVENT_FORM_DEFAULT_VALUES,
-                  priceCategoryId:
-                    priceCategoriesOptions.length === 1
-                      ? priceCategoriesOptions[0].value
-                      : '',
-                })
-              }
-              disabled={isSynchronized || isDisabled}
-            >
-              Ajouter une date
-            </Button>
-            <div>{values.stocks.length} dates</div>
-          </div>
-
           <table className={styles['stock-table']}>
             <caption className={styles['caption-table']}>
               Tableau d'édition des stocks

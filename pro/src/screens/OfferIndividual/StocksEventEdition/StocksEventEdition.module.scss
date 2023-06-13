@@ -1,0 +1,7 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.add-dates-button {
+  display: flex;
+  justify-content: center;
+  margin-bottom: rem.torem(32px);
+}
