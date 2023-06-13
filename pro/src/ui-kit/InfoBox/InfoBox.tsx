@@ -1,10 +1,11 @@
 import cn from 'classnames'
 import React, { ReactNode } from 'react'
 
-import { ReactComponent as BulbIcon } from 'icons/ico-bulb.svg'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
+import TipsIcon from 'icons/shadow-tips.svg'
 import { ButtonLink } from 'ui-kit/Button'
 import type { LinkProps } from 'ui-kit/Button/ButtonLink'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './InfoBox.module.scss'
 
@@ -23,7 +24,12 @@ const InfoBox = ({ children, link }: InfoBoxProps): JSX.Element => {
       <div className={styles['info-box-header']}>
         <div className={cn(styles['info-box-bar'])} />
         <div className={styles['info-box-title']}>
-          <BulbIcon className={styles['info-box-title-icon']} />
+          <SvgIcon
+            src={TipsIcon}
+            alt=""
+            className={styles['info-box-title-icon']}
+            viewBox="0 0 24 26"
+          />
           <span>À SAVOIR</span>
         </div>
         <div className={cn(styles['info-box-bar'])} />
