@@ -6,6 +6,11 @@
        target="_top">{{ user.full_name }} ({{ user.id }})</a>
   {% endif %}
 {% endmacro %}
+{% macro build_booking_token_to_booking_details_link(booking_token) %}
+  <a href="{{ url_for('backoffice_v3_web.individual_bookings.list_individual_bookings', q=booking_token) }}"
+     class="link-primary"
+     target="_top">{{ booking_token }}</a>
+{% endmacro %}
 {% macro build_pro_user_name_to_details_link(user_id, text) %}
   {% if user_id %}
     <a href="{{ url_for('backoffice_v3_web.pro_user.get', user_id=user_id) }}"
