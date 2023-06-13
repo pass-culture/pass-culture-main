@@ -38,8 +38,9 @@
       justify-content: center;
       width: rem.torem(24px);
 
-      path {
-        fill: colors.$grey-medium;
+      &-icon {
+        width: rem.torem(18px);
+        color: colors.$grey-medium;
       }
     }
   }

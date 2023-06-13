@@ -3,7 +3,8 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import Stepper from 'components/Stepper'
-import { ReactComponent as BreadcumbSeparator } from 'icons/ico-breadcrumb-arrow-right.svg'
+import ArrowRight from 'icons/full-arrow-right.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Breadcrumb.module.scss'
 import type { Step } from './types'
@@ -82,7 +83,11 @@ const Breadcrumb = ({
 
             {styleType === BreadcrumbStyle.DEFAULT && !isLastStep && (
               <div className={styles['separator']}>
-                <BreadcumbSeparator />
+                <SvgIcon
+                  src={ArrowRight}
+                  alt=""
+                  className={styles['separator-icon']}
+                />
               </div>
             )}
           </li>
