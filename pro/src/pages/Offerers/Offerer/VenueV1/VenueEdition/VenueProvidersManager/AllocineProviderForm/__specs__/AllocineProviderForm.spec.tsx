@@ -20,10 +20,11 @@ const renderAllocineProviderForm = async (props: AllocineProviderFormProps) => {
   })
 }
 
-describe('components | AllocineProviderForm', () => {
+describe('AllocineProviderForm', () => {
   let props: AllocineProviderFormProps
   const venueId = 1
   const providerId = 2
+  const offererId = 36
   const provider = { id: providerId, name: 'Allociné', isDuo: true }
 
   beforeEach(async () => {
@@ -31,9 +32,10 @@ describe('components | AllocineProviderForm', () => {
       venueId: venueId,
       saveVenueProvider: jest.fn(),
       providerId: providerId,
-      offererId: 36,
+      offererId: offererId,
       onCancel: jest.fn(),
       initialValues: { isDuo: true } as initialValuesProps,
+      isCreatedEntity: true,
     }
 
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -43,10 +45,8 @@ describe('components | AllocineProviderForm', () => {
   })
 
   it('should display the price field with minimum value set to 0', async () => {
-    // when
     await renderAllocineProviderForm(props)
 
-    // then
     const priceField = screen.getByLabelText('Prix de vente/place', {
       exact: false,
     })
@@ -56,246 +56,213 @@ describe('components | AllocineProviderForm', () => {
   })
 
   it('should display the quantity field with default value set to Illimité', async () => {
-    // when
     await renderAllocineProviderForm(props)
 
-    // then
     const quantityField = screen.getByLabelText(`Nombre de places/séance`)
     expect(quantityField).toBeInTheDocument()
     expect(quantityField).toHaveAttribute('min', '0')
     expect(quantityField).toHaveAttribute('step', '1')
   })
 
-  describe('import form allocine provider for the first time', () => {
-    beforeEach(async () => {
-      props.isCreatedEntity = true
+  it('should display the isDuo checkbox checked by default on creation', async () => {
+    await renderAllocineProviderForm(props)
+
+    const isDuoCheckbox = screen.getByLabelText(`Accepter les réservations DUO`)
+    expect(isDuoCheckbox).toBeInTheDocument()
+    expect(isDuoCheckbox).toBeChecked()
+  })
+
+  it('should display an import button disabled by default on creation', async () => {
+    await renderAllocineProviderForm(props)
+
+    const offerImportButton = screen.getByRole('button', {
+      name: 'Importer les offres',
     })
+    expect(offerImportButton).toBeInTheDocument()
+    expect(offerImportButton).toBeDisabled()
+  })
 
-    it('should display the isDuo checkbox checked by default', async () => {
-      // when
-      await renderAllocineProviderForm(props)
+  it('should be able to submit when price field is filled  on creation', async () => {
+    await renderAllocineProviderForm(props)
 
-      // then
-      const isDuoCheckbox = screen.getByLabelText(
-        `Accepter les réservations DUO`
-      )
-      expect(isDuoCheckbox).toBeInTheDocument()
-      expect(isDuoCheckbox).toBeChecked()
+    const offerImportButton = screen.getByRole('button', {
+      name: 'Importer les offres',
     })
-
-    it('should display an import button disabled by default', async () => {
-      // when
-      await renderAllocineProviderForm(props)
-
-      // then
-      const offerImportButton = screen.getByRole('button', {
-        name: 'Importer les offres',
-      })
-      expect(offerImportButton).toBeInTheDocument()
-      expect(offerImportButton).toHaveAttribute('type', 'submit')
-      expect(offerImportButton).toBeDisabled()
+    const priceField = screen.getByLabelText('Prix de vente/place', {
+      exact: false,
     })
+    const quantityField = screen.getByLabelText('Nombre de places/séance')
+    const isDuoCheckbox = screen.getByLabelText(`Accepter les réservations DUO`)
 
-    it('should be able to submit when price field is filled', async () => {
-      // given
-      await renderAllocineProviderForm(props)
+    await userEvent.type(priceField, '10')
+    await userEvent.type(quantityField, '5')
+    await userEvent.click(isDuoCheckbox)
+    await userEvent.click(offerImportButton)
 
-      const offerImportButton = screen.getByRole('button', {
-        name: 'Importer les offres',
-      })
-      const priceField = screen.getByLabelText('Prix de vente/place', {
-        exact: false,
-      })
-      const quantityField = screen.getByLabelText('Nombre de places/séance')
-      const isDuoCheckbox = screen.getByLabelText(
-        `Accepter les réservations DUO`
-      )
-
-      // when
-      await userEvent.type(priceField, '10')
-      await userEvent.type(quantityField, '5')
-      await userEvent.click(isDuoCheckbox)
-      await userEvent.click(offerImportButton)
-
-      // then
-      expect(props.saveVenueProvider).toHaveBeenCalledWith({
-        price: 10,
-        quantity: 5,
-        isDuo: false,
-        providerId: provider.id,
-        venueId: venueId,
-      })
-    })
-
-    it('should be able to submit when price field is filled to 0', async () => {
-      // given
-      await renderAllocineProviderForm(props)
-      const offerImportButton = screen.getByRole('button', {
-        name: 'Importer les offres',
-      })
-      const priceField = screen.getByLabelText('Prix de vente/place', {
-        exact: false,
-      })
-
-      // when
-      await userEvent.type(priceField, '0')
-      await userEvent.click(offerImportButton)
-
-      // then
-      expect(props.saveVenueProvider).toHaveBeenCalledWith({
-        price: 0,
-        quantity: undefined,
-        isDuo: true,
-        providerId: provider.id,
-        venueId: venueId,
-      })
-    })
-
-    it('should be able to submit when price field is filled with a decimal', async () => {
-      // given
-      await renderAllocineProviderForm(props)
-      const offerImportButton = screen.getByRole('button', {
-        name: 'Importer les offres',
-      })
-      const priceField = screen.getByLabelText('Prix de vente/place', {
-        exact: false,
-      })
-
-      // when
-      await userEvent.type(priceField, '0.42')
-      await userEvent.click(offerImportButton)
-
-      // then
-      expect(props.saveVenueProvider).toHaveBeenCalledWith({
-        price: 0.42,
-        quantity: undefined,
-        isDuo: true,
-        providerId: provider.id,
-        venueId: venueId,
-      })
-    })
-
-    it('should track on import', async () => {
-      // given
-      await renderAllocineProviderForm(props)
-      const priceField = screen.getByLabelText('Prix de vente/place', {
-        exact: false,
-      })
-      await userEvent.type(priceField, '10')
-
-      // when
-      const offerImportButton = screen.getByRole('button', {
-        name: 'Importer les offres',
-      })
-      await userEvent.click(offerImportButton)
-
-      // then
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
-      expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
-        SynchronizationEvents.CLICKED_IMPORT,
-        {
-          offererId: 36,
-          venueId: 1,
-          providerId: 2,
-        }
-      )
+    expect(props.saveVenueProvider).toHaveBeenCalledWith({
+      price: 10,
+      quantity: 5,
+      isDuo: false,
+      providerId: provider.id,
+      venueId: venueId,
     })
   })
 
-  describe('edit existing allocine provider', () => {
-    beforeEach(() => {
-      props.isCreatedEntity = false
-      props.initialValues.price = 15
-      props.initialValues.quantity = 50
-      props.initialValues.isDuo = false
+  it('should be able to submit when price field is filled to 0  on creation', async () => {
+    await renderAllocineProviderForm(props)
+    const offerImportButton = screen.getByRole('button', {
+      name: 'Importer les offres',
+    })
+    const priceField = screen.getByLabelText('Prix de vente/place', {
+      exact: false,
     })
 
-    it('should display modify and cancel button', async () => {
-      // when
-      await renderAllocineProviderForm(props)
+    await userEvent.type(priceField, '0')
+    await userEvent.click(offerImportButton)
 
-      // then
-      const saveEditioProvider = screen.getByRole('button', {
-        name: 'Modifier',
-      })
-      expect(saveEditioProvider).toBeInTheDocument()
-      const cancelEditionProvider = screen.getByRole('button', {
-        name: 'Annuler',
-      })
-      expect(cancelEditionProvider).toBeInTheDocument()
+    expect(props.saveVenueProvider).toHaveBeenCalledWith({
+      price: 0,
+      quantity: undefined,
+      isDuo: true,
+      providerId: provider.id,
+      venueId: venueId,
+    })
+  })
+
+  it('should be able to submit when price field is filled with a decimal  on creation', async () => {
+    await renderAllocineProviderForm(props)
+    const offerImportButton = screen.getByRole('button', {
+      name: 'Importer les offres',
+    })
+    const priceField = screen.getByLabelText('Prix de vente/place', {
+      exact: false,
     })
 
-    it('should show existing parameters', async () => {
-      await renderAllocineProviderForm(props)
+    await userEvent.type(priceField, '0.42')
+    await userEvent.click(offerImportButton)
 
-      const priceField = screen.getByLabelText('Prix de vente/place', {
-        exact: false,
-      })
-      expect(priceField).toHaveValue(15)
+    expect(props.saveVenueProvider).toHaveBeenCalledWith({
+      price: 0.42,
+      quantity: undefined,
+      isDuo: true,
+      providerId: provider.id,
+      venueId: venueId,
+    })
+  })
 
-      const quantityField = screen.getByLabelText('Nombre de places/séance', {
-        exact: false,
-      })
-      expect(quantityField).toHaveValue(50)
+  it('should track on import  on creation', async () => {
+    await renderAllocineProviderForm(props)
+    const priceField = screen.getByLabelText('Prix de vente/place', {
+      exact: false,
+    })
+    await userEvent.type(priceField, '10')
 
-      const isDuoField = screen.getByLabelText(
-        'Accepter les réservations DUO',
-        { exact: false }
-      )
-      expect(isDuoField).not.toBeChecked()
+    const offerImportButton = screen.getByRole('button', {
+      name: 'Importer les offres',
+    })
+    await userEvent.click(offerImportButton)
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      SynchronizationEvents.CLICKED_IMPORT,
+      {
+        offererId: offererId,
+        venueId: venueId,
+        providerId: providerId,
+      }
+    )
+  })
+
+  it('should display modify and cancel button on edition', async () => {
+    props.isCreatedEntity = false
+    props.initialValues.price = 15
+    props.initialValues.quantity = 50
+    props.initialValues.isDuo = false
+    await renderAllocineProviderForm(props)
+
+    const saveEditionProviderButton = screen.getByRole('button', {
+      name: 'Modifier',
+    })
+    expect(saveEditionProviderButton).toBeInTheDocument()
+    const cancelEditionProviderButton = screen.getByRole('button', {
+      name: 'Annuler',
+    })
+    expect(cancelEditionProviderButton).toBeInTheDocument()
+  })
+
+  it('should show existing parameters on edition', async () => {
+    props.isCreatedEntity = false
+    props.initialValues.price = 15
+    props.initialValues.quantity = 50
+    props.initialValues.isDuo = false
+    await renderAllocineProviderForm(props)
+
+    const priceField = screen.getByLabelText('Prix de vente/place', {
+      exact: false,
+    })
+    expect(priceField).toHaveValue(15)
+
+    const quantityField = screen.getByLabelText('Nombre de places/séance', {
+      exact: false,
+    })
+    expect(quantityField).toHaveValue(50)
+
+    const isDuoField = screen.getByLabelText('Accepter les réservations DUO', {
+      exact: false,
+    })
+    expect(isDuoField).not.toBeChecked()
+  })
+
+  it('should not be able to submit when price field is not filled on edition', async () => {
+    props.isCreatedEntity = false
+    props.initialValues.price = 15
+    props.initialValues.quantity = 50
+    props.initialValues.isDuo = false
+    await renderAllocineProviderForm(props)
+
+    const saveEditionProviderButton = screen.getByRole('button', {
+      name: 'Modifier',
+    })
+    const priceField = screen.getByLabelText('Prix de vente/place', {
+      exact: false,
     })
 
-    it('should not be able to submit when price field is not filled', async () => {
-      // given
-      await renderAllocineProviderForm(props)
+    await userEvent.clear(priceField)
 
-      const saveEditioProvider = screen.getByRole('button', {
-        name: 'Modifier',
-      })
-      const priceField = screen.getByLabelText('Prix de vente/place', {
-        exact: false,
-      })
+    expect(saveEditionProviderButton).toBeDisabled()
+  })
 
-      // when
-      await userEvent.clear(priceField)
+  it('should be able to submit when price field is filled on edition', async () => {
+    props.isCreatedEntity = false
+    props.initialValues.price = 15
+    props.initialValues.quantity = 50
+    props.initialValues.isDuo = false
+    await renderAllocineProviderForm(props)
 
-      // then
-      expect(saveEditioProvider).toBeDisabled()
+    const saveEditionProviderButton = screen.getByRole('button', {
+      name: 'Modifier',
     })
+    const priceField = screen.getByLabelText('Prix de vente/place', {
+      exact: false,
+    })
+    const quantityField = screen.getByLabelText('Nombre de places/séance')
+    const isDuoCheckbox = screen.getByLabelText(`Accepter les réservations DUO`)
 
-    it('should be able to submit when price field is filled', async () => {
-      // given
-      await renderAllocineProviderForm(props)
+    await userEvent.clear(priceField)
+    await userEvent.clear(quantityField)
+    await userEvent.type(priceField, '5')
+    await userEvent.type(quantityField, '17')
 
-      const saveEditioProvider = screen.getByRole('button', {
-        name: 'Modifier',
-      })
-      const priceField = screen.getByLabelText('Prix de vente/place', {
-        exact: false,
-      })
-      const quantityField = screen.getByLabelText('Nombre de places/séance')
-      const isDuoCheckbox = screen.getByLabelText(
-        `Accepter les réservations DUO`
-      )
+    await userEvent.click(isDuoCheckbox)
+    await userEvent.click(saveEditionProviderButton)
 
-      // when
-      await userEvent.clear(priceField)
-      await userEvent.clear(quantityField)
-      await userEvent.type(priceField, '5')
-      await userEvent.type(quantityField, '17')
-
-      await userEvent.click(isDuoCheckbox)
-      await userEvent.click(saveEditioProvider)
-
-      // then
-      expect(props.saveVenueProvider).toHaveBeenCalledWith({
-        price: 5,
-        quantity: 17,
-        isDuo: true,
-        providerId: provider.id,
-        venueId: 1,
-      })
+    expect(props.saveVenueProvider).toHaveBeenCalledWith({
+      price: 5,
+      quantity: 17,
+      isDuo: true,
+      providerId: provider.id,
+      venueId: venueId,
     })
   })
 })

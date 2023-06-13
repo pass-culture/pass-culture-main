@@ -16,16 +16,19 @@ const renderStocksProviderForm = (props: StocksProviderFormProps) => {
   renderWithProviders(<StocksProviderForm {...props} />)
 }
 
-describe('src | StocksProviderForm', () => {
+describe('StocksProviderForm', () => {
   let props: StocksProviderFormProps
+  const providerId = 66
+  const venueId = 1
+  const offererId = 3
 
   beforeEach(() => {
     props = {
-      offererId: 36,
-      providerId: 2,
+      offererId: offererId,
+      providerId: providerId,
       saveVenueProvider: jest.fn(),
       siret: '12345678901234',
-      venueId: 1,
+      venueId: venueId,
       hasOffererProvider: true,
     }
 
@@ -37,7 +40,7 @@ describe('src | StocksProviderForm', () => {
 
   it('should display an import button', async () => {
     renderStocksProviderForm(props)
-    // then
+
     expect(
       screen.queryByRole('button', { name: 'Importer les offres' })
     ).toBeInTheDocument()
@@ -45,16 +48,13 @@ describe('src | StocksProviderForm', () => {
 
   describe('on form submit', () => {
     it('should display the spinner while waiting for server response', async () => {
-      // given
       renderStocksProviderForm(props)
       const submitButton = screen.getByRole('button', {
         name: 'Importer les offres',
       })
 
-      // when
       await userEvent.click(submitButton)
 
-      // then
       expect(
         screen.getByText('Certaines offres ne seront pas synchronisées')
       ).toBeInTheDocument()
@@ -68,8 +68,8 @@ describe('src | StocksProviderForm', () => {
         screen.getByText('Vérification de votre rattachement')
       ).toBeInTheDocument()
       expect(props.saveVenueProvider).toHaveBeenCalledWith({
-        providerId: 2,
-        venueId: 1,
+        providerId: providerId,
+        venueId: venueId,
         venueIdAtOfferProvider: '12345678901234',
       })
     })
@@ -87,9 +87,9 @@ describe('src | StocksProviderForm', () => {
         1,
         SynchronizationEvents.CLICKED_IMPORT,
         {
-          offererId: 36,
-          venueId: 1,
-          providerId: 2,
+          offererId: offererId,
+          venueId: venueId,
+          providerId: providerId,
         }
       )
 
@@ -103,9 +103,9 @@ describe('src | StocksProviderForm', () => {
         2,
         SynchronizationEvents.CLICKED_VALIDATE_IMPORT,
         {
-          offererId: 36,
-          venueId: 1,
-          providerId: 2,
+          offererId: offererId,
+          venueId: venueId,
+          providerId: providerId,
         }
       )
     })
