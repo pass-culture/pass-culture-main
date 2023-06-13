@@ -100,6 +100,7 @@ export const App = (): JSX.Element => {
       <FacetFiltersContextProvider
         departmentCode={user?.departmentCode}
         uai={user?.uai}
+        venueFilter={venueFilter}
       >
         {notification && <NotificationComponent notification={notification} />}
         {user?.role &&

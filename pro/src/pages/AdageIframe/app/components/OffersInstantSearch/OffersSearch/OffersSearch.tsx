@@ -1,6 +1,6 @@
 import './OffersSearch.scss'
 
-import { useEffect, useContext, useState, useCallback } from 'react'
+import { useContext, useState, useCallback } from 'react'
 import * as React from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
@@ -22,7 +22,7 @@ import Tabs from 'ui-kit/Tabs'
 import { LOGS_DATA } from 'utils/config'
 import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
 
-import { computeVenueFacetFilter, populateFacetFilters } from '../utils'
+import { populateFacetFilters } from '../utils'
 
 import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
@@ -118,15 +118,6 @@ export const OffersSearchComponent = ({
     )
     refine(INITIAL_QUERY)
   }, [activeTab])
-
-  useEffect(() => {
-    if (venueFilter?.id) {
-      setFacetFilters([
-        computeVenueFacetFilter(venueFilter),
-        ...getDefaultFacetFilterUAICodeValue(adageUser.uai),
-      ])
-    }
-  }, [setFacetFilters, venueFilter, adageUser.uai])
 
   const isNewHeaderActive = useActiveFeature('WIP_ENABLE_NEW_ADAGE_HEADER')
 
