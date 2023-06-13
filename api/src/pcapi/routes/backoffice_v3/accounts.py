@@ -102,8 +102,8 @@ def search_public_accounts() -> utils.BackofficeResponse:
 
     return render_template(
         "accounts/search_result.html",
-        dst=url_for(".search_public_accounts"),
-        form=form,
+        search_form=form,
+        search_dst=url_for(".search_public_accounts"),
         next_pages_urls=next_pages_urls,
         new_search_url=url_for(".search_public_accounts"),
         get_link_to_detail=get_public_account_link,
@@ -262,6 +262,8 @@ def render_public_account_details(
 
     return render_template(
         "accounts/get.html",
+        search_form=search_forms.SearchForm(),
+        search_dst=url_for(".search_public_accounts"),
         user=user,
         tunnel=tunnel,
         fraud_actions_desc=fraud_actions_desc,

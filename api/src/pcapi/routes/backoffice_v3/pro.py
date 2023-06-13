@@ -109,8 +109,8 @@ def search_pro() -> utils.BackofficeResponse:
 
     return render_template(
         "pro/search_result.html",
-        form=form,
-        dst=url_for(".search_pro"),
+        search_form=form,
+        search_dst=url_for(".search_pro"),
         result_type=search_model.pro_type.value,
         next_pages_urls=next_pages_urls,
         new_search_url=url_for(".search_pro"),
