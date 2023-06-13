@@ -1,10 +1,10 @@
-export interface IStockEventFormHiddenValues {
+export interface StockEventFormHiddenValues {
   stockId?: number
   isDeletable: boolean
   readOnlyFields: string[]
 }
 
-export interface IStockEventFormValues extends IStockEventFormHiddenValues {
+export interface StockEventFormValues extends StockEventFormHiddenValues {
   bookingsQuantity: number
   remainingQuantity: number | ''
   bookingLimitDatetime: Date | null

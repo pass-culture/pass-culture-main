@@ -38,21 +38,21 @@ import { serializeStockEventEdition } from './adapters/serializers'
 import {
   getValidationSchema,
   buildInitialValues,
-  IStockEventFormValues,
+  StockEventFormValues,
   STOCK_EVENT_FORM_DEFAULT_VALUES,
   StockFormList,
 } from './StockFormList'
 
 export const hasChangesOnStockWithBookings = (
-  submittedStocks: IStockEventFormValues[],
-  initialStocks: IStockEventFormValues[]
+  submittedStocks: StockEventFormValues[],
+  initialStocks: StockEventFormValues[]
 ) => {
   const initialStocksById: Record<
     string,
-    Partial<IStockEventFormValues>
+    Partial<StockEventFormValues>
   > = initialStocks.reduce(
-    (dict: Record<string, Partial<IStockEventFormValues>>, stock) => {
-      dict[stock.stockId || 'IStockEventFormValuesnewStock'] = {
+    (dict: Record<string, Partial<StockEventFormValues>>, stock) => {
+      dict[stock.stockId || 'StockEventFormValuesnewStock'] = {
         priceCategoryId: stock.priceCategoryId,
         beginningDate: stock.beginningDate,
         beginningTime: stock.beginningTime,
@@ -71,14 +71,14 @@ export const hasChangesOnStockWithBookings = (
       return false
     }
     const initialStock = initialStocksById[stock.stockId]
-    const fieldsWithWarning: (keyof IStockEventFormValues)[] = [
+    const fieldsWithWarning: (keyof StockEventFormValues)[] = [
       'priceCategoryId',
       'beginningDate',
       'beginningTime',
     ]
 
     return fieldsWithWarning.some(
-      (fieldName: keyof IStockEventFormValues) =>
+      (fieldName: keyof StockEventFormValues) =>
         initialStock[fieldName] !== stock[fieldName]
     )
   })
@@ -153,9 +153,9 @@ const StocksEventEdition = ({
   // Ideally it should be in the StockFormList component but it's not possible
   // because we need to re-integrate the filtered out stocks when we submit the form
   // We use a ref to prevent re-renreders and we forward it to the StockFormList component
-  const hiddenStocksRef = useRef<IStockEventFormValues[]>([])
+  const hiddenStocksRef = useRef<StockEventFormValues[]>([])
 
-  const onSubmit = async (formValues: { stocks: IStockEventFormValues[] }) => {
+  const onSubmit = async (formValues: { stocks: StockEventFormValues[] }) => {
     const allStocks = [...formValues.stocks, ...hiddenStocksRef.current]
     const changesOnStockWithBookings = hasChangesOnStockWithBookings(
       allStocks,
@@ -213,7 +213,7 @@ const StocksEventEdition = ({
   }
 
   const onDeleteStock = async (
-    stockValues: IStockEventFormValues,
+    stockValues: StockEventFormValues,
     stockIndex: number
   ) => {
     const { isDeletable, stockId } = stockValues
@@ -269,7 +269,7 @@ const StocksEventEdition = ({
     priceCategoriesOptions,
   })
 
-  const formik = useFormik<{ stocks: IStockEventFormValues[] }>({
+  const formik = useFormik<{ stocks: StockEventFormValues[] }>({
     initialValues,
     onSubmit,
     validationSchema: getValidationSchema(priceCategoriesOptions),

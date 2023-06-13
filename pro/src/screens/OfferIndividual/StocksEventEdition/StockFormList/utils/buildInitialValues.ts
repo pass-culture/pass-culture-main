@@ -4,7 +4,7 @@ import { SelectOption } from 'custom_types/form'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../constants'
-import { IStockEventFormValues } from '../types'
+import { StockEventFormValues } from '../types'
 import { setFormReadOnlyFields } from '../utils'
 
 interface BuildInitialValuesCommonArgs {
@@ -15,7 +15,7 @@ interface BuildInitialValuesCommonArgs {
   priceCategoriesOptions: SelectOption[]
 }
 
-interface IBuildSingleInitialValuesArgs extends BuildInitialValuesCommonArgs {
+interface BuildSingleInitialValuesArgs extends BuildInitialValuesCommonArgs {
   stock: IOfferIndividualStock
 }
 
@@ -26,7 +26,7 @@ const buildSingleInitialValues = ({
   lastProviderName,
   offerStatus,
   priceCategoriesOptions,
-}: IBuildSingleInitialValuesArgs): IStockEventFormValues => {
+}: BuildSingleInitialValuesArgs): StockEventFormValues => {
   const hiddenValues = {
     stockId: stock.nonHumanizedId,
     isDeletable: stock.isEventDeletable,
@@ -73,7 +73,7 @@ const buildSingleInitialValues = ({
   }
 }
 
-interface IBuildInitialValuesArgs extends BuildInitialValuesCommonArgs {
+interface BuildInitialValuesArgs extends BuildInitialValuesCommonArgs {
   offerStocks: IOfferIndividualStock[]
 }
 
@@ -84,7 +84,7 @@ export const buildInitialValues = ({
   lastProviderName,
   offerStatus,
   priceCategoriesOptions,
-}: IBuildInitialValuesArgs): { stocks: IStockEventFormValues[] } => {
+}: BuildInitialValuesArgs): { stocks: StockEventFormValues[] } => {
   if (offerStocks.length === 0) {
     return {
       stocks: [
