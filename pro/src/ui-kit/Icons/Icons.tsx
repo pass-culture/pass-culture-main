@@ -43,6 +43,7 @@ const iconList = [
   { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
   { src: 'icons/stroke-error.svg' },
   { src: 'icons/stroke-thing.svg' },
+  { src: 'icons/stroke-info-phone.svg' },
   { src: 'icons/stroke-code.svg' },
   { src: 'icons/stroke-accessibility-ear.svg' },
 
@@ -217,7 +218,6 @@ const iconList = [
   { src: 'icons/ico-eye-close.svg', viewbox: '0 0 20 20' },
   { src: 'icons/ico-eye-open.svg', viewbox: '0 0 20 20' },
   { src: 'icons/ico-help-S.svg', viewbox: '0 0 48 48' },
-  { src: 'icons/info-phone.svg', viewbox: '0 0 24 24' },
   { src: 'icons/ico-info-wrong.svg', viewbox: '0 0 78 78' },
   { src: 'icons/ico-key.svg', viewbox: '0 0 20 20' },
   { src: 'icons/logo-pass-culture-dark.svg', viewbox: '0 0 71 24' },

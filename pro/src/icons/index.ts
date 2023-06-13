@@ -18,7 +18,6 @@ export { ReactComponent as ExternalSiteRedFilledIcon } from 'icons/ico-external-
 export { ReactComponent as EyeCloseIcon } from 'icons/ico-eye-close.svg'
 export { ReactComponent as EyeOpenIcon } from 'icons/ico-eye-open.svg'
 export { ReactComponent as HelpSIcon } from 'icons/ico-help-S.svg'
-export { ReactComponent as InfoPhoneIcon } from 'icons/info-phone.svg'
 export { ReactComponent as InfoWrongIcon } from 'icons/ico-info-wrong.svg'
 export { ReactComponent as KeyIcon } from 'icons/ico-key.svg'
 export { ReactComponent as LogoPassCultureDarkIcon } from 'icons/logo-pass-culture-dark.svg'

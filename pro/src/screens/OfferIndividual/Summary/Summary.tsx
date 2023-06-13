@@ -22,9 +22,10 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import useNotification from 'hooks/useNotification'
 import { PartyIcon } from 'icons'
-import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
+import PhoneInfo from 'icons/stroke-info-phone.svg'
 import { DisplayOfferInAppLink } from 'screens/OfferIndividual/Summary/DisplayOfferInAppLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 
 import { ActionBar } from '../ActionBar'
@@ -172,7 +173,11 @@ const Summary = () => {
 
         <SummaryLayout.Side>
           <div className={styles['offer-creation-preview-title']}>
-            <PhoneInfo />
+            <SvgIcon
+              src={PhoneInfo}
+              alt={'téléphone'}
+              className={styles['icon-info-phone']}
+            />
             <span>Aperçu dans l'app</span>
           </div>
 
