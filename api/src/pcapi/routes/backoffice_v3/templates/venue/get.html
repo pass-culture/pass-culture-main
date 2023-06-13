@@ -93,7 +93,9 @@
               {% endif %}
             </div>
           </div>
-          {% if venue.publicName != venue.name %}<p class="card-subtitle text-muted mb-3 h5">Nom d'usage : {{ venue.publicName }}</p>{% endif %}
+          {% if venue.publicName and venue.publicName != venue.name %}
+            <p class="card-subtitle text-muted mb-3 h5">Nom d'usage : {{ venue.publicName }}</p>
+          {% endif %}
           <p class="card-subtitle text-muted mb-3 h5">Venue ID : {{ venue.id }}</p>
           <p class="card-subtitle text-muted mb-3 h5">SIRET : {{ links.build_siret_to_external_link(venue) }}</p>
           <div class="row pt-3">
