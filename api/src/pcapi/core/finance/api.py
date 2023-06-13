@@ -41,6 +41,7 @@ import typing
 import zipfile
 
 from dateutil.relativedelta import relativedelta
+from flask import current_app as app
 from flask import render_template
 from flask_sqlalchemy import BaseQuery
 import pytz
@@ -730,6 +731,7 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
     """Generate a new CashflowBatch and a new cashflow for each
     reimbursement point for which there is money to transfer.
     """
+    app.redis_client.set(conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", ex=conf.REDIS_GENERATE_CASHFLOW_LOCK_TIMEOUT)  # type: ignore [attr-defined]
     batch = models.CashflowBatch(cutoff=cutoff, label=_get_next_cashflow_batch_label())
     db.session.add(batch)
     db.session.commit()
@@ -737,6 +739,8 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
     # id again after COMMITs in `_generate_cashflows()`.
     batch_id = batch.id
     _generate_cashflows(batch)
+    # if the script fail we want to keep the lock to forbid backoffice to modify the data
+    app.redis_client.delete(conf.REDIS_GENERATE_CASHFLOW_LOCK)  # type: ignore [attr-defined]
     return batch_id
 
 

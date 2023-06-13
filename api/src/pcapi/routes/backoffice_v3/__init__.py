@@ -10,7 +10,6 @@ def install_routes(app: Flask) -> None:
     from . import autocomplete
     from . import collective_bookings
     from . import collective_offer_templates
-    from . import collective_offers
     from . import custom_reimbursement_rules
     from . import filters
     from . import fraud
@@ -27,6 +26,7 @@ def install_routes(app: Flask) -> None:
     from . import venues
     from .admin import blueprint as admin_blueprint
     from .admin import bo_users_blueprint
+    from .collective_offers import blueprint as collective_offers_blueprint
     from .multiple_offers import blueprint as multiple_offers_blueprint
     from .offer_validation_rules import blueprint as offer_validation_rule_blueprint
     from .offerers import offerer_blueprint

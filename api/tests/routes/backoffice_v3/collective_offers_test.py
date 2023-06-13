@@ -1,5 +1,6 @@
 from dataclasses import asdict
 import datetime
+from decimal import Decimal
 
 from flask import url_for
 import pytest
@@ -8,11 +9,14 @@ from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
-import pcapi.core.mails.testing as mails_testing
+from pcapi.core.finance import conf as finance_conf
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
+from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offers_models
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
@@ -501,3 +505,222 @@ class GetBatchCollectiveOffersRejectFormTest(GetEndpointHelper):
 
         # then
         assert response.status_code == 200
+
+
+class GetCollectiveOfferDetailTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_offer.get_collective_offer_details"
+    endpoint_kwargs = {"collective_offer_id": 1}
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    def test_nominal(self, legit_user, authenticated_client):
+        # when
+        pricing = finance_factories.CollectivePricingFactory(
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+        )
+        url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
+        with assert_num_queries(4):
+            response = authenticated_client.get(url)
+
+        # then
+        assert response.status_code == 200
+        assert "Ajuster le prix de l'offre" in response.data.decode()
+
+    def test_processed_pricing(self, legit_user, authenticated_client):
+        # when
+        pricing = finance_factories.CollectivePricingFactory(
+            status=finance_models.PricingStatus.PROCESSED,
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+        )
+        url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
+        response = authenticated_client.get(url)
+
+        # then
+        assert response.status_code == 200
+        assert "Ajuster le prix de l'offre" not in response.data.decode()
+
+    def test_invoiced_pricing(self, legit_user, authenticated_client):
+        # when
+        pricing = finance_factories.CollectivePricingFactory(
+            status=finance_models.PricingStatus.INVOICED,
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+        )
+        url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
+        response = authenticated_client.get(url)
+
+        # then
+        assert response.status_code == 200
+        assert "Ajuster le prix de l'offre" not in response.data.decode()
+
+    def test_cashflow_pending(self, legit_user, authenticated_client, app):
+        # when
+        pricing = finance_factories.CollectivePricingFactory(
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+        )
+        url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
+        app.redis_client.set(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", 600)
+        try:
+            response = authenticated_client.get(url)
+
+        finally:
+            app.redis_client.delete(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK)
+        # then
+        assert response.status_code == 200
+        assert "Ajuster le prix de l'offre" not in response.data.decode()
+
+
+class GetCollectiveOfferPriceFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_offer.get_collective_offer_price_form"
+    endpoint_kwargs = {"collective_offer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+
+
+class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_offer.edit_collective_offer_price"
+    endpoint_kwargs = {"collective_offer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+
+    def test_nominal(self, legit_user, authenticated_client):
+        # when
+        pricing = finance_factories.CollectivePricingFactory(
+            collectiveBooking__collectiveStock__price=Decimal(100.00),
+            collectiveBooking__collectiveStock__numberOfTickets=25,
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+        )
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"numberOfTickets": 5, "price": 1},
+            collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
+        )
+
+        # then
+        assert response.status_code == 303
+        assert pricing.collectiveBooking.collectiveStock.price == 1
+        assert pricing.collectiveBooking.collectiveStock.numberOfTickets == 5
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "L'offre collective a été mise à jour"
+        )
+
+    def test_processed_pricing(self, legit_user, authenticated_client):
+        # when
+        pricing = finance_factories.CollectivePricingFactory(
+            status=finance_models.PricingStatus.PROCESSED,
+            collectiveBooking__collectiveStock__price=Decimal(100.00),
+            collectiveBooking__collectiveStock__numberOfTickets=25,
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+        )
+        url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
+        response = authenticated_client.get(url)
+
+        # then
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"numberOfTickets": 5, "price": 1},
+            collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
+        )
+
+        # then
+        assert response.status_code == 303
+        assert pricing.collectiveBooking.collectiveStock.price == 100
+        assert pricing.collectiveBooking.collectiveStock.numberOfTickets == 25
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "Cette offre n'est pas modifiable"
+        )
+
+    def test_invoiced_pricing(self, legit_user, authenticated_client):
+        # when
+        pricing = finance_factories.CollectivePricingFactory(
+            status=finance_models.PricingStatus.INVOICED,
+            collectiveBooking__collectiveStock__price=Decimal(100.00),
+            collectiveBooking__collectiveStock__numberOfTickets=25,
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+        )
+        url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
+        response = authenticated_client.get(url)
+
+        # then
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"numberOfTickets": 5, "price": 1},
+            collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
+        )
+
+        # then
+        assert response.status_code == 303
+        assert pricing.collectiveBooking.collectiveStock.price == 100
+        assert pricing.collectiveBooking.collectiveStock.numberOfTickets == 25
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "Cette offre n'est pas modifiable"
+        )
+
+    def test_cashflow_pending(self, legit_user, authenticated_client, app):
+        # when
+        pricing = finance_factories.CollectivePricingFactory(
+            collectiveBooking__collectiveStock__price=Decimal(100.00),
+            collectiveBooking__collectiveStock__numberOfTickets=25,
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+        )
+        app.redis_client.set(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", 600)
+        try:
+            response = self.post_to_endpoint(
+                authenticated_client,
+                form={"numberOfTickets": 5, "price": 1},
+                collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
+            )
+        finally:
+            app.redis_client.delete(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK)
+
+        # then
+        assert response.status_code == 303
+        assert pricing.collectiveBooking.collectiveStock.price == 100
+        assert pricing.collectiveBooking.collectiveStock.numberOfTickets == 25
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "Cette offre n'est pas modifiable"
+        )
+
+    def test_price_higher_than_previously(self, legit_user, authenticated_client):
+        # when
+        pricing = finance_factories.CollectivePricingFactory(
+            collectiveBooking__collectiveStock__price=Decimal(100.00),
+            collectiveBooking__collectiveStock__numberOfTickets=25,
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+        )
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"numberOfTickets": 5, "price": 200},
+            collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
+        )
+
+        # then
+        assert response.status_code == 303
+        assert pricing.collectiveBooking.collectiveStock.price == 100
+        assert pricing.collectiveBooking.collectiveStock.numberOfTickets == 25
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "Impossible d'augmenter le prix"
+        )
+
+    def test_number_of_tickets_higher_than_previously(self, legit_user, authenticated_client):
+        # when
+        pricing = finance_factories.CollectivePricingFactory(
+            collectiveBooking__collectiveStock__price=Decimal(100.00),
+            collectiveBooking__collectiveStock__numberOfTickets=25,
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+        )
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"numberOfTickets": 50, "price": 1},
+            collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
+        )
+
+        # then
+        assert response.status_code == 303
+        assert pricing.collectiveBooking.collectiveStock.price == 100
+        assert pricing.collectiveBooking.collectiveStock.numberOfTickets == 25
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "Impossible d'augmenter le nombre de participants"
+        )
