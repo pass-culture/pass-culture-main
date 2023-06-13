@@ -36,11 +36,8 @@ export { OfferStatus } from './models/OfferStatus';
 export type { OfferVenueModel } from './models/OfferVenueModel';
 export type { PatchCollectiveOfferBodyModel } from './models/PatchCollectiveOfferBodyModel';
 export type { PostCollectiveOfferBodyModel } from './models/PostCollectiveOfferBodyModel';
-export type { UpdateVenueStockBodyModel } from './models/UpdateVenueStockBodyModel';
-export type { UpdateVenueStocksBodyModel } from './models/UpdateVenueStocksBodyModel';
 export type { ValidationError } from './models/ValidationError';
 export type { ValidationErrorElement } from './models/ValidationErrorElement';
 
 export { ApiContremarqueService } from './services/ApiContremarqueService';
 export { ApiOffresCollectivesBetaService } from './services/ApiOffresCollectivesBetaService';
-export { ApiStocksService } from './services/ApiStocksService';
