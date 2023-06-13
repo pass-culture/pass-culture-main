@@ -5,9 +5,11 @@ import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { PriceCategoryResponseModel } from 'apiClient/v1'
+import DialogBox from 'components/DialogBox'
 import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
+import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
@@ -22,6 +24,9 @@ import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
+import { PlusCircleIcon } from 'icons'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { getToday } from 'utils/date'
 import { formatPrice } from 'utils/formatPrice'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
@@ -29,6 +34,7 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 import { ActionBar } from '../ActionBar'
 import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
 import { useNotifyFormError } from '../hooks'
+import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 import { getSuccessMessage } from '../utils'
 import { logTo } from '../utils/logTo'
@@ -42,6 +48,7 @@ import {
   STOCK_EVENT_FORM_DEFAULT_VALUES,
   StockFormList,
 } from './StockFormList'
+import styles from './StocksEventEdition.module.scss'
 
 export const hasChangesOnStockWithBookings = (
   submittedStocks: StockEventFormValues[],
@@ -145,6 +152,49 @@ const StocksEventEdition = ({
         linkTitle: 'Comment reporter ou annuler un évènement ?',
       },
     ]
+  }
+
+  const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
+  const onCancel = () => setIsRecurrenceModalOpen(false)
+  const onConfirm = (newStocks: StocksEvent[]) => {
+    setIsRecurrenceModalOpen(false)
+    const transformedStocks = newStocks.map(
+      (stock): StockEventFormValues => ({
+        priceCategoryId: String(stock.priceCategoryId),
+        bookingsQuantity: 0,
+        remainingQuantity: stock.quantity ?? '',
+        isDeletable: true,
+        beginningDate: new Date(stock.beginningDatetime),
+        beginningTime: new Date(stock.beginningDatetime),
+        bookingLimitDatetime: new Date(stock.bookingLimitDatetime),
+        readOnlyFields: [],
+      })
+    )
+    const rawStocksToAdd = [...formik.values.stocks, ...transformedStocks]
+
+    // deduplicate stocks in the whole list
+    const stocksToAdd = rawStocksToAdd.filter((stock1, index) => {
+      return (
+        rawStocksToAdd.findIndex(
+          stock2 =>
+            stock1.beginningDate === stock2.beginningDate &&
+            stock1.beginningTime === stock2.beginningTime &&
+            stock1.priceCategoryId === stock2.priceCategoryId
+        ) === index
+      )
+    })
+    if (stocksToAdd.length < rawStocksToAdd.length) {
+      notify.information(
+        'Certaines occurences n’ont pas été ajoutées car elles existaient déjà'
+      )
+    } else {
+      notify.success(
+        newStocks.length === 1
+          ? '1 nouvelle occurrence a été ajoutée'
+          : `${newStocks.length} nouvelles occurrences ont été ajoutées`
+      )
+    }
+    formik.setFieldValue('stocks', [...stocksToAdd])
   }
 
   // As we are using Formik to handle state and sorting/filtering, we need to
@@ -378,6 +428,9 @@ const StocksEventEdition = ({
     )
   }
 
+  const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
+  const isSynchronized = Boolean(offer.lastProvider)
+
   return (
     <FormikProvider value={formik}>
       {providerName && (
@@ -399,6 +452,32 @@ const StocksEventEdition = ({
               links={links}
               isBanner
             />
+
+            <div className={styles['add-dates-button']}>
+              <Button
+                variant={ButtonVariant.PRIMARY}
+                Icon={PlusCircleIcon}
+                onClick={() => setIsRecurrenceModalOpen(true)}
+                disabled={isSynchronized || isDisabled}
+              >
+                Ajouter une ou plusieurs dates
+              </Button>
+            </div>
+
+            {isRecurrenceModalOpen && (
+              <DialogBox
+                onDismiss={onCancel}
+                hasCloseButton
+                labelledBy="add-recurrence"
+                extraClassNames={styles['recurrence-modal']}
+              >
+                <RecurrenceForm
+                  offer={offer}
+                  onCancel={onCancel}
+                  onConfirm={onConfirm}
+                />
+              </DialogBox>
+            )}
 
             <StockFormList
               offer={offer}

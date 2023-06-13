@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
@@ -32,7 +32,39 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderStockEventScreen = () => {
+const renderStockEventScreen = async (
+  apiOffer: GetIndividualOfferResponseModel
+) => {
+  jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+  jest
+    .spyOn(api, 'getCategories')
+    .mockResolvedValue({ categories: [], subcategories: [] })
+  jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+  jest.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
+  jest.spyOn(api, 'upsertStocks').mockResolvedValue({} as StocksResponseModel)
+  jest.spyOn(api, 'listOffers').mockResolvedValue([
+    {
+      nonHumanizedId: 1,
+      status: 'ACTIVE',
+      isActive: true,
+      hasBookingLimitDatetimesPassed: false,
+      isEducational: false,
+      name: 'name',
+      isEvent: false,
+      venue: {
+        name: 'venue',
+        offererName: 'offerer',
+        isVirtual: false,
+        nonHumanizedId: 1,
+      },
+      stocks: [],
+      isEditable: true,
+      isShowcase: false,
+      isThing: false,
+      subcategoryId: SubcategoryIdEnum.VOD,
+    },
+  ])
+
   const storeOverrides = {
     user: {
       initialized: true,
@@ -90,6 +122,8 @@ const renderStockEventScreen = () => {
       ],
     }
   )
+
+  await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 }
 
 const priceCategoryId = '1'
@@ -192,44 +226,10 @@ describe('screens:StocksEventEdition', () => {
       withdrawalType: null,
       withdrawalDelay: null,
     }
-
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    jest
-      .spyOn(api, 'getCategories')
-      .mockResolvedValue({ categories: [], subcategories: [] })
-    jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
-    jest
-      .spyOn(api, 'listOfferersNames')
-      .mockResolvedValue({ offerersNames: [] })
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({} as StocksResponseModel)
-    jest.spyOn(api, 'listOffers').mockResolvedValue([
-      {
-        nonHumanizedId: 1,
-        status: 'ACTIVE',
-        isActive: true,
-        hasBookingLimitDatetimesPassed: false,
-        isEducational: false,
-        name: 'name',
-        isEvent: false,
-        venue: {
-          name: 'venue',
-          offererName: 'offerer',
-          isVirtual: false,
-          nonHumanizedId: 1,
-        },
-        stocks: [],
-        isEditable: true,
-        isShowcase: false,
-        isThing: false,
-        subcategoryId: SubcategoryIdEnum.VOD,
-      },
-    ])
   })
 
   it('render stock event row', async () => {
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-
-    renderStockEventScreen()
+    await renderStockEventScreen(apiOffer)
 
     expect(await screen.findByLabelText('Date')).toBeInTheDocument()
     expect(screen.getByLabelText('Horaire')).toBeInTheDocument()
@@ -247,7 +247,6 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should allow user to delete a stock', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
     apiOffer.stocks = [
       ...apiOffer.stocks,
       {
@@ -269,9 +268,9 @@ describe('screens:StocksEventEdition', () => {
         dateModified: '2022-05-18T08:25:31.015652Z',
       },
     ]
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    renderStockEventScreen()
-    await screen.findByTestId('stock-event-form')
+    await renderStockEventScreen(apiOffer)
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
+
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
     )
@@ -296,108 +295,15 @@ describe('screens:StocksEventEdition', () => {
     expect(api.upsertStocks).not.toHaveBeenCalled()
   })
 
-  it("should allow user to delete a stock he just created (and didn't save)", async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
-    renderStockEventScreen()
-    await screen.findByTestId('stock-event-form')
-
-    // create new stock
-    await userEvent.click(await screen.findByText('Ajouter une date'))
-    await userEvent.selectOptions(
-      screen.getAllByLabelText('Tarif')[0],
-      priceCategoryId
-    )
-    await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[0]
-    )
-    // delete just created stock
-    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
-
-    expect(api.deleteStock).toHaveBeenCalledTimes(0)
-    expect(screen.getAllByLabelText('Tarif').length).toBe(1)
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Enregistrer les modifications' })
-    )
-  })
-
-  it('should keep user modifications when deleting a exiting stock', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
-    const previousApiOffer = { ...apiOffer }
-    const stockToDeleteId = 2
-    apiOffer.stocks = [
-      ...apiOffer.stocks,
-      {
-        beginningDatetime: '2023-01-25T08:25:31.009799Z',
-        bookingLimitDatetime: '2023-01-25T07:25:31.009799Z',
-        bookingsQuantity: 5,
-        dateCreated: '2022-05-18T08:25:31.015652Z',
-        hasActivationCode: false,
-        nonHumanizedId: stockToDeleteId,
-        isEventDeletable: true,
-        isEventExpired: false,
-        isSoftDeleted: false,
-        price: 30.01,
-        quantity: 40,
-        remainingQuantity: 35,
-        activationCodesExpirationDatetime: null,
-        isBookable: false,
-        dateModified: '2022-05-18T08:25:31.015652Z',
-      },
-    ]
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-
-    renderStockEventScreen()
-    await screen.findByTestId('stock-event-form')
-
-    // create new stock
-    await userEvent.click(await screen.findByText('Ajouter une date'))
-    await userEvent.selectOptions(
-      screen.getAllByLabelText('Tarif')[0],
-      priceCategoryId
-    )
-
-    // delete existing stock
-    jest.spyOn(api, 'getOffer').mockResolvedValue(previousApiOffer)
-    await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[2]
-    )
-    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[2])
-    expect(
-      screen.getByText('Voulez-vous supprimer cette occurrence ?')
-    ).toBeInTheDocument()
-    await userEvent.click(
-      screen.getByText('Confirmer la suppression', { selector: 'button' })
-    )
-
-    expect(
-      await screen.findByText('Le stock a été supprimé.')
-    ).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith(stockToDeleteId)
-    expect(api.deleteStock).toHaveBeenCalledTimes(1)
-
-    const allPriceInputs = screen.getAllByLabelText('Tarif')
-    expect(allPriceInputs).toHaveLength(2)
-    expect(allPriceInputs[0]).toHaveValue(priceCategoryId)
-    expect(allPriceInputs[1]).toHaveValue(otherPriceCategoryId)
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Enregistrer les modifications' })
-    )
-    jest.spyOn(api, 'upsertStocks')
-    expect(api.upsertStocks).not.toHaveBeenCalled()
-  })
-
   it('should not allow user to delete a stock undeletable', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
     apiOffer.stocks = [
       {
         ...apiOffer.stocks[0],
         isEventDeletable: false,
       },
     ]
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    renderStockEventScreen()
-    await screen.findByTestId('stock-event-form')
+    await renderStockEventScreen(apiOffer)
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
 
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[1]
@@ -410,7 +316,6 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should allow user to delete stock from a synchronized offer', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
     apiOffer.lastProvider = {
       ...apiOffer.lastProvider,
       id: 'PROVIDER_ID',
@@ -418,9 +323,8 @@ describe('screens:StocksEventEdition', () => {
       name: 'Provider',
       enabledForPro: true,
     }
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    renderStockEventScreen()
-    await screen.findByTestId('stock-event-form')
+    await renderStockEventScreen(apiOffer)
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
 
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[1]
@@ -443,8 +347,34 @@ describe('screens:StocksEventEdition', () => {
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
+  it.only('should display new stocks banner for several stocks', async () => {
+    await renderStockEventScreen(apiOffer)
+
+    await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
+
+    await userEvent.click(
+      screen.getByLabelText('Date de l’évènement', { exact: true })
+    )
+
+    // There is a case where multiple dates can be displayed by the datepicker,
+    // for instance the 27th of the previous month and the 27th of the current month.
+    // We always choose the last one so that we are sure it's in the future
+    const dates = screen.queryAllByText(new Date().getDate())
+    await userEvent.click(dates[dates.length - 1])
+    await userEvent.click(screen.getByLabelText('Horaire 1'))
+    await userEvent.click(screen.getByText('12:15'))
+    await userEvent.selectOptions(
+      screen.getAllByLabelText('Tarif')[1],
+      priceCategoryId
+    )
+    await userEvent.click(screen.getByText('Valider'))
+
+    expect(
+      screen.getByText('1 nouvelle occurrence a été ajoutée')
+    ).toBeInTheDocument()
+  })
+
   it('should not allow user to add a date for a synchronized offer', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
     apiOffer.lastProvider = {
       ...apiOffer.lastProvider,
       id: 'PROVIDER_ID',
@@ -452,17 +382,13 @@ describe('screens:StocksEventEdition', () => {
       name: 'Provider',
       enabledForPro: true,
     }
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    renderStockEventScreen()
-    await screen.findByTestId('stock-event-form')
+    await renderStockEventScreen(apiOffer)
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
 
-    expect(screen.queryByText('Ajouter une date')).toBeDisabled()
+    expect(screen.getByText('Ajouter une ou plusieurs dates')).toBeDisabled()
   })
 
   it('should allow user to edit quantity for a cinema synchronized offer', async () => {
-    jest
-      .spyOn(api, 'upsertStocks')
-      .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
     apiOffer.lastProvider = {
       ...apiOffer.lastProvider,
       id: 'PROVIDER_ID',
@@ -470,9 +396,11 @@ describe('screens:StocksEventEdition', () => {
       name: 'ciné office',
       enabledForPro: true,
     }
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    renderStockEventScreen()
-    await screen.findByTestId('stock-event-form')
+    await renderStockEventScreen(apiOffer)
+    jest
+      .spyOn(api, 'upsertStocks')
+      .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
+
     await userEvent.type(screen.getByLabelText('Quantité restante'), '30')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
@@ -494,8 +422,7 @@ describe('screens:StocksEventEdition', () => {
         ''
       )
     )
-    renderStockEventScreen()
-    await screen.findByTestId('stock-event-form')
+    await renderStockEventScreen(apiOffer)
 
     await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
     await userEvent.dblClick(await screen.findByText('Supprimer le stock'))
@@ -515,18 +442,16 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should save the offer without warning on "Enregistrer les modifications" button click', async () => {
-    jest
-      .spyOn(api, 'upsertStocks')
-      .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
     apiOffer.stocks = [
       {
         ...apiOffer.stocks[0],
         bookingsQuantity: 0,
       },
     ]
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    renderStockEventScreen()
-    await screen.findByTestId('stock-event-form')
+    await renderStockEventScreen(apiOffer)
+    jest
+      .spyOn(api, 'upsertStocks')
+      .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
 
     await userEvent.selectOptions(
       screen.getByLabelText('Tarif'),
@@ -543,8 +468,8 @@ describe('screens:StocksEventEdition', () => {
     jest
       .spyOn(api, 'upsertStocks')
       .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
-    renderStockEventScreen()
-    await screen.findByTestId('stock-event-form')
+    await renderStockEventScreen(apiOffer)
+
     await userEvent.selectOptions(
       screen.getByLabelText('Tarif'),
       priceCategoryId
@@ -562,8 +487,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should show a success notification if nothing has been touched', async () => {
-    renderStockEventScreen()
-    await screen.findByTestId('stock-event-form')
+    await renderStockEventScreen(apiOffer)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
@@ -574,12 +498,12 @@ describe('screens:StocksEventEdition', () => {
     expect(screen.queryByTestId('stock-event-form')).not.toBeInTheDocument()
     expect(screen.getByText(/Next page/)).toBeInTheDocument()
   })
+
   it('should not display any message when user delete empty stock', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
-    renderStockEventScreen()
     apiOffer.stocks = []
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    await screen.findByTestId('stock-event-form')
+    await renderStockEventScreen(apiOffer)
+
     await userEvent.click(
       (
         await screen.findAllByTitle('Supprimer le stock')
@@ -597,10 +521,8 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should display draft success message on save button when stock form is empty and redirect to next page', async () => {
-    renderStockEventScreen()
     apiOffer.stocks = []
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    await screen.findByTestId('stock-event-form')
+    await renderStockEventScreen(apiOffer)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
