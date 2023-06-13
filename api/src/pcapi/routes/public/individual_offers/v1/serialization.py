@@ -965,7 +965,7 @@ class GetProductsListByEansQuery(serialization.ConfiguredBaseModel):
             if not ean.isdigit():
                 raise ValueError("EAN must be an integer")
             if int(ean) < 0:
-                raise ValueError("EAN must be positive") 
+                raise ValueError("EAN must be positive")
             if len(ean) != 13:
                 raise ValueError("Only 13 characters EAN are accepted")
         return ean_list

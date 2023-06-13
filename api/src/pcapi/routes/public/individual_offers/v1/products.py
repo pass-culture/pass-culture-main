@@ -41,7 +41,9 @@ logger = logging.getLogger(__name__)
     response_model=serialization.GetOfferersVenuesResponse,
 )
 @api_key_required
-def get_offerer_venues(query: serialization.GetOfferersVenuesQuery) -> serialization.GetOfferersVenuesResponse:
+def get_offerer_venues(
+    query: serialization.GetOfferersVenuesQuery,
+) -> serialization.GetOfferersVenuesResponse:
     """
     Get offerer attached the API key used and its venues.
     """
@@ -82,7 +84,9 @@ def _retrieve_offer_by_eans_query(eans: list[str]) -> sqla.orm.Query:
     response_model=serialization.ProductOfferResponse,
 )
 @api_key_required
-def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse:
+def post_product_offer(
+    body: serialization.ProductOfferCreation,
+) -> serialization.ProductOfferResponse:
     """
     Create a book, CD or vinyl product.
     """
@@ -229,7 +233,10 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
 
 
 def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:
-    allowed_product_subcategories = [subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, subcategories.LIVRE_PAPIER.id]
+    allowed_product_subcategories = [
+        subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        subcategories.LIVRE_PAPIER.id,
+    ]
     return offers_models.Product.query.filter(
         offers_models.Product.extraData["ean"].astext.in_(ean_to_create),
         offers_models.Product.can_be_synchronized == True,
@@ -238,7 +245,9 @@ def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Produc
 
 
 def _get_existing_offers(
-    ean_to_create_or_update: set[str], venue: offerers_models.Venue, provider: providers_models.Provider
+    ean_to_create_or_update: set[str],
+    venue: offerers_models.Venue,
+    provider: providers_models.Provider,
 ) -> list[offers_models.Offer]:
     return (
         utils.retrieve_offer_relations_query(offers_models.Offer.query)
@@ -250,7 +259,9 @@ def _get_existing_offers(
     )
 
 
-def _serialize_products_from_body(products: list[serialization.ProductOfferByEanCreation]) -> dict:
+def _serialize_products_from_body(
+    products: list[serialization.ProductOfferByEanCreation],
+) -> dict:
     stock_details = {}
     for product in products:
         stock_details[product.ean] = {
@@ -284,7 +295,11 @@ def _create_offer_from_product(
 
     logger.info(
         "models.Offer has been created",
-        extra={"offer_id": offer.id, "venue_id": venue.id, "product_id": offer.productId},
+        extra={
+            "offer_id": offer.id,
+            "venue_id": venue.id,
+            "product_id": offer.productId,
+        },
         technical_message_id="offer.created",
     )
 
@@ -320,9 +335,11 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     response_model=serialization.ProductOffersByEanResponse,
 )
 @api_key_required
-def get_product_by_ean(query: serialization.GetProductsListByEansQuery) -> serialization.ProductOffersByEanResponse:
+def get_product_by_ean(
+    query: serialization.GetProductsListByEansQuery,
+) -> serialization.ProductOffersByEanResponse:
     """
-        Get bulk product offers using their European Article Number (EAN-13).
+    Get bulk product offers using their European Article Number (EAN-13).
     """
     offers: list[offers_models.Offer] | None = (
         utils.retrieve_offer_relations_query(_retrieve_offer_by_eans_query(query.eans))  # type: ignore [arg-type]
@@ -345,7 +362,9 @@ def get_product_by_ean(query: serialization.GetProductsListByEansQuery) -> seria
     response_model=serialization.ProductOffersResponse,
 )
 @api_key_required
-def get_products(query: serialization.GetOffersQueryParams) -> serialization.ProductOffersResponse:
+def get_products(
+    query: serialization.GetOffersQueryParams,
+) -> serialization.ProductOffersResponse:
     """
     Get products. Results are paginated.
     """
