@@ -115,6 +115,8 @@ class SaveVenueBankInformations:
                     format_error_to_demarches_simplifiees_text(api_errors),
                 )
                 return None
+            if application_details.status == BankInformationStatus.DRAFT:
+                return None
             raise api_errors
 
         if not bank_information:
