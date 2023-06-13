@@ -19,7 +19,9 @@ import pcapi.utils.email as email_utils
 from . import utils
 from .forms import empty as empty_forms
 from .forms import pro_user as pro_user_forms
+from .forms import search as search_forms
 from .forms import user as user_forms
+from .serialization.search import TypeOptions
 
 
 pro_user_blueprint = utils.child_backoffice_blueprint(
@@ -51,6 +53,8 @@ def get(user_id: int) -> utils.BackofficeResponse:
 
     return render_template(
         "pro_user/get.html",
+        search_form=search_forms.ProSearchForm(pro_type=TypeOptions.USER.value),
+        search_dst=url_for("backoffice_v3_web.search_pro"),
         user=user,
         form=form,
         dst=dst,

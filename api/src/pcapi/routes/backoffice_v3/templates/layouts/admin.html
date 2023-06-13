@@ -1,8 +1,10 @@
 {% extends "layouts/connected.html" %}
+{% from "components/search/result_form.html" import build_result_page_form %}
 {% block page %}
   <div class="py-4 px-5">
     <h1 class="text-muted mx-3">Admin</h1>
     <div class="container-fluid">
+      {% if search_form %}{{ build_result_page_form(search_form, search_dst) }}{% endif %}
       {% block main_content %}
       {% endblock main_content %}
     </div>

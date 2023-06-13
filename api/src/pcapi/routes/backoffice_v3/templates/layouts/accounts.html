@@ -1,10 +1,12 @@
 {% extends "layouts/connected.html" %}
+{% from "components/search/result_form.html" import build_result_page_form %}
 {% from "layouts/connected.html" import MENU_JGP_JEUNES_BENEFICAIRES_OU_A_VENIR with context %}
 {% set CURRENT_PATH = MENU_JGP_JEUNES_BENEFICAIRES_OU_A_VENIR %}
 {% block page %}
   <div class="py-4 px-5">
     <h1 class="text-muted mx-3">Jeunes bénéficiaires ou à venir</h1>
     <div class="container-fluid">
+      {% if search_form %}{{ build_result_page_form(search_form, search_dst) }}{% endif %}
       {% block main_content %}
       {% endblock main_content %}
     </div>
