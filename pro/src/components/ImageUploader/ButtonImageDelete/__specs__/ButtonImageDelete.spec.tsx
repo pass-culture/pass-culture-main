@@ -5,13 +5,11 @@ import React from 'react'
 import { RootState } from 'store/reducers'
 import StoreProvider from 'store/StoreProvider/StoreProvider'
 
-import ButtonImageDelete, {
-  IButtonImageDeleteProps,
-} from '../ButtonImageDelete'
+import ButtonImageDelete, { ButtonImageDeleteProps } from '../ButtonImageDelete'
 
 interface IRenderButtonImageDeleteProps {
   storeOverride?: Partial<RootState>
-  props: IButtonImageDeleteProps
+  props: ButtonImageDeleteProps
 }
 const renderButtonImageDelete = ({ props }: IRenderButtonImageDeleteProps) => {
   return render(
@@ -24,7 +22,7 @@ const renderButtonImageDelete = ({ props }: IRenderButtonImageDeleteProps) => {
 const mockOnDelete = jest.fn().mockResolvedValue({})
 
 describe('ButtonImageDelete', () => {
-  let props: IButtonImageDeleteProps
+  let props: ButtonImageDeleteProps
 
   beforeEach(() => {
     props = {

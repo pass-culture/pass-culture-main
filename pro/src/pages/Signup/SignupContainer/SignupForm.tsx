@@ -8,7 +8,6 @@ import LegalInfos from 'components/LegalInfos/LegalInfos'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
-import { useModal } from 'hooks/useModal'
 import MaybeAppUserDialog from 'pages/Signup/SignupContainer/MaybeAppUserDialog'
 import {
   Button,
@@ -28,7 +27,7 @@ import { ISignupFormValues } from './types'
 const SignupForm = (): JSX.Element => {
   const navigate = useNavigate()
   const [showAnonymousBanner, setShowAnonymousBanner] = useState(false)
-  const { visible, showModal, hideModal } = useModal()
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const { values, setFieldValue, setFieldError, isSubmitting } =
     useFormikContext<ISignupFormValues>()
 
@@ -45,7 +44,7 @@ const SignupForm = (): JSX.Element => {
         const { apeCode, ...rest } = response.payload.values
         values = rest
         if (MAYBE_APP_USER_APE_CODE.includes(apeCode)) {
-          showModal()
+          setIsModalOpen(true)
         }
       }
 
@@ -63,7 +62,10 @@ const SignupForm = (): JSX.Element => {
 
   return (
     <>
-      {visible && <MaybeAppUserDialog onCancel={hideModal} />}
+      {isModalOpen && (
+        <MaybeAppUserDialog onCancel={() => setIsModalOpen(false)} />
+      )}
+
       <FormLayout>
         <div className={styles['sign-up-form']}>
           <FormLayout.Row>

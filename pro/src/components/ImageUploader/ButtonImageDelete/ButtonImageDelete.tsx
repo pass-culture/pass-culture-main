@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 
-import { useModal } from 'hooks/useModal'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -8,14 +7,14 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import styles from './ButtonImageDelete.module.scss'
 import { ModalImageDelete } from './ModalImageDelete'
 
-export interface IButtonImageDeleteProps {
+export interface ButtonImageDeleteProps {
   onImageDelete: () => Promise<void>
 }
 
 const ButtonImageDelete = ({
   onImageDelete,
-}: IButtonImageDeleteProps): JSX.Element => {
-  const { visible, showModal, hideModal } = useModal()
+}: ButtonImageDeleteProps): JSX.Element => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   const onConfirm = async () => {
@@ -25,15 +24,19 @@ const ButtonImageDelete = ({
 
   return (
     <>
-      <Button onClick={showModal} variant={ButtonVariant.TERNARY}>
+      <Button
+        onClick={() => setIsModalOpen(true)}
+        variant={ButtonVariant.TERNARY}
+      >
         <TrashFilledIcon className={styles['button-image-delete-icon']} />
         Supprimer
       </Button>
-      {!!visible && (
+
+      {isModalOpen && (
         <ModalImageDelete
           isLoading={isLoading}
           onConfirm={onConfirm}
-          onDismiss={hideModal}
+          onDismiss={() => setIsModalOpen(false)}
         />
       )}
     </>

@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-import { useModal } from 'hooks/useModal'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Icon from 'ui-kit/Icon/Icon'
@@ -10,7 +9,7 @@ import { UploaderModeEnum } from '../types'
 import styles from './ButtonAppPreview.module.scss'
 import { ModalAppPreview } from './ModalAppPreview'
 
-export interface IButtonAppPreviewProps {
+export interface ButtonAppPreviewProps {
   mode: UploaderModeEnum
   imageUrl: string
 }
@@ -18,22 +17,27 @@ export interface IButtonAppPreviewProps {
 const ButtonAppPreview = ({
   imageUrl,
   mode,
-}: IButtonAppPreviewProps): JSX.Element => {
-  const { visible, showModal, hideModal } = useModal()
+}: ButtonAppPreviewProps): JSX.Element => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
   return (
     <>
-      <Button onClick={showModal} variant={ButtonVariant.TERNARY}>
+      <Button
+        onClick={() => setIsModalOpen(true)}
+        variant={ButtonVariant.TERNARY}
+      >
         <Icon
           className={styles['image-venue-uploader-section-icon']}
           svg="ico-eye-open-filled-black"
         />
         Prévisualiser
       </Button>
-      {visible && imageUrl && (
+
+      {isModalOpen && imageUrl && (
         <ModalAppPreview
           mode={mode}
           imageUrl={imageUrl}
-          hideModal={hideModal}
+          hideModal={() => setIsModalOpen(false)}
         />
       )}
     </>

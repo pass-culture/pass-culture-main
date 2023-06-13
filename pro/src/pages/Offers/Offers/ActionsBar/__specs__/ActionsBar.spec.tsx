@@ -9,9 +9,9 @@ import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ActionsBar, { IActionBarProps } from '../ActionsBar'
+import ActionsBar, { ActionBarProps } from '../ActionsBar'
 
-const renderActionsBar = (props: IActionBarProps) => {
+const renderActionsBar = (props: ActionBarProps) => {
   const storeOverrides = {
     offers: {
       searchFilters: {
@@ -44,7 +44,7 @@ const mockGetUpdateOffersStatusMessage = jest.fn().mockReturnValue('')
 const mockCanDeleteOffers = jest.fn().mockReturnValue(true)
 
 describe('src | components | pages | Offers | ActionsBar', () => {
-  let props: IActionBarProps
+  let props: ActionBarProps
   const offerIds = ['1', '2']
 
   beforeEach(() => {
