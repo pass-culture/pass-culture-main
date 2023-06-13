@@ -53,17 +53,17 @@
 {# ----- external links ----- #}
 {% macro build_siren_to_external_link(offerer) %}
   {% if offerer.siren %}
-    <a href="https://www.societe.com/cgi-bin/fiche?rncs={{ offerer.siren }}"
+    <a href="https://annuaire-entreprises.data.gouv.fr/entreprise/{{ offerer.siren }}"
        target="_blank"
-       title="Visualiser sur societe.com"
+       title="Visualiser dans l'Annuaire des Entreprises"
        class="link-primary">{{ offerer.siren }}</a>
   {% endif %}
 {% endmacro %}
 {% macro build_siret_to_external_link(venue) %}
   {% if venue.siret %}
-    <a href="https://www.societe.com/etablissement/{{ venue.name | lower | replace(" ", "-") }}-{{ venue.siret }}.html"
+    <a href="https://annuaire-entreprises.data.gouv.fr/etablissement/{{ venue.siret }}"
        target="_blank"
-       title="Visualiser sur societe.com"
+       title="Visualiser dans l'Annuaire des Entreprises"
        class="link-primary">{{ venue.siret }}</a>
   {% endif %}
 {% endmacro %}
