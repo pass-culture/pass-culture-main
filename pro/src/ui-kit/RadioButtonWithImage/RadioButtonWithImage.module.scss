@@ -35,12 +35,15 @@ $border-size-selected: rem.torem(2px);
 
   &-icon {
     flex-shrink: 0;
-    fill: colors.$tertiary;
+    size: 44px;
     width: rem.torem(44px);
     height: rem.torem(44px);
+    color: colors.$tertiary;
+    fill: colors.$tertiary;
   }
 
   &-icon-transparent {
+    color: transparent;
     fill: transparent;
   }
 

@@ -2,7 +2,9 @@ import React from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
+import PhoneIcon from 'icons/stroke-info-phone.svg'
 import Icon from 'ui-kit/Icon/Icon'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import CollectiveActionButtons from '../CollectiveActionButtons'
 import CollectiveTimeLine from '../CollectiveTimeLine'
@@ -54,10 +56,10 @@ const CollectiveBookingDetails = ({
 
               <div className={styles['contact-detail']}>
                 <dt>
-                  <Icon
+                  <SvgIcon
                     className={styles['contact-detail-icon']}
                     alt="Téléphone"
-                    svg="info-phone"
+                    src={PhoneIcon}
                   />
                 </dt>
                 <dd>{educationalInstitution.phoneNumber}</dd>

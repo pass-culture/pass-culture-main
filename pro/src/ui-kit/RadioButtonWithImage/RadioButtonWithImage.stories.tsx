@@ -1,8 +1,8 @@
 import type { Story } from '@storybook/react'
 import React, { useState } from 'react'
 
-import { ReactComponent as CaseIcon } from 'icons/ico-case.svg'
-import { ReactComponent as PhoneIcon } from 'icons/info-phone.svg'
+import CaseIcon from 'icons/ico-case.svg'
+import PhoneIcon from 'icons/stroke-phone.svg'
 
 import RadioButtonWithImage, {
   IRadioButtonWithImage,
@@ -25,7 +25,7 @@ const Template: Story<IRadioButtonWithImage> = ({ description }) => {
         description={description}
         isChecked={offerType == 'indiv'}
         onChange={handleChange}
-        Icon={PhoneIcon}
+        icon={PhoneIcon}
         value="indiv"
       />
       <br />
@@ -35,7 +35,7 @@ const Template: Story<IRadioButtonWithImage> = ({ description }) => {
         description={description}
         isChecked={offerType == 'collective'}
         onChange={handleChange}
-        Icon={CaseIcon}
+        icon={CaseIcon}
         value="collective"
       />
     </div>
