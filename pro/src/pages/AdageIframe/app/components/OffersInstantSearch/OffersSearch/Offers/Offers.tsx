@@ -27,6 +27,7 @@ import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 import { ResultType } from 'utils/types'
 
 import { Spinner } from '../../../Layout/Spinner/Spinner'
+import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
 
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import Offer from './Offer'
@@ -161,6 +162,7 @@ export const OffersComponent = ({
               userEmail={userEmail}
               userRole={userRole}
             />
+            {index === 1 && <SurveySatisfaction />}
           </div>
         ))}
         <div className={styles['offers-load-more']}>
