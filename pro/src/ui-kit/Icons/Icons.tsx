@@ -48,10 +48,6 @@ const iconList = [
   { src: 'icons/stroke-accessibility-ear.svg' },
 
   // Not cleaned
-  { src: 'icons/ico-box.svg', viewBox: '0 0 33 32' },
-  { src: 'icons/ico-breadcrumb-arrow-right.svg', viewBox: '0 0 7 12' },
-  { src: 'icons/building.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-bulb.svg', viewBox: '0 0 22 26' },
   { src: 'icons/ico-calendar-big.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-calendar-disabled.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-calendar-v2.svg', viewBox: '0 0 24 25' },
