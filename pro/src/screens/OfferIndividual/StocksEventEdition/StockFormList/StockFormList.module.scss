@@ -2,12 +2,6 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.button-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .stock-table {
   margin-top: rem.torem(16px);
 }
@@ -51,6 +45,7 @@
 }
 
 .head-booking-quantity {
+  white-space: nowrap;
   width: rem.torem(110px);
 }
 

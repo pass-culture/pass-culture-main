@@ -72,7 +72,6 @@ export const StocksEventCreation = ({
   const notify = useNotification()
 
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
-
   const onCancel = () => setIsRecurrenceModalOpen(false)
   const onConfirm = (newStocks: StocksEvent[]) => {
     setIsRecurrenceModalOpen(false)
