@@ -169,10 +169,10 @@ describe('app', () => {
     await userEvent.click(launchSearchButton)
 
     // Then
-    await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
+    await waitFor(() => expect(Configure).toHaveBeenCalledTimes(4))
 
     const searchConfigurationLastCall = (Configure as jest.Mock).mock
-      .calls[4][0]
+      .calls[3][0]
     expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
       [
         'offer.educationalInstitutionUAICode:all',
@@ -231,9 +231,9 @@ describe('app', () => {
     await userEvent.click(resetAllFiltersButton)
 
     // Then
-    await waitFor(() => expect(Configure).toHaveBeenCalledTimes(4))
+    await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
     const searchConfigurationFirstCall = (Configure as jest.Mock).mock
-      .calls[2][0]
+      .calls[1][0]
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
       ['venue.departmentCode:01', 'offer.interventionArea:01'],
       ['venue.id:1436'],
@@ -243,7 +243,7 @@ describe('app', () => {
       ],
     ])
     const searchConfigurationLastCall = (Configure as jest.Mock).mock
-      .calls[3][0]
+      .calls[2][0]
     expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
       [
         'offer.educationalInstitutionUAICode:all',
