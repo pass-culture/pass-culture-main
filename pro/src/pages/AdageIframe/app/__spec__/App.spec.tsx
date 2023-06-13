@@ -173,9 +173,9 @@ describe('app', () => {
       expect(contentTitle).toBeInTheDocument()
 
       await waitFor(() => {
-        expect(Configure).toHaveBeenCalledTimes(2)
+        expect(Configure).toHaveBeenCalledTimes(1)
       })
-      const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
+      const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         [`venue.id:${venue.id}`],
         [
@@ -217,9 +217,9 @@ describe('app', () => {
       expect(contentTitle).toBeInTheDocument()
 
       await waitFor(() => {
-        expect(Configure).toHaveBeenCalledTimes(2)
+        expect(Configure).toHaveBeenCalledTimes(1)
       })
-      const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
+      const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         [`venue.id:${venue.id}`],
         [
@@ -301,7 +301,7 @@ describe('app', () => {
       expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, true)
 
       await waitFor(() => {
-        const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
+        const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
         expect(searchConfiguration.facetFilters).toStrictEqual([
           [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
           [
@@ -331,7 +331,7 @@ describe('app', () => {
       expect(apiAdage.getVenueById).toHaveBeenCalledWith(venue.id, true)
 
       await waitFor(() => {
-        const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
+        const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
         expect(searchConfiguration.facetFilters).toStrictEqual([
           [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
           [
@@ -359,20 +359,10 @@ describe('app', () => {
       await userEvent.click(launchSearchButton)
 
       // Then
-      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(4))
-      const searchConfigurationFirstCall = (Configure as jest.Mock).mock
-        .calls[2][0]
-      expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
-        [`venue.id:${venue.id}`],
-        [
-          'offer.educationalInstitutionUAICode:all',
-          'offer.educationalInstitutionUAICode:uai',
-        ],
-      ])
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
+      const searchConfigurationCall = (Configure as jest.Mock).mock.calls[2][0]
 
-      const searchConfigurationLastCall = (Configure as jest.Mock).mock
-        .calls[3][0]
-      expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
+      expect(searchConfigurationCall.facetFilters).toStrictEqual([
         ['venue.departmentCode:30'],
         [
           'offer.educationalInstitutionUAICode:all',
@@ -399,9 +389,9 @@ describe('app', () => {
       await userEvent.click(launchSearchButton)
 
       // Then
-      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(2))
       const searchConfigurationFirstCall = (Configure as jest.Mock).mock
-        .calls[2][0]
+        .calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         ['venue.departmentCode:30', 'offer.interventionArea:30'],
         ['venue.id:1436'],
@@ -456,7 +446,7 @@ describe('app', () => {
         await userEvent.click(secondTab)
 
         expect(Configure).toHaveBeenNthCalledWith(
-          3,
+          2,
 
           expect.objectContaining({
             facetFilters: [

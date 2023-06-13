@@ -31,10 +31,13 @@ export const FacetFiltersContextProvider = ({
   departmentCode?: string | null
   venueFilter?: VenueResponse | null
 }): JSX.Element => {
-  const [facetFilters, setFacetFilters] = useState<Facets>([
-    ...getDefaultFacetFilterUAICodeValue(uai, departmentCode),
-    computeVenueFacetFilter(venueFilter),
-  ])
+  const defaultFacetFilters = venueFilter
+    ? [
+        computeVenueFacetFilter(venueFilter),
+        ...getDefaultFacetFilterUAICodeValue(uai, departmentCode, venueFilter),
+      ]
+    : [...getDefaultFacetFilterUAICodeValue(uai, departmentCode, venueFilter)]
+  const [facetFilters, setFacetFilters] = useState<Facets>(defaultFacetFilters)
 
   const value = useMemo(
     () => ({
