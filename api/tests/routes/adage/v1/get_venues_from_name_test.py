@@ -66,6 +66,12 @@ class Returns200Test:
             collectiveInterventionArea=["mainland"],
             collectiveNetwork=["1"],
             isPermanent=True,
+            bannerUrl="http://example.com/image_cropped.png",
+            bannerMeta={
+                "image_credit": "test",
+                "random": "content",
+                "should": "be_ignored",
+            },
         )
 
         client.with_eac_token()
@@ -102,6 +108,12 @@ class Returns200Test:
                     "isPermanent": venue1.isPermanent,
                     "isAdmin": False,
                     "offerer": {"id": venue1.managingOfferer.id, "name": venue1.managingOfferer.name},
+                    "bannerUrl": "http://example.com/image_cropped.png",
+                    "bannerMeta": {
+                        "image_credit": "test",
+                        "random": "content",
+                        "should": "be_ignored",
+                    },
                 }
             ]
         }
@@ -296,6 +308,8 @@ class Returns200Test:
                     "isPermanent": venue1.isPermanent,
                     "isAdmin": False,
                     "offerer": {"id": venue1.managingOfferer.id, "name": venue1.managingOfferer.name},
+                    "bannerUrl": None,
+                    "bannerMeta": None,
                 },
                 {
                     "id": venue2.id,
@@ -325,6 +339,8 @@ class Returns200Test:
                     "isPermanent": venue2.isPermanent,
                     "isAdmin": False,
                     "offerer": {"id": venue2.managingOfferer.id, "name": venue2.managingOfferer.name},
+                    "bannerUrl": None,
+                    "bannerMeta": None,
                 },
             ]
         }
