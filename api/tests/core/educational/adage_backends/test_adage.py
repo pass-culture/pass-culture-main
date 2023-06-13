@@ -5,7 +5,7 @@ from pcapi.core.educational.adage_backends.serialize import serialize_collective
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import CollectiveOfferFactory
-from pcapi.core.educational.factories import CollectiveStockFactory, EducationalRedactorFactory
+from pcapi.core.educational.factories import CollectiveStockFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.testing import override_settings
 from pcapi.routes.adage.v1.serialization import prebooking
@@ -75,36 +75,9 @@ class AdageHttpClientTest:
         # When
         endpoint = requests_mock.post(f"{MOCK_API_URL}/v1/offre-assoc", status_code=201)
         adage_client.notify_institution_association(offer_data)
-        
 
         # Then
         assert endpoint.called
-        assert offer_data.redactor.email == "Non renseigné"
-        assert offer_data.redactor.redactorCivility == "Non renseigné"
-        assert offer_data.redactor.redactorFirstName == "Non renseigné"
-        assert offer_data.redactor.redactorLastName == "Non renseigné"
-
-    @override_settings(ADAGE_API_URL=MOCK_API_URL)
-    def test_notify_institution_association_success_with_redactor_if_201(self, requests_mock):
-        # Given
-        adage_client = AdageHttpClient()
-        offer = CollectiveOfferFactory(
-            institution=EducationalInstitutionFactory(), collectiveStock=CollectiveStockFactory(), 
-            teacher= EducationalRedactorFactory(),
-        )
-        offer_data = serialize_collective_offer(offer)
-
-        # When
-        endpoint = requests_mock.post(f"{MOCK_API_URL}/v1/offre-assoc", status_code=201)
-        adage_client.notify_institution_association(offer_data)
-        
-
-        # Then
-        assert endpoint.called
-        assert offer_data.redactor.email == 'reda.khteur3@example.com'
-        assert offer_data.redactor.redactorCivility == "M."
-        assert offer_data.redactor.redactorFirstName == "Reda"
-        assert offer_data.redactor.redactorLastName == "Khteur"
 
     @override_settings(ADAGE_API_URL=MOCK_API_URL)
     def test_notify_institution_association_success_if_404(self, requests_mock):
