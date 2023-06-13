@@ -2,8 +2,8 @@ import cn from 'classnames'
 import React from 'react'
 
 import { ReactComponent as CloseIcon } from 'icons/close-dialog.svg'
-import { ReactComponent as BulbIcon } from 'icons/ico-bulb.svg'
 import { ReactComponent as IcoClearIcon } from 'icons/ico-clear.svg'
+import TipsIcon from 'icons/shadow-tips.svg'
 import strokeErrorIcon from 'icons/stroke-error.svg'
 import Icon from 'ui-kit/Icon/Icon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -45,7 +45,12 @@ const BannerLayout = ({
     >
       {type === 'notification-info' && showTitle && (
         <div className={styles['container']}>
-          <BulbIcon className={styles['icon']} />
+          <SvgIcon
+            src={TipsIcon}
+            alt=""
+            className={styles['icon']}
+            viewBox="0 0 22 26"
+          />
           <span className={styles['container-title']}>À SAVOIR</span>
         </div>
       )}
