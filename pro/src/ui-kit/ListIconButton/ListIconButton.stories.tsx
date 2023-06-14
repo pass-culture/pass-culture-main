@@ -1,7 +1,7 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import tashIcon from 'icons/ico-trash-filled.svg'
+import trashIcon from 'icons/ico-trash-filled.svg'
 
 import ListIconButton, { ListIconButtonProps } from './ListIconButton'
 
@@ -19,7 +19,7 @@ const Template: Story<ListIconButtonProps> = props => (
 export const Default = Template.bind({})
 
 Default.args = {
-  icon: tashIcon,
+  icon: trashIcon,
   children: 'Duplicate',
   hasTooltip: true,
 }

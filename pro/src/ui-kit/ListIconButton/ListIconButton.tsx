@@ -2,6 +2,7 @@
 import cn from 'classnames'
 import React, { useId } from 'react'
 
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Tooltip from 'ui-kit/Tooltip'
 
 import styles from './ListIconButton.module.scss'
@@ -35,13 +36,13 @@ const ListIconButton = ({
       onClick={onClick}
       type="button"
     >
-      <img src={icon} className={cn(styles['button-icon'])} />
+      <SvgIcon src={icon} alt="" className={cn(styles['button-icon'])} />
       <div className={styles['visually-hidden']}>{children}</div>
     </button>
   )
   const link = (
     <a className={cn(styles['button'], className)} href={url} onClick={onClick}>
-      <img src={icon} className={cn(styles['button-icon'])} />
+      <SvgIcon src={icon} alt="" className={cn(styles['button-icon'])} />
       <div className={styles['visually-hidden']}>{children}</div>
     </a>
   )

@@ -33,7 +33,7 @@ const iconList = [
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>
-  { src: 'icons/full-arrow-right.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/full-arrow-right.svg' },
 
   // Stroke icons
   { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
