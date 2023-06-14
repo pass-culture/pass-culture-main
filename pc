@@ -33,6 +33,7 @@ Commands:
   reset-all-db          Clear all data in the local database
   reset-all-storage     Delete all local images
   restart-backend       Restart API after removing the database and files
+  restart-backoffice    Restart the backoffice on localhost after removing the database and files
   restore-db            Restore a postgresql database from file (and anonymize data)
   restore-db-intact     Restore a postgresql database from file (non anonymized)
   set-git-config        Define a local Git configuration
@@ -179,6 +180,11 @@ elif [[ "$CMD" == "psql-file" ]]; then
 elif [[ "$CMD" == "restart-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
   restart_backend
+
+# Restart the backoffice on localhost after removing the database and files
+elif [[ "$CMD" == "restart-backoffice" ]]; then
+  source "$INFRA_SCRIPTS_PATH"/start_backend.sh
+  restart_backoffice
 
 # Clear all data in postgresql database
 elif [[ "$CMD" == "reset-all-db" ]]; then
