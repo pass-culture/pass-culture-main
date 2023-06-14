@@ -9,11 +9,7 @@ export interface IBaseCheckboxProps
   description?: string
   hasError?: boolean
   className?: string
-  Icon?: React.FunctionComponent<
-    React.SVGProps<SVGSVGElement> & {
-      title?: string | undefined
-    }
-  >
+  icon?: string
   withBorder?: boolean
 }
 
@@ -22,7 +18,7 @@ const BaseCheckbox = ({
   description,
   hasError,
   className,
-  Icon,
+  icon,
   withBorder,
   ...props
 }: IBaseCheckboxProps): JSX.Element => (
@@ -45,9 +41,9 @@ const BaseCheckbox = ({
         })}
         data-testid={'checkbox'}
       />
-      {!!Icon && (
+      {!!icon && (
         <span className={styles['base-checkbox-icon']}>
-          <Icon className={styles['base-checkbox-icon-svg']} />
+          <img src={icon} className={styles['base-checkbox-icon-svg']} />
         </span>
       )}
       <span className={styles['base-checkbox-label']}>{label}</span>
