@@ -1,32 +1,33 @@
 import cx from 'classnames'
 import React from 'react'
 
-import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
+import strokeDuoIcon from 'icons/stroke-duo.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 import { IBooking } from '..'
 
 import styles from './BookingDetails.module.scss'
 
-interface IBookingDetailsLine {
+interface BookingDetailsLine {
   label: string
   value: number | string
 }
 
-const BookingDetailsLine = ({ label, value }: IBookingDetailsLine) => (
+const BookingDetailsLine = ({ label, value }: BookingDetailsLine) => (
   <div>
     <div className={styles['desk-label']}>{label}</div>
     <div className={styles['desk-value']}>{value}</div>
   </div>
 )
 
-interface IBookingDetailsProps {
+interface BookingDetailsProps {
   booking: IBooking | null
 }
 
 const BookingDetails = ({
   booking,
-}: IBookingDetailsProps): JSX.Element | null => {
+}: BookingDetailsProps): JSX.Element | null => {
   /* istanbul ignore next: DEBT, TO FIX */
   const formattedBookingDate = (booking: IBooking): string => {
     return !booking.datetime
@@ -62,7 +63,7 @@ const BookingDetails = ({
             <div className={styles['desk-label']}>{'Prix : '}</div>
             <div className={cx(styles['desk-value'], styles['duo-price'])}>
               {`${booking.price * 2} €`}
-              <DuoSvg title="Réservation DUO" />
+              <SvgIcon src={strokeDuoIcon} alt="Réservation DUO" />
             </div>
           </div>
         ) : (

@@ -2,12 +2,13 @@ import cn from 'classnames'
 import React from 'react'
 
 import { PasscultureIcon } from 'icons'
-import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
 import { ReactComponent as TagSvg } from 'icons/ico-tag.svg'
+import strokeDuoIcon from 'icons/stroke-duo.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import style from './OptionsIcons.module.scss'
 
-interface IOptionsIconsProps {
+interface OptionsIconsProps {
   isEvent: boolean
   isDuo: boolean
   className?: string
@@ -17,7 +18,7 @@ const OptionsIcons = ({
   isEvent,
   isDuo,
   className,
-}: IOptionsIconsProps): JSX.Element => {
+}: OptionsIconsProps): JSX.Element => {
   return (
     <div className={cn(className, style['options-container'])}>
       <div className={style['option']}>
@@ -27,12 +28,13 @@ const OptionsIcons = ({
         />
         <span className={style['text']}>Type</span>
       </div>
+
       <div
         className={cn(style['option'], {
           [style['disabled']]: !(isEvent && isDuo),
         })}
       >
-        <DuoSvg aria-hidden className={style['icon']} />
+        <SvgIcon src={strokeDuoIcon} alt="" className={style['icon']} />
         <span className={style['text']}>À deux !</span>
       </div>
 

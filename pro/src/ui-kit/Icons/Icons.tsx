@@ -48,11 +48,12 @@ const iconList = [
   { src: 'icons/stroke-error.svg' },
   { src: 'icons/stroke-valid.svg' }, // TODO 1 use left inside <Banner>
   { src: 'icons/stroke-thing.svg' },
+  { src: 'icons/stroke-duo.svg' },
   { src: 'icons/stroke-info-phone.svg' },
   { src: 'icons/stroke-building.svg' },
+  { src: 'icons/stroke-desk.svg' },
   { src: 'icons/stroke-code.svg' },
   { src: 'icons/stroke-accessibility-ear.svg' },
-  { src: 'icons/stroke-desk.svg' },
   { src: 'icons/stroke-close.svg' },
 
   // Shadow icons
@@ -75,7 +76,7 @@ const iconList = [
   },
   { src: 'icons/dropdown-disclosure-down-b.svg', viewBox: '0 0 14 7' },
   { src: 'icons/dropdown-disclosure-down-s-w.svg', viewBox: '0 0 14 7' },
-  { src: 'icons/ico-duo.svg', viewBox: '0 0 24 24' },
+
   { src: 'icons/ico-duplicate-offer.svg', viewBox: '0 0 40 40' },
   { src: 'icons/ico-email-red.svg', viewBox: '0 0 25 24' },
   { src: 'icons/error.svg', viewBox: '0 0 18 18' },
