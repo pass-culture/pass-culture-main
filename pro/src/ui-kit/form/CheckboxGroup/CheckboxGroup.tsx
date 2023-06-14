@@ -14,7 +14,7 @@ export interface ICheckboxGroupProps {
     name: string
     label: string
     description?: string
-    icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+    icon?: string
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   }[]
   className?: string
@@ -40,7 +40,7 @@ const CheckboxGroup = ({
       {group.map(item => (
         <div className={styles['checkbox-group-item']} key={item.name}>
           <CheckboxGroupItem
-            Icon={item.icon}
+            icon={item.icon}
             hasError={meta.touched && !!meta.error}
             label={item.label}
             description={item.description}

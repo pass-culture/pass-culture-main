@@ -8,7 +8,7 @@ interface CheckboxGroupItemProps {
   name: string
   label: string
   description?: string
-  Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+  icon?: string
   hasError?: boolean
   disabled?: boolean
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
@@ -20,7 +20,7 @@ const CheckboxGroupItem = ({
   description,
   name,
   hasError,
-  Icon,
+  icon,
   disabled,
   onChange,
 }: CheckboxGroupItemProps): JSX.Element => {
@@ -37,7 +37,7 @@ const CheckboxGroupItem = ({
   return (
     <BaseCheckbox
       {...field}
-      Icon={Icon}
+      icon={icon}
       hasError={hasError}
       label={label}
       description={description}
