@@ -8,6 +8,7 @@ import pytest
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.factories import ProductWhitelistFactory
 import pcapi.core.permissions.models as perm_models
+from pcapi.routes.backoffice_v3.filters import format_titelive_id_lectorat
 
 from ...connectors.titelive.fixtures import EAN_SEARCH_FIXTURE
 from .helpers import html_parser
@@ -54,7 +55,7 @@ class SearchEanTest(GetEndpointHelper):
         assert EAN_SEARCH_FIXTURE["oeuvre"]["titre"] in card_text[0]
         assert "Modifié le " + article["datemodification"] in card_text[0]
         assert "EAN-13 : " + EAN_SEARCH_FIXTURE["ean"] in card_text[0]
-        assert "Lectorat : " + article["id_lectorat"] in card_text[0]
+        assert "Lectorat : " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
         assert (
             "Prix HT : "
             + str(article["prixpays"]["fr"]["value"])

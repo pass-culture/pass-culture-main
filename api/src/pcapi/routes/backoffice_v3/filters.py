@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import html
 import logging
 import random
 import re
@@ -431,6 +432,22 @@ def format_website(website: str) -> str:
     return website
 
 
+def format_titelive_id_lectorat(id_lectorat: str) -> str:
+    match id_lectorat:
+        case "0":
+            return "grand public"
+        case "1":
+            return "entre 0 et 3 ans"
+        case "2":
+            return "entre 3 et 6 ans"
+        case "3":
+            return "entre 6 et 12 ans"
+        case "4":
+            return "entre 12 et 16 ans"
+        case _:
+            return f'ID lectorat "{id_lectorat}" non renseigné'
+
+
 def format_venue_target(target: offerers_models.Target) -> str:
     match target:
         case offerers_models.Target.INDIVIDUAL:
@@ -504,6 +521,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_types"] = format_offer_types
     app.jinja_env.filters["format_website"] = format_website
     app.jinja_env.filters["format_venue_target"] = format_venue_target
+    app.jinja_env.filters["format_titelive_id_lectorat"] = format_titelive_id_lectorat
     app.jinja_env.filters["parse_referrer"] = parse_referrer
     app.jinja_env.filters["action_to_name"] = action_to_name
     app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link
