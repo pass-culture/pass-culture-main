@@ -42,8 +42,6 @@ const iconList = [
   // Not cleaned
   { src: 'icons/ico-arrow-right.svg', viewBox: '0 0 24 24' },
   { src: 'icons/audio-disability.svg', viewBox: '0 0 20 20' },
-  { src: 'icons/ico-back.svg', viewBox: '0 0 24 17' },
-  { src: 'icons/ico-bookings-w.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-box.svg', viewBox: '0 0 33 32' },
   { src: 'icons/ico-breadcrumb-arrow-right.svg', viewBox: '0 0 7 12' },
   { src: 'icons/building.svg', viewBox: '0 0 24 24' },
@@ -65,7 +63,6 @@ const iconList = [
   { src: 'icons/ico-compta.svg', viewBox: '0 0 20 23' },
   { src: 'icons/ico-copy.svg', viewBox: '0 0 21 20' },
   { src: 'icons/ico-desk.svg', viewBox: '0 0 49 48' },
-  { src: 'icons/ico-deconnect.svg', viewBox: '0 0 25 24' },
   { src: 'icons/ico-double-check.svg' },
   {
     src: 'icons/dropdown-disclosure-down-b-disabled.svg',
