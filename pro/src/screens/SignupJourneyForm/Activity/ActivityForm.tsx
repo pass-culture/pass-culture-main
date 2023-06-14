@@ -3,7 +3,8 @@ import { FieldArray, useFormikContext } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { PlusCircleIcon, TrashFilledIcon } from 'icons'
+import { PlusCircleIcon } from 'icons'
+import trashFilledIcon from 'icons/ico-trash-filled.svg'
 import { Button, CheckboxGroup, Select, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import ListIconButton from 'ui-kit/ListIconButton'
@@ -73,7 +74,7 @@ const ActivityForm = ({ venueTypes }: ActivityFormProps): JSX.Element => {
                 >
                   <ListIconButton
                     hasTooltip
-                    Icon={TrashFilledIcon}
+                    icon={trashFilledIcon}
                     onClick={() => arrayHelpers.remove(index)}
                     disabled={values.socialUrls.length <= 1}
                     className={styles['delete-button']}

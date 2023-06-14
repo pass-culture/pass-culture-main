@@ -1,15 +1,16 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as TrashIcon } from 'icons/ico-trash-filled.svg'
+import tashIcon from 'icons/ico-trash-filled.svg'
 
-import ListIconButton, { IListIconButtonProps } from './ListIconButton'
+import ListIconButton, { ListIconButtonProps } from './ListIconButton'
+
 export default {
   title: 'ui-kit/ListIconButton',
   component: ListIconButton,
 }
 
-const Template: Story<IListIconButtonProps> = props => (
+const Template: Story<ListIconButtonProps> = props => (
   <div style={{ margin: '50px', display: 'flex' }}>
     <ListIconButton {...props}>{props.children}</ListIconButton>
   </div>
@@ -18,7 +19,7 @@ const Template: Story<IListIconButtonProps> = props => (
 export const Default = Template.bind({})
 
 Default.args = {
-  Icon: TrashIcon,
+  icon: tashIcon,
   children: 'Duplicate',
   hasTooltip: true,
 }

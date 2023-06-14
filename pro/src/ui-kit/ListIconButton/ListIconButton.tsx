@@ -1,18 +1,14 @@
 /* istanbul ignore file : no need to test styled html tag  */
 import cn from 'classnames'
-import React, { FunctionComponent, SVGProps, useId } from 'react'
+import React, { useId } from 'react'
 
 import Tooltip from 'ui-kit/Tooltip'
 
 import styles from './ListIconButton.module.scss'
 
-export interface IListIconButtonProps
+export interface ListIconButtonProps
   extends React.HTMLProps<HTMLButtonElement> {
-  Icon: FunctionComponent<
-    SVGProps<SVGSVGElement> & {
-      title?: string | undefined
-    }
-  >
+  icon: string
   innerRef?: React.RefObject<HTMLButtonElement>
   className?: string
   hasTooltip?: boolean
@@ -23,13 +19,13 @@ export interface IListIconButtonProps
 const ListIconButton = ({
   children,
   className,
-  Icon,
+  icon,
   innerRef,
   hasTooltip,
   onClick,
   url,
   ...buttonAttrs
-}: IListIconButtonProps): JSX.Element => {
+}: ListIconButtonProps): JSX.Element => {
   const tooltipId = useId()
   const button = (
     <button
@@ -39,13 +35,13 @@ const ListIconButton = ({
       onClick={onClick}
       type="button"
     >
-      <Icon className={cn(styles['button-icon'])} />
+      <img src={icon} className={cn(styles['button-icon'])} />
       <div className={styles['visually-hidden']}>{children}</div>
     </button>
   )
   const link = (
     <a className={cn(styles['button'], className)} href={url} onClick={onClick}>
-      <Icon className={cn(styles['button-icon'])} />
+      <img src={icon} className={cn(styles['button-icon'])} />
       <div className={styles['visually-hidden']}>{children}</div>
     </a>
   )
