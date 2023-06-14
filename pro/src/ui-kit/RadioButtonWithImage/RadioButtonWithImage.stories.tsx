@@ -2,7 +2,7 @@ import type { Story } from '@storybook/react'
 import React, { useState } from 'react'
 
 import CaseIcon from 'icons/ico-case.svg'
-import PhoneIcon from 'icons/stroke-phone.svg'
+import PhoneIcon from 'icons/stroke-info-phone.svg'
 
 import RadioButtonWithImage, {
   IRadioButtonWithImage,

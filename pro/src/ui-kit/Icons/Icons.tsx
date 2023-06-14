@@ -38,6 +38,7 @@ const iconList = [
   { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-arrow-right.svg' },
+  { src: 'icons/full-circle-arrow-left.svg' },
 
   // Stroke icons
   { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
@@ -58,7 +59,6 @@ const iconList = [
   { src: 'icons/ico-caret-right.svg', viewBox: '0 0 10 13' },
   { src: 'icons/checkbox-check.svg', viewBox: '0 0 10 8' },
   { src: 'icons/checkbox.svg', viewBox: '0 0 10 8' },
-  { src: 'icons/ico-circle-arrow-left.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-clear-red.svg', viewBox: '0 0 15 14' },
   { src: 'icons/ico-close-b.svg', viewBox: '0 0 17 16' },
   { src: 'icons/close-dialog.svg', viewBox: '0 0 24 24' },
