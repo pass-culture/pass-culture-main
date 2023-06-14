@@ -144,6 +144,7 @@ def _get_individual_bookings(
         if search_query.isnumeric():
             or_filters.append(offers_models.Offer.id == int(search_query))
             or_filters.append(users_models.User.id == int(search_query))
+            or_filters.append(bookings_models.Booking.id == int(search_query))
         else:
             sanitized_email = email_utils.sanitize_email(search_query)
             if email_utils.is_valid_email(sanitized_email):
