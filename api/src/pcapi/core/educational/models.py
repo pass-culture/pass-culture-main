@@ -925,10 +925,6 @@ class CollectiveBooking(PcObject, Base, Model):
         uselist=False,
     )
 
-    def mark_as_unused_set_confirmed(self) -> None:
-        self.dateUsed = None
-        self.status = CollectiveBookingStatus.CONFIRMED
-
     def cancel_booking(
         self,
         reason: CollectiveBookingCancellationReasons,
