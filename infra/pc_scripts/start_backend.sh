@@ -31,3 +31,10 @@ function start_backoffice {
     fi
     RUN='cd $ROOT_PATH && docker-compose -f "$ROOT_PATH"/docker-compose-backoffice.yml build && docker-compose -f "$ROOT_PATH"/docker-compose-backoffice.yml up'
 }
+
+
+function restart_backoffice {
+    RUN='sudo rm -rf "$ROOT_PATH"/api/static/object_store_data;
+    docker-compose -f "$ROOT_PATH"/docker-compose-app.yml down --volumes;
+    cd "$ROOT_PATH" && docker-compose -f "$ROOT_PATH"/docker-compose-backoffice.yml build && docker-compose -f "$ROOT_PATH"/docker-compose-backoffice.yml up --force-recreate'
+}
