@@ -925,16 +925,6 @@ class CollectiveBooking(PcObject, Base, Model):
         uselist=False,
     )
 
-    def mark_as_used(self) -> None:
-        if self.is_used_or_reimbursed:
-            raise booking_exceptions.BookingHasAlreadyBeenUsed()
-        if self.status is CollectiveBookingStatus.CANCELLED:
-            raise booking_exceptions.BookingIsCancelled()
-        if self.status is CollectiveBookingStatus.PENDING:
-            raise booking_exceptions.BookingNotConfirmed()
-        self.dateUsed = datetime.utcnow()
-        self.status = CollectiveBookingStatus.USED
-
     def mark_as_unused_set_confirmed(self) -> None:
         self.dateUsed = None
         self.status = CollectiveBookingStatus.CONFIRMED
