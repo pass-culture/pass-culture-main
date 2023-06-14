@@ -25,7 +25,7 @@ pytestmark = [
 
 class GetPivotsPageTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.pivots.get_pivots"
-    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
     def test_get_pivots_page(self, authenticated_client):
         with assert_num_queries(2):
@@ -36,7 +36,7 @@ class GetPivotsPageTest(GetEndpointHelper):
 class ListPivotsTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.pivots.list_pivots"
     endpoint_kwargs = {"name": "allocine"}
-    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
     # - fetch session (1 query)
     # - fetch user (1 query)
@@ -291,7 +291,7 @@ class ListPivotsTest(GetEndpointHelper):
 class GetCreatePivotFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.pivots.get_create_pivot_form"
     endpoint_kwargs = {"name": "allocine"}
-    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
     # - fetch session (1 query)
     # - fetch user (1 query)
@@ -321,7 +321,7 @@ class GetCreatePivotFormTest(GetEndpointHelper):
 class CreatePivotTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.pivots.create_pivot"
     endpoint_kwargs = {"name": "allocine"}
-    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
     def test_create_pivot_allocine(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
@@ -398,7 +398,7 @@ class CreatePivotTest(PostEndpointHelper):
 class GetUpdatePivotFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.pivots.get_update_pivot_form"
     endpoint_kwargs = {"name": "allocine", "pivot_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
     # - fetch session (1 query)
     # - fetch user (1 query)
@@ -479,7 +479,7 @@ class GetUpdatePivotFormTest(GetEndpointHelper):
 class UpdatePivotTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.pivots.update_pivot"
     endpoint_kwargs = {"name": "allocine", "pivot_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
     def test_update_pivot_allocine(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
@@ -555,7 +555,7 @@ class UpdatePivotTest(PostEndpointHelper):
 class DeleteProviderTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.pivots.delete_pivot"
     endpoint_kwargs = {"name": "cgr", "pivot_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
     def test_delete_pivot_boost(self, authenticated_client):
         boost_pivot = providers_factories.BoostCinemaDetailsFactory()

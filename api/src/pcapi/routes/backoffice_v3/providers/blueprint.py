@@ -24,7 +24,7 @@ providers_blueprint = utils.child_backoffice_blueprint(
     "providers",
     __name__,
     url_prefix="/pro/providers",
-    permission=perm_models.Permissions.MANAGE_PROVIDERS,
+    permission=perm_models.Permissions.ADVANCED_PRO_SUPPORT,
 )
 
 
