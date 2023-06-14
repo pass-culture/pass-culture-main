@@ -13,7 +13,7 @@ class GetIndividualBookingListForm(FlaskForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("Code contremarque, ID offre, Nom, email ou ID du bénéficiaire")
+    q = fields.PCOptSearchField("Code contremarque, Nom, email ou ID (offre, bénéficiaire ou résa)")
     offerer = fields.PCTomSelectField(
         "Structures",
         multiple=True,
