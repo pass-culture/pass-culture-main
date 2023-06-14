@@ -30,6 +30,7 @@ class UserGenerationGetRouteTest:
 class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):
     endpoint = "backoffice_v3_web.generate_user"
     needed_permission = None
+    custom_redirect = "backoffice_v3_web.home"
 
     @override_settings(ENABLE_TEST_USER_GENERATION=False)
     def test_returns_not_found_if_generation_disabled(self, authenticated_client):
