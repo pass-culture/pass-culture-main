@@ -20,6 +20,13 @@ class ShowTariffCDS(BaseModel):
         allow_population_by_field_name = True
 
 
+class ShowsMediaoptionsCDS(BaseModel):
+    media_options_id: IdObjectCDS = Field(alias="mediaoptionsid")
+
+    class Config:
+        allow_population_by_field_name = True
+
+
 class CinemaParameterCDS(BaseModel):
     id: int
     key: str
@@ -35,6 +42,12 @@ class CinemaCDS(BaseModel):
         allow_population_by_field_name = True
 
 
+class MediaOptionCDS(BaseModel):
+    id: int
+    ticketlabel: str | None
+    label: str
+
+
 class ShowCDS(BaseModel):
     id: int
     is_cancelled: bool = Field(alias="canceled")
@@ -47,6 +60,7 @@ class ShowCDS(BaseModel):
     shows_tariff_pos_type_collection: list[ShowTariffCDS] = Field(alias="showsTariffPostypeCollection")
     screen: IdObjectCDS = Field(alias="screenid")
     media: IdObjectCDS = Field(alias="mediaid")
+    shows_mediaoptions_collection: list[ShowsMediaoptionsCDS] = Field(alias="showsMediaoptionsCollection")
 
     class Config:
         allow_population_by_field_name = True

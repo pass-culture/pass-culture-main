@@ -340,3 +340,9 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
         raise cds_exceptions.CineDigitalServiceAPIException(
             f"Cinema not found in Cine Digital Service API " f"for cinemaId={self.cinema_id} & url={self.api_url}"
         )
+
+    @lru_cache
+    def get_media_options(self) -> dict[int, str]:
+        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.MEDIA_OPTIONS)
+        media_options = parse_obj_as(list[cds_serializers.MediaOptionCDS], data)
+        return {media_option.id: media_option.ticketlabel for media_option in media_options if media_option.ticketlabel}
