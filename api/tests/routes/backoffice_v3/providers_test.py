@@ -25,7 +25,7 @@ pytestmark = [
 
 class GetProvidersPageTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.providers.get_providers"
-    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
     # - fetch session (1 query)
     # - fetch user (1 query)
@@ -57,7 +57,7 @@ class GetProvidersPageTest(GetEndpointHelper):
 
 class CreateProviderTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.providers.create_provider"
-    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
     def test_create_provider_and_offerer(self, authenticated_client):
         form_data = {
@@ -135,7 +135,7 @@ class CreateProviderTest(PostEndpointHelper):
 class UpdateProviderTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.providers.update_provider"
     endpoint_kwargs = {"provider_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
     def test_update_provider(self, authenticated_client):
         provider = providers_factories.ProviderFactory()

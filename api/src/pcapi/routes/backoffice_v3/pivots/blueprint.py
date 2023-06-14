@@ -19,7 +19,7 @@ pivots_blueprint = utils.child_backoffice_blueprint(
     "pivots",
     __name__,
     url_prefix="/pro/pivots",
-    permission=perm_models.Permissions.MANAGE_PROVIDERS,
+    permission=perm_models.Permissions.ADVANCED_PRO_SUPPORT,
 )
 
 
