@@ -51,7 +51,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "bookingId": humanize(booking.id),
-            "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
             "dateOfBirth": isoformat(booking.user.birth_date),
             "datetime": format_into_utc_date(booking.stock.beginningDatetime),
             "ean13": None,

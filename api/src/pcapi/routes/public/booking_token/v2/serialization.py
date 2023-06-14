@@ -26,9 +26,6 @@ class BookingFormula(str, Enum):
 
 class GetBookingResponse(BaseModel):
     bookingId: str
-    cancellationLimitDate: str | None = pydantic.Field(
-        description="Pour les offres de type événement, date limite d'annulation par le ou la bénéficiaire."
-    )
     dateOfBirth: str | None
     datetime: str  # avoid breaking legacy value "" returned for void date
     ean13: str | None
@@ -71,9 +68,6 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
     birth_date = isoformat(booking.user.birth_date) if booking.user.birth_date else None  # type: ignore [arg-type]
     return GetBookingResponse(
         bookingId=humanize(booking.id),  # type: ignore [arg-type]
-        cancellationLimitDate=(
-            format_into_utc_date(booking.cancellationLimitDate) if booking.cancellationLimitDate else None
-        ),
         dateOfBirth=birth_date,
         datetime=(format_into_utc_date(booking.stock.beginningDatetime) if booking.stock.beginningDatetime else ""),
         ean13=(
