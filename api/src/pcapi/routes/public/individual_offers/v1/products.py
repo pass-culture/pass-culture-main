@@ -20,6 +20,7 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import rate_limiting
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.workers import worker
@@ -41,6 +42,7 @@ logger = logging.getLogger(__name__)
     response_model=serialization.GetOfferersVenuesResponse,
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def get_offerer_venues(
     query: serialization.GetOfferersVenuesQuery,
 ) -> serialization.GetOfferersVenuesResponse:
@@ -84,6 +86,7 @@ def _retrieve_offer_by_eans_query(eans: list[str]) -> sqla.orm.Query:
     response_model=serialization.ProductOfferResponse,
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def post_product_offer(
     body: serialization.ProductOfferCreation,
 ) -> serialization.ProductOfferResponse:
@@ -140,6 +143,7 @@ def post_product_offer(
     on_success_status=204,
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) -> None:
     """
     Create products offer using their European Article Number (EAN-13).
@@ -313,6 +317,7 @@ def _create_offer_from_product(
     response_model=serialization.ProductOfferResponse,
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def get_product(product_id: int) -> serialization.ProductOfferResponse:
     """
     Get a product offer.
@@ -335,6 +340,7 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     response_model=serialization.ProductOffersByEanResponse,
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def get_product_by_ean(
     query: serialization.GetProductsListByEansQuery,
 ) -> serialization.ProductOffersByEanResponse:
@@ -362,6 +368,7 @@ def get_product_by_ean(
     response_model=serialization.ProductOffersResponse,
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def get_products(
     query: serialization.GetOffersQueryParams,
 ) -> serialization.ProductOffersResponse:
@@ -422,6 +429,7 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
     response_model=serialization.ProductOfferResponse,
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def edit_product(product_id: int, body: serialization.ProductOfferEdition) -> serialization.ProductOfferResponse:
     """
     Edit a book, CD or vinyl product.
