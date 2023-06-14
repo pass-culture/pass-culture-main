@@ -1,5 +1,6 @@
 import typing
 
+from flask import g
 from flask import request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -9,6 +10,10 @@ from pcapi import settings
 
 def get_email_from_request() -> str:
     return request.json["identifier"]  # type: ignore [index]
+
+
+def get_api_key() -> str:
+    return g.current_api_key
 
 
 def get_basic_auth_from_request() -> str | None:
@@ -55,6 +60,16 @@ def email_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
     }
     base_kwargs.update(kwargs)
     return rate_limiter.shared_limit(settings.RATE_LIMIT_BY_EMAIL, **base_kwargs)
+
+
+def api_key_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
+    base_kwargs = {
+        "key_func": get_api_key,
+        "scope": "rate_limiter",
+        "error_message": "rate limit by api_key exceeded",
+    }
+    base_kwargs.update(kwargs)
+    return rate_limiter.shared_limit(settings.RATE_LIMIT_BY_API_KEY, **base_kwargs)
 
 
 def basic_auth_rate_limiter(**kwargs: typing.Any) -> typing.Callable:

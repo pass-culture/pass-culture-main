@@ -12,6 +12,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import rate_limiting
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 
@@ -41,6 +42,7 @@ def _deserialize_ticket_collection(
     response_model=serialization.EventOfferResponse,
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def post_event_offer(body: serialization.EventOfferCreation) -> serialization.EventOfferResponse:
     """
     Post an event offer.
@@ -97,6 +99,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
     response_model=serialization.EventOfferResponse,
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def get_event(event_id: int) -> serialization.EventOfferResponse:
     """
     Get an event offer.
@@ -119,6 +122,7 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
     response_model=serialization.EventOffersResponse,
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def get_events(query: serialization.GetOffersQueryParams) -> serialization.EventOffersResponse:
     """
     Get events. Results are paginated.
@@ -163,6 +167,7 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     response_model=serialization.EventOfferResponse,
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serialization.EventOfferResponse:
     """
     Edit a event offer.
@@ -218,6 +223,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     response_model=serialization.PriceCategoriesResponse,
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def post_event_price_categories(
     event_id: int, body: serialization.PriceCategoriesCreation
 ) -> serialization.PriceCategoriesResponse:
@@ -244,6 +250,7 @@ def post_event_price_categories(
     response_model=serialization.PriceCategoryResponse,
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def patch_event_price_categories(
     event_id: int,
     price_category_id: int,
@@ -296,6 +303,7 @@ def patch_event_price_categories(
     response_model=serialization.PostDatesResponse,
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
     """
     Add dates to an event offer.
@@ -343,6 +351,7 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
     api=blueprint.v1_event_schema, tags=[constants.EVENT_OFFER_DATES_TAG], response_model=serialization.GetDatesResponse
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> serialization.GetDatesResponse:
     """
     Get dates of an event. Results are paginated.
@@ -392,6 +401,7 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["DELETE"])
 @spectree_serialize(api=blueprint.v1_event_schema, tags=[constants.EVENT_OFFER_DATES_TAG], on_success_status=204)
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def delete_event_date(event_id: int, date_id: int) -> None:
     """
     Delete an event date.
@@ -418,6 +428,7 @@ def delete_event_date(event_id: int, date_id: int) -> None:
     api=blueprint.v1_event_schema, tags=[constants.EVENT_OFFER_DATES_TAG], response_model=serialization.DateResponse
 )
 @api_key_required
+@rate_limiting.api_key_rate_limiter()
 def patch_event_date(
     event_id: int,
     date_id: int,
