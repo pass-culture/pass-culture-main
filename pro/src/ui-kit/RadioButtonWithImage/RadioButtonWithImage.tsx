@@ -57,7 +57,7 @@ const RadioButtonWithImage = ({
         styles['button-icon'],
         transparent && styles['button-icon-transparent']
       )}
-      alt={name + ' - button'}
+      alt=""
     />
     <input
       checked={isChecked}
