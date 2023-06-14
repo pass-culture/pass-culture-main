@@ -1,10 +1,14 @@
 <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
 {% set search_field_id = random_hash() %}
-<input type="text"
+<input {% if field.flags.required %}required{% endif %}
+       type="text"
        class="form-control col-8 border-start-0 value-element-form"
        id="{{ search_field_id }}"
        name="{{ field.name }}"
        data-original-name="{{ field.name }}"
        value="{{ field.data | empty_string_if_null }}"
        aria-describedby="search-icon"
-       placeholder="{{ field.label.text }}" />
+       placeholder="{{ field.label.text }}"
+       {% if field.flags.minlength %}minlength="{{ field.flags.minlength }}"{% endif %}
+       {% if field.flags.maxlength %}maxlength="{{ field.flags.maxlength }}"{% endif %}
+       {% if field.flags.disabled %}disabled{% endif %} />

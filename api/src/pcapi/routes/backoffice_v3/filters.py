@@ -523,6 +523,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_venue_target"] = format_venue_target
     app.jinja_env.filters["format_titelive_id_lectorat"] = format_titelive_id_lectorat
     app.jinja_env.filters["parse_referrer"] = parse_referrer
+    app.jinja_env.filters["unescape"] = html.unescape
     app.jinja_env.filters["action_to_name"] = action_to_name
     app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link
     app.jinja_env.filters["pc_pro_offerer_link"] = urls.build_pc_pro_offerer_link
