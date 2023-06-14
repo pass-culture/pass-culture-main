@@ -8,7 +8,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as GuichetFullIcon } from 'icons/ico-guichet-full.svg'
+import guichetFullIcon from 'icons/ico-guichet-full.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
 const EditStocksCell = ({
@@ -33,7 +33,7 @@ const EditStocksCell = ({
         })
       }
       url={editionStockLink}
-      Icon={GuichetFullIcon}
+      icon={guichetFullIcon}
       hasTooltip
     >
       {offer.isEvent ? `Dates et capacités` : `Stocks`}

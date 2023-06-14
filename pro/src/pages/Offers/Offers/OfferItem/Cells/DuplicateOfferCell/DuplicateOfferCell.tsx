@@ -9,8 +9,8 @@ import { createOfferFromTemplate } from 'core/OfferEducational'
 import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/createOfferFromBookableOffer'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { CopyIcon } from 'icons'
-import { ReactComponent as PlusIcon } from 'icons/ico-plus.svg'
+import copyIcon from 'icons/ico-copy.svg'
+import plusIcon from 'icons/ico-plus.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
 import DuplicateOfferDialog from './DuplicateOfferDialog'
@@ -61,7 +61,7 @@ const DuplicateOfferCell = ({
     <>
       <ListIconButton
         onClick={handleCreateOfferClick}
-        Icon={isShowcase ? PlusIcon : CopyIcon}
+        icon={isShowcase ? plusIcon : copyIcon}
         innerRef={buttonRef}
         hasTooltip
       >
