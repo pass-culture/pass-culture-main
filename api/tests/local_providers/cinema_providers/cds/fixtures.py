@@ -3,6 +3,7 @@ from datetime import datetime
 from pcapi.connectors.serialization.cine_digital_service_serializers import IdObjectCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowTariffCDS
+from pcapi.connectors.serialization.cine_digital_service_serializers import ShowsMediaoptionsCDS
 from pcapi.core.external_bookings.models import Movie
 
 
@@ -36,6 +37,7 @@ MOVIE_1_SHOW_1 = ShowCDS(
     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
     screen=IdObjectCDS(id=1),
     media=IdObjectCDS(id=123),
+    showsMediaoptionsCollection=[ShowsMediaoptionsCDS(mediaoptionsid=IdObjectCDS(id=5))],
 )
 
 MOVIE_1_SHOW_1_SOLD_OUT = ShowCDS(
@@ -50,6 +52,7 @@ MOVIE_1_SHOW_1_SOLD_OUT = ShowCDS(
     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
     screen=IdObjectCDS(id=1),
     media=IdObjectCDS(id=123),
+    showsMediaoptionsCollection=[ShowsMediaoptionsCDS(mediaoptionsid=IdObjectCDS(id=5))],
 )
 
 MOVIE_2_SHOW_1 = ShowCDS(
@@ -64,6 +67,7 @@ MOVIE_2_SHOW_1 = ShowCDS(
     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
     screen=IdObjectCDS(id=1),
     media=IdObjectCDS(id=51),
+    showsMediaoptionsCollection=[ShowsMediaoptionsCDS(mediaoptionsid=IdObjectCDS(id=5))],
 )
 
 MOVIE_1_SHOW_2 = ShowCDS(
@@ -78,6 +82,7 @@ MOVIE_1_SHOW_2 = ShowCDS(
     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
     screen=IdObjectCDS(id=1),
     media=IdObjectCDS(id=123),
+    showsMediaoptionsCollection=[ShowsMediaoptionsCDS(mediaoptionsid=IdObjectCDS(id=5))],
 )
 
 MOVIE_OTHER_SHOW_1 = ShowCDS(
@@ -92,6 +97,7 @@ MOVIE_OTHER_SHOW_1 = ShowCDS(
     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
     screen=IdObjectCDS(id=1),
     media=IdObjectCDS(id=88888),
+    showsMediaoptionsCollection=[ShowsMediaoptionsCDS(mediaoptionsid=IdObjectCDS(id=5))],
 )
 
 MOVIE_OTHER_SHOW_2 = ShowCDS(
@@ -106,6 +112,7 @@ MOVIE_OTHER_SHOW_2 = ShowCDS(
     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
     screen=IdObjectCDS(id=1),
     media=IdObjectCDS(id=88888),
+    showsMediaoptionsCollection=[ShowsMediaoptionsCDS(mediaoptionsid=IdObjectCDS(id=5))],
 )
 
 CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE = {
@@ -148,6 +155,7 @@ SHOW_1 = {
     ],
     "screenid": {"id": 1},
     "mediaid": {"id": 123},
+    "showsMediaoptionsCollection": [{"mediaoptionsid": {"id": 5}}],
 }
 
 SHOW_2 = {
@@ -162,6 +170,7 @@ SHOW_2 = {
     "showsTariffPostypeCollection": [{"tariffid": {"id": 5}}],
     "screenid": {"id": 1},
     "mediaid": {"id": 51},
+    "showsMediaoptionsCollection": [{"mediaoptionsid": {"id": 5}}],
 }
 
 VOUCHER_TYPE_PC_1 = {
