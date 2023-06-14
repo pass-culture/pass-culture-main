@@ -18,6 +18,7 @@ class ResourceCDS(enum.Enum):
     CREATE_TRANSACTION = "transaction/create"
     CANCEL_BOOKING = "transaction/cancel"
     RATING = "rating"
+    MEDIA_OPTIONS = "mediaoptions"
 
 
 def _extract_reason_from_response(response: requests.Response) -> str:

@@ -6,6 +6,7 @@ import pytest
 from pcapi.connectors.serialization.cine_digital_service_serializers import IdObjectCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowTariffCDS
+from pcapi.connectors.serialization.cine_digital_service_serializers import ShowsMediaoptionsCDS
 from pcapi.core.external_bookings.models import Movie
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
@@ -283,6 +284,7 @@ class Returns201Test:
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
                     screen=IdObjectCDS(id=1),
                     media=IdObjectCDS(id=123),
+                    shows_mediaoptions_collection=[ShowsMediaoptionsCDS(media_options_id=IdObjectCDS(id=12))],
                 ),
                 "price": 5,
                 "price_label": "pass Culture",
@@ -300,6 +302,7 @@ class Returns201Test:
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
                     screen=IdObjectCDS(id=1),
                     media=IdObjectCDS(id=51),
+                    shows_mediaoptions_collection=[ShowsMediaoptionsCDS(media_options_id=IdObjectCDS(id=12))],
                 ),
                 "price": 6,
                 "price_label": "pass Culture",
