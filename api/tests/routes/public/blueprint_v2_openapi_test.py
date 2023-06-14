@@ -151,12 +151,6 @@ def test_public_api(client, app):
                 "GetBookingResponse": {
                     "properties": {
                         "bookingId": {"title": "Bookingid", "type": "string"},
-                        "cancellationLimitDate": {
-                            "description": "Pour les offres de type événement, date limite d'annulation par le ou la bénéficiaire.",
-                            "nullable": True,
-                            "title": "Cancellationlimitdate",
-                            "type": "string",
-                        },
                         "dateOfBirth": {"nullable": True, "title": "Dateofbirth", "type": "string"},
                         "datetime": {"title": "Datetime", "type": "string"},
                         "ean13": {"nullable": True, "title": "Ean13", "type": "string"},
