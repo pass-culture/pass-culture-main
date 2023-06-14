@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 import wtforms
+from wtforms import validators
 
 from pcapi.routes.backoffice_v3 import utils as bo_utils
 
@@ -10,7 +11,13 @@ class SearchEanForm(FlaskForm):
     class Meta:
         csrf = False
 
-    ean = fields.PCSearchField("EAN-13")
+    ean = fields.PCSearchField(
+        "EAN-13",
+        validators=[
+            validators.InputRequired("L'EAN est obligatoire"),
+            validators.Length(min=13, max=13, message="L'EAN doit faire exactement 13 chiffres"),
+        ],
+    )
 
     def validate_ean(self, ean: fields.PCSearchField) -> fields.PCSearchField:
         if ean.data:

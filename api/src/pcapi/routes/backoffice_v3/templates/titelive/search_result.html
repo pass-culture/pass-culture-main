@@ -15,17 +15,17 @@
                   {% if article.image %}
                     <img class="img-fluid rounded-start object-fit-contain"
                          src="{{ article.imagesUrl.recto }}"
-                         alt="Illustration pour {{ json.oeuvre.titre }}"
-                         title="Illustration pour {{ json.oeuvre.titre }}" />
+                         alt="Illustration pour {{ json.oeuvre.titre|safe }}"
+                         title="Illustration pour {{ json.oeuvre.titre|safe }}" />
                   {% endif %}
                 {% endfor %}
               </div>
               <div class="col-md-8">
                 <div class="card-body">
-                  <h5 class="card-title">{{ json.oeuvre.titre }}</h5>
+                  <h5 class="card-title">{{ json.oeuvre.titre|safe }}</h5>
                   {% for article in json.oeuvre.article %}
                     <p class="card-text text-truncate"
-                       title="{{ article.resume }}">{{ article.resume }}</p>
+                       title="{{ article.resume|safe }}">{{ article.resume|safe }}</p>
                     <p class="card-text">
                       <small class="text-body-secondary">
                         {% if article.datemodification %}
@@ -46,7 +46,7 @@
                   </li>
                   {% for article in json.oeuvre.article %}
                     <li class="list-group-item">
-                      <b>Lectorat : </b> {{ article.id_lectorat }}
+                      <b>Lectorat : </b> {{ article.id_lectorat|format_titelive_id_lectorat }}
                     </li>
                     <li class="list-group-item">
                       <b>Prix HT
@@ -56,7 +56,7 @@
                         <b>Taux TVA :</b> {{ article.taux_tva }} %
                       </li>
                       <li class="list-group-item">
-                        <b>Code CLIL :</b> {{ article.code_clil }}
+                        <b>Code CLIL :</b> {{ article.code_clil | default('Non renseigné') }}
                       </li>
                       <li class="list-group-item">
                         <b>Code support :</b> {{ article.libellesupport }}
@@ -64,9 +64,12 @@
                       </li>
                       <li class="list-group-item">
                         <b>Code GTL :</b>
-                        <ul class="mt-2">
-                          {% for key, value in article.gtl.first.items() %}<li>{{ value.libelle|safe }} ({{ value.code }})</li>{% endfor %}
-                        </ul>
+                        {% if not article.gtl.first %}Non renseigné{% endif %}
+                        {% if article.gtl.first %}
+                          <ul class="mt-2">
+                            {% for key, value in article.gtl.first.items() %}<li>{{ value.libelle|safe }} ({{ value.code }})</li>{% endfor %}
+                          </ul>
+                        {% endif %}
                       </li>
                     {% endfor %}
                   </ul>
