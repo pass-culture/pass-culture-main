@@ -1,8 +1,8 @@
 import { AccessiblityEnum } from 'core/shared'
-import { ReactComponent as AudioDisabilitySvg } from 'icons/audio-disability.svg'
-import { ReactComponent as MentalDisabilitySvg } from 'icons/mental-disability.svg'
-import { ReactComponent as MotorDisabilitySvg } from 'icons/motor-disability.svg'
-import { ReactComponent as VisualDisabilitySvg } from 'icons/visual-disability.svg'
+import mentalDisabilitySvg from 'icons/mental-disability.svg'
+import motorDisabilitySvg from 'icons/motor-disability.svg'
+import audioDisabilitySvg from 'icons/stroke-accessibility-ear.svg'
+import visualDisabilitySvg from 'icons/visual-disability.svg'
 
 const useAccessibilityOptions = (
   setFieldValue: (
@@ -33,25 +33,25 @@ const useAccessibilityOptions = (
     {
       label: 'Visuel',
       name: `accessibility.${AccessiblityEnum.VISUAL}`,
-      icon: VisualDisabilitySvg,
+      icon: visualDisabilitySvg,
       onChange: onNormalOptionChange,
     },
     {
       label: 'Psychique ou cognitif',
       name: `accessibility.${AccessiblityEnum.MENTAL}`,
-      icon: MentalDisabilitySvg,
+      icon: mentalDisabilitySvg,
       onChange: onNormalOptionChange,
     },
     {
       label: 'Moteur',
       name: `accessibility.${AccessiblityEnum.MOTOR}`,
-      icon: MotorDisabilitySvg,
+      icon: motorDisabilitySvg,
       onChange: onNormalOptionChange,
     },
     {
       label: 'Auditif',
       name: `accessibility.${AccessiblityEnum.AUDIO}`,
-      icon: AudioDisabilitySvg,
+      icon: audioDisabilitySvg,
       onChange: onNormalOptionChange,
     },
     {

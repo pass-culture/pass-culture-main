@@ -1,7 +1,7 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as Icon } from 'icons/visual-disability.svg'
+import icon from 'icons/visual-disability.svg'
 
 import BaseCheckbox, { IBaseCheckboxProps } from './BaseCheckbox'
 
@@ -23,7 +23,7 @@ Default.args = {
   hasError: false,
   disabled: false,
   onChange: () => {},
-  Icon,
+  icon,
 }
 
 export const WithDescription = Template.bind({})
@@ -35,7 +35,7 @@ WithDescription.args = {
   hasError: false,
   disabled: false,
   onChange: () => {},
-  Icon,
+  icon,
 }
 
 export const WithBorder = Template.bind({})
@@ -45,6 +45,6 @@ WithBorder.args = {
   hasError: false,
   disabled: false,
   onChange: () => {},
-  Icon,
+  icon,
   withBorder: true,
 }

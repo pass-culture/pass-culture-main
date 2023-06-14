@@ -13,11 +13,7 @@ export interface CheckboxProps {
   description?: string
   className?: string
   hideFooter?: boolean
-  Icon?: React.FunctionComponent<
-    React.SVGProps<SVGSVGElement> & {
-      title?: string | undefined
-    }
-  >
+  icon?: string
   disabled?: boolean
   withBorder?: boolean
 }
@@ -28,7 +24,7 @@ const Checkbox = ({
   label,
   description,
   className,
-  Icon,
+  icon,
   hideFooter,
   disabled,
   withBorder,
@@ -38,7 +34,7 @@ const Checkbox = ({
     <div className={cn(styles['checkbox'], className)}>
       <BaseCheckbox
         {...field}
-        Icon={Icon}
+        icon={icon}
         hasError={meta.touched && !!meta.error}
         label={label}
         description={description}
