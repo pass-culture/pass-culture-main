@@ -9,7 +9,7 @@ import {
 import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
-import { PenIcon } from 'icons'
+import penIcon from 'icons/ico-pen.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
 import styles from '../../OfferItem.module.scss'
@@ -44,7 +44,7 @@ const EditOfferCell = ({
       onClick={onEditOfferClick}
       url={editionOfferLink}
       className={styles['button']}
-      Icon={PenIcon}
+      icon={penIcon}
       hasTooltip
     >
       Modifier
