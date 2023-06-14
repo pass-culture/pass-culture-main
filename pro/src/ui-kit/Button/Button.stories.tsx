@@ -2,7 +2,7 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as CircleArrowLeftIcon } from 'icons/ico-circle-arrow-left.svg'
+import { ReactComponent as CircleArrowLeftIcon } from 'icons/full-circle-arrow-left.svg'
 import { ReactComponent as CircleArrowIcon } from 'icons/ico-circle-arrow.svg'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'

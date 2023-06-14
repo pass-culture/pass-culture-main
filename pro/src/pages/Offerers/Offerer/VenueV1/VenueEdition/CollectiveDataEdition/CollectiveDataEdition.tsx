@@ -11,7 +11,7 @@ import {
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as CircleArrowIcon } from 'icons/ico-circle-arrow-left.svg'
+import { ReactComponent as CircleArrowIcon } from 'icons/full-circle-arrow-left.svg'
 import { Banner, Title, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
