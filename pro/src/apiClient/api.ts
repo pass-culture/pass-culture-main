@@ -24,6 +24,5 @@ const configAdage: OpenAPIConfig = {
 
 export const api = new AppClient(config).default
 export const apiContremarque = new AppClientV2(config).apiContremarque
-export const apiStocks = new AppClientV2(config).apiStocks
 export const apiAdage = new AppClientAdage(configAdage).default
 export { apiAdresse } from 'apiClient/adresse'
