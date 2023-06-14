@@ -1,14 +1,19 @@
 import React from 'react'
 
-import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
+import strokeDuoIcon from 'icons/stroke-duo.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BookingIsDuoCell.module.scss'
 
 const BookingIsDuoCell = ({ isDuo }: { isDuo: boolean }) => {
-  return (
-    <span className={styles['bookings-duo-icon']}>
-      {isDuo && <DuoSvg title="Réservation DUO" />}
-    </span>
+  return isDuo ? (
+    <SvgIcon
+      src={strokeDuoIcon}
+      alt="Réservation DUO"
+      className={styles['bookings-duo-icon']}
+    />
+  ) : (
+    <></>
   )
 }
 
