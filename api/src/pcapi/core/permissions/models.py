@@ -31,6 +31,7 @@ class Permissions(enum.Enum):
 
     SUSPEND_USER = "suspendre un compte utilisateur"
     UNSUSPEND_USER = "réactiver un compte utilisateur"
+    BATCH_SUSPEND_USERS = "suspendre en masse des comptes bénéficiaires/grand public"
 
     READ_PRO_ENTITY = "visualiser une structure, un lieu ou un compte pro"
     MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"
@@ -65,25 +66,29 @@ class Permissions(enum.Enum):
         return True
 
 
-def sync_enum_with_db_field(session: sa.orm.Session, py_enum: Type[enum.Enum], db_field: sa.Column) -> None:
-    db_values = set(p.name for p in session.query(db_field).all())
-    py_values = set(e.name for e in py_enum)
+def sync_enum_with_db_field(
+    session: sa.orm.Session, py_enum: Type[enum.Enum], py_attr: str, db_class: Type[Model]
+) -> None:
+    db_values = set(p.name for p in session.query(db_class.name).all())
+    py_values = set(getattr(e, py_attr) for e in py_enum)
 
-    if removed_permissions := db_values - py_values:
+    if removed_names := db_values - py_values:
         logger.warning(
-            "Some permissions have been removed from code: %s\n"
-            "Please check that those permissions are not assigned to any role.",
-            ", ".join(removed_permissions),
+            "Some %ss have been removed from code: %s\nPlease check that those %ss are not assigned to any role.",
+            db_class.__name__,
+            ", ".join(removed_names),
+            db_class.__name__,
         )
 
-    if added_permissions := py_values - db_values:
-        for perm_name in added_permissions:
-            session.add(Permission(name=perm_name))
+    if added_names := py_values - db_values:
+        for name in added_names:
+            session.add(db_class(name=name))
         session.commit()
         logger.info(
-            "%s permission(s) added: %s",
-            len(added_permissions),
-            ", ".join(added_permissions),
+            "%s %s(s) added: %s",
+            len(added_names),
+            db_class.__name__,
+            ", ".join(added_names),
         )
 
 
@@ -94,7 +99,7 @@ def sync_db_permissions(session: sa.orm.Session) -> None:
 
     This is done before each deployment and in tests
     """
-    return sync_enum_with_db_field(session, Permissions, Permission.name)
+    return sync_enum_with_db_field(session, Permissions, "name", Permission)
 
 
 class RolePermission(PcObject, Base, Model):
@@ -130,6 +135,7 @@ class Roles(enum.Enum):
     SUPPORT_PRO = "support-PRO"
     SUPPORT_PRO_N2 = "support-PRO-N2"
     FRAUDE_CONFORMITE = "fraude-conformite"
+    FRAUDE_JEUNES = "fraude-jeunes"
     DAF_MANAGEMENT = "responsable-daf"
     DAF = "daf"
     BIZDEV = "bizdev"
@@ -137,6 +143,18 @@ class Roles(enum.Enum):
     PRODUCT_MANAGEMENT = "product-management"
     CHARGE_DEVELOPPEMENT = "charge-developpement"
     HOMOLOGATION = "homologation"
+    LECTURE_SEULE = "lecture-seule"
+    QA = "qa"
+
+
+def sync_db_roles(session: sa.orm.Session) -> None:
+    """
+    Automatically synchronize `role` table in database from the
+    `Roles` Python Enum.
+
+    This is done before each deployment and in tests
+    """
+    return sync_enum_with_db_field(session, Roles, "value", Role)
 
 
 role_backoffice_profile_table = sa.Table(

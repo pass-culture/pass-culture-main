@@ -1,6 +1,6 @@
 import logging
 
-from pcapi.core.permissions.models import sync_db_permissions
+from pcapi.core.permissions import models as perm_models
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.models import db
 from pcapi.models.feature import install_feature_flags
@@ -16,8 +16,11 @@ def install_data() -> None:
     install_feature_flags()
     logger.info("Feature flags installed")
 
-    sync_db_permissions(db.session)
+    perm_models.sync_db_permissions(db.session)
     logger.info("Permissions synced")
+
+    perm_models.sync_db_roles(db.session)
+    logger.info("Roles synced")
 
 
 @blueprint.cli.command("install_postgres_extensions")

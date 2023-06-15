@@ -124,13 +124,13 @@
                 </div>
                 <hr />
               {% endif %}
-              {% if has_permission("PRO_FRAUD_ACTIONS") or has_permission("BENEFICIARY_FRAUD_ACTIONS") %}
+              {% if has_permission("PRO_FRAUD_ACTIONS") or has_permission("BATCH_SUSPEND_USERS") %}
                 <div class="nav nav-pills flex-column">
                   {% call menu_section("Fraude et conformité") %}
                     {% if has_permission("PRO_FRAUD_ACTIONS") %}
                       {{ menu_section_item("Règles de validation d'offres", "backoffice_v3_web.offer_validation_rules.list_rules") }}
                     {% endif %}
-                    {% if has_permission("BENEFICIARY_FRAUD_ACTIONS") %}
+                    {% if has_permission("BATCH_SUSPEND_USERS") %}
                       {{ menu_section_item("Suspension de comptes jeunes", "backoffice_v3_web.fraud.list_blacklisted_domain_names") }}
                     {% endif %}
                   {% endcall %}

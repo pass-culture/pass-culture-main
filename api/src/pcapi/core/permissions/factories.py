@@ -21,6 +21,11 @@ class RoleFactory(BaseFactory):
     permissions: list[Permission] = []
 
 
+class RolePermissionFactory(BaseFactory):
+    class Meta:
+        model = perm_models.RolePermission
+
+
 class BackOfficeUserProfileFactory(BaseFactory):
     class Meta:
         model = perm_models.BackOfficeUserProfile
