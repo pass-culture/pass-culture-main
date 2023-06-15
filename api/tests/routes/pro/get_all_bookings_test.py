@@ -14,7 +14,6 @@ from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import isoformat
 from pcapi.utils.date import utc_datetime_to_department_timezone
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
@@ -124,12 +123,10 @@ class Returns200Test:
             {
                 "stock": {
                     "offerName": booking.stock.offer.name,
-                    "offerIdentifier": humanize(booking.stock.offer.id),
                     "offerId": booking.stock.offer.id,
                     "offerIsEducational": False,
                     "eventBeginningDatetime": None,
                     "offerIsbn": None,
-                    "stockIdentifier": humanize(booking.stock.id),
                 },
                 "beneficiary": {
                     "email": "beneficiary@example.com",

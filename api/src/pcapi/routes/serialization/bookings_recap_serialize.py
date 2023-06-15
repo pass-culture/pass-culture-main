@@ -18,7 +18,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import isoformat
-from pcapi.utils.human_ids import humanize
 
 
 class OfferType(Enum):
@@ -35,9 +34,7 @@ class BookingRecapResponseBeneficiaryModel(BaseModel):
 
 class BookingRecapResponseStockModel(BaseModel):
     event_beginning_datetime: datetime | None
-    offer_identifier: str
     offer_id: int
-    stock_identifier: str
     offer_is_educational: bool
     # Field should be called offerEan but it is shared with
     # collective bookings. We have to adapt the pro front to change name
@@ -131,9 +128,7 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapRespons
     serialized_booking_recap = BookingRecapResponseModel(  # type: ignore [call-arg]
         stock={  # type: ignore [arg-type]
             "offerName": booking_recap.offer_name,
-            "offerIdentifier": humanize(booking_recap.offer_identifier),
             "offerId": booking_recap.offer_identifier,
-            "stockIdentifier": humanize(booking_recap.stock_identifier),
             "eventBeginningDatetime": isoformat(booking_recap.event_beginning_datetime)
             if booking_recap.event_beginning_datetime
             else None,
