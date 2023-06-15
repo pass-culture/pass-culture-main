@@ -2,6 +2,7 @@ import * as yup from 'yup'
 
 import { oneOfSelectOption } from 'core/shared/utils/validation'
 import { SelectOption } from 'custom_types/form'
+import { getToday, removeTime } from 'utils/date'
 
 import { RecurrenceType } from './types'
 
@@ -15,6 +16,7 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       .date()
       .nullable()
       .transform((curr, orig) => (orig === null ? null : curr))
+      .min(removeTime(getToday()), 'L’évènement doit être à venir')
       .when('recurrenceType', {
         is: RecurrenceType.UNIQUE,
         then: schema => schema.required('Veuillez renseigner une date'),
