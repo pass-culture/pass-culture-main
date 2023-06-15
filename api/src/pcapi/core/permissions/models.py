@@ -24,7 +24,7 @@ class Permissions(enum.Enum):
     FEATURE_FLIPPING = "activer/désactiver les feature flags"
 
     PRO_FRAUD_ACTIONS = "actions exclusives à l'équipe Fraude et Conformité (PRO)"
-    BENEFICIARY_FRAUD_ACTIONS = "actions exclusives à l'équipe Fraude et Conformité (jeune)"
+    BENEFICIARY_FRAUD_ACTIONS = "actions exclusives à l'équipe Fraude (jeune)"
 
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"
