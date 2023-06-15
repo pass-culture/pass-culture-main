@@ -16,7 +16,6 @@ import { AccessiblityEnum } from 'core/shared'
 export const serializeOffererApi = (
   apiOffer: GetIndividualOfferResponseModel
 ): IOfferIndividualOfferer => ({
-  id: apiOffer.venue.managingOfferer.id,
   nonHumanizedId: apiOffer.venue.managingOfferer.nonHumanizedId,
   name: apiOffer.venue.managingOfferer.name,
 })

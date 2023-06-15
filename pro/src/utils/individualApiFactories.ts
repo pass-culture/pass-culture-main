@@ -139,7 +139,6 @@ export const individualOfferOffererFactory = (
   const currentOffererId = offererId++
 
   return {
-    id: `OFFERER${currentOffererId}`,
     nonHumanizedId: currentOffererId,
     name: `La nom de la structure ${currentOffererId}`,
     ...customOfferer,

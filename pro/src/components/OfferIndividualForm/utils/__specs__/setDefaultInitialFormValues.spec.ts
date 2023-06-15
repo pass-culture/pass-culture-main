@@ -25,8 +25,8 @@ describe('setDefaultInitialFormValues', () => {
     }
 
     offererNames = [
-      { id: 'AE', name: 'offerer A', nonHumanizedId: 1 },
-      { id: 'B', name: 'offerer B', nonHumanizedId: 2 },
+      { name: 'offerer A', nonHumanizedId: 1 },
+      { name: 'offerer B', nonHumanizedId: 2 },
     ]
     offererId = '1'
     venueId = '1'
@@ -84,7 +84,7 @@ describe('setDefaultInitialFormValues', () => {
 
   it('should return initial values when there is only one offererName', () => {
     // given
-    offererNames = [{ id: 'A9', name: 'offerer B', nonHumanizedId: 2 }]
+    offererNames = [{ name: 'offerer B', nonHumanizedId: 2 }]
     offererId = '2'
     // when
     const initialValues = setDefaultInitialFormValues(

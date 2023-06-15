@@ -35,7 +35,7 @@ const renderOfferers = async (userOffererValidated: boolean) => {
   renderWithProviders(
     <Offerers
       receivedOffererNames={{
-        offerersNames: [{ id: 'idd', name: 'name', nonHumanizedId: 1 }],
+        offerersNames: [{ name: 'name', nonHumanizedId: 1 }],
       }}
       onSelectedOffererChange={() => null}
       cancelLoading={() => null}

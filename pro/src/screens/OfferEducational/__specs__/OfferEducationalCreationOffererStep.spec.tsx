@@ -172,8 +172,8 @@ describe('screens | OfferEducational : creation offerer step', () => {
       props = {
         ...defaultCreationProps,
         userOfferers: userOfferersFactory([
-          { id: firstOffererId.toString(), nonHumanizedId: firstOffererId },
-          { id: secondOffererId.toString(), nonHumanizedId: secondOffererId },
+          { nonHumanizedId: firstOffererId },
+          { nonHumanizedId: secondOffererId },
         ]),
       }
 

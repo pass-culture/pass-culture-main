@@ -24,7 +24,7 @@ export type TSearchFilters = {
 }
 
 export type Offerer = {
-  id: string
+  nonHumanizedId: number
   name: string
 }
 
@@ -115,7 +115,6 @@ export interface IOfferIndividualStock {
 }
 
 export interface IOfferIndividualOfferer {
-  id: string
   name: string
   nonHumanizedId: number
 }

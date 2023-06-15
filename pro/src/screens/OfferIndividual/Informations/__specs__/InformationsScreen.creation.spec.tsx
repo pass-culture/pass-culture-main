@@ -187,9 +187,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
           hasCreatedOffer: true,
         },
       ],
-      offererNames: [
-        { id: 'AE', nonHumanizedId: offererId, name: 'mon offerer A' },
-      ],
+      offererNames: [{ nonHumanizedId: offererId, name: 'mon offerer A' }],
       categories,
       subCategories,
     }

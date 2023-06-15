@@ -68,9 +68,7 @@ describe('screens:OfferIndividual::OfferType', () => {
   let store: any
   beforeAll(() => {
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        { id: 'A1', nonHumanizedId: 1, name: 'Ma super structure' },
-      ],
+      offerersNames: [{ nonHumanizedId: 1, name: 'Ma super structure' }],
     })
     jest.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
     jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
@@ -148,8 +146,8 @@ describe('screens:OfferIndividual::OfferType', () => {
   it('should select template offer', async () => {
     jest.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
       offerersNames: [
-        { id: 'A1', nonHumanizedId: 1, name: 'Ma super structure' },
-        { id: 'A2', nonHumanizedId: 2, name: 'Ma super structure #2' },
+        { nonHumanizedId: 1, name: 'Ma super structure' },
+        { nonHumanizedId: 2, name: 'Ma super structure #2' },
       ],
     })
     renderOfferTypes(store)
@@ -176,9 +174,7 @@ describe('screens:OfferIndividual::OfferType', () => {
 
   it('should display non eligible banner if offerer can not create collective offer', async () => {
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        { id: 'A1', nonHumanizedId: 1, name: 'Ma super structure' },
-      ],
+      offerersNames: [{ nonHumanizedId: 1, name: 'Ma super structure' }],
     })
     jest.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValue({})
     renderOfferTypes(store)
@@ -250,9 +246,7 @@ describe('screens:OfferIndividual::OfferType', () => {
 
   it('should select duplicate template offer', async () => {
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        { id: 'A1', nonHumanizedId: 1, name: 'Ma super structure' },
-      ],
+      offerersNames: [{ nonHumanizedId: 1, name: 'Ma super structure' }],
     })
     jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
     const offersRecap = [collectiveOfferFactory()]
@@ -306,9 +300,7 @@ describe('screens:OfferIndividual::OfferType', () => {
 
   it('should display error message if trying to duplicate without template offer', async () => {
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        { id: 'A1', nonHumanizedId: 1, name: 'Ma super structure' },
-      ],
+      offerersNames: [{ nonHumanizedId: 1, name: 'Ma super structure' }],
     })
     jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
     jest.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])

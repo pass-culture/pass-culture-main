@@ -281,11 +281,8 @@ class GetOfferStockResponseModel(BaseModel):
 
 
 class GetOfferManagingOffererResponseModel(BaseModel):
-    id: str
     nonHumanizedId: int
     name: str
-
-    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True
