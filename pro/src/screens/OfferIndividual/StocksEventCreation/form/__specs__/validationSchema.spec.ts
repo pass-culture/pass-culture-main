@@ -11,11 +11,11 @@ const priceCategoriesOptions: SelectOption[] = [
 const baseValidForm: RecurrenceFormValues = {
   recurrenceType: RecurrenceType.UNIQUE,
   days: [],
-  startingDate: new Date('2020-03-03'),
+  startingDate: new Date('2050-03-03'),
   endingDate: null,
   beginningTimes: [
-    new Date('2020-01-01T10:00:00'),
-    new Date('2020-01-01T10:30:00'),
+    new Date('2050-01-01T10:00:00'),
+    new Date('2050-01-01T10:30:00'),
   ],
   quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
   bookingLimitDateInterval: 2,
@@ -103,6 +103,14 @@ describe('validationSchema', () => {
         'Veuillez renseigner des horaires différents',
         'Veuillez renseigner des horaires différents',
       ],
+    },
+    {
+      description: 'date is in the past',
+      formValues: {
+        ...baseValidForm,
+        startingDate: new Date('2000-01-01'),
+      },
+      expectedErrors: ['L’évènement doit être à venir'],
     },
   ]
 
