@@ -183,11 +183,17 @@ def post_collective_offer_public(
                 status_code=400,
             )
 
+    offer = educational_api_offer.create_collective_offer_public(
+        provider_id=current_api_key.providerId,
+        body=body,
+    )
+
     try:
         offer = educational_api_offer.create_collective_offer_public(
-            offerer_id=current_api_key.offererId,
+            provider_id=current_api_key.providerId,
             body=body,
         )
+
     except educational_exceptions.CulturalPartnerNotFoundException:
         raise ApiErrors(
             errors={
