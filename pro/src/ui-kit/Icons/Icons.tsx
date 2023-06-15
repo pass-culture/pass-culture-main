@@ -37,6 +37,7 @@ const iconList = [
   { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-arrow-right.svg' },
+  { src: 'icons/full-mail.svg' },
 
   // Stroke icons
   { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
@@ -220,7 +221,6 @@ const iconList = [
   { src: 'icons/ico-info-wrong.svg', viewbox: '0 0 78 78' },
   { src: 'icons/ico-key.svg', viewbox: '0 0 20 20' },
   { src: 'icons/logo-pass-culture-dark.svg', viewbox: '0 0 71 24' },
-  { src: 'icons/ico-mail.svg', viewbox: '0 0 20 20' },
   { src: 'icons/ico-mail-outline.svg', viewbox: '0 0 82 67' },
   { src: 'icons/ico-notification-error.svg', viewbox: '0 0 24 24' },
   { src: 'icons/offer-card-euro.svg', viewbox: '0 0 30 30' },

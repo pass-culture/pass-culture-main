@@ -3,7 +3,9 @@ import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ExternalSiteRedFilledIcon, MailIcon } from 'icons'
+import { ExternalSiteRedFilledIcon } from 'icons'
+import fullMailIcon from 'icons/full-mail.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 interface ILegalInfoProps {
   title: string
@@ -57,7 +59,7 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <MailIcon className="icon-legal-infos" />
+        <SvgIcon src={fullMailIcon} alt="" className="icon-legal-infos" />
         <span>Contacter notre support.</span>
       </a>
     </div>
