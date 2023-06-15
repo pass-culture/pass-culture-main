@@ -2,13 +2,15 @@ import React from 'react'
 
 import { BookingStatusFilter } from 'apiClient/v1'
 import {
-  BOOOKING_STATUS_FILTER,
+  BOOKING_STATUS_FILTER,
   DEFAULT_BOOKING_FILTER,
   TPreFilters,
 } from 'core/Bookings'
-import Select from 'ui-kit/form_raw/Select'
+import SelectInput from 'ui-kit/form/Select/SelectInput'
 
-interface IFilterByStatusProps {
+import styles from './FilterByBookingStatusPeriod.module.scss'
+
+interface FilterByStatusProps {
   isDisabled: boolean
   updateFilters: (filters: Partial<TPreFilters>) => void
   selectedStatusId: string
@@ -18,25 +20,20 @@ const FilterByStatus = ({
   isDisabled = false,
   updateFilters,
   selectedStatusId,
-}: IFilterByStatusProps): JSX.Element => {
-  function handleStatusFilterSelection(
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) {
-    updateFilters({
-      bookingStatusFilter: event.target.value as BookingStatusFilter,
-    })
-  }
-
-  return (
-    <Select
-      defaultOption={DEFAULT_BOOKING_FILTER}
-      handleSelection={handleStatusFilterSelection}
-      isDisabled={isDisabled}
-      name="statusFilter"
-      options={BOOOKING_STATUS_FILTER}
-      selectedValue={selectedStatusId}
-    />
-  )
-}
+}: FilterByStatusProps): JSX.Element => (
+  <SelectInput
+    defaultOption={DEFAULT_BOOKING_FILTER}
+    onChange={event =>
+      updateFilters({
+        bookingStatusFilter: event.target.value as BookingStatusFilter,
+      })
+    }
+    disabled={isDisabled}
+    name="statusFilter"
+    className={styles['status-filter']}
+    options={BOOKING_STATUS_FILTER}
+    value={selectedStatusId}
+  />
+)
 
 export default FilterByStatus

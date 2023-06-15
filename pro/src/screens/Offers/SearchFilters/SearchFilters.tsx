@@ -1,6 +1,6 @@
 import { endOfDay } from 'date-fns'
 import { utcToZonedTime } from 'date-fns-tz'
-import React, { FormEvent, MouseEventHandler, useCallback } from 'react'
+import React, { FormEvent, MouseEventHandler } from 'react'
 
 import {
   ALL_CATEGORIES_OPTION,
@@ -22,11 +22,11 @@ import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
 import Select from 'ui-kit/form_raw/Select'
 import TextInput from 'ui-kit/form_raw/TextInput/TextInput'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
+import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 
 import styles from './SearchFilters.module.scss'
 
-interface ISearchFiltersProps {
+interface SearchFiltersProps {
   applyFilters: () => void
   offerer: Offerer | null
   removeOfferer: () => void
@@ -54,79 +54,52 @@ const SearchFilters = ({
   venues,
   categories,
   audience,
-}: ISearchFiltersProps): JSX.Element => {
-  const updateSearchFilters = useCallback(
-    (newSearchFilters: Partial<TSearchFilters>) => {
-      setSearchFilters(currentSearchFilters => ({
-        ...currentSearchFilters,
-        ...newSearchFilters,
-      }))
-    },
-    [setSearchFilters]
-  )
+}: SearchFiltersProps): JSX.Element => {
+  const updateSearchFilters = (newSearchFilters: Partial<TSearchFilters>) => {
+    setSearchFilters(currentSearchFilters => ({
+      ...currentSearchFilters,
+      ...newSearchFilters,
+    }))
+  }
 
-  const storeNameOrIsbnSearchValue = useCallback(
-    (event: FormEvent<HTMLSelectElement>) => {
-      updateSearchFilters({ nameOrIsbn: event.currentTarget.value })
-    },
-    [updateSearchFilters]
-  )
+  const storeNameOrIsbnSearchValue = (event: FormEvent<HTMLSelectElement>) => {
+    updateSearchFilters({ nameOrIsbn: event.currentTarget.value })
+  }
 
-  const storeSelectedVenue = useCallback(
-    (event: FormEvent<HTMLSelectElement>) => {
-      updateSearchFilters({ venueId: event.currentTarget.value })
-    },
-    [updateSearchFilters]
-  )
+  const storeSelectedVenue = (event: FormEvent<HTMLSelectElement>) => {
+    updateSearchFilters({ venueId: event.currentTarget.value })
+  }
 
-  const storeSelectedCategory = useCallback(
-    (event: FormEvent<HTMLSelectElement>) => {
-      updateSearchFilters({ categoryId: event.currentTarget.value })
-    },
-    [updateSearchFilters]
-  )
+  const storeSelectedCategory = (event: FormEvent<HTMLSelectElement>) => {
+    updateSearchFilters({ categoryId: event.currentTarget.value })
+  }
 
-  const storeCreationMode = useCallback(
-    (event: FormEvent<HTMLSelectElement>) => {
-      updateSearchFilters({ creationMode: event.currentTarget.value })
-    },
-    [updateSearchFilters]
-  )
+  const storeCreationMode = (event: FormEvent<HTMLSelectElement>) => {
+    updateSearchFilters({ creationMode: event.currentTarget.value })
+  }
 
-  const storeCollectiveOfferType = useCallback(
-    (event: FormEvent<HTMLSelectElement>) => {
-      updateSearchFilters({ collectiveOfferType: event.currentTarget.value })
-    },
-    [updateSearchFilters]
-  )
+  const storeCollectiveOfferType = (event: FormEvent<HTMLSelectElement>) => {
+    updateSearchFilters({ collectiveOfferType: event.currentTarget.value })
+  }
 
-  const changePeriodBeginningDateValue = useCallback(
-    (periodBeginningDate: Date) => {
-      const dateToFilter = periodBeginningDate
-        ? formatBrowserTimezonedDateAsUTC(periodBeginningDate)
-        : DEFAULT_SEARCH_FILTERS.periodBeginningDate
-      updateSearchFilters({ periodBeginningDate: dateToFilter })
-    },
-    [updateSearchFilters]
-  )
+  const changePeriodBeginningDateValue = (periodBeginningDate: Date) => {
+    const dateToFilter = periodBeginningDate
+      ? formatBrowserTimezonedDateAsUTC(periodBeginningDate)
+      : DEFAULT_SEARCH_FILTERS.periodBeginningDate
+    updateSearchFilters({ periodBeginningDate: dateToFilter })
+  }
 
-  const changePeriodEndingDateValue = useCallback(
-    (periodEndingDate: Date) => {
-      const dateToFilter = periodEndingDate
-        ? formatBrowserTimezonedDateAsUTC(endOfDay(periodEndingDate))
-        : DEFAULT_SEARCH_FILTERS.periodEndingDate
-      updateSearchFilters({ periodEndingDate: dateToFilter })
-    },
-    [updateSearchFilters]
-  )
+  const changePeriodEndingDateValue = (periodEndingDate: Date) => {
+    const dateToFilter = periodEndingDate
+      ? formatBrowserTimezonedDateAsUTC(endOfDay(periodEndingDate))
+      : DEFAULT_SEARCH_FILTERS.periodEndingDate
+    updateSearchFilters({ periodEndingDate: dateToFilter })
+  }
 
-  const requestFilteredOffers = useCallback(
-    (event: FormEvent) => {
-      event.preventDefault()
-      applyFilters()
-    },
-    [applyFilters]
-  )
+  const requestFilteredOffers = (event: FormEvent) => {
+    event.preventDefault()
+    applyFilters()
+  }
 
   const searchByOfferNameLabel =
     audience === Audience.INDIVIDUAL
@@ -208,6 +181,7 @@ const SearchFilters = ({
               selectedValue={selectedFilters.collectiveOfferType}
             />
           )}
+
           <PeriodSelector
             changePeriodBeginningDateValue={changePeriodBeginningDateValue}
             changePeriodEndingDateValue={changePeriodEndingDateValue}
@@ -223,9 +197,9 @@ const SearchFilters = ({
                 ? utcToZonedTime(selectedFilters.periodEndingDate, 'UTC')
                 : undefined
             }
-            todayDate={getToday()}
           />
         </div>
+
         <div className={styles['reset-filters']}>
           <ButtonLink
             Icon={ResetIcon}

@@ -2,6 +2,7 @@ import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
 import React, { useCallback, useEffect, useState } from 'react'
 
+import FormLayout from 'components/FormLayout/FormLayout'
 import MultiDownloadButtonsModal from 'components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import {
   DEFAULT_PRE_FILTERS,
@@ -21,7 +22,8 @@ import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
 import FilterByEventDate from './FilterByEventDate'
 import FilterByVenue from './FilterByVenue'
 import styles from './PreFilters.module.scss'
-export interface IPreFiltersProps {
+
+export interface PreFiltersProps {
   appliedPreFilters: TPreFilters
   applyPreFilters: (filters: TPreFilters) => void
   hasResult: boolean
@@ -50,7 +52,7 @@ const PreFilters = ({
   updateUrl,
   getBookingsCSVFileAdapter,
   getBookingsXLSFileAdapter,
-}: IPreFiltersProps): JSX.Element => {
+}: PreFiltersProps): JSX.Element => {
   const notify = useNotification()
 
   const { logEvent } = useAnalytics()
@@ -154,29 +156,29 @@ const PreFilters = ({
   return (
     <>
       <form
-        className={classNames({
-          'has-result': hasResult,
-          'refresh-required': isRefreshRequired,
+        className={classNames(styles['pre-filters-form'], {
+          [styles['has-result']]: hasResult,
+          [styles['refresh-required']]: isRefreshRequired,
         })}
         onSubmit={requestFilteredBookings}
       >
-        <div className="pre-filters">
-          <div className="pre-filters-row">
-            <div className="pre-filters-venue">
-              <FilterByVenue
-                isDisabled={isFiltersDisabled}
-                selectedVenueId={selectedPreFilters.offerVenueId}
-                updateFilters={updateSelectedFilters}
-                venuesFormattedAndOrdered={venues}
-              />
-            </div>
+        <div>
+          <FormLayout.Row inline>
+            <FilterByVenue
+              isDisabled={isFiltersDisabled}
+              selectedVenueId={selectedPreFilters.offerVenueId}
+              updateFilters={updateSelectedFilters}
+              venuesFormattedAndOrdered={venues}
+            />
+
             <FilterByEventDate
               isDisabled={isFiltersDisabled}
               selectedOfferDate={selectedPreFilters.offerEventDate}
               updateFilters={updateSelectedFilters}
             />
-          </div>
-          <div className="pre-filters-row">
+          </FormLayout.Row>
+
+          <FormLayout.Row inline>
             <FilterByBookingStatusPeriod
               isDisabled={isFiltersDisabled}
               selectedBookingBeginningDate={
@@ -186,9 +188,10 @@ const PreFilters = ({
               selectedBookingFilter={selectedPreFilters.bookingStatusFilter}
               updateFilters={updateSelectedFilters}
             />
-          </div>
+          </FormLayout.Row>
         </div>
-        <div className="reset-filters">
+
+        <div className={styles['reset-filters']}>
           <Button
             Icon={ResetIcon}
             disabled={!hasPreFilters}
@@ -198,6 +201,7 @@ const PreFilters = ({
             Réinitialiser les filtres
           </Button>
         </div>
+
         <div className="button-group">
           <div className="button-group-buttons">
             <span className="button-group-separator" />
@@ -226,9 +230,10 @@ const PreFilters = ({
           </div>
         </div>
       </form>
+
       {isRefreshRequired && (
         <p
-          className="pf-refresh-message"
+          className={styles['pf-refresh-message']}
           data-testid="refresh-required-message"
         >
           Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour

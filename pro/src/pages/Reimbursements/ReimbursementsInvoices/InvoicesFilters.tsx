@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useCallback } from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 
 import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
 import Select from 'ui-kit/form_raw/Select'
@@ -6,7 +6,7 @@ import { getToday } from 'utils/date'
 
 import { TFiltersType } from './types'
 
-interface IReimbursementsSectionHeaderProps {
+interface ReimbursementsSectionHeaderProps {
   areFiltersDefault: boolean
   children: React.ReactNode | React.ReactNode[]
   filters: TFiltersType
@@ -28,7 +28,7 @@ const InvoicesFilters = ({
   selectableOptions,
   setAreFiltersDefault,
   setFilters,
-}: IReimbursementsSectionHeaderProps): JSX.Element => {
+}: ReimbursementsSectionHeaderProps): JSX.Element => {
   const {
     reimbursementPoint: selectedReimbursementPoint,
     periodStart: selectedPeriodStart,
@@ -41,39 +41,32 @@ const InvoicesFilters = ({
     loadInvoices(true)
   }
 
-  const setReimbursementPointFilter = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const reimbursementPointId = event.target.value
-      setFilters((prevFilters: TFiltersType) => ({
-        ...prevFilters,
-        reimbursementPoint: reimbursementPointId,
-      }))
-      setAreFiltersDefault(false)
-    },
-    [setAreFiltersDefault, setFilters]
-  )
+  const setReimbursementPointFilter = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const reimbursementPointId = event.target.value
+    setFilters((prevFilters: TFiltersType) => ({
+      ...prevFilters,
+      reimbursementPoint: reimbursementPointId,
+    }))
+    setAreFiltersDefault(false)
+  }
 
-  const setStartDateFilter = useCallback(
-    (startDate: Date) => {
-      setFilters((prevFilters: TFiltersType) => ({
-        ...prevFilters,
-        periodStart: startDate,
-      }))
-      setAreFiltersDefault(false)
-    },
-    [setAreFiltersDefault, setFilters]
-  )
+  const setStartDateFilter = (startDate: Date) => {
+    setFilters((prevFilters: TFiltersType) => ({
+      ...prevFilters,
+      periodStart: startDate,
+    }))
+    setAreFiltersDefault(false)
+  }
 
-  const setEndDateFilter = useCallback(
-    (endDate: Date) => {
-      setFilters((prevFilters: TFiltersType) => ({
-        ...prevFilters,
-        periodEnd: endDate,
-      }))
-      setAreFiltersDefault(false)
-    },
-    [setAreFiltersDefault, setFilters]
-  )
+  const setEndDateFilter = (endDate: Date) => {
+    setFilters((prevFilters: TFiltersType) => ({
+      ...prevFilters,
+      periodEnd: endDate,
+    }))
+    setAreFiltersDefault(false)
+  }
 
   return (
     <>
@@ -104,6 +97,7 @@ const InvoicesFilters = ({
           options={selectableOptions}
           selectedValue={selectedReimbursementPoint}
         />
+
         <PeriodSelector
           changePeriodBeginningDateValue={setStartDateFilter}
           changePeriodEndingDateValue={setEndDateFilter}
@@ -112,7 +106,6 @@ const InvoicesFilters = ({
           maxDateEnding={getToday()}
           periodBeginningDate={selectedPeriodStart}
           periodEndingDate={selectedPeriodEnd}
-          todayDate={getToday()}
         />
       </div>
 
