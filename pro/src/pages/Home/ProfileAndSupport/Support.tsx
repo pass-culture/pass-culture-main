@@ -4,9 +4,9 @@ import { useLocation } from 'react-router-dom'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import { ReactComponent as fullMailIcon } from 'icons/full-mail.svg'
 import { ReactComponent as SettingsIcon } from 'icons/full-parameters.svg'
 import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
-import { ReactComponent as MailIcon } from 'icons/ico-mail.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { initCookieConsent } from 'utils/cookieConsentModal'
@@ -71,7 +71,7 @@ const Support: () => JSX.Element | null = () => {
                   target: '_blank',
                   rel: 'noopener noreferrer',
                 }}
-                Icon={MailIcon}
+                Icon={fullMailIcon}
                 onClick={() =>
                   logEvent?.(Events.CLICKED_CONSULT_SUPPORT, {
                     from: location.pathname,
