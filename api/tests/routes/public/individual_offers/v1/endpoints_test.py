@@ -786,22 +786,42 @@ class PostProductTest:
         assert offers_models.Offer.query.first() is None
 
     @pytest.mark.usefixtures("db_session")
-    def test_books_are_not_allowed(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+    def test_books_are_allowed(self, client):
+        venue, _ = create_offerer_provider_linked_to_venue()
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "1234567891234"}
+        )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "categoryRelatedFields": {"category": "LIVRE_PAPIER"},
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
-                "name": "A qui mieux mieux",
+                {
+                    "categoryRelatedFields": {
+                        "category": "LIVRE_PAPIER",
+                        "ean": product.extraData["ean"],
+                        "author": "Maurice",
+                    },
+                    "accessibility": ACCESSIBILITY_FIELDS,
+                    "location": {"type": "physical", "venueId": venue.id},
+                    "name": "A qui mieux mieux",
+                },
             },
         )
 
-        assert response.status_code == 400
-        assert offers_models.Offer.query.count() == 0
+        assert response.status_code == 200
+        created_offer = offers_models.Offer.query.first()
+
+        assert created_offer.name == "A qui mieux mieux"
+        assert created_offer.venue == venue
+        assert created_offer.subcategoryId == "LIVRE_PAPIER"
+        assert created_offer.audioDisabilityCompliant is True
+
+        assert response.json["categoryRelatedFields"] == {
+            "author": "Maurice",
+            "category": "LIVRE_PAPIER",
+            "ean": "1234567891234",
+        }
+        assert created_offer.id is not None
 
 
 @pytest.mark.usefixtures("db_session")
@@ -2626,7 +2646,10 @@ class PatchProductTest:
         )
         assert response.status_code == 400
         assert response.json == {
-            "categoryRelatedFields.category": ["unexpected value; permitted: 'SUPPORT_PHYSIQUE_MUSIQUE'"]
+            "categoryRelatedFields.category": [
+                "unexpected value; permitted: 'SUPPORT_PHYSIQUE_MUSIQUE'",
+                "unexpected value; permitted: 'LIVRE_PAPIER'",
+            ]
         }
 
     def test_update_unallowed_subcategory_product_raises_error(self, client):
@@ -2643,7 +2666,9 @@ class PatchProductTest:
         )
 
         assert response.status_code == 400
-        assert response.json == {"product.subcategory": ["Only SUPPORT_PHYSIQUE_MUSIQUE products can be edited"]}
+        assert response.json == {
+            "product.subcategory": ["Only SUPPORT_PHYSIQUE_MUSIQUE, LIVRE_PAPIER products can be edited"]
+        }
 
 
 @pytest.mark.usefixtures("db_session")
