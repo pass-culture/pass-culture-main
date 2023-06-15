@@ -296,14 +296,12 @@ class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     id: str
     nonHumanizedId: int
     isVirtual: bool
-    lastProviderId: str | None
     managingOfferer: GetOfferManagingOffererResponseModel
     name: str
     postalCode: str | None
     publicName: str | None
 
     _humanize_id = humanize_field("id")
-    _humanize_last_provider_id = humanize_field("lastProviderId")
 
     class Config:
         orm_mode = True
