@@ -318,24 +318,10 @@ class GetOfferLastProviderResponseModel(BaseModel):
 class GetOfferMediationResponseModel(BaseModel):
     authorId: str | None
     credit: str | None
-    dateCreated: datetime
-    dateModifiedAtLastProvider: datetime | None
-    fieldsUpdated: list[str]
-    id: str
-    idAtProviders: str | None
-    isActive: bool
-    lastProviderId: str | None
-    offerId: str
-    thumbCount: int
     thumbUrl: str | None
-
-    _humanize_id = humanize_field("id")
-    _humanize_offer_id = humanize_field("offerId")
-    _humanize_last_provider_id = humanize_field("lastProviderId")
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
 
 
 class PriceCategoryResponseModel(BaseModel):

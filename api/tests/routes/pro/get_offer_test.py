@@ -108,7 +108,7 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        assert response.json["activeMediation"]["id"] == humanize(mediation.id)
+        assert f"/thumbs/mediations/{humanize(mediation.id)}" in response.json["activeMediation"]["thumbUrl"]
 
     @freeze_time("2020-10-15 00:00:00")
     def test_returns_an_event_stock(self, app):
