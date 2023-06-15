@@ -83,57 +83,62 @@ def _retrieve_offer_by_eans_query(eans: list[str]) -> sqla.orm.Query:
 @spectree_serialize(
     api=blueprint.v1_product_schema,
     tags=[constants.PRODUCT_OFFER_TAG],
-    response_model=serialization.ProductOfferResponse,
+    response_model=serialization.BatchProductOfferResponse,
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
-def post_product_offer(
-    body: serialization.ProductOfferCreation,
-) -> serialization.ProductOfferResponse:
+def post_product_offer(body: serialization.BatchProductOfferCreation) -> serialization.BatchProductOfferResponse:
     """
-    Create a book, CD or vinyl product.
+    Create in batch (1-50) CD or vinyl products.
     """
+    created_offers: list[offers_models.Offer] = []
     venue = utils.retrieve_venue_from_location(body.location)
 
     try:
         with repository.transaction():
-            created_offer = offers_api.create_offer(
-                audio_disability_compliant=body.accessibility.audio_disability_compliant,
-                booking_email=body.booking_email,
-                description=body.description,
-                external_ticket_office_url=body.external_ticket_office_url,
-                extra_data=serialization.deserialize_extra_data(body.category_related_fields),
-                is_duo=body.is_duo,
-                mental_disability_compliant=body.accessibility.mental_disability_compliant,
-                motor_disability_compliant=body.accessibility.motor_disability_compliant,
-                name=body.name,
-                provider=current_api_key.provider,
-                subcategory_id=body.category_related_fields.subcategory_id,
-                url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
-                venue=venue,
-                visual_disability_compliant=body.accessibility.visual_disability_compliant,
-                withdrawal_details=body.withdrawal_details,
-            )
-
-            # To create the stock, the offer needs to have an id
-            db.session.flush()
-            if body.stock:
-                offers_api.create_stock(
-                    offer=created_offer,
-                    price=finance_utils.to_euros(body.stock.price),
-                    quantity=serialization.deserialize_quantity(body.stock.quantity),
-                    booking_limit_datetime=body.stock.booking_limit_datetime,
-                    creating_provider=current_api_key.provider,
+            for product_offer in body.product_offers:
+                created_offer = offers_api.create_offer(
+                    audio_disability_compliant=product_offer.accessibility.audio_disability_compliant,
+                    booking_email=product_offer.booking_email,
+                    description=product_offer.description,
+                    external_ticket_office_url=product_offer.external_ticket_office_url,
+                    extra_data=serialization.deserialize_extra_data(product_offer.category_related_fields),
+                    is_duo=product_offer.is_duo,
+                    mental_disability_compliant=product_offer.accessibility.mental_disability_compliant,
+                    motor_disability_compliant=product_offer.accessibility.motor_disability_compliant,
+                    name=product_offer.name,
+                    provider=current_api_key.provider,
+                    subcategory_id=product_offer.category_related_fields.subcategory_id,
+                    url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
+                    venue=venue,
+                    visual_disability_compliant=product_offer.accessibility.visual_disability_compliant,
+                    withdrawal_details=product_offer.withdrawal_details,
                 )
-            if body.image:
-                utils.save_image(body.image, created_offer)
+                created_offers.append(created_offer)
 
-            offers_api.publish_offer(created_offer, user=None)
+            db.session.add_all(created_offers)
+            db.session.flush()
+
+            # FIXME (ghaliela, 2023-06-15): stock saving optimisation
+            # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
+            # It will be done before the release of this API
+            for product_offer, saved_offer in zip(body.product_offers, created_offers):
+                if product_offer.stock:
+                    offers_api.create_stock(
+                        offer=saved_offer,
+                        price=finance_utils.to_euros(product_offer.stock.price),
+                        quantity=serialization.deserialize_quantity(product_offer.stock.quantity),
+                        booking_limit_datetime=product_offer.stock.booking_limit_datetime,
+                        creating_provider=current_api_key.provider,
+                    )
+                if product_offer.image:
+                    utils.save_image(product_offer.image, saved_offer)
+                offers_api.publish_offer(saved_offer, user=None)
 
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
-    return serialization.ProductOfferResponse.build_product_offer(created_offer)
+    return serialization.BatchProductOfferResponse.build_product_offers(created_offers)
 
 
 @blueprint.v1_blueprint.route("/products/ean", methods=["POST"])
