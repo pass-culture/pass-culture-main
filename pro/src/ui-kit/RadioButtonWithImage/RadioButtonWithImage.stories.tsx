@@ -2,7 +2,7 @@ import type { Story } from '@storybook/react'
 import React, { useState } from 'react'
 
 import CaseIcon from 'icons/ico-case.svg'
-import PhoneIcon from 'icons/stroke-info-phone.svg'
+import phoneInfoStrokeIcon from 'icons/stroke-info-phone.svg'
 
 import RadioButtonWithImage, {
   IRadioButtonWithImage,
@@ -25,7 +25,7 @@ const Template: Story<IRadioButtonWithImage> = ({ description }) => {
         description={description}
         isChecked={offerType == 'indiv'}
         onChange={handleChange}
-        icon={PhoneIcon}
+        icon={phoneInfoStrokeIcon}
         value="indiv"
       />
       <br />
