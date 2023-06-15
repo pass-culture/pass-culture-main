@@ -271,7 +271,7 @@ def deserialize_extra_data(
     return extra_data
 
 
-ALLOWED_PRODUCT_SUBCATEGORIES = [subcategories.SUPPORT_PHYSIQUE_MUSIQUE]
+ALLOWED_PRODUCT_SUBCATEGORIES = [subcategories.SUPPORT_PHYSIQUE_MUSIQUE, subcategories.LIVRE_PAPIER]
 product_category_creation_models = {
     subcategory.id: compute_category_fields_model(subcategory, Method.create)
     for subcategory in ALLOWED_PRODUCT_SUBCATEGORIES
@@ -314,8 +314,15 @@ if typing.TYPE_CHECKING:
     product_category_edition_fields = CategoryRelatedFields
 else:
     product_category_creation_fields = typing_extensions.Annotated[
-        product_category_creation_models[subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id],
-        pydantic.Field(description=CATEGORY_RELATED_FIELD_DESCRIPTION),
+        typing.Union[
+            tuple(
+                [
+                    product_category_creation_models[subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id],
+                    product_category_creation_models[subcategories.LIVRE_PAPIER.id],
+                ]
+            )
+        ],
+        pydantic.Field(description=CATEGORY_RELATED_FIELD_DESCRIPTION, discriminator="subcategory_id"),
     ]
     product_category_reading_fields = typing_extensions.Annotated[
         typing.Union[tuple(product_category_reading_models.values())],
