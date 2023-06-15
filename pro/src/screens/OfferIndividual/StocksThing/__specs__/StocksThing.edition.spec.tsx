@@ -144,12 +144,6 @@ describe('screens:StocksThing', () => {
         {
           thumbUrl: 'http://my.thumb.url',
           credit: 'John Do',
-          dateCreated: '01-01-2000',
-          fieldsUpdated: [],
-          id: 'AA',
-          isActive: true,
-          offerId: 'YA',
-          thumbCount: 1,
         },
       ],
       name: 'Séance ciné duo',
