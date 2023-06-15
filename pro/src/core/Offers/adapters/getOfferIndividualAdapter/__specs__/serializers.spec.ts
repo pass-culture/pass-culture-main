@@ -310,14 +310,9 @@ describe('serializer', () => {
   })
   it('serializeLastProvider', async () => {
     const venueProviderApi: GetOfferLastProviderResponseModel = {
-      enabledForPro: true,
-      id: 'venueProvider ID',
-      isActive: true,
       name: 'Awesom provider',
     }
     const provider: IOfferIndividualVenueProvider = {
-      id: 'venueProvider ID',
-      isActive: true,
       name: 'Awesom provider',
     }
 

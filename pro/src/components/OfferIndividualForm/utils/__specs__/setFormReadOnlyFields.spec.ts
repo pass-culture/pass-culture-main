@@ -59,8 +59,6 @@ describe('setFormReadOnlyFields', () => {
     )
     const offer = {
       lastProvider: {
-        id: 'test',
-        isActive: true,
         name: 'AlLocINé',
       },
     } as IOfferIndividual
@@ -75,8 +73,6 @@ describe('setFormReadOnlyFields', () => {
     )
     const offer = {
       lastProvider: {
-        id: 'test',
-        isActive: true,
         name: 'AnySyncProviderName',
       },
     } as IOfferIndividual

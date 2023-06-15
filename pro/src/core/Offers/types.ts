@@ -148,8 +148,6 @@ export interface IOfferExtraData {
 }
 
 export interface IOfferIndividualVenueProvider {
-  id: string
-  isActive: boolean
   name: string
 }
 
