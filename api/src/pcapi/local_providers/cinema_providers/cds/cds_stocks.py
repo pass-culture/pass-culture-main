@@ -12,10 +12,18 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.repository import get_next_product_id_from_database
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.repository import get_cds_cinema_details
+from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 import pcapi.utils.date as utils_date
+
+
+ACCEPTED_MEDIA_OPTIONS_TICKET_LABEL = {
+    "VF": ShowtimeFeatures.VF.value,
+    "VO": ShowtimeFeatures.VO.value,
+    "3D": ShowtimeFeatures.THREE_D.value,
+}
 
 
 class CDSStocks(LocalProvider):
@@ -40,6 +48,7 @@ class CDSStocks(LocalProvider):
             cinema_api_token=self.apiToken,
         )
         self.movies: Iterator[Movie] = iter(self.client_cds.get_venue_movies())
+        self.media_options = self.client_cds.get_media_options()
         self.shows = self._get_cds_shows()
         self.filtered_movie_showtimes = None
         self.price_category_labels: list[
@@ -153,6 +162,14 @@ class CDSStocks(LocalProvider):
             else:
                 quantity = show.remaining_place + booked_quantity
             cds_stock.quantity = quantity
+
+        features = [
+            self.media_options.get(option.media_options_id.id)
+            for option in show.shows_mediaoptions_collection
+            if self.media_options.get(option.media_options_id.id) in ACCEPTED_MEDIA_OPTIONS_TICKET_LABEL
+        ]
+
+        cds_stock.features = [ACCEPTED_MEDIA_OPTIONS_TICKET_LABEL.get(feature) for feature in features if feature]
 
         if "price" not in cds_stock.fieldsUpdated:
             cds_stock.price = show_price
