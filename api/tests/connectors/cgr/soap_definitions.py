@@ -30,7 +30,7 @@ WEB_SERVICE_DEFINITION = """<?xml version="1.0" encoding="UTF-8"?>
                     <xsd:element name="pPrenom" type="xsd:string"/>
                     <xsd:element name="pEmail" type="xsd:string"/>
                     <xsd:element name="pToken" type="xsd:string"/>
-                    <xsd:element name="pDateLimiteAnnul" type="xsd:dateTime"/>
+                    <xsd:element name="pDateLimiteAnnul" type="xsd:string"/>
                 </xsd:sequence>
             </xsd:complexType>
             <xsd:element name="ReservationPassCulture" type="s0:tReservationPassCulture"/>

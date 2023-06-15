@@ -42,7 +42,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             pPrenom=beneficiary.firstName if beneficiary.firstName else "",
             pEmail=beneficiary.email,
             pToken=booking.token,
-            pDateLimiteAnnul=booking.cancellationLimitDate,
+            pDateLimiteAnnul=booking.cancellationLimitDate.isoformat(),
         )
         response = reservation_pass_culture(self.cgr_cinema_details, book_show_body)
         logger.info("Booked CGR Ticket", extra={"barcode": response.QrCode, "seat_number": response.Placement})

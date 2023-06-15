@@ -45,7 +45,7 @@ class BookTicketTest:
         assert "<pPUTTC>5.50</pPUTTC>" in post_adapter.last_request.text
         assert "<pIDSeances>177182</pIDSeances>" in post_adapter.last_request.text
         assert (
-            f"<pDateLimiteAnnul>{booking.cancellationLimitDate.isoformat()}</pDateLimiteAnnul>"
+            f"<pDateLimiteAnnul>{booking.cancellationLimitDate.strftime('%Y-%m-%dT%H:%M:%S.%f')}</pDateLimiteAnnul>"
             in post_adapter.last_request.text
         )
         redis_external_bookings = app.redis_client.lrange("api:external_bookings:barcodes", 0, -1)
@@ -84,7 +84,7 @@ class BookTicketTest:
         assert "<pPUTTC>5.50</pPUTTC>" in post_adapter.last_request.text
         assert "<pIDSeances>177182</pIDSeances>" in post_adapter.last_request.text
         assert (
-            f"<pDateLimiteAnnul>{booking.cancellationLimitDate.isoformat()}</pDateLimiteAnnul>"
+            f"<pDateLimiteAnnul>{booking.cancellationLimitDate.strftime('%Y-%m-%dT%H:%M:%S.%f')}</pDateLimiteAnnul>"
             in post_adapter.last_request.text
         )
 
@@ -119,7 +119,7 @@ class BookTicketTest:
         assert "<pPUTTC>5.50</pPUTTC>" in post_adapter.last_request.text
         assert "<pIDSeances>177182</pIDSeances>" in post_adapter.last_request.text
         assert (
-            f"<pDateLimiteAnnul>{booking.cancellationLimitDate.isoformat()}</pDateLimiteAnnul>"
+            f"<pDateLimiteAnnul>{booking.cancellationLimitDate.strftime('%Y-%m-%dT%H:%M:%S.%f')}</pDateLimiteAnnul>"
             in post_adapter.last_request.text
         )
 
@@ -155,7 +155,7 @@ class BookTicketTest:
         assert "<pPUTTC>5.50</pPUTTC>" in post_adapter.last_request.text
         assert "<pIDSeances>177182</pIDSeances>" in post_adapter.last_request.text
         assert (
-            f"<pDateLimiteAnnul>{booking.cancellationLimitDate.isoformat()}</pDateLimiteAnnul>"
+            f"<pDateLimiteAnnul>{booking.cancellationLimitDate.strftime('%Y-%m-%dT%H:%M:%S.%f')}</pDateLimiteAnnul>"
             in post_adapter.last_request.text
         )
 
