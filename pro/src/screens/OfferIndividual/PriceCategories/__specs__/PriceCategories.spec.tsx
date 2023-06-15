@@ -39,8 +39,6 @@ describe('PriceCategories', () => {
     renderPriceCategories({
       offer: individualOfferFactory({
         lastProvider: {
-          id: 'AA',
-          isActive: true,
           name: 'provider',
         },
         lastProviderName: 'provider',

@@ -271,10 +271,7 @@ describe('screens:StocksThing', () => {
 
   it('should allow user to delete stock from a synchronized offer', async () => {
     apiOffer.lastProvider = {
-      id: 'PROVIDER_ID',
-      isActive: true,
       name: 'Provider',
-      enabledForPro: true,
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })

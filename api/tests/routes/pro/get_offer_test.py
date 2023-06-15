@@ -220,9 +220,7 @@ class Returns200Test:
                 "id": humanize(venue.id),
                 "nonHumanizedId": venue.id,
                 "isVirtual": False,
-                "lastProviderId": None,  ## Should be unused
                 "managingOfferer": {
-                    "id": humanize(offerer.id),
                     "nonHumanizedId": offerer.id,
                     "name": "Test Offerer",
                 },

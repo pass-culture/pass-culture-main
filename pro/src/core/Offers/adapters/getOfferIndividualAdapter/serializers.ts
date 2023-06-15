@@ -100,8 +100,6 @@ export const serializeLastProvider = (
   }
 
   return {
-    id: apiVenueProvider.id,
-    isActive: apiVenueProvider.isActive,
     name: apiVenueProvider.name,
   }
 }
