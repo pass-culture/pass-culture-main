@@ -59,7 +59,7 @@
     "formik": "^2.4.1",
     "hi-base32": "^0.5.1",
     "identity-obj-proxy": "^3.0.0",
-    "libphonenumber-js": "^1.10.34",
+    "libphonenumber-js": "^1.10.36",
     "lodash.debounce": "^4.0.8",
     "lodash.invert": "^4.3.0",
     "lodash.isequal": "^4.5.0",
