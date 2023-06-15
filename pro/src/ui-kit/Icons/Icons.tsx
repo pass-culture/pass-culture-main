@@ -32,6 +32,7 @@ const iconList = [
   { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
+  { src: 'icons/full-more-bis.svg' }, // TODO still in 2 ButtonLink and 1 Button
   { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-arrow-right.svg' },
@@ -143,7 +144,6 @@ const iconList = [
   { src: 'icons/picto-info-grey.svg', viewBox: '0 0 22 22' },
   { src: 'icons/picto-info.svg', viewBox: '0 0 22 22' },
   { src: 'icons/picto-tip.svg', viewBox: '0 0 18 18' },
-  { src: 'icons/ico-plus.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-radio-off.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-radio-on.svg', viewBox: '0 0 16 16' },
   { src: 'icons/reset.svg', viewBox: '0 0 20 20' },
