@@ -7,7 +7,7 @@ import Dialog from 'components/Dialog/Dialog'
 import FormLayout from 'components/FormLayout'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as MailIcon } from 'icons/ico-mail.svg'
+import { ReactComponent as fullMailIcon } from 'icons/full-mail.svg'
 import { Button, DatePicker, SubmitButton, TextArea, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
@@ -156,7 +156,7 @@ const RequestFormDialog = ({
                   </Button>
                   <SubmitButton
                     iconPosition={IconPositionEnum.LEFT}
-                    Icon={MailIcon}
+                    Icon={fullMailIcon}
                   >
                     Envoyer ma demande
                   </SubmitButton>
