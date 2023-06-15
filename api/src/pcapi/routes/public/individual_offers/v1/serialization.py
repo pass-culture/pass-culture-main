@@ -196,7 +196,6 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
     external_ticket_office_url: pydantic.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageBody | None
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
-    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     name: str = NAME_FIELD
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
 
@@ -452,6 +451,17 @@ class ProductOfferCreation(OfferCreationBase):
         extra = "forbid"
 
 
+class BatchProductOfferCreation(serialization.ConfiguredBaseModel):
+    product_offers: list[ProductOfferCreation]
+    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
+
+    @pydantic.validator("product_offers")
+    def validate_product_offer_list(cls, product_offers: list[ProductOfferCreation]) -> list[ProductOfferCreation]:
+        if len(product_offers) > 50:
+            raise ValueError("Maximum number of product offers is 50")
+        return product_offers
+
+
 class ProductOfferByEanCreation(serialization.ConfiguredBaseModel):
     if typing.TYPE_CHECKING:
         ean: str = EAN_FIELD
@@ -508,6 +518,7 @@ class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
 class EventOfferCreation(OfferCreationBase):
     category_related_fields: event_category_creation_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
+    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = TICKET_COLLECTION_FIELD
     price_categories: typing.List[PriceCategoryCreation] | None = PRICE_CATEGORIES_FIELD
 
@@ -732,6 +743,14 @@ class ProductOfferResponse(OfferResponse):
             stock=ProductStockResponse.build_product_stock(active_stock) if active_stock else None,
             **base_offer_response.dict(),
         )
+
+
+class BatchProductOfferResponse(serialization.ConfiguredBaseModel):
+    product_offers: list[ProductOfferResponse]
+
+    @classmethod
+    def build_product_offers(cls, offers: list[offers_models.Offer]) -> "BatchProductOfferResponse":
+        return cls(product_offers=[ProductOfferResponse.build_product_offer(offer) for offer in offers])
 
 
 def _serialize_ticket_collection(
