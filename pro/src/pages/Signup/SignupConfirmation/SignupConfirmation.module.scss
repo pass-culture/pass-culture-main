@@ -16,7 +16,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: rem.torem(500px);
+    width: rem.torem(486px);
 
     a.quaternary-link {
       color: colors.$primary;
@@ -42,23 +42,26 @@
       }
     }
 
-    .hero-body {
-      padding: rem.torem(48px) rem.torem(24px);
-    }
-
     .confirmation-text {
-      font-size: rem.torem(20px);
-      font-weight: 500;
-      line-height: rem.torem(24px);
-      margin-bottom: rem.torem(12px);
+      @include fonts.title4;
 
-      span {
-        font-weight: 700;
-      }
+      margin-bottom: rem.torem(24px);
     }
 
     h1 {
       margin-bottom: rem.torem(16px);
+    }
+
+    .contact-link {
+      margin-top: rem.torem(8px);
+    }
+
+    .banner-text-gap {
+      margin-top: rem.torem(24px);
+    }
+
+    .explanation {
+      margin-bottom: rem.torem(40px);
     }
   }
 }
