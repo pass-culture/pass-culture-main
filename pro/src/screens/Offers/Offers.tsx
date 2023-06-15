@@ -9,19 +9,19 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import {
-  DEFAULT_SEARCH_FILTERS,
-  MAX_TOTAL_PAGES,
-  NUMBER_OF_OFFERS_PER_PAGE,
-  hasSearchFilters,
-  OFFER_STATUS_DRAFT,
   computeCollectiveOffersUrl,
   computeOffersUrl,
+  DEFAULT_SEARCH_FILTERS,
+  hasSearchFilters,
+  MAX_TOTAL_PAGES,
+  NUMBER_OF_OFFERS_PER_PAGE,
+  OFFER_STATUS_DRAFT,
 } from 'core/Offers'
 import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserValidatedOfferersNamesAdapter'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import { ReactComponent as AddOfferSvg } from 'icons/full-more-bis.svg'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as strokeUserIcon } from 'icons/stroke-user.svg'
 import ActionsBar from 'pages/Offers/Offers/ActionsBar'
