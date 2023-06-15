@@ -18,6 +18,8 @@ from pcapi.core.users import constants
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions
 from pcapi.core.users.email import repository as email_repository
+from pcapi.core.users.email.update import check_and_desactivate_validation_token
+from pcapi.core.users.email.update import check_email_address_does_not_exist
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.core.users.utils import decode_jwt_token
@@ -151,12 +153,19 @@ def confirm_email_update(user: users_models.User, body: serializers.ChangeBenefi
         )
 
 
-@blueprint.native_v1.route("/profile/validate_email", methods=["PUT"])
+@blueprint.native_v1.route("/profile/email_update/validate", methods=["PUT"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
     try:
         payload = serializers.ChangeEmailTokenContent.from_token(body.token)
-        api.change_user_email(current_email=payload.current_email, new_email=payload.new_email)
+        current_email = payload.current_email
+        new_email = payload.new_email
+        user = find_user_by_email(current_email)
+        if not user:
+            raise exceptions.InvalidEmailError()
+        check_email_address_does_not_exist(new_email)
+        check_and_desactivate_validation_token(user, body.token)
+        api.change_user_email(current_email, new_email)
     except pydantic.ValidationError:
         raise api_errors.ApiErrors(
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
