@@ -21,7 +21,7 @@ jest.mock('apiClient/api', () => ({
     getInvoices: jest.fn(),
   },
 }))
-
+const venueId = 12
 const BASE_VENUES: VenueListItemResponseModel[] = [
   {
     id: 'VENUE1',
@@ -34,7 +34,7 @@ const BASE_VENUES: VenueListItemResponseModel[] = [
     withdrawalDetails: '',
     hasCreatedOffer: true,
     hasMissingReimbursementPoint: false,
-    nonHumanizedId: 1,
+    nonHumanizedId: venueId,
   },
   {
     id: 'VENUE2',
@@ -160,7 +160,7 @@ describe('reimbursementsWithFilters', () => {
     ).toBeEnabled()
     expect(screen.getByRole('link', { name: /Afficher/ })).toHaveAttribute(
       'href',
-      `/remboursements-details?reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15&venueId=VENUE1`
+      `/remboursements-details?reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15&venueId=${venueId}`
     )
   })
 
@@ -241,7 +241,7 @@ describe('reimbursementsWithFilters', () => {
     await userEvent.type(endFilter, '12/12/1999')
     expect(screen.getByText(/Afficher/)).toHaveAttribute(
       'href',
-      `/remboursements-details?reimbursementPeriodBeginningDate=1998-11-12&reimbursementPeriodEndingDate=1999-12-12&venueId=VENUE1`
+      `/remboursements-details?reimbursementPeriodBeginningDate=1998-11-12&reimbursementPeriodEndingDate=1999-12-12&venueId=${venueId}`
     )
   })
 

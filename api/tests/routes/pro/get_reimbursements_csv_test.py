@@ -7,7 +7,6 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
@@ -31,7 +30,7 @@ def test_with_venue_filter(app):
     # When
     client = TestClient(app.test_client()).with_session_auth(pro.email)
     response = client.get(
-        f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={humanize(venue1.id)}"
+        f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue1.id}"
     )
 
     # Then
@@ -126,9 +125,7 @@ def test_admin_can_access_reimbursements_data_with_venue_filter(app, client):
     # When
     admin_client = client.with_session_auth(admin.email)
     response = admin_client.get(
-        "/reimbursements/csv?venueId={}&reimbursementPeriodBeginningDate={}&reimbursementPeriodEndingDate={}".format(
-            humanize(venue.id), beginning_date.isoformat(), ending_date.isoformat()
-        )
+        f"/reimbursements/csv?venueId={venue.id}&reimbursementPeriodBeginningDate={beginning_date.isoformat()}&reimbursementPeriodEndingDate={ending_date.isoformat()}"
     )
 
     # Then

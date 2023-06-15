@@ -11,7 +11,6 @@ from pcapi.routes.serialization.reimbursement_csv_serialize import find_all_offe
 from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
 from pcapi.routes.serialization.reimbursement_csv_serialize import validate_reimbursement_period
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.serialization.utils import dehumanize_id
 
 from . import blueprint
 
@@ -44,7 +43,7 @@ def _get_reimbursements_csv_filter(user: User, query: ReimbursementCsvQueryModel
     reimbursement_period_beginning_date, reimbursement_period_ending_date = validate_reimbursement_period(
         reimbursement_period_field_names, query.dict().get
     )
-    venue_id = dehumanize_id(query.venueId)
+    venue_id = query.venueId
 
     reimbursement_details = find_all_offerers_reimbursement_details(
         all_offerer_ids,

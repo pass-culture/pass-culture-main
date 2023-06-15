@@ -64,7 +64,7 @@ const ReimbursementsDetails = (): JSX.Element => {
   ) =>
     sortByDisplayName(
       venues.map(venue => ({
-        id: venue.id,
+        id: venue.nonHumanizedId.toString(),
         displayName: venue.isVirtual
           ? `${venue.offererName} - Offre numérique`
           : /* istanbul ignore next: TO FIX */

@@ -2,7 +2,6 @@ from pcapi.core.categories import subcategories
 from pcapi.domain.pro_offers.offers_recap import OfferRecap
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
-from pcapi.utils.human_ids import humanize
 
 
 def should_return_serialized_offers_with_relevant_informations():
