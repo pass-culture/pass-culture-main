@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { CaseIcon } from 'icons'
-import PhoneIcon from 'icons/stroke-info-phone.svg'
+import phoneInfoStrokeIcon from 'icons/stroke-info-phone.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { IStepComponentProps } from '../types'
@@ -16,7 +16,7 @@ const CreateOffer = ({
     <h1 id={titleId}>Créez et publiez vos offres à destination :</h1>
     <section className={contentClassName}>
       <div className={styles['two-columns-section-block']}>
-        <SvgIcon src={PhoneIcon} alt={''} />
+        <SvgIcon src={phoneInfoStrokeIcon} alt="" />
         <h2>Du grand public</h2>
         <p>
           Les offres seront publiées et réservables par les jeunes via

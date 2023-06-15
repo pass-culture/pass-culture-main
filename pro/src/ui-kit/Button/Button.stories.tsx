@@ -2,10 +2,10 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as CircleArrowLeftIcon } from 'icons/full-circle-arrow-left.svg'
-import { ReactComponent as CircleArrowIcon } from 'icons/ico-circle-arrow.svg'
-import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
-import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
+import { ReactComponent as backFullIcon } from 'icons/full-back.svg'
+import { ReactComponent as circleArrowIcon } from 'icons/ico-circle-arrow.svg'
+import { ReactComponent as linkIcon } from 'icons/ico-external-site-filled.svg'
+import { ReactComponent as penIcon } from 'icons/ico-pen-black.svg'
 
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
@@ -69,7 +69,7 @@ export const DefaultButtonWithIcon = Template.bind({})
 
 DefaultButtonWithIcon.args = {
   ...DefaultButton.args,
-  Icon: LinkIcon,
+  Icon: linkIcon,
 }
 
 export const DefaultSecondaryButton = Template.bind({})
@@ -92,7 +92,7 @@ export const LinkButtonWithIcon = TemplateLink.bind({})
 
 LinkButtonWithIcon.args = {
   ...LinkButton.args,
-  Icon: PenIcon,
+  Icon: penIcon,
 }
 
 export const LinkQuaternaryButtonWithIcon = TemplateLink.bind({})
@@ -100,7 +100,7 @@ export const LinkQuaternaryButtonWithIcon = TemplateLink.bind({})
 LinkQuaternaryButtonWithIcon.args = {
   children: 'Accueil',
   variant: ButtonVariant.QUATERNARY,
-  Icon: CircleArrowLeftIcon,
+  Icon: backFullIcon,
   link: { to: '/my-path', isExternal: false },
 }
 
@@ -108,7 +108,7 @@ export const WithTooltip = Template.bind({})
 WithTooltip.args = {
   ...DefaultButton.args,
   children: 'Créer une offre réservable pour un établissement scolaire',
-  Icon: PenIcon,
+  Icon: penIcon,
   iconPosition: IconPositionEnum.CENTER,
   variant: ButtonVariant.SECONDARY,
   hasTooltip: true,
@@ -120,5 +120,5 @@ BoxButtonWithIcon.args = {
   disabled: false,
   variant: ButtonVariant.BOX,
   iconPosition: IconPositionEnum.LEFT,
-  Icon: CircleArrowIcon,
+  Icon: circleArrowIcon,
 }

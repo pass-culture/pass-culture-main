@@ -39,12 +39,12 @@ $border-size-selected: rem.torem(2px);
     width: rem.torem(44px);
     height: rem.torem(44px);
     color: colors.$tertiary;
-    fill: colors.$tertiary;
+    fill: colors.$tertiary; //TODO: delete after all icons update
   }
 
   &-icon-transparent {
     color: transparent;
-    fill: transparent;
+    fill: transparent; //TODO: delete after all icons update
   }
 
   &:hover {
