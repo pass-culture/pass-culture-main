@@ -123,6 +123,34 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
     )
 
 
+@blueprint.native_v1.route("/profile/email_update/confirm", methods=["POST"])
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.api,
+)
+@authenticated_and_active_user_required
+def confirm_email_update(user: users_models.User, body: serializers.ChangeBeneficiaryEmailBody) -> None:
+    try:
+        email_api.update.confirm_email_update_request(body.token)
+    except pydantic.ValidationError:
+        raise api_errors.ApiErrors(
+            {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
+            status_code=400,
+        )
+    except exceptions.InvalidToken:
+        raise api_errors.ApiErrors(
+            {"code": "INVALID_TOKEN", "message": "aucune demande de changement d'email en cours"},
+            status_code=404,
+        )
+    except exceptions.EmailExistsError:
+        # Returning an error message might help the end client find
+        # existing email addresses.
+        raise api_errors.ApiErrors(
+            {"message": "Token invalide"},
+            status_code=400,
+        )
+
+
 @blueprint.native_v1.route("/profile/validate_email", methods=["PUT"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:

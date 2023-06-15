@@ -15,7 +15,10 @@ from pcapi.core.users import models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.models import db
+from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
+from pcapi.repository import transaction
+from pcapi.routes.native.v1.serialization.account import ChangeEmailTokenContent
 from pcapi.utils.urls import generate_firebase_dynamic_link
 
 from .send import send_pro_user_emails_for_email_change
@@ -73,6 +76,26 @@ def generate_and_send_beneficiary_confirmation_email_for_email_change(user: mode
     return success
 
 
+def generate_and_send_beneficiary_validation_email_for_email_change(user: models.User, new_email: str) -> bool:
+    expiration_date = generate_email_change_token_expiration_date()
+    token = generate_email_change_validation_token(user, new_email, expiration_date)
+
+    link_for_email_change_validation = _build_link_for_email_change_action(
+        EmailChangeAction.VALIDATION,
+        new_email,
+        expiration_date,
+        token=token,
+    )
+
+    success = transactional_mails.send_validation_email_change_email(
+        user,
+        new_email,
+        link_for_email_change_validation,
+    )
+
+    return success
+
+
 def request_email_update(user: models.User, new_email: str, password: str) -> None:
     check_user_password(user, password)
     check_and_increment_email_update_attempts_count(user)
@@ -83,6 +106,28 @@ def request_email_update(user: models.User, new_email: str, password: str) -> No
     email_history = models.UserEmailHistory.build_update_request(user=user, new_email=new_email)
     repository.save(email_history)
     generate_and_send_beneficiary_confirmation_email_for_email_change(user, new_email)
+
+
+def confirm_email_update_request(token: str) -> None:
+    """Confirm the email update request for the given user"""
+
+    payload = ChangeEmailTokenContent.from_token(token)
+    current_email = payload.current_email
+    new_email = payload.new_email
+    user = users_repository.find_user_by_email(current_email)
+    if not user:
+        raise exceptions.InvalidEmailError()
+    check_email_address_does_not_exist(new_email)
+    check_and_desactivate_confirmation_token(user, token)
+    try:
+        with transaction():
+            models.UserEmailHistory.build_confirmation(user, new_email)
+            generate_and_send_beneficiary_validation_email_for_email_change(user, new_email)
+
+    except Exception as error:
+        raise ApiErrors(
+            errors={"message": f"erreur inattendue: {error}"},
+        )
 
 
 def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:
@@ -179,9 +224,22 @@ def validation_token_exists(user: models.User) -> bool:
 
 def generate_email_change_confirmation_token(user: models.User, new_email: str, expiration_date: datetime) -> str:
     token = encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
-    app.redis_client.set(get_confirmation_token_key(user), token)  # type: ignore [attr-defined]
-    app.redis_client.expireat(get_confirmation_token_key(user), expiration_date)  # type: ignore [attr-defined]
+    app.redis_client.set(get_confirmation_token_key(user), token, exat=expiration_date)  # type: ignore [attr-defined]
     return token
+
+
+def generate_email_change_validation_token(user: models.User, new_email: str, expiration_date: datetime) -> str:
+    token = encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
+    app.redis_client.set(get_validation_token_key(user), token, exat=expiration_date)  # type: ignore [attr-defined]
+    return token
+
+
+def check_and_desactivate_confirmation_token(user: models.User, token: str) -> None:
+    token_key = get_confirmation_token_key(user)
+    assert app.redis_client  # helps mypy
+    if app.redis_client.get(token_key) != token:
+        raise exceptions.InvalidToken()
+    app.redis_client.delete(token_key)
 
 
 def check_no_active_token_exists(
