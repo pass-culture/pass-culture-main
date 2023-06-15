@@ -18,7 +18,7 @@ from pcapi.core.users import constants
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions
 from pcapi.core.users.email import repository as email_repository
-from pcapi.core.users.email.update import check_and_desactivate_validation_token
+from pcapi.core.users.email.update import check_and_expire_validation_token
 from pcapi.core.users.email.update import check_email_address_does_not_exist
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
@@ -164,7 +164,7 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
         if not user:
             raise exceptions.InvalidEmailError()
         check_email_address_does_not_exist(new_email)
-        check_and_desactivate_validation_token(user, body.token)
+        check_and_expire_validation_token(user, body.token)
         api.change_user_email(current_email, new_email)
     except pydantic.ValidationError:
         raise api_errors.ApiErrors(

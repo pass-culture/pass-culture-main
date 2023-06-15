@@ -67,13 +67,11 @@ def generate_and_send_beneficiary_confirmation_email_for_email_change(user: mode
         expiration_date,
         token=token,
     )
-    success = transactional_mails.send_confirmation_email_change_email(
+    return transactional_mails.send_confirmation_email_change_email(
         user,
         link_for_email_change_confirmation,
         link_for_email_change_cancellation,
     )
-
-    return success
 
 
 def generate_and_send_beneficiary_validation_email_for_email_change(user: models.User, new_email: str) -> bool:
@@ -87,13 +85,11 @@ def generate_and_send_beneficiary_validation_email_for_email_change(user: models
         token=token,
     )
 
-    success = transactional_mails.send_validation_email_change_email(
+    return transactional_mails.send_validation_email_change_email(
         user,
         new_email,
         link_for_email_change_validation,
     )
-
-    return success
 
 
 def request_email_update(user: models.User, new_email: str, password: str) -> None:
@@ -118,7 +114,7 @@ def confirm_email_update_request(token: str) -> None:
     if not user:
         raise exceptions.InvalidEmailError()
     check_email_address_does_not_exist(new_email)
-    check_and_desactivate_confirmation_token(user, token)
+    check_and_expire_confirmation_token(user, token)
     try:
         with transaction():
             models.UserEmailHistory.build_confirmation(user, new_email)
@@ -234,7 +230,7 @@ def generate_email_change_validation_token(user: models.User, new_email: str, ex
     return token
 
 
-def check_and_desactivate_confirmation_token(user: models.User, token: str) -> None:
+def check_and_expire_confirmation_token(user: models.User, token: str) -> None:
     token_key = get_confirmation_token_key(user)
     assert app.redis_client  # helps mypy
     if app.redis_client.get(token_key) != token:
@@ -243,7 +239,7 @@ def check_and_desactivate_confirmation_token(user: models.User, token: str) -> N
 
 
 
-def check_and_desactivate_validation_token(user: models.User, token: str) -> None:
+def check_and_expire_validation_token(user: models.User, token: str) -> None:
     token_key = get_validation_token_key(user)
     if app.redis_client.get(token_key) == token:  # type: ignore [attr-defined]
         app.redis_client.delete(token_key)  # type: ignore [attr-defined]
@@ -251,7 +247,7 @@ def check_and_desactivate_validation_token(user: models.User, token: str) -> Non
         raise exceptions.InvalidToken()
 
 
-def check_no_active_token_exists(
+def check_and_expire_or_create_token(
     user: models.User, expiration_date: datetime
 ) -> None:  # TODO Do not use this function replace it with create token and
     """

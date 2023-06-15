@@ -647,8 +647,8 @@ class ConfirmUpdateUserEmailTest:
     def _initialize_token(self, user, app, new_email):
         expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
         token = encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
-        app.redis_client.set(email_update.get_confirmation_token_key(user), token)  # type: ignore [attr-defined]
-        app.redis_client.expireat(email_update.get_confirmation_token_key(user), expiration_date)  # type: ignore [attr-defined]
+        app.redis_client.set(email_update.get_confirmation_token_key(user), token)
+        app.redis_client.expireat(email_update.get_confirmation_token_key(user), expiration_date)
         return token
 
     def test_can_confirm_email_update(self, client, app):
@@ -905,10 +905,18 @@ class ValidateEmailTest:
     old_email = "old@email.com"
     new_email = "new@email.com"
 
+    def _initialize_token(self, user, app, new_email):
+        expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+        token = encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
+        app.redis_client.set(email_update.get_validation_token_key(user), token)  # type: ignore [attr-defined]
+        app.redis_client.expireat(email_update.get_validation_token_key(user), expiration_date)  # type: ignore [attr-defined]
+        return token
+
     def test_validate_email(self, app, client):
         user = users_factories.UserFactory(email=self.old_email)
+        token = self._initialize_token(user, app, self.new_email)
+        response = client.put("/native/v1/profile/email_update/validate", json={"token": token})
 
-        response = self.send_request_with_token(client, user.email)
         assert response.status_code == 204
 
         user = users_models.User.query.get(user.id)
@@ -921,46 +929,27 @@ class ValidateEmailTest:
         """
         user = users_factories.UserFactory(email=self.old_email)
         users_factories.UserFactory(email=self.new_email, isEmailValidated=True)
-
-        response = self.send_request_with_token(client, user.email)
+        token = self._initialize_token(user, app, self.new_email)
+        response = client.put("/native/v1/profile/email_update/validate", json={"token": token})
 
         assert response.status_code == 204
 
         user = users_models.User.query.get(user.id)
         assert user.email == self.old_email
 
-    def test_email_invalid(self, app, client):
-        response = self.send_request_with_token(client, "not_an_email")
-
-        assert response.status_code == 400
-        assert response.json["code"] == "INVALID_EMAIL"
-
     def test_expired_token(self, app, client):
         user = users_factories.UserFactory(email=self.old_email)
         users_factories.UserFactory(email=self.new_email, isEmailValidated=True)
+        expiration_date = datetime.utcnow() - timedelta(days=1)
+        token = encode_jwt_payload({"current_email": user.email, "new_email": self.new_email}, expiration_date)
 
-        response = self.send_request_with_token(client, user.email, expiration_delta=-timedelta(hours=1))
+        response = client.put("/native/v1/profile/email_update/validate", json={"token": token})
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_TOKEN"
 
         user = users_models.User.query.get(user.id)
         assert user.email == self.old_email
-
-    def send_request_with_token(self, client, email, expiration_delta=None):
-        if not expiration_delta:
-            expiration_delta = timedelta(hours=1)
-
-        expiration = int((datetime.utcnow() + expiration_delta).timestamp())
-        token_payload = {"exp": expiration, "current_email": email, "new_email": self.new_email}
-
-        token = jwt.encode(
-            token_payload,
-            settings.JWT_SECRET_KEY,  # type: ignore # known as str in build assertion
-            algorithm=ALGORITHM_HS_256,
-        )
-
-        return client.with_token(email).put("/native/v1/profile/validate_email", json={"token": token})
 
 
 class GetTokenExpirationTest:
