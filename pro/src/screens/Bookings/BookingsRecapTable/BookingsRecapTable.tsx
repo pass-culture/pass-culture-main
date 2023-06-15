@@ -24,7 +24,7 @@ import { filterBookingsRecap, getColumnsByAudience } from './utils'
 
 const FIRST_PAGE_INDEX = 0
 
-interface IBookingsRecapTableProps<
+interface BookingsRecapTableProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 > {
   bookingsRecap: T[]
@@ -46,7 +46,7 @@ const BookingsRecapTable = <
   audience,
   reloadBookings,
   resetBookings,
-}: IBookingsRecapTableProps<T>) => {
+}: BookingsRecapTableProps<T>) => {
   const [filteredBookings, setFilteredBookings] = useState(bookingsRecap)
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_INDEX)
   const location = useLocation()

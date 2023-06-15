@@ -1,8 +1,12 @@
-import React, { ChangeEvent, useMemo } from 'react'
+import cn from 'classnames'
+import React, { ChangeEvent } from 'react'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
+import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
+import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { BaseInput } from 'ui-kit/form/shared'
 
 import { BookingsFilters } from '../../../types'
 import { EMPTY_FILTER_VALUE } from '../_constants'
@@ -11,6 +15,7 @@ import {
   COLLECTIVE_OMNISEARCH_FILTERS,
   INDIVIDUAL_OMNISEARCH_FILTERS,
 } from './constants'
+import styles from './FilterByOmniSearch.module.scss'
 import { BookingOmniSearchFilters } from './types'
 
 export interface FilterByOmniSearchProps {
@@ -32,18 +37,22 @@ const FilterByOmniSearch = ({
   audience,
 }: FilterByOmniSearchProps) => {
   const { logEvent } = useAnalytics()
-  const omnisearchFilters = useMemo(
-    () =>
-      audience === Audience.INDIVIDUAL
-        ? INDIVIDUAL_OMNISEARCH_FILTERS
-        : COLLECTIVE_OMNISEARCH_FILTERS,
-    [audience]
+  const omnisearchFilters =
+    audience === Audience.INDIVIDUAL
+      ? INDIVIDUAL_OMNISEARCH_FILTERS
+      : COLLECTIVE_OMNISEARCH_FILTERS
+
+  const omnisearchFiltersOptions: SelectOption[] = omnisearchFilters.map(
+    omnisearchFilter => ({
+      value: omnisearchFilter.id,
+      label: omnisearchFilter.selectOptionText,
+    })
   )
 
-  function updateOmniSearchKeywords(
+  const updateOmniSearchKeywords = (
     omniSearchCriteria: string,
     keywords: string
-  ) {
+  ) => {
     const cleanedOmnisearchFilters: BookingOmniSearchFilters = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingToken: EMPTY_FILTER_VALUE,
@@ -67,13 +76,13 @@ const FilterByOmniSearch = ({
     updateFilters(cleanedOmnisearchFilters, updatedSelectedContent)
   }
 
-  function handleOmniSearchChange(event: ChangeEvent<HTMLInputElement>) {
+  const handleOmniSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     updateOmniSearchKeywords(selectedOmniSearchCriteria, event.target.value)
   }
 
-  function handleOmniSearchCriteriaChange(
+  const handleOmniSearchCriteriaChange = (
     event: ChangeEvent<HTMLSelectElement>
-  ) {
+  ) => {
     const newOmniSearchCriteria = event.target.value.toLowerCase()
     updateOmniSearchKeywords(newOmniSearchCriteria, keywords)
     logEvent?.(Events.CLICKED_OMNI_SEARCH_CRITERIA, {
@@ -87,30 +96,30 @@ const FilterByOmniSearch = ({
   )?.placeholderText
 
   return (
-    <div className={`fw-first-line ${isDisabled ? 'disabled' : ''}`}>
-      <select
-        className="fw-booking-text-filters-select"
+    <div
+      className={cn(styles['omnisearch-container'], {
+        [styles['omnisearch-container-disabled']]: isDisabled,
+      })}
+    >
+      <SelectInput
+        name="omnisearch-criteria"
+        className={styles['omnisearch-filter-select']}
         disabled={isDisabled}
         onBlur={handleOmniSearchCriteriaChange}
         onChange={handleOmniSearchCriteriaChange}
         value={selectedOmniSearchCriteria}
-      >
-        {omnisearchFilters.map(selectOption => (
-          <option key={selectOption.id} value={selectOption.id}>
-            {selectOption.selectOptionText}
-          </option>
-        ))}
-      </select>
+        options={omnisearchFiltersOptions}
+      />
 
-      <span className="vertical-bar" />
+      <span className={styles['vertical-bar']} />
 
-      <input
-        className="fw-booking-text-filters-input"
+      <BaseInput
+        type="text"
+        className={styles['omnisearch-filter-input']}
         disabled={isDisabled}
         id="text-filter-input"
         onChange={handleOmniSearchChange}
         placeholder={placeholderText}
-        type="text"
         value={keywords}
       />
     </div>
