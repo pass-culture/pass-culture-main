@@ -39,7 +39,7 @@ def get_from_cache(
     :param key_template: A template to generate the key. This must be compatible with printf style string formatting
         see for documentation: https://docs.python.org/3/library/stdtypes.html#printf-style-string-formatting
     :param key_args: `list` or `dict` of `str` to fill the template.
-    :param retriever: Function to call to retrive the data if they are not in the cache. As it does not take args you
+    :param retriever: Function to call to retrieve the data if they are not in the cache. As it does not take args you
         can use functools.partial to prefill its arguments. It must return a pydantic.BaseModel child or str.
     :param expire: The number of seconds before the cache expires. If None it will be set to never expire.
         It's default value is 86400 (24h).
@@ -79,17 +79,17 @@ def cached_view(
     ignore_args: bool = False,
 ) -> Callable:
     """
-    Décorator to cache a view. This decorator MUST be set after spectree_serialize
+    Decorator to cache a view. This decorator MUST be set after spectree_serialize
 
-    By default it only caches the case where no arguments are passed to the view and the cache liftime is set to 24h.
+    By default, it only caches the case where no arguments are passed to the view and the cache lifetime is set to 24h.
 
     :param prefix: String to differentiate multiple view with the same name.
     :param expire: The number of seconds before the cache expires. If None it will be set to never expire.
         It's default value is 86400 (24h).
     :param cache_only_if_no_arguments: When True only the case when there are no args or kwargs is cached, any other
         case will be a passthrough. Default to True
-    :param: ignore_args: If True, the decorator will not look a the args to generate the key and it will always
-        considere the args as the default ones. This argument is dangerous, you should not use it.
+    :param: ignore_args: If True, the decorator will not look the args to generate the key, and it will always
+        consider the args as the default ones. This argument is dangerous, you should not use it.
     """
 
     def decorator(function: Callable[[Any], pydantic.BaseModel]) -> Callable:
