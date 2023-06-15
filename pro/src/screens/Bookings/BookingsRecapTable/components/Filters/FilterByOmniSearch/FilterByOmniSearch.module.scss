@@ -1,0 +1,52 @@
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.vertical-bar {
+  background-color: colors.$grey-medium;
+  height: rem.torem(40px);
+  width: rem.torem(1px);
+}
+
+$border-radius: rem.torem(20px);
+$input-height: rem.torem(40px);
+
+.omnisearch-container {
+  border-radius: $border-radius;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: rem.torem(32px);
+
+  &-disabled {
+    box-shadow: none;
+  }
+
+  &:focus-within {
+    .vertical-bar {
+      margin-right: 0;
+      width: rem.torem(2px);
+    }
+  }
+
+  .vertical-bar {
+    margin-right: rem.torem(1px);
+  }
+}
+
+.omnisearch-filter-select {
+  @include fonts.button;
+
+  border-radius: $border-radius 0 0 $border-radius;
+  border-right: none;
+  height: $input-height;
+  padding-left: rem.torem(16px);
+  width: rem.torem(250px);
+}
+
+.omnisearch-filter-input {
+  border-left: none;
+  border-radius: 0 $border-radius $border-radius 0;
+  flex-grow: 1;
+  height: $input-height;
+  padding: rem.torem(8px) rem.torem(16px);
+}
