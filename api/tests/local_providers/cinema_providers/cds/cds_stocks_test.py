@@ -29,19 +29,23 @@ from . import fixtures
 class CDSStocksTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
-    def should_get_venue_movies(self, mock_get_venue_movies, mock_get_shows):
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    def should_get_venue_movies(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         venue_provider = VenueProviderFactory(provider=cds_provider)
         cinema_provider_pivot = CDSCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
-        CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+        cds_details = CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
         mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
         mock_get_venue_movies.return_value = mocked_movies
         mocked_shows = [{"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5}]
         mock_get_shows.return_value = mocked_shows
+        requests_mock.get(
+            f"https://{cds_details.accountId}.fakeurl/mediaoptions?api_token={cds_details.cinemaApiToken}",
+            json=fixtures.MEDIA_OPTIONS,
+        )
         # When
         cds_stocks = CDSStocks(venue_provider=venue_provider)
         cds_movies = list(cds_stocks.movies)
@@ -52,15 +56,15 @@ class CDSStocksTest:
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
-    def should_return_providable_info_on_next(self, mock_get_venue_movies, mock_get_shows):
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    def should_return_providable_info_on_next(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         venue_provider = VenueProviderFactory(provider=cds_provider)
         cinema_provider_pivot = CDSCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
-        CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+        cds_details = CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
         mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
         mocked_shows = [
@@ -68,6 +72,10 @@ class CDSStocksTest:
             {"show_information": fixtures.MOVIE_2_SHOW_1, "price": 5},
         ]
         mock_get_shows.return_value = mocked_shows
+        requests_mock.get(
+            f"https://{cds_details.accountId}.fakeurl/mediaoptions?api_token={cds_details.cinemaApiToken}",
+            json=fixtures.MEDIA_OPTIONS,
+        )
         # When
         cds_stocks = CDSStocks(venue_provider=venue_provider)
         providable_infos = next(cds_stocks)
@@ -93,9 +101,9 @@ class CDSStocksTest:
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_not_return_providable_info_on_next_when_no_stocks_for_movies(
-        self, mock_get_venue_movies, mock_get_shows
+        self, mock_get_venue_movies, mock_get_shows, requests_mock
     ):
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
@@ -103,9 +111,13 @@ class CDSStocksTest:
         cinema_provider_pivot = CDSCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
-        CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+        cds_details = CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
         mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
+        requests_mock.get(
+            f"https://{cds_details.accountId}.fakeurl/mediaoptions?api_token={cds_details.cinemaApiToken}",
+            json=fixtures.MEDIA_OPTIONS,
+        )
 
         # these shows are not matching movies (by mediaid)
         mocked_shows = [
@@ -138,6 +150,8 @@ class CDSStocksTest:
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
         )
+        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
+
         mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
         mock_get_venue_movies.return_value = mocked_movies
         mocked_shows = [
@@ -176,6 +190,7 @@ class CDSStocksTest:
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_FALSE],
         )
+        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
         mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
         mock_get_venue_movies.return_value = mocked_movies
 
@@ -222,6 +237,7 @@ class CDSStocksTest:
         assert created_stocks[0].offer == created_offers[0]
         assert created_stocks[0].bookingLimitDatetime == datetime(2022, 6, 20, 9)
         assert created_stocks[0].beginningDatetime == datetime(2022, 6, 20, 9)
+        assert created_stocks[0].features == ["3D", "VF"]
 
         assert created_offers[1].name == "Top Gun"
         assert created_offers[1].product == created_products[1]
@@ -243,6 +259,7 @@ class CDSStocksTest:
         assert created_stocks[1].offer == created_offers[1]
         assert created_stocks[1].bookingLimitDatetime == datetime(2022, 7, 1, 10)
         assert created_stocks[1].beginningDatetime == datetime(2022, 7, 1, 10)
+        assert created_stocks[1].features == []
 
         assert all(
             (category.priceCategoryLabel == created_price_category_label for category in created_price_categories)
@@ -275,6 +292,7 @@ class CDSStocksTest:
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_FALSE],
         )
+        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
         mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
         mocked_same_film_shows = [
@@ -361,6 +379,7 @@ class CDSStocksTest:
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_FALSE],
         )
+        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
         mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
         mocked_shows = [
@@ -402,6 +421,7 @@ class CDSStocksTest:
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
         )
+        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
         mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
         mock_get_venue_movies.return_value = mocked_movies
 
@@ -459,6 +479,7 @@ class CDSStocksTest:
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
         )
+        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
         mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
 
@@ -494,6 +515,7 @@ class CDSStocksTest:
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
         )
+        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
 
         cds_stocks = CDSStocks(venue_provider=venue_provider)
         cds_stocks.updateObjects()
@@ -528,6 +550,7 @@ class CDSStocksQuantityTest:
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
         )
+        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
         mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
         mocked_shows = [{"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5, "price_label": "pass Culture"}]
