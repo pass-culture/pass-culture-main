@@ -137,18 +137,10 @@ describe('serializer', () => {
 
   const serializeOfferApiImageDataSet = [
     {
-      mediations: [
-        {
-          thumbUrl: 'http://image.url',
-          credit: 'John Do',
-          dateCreated: '01-01-2001',
-          fieldsUpdated: [],
-          id: 'image_id',
-          isActive: true,
-          offerId: 'offer_id',
-          thumbCount: 1,
-        },
-      ] as unknown as GetIndividualOfferResponseModel[],
+      activeMediation: {
+        thumbUrl: 'http://image.url',
+        credit: 'John Do',
+      } as unknown as GetIndividualOfferResponseModel[],
       expectedImage: {
         originalUrl: 'http://image.url',
         url: 'http://image.url',
@@ -156,28 +148,20 @@ describe('serializer', () => {
       },
     },
     {
-      mediations: [] as unknown as GetIndividualOfferResponseModel[],
+      activeMediation: {} as unknown as GetIndividualOfferResponseModel[],
       expectedImage: undefined,
     },
     {
-      mediations: [
-        { credit: 'John Do' },
-      ] as unknown as GetIndividualOfferResponseModel[],
+      activeMediation: {
+        credit: 'John Do',
+      } as unknown as GetIndividualOfferResponseModel[],
       expectedImage: undefined,
     },
     {
-      mediations: [
-        {
-          thumbUrl: 'http://image.url',
-          credit: null,
-          dateCreated: '01-01-2001',
-          fieldsUpdated: [],
-          id: 'image_id',
-          isActive: true,
-          offerId: 'offer_id',
-          thumbCount: 1,
-        },
-      ] as unknown as GetIndividualOfferResponseModel[],
+      activeMediation: {
+        thumbUrl: 'http://image.url',
+        credit: null,
+      } as unknown as GetIndividualOfferResponseModel[],
       expectedImage: {
         originalUrl: 'http://image.url',
         url: 'http://image.url',
@@ -187,9 +171,9 @@ describe('serializer', () => {
   ]
   it.each(serializeOfferApiImageDataSet)(
     'serializeOfferApiImage from mediation',
-    ({ mediations, expectedImage }) => {
+    ({ activeMediation, expectedImage }) => {
       const offerApi = {
-        mediations,
+        activeMediation,
       } as unknown as GetIndividualOfferResponseModel
 
       expect(serializeOfferApiImage(offerApi)).toEqual(expectedImage)
@@ -339,7 +323,6 @@ describe('serializer', () => {
       isActive: true,
       isDigital: false,
       isDuo: true,
-      isEducational: false,
       isEvent: false,
       isNational: true,
       isbn: '',

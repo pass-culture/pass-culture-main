@@ -194,7 +194,6 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       isbn: '',
       isActive: true,
       isDuo: false,
-      isEducational: false,
       isEvent: true,
       isDigital: false,
       accessibility: {

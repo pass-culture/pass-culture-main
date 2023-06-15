@@ -179,7 +179,6 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       isbn: '',
       isActive: true,
       isDuo: false,
-      isEducational: false,
       isEvent: false,
       isDigital: false,
       accessibility: {

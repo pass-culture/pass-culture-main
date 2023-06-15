@@ -21,7 +21,6 @@ describe('setFormReadOnlyFields', () => {
       isbn: '',
       isActive: true,
       isDuo: false,
-      isEducational: false,
       isEvent: true,
       isDigital: false,
       accessibility: {

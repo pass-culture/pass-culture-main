@@ -345,14 +345,11 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     isDigital: bool
     isDuo: bool
     isEditable: bool
-    isEducational: bool
     isEvent: bool
     isNational: bool
     isThing: bool
     nonHumanizedId: int
     lastProvider: GetOfferLastProviderResponseModel | None
-    mediaUrls: list[str]
-    mediations: list[GetOfferMediationResponseModel]
     name: str
     priceCategories: list[PriceCategoryResponseModel] | None
     stocks: list[GetOfferStockResponseModel]

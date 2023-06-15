@@ -172,7 +172,6 @@ export interface IOfferIndividual {
   isbn: string
   isActive: boolean
   isDuo: boolean
-  isEducational: boolean
   isEvent: boolean
   isDigital: boolean
   accessibility: IAccessibiltyFormValues
