@@ -278,6 +278,6 @@ def validate_reimbursement_period(
 
 
 class ReimbursementCsvQueryModel(BaseModel):
-    venueId: str | None
+    venueId: int | None
     reimbursementPeriodBeginningDate: str | None
     reimbursementPeriodEndingDate: str | None
