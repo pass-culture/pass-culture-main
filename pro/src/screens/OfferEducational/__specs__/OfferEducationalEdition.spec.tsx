@@ -37,7 +37,6 @@ describe('screens | OfferEducational', () => {
     props.userOfferers = [
       ...props.userOfferers,
       userOffererFactory({
-        id: 'OFFERER_WITH_INTERVENTION_AREA',
         managedVenues: [
           managedVenueFactory({}),
           managedVenueFactory({

@@ -133,11 +133,8 @@ class GetOffererResponseModel(BaseModel):
 
 
 class GetOffererNameResponseModel(BaseModel):
-    id: str
     nonHumanizedId: int
     name: str
-
-    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True
@@ -180,12 +177,9 @@ class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityCompliance
 
 
 class GetEducationalOffererResponseModel(BaseModel):
-    id: str
     nonHumanizedId: int
     name: str
     managedVenues: list[GetEducationalOffererVenueResponseModel]
-
-    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True

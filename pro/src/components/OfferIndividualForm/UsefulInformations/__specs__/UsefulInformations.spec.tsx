@@ -56,7 +56,6 @@ describe('OfferIndividual section: UsefulInformations', () => {
   beforeEach(() => {
     const offererNames: TOffererName[] = [
       {
-        id: 'AE',
         nonHumanizedId: offererId,
         name: 'Offerer AE',
       },

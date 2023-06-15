@@ -148,13 +148,14 @@ const OffersRoute = (): JSX.Element => {
 
   useEffect(() => {
     const loadAllVenuesByProUser = () =>
-      getVenuesForOffererAdapter({ offererId: offerer?.id }).then(
-        venuesResponse =>
-          setVenues(formatAndOrderVenues(venuesResponse.payload))
+      getVenuesForOffererAdapter({
+        offererId: offerer?.nonHumanizedId.toString(),
+      }).then(venuesResponse =>
+        setVenues(formatAndOrderVenues(venuesResponse.payload))
       )
 
     loadAllVenuesByProUser()
-  }, [offerer?.id])
+  }, [offerer?.nonHumanizedId])
 
   if (!initialSearchFilters) {
     return <Spinner />

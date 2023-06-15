@@ -35,7 +35,6 @@ describe('screens | OfferEducational : edition offerer step', () => {
       ...props,
       userOfferers: userOfferersFactory([
         {
-          id: firstOffererId.toString(),
           nonHumanizedId: firstOffererId,
           managedVenues: managedVenuesFactory([
             { id: firstvenueId.toString(), nonHumanizedId: firstvenueId },
@@ -43,7 +42,6 @@ describe('screens | OfferEducational : edition offerer step', () => {
           ]),
         },
         {
-          id: secondOffererId.toString(),
           nonHumanizedId: secondOffererId,
           managedVenues: managedVenuesFactory([
             { id: thirdVenueId.toString(), nonHumanizedId: thirdVenueId },
@@ -98,7 +96,6 @@ describe('screens | OfferEducational : edition offerer step', () => {
       ...props,
       userOfferers: userOfferersFactory([
         {
-          id: firstOffererId.toString(),
           nonHumanizedId: firstOffererId,
           managedVenues: managedVenuesFactory([
             { id: firstvenueId.toString(), nonHumanizedId: firstvenueId },
@@ -106,7 +103,6 @@ describe('screens | OfferEducational : edition offerer step', () => {
           ]),
         },
         {
-          id: secondOffererId.toString(),
           nonHumanizedId: secondOffererId,
           managedVenues: managedVenuesFactory([
             { id: thirdVenueId.toString(), nonHumanizedId: thirdVenueId },

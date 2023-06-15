@@ -33,7 +33,6 @@ class GetEducationalOfferersTest:
         assert response.json == {
             "educationalOfferers": [
                 {
-                    "id": humanize(offerer_1.id),
                     "nonHumanizedId": offerer_1.id,
                     "name": offerer_1.name,
                     "managedVenues": [
@@ -58,7 +57,6 @@ class GetEducationalOfferersTest:
                     ],
                 },
                 {
-                    "id": humanize(offerer_2.id),
                     "nonHumanizedId": offerer_2.id,
                     "name": offerer_2.name,
                     "managedVenues": [
@@ -119,7 +117,6 @@ class GetEducationalOfferersTest:
         assert response.json == {
             "educationalOfferers": [
                 {
-                    "id": humanize(offerer_2.id),
                     "nonHumanizedId": offerer_2.id,
                     "name": offerer_2.name,
                     "managedVenues": [

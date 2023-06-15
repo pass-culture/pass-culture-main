@@ -117,7 +117,7 @@ export const getVenueListItemFactory = (
     nonHumanizedId: currentVenueId,
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
-    managingOffererId: customOfferer.id,
+    managingOffererId: customOfferer.nonHumanizedId.toString(),
     publicName: 'Mon Lieu',
     hasCreatedOffer: true,
     hasMissingReimbursementPoint: true,
@@ -131,7 +131,6 @@ export const offererFactory = (
 ): GetOfferManagingOffererResponseModel => {
   const currentOffererId = offererId++
   return {
-    id: `OFFERER${currentOffererId}`,
     name: `La nom de la structure ${currentOffererId}`,
     nonHumanizedId: 3,
     ...customOfferer,

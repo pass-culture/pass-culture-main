@@ -65,7 +65,6 @@ describe('routes::Summary::serializers', () => {
         postalCode: '75001',
         city: 'Paris',
         offerer: {
-          id: 'OFID',
           nonHumanizedId: 1,
           name: 'Offerer name',
         },

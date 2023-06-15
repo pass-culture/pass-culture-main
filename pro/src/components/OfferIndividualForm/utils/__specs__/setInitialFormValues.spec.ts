@@ -57,7 +57,6 @@ describe('setFormReadOnlyFields', () => {
         postalCode: '75001',
         city: 'Paris',
         offerer: {
-          id: 'AE',
           nonHumanizedId: 1,
           name: 'Offerer name',
         },
