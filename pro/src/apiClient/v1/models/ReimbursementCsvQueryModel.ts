@@ -5,6 +5,6 @@
 export type ReimbursementCsvQueryModel = {
   reimbursementPeriodBeginningDate?: string;
   reimbursementPeriodEndingDate?: string;
-  venueId?: string;
+  venueId?: number;
 };
 

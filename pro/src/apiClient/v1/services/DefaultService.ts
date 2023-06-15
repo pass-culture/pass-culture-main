@@ -1523,7 +1523,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getReimbursementsCsv(
-    venueId?: string,
+    venueId?: number,
     reimbursementPeriodBeginningDate?: string,
     reimbursementPeriodEndingDate?: string,
   ): CancelablePromise<any> {

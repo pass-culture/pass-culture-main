@@ -3,16 +3,6 @@ import datetime
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
 from pcapi.routes.serialization import BaseModel
-import pcapi.serialization.utils as serialization_utils
-
-
-class ReimbursementPointListQueryModel(BaseModel):
-    class Config:
-        alias_generator = serialization_utils.to_camel
-        extra = "forbid"
-
-    _dehumanize_id = serialization_utils.dehumanize_field("offerer_id")
-    offerer_id: int | None
 
 
 class FinanceReimbursementPointResponseModel(BaseModel):
