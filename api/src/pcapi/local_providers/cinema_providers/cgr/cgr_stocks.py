@@ -10,6 +10,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.providers.models as providers_models
+from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
@@ -156,6 +157,13 @@ class CGRStocks(LocalProvider):
 
         show_price = decimal.Decimal(str(showtime.PrixUnitaire))
         price_label = showtime.libTarif
+
+        features = [ShowtimeFeatures.VF.value if showtime.Version == "VF" else ShowtimeFeatures.VO.value]
+        if showtime.Relief == "3D":
+            features.append(ShowtimeFeatures.THREE_D.value)
+        if showtime.bICE:
+            features.append(ShowtimeFeatures.ICE.value)
+        stock.features = features
 
         if "price" not in stock.fieldsUpdated:
             stock.price = show_price
