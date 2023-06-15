@@ -1,9 +1,10 @@
 import React from 'react'
 
 import { CalendarIcon } from 'icons'
-import { ReactComponent as IconDesk } from 'icons/ico-desk.svg'
 import { ReactComponent as IconEuro } from 'icons/ico-euro.svg'
 import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
+import deskIcon from 'icons/stroke-desk.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { IStepComponentProps } from '../types'
 
@@ -23,7 +24,11 @@ const ManageBookings = ({ titleId }: IStepComponentProps): JSX.Element => (
       <DownArrow className={styles['third-column']} />
       <span className={styles['header-example']}>
         <span className={styles['header-element']}>
-          <IconDesk className={styles['header-element-icon']} />
+          <SvgIcon
+            className={styles['header-element-icon']}
+            src={deskIcon}
+            alt=""
+          />
           Guichet
         </span>
         <span className={styles['header-element']}>

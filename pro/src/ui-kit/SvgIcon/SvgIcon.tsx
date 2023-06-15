@@ -5,6 +5,7 @@ export interface SvgIconProps {
   alt: string
   className?: string
   viewBox?: string
+  ariaHidden?: boolean
 }
 
 // This is component is used to display svg icons that can change color and have a text alternative
@@ -16,10 +17,17 @@ export const SvgIcon = ({
   src,
   alt,
   className,
+  ariaHidden = false,
   viewBox = '0 0 48 48',
 }: SvgIconProps) => {
   return (
-    <svg className={className} viewBox={viewBox} role="img" aria-label={alt}>
+    <svg
+      className={className}
+      viewBox={viewBox}
+      role="img"
+      aria-label={alt}
+      aria-hidden={ariaHidden}
+    >
       <use xlinkHref={`${src}#icon`}></use>
     </svg>
   )

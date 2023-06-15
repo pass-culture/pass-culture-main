@@ -49,6 +49,7 @@ const iconList = [
   { src: 'icons/stroke-building.svg' },
   { src: 'icons/stroke-code.svg' },
   { src: 'icons/stroke-accessibility-ear.svg' },
+  { src: 'icons/stroke-desk.svg' },
 
   // Shadow icons
   { src: 'icons/shadow-tips-help.svg', viewBox: '0 0 22 26' },
@@ -68,7 +69,6 @@ const iconList = [
   { src: 'icons/ico-close-r.svg', viewBox: '0 0 17 16' },
   { src: 'icons/close-tag.svg', viewBox: '0 0 10 10' },
   { src: 'icons/ico-compta.svg', viewBox: '0 0 20 23' },
-  { src: 'icons/ico-desk.svg', viewBox: '0 0 49 48' },
   { src: 'icons/ico-double-check.svg' },
   {
     src: 'icons/dropdown-disclosure-down-b-disabled.svg',
