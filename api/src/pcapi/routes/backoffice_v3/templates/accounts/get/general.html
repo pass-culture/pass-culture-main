@@ -72,6 +72,11 @@
               <p class="mb-1">
                 <span class="fw-bold">Crédité le :</span> {{ user.deposit_activation_date | format_date }}
               </p>
+              {% if user.deposit %}
+                <p class="mb-1">
+                  <span class="fw-bold">Date d'expiration du crédit :</span> {{ user.deposit.expirationDate | format_date_time }}
+                </p>
+              {% endif %}
             {% endif %}
             <p class="mb-1">
               <span class="fw-bold">Date de création du compte :</span> {{ user.dateCreated | format_date }}
