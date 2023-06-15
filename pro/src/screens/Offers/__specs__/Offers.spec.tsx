@@ -25,10 +25,10 @@ import { offererFactory } from 'utils/apiFactories'
 import { individualOfferOffererFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Offers, { IOffersProps } from '../Offers'
+import Offers, { OffersProps } from '../Offers'
 import { individualOfferFactory } from '../utils/individualOffersFactories'
 
-const renderOffers = (props: IOffersProps, storeOverrides: any) => {
+const renderOffers = (props: OffersProps, storeOverrides: any) => {
   renderWithProviders(<Offers {...props} />, { storeOverrides })
 }
 
@@ -56,14 +56,8 @@ const proVenues = [
   },
 ]
 const proVenuesOptions = [
-  {
-    id: 'JI',
-    displayName: 'Ma venue',
-  },
-  {
-    id: 'JQ',
-    displayName: 'Mon offerer - Offre numérique',
-  },
+  { value: 'JI', label: 'Ma venue' },
+  { value: 'JQ', label: 'Mon offerer - Offre numérique' },
 ]
 
 jest.mock('utils/date', () => ({
@@ -81,7 +75,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 describe('screen Offers', () => {
-  let props: IOffersProps
+  let props: OffersProps
   let currentUser: {
     id: string
     isAdmin: boolean
@@ -127,9 +121,9 @@ describe('screen Offers', () => {
       redirectWithUrlFilters: jest.fn(),
       venues: proVenuesOptions,
       categories: categoriesAndSubcategories.categories.map(
-        ({ id, proLabel }) => ({ id, displayName: proLabel })
+        ({ id, proLabel }) => ({ value: id, label: proLabel })
       ),
-    } as IOffersProps
+    } as OffersProps
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useNotification'),
       error: mockNotifyError,
@@ -149,10 +143,10 @@ describe('screen Offers', () => {
         categoryId: ALL_CATEGORIES,
         offererId: ALL_OFFERERS,
         status: ALL_STATUS,
-        creationMode: DEFAULT_CREATION_MODE.id,
+        creationMode: DEFAULT_CREATION_MODE.value,
         periodBeginningDate: ALL_EVENT_PERIODS,
         periodEndingDate: ALL_EVENT_PERIODS,
-        collectiveOfferType: DEFAULT_COLLECTIVE_OFFER_TYPE.id,
+        collectiveOfferType: DEFAULT_COLLECTIVE_OFFER_TYPE.value,
       })
     })
 
@@ -253,7 +247,7 @@ describe('screen Offers', () => {
       it('should render venue filter with default option selected and given venues as options', async () => {
         // Given
         const expectedSelectOptions = [
-          { id: [ALL_VENUES_OPTION.id], value: ALL_VENUES_OPTION.displayName },
+          { id: [ALL_VENUES_OPTION.value], value: ALL_VENUES_OPTION.label },
           { id: [proVenues[0].id], value: proVenues[0].name },
           {
             id: [proVenues[1].id],
@@ -650,7 +644,7 @@ describe('screen Offers', () => {
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
         periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
         periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
-        collectiveOfferType: DEFAULT_COLLECTIVE_OFFER_TYPE.id,
+        collectiveOfferType: DEFAULT_COLLECTIVE_OFFER_TYPE.value,
       })
     })
   })

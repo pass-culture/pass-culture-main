@@ -14,11 +14,11 @@ import { offererFactory } from 'utils/apiFactories'
 import { individualOfferOffererFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Offers, { IOffersProps } from '../Offers'
+import Offers, { OffersProps } from '../Offers'
 
 const mockLogEvent = jest.fn()
 
-const renderOffers = (props: IOffersProps) =>
+const renderOffers = (props: OffersProps) =>
   renderWithProviders(<Offers {...props} />)
 
 jest.mock('apiClient/api', () => ({
