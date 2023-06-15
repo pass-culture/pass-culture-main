@@ -308,17 +308,8 @@ class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
         json_encoders = {datetime: format_into_utc_date}
 
 
-# FIXME (apibrac, 2021-03-23): we should not expose so much information to the fronts.
-# Only the name is needed in pro and nothing in webapp => can we just send a providerName field?
-# The field lastProviderId is not used anywhere in the fronts either.
 class GetOfferLastProviderResponseModel(BaseModel):
-    enabledForPro: bool
-    id: str
-    isActive: bool
-    localClass: str | None
     name: str
-
-    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True

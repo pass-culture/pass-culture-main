@@ -316,10 +316,7 @@ describe('screens:StocksEventEdition', () => {
   it('should allow user to delete stock from a synchronized offer', async () => {
     apiOffer.lastProvider = {
       ...apiOffer.lastProvider,
-      id: 'PROVIDER_ID',
-      isActive: true,
       name: 'Provider',
-      enabledForPro: true,
     }
     await renderStockEventScreen(apiOffer)
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
@@ -375,10 +372,7 @@ describe('screens:StocksEventEdition', () => {
   it('should not allow user to add a date for a synchronized offer', async () => {
     apiOffer.lastProvider = {
       ...apiOffer.lastProvider,
-      id: 'PROVIDER_ID',
-      isActive: true,
       name: 'Provider',
-      enabledForPro: true,
     }
     await renderStockEventScreen(apiOffer)
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
@@ -389,10 +383,7 @@ describe('screens:StocksEventEdition', () => {
   it('should allow user to edit quantity for a cinema synchronized offer', async () => {
     apiOffer.lastProvider = {
       ...apiOffer.lastProvider,
-      id: 'PROVIDER_ID',
-      isActive: true,
       name: 'ciné office',
-      enabledForPro: true,
     }
     await renderStockEventScreen(apiOffer)
     jest

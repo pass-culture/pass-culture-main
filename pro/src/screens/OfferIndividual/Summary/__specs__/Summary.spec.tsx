@@ -158,8 +158,6 @@ describe('Summary', () => {
           isEvent: false,
           name: 'mon offre',
           lastProvider: {
-            id: 'ciné office',
-            isActive: true,
             name: 'Ciné Office',
           },
           lastProviderName: 'Ciné Office',
