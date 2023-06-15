@@ -829,7 +829,7 @@ class GetEMailUpdateStatusTest:
         user = users_factories.UserFactory(email=self.old_email)
         request_email_update(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
 
-        redis_key = email_update.get_no_active_token_key(user)
+        redis_key = email_update.get_confirmation_token_key(user)
         redis_value = app.redis_client.get(redis_key)
         redis_expiration = app.redis_client.ttl(redis_key)
         app.redis_client.delete(redis_key)
@@ -920,7 +920,7 @@ class GetTokenExpirationTest:
         user = users_factories.UserFactory(email=self.email)
 
         expiration_date = datetime.utcnow() + timedelta(hours=15)
-        key = email_update.get_no_active_token_key(user)
+        key = email_update.get_confirmation_token_key(user)
 
         app.redis_client.incr(key)
         app.redis_client.expireat(key, expiration_date)
