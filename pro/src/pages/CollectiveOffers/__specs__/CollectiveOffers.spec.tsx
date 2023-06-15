@@ -455,7 +455,7 @@ describe('route CollectiveOffers', () => {
             name: 'Cinéma',
           })
           const typeSelect = screen.getByDisplayValue(
-            ALL_CATEGORIES_OPTION.displayName
+            ALL_CATEGORIES_OPTION.label
           )
           await userEvent.selectOptions(typeSelect, firstTypeOption)
           // When
@@ -632,9 +632,7 @@ describe('route CollectiveOffers', () => {
         name: proVenues[0].name,
       })
 
-      const venueSelect = screen.getByDisplayValue(
-        ALL_VENUES_OPTION.displayName
-      )
+      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
 
       await userEvent.selectOptions(venueSelect, firstVenueOption)
 
@@ -700,9 +698,7 @@ describe('route CollectiveOffers', () => {
         name: proVenues[0].name,
       })
 
-      const venueSelect = screen.getByDisplayValue(
-        ALL_VENUES_OPTION.displayName
-      )
+      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
 
       await userEvent.selectOptions(venueSelect, venueOptionToSelect)
 

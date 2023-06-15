@@ -61,5 +61,5 @@ export type GetBookingsXLSFileAdapter = Adapter<
 
 export type GetUserHasBookingsAdapter = Adapter<void, boolean, boolean>
 
-export type VenuesPayload = { venues: { id: string; displayName: string }[] }
+export type VenuesPayload = { venues: { value: string; label: string }[] }
 export type GetVenuesAdapter = Adapter<void, VenuesPayload, VenuesPayload>

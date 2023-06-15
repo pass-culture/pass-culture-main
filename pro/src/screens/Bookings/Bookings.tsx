@@ -19,6 +19,7 @@ import {
 } from 'core/Bookings'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
+import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -76,9 +77,7 @@ const Bookings = <
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
   const [hasBooking, setHasBooking] = useState(true)
   const [isLocalLoading, setIsLocalLoading] = useState(false)
-  const [venues, setVenues] = useState<{ id: string; displayName: string }[]>(
-    []
-  )
+  const [venues, setVenues] = useState<SelectOption[]>([])
   const [urlParams, setUrlParams] = useState<TPreFilters>(DEFAULT_PRE_FILTERS)
 
   const resetPreFilters = useCallback(() => {
@@ -271,7 +270,10 @@ const Bookings = <
         isLocalLoading={isLocalLoading}
         isTableLoading={isTableLoading}
         resetPreFilters={resetPreFilters}
-        venues={venues}
+        venues={venues.map(venue => ({
+          id: String(venue.value),
+          displayName: venue.label,
+        }))}
         urlParams={urlParams}
         updateUrl={updateUrl}
         wereBookingsRequested={wereBookingsRequested}

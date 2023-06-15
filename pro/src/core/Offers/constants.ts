@@ -1,4 +1,5 @@
 import { OfferStatus } from 'apiClient/v1'
+import { SelectOption } from 'custom_types/form'
 
 import { TSearchFilters } from './types'
 
@@ -91,23 +92,25 @@ export const DEFAULT_SEARCH_FILTERS: TSearchFilters = {
   periodEndingDate: ALL_EVENT_PERIODS,
 }
 
-export const ALL_VENUES_OPTION = {
-  displayName: 'Tous les lieux',
-  id: ALL_VENUES,
+export const ALL_VENUES_OPTION: SelectOption = {
+  label: 'Tous les lieux',
+  value: ALL_VENUES,
 }
-export const ALL_CATEGORIES_OPTION = {
-  displayName: 'Toutes',
-  id: ALL_CATEGORIES,
+
+export const ALL_CATEGORIES_OPTION: SelectOption = {
+  label: 'Toutes',
+  value: ALL_CATEGORIES,
 }
-const CREATION_MODES_OPTIONS = [
-  { displayName: 'Tous', id: ALL_CREATION_MODES },
-  { displayName: 'Manuel', id: 'manual' },
-  { displayName: 'Synchronisé', id: 'imported' },
+
+const CREATION_MODES_OPTIONS: SelectOption[] = [
+  { label: 'Tous', value: ALL_CREATION_MODES },
+  { label: 'Manuel', value: 'manual' },
+  { label: 'Synchronisé', value: 'imported' },
 ]
-const COLLECTIVE_OFFER_TYPES_OPTIONS = [
-  { displayName: 'Tout', id: ALL_CREATION_MODES },
-  { displayName: 'Offre vitrine', id: 'template' },
-  { displayName: 'Offre réservable', id: 'offer' },
+const COLLECTIVE_OFFER_TYPES_OPTIONS: SelectOption[] = [
+  { label: 'Tout', value: ALL_CREATION_MODES },
+  { label: 'Offre vitrine', value: 'template' },
+  { label: 'Offre réservable', value: 'offer' },
 ]
 
 export const [DEFAULT_CREATION_MODE, ...CREATION_MODES_FILTERS] =

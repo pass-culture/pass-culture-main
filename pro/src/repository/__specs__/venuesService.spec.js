@@ -3,7 +3,6 @@ import { computeVenueDisplayName, formatAndOrderVenues } from '../venuesService'
 describe('venuesService', () => {
   describe('formatAndOrderVenues', () => {
     it('should sort venues alphabetically', () => {
-      // given
       const venues = [
         {
           id: 'AF',
@@ -21,24 +20,21 @@ describe('venuesService', () => {
         },
       ]
 
-      // when
       const sortingValues = formatAndOrderVenues(venues)
 
-      // then
       expect(sortingValues).toStrictEqual([
         {
-          displayName: 'gilbert Joseph - Offre numérique',
-          id: venues[1].nonHumanizedId.toString(),
+          label: 'gilbert Joseph - Offre numérique',
+          value: venues[1].nonHumanizedId.toString(),
         },
         {
-          displayName: 'Librairie Fnac',
-          id: venues[0].nonHumanizedId.toString(),
+          label: 'Librairie Fnac',
+          value: venues[0].nonHumanizedId.toString(),
         },
       ])
     })
 
     it('should format venue option with "offerer name - offre numérique" when venue is virtual', () => {
-      // given
       const venues = [
         {
           id: 'AE',
@@ -49,14 +45,12 @@ describe('venuesService', () => {
         },
       ]
 
-      // when
       const formattedValues = formatAndOrderVenues(venues)
 
-      // then
       expect(formattedValues).toStrictEqual([
         {
-          displayName: 'gilbert Joseph - Offre numérique',
-          id: venues[0].nonHumanizedId.toString(),
+          label: 'gilbert Joseph - Offre numérique',
+          value: venues[0].nonHumanizedId.toString(),
         },
       ])
     })

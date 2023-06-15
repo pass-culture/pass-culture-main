@@ -254,9 +254,7 @@ describe('route CollectiveOffers', () => {
       const firstTypeOption = screen.getByRole('option', {
         name: 'My test value',
       })
-      const typeSelect = screen.getByDisplayValue(
-        ALL_CATEGORIES_OPTION.displayName
-      )
+      const typeSelect = screen.getByDisplayValue(ALL_CATEGORIES_OPTION.label)
       // When
       await userEvent.selectOptions(typeSelect, firstTypeOption)
       await userEvent.click(screen.getByText('Lancer la recherche'))

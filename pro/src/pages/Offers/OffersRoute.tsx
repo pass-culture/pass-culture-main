@@ -6,17 +6,18 @@ import { api } from 'apiClient/api'
 import { DEFAULT_SEARCH_FILTERS, hasSearchFilters } from 'core/Offers'
 import { getOffererAdapter } from 'core/Offers/adapters'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
-import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
+import { Offer, Offerer, TSearchFilters } from 'core/Offers/types'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
+import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { sortByDisplayName } from 'utils/strings'
+import { sortByLabel } from 'utils/strings'
 
 import { getFilteredOffersAdapter } from './adapters/getFilteredOffersAdapter'
 
@@ -32,8 +33,8 @@ const OffersRoute = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<TSearchFilters | null>(null)
-  const [venues, setVenues] = useState<Option[]>([])
-  const [categories, setCategories] = useState<Option[]>([])
+  const [venues, setVenues] = useState<SelectOption[]>([])
+  const [categories, setCategories] = useState<SelectOption[]>([])
 
   useEffect(() => {
     const loadOfferer = async () => {
@@ -83,11 +84,11 @@ const OffersRoute = (): JSX.Element => {
         const categoriesOptions = categoriesAndSubcategories.categories
           .filter(category => category.isSelectable)
           .map(category => ({
-            id: category.id,
-            displayName: category.proLabel,
+            value: category.id,
+            label: category.proLabel,
           }))
 
-        setCategories(sortByDisplayName(categoriesOptions))
+        setCategories(sortByLabel(categoriesOptions))
       })
 
     loadCategories()
