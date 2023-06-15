@@ -199,7 +199,13 @@ def update_allocine_venue_provider(
 def connect_venue_to_provider(
     venue: offerers_models.Venue, provider: providers_models.Provider, venueIdAtOfferProvider: str = None
 ) -> providers_models.VenueProvider:
-    id_at_provider = _get_siret(venueIdAtOfferProvider, venue.siret)
+    if provider.hasOffererProvider:
+        # FIXME (mageoffray, 16-06-2023): Column is not nullable but not
+        # needed for new provider apis. We will have few venues to sync
+        # without siret before the column is nullable.
+        id_at_provider = "dummyIdAtProvider"
+    else:
+        id_at_provider = _get_siret(venueIdAtOfferProvider, venue.siret)
 
     _check_provider_can_be_connected(provider, id_at_provider)
 
