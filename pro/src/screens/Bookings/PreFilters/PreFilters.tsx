@@ -209,6 +209,7 @@ const PreFilters = ({
               isFiltersDisabled={isFiltersDisabled}
               isLocalLoading={isLocalLoading}
             />
+
             <Button
               className={styles['show-button']}
               disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
