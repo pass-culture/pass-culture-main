@@ -2735,6 +2735,31 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
+            "/native/v1/profile/email_update/confirm": {
+                "post": {
+                    "description": "",
+                    "operationId": "post_/native/v1/profile/email_update/confirm",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/ChangeBeneficiaryEmailBody"}}
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "confirm_email_update <POST>",
+                    "tags": [],
+                }
+            },
             "/native/v1/profile/validate_email": {
                 "put": {
                     "description": "",

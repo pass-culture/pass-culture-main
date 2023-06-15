@@ -39,6 +39,7 @@ import pcapi.core.users.constants as users_constants
 from pcapi.core.users.email import request_email_update
 from pcapi.core.users.email import update as email_update
 from pcapi.core.users.utils import ALGORITHM_HS_256
+from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.sms import testing as sms_testing
@@ -640,6 +641,63 @@ class UserProfileUpdateTest:
 
         assert response.status_code == 200
         assert user.recreditAmountToShow is None
+
+
+class ConfirmUpdateUserEmailTest:
+    def _initialize_token(self, user, app, new_email):
+        expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+        token = encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
+        app.redis_client.set(email_update.get_confirmation_token_key(user), token)  # type: ignore [attr-defined]
+        app.redis_client.expireat(email_update.get_confirmation_token_key(user), expiration_date)  # type: ignore [attr-defined]
+        return token
+
+    def test_can_confirm_email_update(self, client, app):
+        user = users_factories.BeneficiaryGrant18Factory()
+        email_update_request = users_factories.EmailUpdateEntryFactory(user=user)
+        token = self._initialize_token(user, app, email_update_request.newEmail)
+
+        client.with_token(user.email)
+        response = client.post("/native/v1/profile/email_update/confirm", json={"token": token})
+
+        assert response.status_code == 204
+        assert (
+            users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+            >= email_update.get_active_token_expiration(user) - datetime.utcnow()
+            >= users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME - timedelta(minutes=1)
+        )
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["params"]["FIRSTNAME"] == user.firstName
+
+        validation_email = mails_testing.outbox[-1]
+        validation_link = urlparse(validation_email.sent_data["params"]["CONFIRMATION_LINK"])
+        base_url = parse_qs(validation_link.query)["link"][0]
+        base_url_params = parse_qs(urlparse(base_url).query)
+
+        assert {"new_email", "token", "expiration_timestamp"} <= base_url_params.keys()
+        assert base_url_params["new_email"] == [email_update_request.newEmail]
+
+    def test_cannot_confirm_after_expiration(self, client, app):
+        user = users_factories.BeneficiaryGrant18Factory()
+        email_update_request = users_factories.EmailUpdateEntryFactory(user=user)
+        token = self._initialize_token(user, app, email_update_request.newEmail)
+
+        app.redis_client.expireat(
+            email_update.get_confirmation_token_key(user), datetime.utcnow() - timedelta(minutes=1)
+        )
+        client.with_token(user.email)
+        response = client.post("/native/v1/profile/email_update/confirm", json={"token": token})
+        assert response.status_code == 404
+        assert response.json["message"] == "aucune demande de changement d'email en cours"
+
+    def test_cannot_confirm_if_no_pending_email_update(self, client, app):
+        user = users_factories.BeneficiaryGrant18Factory()
+        expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+        token = encode_jwt_payload({"current_email": user.email, "new_email": "exemple@exemple.com"}, expiration_date)
+        client.with_token(user.email)
+        response = client.post("/native/v1/profile/email_update/confirm", json={"token": token})
+
+        assert response.status_code == 404
+        assert response.json["message"] == "aucune demande de changement d'email en cours"
 
 
 class UpdateUserEmailTest:
