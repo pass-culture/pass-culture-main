@@ -6,12 +6,12 @@ from tests.connectors.titelive import fixtures
 
 @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
 @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
-def test_get_jwt(requests_mock):
+def test_get_jwt_token(requests_mock):
     requests_mock.post(
         "https://login.epagine.fr/v1/login/test@example.com/token",
         json={"token": "XYZ"},
     )
-    assert titelive.get_jwt() == "XYZ"
+    assert titelive.get_jwt_token() == "XYZ"
 
 
 @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
