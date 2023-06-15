@@ -167,7 +167,6 @@ describe('screens:StocksThing', () => {
         id: 'DY',
         nonHumanizedId: 1,
         isVirtual: false,
-        lastProviderId: null,
         managingOfferer: {
           nonHumanizedId: 1,
           name: 'Le Petit Rintintin Management 6',
