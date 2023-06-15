@@ -44,33 +44,38 @@ if (SENTRY_SERVER_URL) {
   })
 }
 
-// load and initialise hotjar library
+// load and initialise hotjar library for all pc pro except adage-iframe
 // included in the bundle instead of <script> tag in index.html
 // to avoid the need of 'insafe-inline' in Content Security Policy
-;(function (h, o, t, j, a, r) {
-  h.hj =
-    h.hj ||
-    function () {
-      ;(h.hj.q = h.hj.q || []).push(arguments)
+if (!window.location.href.includes('adage-iframe')) {
+  ;(function (h, o, t, j, a, r) {
+    h.hj =
+      h.hj ||
+      function () {
+        ;(h.hj.q = h.hj.q || []).push(arguments)
+      }
+    h._hjSettings = {
+      hjid: 2925982,
+      hjsv: 6,
     }
-  h._hjSettings = {
-    hjid: 2925982,
-    hjsv: 6,
-  }
-  a = o.getElementsByTagName('head')[0]
-  r = o.createElement('script')
-  r.async = 1
-  // We do not change hotjar loading in production until it is tested
-  if (process.env.REACT_APP_ENVIRONMENT_NAME !== 'production') {
-    r.setAttribute('data-src', t + h._hjSettings.hjid + j + h._hjSettings.hjsv)
-    r.setAttribute('data-type', 'application/javascript')
-    r.setAttribute('data-name', 'hotjar')
-    r.type = 'opt-in'
-  } else {
-    r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv
-  }
-  a.appendChild(r)
-})(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=')
+    a = o.getElementsByTagName('head')[0]
+    r = o.createElement('script')
+    r.async = 1
+    // We do not change hotjar loading in production until it is tested
+    if (process.env.REACT_APP_ENVIRONMENT_NAME !== 'production') {
+      r.setAttribute(
+        'data-src',
+        t + h._hjSettings.hjid + j + h._hjSettings.hjsv
+      )
+      r.setAttribute('data-type', 'application/javascript')
+      r.setAttribute('data-name', 'hotjar')
+      r.type = 'opt-in'
+    } else {
+      r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv
+    }
+    a.appendChild(r)
+  })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=')
+}
 
 smoothscroll.polyfill()
 
