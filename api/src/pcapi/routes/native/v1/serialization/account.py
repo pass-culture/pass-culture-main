@@ -224,7 +224,7 @@ class UserProfileUpdateRequest(BaseModel):
 
 
 class UserProfileEmailUpdate(BaseModel):
-    email: pydantic.EmailStr
+    email: pydantic.EmailStr  # the new email address
     if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
         password: str
     else:
