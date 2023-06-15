@@ -17,9 +17,10 @@ import {
   NUMBER_OF_OFFERS_PER_PAGE,
   OFFER_STATUS_DRAFT,
 } from 'core/Offers'
-import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
+import { Offer, Offerer, TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserValidatedOfferersNamesAdapter'
+import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as AddOfferSvg } from 'icons/full-more-bis.svg'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
@@ -33,7 +34,7 @@ import Titles from 'ui-kit/Titles/Titles'
 
 import SearchFilters from './SearchFilters'
 
-export interface IOffersProps {
+export interface OffersProps {
   currentPageNumber: number
   currentUser: {
     roles: Array<UserRole>
@@ -53,8 +54,8 @@ export interface IOffersProps {
     }
   ) => void
   urlSearchFilters: TSearchFilters
-  venues: Option[]
-  categories: Option[]
+  venues: SelectOption[]
+  categories: SelectOption[]
 }
 
 const Offers = ({
@@ -71,7 +72,7 @@ const Offers = ({
   urlSearchFilters,
   venues,
   categories,
-}: IOffersProps): JSX.Element => {
+}: OffersProps): JSX.Element => {
   const [searchFilters, setSearchFilters] =
     useState<TSearchFilters>(initialSearchFilters)
   const [isRefreshingOffers, setIsRefreshingOffers] = useState(true)

@@ -2,6 +2,7 @@ import { endOfDay } from 'date-fns'
 import { utcToZonedTime } from 'date-fns-tz'
 import React, { FormEvent, MouseEventHandler } from 'react'
 
+import FormLayout from 'components/FormLayout/FormLayout'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_VENUES_OPTION,
@@ -11,16 +12,17 @@ import {
   DEFAULT_CREATION_MODE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offerer, Option, TSearchFilters } from 'core/Offers/types'
+import { Offerer, TSearchFilters } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
+import { SelectOption } from 'custom_types/form'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { BaseInput, FieldLayout } from 'ui-kit/form/shared'
 import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
-import Select from 'ui-kit/form_raw/Select'
-import TextInput from 'ui-kit/form_raw/TextInput/TextInput'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 
@@ -38,8 +40,8 @@ interface SearchFiltersProps {
   ) => void
   disableAllFilters: boolean
   resetFilters: MouseEventHandler<HTMLAnchorElement>
-  venues: Option[]
-  categories: Option[]
+  venues: SelectOption[]
+  categories: SelectOption[]
   audience: Audience
 }
 
@@ -62,7 +64,7 @@ const SearchFilters = ({
     }))
   }
 
-  const storeNameOrIsbnSearchValue = (event: FormEvent<HTMLSelectElement>) => {
+  const storeNameOrIsbnSearchValue = (event: FormEvent<HTMLInputElement>) => {
     updateSearchFilters({ nameOrIsbn: event.currentTarget.value })
   }
 
@@ -131,55 +133,66 @@ const SearchFilters = ({
           </button>
         </span>
       )}
+
       <form onSubmit={requestFilteredOffers}>
-        <TextInput
-          disabled={disableAllFilters}
-          label={searchByOfferNameLabel}
-          name="offre"
-          onChange={storeNameOrIsbnSearchValue}
-          placeholder={searchByOfferNamePlaceholder}
-          value={selectedFilters.nameOrIsbn}
-        />
-        <div className="form-row">
-          <Select
-            defaultOption={ALL_VENUES_OPTION}
-            handleSelection={storeSelectedVenue}
-            isDisabled={disableAllFilters}
-            label="Lieu"
-            name="lieu"
-            options={venues}
-            selectedValue={selectedFilters.venueId}
+        <FieldLayout label={searchByOfferNameLabel} name="offre">
+          <BaseInput
+            type="text"
+            disabled={disableAllFilters}
+            name="offre"
+            onChange={storeNameOrIsbnSearchValue}
+            placeholder={searchByOfferNamePlaceholder}
+            value={selectedFilters.nameOrIsbn}
           />
-          <Select
-            defaultOption={ALL_CATEGORIES_OPTION}
-            handleSelection={storeSelectedCategory}
-            isDisabled={disableAllFilters}
-            label="Catégories"
-            name="categorie"
-            options={categories}
-            selectedValue={selectedFilters.categoryId}
-          />
+        </FieldLayout>
+
+        <FormLayout.Row inline>
+          <FieldLayout label="Lieu" name="lieu">
+            <SelectInput
+              defaultOption={ALL_VENUES_OPTION}
+              onChange={storeSelectedVenue}
+              disabled={disableAllFilters}
+              name="lieu"
+              options={venues}
+              value={selectedFilters.venueId}
+            />
+          </FieldLayout>
+
+          <FieldLayout label="Catégories" name="categorie">
+            <SelectInput
+              defaultOption={ALL_CATEGORIES_OPTION}
+              onChange={storeSelectedCategory}
+              disabled={disableAllFilters}
+              name="categorie"
+              options={categories}
+              value={selectedFilters.categoryId}
+            />
+          </FieldLayout>
+
           {audience === Audience.INDIVIDUAL && (
-            <Select
-              defaultOption={DEFAULT_CREATION_MODE}
-              handleSelection={storeCreationMode}
-              isDisabled={disableAllFilters}
-              label="Mode de création"
-              name="creationMode"
-              options={CREATION_MODES_FILTERS}
-              selectedValue={selectedFilters.creationMode}
-            />
+            <FieldLayout label="Mode de création" name="creationMode">
+              <SelectInput
+                defaultOption={DEFAULT_CREATION_MODE}
+                onChange={storeCreationMode}
+                disabled={disableAllFilters}
+                name="creationMode"
+                options={CREATION_MODES_FILTERS}
+                value={selectedFilters.creationMode}
+              />
+            </FieldLayout>
           )}
+
           {audience === Audience.COLLECTIVE && (
-            <Select
-              defaultOption={DEFAULT_COLLECTIVE_OFFER_TYPE}
-              handleSelection={storeCollectiveOfferType}
-              isDisabled={disableAllFilters}
-              label="Type de l’offre"
-              name="collectiveOfferType"
-              options={COLLECTIVE_OFFER_TYPES_FILTERS}
-              selectedValue={selectedFilters.collectiveOfferType}
-            />
+            <FieldLayout label="Type de l’offre" name="collectiveOfferType">
+              <SelectInput
+                defaultOption={DEFAULT_COLLECTIVE_OFFER_TYPE}
+                onChange={storeCollectiveOfferType}
+                disabled={disableAllFilters}
+                name="collectiveOfferType"
+                options={COLLECTIVE_OFFER_TYPES_FILTERS}
+                value={selectedFilters.collectiveOfferType}
+              />
+            </FieldLayout>
           )}
 
           <PeriodSelector
@@ -198,7 +211,7 @@ const SearchFilters = ({
                 : undefined
             }
           />
-        </div>
+        </FormLayout.Row>
 
         <div className={styles['reset-filters']}>
           <ButtonLink

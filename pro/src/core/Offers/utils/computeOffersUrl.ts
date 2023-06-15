@@ -26,7 +26,7 @@ const computeOffersUrlForGivenAudience = (
   if (status && status !== ALL_STATUS) {
     searchFiltersParams.status = mapApiToBrowser[status]
   }
-  if (creationMode && creationMode !== DEFAULT_CREATION_MODE.id) {
+  if (creationMode && creationMode !== DEFAULT_CREATION_MODE.value) {
     searchFiltersParams.creationMode = mapApiToBrowser[creationMode]
   }
 

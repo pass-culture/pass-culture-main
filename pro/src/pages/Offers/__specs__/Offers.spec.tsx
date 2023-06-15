@@ -131,10 +131,8 @@ describe('route Offers', () => {
   describe('render', () => {
     describe('filters', () => {
       it('should display only selectable categories on filters', async () => {
-        // When
         await renderOffers(store)
 
-        // Then
         expect(
           screen.getByRole('option', { name: 'Cinéma' })
         ).toBeInTheDocument()
@@ -146,15 +144,14 @@ describe('route Offers', () => {
 
       describe('status filters', () => {
         it('should filter offers given status filter when clicking on "Appliquer"', async () => {
-          // Given
           await renderOffers(store)
+
           await userEvent.click(
             screen.getByAltText('Afficher ou masquer le filtre par statut')
           )
           await userEvent.click(screen.getByLabelText('Expirée'))
-          // When
           await userEvent.click(screen.getByText('Appliquer'))
-          // Then
+
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
@@ -443,7 +440,7 @@ describe('route Offers', () => {
             name: 'Cinéma',
           })
           const typeSelect = screen.getByDisplayValue(
-            ALL_CATEGORIES_OPTION.displayName
+            ALL_CATEGORIES_OPTION.label
           )
           await userEvent.selectOptions(typeSelect, firstTypeOption)
           // When
@@ -465,12 +462,12 @@ describe('route Offers', () => {
           // Given
           await renderOffers(store)
           const creationModeSelect = screen.getByDisplayValue(
-            DEFAULT_CREATION_MODE.displayName
+            DEFAULT_CREATION_MODE.label
           )
-          const importedCreationMode = CREATION_MODES_FILTERS[1].id
+          const importedCreationMode = CREATION_MODES_FILTERS[1].value
           await userEvent.selectOptions(
             creationModeSelect,
-            importedCreationMode
+            String(importedCreationMode)
           )
           // When
           await userEvent.click(screen.getByText('Lancer la recherche'))
@@ -635,9 +632,7 @@ describe('route Offers', () => {
       const firstTypeOption = screen.getByRole('option', {
         name: 'My test value',
       })
-      const typeSelect = screen.getByDisplayValue(
-        ALL_CATEGORIES_OPTION.displayName
-      )
+      const typeSelect = screen.getByDisplayValue(ALL_CATEGORIES_OPTION.label)
       // When
       await userEvent.selectOptions(typeSelect, firstTypeOption)
       await userEvent.click(screen.getByText('Lancer la recherche'))
@@ -783,7 +778,7 @@ describe('route Offers', () => {
       // When
       await userEvent.selectOptions(
         screen.getByDisplayValue('Manuel'),
-        DEFAULT_CREATION_MODE.id
+        String(DEFAULT_CREATION_MODE.value)
       )
       await userEvent.click(searchButton)
 
@@ -914,9 +909,7 @@ describe('route Offers', () => {
         name: proVenues[0].name,
       })
 
-      const venueSelect = screen.getByDisplayValue(
-        ALL_VENUES_OPTION.displayName
-      )
+      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
 
       await userEvent.selectOptions(venueSelect, firstVenueOption)
       await userEvent.click(screen.getByText('Lancer la recherche'))
@@ -965,9 +958,7 @@ describe('route Offers', () => {
         name: proVenues[0].name,
       })
 
-      const venueSelect = screen.getByDisplayValue(
-        ALL_VENUES_OPTION.displayName
-      )
+      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
 
       await userEvent.selectOptions(venueSelect, venueOptionToSelect)
       await userEvent.click(screen.getByText('Lancer la recherche'))
