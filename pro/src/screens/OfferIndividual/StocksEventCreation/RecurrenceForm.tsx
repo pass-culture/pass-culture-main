@@ -260,11 +260,7 @@ export const RecurrenceForm = ({
                       : 'Du'
                   }
                   className={styles['date-input']}
-                  minDateTime={
-                    values.recurrenceType === RecurrenceType.UNIQUE
-                      ? new Date()
-                      : undefined
-                  }
+                  minDateTime={new Date()}
                 />
 
                 {values.recurrenceType !== RecurrenceType.UNIQUE && (
@@ -284,6 +280,7 @@ export const RecurrenceForm = ({
                   name="startingDate"
                   label={'Premier évènement le'}
                   className={styles['date-input']}
+                  minDateTime={new Date()}
                 />
 
                 <Select
