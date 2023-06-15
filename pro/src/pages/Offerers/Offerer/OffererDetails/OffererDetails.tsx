@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererVenueResponseModel } from 'apiClient/v1'
-import { ReactComponent as CircleArrowIcon } from 'icons/full-circle-arrow-left.svg'
+import { ReactComponent as backFullIcon } from 'icons/full-back.svg'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -83,7 +83,7 @@ const OffererDetails = () => {
       <ButtonLink
         link={{ to: `/accueil?structure=${offerer.id}`, isExternal: false }}
         variant={ButtonVariant.TERNARY}
-        Icon={CircleArrowIcon}
+        Icon={backFullIcon}
         className={styles['offerer-page-go-back-link']}
       >
         Accueil

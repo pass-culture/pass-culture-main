@@ -6,7 +6,7 @@ import { api } from 'apiClient/api'
 import { CreateOffererQueryModel } from 'apiClient/v1'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as CircleArrowIcon } from 'icons/full-circle-arrow-left.svg'
+import { ReactComponent as backFullIcon } from 'icons/full-back.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { addressAndDesignationFromSirenDecorator } from 'ui-kit/form_rff/fields/SirenField'
@@ -58,7 +58,7 @@ const OffererCreation = (): JSX.Element => {
       <ButtonLink
         link={{ to: '/accueil', isExternal: false }}
         variant={ButtonVariant.TERNARY}
-        Icon={CircleArrowIcon}
+        Icon={backFullIcon}
         className={styles['offerer-page-go-back-link']}
       >
         Accueil

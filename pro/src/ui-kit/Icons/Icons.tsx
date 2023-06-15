@@ -32,19 +32,21 @@ const iconList = [
   { src: 'icons/full-mail.svg' }, // TODO 2 uses left inside ButtonLink, 1 use left inside SubmitButton
   { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
   { src: 'icons/full-duplicate.svg' }, // TODO still used in 1 Button
+  { src: 'icons/full-back.svg' },
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-more-bis.svg' }, // TODO still in 2 ButtonLink and 1 Button
   { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>
+  { src: 'icons/full-right.svg' },
   { src: 'icons/full-arrow-right.svg' },
-  { src: 'icons/full-circle-arrow-left.svg' },
 
   // Stroke icons
   { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
   { src: 'icons/stroke-error.svg' },
   { src: 'icons/stroke-thing.svg' },
   { src: 'icons/stroke-info-phone.svg' },
+  { src: 'icons/stroke-building.svg' },
   { src: 'icons/stroke-code.svg' },
   { src: 'icons/stroke-accessibility-ear.svg' },
 

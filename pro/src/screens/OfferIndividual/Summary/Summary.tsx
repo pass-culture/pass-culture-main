@@ -22,7 +22,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import useNotification from 'hooks/useNotification'
 import { PartyIcon } from 'icons'
-import PhoneInfo from 'icons/stroke-info-phone.svg'
+import phoneInfoFullIcon from 'icons/stroke-info-phone.svg'
 import { DisplayOfferInAppLink } from 'screens/OfferIndividual/Summary/DisplayOfferInAppLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -174,8 +174,8 @@ const Summary = () => {
         <SummaryLayout.Side>
           <div className={styles['offer-creation-preview-title']}>
             <SvgIcon
-              src={PhoneInfo}
-              alt={'téléphone'}
+              src={phoneInfoFullIcon}
+              alt=""
               className={styles['icon-info-phone']}
             />
             <span>Aperçu dans l'app</span>
