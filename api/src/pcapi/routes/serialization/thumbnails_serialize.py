@@ -2,7 +2,6 @@ import flask
 
 from pcapi.core.offers import validation
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.image_conversion import CropParams
 
@@ -42,8 +41,6 @@ class CreateThumbnailBodyModel(BaseModel):
 
 
 class CreateThumbnailResponseModel(BaseModel):
-    id: str
+    id: int
     url: str
     credit: str | None
-
-    _humanize_id = humanize_field("id")
