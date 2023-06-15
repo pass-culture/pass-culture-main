@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { PenIcon } from 'icons'
+import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
 import { ButtonLink, Title } from 'ui-kit'
 
 import style from './SummaryLayout.module.scss'
@@ -37,7 +37,7 @@ const Section = ({
               'aria-label': props['aria-label'],
             }}
             className={style['summary-layout-section-header-edit-link']}
-            Icon={PenIcon}
+            Icon={FullEdit}
             onClick={onLinkClick ? onLinkClick : undefined}
           >
             Modifier

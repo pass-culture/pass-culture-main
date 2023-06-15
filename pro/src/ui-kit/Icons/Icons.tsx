@@ -29,6 +29,7 @@ const iconList = [
   // Full icons
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
+  { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
@@ -226,7 +227,6 @@ const iconList = [
   { src: 'icons/other-offer.svg', viewbox: '0 0 30 30' },
   { src: 'icons/party.svg', viewbox: '0 0 48 48' },
   { src: 'icons/ico-passculture.svg', viewbox: '0 0 30 30' },
-  { src: 'icons/ico-pen.svg', viewbox: '0 0 24 24' },
   { src: 'icons/ico-plus-circle.svg', viewbox: '0 0 48 48' },
   { src: 'icons/ico-search.svg', viewbox: '0 0 48 48' },
   { src: 'icons/ico-ticket-plus-full.svg', viewbox: '0 0 20 20' },
