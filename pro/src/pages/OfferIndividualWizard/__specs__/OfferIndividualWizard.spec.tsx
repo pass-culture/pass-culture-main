@@ -20,7 +20,6 @@ import {
   getOfferVenueFactory,
   offererFactory,
 } from 'utils/apiFactories'
-import { dehumanizeId } from 'utils/dehumanize'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferIndividualWizard from '../OfferIndividualWizard'
@@ -257,7 +256,7 @@ describe('test OfferIndividualWisard', () => {
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
         { offerId }
-      ) + `?structure=${dehumanizeId(apiOffer.venue.managingOfferer.id)}`
+      ) + `?structure=${apiOffer.venue.managingOfferer.nonHumanizedId}`
     )
     expect(
       await screen.findByRole('heading', { name: 'Modifier l’offre' })
@@ -270,7 +269,7 @@ describe('test OfferIndividualWisard', () => {
     expect(api.getVenues).toHaveBeenCalledWith(
       null, // validated
       true, // activeOfferersOnly,
-      dehumanizeId(apiOffer.venue.managingOfferer.id) // offererId
+      apiOffer.venue.managingOfferer.nonHumanizedId // offererId
     )
     expect(api.getCategories).toHaveBeenCalledWith()
     expect(api.getOffer).toHaveBeenCalledWith(offerId)

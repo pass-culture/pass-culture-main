@@ -171,7 +171,6 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         postalCode: '75001',
         city: 'Paris',
         offerer: {
-          id: 'OFID',
           nonHumanizedId: 1,
           name: 'Offerer name',
         },
@@ -288,14 +287,14 @@ describe('screens:OfferIndividual::Informations::creation', () => {
           hasCreatedOffer: true,
         },
       ],
-      offererNames: [{ id: 'A', nonHumanizedId: 1, name: 'mon offerer A' }],
+      offererNames: [{ nonHumanizedId: 1, name: 'mon offerer A' }],
       categories,
       subCategories,
     }
 
     props = {
       venueId: offer.venue.id.toString(),
-      offererId: offer.venue.offerer.id,
+      offererId: offer.venue.offerer.nonHumanizedId.toString(),
     }
 
     jest

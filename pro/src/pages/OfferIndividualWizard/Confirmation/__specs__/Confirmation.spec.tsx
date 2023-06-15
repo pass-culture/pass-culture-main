@@ -79,6 +79,7 @@ describe('Confirmation', () => {
   let contextOverride: Partial<IOfferIndividualContext>
   let offer: IOfferIndividual
   const venueId = 45
+  const offererId = 51
   beforeEach(() => {
     store = {
       user: {
@@ -94,7 +95,7 @@ describe('Confirmation', () => {
       venueId: venueId,
       venue: {
         offerer: {
-          id: 'OFID',
+          nonHumanizedId: offererId,
           name: 'Offerer name',
         },
       },
@@ -123,7 +124,10 @@ describe('Confirmation', () => {
     ).toHaveAttribute('href', `http://localhost/offre/${offer.nonHumanizedId}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
-    ).toHaveAttribute('href', `/offre/creation?structure=OFID&lieu=${venueId}`)
+    ).toHaveAttribute(
+      'href',
+      `/offre/creation?structure=${offererId}&lieu=${venueId}`
+    )
     expect(
       screen.getByText('Voir la liste des offres', { selector: 'a' })
     ).toHaveAttribute('href', `/offres`)
@@ -139,7 +143,10 @@ describe('Confirmation', () => {
     ).toHaveAttribute('href', `http://localhost/offre/${offer.nonHumanizedId}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
-    ).toHaveAttribute('href', `/offre/creation?structure=OFID&lieu=${venueId}`)
+    ).toHaveAttribute(
+      'href',
+      `/offre/creation?structure=${offererId}&lieu=${venueId}`
+    )
   })
 
   describe('trackers', () => {

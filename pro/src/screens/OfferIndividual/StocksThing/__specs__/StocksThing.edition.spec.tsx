@@ -170,7 +170,6 @@ describe('screens:StocksThing', () => {
         lastProviderId: null,
         managingOfferer: {
           nonHumanizedId: 1,
-          id: 'CU',
           name: 'Le Petit Rintintin Management 6',
         },
         name: 'Cinéma synchro avec booking provider',

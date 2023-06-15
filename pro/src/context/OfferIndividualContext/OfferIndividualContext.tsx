@@ -83,7 +83,6 @@ export function OfferIndividualContextProvider({
     setOfferOfferer(
       offer
         ? {
-            id: offer.venue.offerer.id,
             nonHumanizedId: offer.venue.offerer.nonHumanizedId,
             name: offer.venue.offerer.name,
           }

@@ -38,7 +38,6 @@ export const userOffererFactory = (
 ): GetEducationalOffererResponseModel => {
   const currentOffererId = offererId++
   return {
-    id: 'OFFERER_ID',
     nonHumanizedId: currentOffererId,
     name: 'offerer name',
     managedVenues: [managedVenueFactory({})],

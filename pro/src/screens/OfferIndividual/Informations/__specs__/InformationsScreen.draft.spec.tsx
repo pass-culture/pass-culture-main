@@ -215,7 +215,6 @@ describe('screens:OfferIndividual::Informations:draft', () => {
         postalCode: '75001',
         city: 'Paris',
         offerer: {
-          id: 'OFID',
           nonHumanizedId: 1,
           name: 'Offerer name',
         },
@@ -261,7 +260,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
           hasCreatedOffer: true,
         },
       ],
-      offererNames: [{ id: 'OFID', nonHumanizedId: 1, name: 'Offerer name' }],
+      offererNames: [{ nonHumanizedId: 1, name: 'Offerer name' }],
       categories,
       subCategories,
     }

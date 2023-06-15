@@ -80,7 +80,6 @@ const getWizardData: TGetOfferIndividualAdapter = async ({
   if (isAdmin && offerer) {
     successPayload.offererNames = [
       {
-        id: offerer.id,
         nonHumanizedId: 1,
         name: offerer.name,
       },

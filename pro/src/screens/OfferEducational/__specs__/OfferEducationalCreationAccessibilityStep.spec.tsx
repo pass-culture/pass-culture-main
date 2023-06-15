@@ -37,7 +37,6 @@ describe('screens | OfferEducational : event address step', () => {
     props.userOfferers = [
       ...props.userOfferers,
       userOffererFactory({
-        id: offererId.toString(),
         nonHumanizedId: offererId,
         managedVenues: [
           managedVenueFactory({}),
@@ -74,7 +73,6 @@ describe('screens | OfferEducational : event address step', () => {
     props.userOfferers = [
       ...props.userOfferers,
       userOffererFactory({
-        id: offererId.toString(),
         nonHumanizedId: offererId,
         managedVenues: [
           managedVenueFactory({

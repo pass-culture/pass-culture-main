@@ -4,7 +4,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import AUTHENTICATION_QUERIES
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.human_ids import humanize
 
 
 class Returns200ForProUserTest:
@@ -51,9 +50,7 @@ class Returns200ForProUserTest:
 
         # then
         assert response.status_code == 200
-        assert response.json == {
-            "offerersNames": [{"id": humanize(offerer.id), "name": offerer.name, "nonHumanizedId": offerer.id}]
-        }
+        assert response.json == {"offerersNames": [{"name": offerer.name, "nonHumanizedId": offerer.id}]}
 
     @pytest.mark.usefixtures("db_session")
     def test_get_offerers_names_for_id(self, client):
@@ -69,7 +66,7 @@ class Returns200ForProUserTest:
         assert response.status_code == 200
         assert "offerersNames" in response.json
         assert len(response.json["offerersNames"]) == 1
-        assert response.json["offerersNames"][0]["id"] == humanize(offerers["owned_offerer_validated"].id)
+        assert response.json["offerersNames"][0]["nonHumanizedId"] == offerers["owned_offerer_validated"].id
         assert response.json["offerersNames"][0]["name"] == offerers["owned_offerer_validated"].name
 
     @pytest.mark.usefixtures("db_session")
@@ -87,11 +84,11 @@ class Returns200ForProUserTest:
         assert "offerersNames" in response.json
         assert len(response.json["offerersNames"]) == 4
 
-        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
-        assert humanize(offerers["owned_offerer_validated"].id) in offerer_ids
-        assert humanize(offerers["owned_offerer_not_validated"].id) in offerer_ids
-        assert humanize(offerers["owned_offerer_validated_for_user"].id) in offerer_ids
-        assert humanize(offerers["owned_offerer_not_validated_for_user"].id) in offerer_ids
+        offerer_ids = [offererName["nonHumanizedId"] for offererName in response.json["offerersNames"]]
+        assert offerers["owned_offerer_validated"].id in offerer_ids
+        assert offerers["owned_offerer_not_validated"].id in offerer_ids
+        assert offerers["owned_offerer_validated_for_user"].id in offerer_ids
+        assert offerers["owned_offerer_not_validated_for_user"].id in offerer_ids
 
     @pytest.mark.usefixtures("db_session")
     def test_get_all_validated_offerers_names(self, client):
@@ -108,10 +105,10 @@ class Returns200ForProUserTest:
         assert "offerersNames" in response.json
         assert len(response.json["offerersNames"]) == 3
 
-        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
-        assert humanize(offerers["owned_offerer_validated"].id) in offerer_ids
-        assert humanize(offerers["owned_offerer_validated_for_user"].id) in offerer_ids
-        assert humanize(offerers["owned_offerer_not_validated_for_user"].id) in offerer_ids
+        offerer_ids = [offererName["nonHumanizedId"] for offererName in response.json["offerersNames"]]
+        assert offerers["owned_offerer_validated"].id in offerer_ids
+        assert offerers["owned_offerer_validated_for_user"].id in offerer_ids
+        assert offerers["owned_offerer_not_validated_for_user"].id in offerer_ids
 
     @pytest.mark.usefixtures("db_session")
     def test_get_all_validated_for_user_offerers_names(self, client):
@@ -128,10 +125,10 @@ class Returns200ForProUserTest:
         assert "offerersNames" in response.json
         assert len(response.json["offerersNames"]) == 3
 
-        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
-        assert humanize(offerers["owned_offerer_validated"].id) in offerer_ids
-        assert humanize(offerers["owned_offerer_not_validated"].id) in offerer_ids
-        assert humanize(offerers["owned_offerer_validated_for_user"].id) in offerer_ids
+        offerer_ids = [offererName["nonHumanizedId"] for offererName in response.json["offerersNames"]]
+        assert offerers["owned_offerer_validated"].id in offerer_ids
+        assert offerers["owned_offerer_not_validated"].id in offerer_ids
+        assert offerers["owned_offerer_validated_for_user"].id in offerer_ids
 
 
 class Returns200ForAdminTest:
@@ -169,11 +166,11 @@ class Returns200ForAdminTest:
         assert "offerersNames" in response.json
         assert len(response.json["offerersNames"]) == 4
 
-        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
-        assert humanize(offerers["offerer"].id) in offerer_ids
-        assert humanize(offerers["offerer_not_validated"].id) in offerer_ids
-        assert humanize(offerers["other_offerer"].id) in offerer_ids
-        assert humanize(offerers["other_offerer_not_validated"].id) in offerer_ids
+        offerer_ids = [offererName["nonHumanizedId"] for offererName in response.json["offerersNames"]]
+        assert offerers["offerer"].id in offerer_ids
+        assert offerers["offerer_not_validated"].id in offerer_ids
+        assert offerers["other_offerer"].id in offerer_ids
+        assert offerers["other_offerer_not_validated"].id in offerer_ids
 
     @pytest.mark.usefixtures("db_session")
     def test_get_all_validated_offerers(self, client):
@@ -190,9 +187,9 @@ class Returns200ForAdminTest:
         assert "offerersNames" in response.json
         assert len(response.json["offerersNames"]) == 2
 
-        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
-        assert humanize(offerers["offerer"].id) in offerer_ids
-        assert humanize(offerers["other_offerer"].id) in offerer_ids
+        offerer_ids = [offererName["nonHumanizedId"] for offererName in response.json["offerersNames"]]
+        assert offerers["offerer"].id in offerer_ids
+        assert offerers["other_offerer"].id in offerer_ids
 
     @pytest.mark.usefixtures("db_session")
     def test_get_all_not_validated_offerers(self, client):
@@ -209,9 +206,9 @@ class Returns200ForAdminTest:
         assert "offerersNames" in response.json
         assert len(response.json["offerersNames"]) == 2
 
-        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
-        assert humanize(offerers["offerer_not_validated"].id) in offerer_ids
-        assert humanize(offerers["other_offerer_not_validated"].id) in offerer_ids
+        offerer_ids = [offererName["nonHumanizedId"] for offererName in response.json["offerersNames"]]
+        assert offerers["offerer_not_validated"].id in offerer_ids
+        assert offerers["other_offerer_not_validated"].id in offerer_ids
 
     @pytest.mark.usefixtures("db_session")
     def test_queries(self, client):

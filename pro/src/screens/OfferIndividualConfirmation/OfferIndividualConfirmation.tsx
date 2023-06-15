@@ -27,7 +27,7 @@ const OfferIndividualConfirmation = ({
   offer,
 }: IOfferIndividualConfirmationProps): JSX.Element => {
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
-  const queryString = `?structure=${offer.venue.offerer.id}&lieu=${offer.venueId}`
+  const queryString = `?structure=${offer.venue.offerer.nonHumanizedId}&lieu=${offer.venueId}`
   const { logEvent } = useAnalytics()
   const title = isPendingOffer
     ? 'Offre en cours de validation'

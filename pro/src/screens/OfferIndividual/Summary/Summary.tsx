@@ -218,7 +218,7 @@ const Summary = () => {
           title="Félicitations, vous avez créé votre offre !"
           redirectText="Renseigner des coordonnées bancaires"
           redirectLink={{
-            to: `/structures/${offerOfferer?.id}/lieux/${venueId}?modification#remboursement`,
+            to: `/structures/${offerOfferer?.nonHumanizedId}/lieux/${venueId}?modification#remboursement`,
             isExternal: false,
           }}
           onRedirect={() =>

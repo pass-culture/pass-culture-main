@@ -10,7 +10,6 @@ describe('useOffererNames', () => {
   it('should return loading payload then success payload', async () => {
     const offererNames: GetOffererNameResponseModel[] = [
       {
-        id: 'AA',
         name: 'Structure AA',
         nonHumanizedId: 123,
       },

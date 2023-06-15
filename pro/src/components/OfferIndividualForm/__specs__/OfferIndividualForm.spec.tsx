@@ -134,7 +134,6 @@ describe('OfferIndividualForm', () => {
     ]
     offererNames = [
       {
-        id: 'AE',
         nonHumanizedId: offererId,
         name: 'Offerer virtual and physical',
       },
@@ -208,7 +207,7 @@ describe('OfferIndividualForm', () => {
       venueId: 5,
       venue: {
         offerer: {
-          id: 'AE',
+          nonHumanizedId: 12,
           name: 'Offerer name',
         },
       },

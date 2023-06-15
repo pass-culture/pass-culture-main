@@ -105,7 +105,6 @@ describe('screens | OfferEducational : event address step', () => {
         ...defaultCreationProps,
         userOfferers: userOfferersFactory([
           {
-            id: '1',
             nonHumanizedId: 1,
             managedVenues: [
               managedVenueFactory({
@@ -180,7 +179,6 @@ describe('screens | OfferEducational : event address step', () => {
           userOfferers={[
             ...props.userOfferers,
             userOffererFactory({
-              id: offererId,
               nonHumanizedId: Number(offererId),
               managedVenues: [
                 managedVenueFactory({}),

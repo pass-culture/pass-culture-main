@@ -218,7 +218,6 @@ describe('serializer', () => {
       },
     } as unknown as GetIndividualOfferResponseModel
     const offerer: IOfferIndividualOfferer = {
-      id: 'Offerer ID',
       nonHumanizedId: 1,
       name: 'Offerer name',
     }
@@ -261,7 +260,6 @@ describe('serializer', () => {
       departmentCode: '75',
       city: 'venue city',
       offerer: {
-        id: 'Offerer ID',
         nonHumanizedId: 1,
         name: 'Offerer name',
       },
@@ -400,7 +398,6 @@ describe('serializer', () => {
         isVirtual: false,
         name: 'Le nom du lieu 1',
         offerer: {
-          id: 'OFFERER1',
           name: 'La nom de la structure 1',
           nonHumanizedId: 3,
         },
