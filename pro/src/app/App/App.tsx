@@ -25,9 +25,12 @@ const App = ({ children }: AppProps): JSX.Element | null => {
   const [isCookieConsentChecked, setIsCookieConsentChecked] = useState(false)
 
   // Initialize cookie consent modal
-  if (isCookieBannerEnabled && !isCookieConsentChecked) {
+  if (!isCookieConsentChecked) {
     setTimeout(() => {
-      if (location.pathname.indexOf('/adage-iframe') === -1) {
+      if (
+        isCookieBannerEnabled &&
+        location.pathname.indexOf('/adage-iframe') === -1
+      ) {
         const orejime = initCookieConsent()
         // Set the consent on consent change
         orejime.internals.manager.watch({
