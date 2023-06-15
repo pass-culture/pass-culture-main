@@ -23,21 +23,24 @@ const App = ({ children }: AppProps): JSX.Element | null => {
   const [isCookieConsentChecked, setIsCookieConsentChecked] = useState(false)
 
   // Initialize cookie consent modal
-  if (
-    process.env.REACT_APP_ENVIRONMENT_NAME !== 'production' &&
-    location.pathname.indexOf('/adage-iframe') === -1 &&
-    !isCookieConsentChecked
-  ) {
+  if (!isCookieConsentChecked) {
     setTimeout(() => {
-      const orejime = initCookieConsent()
-      // Set the consent on consent change
-      orejime.internals.manager.watch({
-        update: ({ consents }: { consents: { firebase: boolean } }) => {
-          setConsentedToFirebase(consents.firebase)
-        },
-      })
-      // Set the consent if the user has already seen the modal
-      setConsentedToFirebase(orejime.internals.manager.consents['firebase'])
+      if (
+        process.env.REACT_APP_ENVIRONMENT_NAME !== 'production' &&
+        location.pathname.indexOf('/adage-iframe') === -1
+      ) {
+        const orejime = initCookieConsent()
+        // Set the consent on consent change
+        orejime.internals.manager.watch({
+          update: ({ consents }: { consents: { firebase: boolean } }) => {
+            setConsentedToFirebase(consents.firebase)
+          },
+        })
+        // Set the consent if the user has already seen the modal
+        setConsentedToFirebase(orejime.internals.manager.consents['firebase'])
+      } else {
+        setConsentedToFirebase(true)
+      }
     })
     setIsCookieConsentChecked(true)
   }
