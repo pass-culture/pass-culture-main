@@ -284,7 +284,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
-def delete_thumbnail(offer_id: str) -> None:
+def delete_thumbnail(offer_id: int) -> None:
     offer = models.Offer.query.get_or_404(offer_id)
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)

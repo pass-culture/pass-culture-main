@@ -70,7 +70,7 @@ class CreateThumbnailFromFileTest:
         assert mediation.thumbCount == 1
         assert response.json == {
             "credit": "John Do",
-            "id": humanize(mediation.id),
+            "id": mediation.id,
             "url": f"http://localhost/storage/thumbs/mediations/{humanize(mediation.id)}",
         }
 
