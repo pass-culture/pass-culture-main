@@ -4,12 +4,10 @@ import React from 'react'
 
 import { EMPTY_FILTER_VALUE } from 'core/Bookings'
 
-import FilterByEventDate, {
-  IFilterByEventDateProps,
-} from '../FilterByEventDate'
+import FilterByEventDate, { FilterByEventDateProps } from '../FilterByEventDate'
 
 describe('components | FilterByEventDate', () => {
-  let props: IFilterByEventDateProps
+  let props: FilterByEventDateProps
   beforeEach(() => {
     props = {
       updateFilters: jest.fn(),

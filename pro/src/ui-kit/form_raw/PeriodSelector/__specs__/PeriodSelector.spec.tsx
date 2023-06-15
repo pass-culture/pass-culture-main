@@ -4,7 +4,7 @@ import React from 'react'
 
 import PeriodSelector from '../PeriodSelector'
 
-describe('components | PeriodSelector', () => {
+describe('PeriodSelector', () => {
   const mockChangePeriodBeginningDateValue = jest.fn()
   const mockChangePeriodEndingDateValue = jest.fn()
   const renderPeriodSelector = () => {
@@ -13,17 +13,18 @@ describe('components | PeriodSelector', () => {
         changePeriodBeginningDateValue={mockChangePeriodBeginningDateValue}
         changePeriodEndingDateValue={mockChangePeriodEndingDateValue}
         label="label"
-        todayDate={new Date('2021/10/14')}
       />
     )
   }
+
   it('should call on changePeriodBeginningDateValue and changePeriodEndingDateValue', async () => {
     renderPeriodSelector()
-    const startingDateInput = screen.getByTestId('period-filter-begin-picker')
+
+    const startingDateInput = screen.getByLabelText('Début de la période')
     await userEvent.click(startingDateInput)
     await userEvent.click(screen.getByText('10'))
 
-    const endCalendar = screen.getByTestId('period-filter-end-picker')
+    const endCalendar = screen.getByLabelText('Fin de la période')
     await userEvent.click(endCalendar)
     await userEvent.click(screen.getByText('10'))
 

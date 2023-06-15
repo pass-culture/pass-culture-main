@@ -452,8 +452,10 @@ describe('components | BookingsRecap | Pro user', () => {
     const { submitFilters } = await renderBookingsRecap(store)
 
     // When
-    await userEvent.click(screen.getByLabelText('Date de l’évènement'))
-    await userEvent.click(screen.getByText('8'))
+    await userEvent.type(
+      screen.getByLabelText('Date de l’évènement'),
+      '08/06/2020'
+    )
     await submitFilters()
 
     // Then
@@ -543,10 +545,8 @@ describe('components | BookingsRecap | Pro user', () => {
       })
     const { submitFilters } = await renderBookingsRecap(store)
 
-    const beginningPeriodInput = screen.getByTestId(
-      'period-filter-begin-picker'
-    )
-    const endingPeriodInput = screen.getByTestId('period-filter-end-picker')
+    const beginningPeriodInput = screen.getByLabelText('Début de la période')
+    const endingPeriodInput = screen.getByLabelText('Fin de la période')
 
     // When
     await userEvent.click(beginningPeriodInput)
@@ -592,10 +592,8 @@ describe('components | BookingsRecap | Pro user', () => {
       })
     const { submitFilters } = await renderBookingsRecap(store)
 
-    const beginningPeriodInput = screen.getByTestId(
-      'period-filter-begin-picker'
-    )
-    const endingPeriodInput = screen.getByTestId('period-filter-end-picker')
+    const beginningPeriodInput = screen.getByLabelText('Début de la période')
+    const endingPeriodInput = screen.getByLabelText('Fin de la période')
 
     await userEvent.click(endingPeriodInput)
     await userEvent.click(screen.getByText('12'))
@@ -629,10 +627,9 @@ describe('components | BookingsRecap | Pro user', () => {
         bookingsRecap: [bookingRecap],
       })
     const { submitFilters } = await renderBookingsRecap(store)
-    const beginningPeriodInput = screen.getByTestId(
-      'period-filter-begin-picker'
-    )
-    const endingPeriodInput = screen.getByTestId('period-filter-end-picker')
+    const beginningPeriodInput = screen.getByLabelText('Début de la période')
+    const endingPeriodInput = screen.getByLabelText('Fin de la période')
+
     await userEvent.click(beginningPeriodInput)
     await userEvent.click(screen.getByText('10'))
 

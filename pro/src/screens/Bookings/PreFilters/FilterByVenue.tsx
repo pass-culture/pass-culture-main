@@ -1,9 +1,12 @@
 import React from 'react'
 
 import { ALL_VENUES_OPTION, TPreFilters } from 'core/Bookings'
-import Select from 'ui-kit/form_raw/Select'
+import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { FieldLayout } from 'ui-kit/form/shared'
 
-interface IFilterByVenueProps {
+import styles from './PreFilters.module.scss'
+
+interface FilterByVenueProps {
   isDisabled?: boolean
   selectedVenueId: string
   updateFilters: (filter: Partial<TPreFilters>) => void
@@ -15,27 +18,23 @@ const FilterByVenue = ({
   updateFilters,
   selectedVenueId,
   venuesFormattedAndOrdered,
-}: IFilterByVenueProps): JSX.Element => {
-  function handleVenueSelection(event: React.ChangeEvent<HTMLSelectElement>) {
-    const venueId = event.target.value
-    updateFilters({ offerVenueId: venueId })
-  }
-
+}: FilterByVenueProps): JSX.Element => {
   const venueOptions = venuesFormattedAndOrdered.map(venue => ({
-    id: venue.id,
-    displayName: venue.displayName,
+    value: venue.id,
+    label: venue.displayName,
   }))
 
   return (
-    <Select
-      defaultOption={ALL_VENUES_OPTION}
-      handleSelection={handleVenueSelection}
-      isDisabled={isDisabled}
-      label="Lieu"
-      name="lieu"
-      options={venueOptions}
-      selectedValue={selectedVenueId}
-    />
+    <FieldLayout label="Lieu" name="lieu" className={styles['venue-filter']}>
+      <SelectInput
+        defaultOption={ALL_VENUES_OPTION}
+        onChange={event => updateFilters({ offerVenueId: event.target.value })}
+        disabled={isDisabled}
+        name="lieu"
+        options={venueOptions}
+        value={selectedVenueId}
+      />
+    </FieldLayout>
   )
 }
 

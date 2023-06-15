@@ -8,7 +8,7 @@ import { getToday } from 'utils/date'
 import styles from './FilterByBookingStatusPeriod.module.scss'
 import FilterByStatus from './FilterByStatus'
 
-interface IFilterByBookingStatusPeriodProps {
+interface FilterByBookingStatusPeriodProps {
   isDisabled: boolean
   selectedBookingBeginningDate?: Date
   selectedBookingEndingDate?: Date
@@ -22,8 +22,8 @@ const FilterByBookingStatusPeriod = ({
   selectedBookingEndingDate,
   selectedBookingFilter,
   updateFilters,
-}: IFilterByBookingStatusPeriodProps): JSX.Element => {
-  function handleBookingBeginningDateChange(bookingBeginningDate: Date) {
+}: FilterByBookingStatusPeriodProps): JSX.Element => {
+  const handleBookingBeginningDateChange = (bookingBeginningDate: Date) => {
     updateFilters({
       bookingBeginningDate: bookingBeginningDate
         ? bookingBeginningDate
@@ -33,7 +33,7 @@ const FilterByBookingStatusPeriod = ({
     })
   }
 
-  function handleBookingEndingDateChange(bookingEndingDate: Date) {
+  const handleBookingEndingDateChange = (bookingEndingDate: Date) => {
     updateFilters({
       bookingEndingDate: bookingEndingDate
         ? bookingEndingDate
@@ -44,12 +44,13 @@ const FilterByBookingStatusPeriod = ({
   }
 
   return (
-    <div className={styles['satus-period-filter']}>
+    <div className={styles['status-period-filter']}>
       <FilterByStatus
         isDisabled={isDisabled}
         selectedStatusId={selectedBookingFilter}
         updateFilters={updateFilters}
       />
+
       <PeriodSelector
         changePeriodBeginningDateValue={handleBookingBeginningDateChange}
         changePeriodEndingDateValue={handleBookingEndingDateChange}
@@ -57,7 +58,6 @@ const FilterByBookingStatusPeriod = ({
         maxDateEnding={getToday()}
         periodBeginningDate={selectedBookingBeginningDate || undefined}
         periodEndingDate={selectedBookingEndingDate}
-        todayDate={getToday()}
       />
     </div>
   )

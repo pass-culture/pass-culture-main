@@ -475,17 +475,15 @@ describe('route CollectiveOffers', () => {
         })
 
         it('should load offers with selected period beginning date', async () => {
-          // Given
           await renderOffers(store)
-          await userEvent.click(
-            (
-              await screen.findAllByPlaceholderText('JJ/MM/AAAA')
-            )[0]
+
+          await userEvent.type(
+            screen.getByLabelText('Début de la période'),
+            '25/12/2020'
           )
-          await userEvent.click(screen.getByText('25'))
-          // When
+
           await userEvent.click(screen.getByText('Lancer la recherche'))
-          // Then
+
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
@@ -500,17 +498,14 @@ describe('route CollectiveOffers', () => {
         })
 
         it('should load offers with selected period ending date', async () => {
-          // Given
           await renderOffers(store)
-          await userEvent.click(
-            (
-              await screen.findAllByPlaceholderText('JJ/MM/AAAA')
-            )[1]
+          await userEvent.type(
+            screen.getByLabelText('Fin de la période'),
+            '27/12/2020'
           )
-          await userEvent.click(screen.getByText('27'))
-          // When
+
           await userEvent.click(screen.getByText('Lancer la recherche'))
-          // Then
+
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
