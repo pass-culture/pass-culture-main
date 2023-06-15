@@ -62,7 +62,6 @@ export const individualOfferFactory = (
     externalTicketOfficeUrl: '',
     isbn: 'isbn',
     isDuo: true,
-    isEducational: true,
     isEvent: true,
     isDigital: false,
     accessibility: {

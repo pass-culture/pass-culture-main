@@ -25,7 +25,6 @@ describe('routes::Summary::serializers', () => {
       isbn: '',
       isActive: true,
       isDuo: false,
-      isEducational: false,
       isEvent: true,
       isDigital: true,
       accessibility: {

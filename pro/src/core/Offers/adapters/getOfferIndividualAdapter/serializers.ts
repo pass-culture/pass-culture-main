@@ -107,13 +107,12 @@ export const serializeLastProvider = (
 export const serializeOfferApiImage = (
   apiOffer: GetIndividualOfferResponseModel
 ): IOfferIndividualImage | undefined => {
-  if (apiOffer.mediations?.length > 0) {
-    const mediation = apiOffer.mediations[0]
-    if (mediation.thumbUrl) {
+  if (apiOffer.activeMediation) {
+    if (apiOffer.activeMediation.thumbUrl) {
       return {
-        originalUrl: mediation.thumbUrl,
-        url: mediation.thumbUrl,
-        credit: mediation?.credit || '',
+        originalUrl: apiOffer.activeMediation.thumbUrl,
+        url: apiOffer.activeMediation.thumbUrl,
+        credit: apiOffer.activeMediation?.credit || '',
       }
     }
   } else if (apiOffer.thumbUrl) {
@@ -146,7 +145,6 @@ export const serializeOfferApi = (
     isDuo: apiOffer.isDuo,
     isEvent: apiOffer.isEvent,
     isDigital: apiOffer.isDigital,
-    isEducational: apiOffer.isEducational,
     isNational: apiOffer.isNational,
     name: apiOffer.name,
     offererId: apiOffer.venue.managingOfferer.nonHumanizedId,
