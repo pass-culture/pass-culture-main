@@ -381,7 +381,7 @@ describe('screen | VenueForm', () => {
         jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: '56' })
         renderForm(
           {
-            id: 'EY',
+            nonHumanizedId: 12,
             isAdmin: true,
           } as SharedCurrentUserResponseModel,
           formValues,
@@ -400,7 +400,7 @@ describe('screen | VenueForm', () => {
       it('User should be redirected with the creation popin displayed', async () => {
         renderForm(
           {
-            id: 'EY',
+            nonHumanizedId: 12,
             isAdmin: false,
           } as SharedCurrentUserResponseModel,
           formValues,
@@ -422,7 +422,7 @@ describe('screen | VenueForm', () => {
     it('User should be redirected to the edit page after creating a venue', async () => {
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: true,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -445,7 +445,7 @@ describe('screen | VenueForm', () => {
     it('should display an error when the venue could not be created', async () => {
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: true,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -477,7 +477,7 @@ describe('screen | VenueForm', () => {
     it('should display an error when the venue could not be updated', async () => {
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: true,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -509,7 +509,7 @@ describe('screen | VenueForm', () => {
     it('Submit creation form that fails with unknown error', async () => {
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: true,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -535,7 +535,7 @@ describe('screen | VenueForm', () => {
       formValues.isVenueVirtual = true
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: true,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -560,7 +560,7 @@ describe('screen | VenueForm', () => {
 
     renderForm(
       {
-        id: 'EY',
+        nonHumanizedId: 12,
         isAdmin: true,
       } as SharedCurrentUserResponseModel,
       formValues,
@@ -583,7 +583,7 @@ describe('screen | VenueForm', () => {
     formValues.isVenueVirtual = true
     renderForm(
       {
-        id: 'EY',
+        nonHumanizedId: 12,
         isAdmin: true,
       } as SharedCurrentUserResponseModel,
       formValues,
@@ -608,7 +608,7 @@ describe('screen | VenueForm', () => {
 
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -656,7 +656,7 @@ describe('screen | VenueForm', () => {
       venue.isVirtual = false
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -688,7 +688,7 @@ describe('screen | VenueForm', () => {
       formValues.publicName = ''
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -757,7 +757,7 @@ describe('screen | VenueForm', () => {
     it('should display withdrawal and submit on confirm dialog button when offer has bookingQuantity and withdrawalDetails is updated and isWithdrawalAppliedOnAllOffers is true', async () => {
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -827,7 +827,7 @@ describe('screen | VenueForm', () => {
     it('should display withdrawal dialog and submit on cancel click and should not send mail', async () => {
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -901,7 +901,7 @@ describe('screen | VenueForm', () => {
 
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -949,7 +949,7 @@ describe('screen | VenueForm', () => {
     it('should close withdrawal dialog and not submit if user close dialog', async () => {
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -1016,7 +1016,7 @@ describe('screen | VenueForm', () => {
     it('should not display withdrawal dialog if withdrawalDetails value after update is the same', async () => {
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -1062,7 +1062,7 @@ describe('screen | VenueForm', () => {
     it('should display eac section if offerer is eligble to eac and ff active', async () => {
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -1092,7 +1092,7 @@ describe('screen | VenueForm', () => {
         .mockRejectedValueOnce('error')
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -1120,7 +1120,7 @@ describe('screen | VenueForm', () => {
         .mockRejectedValueOnce('error')
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -1147,7 +1147,7 @@ describe('screen | VenueForm', () => {
     it('should display eac section during venue creation if venue has siret and is eligible to eac', async () => {
       renderForm(
         {
-          id: 'EY',
+          nonHumanizedId: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,

@@ -50,7 +50,6 @@ def should_return_serialized_offers_with_relevant_informations():
     expected_serialized_offer = [
         {
             "hasBookingLimitDatetimesPassed": False,
-            "id": humanize(offer_id),
             "nonHumanizedId": offer_id,
             "isActive": True,
             "isEditable": True,
@@ -62,9 +61,7 @@ def should_return_serialized_offers_with_relevant_informations():
             "status": "ACTIVE",
             "stocks": [
                 {
-                    "id": humanize(stock_id),
                     "hasBookingLimitDatetimePassed": False,
-                    "offerId": humanize(offer_id),
                     "nonHumanizedId": stock_id,
                     "remainingQuantity": 10,
                     "beginningDatetime": None,
@@ -74,16 +71,13 @@ def should_return_serialized_offers_with_relevant_informations():
             "subcategoryId": "SUPPORT_PHYSIQUE_FILM",
             "thumbUrl": "/thumb/url",
             "venue": {
-                "id": humanize(venue_id),
                 "nonHumanizedId": venue_id,
                 "isVirtual": False,
                 "departementCode": departement_code,
-                "managingOffererId": humanize(offerer_id),
                 "name": "La petite librairie",
                 "offererName": "Gérant de petites librairies",
                 "publicName": "Petite librairie",
             },
-            "venueId": humanize(venue_id),
             "isShowcase": False,
         }
     ]

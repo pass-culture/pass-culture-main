@@ -49,14 +49,14 @@ const App = ({ children }: AppProps): JSX.Element | null => {
 
   const isMaintenanceActivated = useSelector(maintenanceSelector)
   useConfigureFirebase({
-    currentUserId: currentUser?.nonHumanizedId,
+    currentUserId: currentUser?.nonHumanizedId.toString(),
     isCookieEnabled: consentedToFirebase,
   })
   usePageTitle()
   useLogNavigation()
 
   if (currentUser !== null) {
-    setSentryUser({ id: currentUser.id })
+    setSentryUser({ id: currentUser.nonHumanizedId.toString() })
   }
 
   if (isMaintenanceActivated) {

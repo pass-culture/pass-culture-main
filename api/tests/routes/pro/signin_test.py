@@ -7,7 +7,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.human_ids import humanize
 
 
 class Returns200Test:
@@ -49,8 +48,7 @@ class Returns200Test:
             "hasPhysicalVenues": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
-            "id": humanize(user.id),
-            "nonHumanizedId": str(user.id),
+            "nonHumanizedId": user.id,
             "isAdmin": False,
             "isEmailValidated": True,
             "lastConnectionDate": format_into_utc_date(user.lastConnectionDate),

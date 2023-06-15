@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -17,9 +16,9 @@ const renderVanueFormActionBar = ({
     user: {
       initialized: true,
       currentUser: {
-        id: 'EY',
+        nonHumanizedId: 12,
         isAdmin: true,
-      } as SharedCurrentUserResponseModel,
+      },
     },
     features: {
       list: [
