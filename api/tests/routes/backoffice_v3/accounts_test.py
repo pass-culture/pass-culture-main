@@ -4,6 +4,7 @@ from unittest import mock
 from dateutil.relativedelta import relativedelta
 from flask import url_for
 import pytest
+import pytz
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.fraud import factories as fraud_factories
@@ -444,6 +445,15 @@ class GetPublicAccountTest(GetEndpointHelper):
         if user.dateOfBirth:
             assert f"Date de naissance {user.dateOfBirth.strftime('%d/%m/%Y')}" in content
         assert "Date de naissance déclarée à l'inscription" not in content
+        if user.deposit:
+            assert (
+                f"Crédité le : {user.deposit.dateCreated.astimezone(tz=pytz.timezone('Europe/Paris')).strftime('%d/%m/%Y')}"
+                in content
+            )
+            assert (
+                f"Date d'expiration du crédit : {user.deposit.expirationDate.astimezone(tz=pytz.timezone('Europe/Paris')).strftime('%d/%m/%Y à %Hh%M')}"
+                in content
+            )
         assert f"Date de création du compte : {user.dateCreated.strftime('%d/%m/%Y')}" in content
         assert (
             f"Date de dernière connexion : {user.lastConnectionDate.strftime('%d/%m/%Y') if user.lastConnectionDate else ''}"
