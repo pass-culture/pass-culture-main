@@ -53,7 +53,7 @@ describe('src | App', () => {
       user: {
         initialized: true,
         currentUser: {
-          id: 'user_id',
+          nonHumanizedId: 12,
           isAdmin: false,
         },
       },
@@ -64,7 +64,9 @@ describe('src | App', () => {
     renderApp(store)
 
     expect(await screen.findByText('Sub component')).toBeInTheDocument()
-    expect(setUser).toHaveBeenCalledWith({ id: store.user.currentUser.id })
+    expect(setUser).toHaveBeenCalledWith({
+      id: store.user.currentUser.nonHumanizedId.toString(),
+    })
   })
 
   it('should render a Redirect component when isMaintenanceActivated is true', async () => {

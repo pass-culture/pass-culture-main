@@ -13,7 +13,6 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.domain.password import check_password_strength
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.date import format_into_utc_date
@@ -139,8 +138,7 @@ class SharedLoginUserResponseModel(BaseModel):
     # FIXME (mageoffray, 2022-04-04): Optional can be removed after
     # post-deploy migrations have been done
     hasSeenProRgs: bool | None
-    id: str
-    nonHumanizedId: str
+    nonHumanizedId: int
     isAdmin: bool
     isEmailValidated: bool
     lastConnectionDate: datetime | None
@@ -149,8 +147,6 @@ class SharedLoginUserResponseModel(BaseModel):
     phoneNumber: str | None
     postalCode: str | None
     roles: list[users_models.UserRole]
-
-    _normalize_id = humanize_field("id")
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
@@ -181,8 +177,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     hasPhysicalVenues: bool | None
     hasSeenProTutorials: bool | None
     hasSeenProRgs: bool | None
-    id: str
-    nonHumanizedId: str
+    nonHumanizedId: int
     idPieceNumber: str | None
     isAdmin: bool
     isEmailValidated: bool
@@ -194,8 +189,6 @@ class SharedCurrentUserResponseModel(BaseModel):
     phoneValidationStatus: users_models.PhoneValidationStatusType | None
     postalCode: str | None
     roles: list[users_models.UserRole]
-
-    _normalize_id = humanize_field("id")
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}

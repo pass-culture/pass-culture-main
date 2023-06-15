@@ -18,13 +18,12 @@ export type SharedLoginUserResponseModel = {
   hasPhysicalVenues?: boolean | null;
   hasSeenProRgs?: boolean | null;
   hasSeenProTutorials?: boolean | null;
-  id: string;
   isAdmin: boolean;
   isEmailValidated: boolean;
   lastConnectionDate?: string | null;
   lastName?: string | null;
   needsToFillCulturalSurvey?: boolean | null;
-  nonHumanizedId: string;
+  nonHumanizedId: number;
   phoneNumber?: string | null;
   postalCode?: string | null;
   roles: Array<UserRole>;

@@ -16,7 +16,7 @@ const SignupValidation = (): null => {
 
   useEffect(() => {
     const validateTokenAndRedirect = async () => {
-      if (currentUser?.id) {
+      if (currentUser?.nonHumanizedId) {
         navigate('/')
       } else if (token) {
         try {
@@ -35,7 +35,7 @@ const SignupValidation = (): null => {
       }
     }
     void validateTokenAndRedirect()
-  }, [notify, token, currentUser?.id])
+  }, [notify, token, currentUser?.nonHumanizedId])
 
   return null
 }
