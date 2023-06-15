@@ -2760,10 +2760,10 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
-            "/native/v1/profile/validate_email": {
+            "/native/v1/profile/email_update/validate": {
                 "put": {
                     "description": "",
-                    "operationId": "put_/native/v1/profile/validate_email",
+                    "operationId": "put_/native/v1/profile/email_update/validate",
                     "parameters": [],
                     "requestBody": {
                         "content": {
