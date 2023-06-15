@@ -914,6 +914,29 @@ def can_offerer_create_educational_offer(offerer_id: int) -> None:
         raise exception
 
 
+def can_provider_create_educational_offer(provider_id: int) -> None:
+    import pcapi.core.educational.adage_backends as adage_client
+
+    if settings.CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE:
+        return
+
+    if offerers_repository.provider_has_venue_with_adage_id(provider_id):
+        return
+
+    siren = offerers_repository.find_siren_by_provider_id(provider_id)
+    try:
+        response = adage_client.get_adage_offerer(siren)
+        if len(response) == 0:
+            raise educational_exceptions.CulturalPartnerNotFoundException(
+                "No venue has been found for the selected siren"
+            )
+    except (
+        educational_exceptions.CulturalPartnerNotFoundException,
+        educational_exceptions.AdageException,
+    ) as exception:
+        raise exception
+
+
 def get_educational_offerers(offerer_id: str | None, current_user: users_models.User) -> list[models.Offerer]:
     if current_user.has_admin_role and not offerer_id:
         logger.info("Admin user must provide offerer_id as a query parameter")

@@ -434,14 +434,15 @@ def update_collective_offer_educational_institution(
 
 
 def create_collective_offer_public(
-    offerer_id: int,
+    provider_id: int,
     body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel,
 ) -> educational_models.CollectiveOffer:
     from pcapi.core.offers.api import update_offer_fraud_information
 
-    offerers_api.can_offerer_create_educational_offer(offerer_id)
+    offerers_api.can_provider_create_educational_offer(provider_id)
+
     venue = offerers_models.Venue.query.filter_by(id=body.venue_id).one_or_none()
-    if venue is None or venue.managingOffererId != offerer_id:
+    if venue is None or venue.venueProviders.id != provider_id:
         raise offerers_exceptions.VenueNotFoundException()
     typing.cast(offerers_models.Venue, venue)
 
