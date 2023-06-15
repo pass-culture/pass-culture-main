@@ -29,6 +29,7 @@ const iconList = [
   // Full icons
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
+  { src: 'icons/full-mail.svg' },
   { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
   { src: 'icons/full-duplicate.svg' }, // TODO still used in 1 Button
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
@@ -37,7 +38,6 @@ const iconList = [
   { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-arrow-right.svg' },
-  { src: 'icons/full-mail.svg' },
 
   // Stroke icons
   { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
