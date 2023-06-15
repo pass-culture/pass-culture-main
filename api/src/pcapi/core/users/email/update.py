@@ -242,6 +242,15 @@ def check_and_desactivate_confirmation_token(user: models.User, token: str) -> N
     app.redis_client.delete(token_key)
 
 
+
+def check_and_desactivate_validation_token(user: models.User, token: str) -> None:
+    token_key = get_validation_token_key(user)
+    if app.redis_client.get(token_key) == token:  # type: ignore [attr-defined]
+        app.redis_client.delete(token_key)  # type: ignore [attr-defined]
+    else:
+        raise exceptions.InvalidToken()
+
+
 def check_no_active_token_exists(
     user: models.User, expiration_date: datetime
 ) -> None:  # TODO Do not use this function replace it with create token and
