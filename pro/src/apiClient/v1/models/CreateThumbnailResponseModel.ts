@@ -4,7 +4,7 @@
 
 export type CreateThumbnailResponseModel = {
   credit?: string | null;
-  id: string;
+  id: number;
   url: string;
 };
 
