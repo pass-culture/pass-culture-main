@@ -89,7 +89,7 @@ def _retrieve_offer_by_eans_query(eans: list[str]) -> sqla.orm.Query:
 @rate_limiting.api_key_rate_limiter()
 def post_product_offer(body: serialization.BatchProductOfferCreation) -> serialization.BatchProductOfferResponse:
     """
-    Create in batch (1-50) book, CD or vinyl products.
+    Create in batch (1-50) CD or vinyl products.
     """
     created_offers: list[offers_models.Offer] = []
 

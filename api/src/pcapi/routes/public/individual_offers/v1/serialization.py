@@ -675,7 +675,6 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     description: str | None = DESCRIPTION_FIELD
     external_ticket_office_url: pydantic.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageResponse | None
-    id_at_provider: str | None = ID_AT_PROVIDER_FIELD
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     name: str = NAME_FIELD
@@ -704,7 +703,6 @@ class OfferResponse(serialization.ConfiguredBaseModel):
             accessibility=Accessibility.from_orm(offer),
             external_ticket_office_url=offer.externalTicketOfficeUrl,  # type: ignore [arg-type]
             image=offer.image,  # type: ignore [arg-type]
-            id_at_provider=offer.idAtProvider,
             is_duo=offer.isDuo,
             location=DigitalLocation.from_orm(offer) if offer.isDigital else PhysicalLocation.from_orm(offer),
             name=offer.name,
