@@ -6,13 +6,14 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { CalendarIcon } from 'icons'
-import { ReactComponent as IconDesk } from 'icons/ico-desk.svg'
 import { ReactComponent as IconEuro } from 'icons/ico-euro.svg'
 import { ReactComponent as IconHome } from 'icons/ico-home.svg'
 import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
 import { ReactComponent as IconSignout } from 'icons/ico-signout.svg'
 import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
+import deskIcon from 'icons/stroke-desk.svg'
 import Logo from 'ui-kit/Logo/Logo'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 const Header = () => {
   const { currentUser } = useCurrentUser()
@@ -59,7 +60,12 @@ const Header = () => {
             role="menuitem"
             to="/guichet"
           >
-            <IconDesk aria-hidden className="nav-item-icon" />
+            <SvgIcon
+              className="nav-item-icon"
+              src={deskIcon}
+              alt=""
+              ariaHidden={true}
+            />
             Guichet
           </NavLink>
 
