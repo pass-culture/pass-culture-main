@@ -11,7 +11,8 @@ import { BOOKING_STATUS } from 'core/Bookings'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { ExternalLinkIcon, PenIcon } from 'icons'
+import { ExternalLinkIcon } from 'icons'
+import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Timeline from 'ui-kit/Timeline'
@@ -150,7 +151,7 @@ const CollectiveTimeLine = ({
                   to: `/offre/${bookingRecap.stock.offerIdentifier}/collectif/stocks/edition`,
                   isExternal: false,
                 }}
-                Icon={PenIcon}
+                Icon={FullEdit}
                 onClick={logModifyBookingLimitDateClick}
               >
                 Modifier le prix ou le nombre d’élèves
@@ -171,7 +172,7 @@ const CollectiveTimeLine = ({
                     to: `/offre/${bookingRecap.stock.offerIdentifier}/collectif/stocks/edition`,
                     isExternal: false,
                   }}
-                  Icon={PenIcon}
+                  Icon={FullEdit}
                   onClick={logModifyBookingLimitDateClick}
                 >
                   Modifier le prix ou le nombre d’élèves
@@ -223,7 +224,7 @@ const CollectiveTimeLine = ({
               to: `/offre/${bookingRecap.stock.offerIdentifier}/collectif/stocks/edition`,
               isExternal: false,
             }}
-            Icon={PenIcon}
+            Icon={FullEdit}
             onClick={logModifyBookingLimitDateClick}
           >
             Modifier la date limite de réservation

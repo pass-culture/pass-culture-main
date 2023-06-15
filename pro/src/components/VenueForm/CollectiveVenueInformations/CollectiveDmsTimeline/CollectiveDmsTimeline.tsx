@@ -3,12 +3,8 @@ import React from 'react'
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import {
-  ExternalSiteIcon,
-  PenIcon,
-  ValidCircleIcon,
-  InfoWrongIcon,
-} from 'icons'
+import { ExternalSiteIcon, InfoWrongIcon, ValidCircleIcon } from 'icons'
+import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Timeline, { TimelineStepType } from 'ui-kit/Timeline/Timeline'
@@ -242,7 +238,7 @@ const CollectiveDmsTimeline = ({
               to: collectiveVenueInformationsLink,
               isExternal: true,
             }}
-            Icon={PenIcon}
+            Icon={FullEdit}
           >
             Vérifier les informations de mon lieu
           </ButtonLink>

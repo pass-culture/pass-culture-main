@@ -9,7 +9,7 @@ import {
 import { OFFER_STATUS_DRAFT } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
-import penIcon from 'icons/ico-pen.svg'
+import penIcon from 'icons/full-edit.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
 import styles from '../../OfferItem.module.scss'
