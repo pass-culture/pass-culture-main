@@ -155,7 +155,6 @@ describe('screens:StocksEventEdition', () => {
 
   beforeEach(() => {
     apiOffer = {
-      activeMediation: null,
       bookingEmail: null,
       dateCreated: '2022-05-18T08:25:30.991476Z',
       description: 'A passionate description of product 80',
@@ -166,7 +165,6 @@ describe('screens:StocksEventEdition', () => {
       isDigital: false,
       isDuo: false,
       isEditable: true,
-      isEducational: false,
       isEvent: true,
       isNational: false,
       isThing: false,
@@ -176,13 +174,6 @@ describe('screens:StocksEventEdition', () => {
       nonHumanizedId: 12,
       visualDisabilityCompliant: false,
       lastProvider: null,
-      mediaUrls: [],
-      mediations: [
-        {
-          thumbUrl: 'http://my.thumb.url',
-          credit: 'John Do',
-        },
-      ],
       name: 'Séance ciné duo',
       priceCategories: [
         { id: Number(priceCategoryId), label: 'Cat 1', price: 10 },

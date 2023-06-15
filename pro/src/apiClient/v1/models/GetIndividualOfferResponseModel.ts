@@ -25,13 +25,10 @@ export type GetIndividualOfferResponseModel = {
   isDigital: boolean;
   isDuo: boolean;
   isEditable: boolean;
-  isEducational: boolean;
   isEvent: boolean;
   isNational: boolean;
   isThing: boolean;
   lastProvider?: GetOfferLastProviderResponseModel | null;
-  mediaUrls: Array<string>;
-  mediations: Array<GetOfferMediationResponseModel>;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;

@@ -75,13 +75,10 @@ export const GetIndividualOfferFactory = (
     stocks,
     venue: customVenue,
     hasBookingLimitDatetimesPassed: false,
-    isEducational: false,
     dateCreated: '2020-04-12T19:31:12Z',
     isDigital: false,
     isDuo: true,
     isNational: true,
-    mediaUrls: [],
-    mediations: [],
     subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
     ...customOffer,
   }

@@ -135,7 +135,6 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       isbn: '',
       isActive: true,
       isDuo: false,
-      isEducational: false,
       isEvent: true,
       isDigital: false,
       accessibility: {
