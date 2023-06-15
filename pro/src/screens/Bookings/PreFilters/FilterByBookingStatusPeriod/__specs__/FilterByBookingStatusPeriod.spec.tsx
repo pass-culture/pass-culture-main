@@ -6,7 +6,7 @@ import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { getOfferVenueFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import PreFilters, { IPreFiltersProps } from '../../PreFilters'
+import PreFilters, { PreFiltersProps } from '../../PreFilters'
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
@@ -19,12 +19,12 @@ jest.mock('apiClient/api', () => ({
   api: { getVenues: jest.fn() },
 }))
 
-const renderPreFilters = (props: IPreFiltersProps) => {
+const renderPreFilters = (props: PreFiltersProps) => {
   renderWithProviders(<PreFilters {...props} />)
 }
 
 describe('filter bookings by bookings period', () => {
-  let props: IPreFiltersProps
+  let props: PreFiltersProps
 
   beforeEach(() => {
     props = {

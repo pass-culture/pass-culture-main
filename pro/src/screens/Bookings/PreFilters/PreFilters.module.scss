@@ -2,108 +2,20 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
 
+.offer-date-filter {
+  width: rem.torem(173px);
+}
+
+.venue-filter {
+  flex-grow: 1;
+  width: rem.torem(397px);
+}
+
 .bookings-page {
   .vertical-bar {
     background-color: colors.$grey-medium;
     height: rem.torem(40px);
     width: rem.torem(1px);
-  }
-
-  .reset-filters {
-    margin-bottom: rem.torem(36px);
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  .pre-filters {
-    .pre-filters-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: rem.torem(30px);
-    }
-
-    .pf-offer-date {
-      .field-date {
-        align-items: center;
-        background-image: url("/icons/ico-calendar-big.svg");
-        background-position-x: 90%;
-        background-position-y: center;
-        background-repeat: no-repeat;
-        background-size: rem.torem(16px);
-        border: rem.torem(1px) solid colors.$grey-medium;
-        border-radius: rem.torem(20px);
-        display: flex;
-        height: rem.torem(40px);
-        margin-top: rem.torem(16px);
-        padding: 0 rem.torem(1px);
-        width: rem.torem(173px);
-
-        &:focus-within {
-          border-color: colors.$primary;
-          border-width: rem.torem(2px);
-        }
-
-        &.disabled {
-          background-image: url("/icons/ico-calendar-disabled.svg");
-          border: none;
-          box-shadow: none;
-        }
-      }
-
-      .pf-offer-date-picker:focus-within {
-        .field-date {
-          border-color: colors.$primary;
-          border-width: rem.torem(2px);
-          padding: 0;
-        }
-      }
-
-      button {
-        outline: none;
-      }
-
-      .pf-offer-date-label {
-        margin-bottom: rem.torem(12px);
-      }
-
-      .pf-offer-date-input {
-        @include fonts.body;
-
-        background: none;
-        border: 0;
-        outline: none;
-        padding-left: rem.torem(10px);
-        width: 100%;
-
-        &:disabled {
-          color: colors.$grey-dark;
-          cursor: initial;
-          opacity: 1;
-
-          &::placeholder {
-            color: colors.$grey-dark;
-          }
-        }
-      }
-    }
-
-    .input-select {
-      select {
-        margin-top: rem.torem(16px);
-      }
-    }
-
-    .pre-filters-venue {
-      flex-grow: 1;
-      width: rem.torem(397px);
-      min-width: rem.torem(397px);
-      margin-right: rem.torem(24px);
-    }
-
-    .pre-filters-offer-type {
-      width: rem.torem(208px);
-      margin-right: rem.torem(24px);
-    }
   }
 
   .search-separator {
@@ -121,39 +33,46 @@
     }
   }
 
-  form {
-    &:not(.has-result) {
-      margin-bottom: rem.torem(32px);
-    }
-
-    &.has-result:not(.refresh-required) {
-      margin-bottom: rem.torem(48px);
-    }
-
-    &.refresh-required.has-result {
-      margin-bottom: rem.torem(16px);
-    }
-
-    &:not(.refresh-required) ~ .no-bookings-for-pre-filters {
-      padding-top: rem.torem(16px);
-    }
-
-    &.refresh-required ~ .no-bookings-for-pre-filters {
-      padding-top: 0;
-    }
-  }
-
   .choose-pre-filters {
     padding-top: rem.torem(16px);
   }
+}
 
-  .pf-refresh-message {
-    @include fonts.body;
-
-    color: colors.$red-error;
-    line-height: rem.torem(16px);
-    text-align: center;
+.pre-filters-form {
+  &:not(.has-result) {
+    margin-bottom: rem.torem(32px);
   }
+
+  &.has-result:not(.refresh-required) {
+    margin-bottom: rem.torem(48px);
+  }
+
+  &.refresh-required.has-result {
+    margin-bottom: rem.torem(16px);
+  }
+
+  &:not(.refresh-required) ~ .no-bookings-for-pre-filters {
+    padding-top: rem.torem(16px);
+  }
+
+  &.refresh-required ~ .no-bookings-for-pre-filters {
+    padding-top: 0;
+  }
+}
+
+.reset-filters {
+  margin-top: rem.torem(30px);
+  margin-bottom: rem.torem(36px);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pf-refresh-message {
+  @include fonts.body;
+
+  color: colors.$red-error;
+  line-height: rem.torem(16px);
+  text-align: center;
 }
 
 .show-button {

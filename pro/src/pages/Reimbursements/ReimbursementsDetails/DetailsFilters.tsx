@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useCallback, useState } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 
 import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
 import Select from 'ui-kit/form_raw/Select'
@@ -9,22 +9,22 @@ type SelectableOptionsType = {
   displayName: string
 }
 
-type filtersType = {
+type FiltersType = {
   venue: string
   periodStart: Date
   periodEnd: Date
 }
 
-interface IReimbursementsSectionHeaderProps {
+interface ReimbursementsSectionHeaderProps {
   children: React.ReactNode | React.ReactNode[]
   defaultSelectDisplayName: string
   defaultSelectId: string
-  filters: filtersType
+  filters: FiltersType
   headerTitle: string
-  initialFilters: filtersType
+  initialFilters: FiltersType
   selectLabel: string
   selectName: string
-  setFilters: Dispatch<SetStateAction<filtersType>>
+  setFilters: Dispatch<SetStateAction<FiltersType>>
   selectableOptions: SelectableOptionsType[]
 }
 
@@ -39,7 +39,7 @@ const DetailsFilters = ({
   selectableOptions,
   filters,
   setFilters,
-}: IReimbursementsSectionHeaderProps): JSX.Element => {
+}: ReimbursementsSectionHeaderProps): JSX.Element => {
   const {
     venue: selectedVenue,
     periodStart: selectedPeriodStart,
@@ -53,39 +53,30 @@ const DetailsFilters = ({
     setFilters(initialFilters)
   }
 
-  const setVenueFilter = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const venueId = event.target.value
-      setFilters((prevFilters: filtersType) => ({
-        ...prevFilters,
-        venue: venueId,
-      }))
-      setAreFiltersDefault(false)
-    },
-    [setFilters]
-  )
+  const setVenueFilter = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const venueId = event.target.value
+    setFilters((prevFilters: FiltersType) => ({
+      ...prevFilters,
+      venue: venueId,
+    }))
+    setAreFiltersDefault(false)
+  }
 
-  const setStartDateFilter = useCallback(
-    (startDate: Date) => {
-      setFilters((prevFilters: filtersType) => ({
-        ...prevFilters,
-        periodStart: startDate,
-      }))
-      setAreFiltersDefault(false)
-    },
-    [setFilters]
-  )
+  const setStartDateFilter = (startDate: Date) => {
+    setFilters((prevFilters: FiltersType) => ({
+      ...prevFilters,
+      periodStart: startDate,
+    }))
+    setAreFiltersDefault(false)
+  }
 
-  const setEndDateFilter = useCallback(
-    (endDate: Date) => {
-      setFilters((prevFilters: filtersType) => ({
-        ...prevFilters,
-        periodEnd: endDate,
-      }))
-      setAreFiltersDefault(false)
-    },
-    [setFilters]
-  )
+  const setEndDateFilter = (endDate: Date) => {
+    setFilters((prevFilters: FiltersType) => ({
+      ...prevFilters,
+      periodEnd: endDate,
+    }))
+    setAreFiltersDefault(false)
+  }
 
   return (
     <>
@@ -113,6 +104,7 @@ const DetailsFilters = ({
           options={selectableOptions}
           selectedValue={selectedVenue}
         />
+
         <PeriodSelector
           changePeriodBeginningDateValue={setStartDateFilter}
           changePeriodEndingDateValue={setEndDateFilter}
@@ -121,7 +113,6 @@ const DetailsFilters = ({
           maxDateEnding={getToday()}
           periodBeginningDate={selectedPeriodStart}
           periodEndingDate={selectedPeriodEnd}
-          todayDate={getToday()}
         />
       </div>
 

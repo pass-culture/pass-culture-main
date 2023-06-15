@@ -1,6 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 
-.satus-period-filter {
+.status-period-filter {
   display: flex;
 
   /* stylelint-disable selector-pseudo-class-no-unknown */
@@ -9,13 +9,13 @@
     margin-top: 0 !important;
   }
 
-  :global(.input-select-full-width > select) {
-    border-right: none;
-    border-radius: rem.torem(20px) 0 0 rem.torem(20px);
-  }
-
   :global(.period-filter .field-date-begin) {
     border-radius: 0;
   }
   /* stylelint-enable selector-pseudo-class-no-unknown */
+}
+
+.status-filter {
+  border-right: none;
+  border-radius: rem.torem(20px) 0 0 rem.torem(20px);
 }

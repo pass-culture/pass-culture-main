@@ -2,44 +2,23 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
 
+$input-height: rem.torem(40px);
+
 .period-filter {
   .period-filter-inputs {
     border-radius: rem.torem(20px);
     display: flex;
-    height: rem.torem(40px);
+    height: $input-height;
     margin-top: rem.torem(16px);
-
-    button {
-      outline: none;
-    }
-
-    &.disabled {
-      background-color: colors.$grey-light;
-      box-shadow: none;
-    }
   }
 
   .period-filter-inputs .field-date {
-    align-items: center;
-    background: url("/icons/ico-calendar-big.svg") no-repeat 93% center;
-    background-size: rem.torem(16px);
-    box-shadow: none;
-    display: flex;
-    height: rem.torem(40px);
-
-    &:focus-within {
-      border-color: colors.$primary;
-    }
-
-    &.disabled {
-      background-image: url("/icons/ico-calendar-disabled.svg");
-    }
+    height: $input-height;
   }
 
   .field-date-begin,
   .field-date-end {
-    height: rem.torem(40px);
-    padding: 0 rem.torem(1px);
+    height: $input-height;
   }
 
   .field-date-begin {
@@ -54,37 +33,13 @@
     border-top-left-radius: 0;
   }
 
-  .period-filter-begin-picker:focus-within .field-date-begin,
-  .period-filter-end-picker:focus-within .field-date-end {
-    border-color: colors.$primary;
-    border-width: rem.torem(2px);
-    padding: 0;
-  }
-
   .period-filter-input {
-    @include fonts.body;
-
-    background: none;
-    border: 0;
-    outline: none;
-    padding-left: rem.torem(10px);
-    width: rem.torem(135px);
-
-    &:disabled {
-      color: colors.$grey-dark;
-      cursor: initial;
-      opacity: 1;
-
-      &::placeholder {
-        color: colors.$grey-dark;
-      }
-    }
+    width: rem.torem(150px);
   }
-}
 
-.period-filter:focus-within {
   .vertical-bar {
-    background-color: colors.$primary;
-    width: rem.torem(2px);
+    background-color: colors.$grey-medium;
+    height: rem.torem(40px);
+    width: rem.torem(1px);
   }
 }

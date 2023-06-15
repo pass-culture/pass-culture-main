@@ -1,14 +1,12 @@
-import fr from 'date-fns/locale/fr'
 import React from 'react'
-import DatePicker, { registerLocale } from 'react-datepicker'
 
 import { DEFAULT_PRE_FILTERS, TPreFilters } from 'core/Bookings'
-import InputWithCalendar from 'ui-kit/form_raw/PeriodSelector/InputWithCalendar'
-import { FORMAT_DD_MM_YYYY, getToday } from 'utils/date'
+import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
+import { FieldLayout } from 'ui-kit/form/shared'
 
-registerLocale('fr', fr)
+import styles from './PreFilters.module.scss'
 
-export interface IFilterByEventDateProps {
+export interface FilterByEventDateProps {
   isDisabled?: boolean
   selectedOfferDate: Date | string
   updateFilters: (filters: Partial<TPreFilters>) => void
@@ -23,50 +21,25 @@ const FilterByEventDate = ({
   isDisabled = false,
   updateFilters,
   selectedOfferDate,
-}: IFilterByEventDateProps): JSX.Element => {
-  function handleOfferDateChange(offerEventDate: Date) {
-    updateFilters({
-      offerEventDate: offerEventDate
-        ? offerEventDate
-        : DEFAULT_PRE_FILTERS.offerEventDate,
-    })
-  }
-
-  return (
-    <div className="pf-offer-date">
-      <label className="pf-offer-date-label" htmlFor="select-filter-date">
-        Date de l’évènement
-      </label>
-      <div className="pf-offer-date-picker">
-        <DatePicker
-          className="pf-offer-date-input"
-          customInput={
-            <InputWithCalendar
-              // @ts-expect-error InputWithCalendar should be rewritten in ts
-              customClass={`field-date-only${isDisabled ? ' disabled' : ''}`}
-            />
-          }
-          dateFormat={FORMAT_DD_MM_YYYY}
-          disabled={isDisabled}
-          dropdownMode="select"
-          id="select-filter-date"
-          locale="fr"
-          onChange={handleOfferDateChange}
-          openToDate={
-            selectedOfferDateIsDate(selectedOfferDate)
-              ? selectedOfferDate
-              : getToday()
-          }
-          placeholderText="JJ/MM/AAAA"
-          selected={
-            selectedOfferDateIsDate(selectedOfferDate)
-              ? selectedOfferDate
-              : null
-          }
-        />
-      </div>
-    </div>
-  )
-}
+}: FilterByEventDateProps): JSX.Element => (
+  <FieldLayout
+    label="Date de l’évènement"
+    name="select-filter-date"
+    className={styles['offer-date-filter']}
+  >
+    <BaseDatePicker
+      name="select-filter-date"
+      onChange={(date: Date) =>
+        updateFilters({
+          offerEventDate: date ? date : DEFAULT_PRE_FILTERS.offerEventDate,
+        })
+      }
+      disabled={isDisabled}
+      value={
+        selectedOfferDateIsDate(selectedOfferDate) ? selectedOfferDate : null
+      }
+    />
+  </FieldLayout>
+)
 
 export default FilterByEventDate

@@ -260,6 +260,7 @@ const Bookings = <
           },
         ]}
       />
+
       <PreFilters
         appliedPreFilters={appliedPreFilters}
         applyPreFilters={applyPreFilters}
@@ -275,6 +276,7 @@ const Bookings = <
         updateUrl={updateUrl}
         wereBookingsRequested={wereBookingsRequested}
       />
+
       {wereBookingsRequested ? (
         bookings.length > 0 ? (
           <BookingsRecapTable

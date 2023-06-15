@@ -89,8 +89,8 @@ describe('reimbursementsWithFilters', () => {
       storeOverrides,
     })
 
-    const startFilter = await screen.findByLabelText('début de la période')
-    const endFilter = screen.getByLabelText('fin de la période')
+    const startFilter = await screen.findByLabelText('Début de la période')
+    const endFilter = screen.getByLabelText('Fin de la période')
     await userEvent.clear(startFilter)
     await userEvent.clear(endFilter)
 
@@ -169,8 +169,9 @@ describe('reimbursementsWithFilters', () => {
       storeOverrides,
     })
 
-    const startFilter = await screen.findByLabelText('début de la période')
-    const endFilter = screen.getByLabelText('fin de la période')
+    const startFilter = await screen.findByLabelText('Début de la période')
+    const endFilter = screen.getByLabelText('Fin de la période')
+
     await userEvent.clear(startFilter)
     await userEvent.clear(endFilter)
     await userEvent.type(startFilter, '12/11/1998')
@@ -187,10 +188,10 @@ describe('reimbursementsWithFilters', () => {
     )
 
     expect(screen.getByLabelText('Lieu')).toHaveValue('allVenues')
-    expect(screen.getByLabelText('début de la période')).toHaveValue(
+    expect(screen.getByLabelText('Début de la période')).toHaveValue(
       '15/11/2020'
     )
-    expect(screen.getByLabelText('fin de la période')).toHaveValue('15/12/2020')
+    expect(screen.getByLabelText('Fin de la période')).toHaveValue('15/12/2020')
   })
 
   it('should order venue option by alphabetical order', async () => {
@@ -229,8 +230,9 @@ describe('reimbursementsWithFilters', () => {
       storeOverrides,
     })
 
-    const startFilter = await screen.findByLabelText('début de la période')
-    const endFilter = screen.getByLabelText('fin de la période')
+    const startFilter = await screen.findByLabelText('Début de la période')
+    const endFilter = screen.getByLabelText('Fin de la période')
+
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       'Public Name venue 1'

@@ -33,7 +33,7 @@ export type FieldLayoutBaseProps = {
 type FieldLayoutProps = FieldLayoutBaseProps & {
   // These props are derived from the formik state and passed by the parent component
   children: React.ReactNode
-  showError: boolean
+  showError?: boolean
   error?: string
   count?: number
 }
