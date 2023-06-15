@@ -30,6 +30,7 @@ const iconList = [
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
   { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
+  { src: 'icons/full-duplicate.svg' }, // TODO still used in 1 Button
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-more-bis.svg' }, // TODO still in 2 ButtonLink and 1 Button
@@ -63,7 +64,6 @@ const iconList = [
   { src: 'icons/ico-close-r.svg', viewBox: '0 0 17 16' },
   { src: 'icons/close-tag.svg', viewBox: '0 0 10 10' },
   { src: 'icons/ico-compta.svg', viewBox: '0 0 20 23' },
-  { src: 'icons/ico-copy.svg', viewBox: '0 0 21 20' },
   { src: 'icons/ico-desk.svg', viewBox: '0 0 49 48' },
   { src: 'icons/ico-double-check.svg' },
   {
