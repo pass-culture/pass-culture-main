@@ -115,3 +115,4 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     install_feature_flags()
     install_local_providers()
     perm_models.sync_db_permissions(db.session)
+    perm_models.sync_db_roles(db.session)

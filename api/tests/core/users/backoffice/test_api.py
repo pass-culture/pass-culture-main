@@ -1,11 +1,11 @@
 import pytest
 
-from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 import pcapi.core.users.backoffice.api as backoffice_api
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -18,17 +18,28 @@ def permissions_fixture() -> list[perm_models.Permissions]:
 
 @pytest.fixture(scope="function", name="roles")
 def roles_fixture(permissions) -> list[perm_models.Roles]:
-    return [
-        perm_factories.RoleFactory(  # 0
-            name=perm_models.Roles.SUPPORT_N1.value, permissions=[permissions[1], permissions[3]]
-        ),
-        perm_factories.RoleFactory(  # 1
-            name=perm_models.Roles.SUPPORT_N2.value, permissions=[permissions[2], permissions[3]]
-        ),
-        perm_factories.RoleFactory(  # 2
-            name=perm_models.Roles.SUPPORT_PRO.value, permissions=[permissions[0], permissions[1]]
-        ),
-    ]
+    roles = (
+        perm_models.Role.query.filter(
+            perm_models.Role.name.in_(
+                [
+                    perm_models.Roles.SUPPORT_N1.value,
+                    perm_models.Roles.SUPPORT_N2.value,
+                    perm_models.Roles.SUPPORT_PRO.value,
+                ]
+            )
+        )
+        .order_by(perm_models.Role.name)
+        .all()
+    )
+
+    roles[0].permissions = [permissions[1], permissions[3]]
+    roles[1].permissions = [permissions[2], permissions[3]]
+    roles[2].permissions = [permissions[0], permissions[1]]
+
+    db.session.bulk_save_objects(roles)
+    db.session.commit()
+
+    return roles
 
 
 def test_update_roles_from_no_profile(permissions, roles) -> None:

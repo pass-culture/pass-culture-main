@@ -26,7 +26,7 @@ pytestmark = [
 
 class ListBlacklistedDomainNamesTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.fraud.list_blacklisted_domain_names"
-    needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.BATCH_SUSPEND_USERS
 
     def test_list_blacklisted_domain_names(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.fr")
@@ -59,7 +59,7 @@ class ListBlacklistedDomainNamesTest(GetEndpointHelper):
 
 class PrepareBlacklistDomainNamesTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.fraud.prepare_blacklist_domain_name"
-    needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.BATCH_SUSPEND_USERS
 
     def test_prepare_blacklist_domain_name(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.fr")
@@ -84,7 +84,7 @@ class PrepareBlacklistDomainNamesTest(GetEndpointHelper):
 class BlacklistDomainNameTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.fraud.blacklist_domain_name"
     endpoint_kwargs = {"domain": "example.fr"}
-    needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.BATCH_SUSPEND_USERS
 
     def test_blacklist_domain_name(self, authenticated_client):
         user = bookings_factories.BookingFactory(user__email="user@example.fr").user
@@ -125,7 +125,7 @@ class BlacklistDomainNameTest(PostEndpointHelper):
 class RemoveBlacklistedDomainNameTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.fraud.remove_blacklisted_domain_name"
     endpoint_kwargs = {"domain": "example.fr"}
-    needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.BATCH_SUSPEND_USERS
 
     def test_remove_blacklisted_domain(self, authenticated_client):
         domain = fraud_factories.BlacklistedDomainNameFactory().domain
