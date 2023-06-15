@@ -118,6 +118,7 @@ class CGRStocksTest:
         assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 1, 29, 13)
         assert created_stocks[0].priceCategory.price == Decimal("6.9")
         assert created_stocks[0].priceCategory.priceCategoryLabel.label == "Tarif Standard ICE"
+        assert created_stocks[0].features == ["VF", "ICE"]
 
         assert created_offers[1].name == "Super Mario Bros, Le Film"
         assert created_offers[1].product == created_products[1]
@@ -142,6 +143,7 @@ class CGRStocksTest:
         assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 3, 4, 15)
         assert created_stocks[1].priceCategory.price == Decimal(11.00)
         assert created_stocks[1].priceCategory.priceCategoryLabel.label == "Tarif standard 3D"
+        assert created_stocks[1].features == ["VF", "3D", "ICE"]
 
     def should_fill_stocks_and_price_categories_for_a_movie(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
