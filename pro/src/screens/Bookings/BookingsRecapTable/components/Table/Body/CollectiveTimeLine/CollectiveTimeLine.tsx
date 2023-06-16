@@ -11,8 +11,8 @@ import { BOOKING_STATUS } from 'core/Bookings'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { ExternalLinkIcon } from 'icons'
 import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
+import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Timeline from 'ui-kit/Timeline'
@@ -183,7 +183,7 @@ const CollectiveTimeLine = ({
                     to: 'https://aide.passculture.app/hc/fr/articles/4405297381788--Acteurs-Culturels-Que-faire-si-le-groupe-scolaire-n-est-pas-au-complet-ou-doit-annuler-sa-participation-',
                     isExternal: true,
                   }}
-                  Icon={ExternalLinkIcon}
+                  Icon={FullLink}
                 >
                   Je rencontre un problème à cette étape
                 </ButtonLink>
@@ -278,7 +278,7 @@ const CollectiveTimeLine = ({
               to: 'https://aide.passculture.app/hc/fr/articles/4405297381788--Acteurs-Culturels-Que-faire-si-le-groupe-scolaire-n-est-pas-au-complet-ou-doit-annuler-sa-participation-',
               isExternal: true,
             }}
-            Icon={ExternalLinkIcon}
+            Icon={FullLink}
           >
             Je rencontre un problème à cette étape
           </ButtonLink>
@@ -340,7 +340,7 @@ const CollectiveTimeLine = ({
             to: 'https://aide.passculture.app/hc/fr/articles/4411992051601',
             isExternal: true,
           }}
-          Icon={ExternalLinkIcon}
+          Icon={FullLink}
         >
           Voir le calendrier des remboursements
         </ButtonLink>
@@ -406,7 +406,7 @@ const CollectiveTimeLine = ({
             to: `/structures/${bookingDetails.offererId}/lieux/${bookingDetails.venueId}?modification#reimbursement-section`,
             isExternal: false,
           }}
-          Icon={ExternalLinkIcon}
+          Icon={FullLink}
           className={styles['button-important']}
         >
           Renseigner mes coordonnées bancaires
@@ -433,7 +433,7 @@ const CollectiveTimeLine = ({
             to: `https://www.demarches-simplifiees.fr/dossiers/${bookingDetails.venueDMSApplicationId}/messagerie`,
             isExternal: true,
           }}
-          Icon={ExternalLinkIcon}
+          Icon={FullLink}
         >
           Voir le dossier en cours
         </ButtonLink>

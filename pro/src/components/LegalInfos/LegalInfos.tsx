@@ -4,8 +4,10 @@ import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import fullExternalIcon from 'icons/full-external-site.svg'
+import fullLink from 'icons/full-link.svg'
 import fullMailIcon from 'icons/full-mail.svg'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './LegalInfos.module.scss'
@@ -20,56 +22,68 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
   return (
     <div className={cn(styles['legal-infos'], className)}>
       <span>{`En cliquant sur ${title}, vous acceptez nos `}</span>
-      <a
-        className={styles['quaternary-link']}
-        href="https://pass.culture.fr/cgu-professionnels/"
+      <ButtonLink
+        className="quaternary-link"
         onClick={() =>
           logEvent?.(Events.CLICKED_CONSULT_CGU, { from: location.pathname })
         }
-        rel="noopener noreferrer"
-        target="_blank"
+        link={{
+          to: 'https://pass.culture.fr/cgu-professionnels/',
+          isExternal: true,
+          rel: 'noopener noreferrer',
+          target: '_blank',
+        }}
+        variant={ButtonVariant.QUATERNARY}
       >
         <SvgIcon
-          src={fullExternalIcon}
+          src={fullLink}
           alt="Site pass.culture.fr"
           className={styles['icon-legal-infos']}
           width="22"
         />
         <span>Conditions Générales d’Utilisation</span>
-      </a>
+      </ButtonLink>
       <span>{' ainsi que notre '}</span>
-      <a
+      <ButtonLink
         className={styles['quaternary-link']}
-        href="https://pass.culture.fr/donnees-personnelles/"
         onClick={() =>
           logEvent?.(Events.CLICKED_PERSONAL_DATA, { from: location.pathname })
         }
-        rel="noopener noreferrer"
-        target="_blank"
+        link={{
+          to: 'https://pass.culture.fr/donnees-personnelles/',
+          isExternal: true,
+          rel: 'noopener noreferrer',
+          target: '_blank',
+        }}
+        variant={ButtonVariant.QUATERNARY}
       >
         <SvgIcon
-          src={fullExternalIcon}
+          src={fullLink}
           alt="Site pass.culture.fr"
           className={styles['icon-legal-infos']}
           width="22"
         />
         <span>Charte des Données Personnelles</span>
-      </a>
+      </ButtonLink>
       <span>
         {
           '. Pour en savoir plus sur la gestion de vos données personnelles et pour exercer vos droits, ou répondre à toute autre question, '
         }
       </span>
-      <a
+      <ButtonLink
         className={styles['quaternary-link']}
-        href="mailto:support-pro@passculture.app"
+        variant={ButtonVariant.QUATERNARY}
         onClick={() =>
           logEvent?.(Events.CLICKED_CONSULT_SUPPORT, {
             from: location.pathname,
           })
         }
-        rel="noopener noreferrer"
-        target="_blank"
+        link={{
+          to: 'mailto:support-pro@passculture.app',
+          isExternal: true,
+          rel: 'noopener noreferrer',
+          target: '_blank',
+        }}
       >
         <SvgIcon
           src={fullMailIcon}
@@ -78,7 +92,7 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
           width="22"
         />
         <span>Contacter notre support.</span>
-      </a>
+      </ButtonLink>
     </div>
   )
 }

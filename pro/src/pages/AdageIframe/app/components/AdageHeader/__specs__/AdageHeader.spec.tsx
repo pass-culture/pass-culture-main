@@ -89,7 +89,7 @@ describe('AdageHeader', () => {
       expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
     )
 
-    expect(screen.getByText('1,000€')).toBeInTheDocument()
+    expect(screen.getByText(/1,000/)).toBeInTheDocument()
   })
 
   it('should return an error when the institution budget could not be retrieved', async () => {

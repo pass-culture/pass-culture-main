@@ -29,7 +29,7 @@ const iconList = [
   // Full icons
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
-  { src: 'icons/full-external-site.svg' }, // TODO 17 uses left inside <ButtonLink> and <Banner> and <InternalBanner>
+  { src: 'icons/full-link.svg' }, // TODO 17 uses left inside <ButtonLink> and <Banner> and <InternalBanner>
   { src: 'icons/full-mail.svg' }, // TODO 2 uses left inside ButtonLink, 1 use left inside SubmitButton
   { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
   { src: 'icons/full-duplicate.svg' }, // TODO still used in 1 Button
@@ -82,8 +82,6 @@ const iconList = [
   { src: 'icons/error.svg', viewBox: '0 0 18 18' },
   { src: 'icons/ico-euro-grey.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-euro-v2.svg', viewBox: '0 0 24 25' },
-  { src: 'icons/ico-fill-external-link.svg', viewBox: '0 0 25 24' },
-  { src: 'icons/external-site.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-eye-full-close.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-eye-full-open.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-eye-open-filled-black.svg' },
