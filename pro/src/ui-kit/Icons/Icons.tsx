@@ -94,7 +94,6 @@ const iconList = [
   { src: 'icons/ico-filter-status-black.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-filter-status-red.svg', viewBox: '0 0 24 24' },
   { src: 'icons/fraud.svg', viewBox: '0 0 88 88' },
-  { src: 'icons/ico-geoloc-solid.svg', viewBox: '0 0 21 30' },
   { src: 'icons/ico-guichet-full.svg' },
   { src: 'icons/ico-home.svg' },
   { src: 'icons/ico-hourglass.svg' },
