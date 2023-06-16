@@ -26,15 +26,6 @@
                   {% for article in json.oeuvre.article %}
                     <p class="card-text text-truncate"
                        title="{{ article.resume|unescape }}">{{ article.resume|unescape }}</p>
-                    <p class="card-text">
-                      <small class="text-body-secondary">
-                        {% if article.datemodification %}
-                          Modifié le {{ article.datemodification }}
-                        {% else %}
-                          Ajouté le {{ article.datecreation }}
-                        {% endif %}
-                      </small>
-                    </p>
                   {% endfor %}
                 </div>
                 <ul class="list-group list-group-flush">

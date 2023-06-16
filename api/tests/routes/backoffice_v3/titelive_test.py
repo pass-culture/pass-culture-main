@@ -53,7 +53,6 @@ class SearchEanTest(GetEndpointHelper):
             f"div.pc-ean-result img[src=\"{EAN_SEARCH_FIXTURE['oeuvre']['article'][0]['imagesUrl']['recto']}\"]"
         )
         assert EAN_SEARCH_FIXTURE["oeuvre"]["titre"] in card_text[0]
-        assert "Modifié le " + article["datemodification"] in card_text[0]
         assert "EAN-13 : " + EAN_SEARCH_FIXTURE["ean"] in card_text[0]
         assert "Lectorat : " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
         assert (
