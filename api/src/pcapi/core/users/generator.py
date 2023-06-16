@@ -1,6 +1,7 @@
 import dataclasses
 
 from pcapi import settings
+import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
@@ -11,6 +12,7 @@ from . import exceptions
 @dataclasses.dataclass
 class GenerateUserData:
     age: int
+    id_provider: str
     is_beneficiary: bool
     step: subscription_models.SubscriptionStep | None = None
 
@@ -35,4 +37,5 @@ def generate_user(user_data: GenerateUserData) -> users_models.User:
     if user_data.is_beneficiary:
         factory = users_factories.BeneficiaryFactory
 
-    return factory(age=user_data.age)
+    id_provider = fraud_models.FraudCheckType[user_data.id_provider]
+    return factory(age=user_data.age, beneficiaryFraudChecks__type=id_provider)
