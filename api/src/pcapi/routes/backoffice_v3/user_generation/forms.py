@@ -1,6 +1,6 @@
-from pcapi.core.fraud.models import FraudCheckType
-from pcapi.core.subscription.models import SubscriptionStep
 from pcapi.core.users import constants as users_constants
+from pcapi.core.users.generator import GeneratedIdProvider
+from pcapi.core.users.generator import GeneratedSubscriptionStep
 from pcapi.routes.backoffice_v3.forms import fields
 from pcapi.routes.backoffice_v3.forms import utils
 
@@ -10,15 +10,21 @@ class UserGeneratorForm(utils.PCForm):
     id_provider = fields.PCSelectField(
         "Méthode d'identification",
         choices=[
-            (FraudCheckType.DMS.name, "DMS"),
-            (FraudCheckType.EDUCONNECT.name, "Educonnect"),
-            (FraudCheckType.UBBLE.name, "Ubble"),
+            (GeneratedIdProvider.DMS.name, "DMS"),
+            (GeneratedIdProvider.EDUCONNECT.name, "Educonnect"),
+            (GeneratedIdProvider.UBBLE.name, "Ubble"),
         ],
-        default=FraudCheckType.UBBLE.name,
+        default=GeneratedIdProvider.UBBLE.name,
     )
     step = fields.PCSelectField(
         "Étape de validation",
-        choices=[(step.name, step.get_title()) for step in SubscriptionStep if step != SubscriptionStep.MAINTENANCE],
-        default=SubscriptionStep.EMAIL_VALIDATION.name,
+        choices=[
+            (GeneratedSubscriptionStep.EMAIL_VALIDATION.name, "Email Validé"),
+            (GeneratedSubscriptionStep.PHONE_VALIDATION.name, "Téléphone validé"),
+            (GeneratedSubscriptionStep.PROFILE_COMPLETION.name, "Profil completé"),
+            (GeneratedSubscriptionStep.IDENTITY_CHECK.name, "Identité vérifiée"),
+            (GeneratedSubscriptionStep.HONOR_STATEMENT.name, "Attesté sur l'honneur"),
+            (GeneratedSubscriptionStep.BENEFICIARY.name, "Bénéficiaire"),
+        ],
+        default=GeneratedSubscriptionStep.EMAIL_VALIDATION.name,
     )
-    is_beneficiary = fields.PCSwitchBooleanField("Bénéficiaire", default=False)

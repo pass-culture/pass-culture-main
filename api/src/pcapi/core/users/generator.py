@@ -1,20 +1,36 @@
 import dataclasses
+import enum
 
 from pcapi import settings
 import pcapi.core.fraud.models as fraud_models
-import pcapi.core.subscription.models as subscription_models
+from pcapi.core.users import constants as users_constants
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 
 from . import exceptions
 
 
+class GeneratedIdProvider(enum.Enum):
+    DMS = fraud_models.FraudCheckType.DMS
+    EDUCONNECT = fraud_models.FraudCheckType.EDUCONNECT
+    UBBLE = fraud_models.FraudCheckType.UBBLE
+
+
+class GeneratedSubscriptionStep(enum.Enum):
+    EMAIL_VALIDATION = "email-validation"
+    PHONE_VALIDATION = "phone-validation"
+    PROFILE_COMPLETION = "profile-completion"
+    IDENTITY_CHECK = "identity-check"
+    MAINTENANCE = "maintenance"
+    HONOR_STATEMENT = "honor-statement"
+    BENEFICIARY = "beneficiary"
+
+
 @dataclasses.dataclass
 class GenerateUserData:
-    age: int
-    id_provider: str
-    is_beneficiary: bool
-    step: subscription_models.SubscriptionStep | None = None
+    age: int = users_constants.ELIGIBILITY_AGE_18
+    id_provider: GeneratedIdProvider = GeneratedIdProvider.UBBLE
+    step: GeneratedSubscriptionStep = GeneratedSubscriptionStep.EMAIL_VALIDATION
 
 
 def generate_user(user_data: GenerateUserData) -> users_models.User:
@@ -23,19 +39,18 @@ def generate_user(user_data: GenerateUserData) -> users_models.User:
 
     factory = users_factories.BaseUserFactory
     match user_data.step:
-        case subscription_models.SubscriptionStep.EMAIL_VALIDATION:
+        case GeneratedSubscriptionStep.EMAIL_VALIDATION:
             factory = users_factories.EmailValidatedUserFactory
-        case subscription_models.SubscriptionStep.PHONE_VALIDATION:
+        case GeneratedSubscriptionStep.PHONE_VALIDATION:
             factory = users_factories.PhoneValidatedUserFactory
-        case subscription_models.SubscriptionStep.PROFILE_COMPLETION:
+        case GeneratedSubscriptionStep.PROFILE_COMPLETION:
             factory = users_factories.ProfileCompletedUserFactory
-        case subscription_models.SubscriptionStep.IDENTITY_CHECK:
+        case GeneratedSubscriptionStep.IDENTITY_CHECK:
             factory = users_factories.IdentityValidatedUserFactory
-        case subscription_models.SubscriptionStep.HONOR_STATEMENT:
+        case GeneratedSubscriptionStep.HONOR_STATEMENT:
             factory = users_factories.HonorStatementValidatedUserFactory
+        case GeneratedSubscriptionStep.BENEFICIARY:
+            factory = users_factories.BeneficiaryFactory
 
-    if user_data.is_beneficiary:
-        factory = users_factories.BeneficiaryFactory
-
-    id_provider = fraud_models.FraudCheckType[user_data.id_provider]
+    id_provider = user_data.id_provider.value
     return factory(age=user_data.age, beneficiaryFraudChecks__type=id_provider)

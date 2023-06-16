@@ -31,9 +31,6 @@ class SubscriptionStep(enum.Enum):
     IDENTITY_CHECK = "identity-check"
     HONOR_STATEMENT = "honor-statement"
 
-    def get_title(self) -> str:
-        return self.value.title().replace("-", " ")
-
 
 class SubscriptionStepTitle(enum.Enum):
     PHONE_VALIDATION = "Numéro de téléphone"
