@@ -647,8 +647,9 @@ class ConfirmUpdateUserEmailTest:
     def _initialize_token(self, user, app, new_email):
         expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
         token = encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
-        app.redis_client.set(email_update.get_confirmation_token_key(user), token)
-        app.redis_client.expireat(email_update.get_confirmation_token_key(user), expiration_date)
+        app.redis_client.set(
+            email_update.get_token_key(user, email_update.TokenType.CONFIRMATION), token, exat=expiration_date
+        )
         return token
 
     def test_can_confirm_email_update(self, client, app):
@@ -682,7 +683,8 @@ class ConfirmUpdateUserEmailTest:
         token = self._initialize_token(user, app, email_update_request.newEmail)
 
         app.redis_client.expireat(
-            email_update.get_confirmation_token_key(user), datetime.utcnow() - timedelta(minutes=1)
+            email_update.get_token_key(user, email_update.TokenType.CONFIRMATION),
+            datetime.utcnow() - timedelta(minutes=1),
         )
         client.with_token(user.email)
         response = client.post("/native/v1/profile/email_update/confirm", json={"token": token})
@@ -887,7 +889,7 @@ class GetEMailUpdateStatusTest:
         user = users_factories.UserFactory(email=self.old_email)
         request_email_update(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
 
-        redis_key = email_update.get_confirmation_token_key(user)
+        redis_key = email_update.get_token_key(user, email_update.TokenType.CONFIRMATION)
         redis_value = app.redis_client.get(redis_key)
         redis_expiration = app.redis_client.ttl(redis_key)
         app.redis_client.delete(redis_key)
@@ -908,8 +910,8 @@ class ValidateEmailTest:
     def _initialize_token(self, user, app, new_email):
         expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
         token = encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
-        app.redis_client.set(email_update.get_validation_token_key(user), token)  # type: ignore [attr-defined]
-        app.redis_client.expireat(email_update.get_validation_token_key(user), expiration_date)  # type: ignore [attr-defined]
+        app.redis_client.set(email_update.get_token_key(user, email_update.TokenType.VALIDATION), token)  # type: ignore [attr-defined]
+        app.redis_client.expireat(email_update.get_token_key(user, email_update.TokenType.VALIDATION), expiration_date)  # type: ignore [attr-defined]
         return token
 
     def test_validate_email(self, app, client):
@@ -967,7 +969,7 @@ class GetTokenExpirationTest:
         user = users_factories.UserFactory(email=self.email)
 
         expiration_date = datetime.utcnow() + timedelta(hours=15)
-        key = email_update.get_confirmation_token_key(user)
+        key = email_update.get_token_key(user, email_update.TokenType.CONFIRMATION)
 
         app.redis_client.incr(key)
         app.redis_client.expireat(key, expiration_date)
