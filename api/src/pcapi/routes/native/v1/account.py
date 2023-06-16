@@ -2,7 +2,7 @@ from datetime import datetime
 import logging
 
 from flask import current_app as app
-from jwt import InvalidTokenError
+import jwt
 import pydantic
 
 from pcapi.connectors import api_recaptcha
@@ -20,6 +20,7 @@ from pcapi.core.users import exceptions
 from pcapi.core.users.email import repository as email_repository
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.core.users.utils import decode_jwt_token
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
@@ -133,7 +134,7 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
             status_code=400,
         )
-    except InvalidTokenError:
+    except jwt.InvalidTokenError:
         raise api_errors.ApiErrors(
             {"code": "INVALID_TOKEN", "message": "Token invalide"},
             status_code=400,
@@ -317,6 +318,15 @@ def suspend_account(user: users_models.User) -> None:
     except bookings_exceptions.BookingIsAlreadyRefunded:
         raise api_errors.ForbiddenError()
     transactional_mails.send_user_request_to_delete_account_reception_email(user)
+
+
+@blueprint.native_v1.route("/account/suspend/token_validation/<token>", methods=["GET"])
+@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
+def account_suspension_token_validation(token: str) -> None:
+    try:
+        decode_jwt_token(token)
+    except (jwt.InvalidTokenError, jwt.InvalidSignatureError):
+        raise api_errors.ApiErrors({"reason": "Le token est invalide."})
 
 
 @blueprint.native_v1.route("/account/suspension_date", methods=["GET"])
