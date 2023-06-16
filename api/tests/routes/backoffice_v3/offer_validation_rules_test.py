@@ -360,3 +360,233 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
             authenticated_client.get(response.location).data
         )
         assert offers_models.OfferValidationRule.query.count() == 0
+
+
+class GetDeleteOfferValidationRuleFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.offer_validation_rules.delete_rule"
+    endpoint_kwargs = {"rule_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_get_delete_form_test(self, legit_user, authenticated_client):
+        rule = offers_factories.OfferValidationRuleFactory(name="First rule of robotics")
+        offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFER,
+            attribute=offers_models.OfferValidationAttribute.NAME,
+            operator=offers_models.OfferValidationRuleOperator.CONTAINS,
+            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+        )
+        form_url = url_for(self.endpoint, rule_id=rule.id)
+
+        with assert_num_queries(2):  # session + user
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+
+class DeleteOfferValidationRuleTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.offer_validation_rules.delete_rule"
+    endpoint_kwargs = {"rule_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_delete_offer_validation_rule(self, legit_user, authenticated_client):
+        rule = offers_factories.OfferValidationRuleFactory(name="First rule of robotics")
+        sub_rule_1 = offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFER,
+            attribute=offers_models.OfferValidationAttribute.NAME,
+            operator=offers_models.OfferValidationRuleOperator.CONTAINS,
+            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+        )
+        sub_rule_2 = offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFER,
+            attribute=offers_models.OfferValidationAttribute.DESCRIPTION,
+            operator=offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
+            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+        )
+
+        response = self.post_to_endpoint(authenticated_client, rule_id=rule.id)
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"La règle {rule.name} et ses sous-règles ont été supprimées"
+        )
+
+        assert not offers_models.OfferValidationRule.query.filter_by(id=rule.id).one_or_none()
+        assert not offers_models.OfferValidationRule.query.filter_by(id=sub_rule_1.id).one_or_none()
+        assert not offers_models.OfferValidationRule.query.filter_by(id=sub_rule_2.id).one_or_none()
+
+
+class GetEditOfferValidationRuleFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.offer_validation_rules.edit_rule"
+    endpoint_kwargs = {"rule_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_get_edit_form_test(self, legit_user, authenticated_client):
+        rule = offers_factories.OfferValidationRuleFactory(name="First rule of robotics")
+        offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFER,
+            attribute=offers_models.OfferValidationAttribute.NAME,
+            operator=offers_models.OfferValidationRuleOperator.CONTAINS,
+            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+        )
+        form_url = url_for(self.endpoint, rule_id=rule.id)
+
+        with assert_num_queries(3):  # session + user
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+
+class EditOfferValidationRuleTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.offer_validation_rules.edit_rule"
+    endpoint_kwargs = {"rule_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    ## edit one rule to one rule
+    # modify only comparated
+    # modify operator
+    # modify sub_rule_type
+    # modify only name
+    ## edit one rule to two rule
+    ## edit two rule to one rule
+
+    def test_edit_offer_validation_rule(self, legit_user, authenticated_client):
+        rule = offers_factories.OfferValidationRuleFactory(
+            name="First rule of robotics", dateModified=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        )
+        sub_rule = offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFER,
+            attribute=offers_models.OfferValidationAttribute.NAME,
+            operator=offers_models.OfferValidationRuleOperator.CONTAINS,
+            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+        )
+        sub_rule_data = get_empty_sub_rule_data() | {
+            "sub_rules-0-id": str(sub_rule.id),
+            "sub_rules-0-sub_rule_type": "DESCRIPTION_OFFER",
+            "sub_rules-0-operator": "CONTAINS",
+            "sub_rules-0-list_field": "suspicious, verboten, interdit, pifpafpouf",
+        }
+        form = {"name": "Second rule of robotics"} | sub_rule_data
+
+        response = self.post_to_endpoint(authenticated_client, rule_id=rule.id, form=form)
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"La règle {rule.name} et ses sous-règles ont été modifiées"
+        )
+
+        rule = offers_models.OfferValidationRule.query.one()
+        assert rule.name == "Second rule of robotics"
+        assert rule.latestAuthor == legit_user
+        assert rule.dateModified.date() == datetime.date.today()
+        assert rule.subRules[0].id == sub_rule.id
+        assert rule.subRules[0].model == offers_models.OfferValidationModel.OFFER
+        assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.DESCRIPTION
+        assert rule.subRules[0].operator == offers_models.OfferValidationRuleOperator.CONTAINS
+        assert rule.subRules[0].comparated == {"comparated": ["suspicious", "verboten", "interdit", "pifpafpouf"]}
+
+    def test_edit_offer_validation_rule_add_sub_rule(self, legit_user, authenticated_client):
+        rule = offers_factories.OfferValidationRuleFactory(
+            name="First rule of robotics", dateModified=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        )
+        sub_rule = offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFER,
+            attribute=offers_models.OfferValidationAttribute.NAME,
+            operator=offers_models.OfferValidationRuleOperator.CONTAINS,
+            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+        )
+        sub_rule_data_0 = get_empty_sub_rule_data(0) | {
+            "sub_rules-0-id": str(sub_rule.id),
+            "sub_rules-0-sub_rule_type": "DESCRIPTION_OFFER",
+            "sub_rules-0-operator": "CONTAINS",
+            "sub_rules-0-list_field": "suspicious, verboten, interdit, pifpafpouf",
+        }
+        sub_rule_data_1 = get_empty_sub_rule_data(1) | {
+            "sub_rules-1-id": None,
+            "sub_rules-1-sub_rule_type": "DESCRIPTION_COLLECTIVE_OFFER",
+            "sub_rules-1-operator": "CONTAINS_EXACTLY",
+            "sub_rules-1-list_field": "suspicious, verboten, interdit",
+        }
+        form = {"name": "Second rule of robotics"} | sub_rule_data_0 | sub_rule_data_1
+
+        response = self.post_to_endpoint(authenticated_client, rule_id=rule.id, form=form)
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"La règle {rule.name} et ses sous-règles ont été modifiées"
+        )
+
+        rule = offers_models.OfferValidationRule.query.one()
+        assert rule.name == "Second rule of robotics"
+        assert rule.latestAuthor == legit_user
+        assert rule.dateModified.date() == datetime.date.today()
+        assert rule.subRules[0].id == sub_rule.id
+        assert rule.subRules[0].model == offers_models.OfferValidationModel.OFFER
+        assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.DESCRIPTION
+        assert rule.subRules[0].operator == offers_models.OfferValidationRuleOperator.CONTAINS
+        assert rule.subRules[0].comparated == {"comparated": ["suspicious", "verboten", "interdit", "pifpafpouf"]}
+        assert rule.subRules[1].id != sub_rule.id
+        assert rule.subRules[1].model == offers_models.OfferValidationModel.COLLECTIVE_OFFER
+        assert rule.subRules[1].attribute == offers_models.OfferValidationAttribute.DESCRIPTION
+        assert rule.subRules[1].operator == offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY
+        assert rule.subRules[1].comparated == {"comparated": ["suspicious", "verboten", "interdit"]}
+
+    def test_edit_offer_validation_rule_delete_sub_rule(self, legit_user, authenticated_client):
+        rule = offers_factories.OfferValidationRuleFactory(
+            name="First rule of robotics", dateModified=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        )
+        sub_rule_1 = offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFER,
+            attribute=offers_models.OfferValidationAttribute.NAME,
+            operator=offers_models.OfferValidationRuleOperator.CONTAINS,
+            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+        )
+        sub_rule_2 = offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.COLLECTIVE_OFFER,
+            attribute=offers_models.OfferValidationAttribute.NAME,
+            operator=offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
+            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+        )
+        sub_rule_data_0 = get_empty_sub_rule_data(0) | {
+            "sub_rules-0-id": None,
+            "sub_rules-0-sub_rule_type": "DESCRIPTION_OFFER",
+            "sub_rules-0-operator": "CONTAINS",
+            "sub_rules-0-list_field": "Riri, Fifi, Loulou",
+        }
+        sub_rule_data_1 = get_empty_sub_rule_data(1) | {
+            "sub_rules-1-id": str(sub_rule_1.id),
+            "sub_rules-1-sub_rule_type": "DESCRIPTION_COLLECTIVE_OFFER",
+            "sub_rules-1-operator": "CONTAINS_EXACTLY",
+            "sub_rules-1-list_field": "Astérix, Obélix",
+        }
+        form = {"name": "Second rule of robotics"} | sub_rule_data_0 | sub_rule_data_1
+
+        response = self.post_to_endpoint(authenticated_client, rule_id=rule.id, form=form)
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"La règle {rule.name} et ses sous-règles ont été modifiées"
+        )
+
+        rule = offers_models.OfferValidationRule.query.one()
+
+        assert rule.name == "Second rule of robotics"
+        assert rule.latestAuthor == legit_user
+        assert rule.dateModified.date() == datetime.date.today()
+        assert rule.subRules[0].id == sub_rule_1.id
+        assert rule.subRules[0].model == offers_models.OfferValidationModel.COLLECTIVE_OFFER
+        assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.DESCRIPTION
+        assert rule.subRules[0].operator == offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY
+        assert rule.subRules[0].comparated == {"comparated": ["Astérix", "Obélix"]}
+        assert rule.subRules[1].id != sub_rule_1.id
+        assert rule.subRules[1].model == offers_models.OfferValidationModel.OFFER
+        assert rule.subRules[1].attribute == offers_models.OfferValidationAttribute.DESCRIPTION
+        assert rule.subRules[1].operator == offers_models.OfferValidationRuleOperator.CONTAINS
+        assert rule.subRules[1].comparated == {"comparated": ["Riri", "Fifi", "Loulou"]}
+
+        assert not offers_models.OfferValidationRule.query.filter_by(id=sub_rule_2.id).one_or_none()

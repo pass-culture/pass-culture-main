@@ -94,10 +94,10 @@ class PcFieldList extends PcAddOn {
     const minEntries = Number($ul.dataset.minEntries)
     if (minEntries && minEntries !== undefined) {
       const fieldsCount = $ul.children.length
-      if (fieldsCount <= minEntries + 1) {
+      if (fieldsCount <= minEntries) {
         this.#changeButtonDisplay($ul, PcFieldList.REMOVE_BUTTON_SELECTOR, "none")
       }
-      if (fieldsCount <= minEntries && !skipError) {
+      if (fieldsCount < minEntries && !skipError) {
         throw new Error('Already min entries');
       }
     }
@@ -233,8 +233,8 @@ class PcFieldList extends PcAddOn {
     const $fieldListContainer = this.#getFieldListContainerFromId(fieldListContainerId)
     const $ul = $fieldListContainer.querySelector(PcFieldList.PC_FIELD_LIST_UL_SELECTOR)
     const $li = event.target.parentElement // remove button is within li
-    this.#filterMinEntries($ul)
     $li.remove()
+    this.#filterMinEntries($ul)
     this.#changeButtonDisplay($ul, PcFieldList.ADD_BUTTON_SELECTOR, true)
   }
 
