@@ -8,8 +8,7 @@ class UserGeneratorForm(utils.PCForm):
     age = fields.PCIntegerField("Age", default=users_constants.ELIGIBILITY_AGE_18)
     step = fields.PCSelectField(
         "Étape de validation",
-        choices=[(step.value, step.get_title()) for step in SubscriptionStep if step != SubscriptionStep.MAINTENANCE],
-        default=SubscriptionStep.EMAIL_VALIDATION.value,
-        coerce=lambda value: SubscriptionStep(value) if SubscriptionStep.is_valid(value) else None,
+        choices=[(step.name, step.get_title()) for step in SubscriptionStep if step != SubscriptionStep.MAINTENANCE],
+        default=SubscriptionStep.EMAIL_VALIDATION.name,
     )
     is_beneficiary = fields.PCSwitchBooleanField("Bénéficiaire", default=False)
