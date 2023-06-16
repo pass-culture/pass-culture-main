@@ -32,7 +32,34 @@
   </div>
   <div class="col-4">
     <div class="card h-100 shadow">
-      <div class="card-body"></div>
+      <div class="card-body">
+        <ul class="list-unstyled list-group small">
+          <li>
+            <span class="fw-bold">Point de remboursement :</span>
+            {% if bank_information.reimbursement_point_url %}
+              <a href="{{ bank_information.reimbursement_point_url }}"
+                 class="link-primary">{{ bank_information.reimbursement_point_name }}</a>
+            {% else %}
+              {{ bank_information.reimbursement_point_name | empty_string_if_null }}
+            {% endif %}
+          </li>
+          <li>
+            <span class="fw-bold">Siret de valorisation :</span>
+            {% if bank_information.pricing_point_url %}
+              <a href="{{ bank_information.pricing_point_url }}"
+                 class="link-primary">{{ bank_information.pricing_point_name }}</a>
+            {% else %}
+              {{ bank_information.pricing_point_name | empty_string_if_null }}
+            {% endif %}
+          </li>
+          <li>
+            <span class="fw-bold">BIC :</span> {{ bank_information.bic | empty_string_if_null }}
+          </li>
+          <li>
+            <span class="fw-bold">IBAN :</span> {{ bank_information.iban | empty_string_if_null }}
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

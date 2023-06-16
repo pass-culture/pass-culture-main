@@ -38,6 +38,8 @@ from pcapi.utils.string import to_camelcase
 
 from . import autocomplete
 from . import utils
+from ...core.offerers.models import VenuePricingPointLink
+from ...core.offerers.models import VenueReimbursementPointLink
 from .forms import empty as empty_forms
 from .forms import search as search_forms
 from .forms import venue as forms
@@ -290,16 +292,84 @@ def get_stats_data(venue_id: int) -> serialization.VenueStats:
     return serialization.VenueStats(stats=stats, total_revenue=total_revenue)
 
 
+def get_venue_bank_information(venue: offerers_models.Venue) -> serialization.VenueBankInformation:
+    now = datetime.utcnow()
+    has_bank_information = venue.bic and venue.iban
+    reimbursement_point_name = None
+    pricing_point_name = None
+    bic = None
+    iban = None
+    reimbursement_point_url = None
+    pricing_point_url = None
+    current_pricing_point = next(
+        (
+            pricing_point_link.pricingPoint
+            for pricing_point_link in venue.pricing_point_links
+            if now in pricing_point_link.timespan
+        ),
+        None,
+    )
+    current_reimbursement_point = next(
+        (
+            reimbursement_point_link.reimbursementPoint
+            for reimbursement_point_link in venue.reimbursement_point_links
+            if now in reimbursement_point_link.timespan
+        ),
+        None,
+    )
+
+    if has_bank_information:
+        bic = venue.bic
+        iban = venue.iban
+        reimbursement_point_name = venue.name
+    elif current_reimbursement_point is not None:
+        bic = current_reimbursement_point.bic
+        iban = current_reimbursement_point.iban
+        reimbursement_point_name = current_reimbursement_point.name
+        reimbursement_point_url = url_for("backoffice_v3_web.venue.get", venue_id=current_reimbursement_point.id)
+
+    if venue.siret:
+        pricing_point_name = venue.name
+    elif current_pricing_point is not None:
+        pricing_point_name = current_pricing_point.name
+        pricing_point_url = url_for("backoffice_v3_web.venue.get", venue_id=current_pricing_point.id)
+
+    return serialization.VenueBankInformation(
+        reimbursement_point_name=reimbursement_point_name,
+        reimbursement_point_url=reimbursement_point_url,
+        pricing_point_name=pricing_point_name,
+        pricing_point_url=pricing_point_url,
+        bic=bic,
+        iban=iban,
+    )
+
+
 @venue_blueprint.route("/<int:venue_id>/stats", methods=["GET"])
 def get_stats(venue_id: int) -> utils.BackofficeResponse:
-    venue = offerers_models.Venue.query.get_or_404(venue_id)
-    data = get_stats_data(venue.id)
+    venue = (
+        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        .options(
+            sa.orm.joinedload(offerers_models.Venue.pricing_point_links).joinedload(VenuePricingPointLink.pricingPoint),
+            sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links)
+            .joinedload(VenueReimbursementPointLink.reimbursementPoint)
+            .load_only(offerers_models.Venue.name)
+            .joinedload(offerers_models.Venue.bankInformation)
+            .load_only(finance_models.BankInformation.bic, finance_models.BankInformation.iban),
+            sa.orm.joinedload(offerers_models.Venue.bankInformation).load_only(
+                finance_models.BankInformation.bic, finance_models.BankInformation.iban
+            ),
+        )
+        .one_or_none()
+    )
 
+    data = get_stats_data(venue.id)
+    bank_information = get_venue_bank_information(venue)
     return render_template(
         "venue/get/stats.html",
         venue=venue,
         stats=data.stats,
         total_revenue=data.total_revenue,
+        bank_information=bank_information,
     )
 
 
