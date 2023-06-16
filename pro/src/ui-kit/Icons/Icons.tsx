@@ -32,6 +32,7 @@ const iconList = [
   { src: 'icons/full-mail.svg' }, // TODO 2 uses left inside ButtonLink, 1 use left inside SubmitButton
   { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
   { src: 'icons/full-duplicate.svg' }, // TODO still used in 1 Button
+  { src: 'icons/full-hide.svg' }, // TODO still used in 1 ConfirmDialog
   { src: 'icons/full-back.svg' },
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
@@ -88,7 +89,6 @@ const iconList = [
   { src: 'icons/external-site.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-eye-full-close.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-eye-full-open.svg', viewBox: '0 0 20 20' },
-  { src: 'icons/ico-eye-hidden.svg', viewBox: '0 0 88 88' },
   { src: 'icons/ico-eye-open-filled-black.svg' },
   { src: 'icons/ico-filter-status-active.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-filter-status-black.svg', viewBox: '0 0 24 24' },
