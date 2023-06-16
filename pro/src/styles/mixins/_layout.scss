@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/size.scss" as size;
 
 @mixin logo-side() {
   display: flex;
@@ -10,6 +11,6 @@
   min-height: 100vh;
   background-image: url("/icons/linear-gradient.svg");
   box-shadow: inset rem.torem(-10px) 0 rem.torem(20px) 0 colors.$black-shadow;
-  min-width: rem.torem(520px);
+  min-width: size.$logo-side-width;
   background-size: cover;
 }

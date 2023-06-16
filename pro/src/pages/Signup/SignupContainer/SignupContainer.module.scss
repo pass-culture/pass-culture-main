@@ -4,6 +4,10 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_forms.scss" as forms;
 
+.signup-page-form {
+  position: relative;
+}
+
 .sign-up-form-page {
   height: 100%;
   width: 100%;
@@ -53,4 +57,9 @@
       }
     }
   }
+}
+
+.cookie-footer {
+  bottom: -97px;
+  left: -145px;
 }
