@@ -2,8 +2,8 @@
 <div class="d-flex d-flex-column justify-content-between"
      data-field-list-container="{{ field.name }}-{{ field_id }}">
   <ul data-entries-count="{{ field|length }}"
-      data-max-entries="{{ field.max_entries }}"
-      data-min-entries="{{ field.min_entries }}"
+      {% if field.max_entries %}data-max-entries="{{ field.max_entries }}"{% endif %}
+      {% if field.min_entries %}data-min-entries="{{ field.min_entries }}"{% endif %}
       data-field-name="{{ field.name }}"
       class="field-list list-unstyled flex-grow">
     {% for subfield in field %}

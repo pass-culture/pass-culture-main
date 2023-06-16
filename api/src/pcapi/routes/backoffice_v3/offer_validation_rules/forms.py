@@ -15,6 +15,52 @@ from ..forms import fields
 from ..forms import utils
 
 
+OFFER_VALIDATION_SUB_RULE_FORM_FIELD_CONFIGURATION = {
+    "OFFER_TYPE": {"field": "offer_type", "operator": ["IN", "NOT_IN"]},
+    "MAX_PRICE_OFFER": {
+        "field": "decimal_field",
+        "operator": [
+            "EQUALS",
+            "NOT_EQUALS",
+            "GREATER_THAN",
+            "GREATER_THAN_OR_EQUAL_TO",
+            "LESS_THAN",
+            "LESS_THAN_OR_EQUAL_TO",
+        ],
+    },
+    "PRICE_COLLECTIVE_STOCK": {
+        "field": "decimal_field",
+        "operator": [
+            "EQUALS",
+            "NOT_EQUALS",
+            "GREATER_THAN",
+            "GREATER_THAN_OR_EQUAL_TO",
+            "LESS_THAN",
+            "LESS_THAN_OR_EQUAL_TO",
+        ],
+    },
+    "PRICE_DETAIL_COLLECTIVE_STOCK": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
+    "PRICE_DETAIL_COLLECTIVE_OFFER_TEMPLATE": {
+        "field": "list_field",
+        "operator": ["CONTAINS", "CONTAINS_EXACTLY"],
+    },
+    "WITHDRAWAL_DETAILS_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
+    "NAME_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
+    "NAME_COLLECTIVE_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
+    "NAME_COLLECTIVE_OFFER_TEMPLATE": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
+    "DESCRIPTION_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
+    "DESCRIPTION_COLLECTIVE_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
+    "DESCRIPTION_COLLECTIVE_OFFER_TEMPLATE": {
+        "field": "list_field",
+        "operator": ["CONTAINS", "CONTAINS_EXACTLY"],
+    },
+    "SUBCATEGORY_OFFER": {"field": "subcategories", "operator": ["IN", "NOT_IN"]},
+    "CATEGORY_OFFER": {"field": "categories", "operator": ["IN", "NOT_IN"]},
+    "SHOW_SUB_TYPE_OFFER": {"field": "show_sub_type", "operator": ["IN", "NOT_IN"]},
+    "ID_OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
+}
+
+
 class SearchRuleForm(FlaskForm):
     class Meta:
         csrf = False
@@ -35,6 +81,7 @@ class OfferValidationSubRuleForm(FlaskForm):
     class Meta:
         csrf = False
 
+    id = fields.PCOptHiddenIntegerField("ID de sous-règle")
     sub_rule_type = fields.PCSelectWithPlaceholderValueField(
         "Type de sous-règle",
         choices=utils.choices_from_enum(
@@ -75,50 +122,8 @@ class OfferValidationSubRuleForm(FlaskForm):
         choices=[(str(s), SHOW_SUB_TYPES_LABEL_BY_CODE[s]) for s in SHOW_SUB_TYPES_LABEL_BY_CODE],
     )
 
-    form_field_configuration = {
-        "OFFER_TYPE": {"field": "offer_type", "operator": ["IN", "NOT_IN"]},
-        "MAX_PRICE_OFFER": {
-            "field": "decimal_field",
-            "operator": [
-                "EQUALS",
-                "NOT_EQUALS",
-                "GREATER_THAN",
-                "GREATER_THAN_OR_EQUAL_TO",
-                "LESS_THAN",
-                "LESS_THAN_OR_EQUAL_TO",
-            ],
-        },
-        "PRICE_COLLECTIVE_STOCK": {
-            "field": "decimal_field",
-            "operator": [
-                "EQUALS",
-                "NOT_EQUALS",
-                "GREATER_THAN",
-                "GREATER_THAN_OR_EQUAL_TO",
-                "LESS_THAN",
-                "LESS_THAN_OR_EQUAL_TO",
-            ],
-        },
-        "PRICE_DETAIL_COLLECTIVE_STOCK": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
-        "PRICE_DETAIL_COLLECTIVE_OFFER_TEMPLATE": {
-            "field": "list_field",
-            "operator": ["CONTAINS", "CONTAINS_EXACTLY"],
-        },
-        "WITHDRAWAL_DETAILS_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
-        "NAME_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
-        "NAME_COLLECTIVE_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
-        "NAME_COLLECTIVE_OFFER_TEMPLATE": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
-        "DESCRIPTION_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
-        "DESCRIPTION_COLLECTIVE_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
-        "DESCRIPTION_COLLECTIVE_OFFER_TEMPLATE": {
-            "field": "list_field",
-            "operator": ["CONTAINS", "CONTAINS_EXACTLY"],
-        },
-        "SUBCATEGORY_OFFER": {"field": "subcategories", "operator": ["IN", "NOT_IN"]},
-        "CATEGORY_OFFER": {"field": "categories", "operator": ["IN", "NOT_IN"]},
-        "SHOW_SUB_TYPE_OFFER": {"field": "show_sub_type", "operator": ["IN", "NOT_IN"]},
-        "ID_OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
-    }
+    form_field_configuration = OFFER_VALIDATION_SUB_RULE_FORM_FIELD_CONFIGURATION
+
     json_data = json.dumps(
         {
             "display_configuration": form_field_configuration,
