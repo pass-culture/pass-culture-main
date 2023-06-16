@@ -6,12 +6,12 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { CalendarIcon } from 'icons'
-import { ReactComponent as IconEuro } from 'icons/ico-euro.svg'
 import { ReactComponent as IconHome } from 'icons/ico-home.svg'
 import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
 import { ReactComponent as IconSignout } from 'icons/ico-signout.svg'
 import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
 import deskIcon from 'icons/stroke-desk.svg'
+import strokeEuro from 'icons/stroke-euro.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { ROOT_PATH } from 'utils/config'
 
@@ -103,7 +103,7 @@ const Header = () => {
             role="menuitem"
             to="/remboursements/justificatifs"
           >
-            <IconEuro aria-hidden className="nav-item-icon" />
+            <SvgIcon className="nav-item-icon" src={strokeEuro} alt="" />
             Remboursements
           </NavLink>
 

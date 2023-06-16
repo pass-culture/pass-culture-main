@@ -47,6 +47,7 @@ const iconList = [
   { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
   { src: 'icons/stroke-error.svg' },
   { src: 'icons/stroke-valid.svg' }, // TODO 1 use left inside <Banner>
+  { src: 'icons/stroke-euro.svg' }, // TODO 3 use left inside a <TextInput>
   { src: 'icons/stroke-thing.svg' },
   { src: 'icons/stroke-duo.svg' },
   { src: 'icons/stroke-phone.svg' },
@@ -77,7 +78,6 @@ const iconList = [
   },
   { src: 'icons/dropdown-disclosure-down-b.svg', viewBox: '0 0 14 7' },
   { src: 'icons/dropdown-disclosure-down-s-w.svg', viewBox: '0 0 14 7' },
-
   { src: 'icons/ico-email-red.svg', viewBox: '0 0 25 24' },
   { src: 'icons/error.svg', viewBox: '0 0 18 18' },
   { src: 'icons/ico-euro-grey.svg', viewBox: '0 0 24 24' },
@@ -203,7 +203,6 @@ const iconList = [
   { src: 'icons/ico-clock.svg', viewbox: '0 0 24 24' },
   { src: 'icons/ico-date.svg', viewbox: '0 0 48 48' },
   { src: 'icons/ico-disconnect-full.svg', viewbox: '0 0 40 40' },
-  { src: 'icons/ico-euro.svg', viewbox: '0 0 24 24' },
   { src: 'icons/ico-events.svg', viewbox: '0 0 24 24' },
   { src: 'icons/ico-eye-close.svg', viewbox: '0 0 20 20' },
   { src: 'icons/ico-eye-open.svg', viewbox: '0 0 20 20' },
@@ -211,7 +210,6 @@ const iconList = [
   { src: 'icons/ico-info-wrong.svg', viewbox: '0 0 78 78' },
   { src: 'icons/ico-key.svg', viewbox: '0 0 20 20' },
   { src: 'icons/logo-pass-culture-dark.svg', viewbox: '0 0 71 24' },
-
   { src: 'icons/ico-mail-outline.svg', viewbox: '0 0 82 67' },
   { src: 'icons/ico-notification-error.svg', viewbox: '0 0 24 24' },
   { src: 'icons/offer-card-euro.svg', viewbox: '0 0 30 30' },
