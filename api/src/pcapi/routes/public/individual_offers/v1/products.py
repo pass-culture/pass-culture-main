@@ -92,11 +92,11 @@ def post_product_offer(body: serialization.BatchProductOfferCreation) -> seriali
     Create in batch (1-50) CD or vinyl products.
     """
     created_offers: list[offers_models.Offer] = []
+    venue = utils.retrieve_venue_from_location(body.location)
 
     try:
         with repository.transaction():
             for product_offer in body.product_offers:
-                venue = utils.retrieve_venue_from_location(product_offer.location)
                 created_offer = offers_api.create_offer(
                     audio_disability_compliant=product_offer.accessibility.audio_disability_compliant,
                     booking_email=product_offer.booking_email,
@@ -109,9 +109,7 @@ def post_product_offer(body: serialization.BatchProductOfferCreation) -> seriali
                     name=product_offer.name,
                     provider=current_api_key.provider,
                     subcategory_id=product_offer.category_related_fields.subcategory_id,
-                    url=product_offer.location.url
-                    if isinstance(product_offer.location, serialization.DigitalLocation)
-                    else None,
+                    url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                     venue=venue,
                     visual_disability_compliant=product_offer.accessibility.visual_disability_compliant,
                     withdrawal_details=product_offer.withdrawal_details,
@@ -122,6 +120,7 @@ def post_product_offer(body: serialization.BatchProductOfferCreation) -> seriali
             # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
             # It will be done before the release of this API
             db.session.add_all(created_offers)
+            db.session.flush()
 
             # FIXME:
             for product_offer, saved_offer in zip(body.product_offers, created_offers):

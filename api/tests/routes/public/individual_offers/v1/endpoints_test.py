@@ -231,6 +231,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
@@ -239,10 +240,9 @@ class PostProductTest:
                             "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                     }
-                ]
+                ],
             },
         )
 
@@ -300,6 +300,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
@@ -308,7 +309,6 @@ class PostProductTest:
                             "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                     },
                     {
@@ -318,10 +318,9 @@ class PostProductTest:
                             "musicType": "HIP_HOP_RAP-RAP_OLD_SCHOOL",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Pump it",
                     },
-                ]
+                ],
             },
         )
 
@@ -411,6 +410,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "productOffers": [
                     {
                         "enableDoubleBookings": False,
@@ -436,7 +436,6 @@ class PostProductTest:
                             "file": image_data.GOOD_IMAGE,
                         },
                         "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                         "stock": {
                             "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
@@ -444,7 +443,7 @@ class PostProductTest:
                             "quantity": 3,
                         },
                     }
-                ]
+                ],
             },
         )
 
@@ -522,7 +521,7 @@ class PostProductTest:
                         "quantity": 3,
                     },
                 }
-            ]
+            ],
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -532,6 +531,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
@@ -540,7 +540,6 @@ class PostProductTest:
                             "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                         "stock": {
                             "bookedQuantity": 0,
@@ -548,7 +547,7 @@ class PostProductTest:
                             "quantity": "unlimited",
                         },
                     }
-                ]
+                ],
             },
         )
 
@@ -570,6 +569,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
@@ -578,14 +578,13 @@ class PostProductTest:
                             "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                         "stock": {
                             "price": 12.34,
                             "quantity": "unlimited",
                         },
                     },
-                ]
+                ],
             },
         )
 
@@ -600,6 +599,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
@@ -608,14 +608,13 @@ class PostProductTest:
                             "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                         "stock": {
                             "price": -1200,
                             "quantity": "unlimited",
                         },
                     },
-                ]
+                ],
             },
         )
 
@@ -630,6 +629,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
@@ -638,14 +638,13 @@ class PostProductTest:
                             "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                         "stock": {
                             "price": 1200,
                             "quantity": -1,
                         },
                     }
-                ]
+                ],
             },
         )
 
@@ -659,6 +658,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "productOffers": [
                     {
                         "enableDoubleBookings": True,
@@ -668,10 +668,9 @@ class PostProductTest:
                             "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                     },
-                ]
+                ],
             },
         )
         assert response.status_code == 400
@@ -687,14 +686,14 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "productOffers": [
                     {
                         "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE"},
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                     },
-                ]
+                ],
             },
         )
 
@@ -709,6 +708,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
@@ -719,10 +719,9 @@ class PostProductTest:
                             "isbn": "1234567891123",  # this field is not applicable and not added to extraData
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                     },
-                ]
+                ],
             },
         )
 
@@ -751,6 +750,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
@@ -759,10 +759,9 @@ class PostProductTest:
                             "musicType": "CHANSON_VARIETE-OTHER",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                     },
-                ]
+                ],
             },
         )
 
@@ -778,14 +777,14 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "productOffers": [
                     {
                         "categoryRelatedFields": {"category": "EVENEMENT_JEU"},
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                     },
-                ]
+                ],
             },
         )
 
@@ -801,6 +800,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": not_allowed_venue.id},
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
@@ -809,10 +809,9 @@ class PostProductTest:
                             "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": not_allowed_venue.id},
                         "name": "Le champ des possibles",
                     },
-                ]
+                ],
             },
         )
 
@@ -829,6 +828,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
@@ -837,12 +837,11 @@ class PostProductTest:
                             "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                         "image": {"file": image_data.GOOD_IMAGE},
                         "stock": {"quantity": 1, "price": 100},
                     },
-                ]
+                ],
             },
         )
 
@@ -859,6 +858,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
@@ -867,12 +867,11 @@ class PostProductTest:
                             "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                         "image": {"file": image_data.WRONG_IMAGE_SIZE},
                         "stock": {"quantity": 1, "price": 100},
                     },
-                ]
+                ],
             },
         )
 
@@ -892,6 +891,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
@@ -900,12 +900,11 @@ class PostProductTest:
                             "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                         "image": {"file": encoded_bytes.decode()},
                         "stock": {"quantity": 1, "price": 100},
                     },
-                ]
+                ],
             },
         )
 
@@ -923,6 +922,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "physical", "venueId": venue.id},
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
@@ -931,11 +931,10 @@ class PostProductTest:
                             "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "Le champ des possibles",
                         "stock": {"bookingLimitDatetime": "2021-01-01T00:00:00", "price": 10, "quantity": 10},
                     },
-                ]
+                ],
             },
         )
 
@@ -953,6 +952,7 @@ class PostProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
+                "location": {"type": "digital", "url": "https://la-flute-en-chantier.fr"},
                 "product_offers": [
                     {
                         "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "OPERA-GRAND_OPERA"},
@@ -960,7 +960,7 @@ class PostProductTest:
                         "location": {"type": "digital", "url": "https://la-flute-en-chantier.fr"},
                         "name": "La flûte en chantier",
                     },
-                ]
+                ],
             },
         )
 
@@ -970,9 +970,11 @@ class PostProductTest:
         assert offers_models.Offer.query.first() is None
 
     @pytest.mark.usefixtures("db_session")
-    def test_books_are_not_allowed(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+    def test_books_are_allowed(self, client):
+        venue, _ = create_offerer_provider_linked_to_venue()
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "1234567891234"}
+        )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -982,19 +984,30 @@ class PostProductTest:
                     {
                         "categoryRelatedFields": {
                             "category": "LIVRE_PAPIER",
-                            "ean": "1234567890123",
+                            "ean": product.extraData["ean"],
                             "author": "Maurice",
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
-                        "location": {"type": "physical", "venueId": venue.id},
                         "name": "A qui mieux mieux",
                     },
                 ],
             },
         )
 
-        assert response.status_code == 400
-        assert offers_models.Offer.query.count() == 0
+        assert response.status_code == 200
+        created_offer = offers_models.Offer.query.first()
+
+        assert created_offer.name == "A qui mieux mieux"
+        assert created_offer.venue == venue
+        assert created_offer.subcategoryId == "LIVRE_PAPIER"
+        assert created_offer.audioDisabilityCompliant is True
+
+        assert response.json["productOffers"][0]["categoryRelatedFields"] == {
+            "author": "Maurice",
+            "category": "LIVRE_PAPIER",
+            "ean": "1234567891234",
+        }
+        assert created_offer.id is not None
 
 
 @pytest.mark.usefixtures("db_session")
@@ -2811,7 +2824,10 @@ class PatchProductTest:
         )
         assert response.status_code == 400
         assert response.json == {
-            "categoryRelatedFields.category": ["unexpected value; permitted: 'SUPPORT_PHYSIQUE_MUSIQUE'"]
+            "categoryRelatedFields.category": [
+                "unexpected value; permitted: 'SUPPORT_PHYSIQUE_MUSIQUE'",
+                "unexpected value; permitted: 'LIVRE_PAPIER'",
+            ]
         }
 
     def test_update_unallowed_subcategory_product_raises_error(self, client):
@@ -2828,7 +2844,9 @@ class PatchProductTest:
         )
 
         assert response.status_code == 400
-        assert response.json == {"product.subcategory": ["Only SUPPORT_PHYSIQUE_MUSIQUE products can be edited"]}
+        assert response.json == {
+            "product.subcategory": ["Only SUPPORT_PHYSIQUE_MUSIQUE, LIVRE_PAPIER products can be edited"]
+        }
 
 
 @pytest.mark.usefixtures("db_session")

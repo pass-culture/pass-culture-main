@@ -196,7 +196,6 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
     external_ticket_office_url: pydantic.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageBody | None
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
-    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     name: str = NAME_FIELD
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
 
@@ -271,7 +270,7 @@ def deserialize_extra_data(
     return extra_data
 
 
-ALLOWED_PRODUCT_SUBCATEGORIES = [subcategories.SUPPORT_PHYSIQUE_MUSIQUE]
+ALLOWED_PRODUCT_SUBCATEGORIES = [subcategories.SUPPORT_PHYSIQUE_MUSIQUE, subcategories.LIVRE_PAPIER]
 product_category_creation_models = {
     subcategory.id: compute_category_fields_model(subcategory, Method.create)
     for subcategory in ALLOWED_PRODUCT_SUBCATEGORIES
@@ -314,8 +313,15 @@ if typing.TYPE_CHECKING:
     product_category_edition_fields = CategoryRelatedFields
 else:
     product_category_creation_fields = typing_extensions.Annotated[
-        product_category_creation_models[subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id],
-        pydantic.Field(description=CATEGORY_RELATED_FIELD_DESCRIPTION),
+        typing.Union[
+            tuple(
+                [
+                    product_category_creation_models[subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id],
+                    product_category_creation_models[subcategories.LIVRE_PAPIER.id],
+                ]
+            )
+        ],
+        pydantic.Field(description=CATEGORY_RELATED_FIELD_DESCRIPTION, discriminator="subcategory_id"),
     ]
     product_category_reading_fields = typing_extensions.Annotated[
         typing.Union[tuple(product_category_reading_models.values())],
@@ -447,6 +453,7 @@ class ProductOfferCreation(OfferCreationBase):
 
 class BatchProductOfferCreation(serialization.ConfiguredBaseModel):
     product_offers: list[ProductOfferCreation]
+    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
 
     @pydantic.validator("product_offers")
     def validate_product_offer_list(cls, product_offers: list[ProductOfferCreation]) -> list[ProductOfferCreation]:
@@ -511,6 +518,7 @@ class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
 class EventOfferCreation(OfferCreationBase):
     category_related_fields: event_category_creation_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
+    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = TICKET_COLLECTION_FIELD
     price_categories: typing.List[PriceCategoryCreation] | None = PRICE_CATEGORIES_FIELD
 
