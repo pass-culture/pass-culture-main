@@ -233,12 +233,13 @@ class SearchOffererTest:
         assert len(cards_text) == 1
         assert_offerer_equals(cards_text[0], self.offerers[2])
 
-    def test_can_search_offerer_by_siren(self, authenticated_client):
+    @pytest.mark.parametrize("siren", ["123456003", "123 456 003 "])
+    def test_can_search_offerer_by_siren(self, authenticated_client, siren):
         # given
         self._create_offerers()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=self.offerers[3].siren, pro_type="offerer"))
+        response = authenticated_client.get(url_for(self.endpoint, terms=siren, pro_type="offerer"))
 
         # then
         assert response.status_code == 200
@@ -318,12 +319,13 @@ class SearchVenueTest:
         assert len(cards_text) == 1
         assert_venue_equals(cards_text[0], self.venues[2])
 
-    def test_can_search_venue_by_siret(self, authenticated_client):
+    @pytest.mark.parametrize("siret", ["12345600300003", "123 456 003 00003"])
+    def test_can_search_venue_by_siret(self, authenticated_client, siret):
         # given
         self._create_venues()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=self.venues[3].siret, pro_type="venue"))
+        response = authenticated_client.get(url_for(self.endpoint, terms=siret, pro_type="venue"))
 
         # then
         assert response.status_code == 200

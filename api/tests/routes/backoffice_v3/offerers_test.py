@@ -1306,7 +1306,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert response.status_code == 400
             assert "Date invalide" in response.data.decode("utf-8")
 
-        @pytest.mark.parametrize("search", ["123004004", "  123004004 ", "123004004\n"])
+        @pytest.mark.parametrize("search", ["123004004", "123 004 004", "  123004004 ", "123004004\n"])
         def test_list_search_by_siren(self, authenticated_client, offerers_to_be_validated, search):
             # when
             with assert_num_queries(self.expected_num_queries):
@@ -1319,11 +1319,12 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"D"}
 
-        def test_list_search_by_postal_code(self, authenticated_client, offerers_to_be_validated):
+        @pytest.mark.parametrize("postal_code", ["35400", "35 400"])
+        def test_list_search_by_postal_code(self, authenticated_client, offerers_to_be_validated, postal_code):
             # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
-                    url_for("backoffice_v3_web.validation.list_offerers_to_validate", q="35400")
+                    url_for("backoffice_v3_web.validation.list_offerers_to_validate", q=postal_code)
                 )
 
             # then
@@ -2197,10 +2198,11 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert [int(row["ID Compte pro"]) for row in rows] == [uo.user.id for uo in (user_offerer_3, user_offerer_2)]
 
-    def test_list_search_by_postal_code(self, authenticated_client, user_offerer_to_be_validated):
+    @pytest.mark.parametrize("postal_code", ["97100", "97 100"])
+    def test_list_search_by_postal_code(self, authenticated_client, user_offerer_to_be_validated, postal_code):
         # when
         with assert_no_duplicated_queries():
-            response = authenticated_client.get(url_for(self.endpoint, q="97100"))
+            response = authenticated_client.get(url_for(self.endpoint, q=postal_code))
 
         # then
         assert response.status_code == 200

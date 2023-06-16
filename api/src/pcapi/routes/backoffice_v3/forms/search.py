@@ -1,3 +1,5 @@
+import re
+
 from flask_wtf import FlaskForm
 import wtforms
 from wtforms import validators
@@ -6,6 +8,9 @@ from pcapi.routes.backoffice_v3.serialization.search import TypeOptions
 
 from . import fields
 from . import utils
+
+
+DIGITS_AND_WHITESPACES_REGEX = re.compile(r"^[\d\s]+$")
 
 
 class SearchForm(FlaskForm):
@@ -46,3 +51,9 @@ class ProSearchForm(SearchForm):
     pro_type = fields.PCSelectField(
         "Type", choices=utils.values_from_enum(TypeOptions), default=TypeOptions.OFFERER.value
     )
+
+    def filter_terms(self, value: str | None) -> str | None:
+        # Remove spaces from SIREN, SIRET and IDs
+        if value and DIGITS_AND_WHITESPACES_REGEX.match(value):
+            return re.sub(r"\s+", "", value)
+        return value
