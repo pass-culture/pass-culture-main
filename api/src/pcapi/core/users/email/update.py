@@ -131,6 +131,24 @@ def confirm_email_update_request(token: str) -> None:
         )
 
 
+def cancel_email_update_request(token: str) -> None:
+    """Cancel the email update request for the given user"""
+
+    payload = ChangeEmailTokenContent.from_token(token)
+    current_email = payload.current_email
+    new_email = payload.new_email
+    user = users_repository.find_user_by_email(current_email)
+    if not user:
+        raise exceptions.InvalidEmailError()
+    check_and_expire_token(user, token, TokenType.CONFIRMATION)
+    with transaction():
+        models.UserEmailHistory.build_cancellation(user, new_email)
+        api.suspend_account(
+            user, constants.SuspensionReason.FRAUD_SUSPICION, user, "Suspension suite à un changement d'email annulé"
+        )
+        transactional_mails.send_email_update_cancellation_email(user)
+
+
 def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:
     check_user_password(user, password)
     check_pro_email_update_attempts(user)

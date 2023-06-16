@@ -38,6 +38,7 @@ from pcapi.core.users.api import create_phone_validation_token
 import pcapi.core.users.constants as users_constants
 from pcapi.core.users.email import request_email_update
 from pcapi.core.users.email import update as email_update
+from pcapi.core.users.email.repository import get_email_update_latest_event
 from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.models import db
@@ -973,6 +974,31 @@ class ValidateEmailTest:
 
         user = users_models.User.query.get(user.id)
         assert user.email == self.old_email
+
+
+class CancelEmailChangeTest:
+    def test_cancel_email_change(self, app, client):
+        user = users_factories.UserFactory()
+        expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+        token = email_update.generate_email_change_token(
+            user, "example@example.com", expiration_date, email_update.TokenType.CONFIRMATION
+        )
+        response = client.post("/native/v1/profile/email_update/cancel", json={"token": token})
+        assert response.status_code == 204
+        assert app.redis_client.get(email_update.get_token_key(user, email_update.TokenType.CONFIRMATION)) is None  # type: ignore [attr-defined]
+        assert mails_testing.outbox[0].sent_data["params"]["FIRSTNAME"] == user.firstName
+        assert get_email_update_latest_event(user).eventType == users_models.EmailHistoryEventTypeEnum.CANCELLATION
+        assert user.account_state == users_models.AccountState.SUSPENDED
+
+    def test_cancel_email_change_expired_token(self, app, client):
+        user = users_factories.UserFactory()
+        expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+        token = email_update.generate_email_change_token(
+            user, "example@example.com", expiration_date, email_update.TokenType.CONFIRMATION
+        )
+        app.redis_client.expireat(email_update.get_token_key(user, email_update.TokenType.CONFIRMATION), datetime.utcnow() - timedelta(days=1))  # type: ignore [attr-defined]
+        response = client.post("/native/v1/profile/email_update/cancel", json={"token": token})
+        assert response.status_code == 404
 
 
 class GetTokenExpirationTest:

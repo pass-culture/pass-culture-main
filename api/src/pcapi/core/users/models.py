@@ -756,6 +756,10 @@ class UserEmailHistory(PcObject, Base, Model):
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.CONFIRMATION)
 
     @classmethod
+    def build_cancellation(cls, user: User, new_email: str) -> "UserEmailHistory":
+        return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.CANCELLATION)
+
+    @classmethod
     def build_validation(cls, user: User, new_email: str, by_admin: bool) -> "UserEmailHistory":
         if by_admin:
             return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_VALIDATION)

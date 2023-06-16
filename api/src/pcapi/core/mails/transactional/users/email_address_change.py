@@ -24,6 +24,18 @@ def send_confirmation_email_change_email(user: User, confirmation_link: str, can
     return mails.send(recipients=[user.email], data=data)
 
 
+def get_email_update_cancellation_data(first_name: str | None) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
+        template=TransactionalEmail.EMAIL_CHANGE_CANCELLATION.value,
+        params={"FIRSTNAME": first_name},
+    )
+
+
+def send_email_update_cancellation_email(user: User) -> bool:
+    data = get_email_update_cancellation_data(user.firstName)
+    return mails.send(recipients=[user.email], data=data)
+
+
 def get_validation_email_change_data(first_name: str | None, confirmation_link: str) -> models.TransactionalEmailData:
     return models.TransactionalEmailData(
         template=TransactionalEmail.EMAIL_CHANGE_CONFIRMATION.value,
