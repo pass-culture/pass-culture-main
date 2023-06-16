@@ -178,6 +178,13 @@ class PCIntegerField(wtforms.IntegerField):
     ]
 
 
+class PCOptHiddenIntegerField(wtforms.IntegerField):
+    widget = partial(widget, template="components/forms/string_field.html")
+    validators = [
+        validators.Optional(""),
+    ]
+
+
 class PCDateField(wtforms.DateField):
     widget = partial(widget, template="components/forms/date_field.html")
 
