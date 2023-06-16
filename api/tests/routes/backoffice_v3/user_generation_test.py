@@ -33,6 +33,6 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
 
     @override_settings(ENABLE_TEST_USER_GENERATION=False)
     def test_returns_not_found_if_generation_disabled(self, authenticated_client):
-        form = {"age": "18", "is_beneficiary": "0", "id_provider": "UBBLE", "step": "email-validation"}
+        form = {"age": "18", "id_provider": "UBBLE", "step": "BENEFICIARY"}
         response = self.post_to_endpoint(authenticated_client, form=form)
         assert response.status_code == 404
