@@ -87,12 +87,12 @@
     &::after {
       content: "";
       position: absolute;
-      bottom: -2px;
+      bottom: 0;
       left: 0;
       width: 100%;
       height: rem.torem(4px);
       background-color: colors.$primary;
-      border-radius: rem.torem(2px);
+      border-radius: rem.torem(2px) rem.torem(2px) 0 0;
     }
 
     .adage-header-item-icon {
