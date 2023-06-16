@@ -4,10 +4,10 @@ import React from 'react'
 
 import { OfferAddressType } from 'apiClient/adage'
 import { ReactComponent as DateIcon } from 'icons/ico-date.svg'
-import { ReactComponent as EuroIcon } from 'icons/ico-euro.svg'
 import { ReactComponent as SubcategoryIcon } from 'icons/ico-subcategory.svg'
 import { ReactComponent as LocationIcon } from 'icons/location.svg'
 import buildingStrokeIcon from 'icons/stroke-building.svg'
+import strokeEuro from 'icons/stroke-euro.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import {
   HydratedCollectiveOffer,
@@ -123,7 +123,11 @@ const OfferSummary = ({
         )}
         {formattedPrice && (
           <li className="offer-summary-item">
-            <EuroIcon className="offer-summary-item-icon" />
+            <SvgIcon
+              src={strokeEuro}
+              alt=""
+              className="offer-summary-item-icon"
+            />
             {formattedPrice}
           </li>
         )}

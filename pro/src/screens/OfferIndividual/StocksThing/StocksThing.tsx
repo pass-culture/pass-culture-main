@@ -30,7 +30,8 @@ import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { EuroIcon, TicketPlusFullIcon, TrashFilledIcon } from 'icons'
+import { TicketPlusFullIcon, TrashFilledIcon } from 'icons'
+import { ReactComponent as StrokeEuro } from 'icons/stroke-euro.svg'
 import { Checkbox, DatePicker, InfoBox, TextInput } from 'ui-kit'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
@@ -401,7 +402,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
                   disabled={readOnlyFields.includes('price')}
                   type="number"
                   data-testid="input-price"
-                  rightIcon={() => <EuroIcon tabIndex={-1} />}
+                  rightIcon={() => <StrokeEuro tabIndex={-1} />}
                   step="0.01"
                 />
                 <DatePicker

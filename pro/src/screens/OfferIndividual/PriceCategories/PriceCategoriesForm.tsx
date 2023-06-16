@@ -9,7 +9,8 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
-import { EuroIcon, PlusCircleIcon, TrashFilledIcon } from 'icons'
+import { PlusCircleIcon, TrashFilledIcon } from 'icons'
+import { ReactComponent as StrokeEuro } from 'icons/stroke-euro.svg'
 import { Button, Checkbox, InfoBox, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { BaseCheckbox } from 'ui-kit/form/shared'
@@ -178,7 +179,7 @@ export const PriceCategoriesForm = ({
                     type="number"
                     step="0.01"
                     max={PRICE_CATEGORY_PRICE_MAX}
-                    rightIcon={() => <EuroIcon />}
+                    rightIcon={() => <StrokeEuro />}
                     className={styles['price-input']}
                     isLabelHidden={index !== 0}
                     disabled={isDisabled}
