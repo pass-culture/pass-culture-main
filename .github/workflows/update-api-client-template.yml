@@ -126,23 +126,7 @@ jobs:
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         id: changes
         run: |
-          if [[ -z "$(git status --porcelain $STATUS_ARGS $PATHSPEC)" ]];
+          if ! [[ -z "$(git status --porcelain $STATUS_ARGS $PATHSPEC)" ]];
             then
-              echo "changed=false" >> $GITHUB_OUTPUT
-            else
-              echo "changed=true" >> $GITHUB_OUTPUT
+              exit 1
             fi
-
-      - name: Commit
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git add pro/src/apiClient adage-front/src/apiClient
-          git commit -m "(BSR) chore: update api client"
-
-      - name: Push changes
-        if: steps.changes.outputs.changed == 'true'
-        uses: ad-m/github-push-action@master
-        with:
-          branch: ${{ github.head_ref }}
