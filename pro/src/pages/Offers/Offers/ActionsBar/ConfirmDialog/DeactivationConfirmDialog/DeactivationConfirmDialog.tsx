@@ -5,7 +5,7 @@ import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience, NBSP } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as EyeIcon } from 'icons/ico-eye-hidden.svg'
+import { ReactComponent as EyeIcon } from 'icons/full-hide.svg'
 
 export interface IDeactivationConfirmDialogProps {
   areAllOffersSelected: boolean
