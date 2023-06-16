@@ -51,7 +51,6 @@ describe('OffererStatsScreen', () => {
   const secondVenueId = 2
   beforeEach(() => {
     jest.spyOn(api, 'getOfferer').mockResolvedValue({
-      id: 'A1',
       managedVenues: [
         { id: 'V1', name: 'Salle 1', nonHumanizedId: firstVenueId },
         { id: 'V2', name: 'Stand popcorn', nonHumanizedId: secondVenueId },

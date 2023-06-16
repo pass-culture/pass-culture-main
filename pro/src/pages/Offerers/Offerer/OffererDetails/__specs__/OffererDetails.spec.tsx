@@ -24,7 +24,6 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
   const offererId = 1
 
   jest.spyOn(api, 'getOfferer').mockResolvedValue({
-    id: 'AA',
     nonHumanizedId: offererId,
     name: 'fake offerer name',
     city: 'Paris',
