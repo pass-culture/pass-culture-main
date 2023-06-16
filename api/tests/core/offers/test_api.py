@@ -39,6 +39,7 @@ from pcapi.utils.human_ids import humanize
 
 import tests
 from tests import conftest
+from tests.connectors.titelive import fixtures
 
 
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
@@ -2168,16 +2169,34 @@ class DeleteUnwantedExistingProductTest:
 @pytest.mark.usefixtures("db_session")
 class WhitelistExistingProductTest:
     def test_modify_product_if_existing_and_not_cgcompatible_nor_synchronizable(self):
-        ean = "1111111111111"
+        ean = "9782070455379"
         product = factories.ProductFactory(
             idAtProviders=ean,
             isGcuCompatible=False,
             isSynchronizationCompatible=False,
         )
-        api.whitelist_existing_product(ean)
+        api.whitelist_product(ean)
         assert models.Product.query.one() == product
         assert product.isGcuCompatible
         assert product.isSynchronizationCompatible
+
+    @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
+    @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
+    def test_create_product_if_not_existing(self, requests_mock):
+        ean = "9782070455379"
+        requests_mock.post(
+            "https://login.epagine.fr/v1/login/test@example.com/token",
+            json={"token": "XYZ"},
+        )
+        requests_mock.get(
+            f"https://catsearch.epagine.fr/v1/ean/{ean}",
+            json=fixtures.EAN_SEARCH_FIXTURE,
+        )
+        assert not models.Product.query.filter(models.Product.idAtProviders == ean).one_or_none()
+
+        api.whitelist_product(ean)
+
+        assert models.Product.query.filter(models.Product.idAtProviders == ean).one()
 
 
 @pytest.mark.usefixtures("db_session")

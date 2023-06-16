@@ -53,6 +53,7 @@ from . import models
 from . import offer_validation
 from . import repository as offers_repository
 from . import validation
+from ...connectors.titelive import get_new_product_from_ean13
 
 
 logger = logging.getLogger(__name__)
@@ -1221,18 +1222,22 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         search.async_index_offer_ids([offer.id])
 
 
-def whitelist_existing_product(idAtProviders: str) -> None:
+def whitelist_product(idAtProviders: str) -> None:
     product = (
         models.Product.query.filter(models.Product.can_be_synchronized == False)
         .filter_by(idAtProviders=idAtProviders)
         .one_or_none()
     )
-    if not product:
+    if product:
+        product.isGcuCompatible = True
+        product.isSynchronizationCompatible = True
+        repository.save(product)
         return
 
-    product.isGcuCompatible = True
-    product.isSynchronizationCompatible = True
-    repository.save(product)
+    product = get_new_product_from_ean13(idAtProviders)
+    if product:
+        db.session.add(product)
+        db.session.commit()
 
 
 def delete_unwanted_existing_product(idAtProviders: str) -> None:
