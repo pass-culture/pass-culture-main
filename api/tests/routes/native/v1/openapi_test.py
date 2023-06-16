@@ -1996,6 +1996,34 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
+            "/native/v1/account/suspend/token_validation/{token}": {
+                "get": {
+                    "description": "",
+                    "operationId": "get_/native/v1/account/suspend/token_validation/{token}",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "token",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "400": {"description": "Bad Request"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "account_suspension_token_validation <GET>",
+                    "tags": [],
+                }
+            },
             "/native/v1/account/suspension_date": {
                 "get": {
                     "description": "",
