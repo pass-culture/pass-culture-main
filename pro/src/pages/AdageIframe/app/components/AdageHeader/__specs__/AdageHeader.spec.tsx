@@ -78,7 +78,7 @@ describe('AdageHeader', () => {
   it('should render the number of hits', async () => {
     renderAdageHeader([defaultAlgoliaHits, defaultAlgoliaHits], user)
     await waitFor(() =>
-      expect(screen.getByText('Budget restant')).toBeInTheDocument()
+      expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
     )
     expect(screen.getByText('2')).toBeInTheDocument()
   })
@@ -86,7 +86,7 @@ describe('AdageHeader', () => {
   it('should display the institution budget', async () => {
     renderAdageHeader([], user)
     await waitFor(() =>
-      expect(screen.getByText('Budget restant')).toBeInTheDocument()
+      expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
     )
 
     expect(screen.getByText('1,000€')).toBeInTheDocument()
@@ -121,7 +121,7 @@ describe('AdageHeader', () => {
     async (headerLink: HeaderLinkProps) => {
       renderAdageHeader([], user)
       await waitFor(() =>
-        expect(screen.getByText('Budget restant')).toBeInTheDocument()
+        expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
       )
 
       await userEvent.click(
