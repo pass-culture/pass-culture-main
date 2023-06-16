@@ -15,7 +15,7 @@
           <hr class="my-5" />
           <h1>Connexion au backoffice</h1>
           <div>
-            <a href="{% if redirect %}{{ url_for('backoffice_v3_web.login', redirect=redirect) }}{% else %}{{ url_for('backoffice_v3_web.login') }}{% endif %}"
+            <a href="{{ url_for('backoffice_v3_web.login') }}"
                class="btn mt-5 btn-primary">Se connecter via Google</a>
           </div>
         </div>

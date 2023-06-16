@@ -1,6 +1,3 @@
-from base64 import b64encode
-from urllib.parse import unquote_plus
-
 from flask import g
 from flask import url_for
 
@@ -49,32 +46,7 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
         response = client_method(self.path, form=self.form)
 
         assert response.status_code in (302, 303)
-        if hasattr(self, "custom_redirect"):
-            expected_urls = [url_for(self.custom_redirect, _external=True)]
-        else:
-            expected_urls = [
-                url_for(
-                    "backoffice_v3_web.home",
-                    _external=True,
-                    redirect=b64encode(unquote_plus(self.path).encode() + b"?"),
-                ),
-                url_for(
-                    "backoffice_v3_web.home",
-                    _external=True,
-                    redirect=b64encode(self.path.encode() + b"?"),
-                ),
-                url_for(
-                    "backoffice_v3_web.home",
-                    _external=True,
-                    redirect=b64encode(unquote_plus(self.path).encode()),
-                ),
-                url_for(
-                    "backoffice_v3_web.home",
-                    _external=True,
-                    redirect=b64encode(self.path.encode()),
-                ),
-            ]
-        assert response.location in expected_urls
+        assert response.location == url_for("backoffice_v3_web.home", _external=True)
 
     def test_missing_csrf_token(self, client):
         user = users_factories.UserFactory()
