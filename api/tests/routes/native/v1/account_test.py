@@ -902,6 +902,25 @@ class GetEMailUpdateStatusTest:
         assert response.json["expired"] is True
         assert response.json["status"] == users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
 
+    def test_get_active_token_expiration_no_token(self):
+        assert email_update.get_active_token_expiration(users_factories.UserFactory()) is None
+
+    def test_get_active_token_expiration_confirmation_token(self):
+        user = users_factories.UserFactory()
+        expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+        email_update.generate_email_change_token(
+            user, "example@example.com", expiration_date, email_update.TokenType.CONFIRMATION
+        )
+        assert email_update.get_active_token_expiration(user) is not None
+
+    def test_get_active_token_expiration_validation_token(self):
+        user = users_factories.UserFactory()
+        expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+        email_update.generate_email_change_token(
+            user, "example@example.com", expiration_date, email_update.TokenType.VALIDATION
+        )
+        assert email_update.get_active_token_expiration(user) is not None
+
 
 class ValidateEmailTest:
     old_email = "old@email.com"
