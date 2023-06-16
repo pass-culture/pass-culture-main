@@ -9,6 +9,7 @@
   box-shadow: 0 2px 4px rgb(0 0 0 / 25%);
   margin-bottom: rem.torem(48px);
   padding-left: rem.torem(16px);
+  border-radius: rem.torem(8px) rem.torem(8px) 0 0;
 
   &-brand {
     display: flex;
@@ -22,11 +23,10 @@
     align-items: center;
     gap: rem.torem(48px);
 
-
     &-budget {
       display: flex;
       margin-left: auto;
-      margin-right: rem.torem(6px);
+      margin-right: rem.torem(16px);
 
       &-item {
         @include fonts.caption;
@@ -37,7 +37,6 @@
         color: colors.$grey-dark;
       }
     }
-
   }
 
   &-nb-hits {
@@ -65,7 +64,7 @@
 
 .adage-header-budget {
   @include fonts.title4;
-  
+
   display: block;
   background-image: linear-gradient(to bottom, #eb0055, #320096);
   background-clip: text;
@@ -82,8 +81,19 @@
   gap: rem.torem(10px);
 
   &-active {
+    position: relative;
     color: colors.$primary;
-    border-bottom: solid rem.torem(3px) colors.$primary;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: rem.torem(4px);
+      background-color: colors.$primary;
+      border-radius: rem.torem(2px);
+    }
 
     .adage-header-item-icon {
       fill: colors.$primary;
@@ -91,8 +101,8 @@
   }
 
   &-icon {
-    width: rem.torem(16px);
-    height: rem.torem(16px);
+    width: rem.torem(20px);
+    height: rem.torem(20px);
     fill: colors.$black;
   }
 

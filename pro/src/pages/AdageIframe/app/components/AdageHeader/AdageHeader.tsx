@@ -98,7 +98,7 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
           <a className={styles['adage-header-menu-budget-item']}>
             <div className={styles['adage-header-separator']}></div>
             <div className={styles['adage-budget-text']}>
-              <span>Budget restant</span>
+              <span>Solde prévisionnel</span>
               <span className={styles['adage-header-budget']}>
                 {institutionBudget.toLocaleString()}€
               </span>
