@@ -52,7 +52,7 @@ describe('PhoneNumberInput', () => {
   it('should not show an error if input has not been touched', () => {
     renderPhoneNumberInput()
     expect(
-      screen.queryByText('Veuillez entrer un numéro de téléphone valide')
+      screen.queryByText('Veuillez renseigner votre numéro de téléphone')
     ).not.toBeInTheDocument()
   })
 
@@ -64,7 +64,7 @@ describe('PhoneNumberInput', () => {
     await userEvent.tab()
 
     expect(
-      screen.queryByText('Veuillez entrer un numéro de téléphone valide')
+      screen.queryByText('Veuillez renseigner votre numéro de téléphone')
     ).toBeInTheDocument()
   })
 
@@ -80,7 +80,7 @@ describe('PhoneNumberInput', () => {
 
     expect(parsePhoneNumberFromString).toHaveBeenLastCalledWith('123', 'GP')
     expect(
-      screen.queryByText('Veuillez entrer un numéro de téléphone valide')
+      screen.queryByText('Veuillez renseigner votre numéro de téléphone')
     ).toBeInTheDocument()
 
     await userEvent.selectOptions(countryCodeSelect, '+33')

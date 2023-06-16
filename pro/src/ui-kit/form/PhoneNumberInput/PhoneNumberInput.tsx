@@ -53,7 +53,7 @@ const PhoneNumberInput = ({
     if (!phoneNumber || !phoneNumber.isValid()) {
       // input optional -> if optional we want to value formik field with incorrect phone number to raise error on form validation
       isOptional && helpers.setValue(phoneNumberInputValue)
-      helpers.setError('Veuillez entrer un numéro de téléphone valide')
+      helpers.setError('Veuillez renseigner votre numéro de téléphone')
       return phoneNumberInputValue
     }
 
