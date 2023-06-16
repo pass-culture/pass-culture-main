@@ -33,6 +33,11 @@ class EmailChangeAction(enum.Enum):
     VALIDATION = "changement-email/validation"
 
 
+class TokenType(enum.Enum):
+    CONFIRMATION = "confirmation"
+    VALIDATION = "validation"
+
+
 def _build_link_for_email_change_action(
     action: EmailChangeAction, new_email: str, expiration_date: datetime, token: str
 ) -> str:
@@ -54,7 +59,7 @@ def generate_and_send_beneficiary_confirmation_email_for_email_change(user: mode
 
     expiration_date = generate_email_change_token_expiration_date()
 
-    token = generate_email_change_confirmation_token(user, new_email, expiration_date)
+    token = generate_email_change_token(user, new_email, expiration_date, TokenType.CONFIRMATION)
     link_for_email_change_confirmation = _build_link_for_email_change_action(
         EmailChangeAction.CONFIRMATION,
         new_email,
@@ -76,7 +81,7 @@ def generate_and_send_beneficiary_confirmation_email_for_email_change(user: mode
 
 def generate_and_send_beneficiary_validation_email_for_email_change(user: models.User, new_email: str) -> bool:
     expiration_date = generate_email_change_token_expiration_date()
-    token = generate_email_change_validation_token(user, new_email, expiration_date)
+    token = generate_email_change_token(user, new_email, expiration_date, TokenType.VALIDATION)
 
     link_for_email_change_validation = _build_link_for_email_change_action(
         EmailChangeAction.VALIDATION,
@@ -114,7 +119,7 @@ def confirm_email_update_request(token: str) -> None:
     if not user:
         raise exceptions.InvalidEmailError()
     check_email_address_does_not_exist(new_email)
-    check_and_expire_confirmation_token(user, token)
+    check_and_expire_token(user, token, TokenType.CONFIRMATION)
     try:
         with transaction():
             models.UserEmailHistory.build_confirmation(user, new_email)
@@ -198,53 +203,36 @@ def full_email_update_by_admin(user: models.User, email: str) -> None:
     repository.save(user, admin_update_event)
 
 
-def get_confirmation_token_key(user: models.User) -> str:
-    return f"update_email_confirmation_token_{user.id}"
+def get_token_key(user: models.User, token_type: TokenType) -> str:
+    match token_type:
+        case TokenType.CONFIRMATION:
+            return f"update_email_confirmation_token_{user.id}"
+        case TokenType.VALIDATION:
+            return f"update_email_validation_token_{user.id}"
+        case _:
+            raise ValueError(f"Invalid token type: {token_type}")
 
 
-def get_validation_token_key(user: models.User) -> str:
-    return f"update_email_validation_token_{user.id}"
-
-
-def confirmation_token_exists(user: models.User) -> bool:
+def token_exists(user: models.User, token_type: TokenType) -> bool:
     """Check if there is an active confirmation token for the user"""
-    key = get_confirmation_token_key(user)
+    key = get_token_key(user, token_type)
     return app.redis_client.exists(key)  # type: ignore [attr-defined]
 
 
-def validation_token_exists(user: models.User) -> bool:
-    """Check if there is an active validation token for the user"""
-    key = get_validation_token_key(user)
-    return app.redis_client.exists(key)  # type: ignore [attr-defined]
-
-
-def generate_email_change_confirmation_token(user: models.User, new_email: str, expiration_date: datetime) -> str:
+def generate_email_change_token(
+    user: models.User, new_email: str, expiration_date: datetime, token_type: TokenType
+) -> str:
     token = encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
-    app.redis_client.set(get_confirmation_token_key(user), token, exat=expiration_date)  # type: ignore [attr-defined]
+    key = get_token_key(user, token_type)
+    app.redis_client.set(key, token, exat=expiration_date)  # type: ignore [attr-defined]
     return token
 
 
-def generate_email_change_validation_token(user: models.User, new_email: str, expiration_date: datetime) -> str:
-    token = encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
-    app.redis_client.set(get_validation_token_key(user), token, exat=expiration_date)  # type: ignore [attr-defined]
-    return token
-
-
-def check_and_expire_confirmation_token(user: models.User, token: str) -> None:
-    token_key = get_confirmation_token_key(user)
-    assert app.redis_client  # helps mypy
-    if app.redis_client.get(token_key) != token:
+def check_and_expire_token(user: models.User, token: str, token_type: TokenType) -> None:
+    token_key = get_token_key(user, token_type)
+    if app.redis_client.get(token_key) != token:  # type: ignore [attr-defined]
         raise exceptions.InvalidToken()
-    app.redis_client.delete(token_key)
-
-
-
-def check_and_expire_validation_token(user: models.User, token: str) -> None:
-    token_key = get_validation_token_key(user)
-    if app.redis_client.get(token_key) == token:  # type: ignore [attr-defined]
-        app.redis_client.delete(token_key)  # type: ignore [attr-defined]
-    else:
-        raise exceptions.InvalidToken()
+    app.redis_client.delete(token_key)  # type: ignore [attr-defined]
 
 
 def check_and_expire_or_create_token(
@@ -258,7 +246,7 @@ def check_and_expire_or_create_token(
       (expiration_date, the lifetime of the validation token).
     * If not, raise an error because there is already one.
     """
-    key = get_confirmation_token_key(user)
+    key = get_token_key(user, TokenType.CONFIRMATION)
     count = app.redis_client.incr(key)  # type: ignore [attr-defined]
 
     if count > 1:
@@ -268,8 +256,8 @@ def check_and_expire_or_create_token(
 
 
 def get_active_token_expiration(user: models.User) -> datetime | None:
-    confirmation_key = get_confirmation_token_key(user)
-    validation_key = get_validation_token_key(user)
+    confirmation_key = get_token_key(user, TokenType.CONFIRMATION)
+    validation_key = get_token_key(user, TokenType.VALIDATION)
     ttl = max(app.redis_client.ttl(confirmation_key), app.redis_client.ttl(validation_key))  # type: ignore [attr-defined]
     if ttl < 0:
         return None
@@ -301,7 +289,7 @@ def check_email_address_does_not_exist(email: str) -> None:
 
 def check_no_ongoing_email_update_request(user: models.User) -> None:
     """Raise error if user has an ongoing email update request"""
-    if confirmation_token_exists(user) or validation_token_exists(user):
+    if token_exists(user, TokenType.CONFIRMATION) or token_exists(user, TokenType.VALIDATION):
         raise exceptions.EmailUpdateTokenExists()
 
 
