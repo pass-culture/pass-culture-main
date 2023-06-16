@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as FullExternalSite } from 'icons/full-external-site.svg'
+import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -110,7 +110,7 @@ const StocksProviderForm = ({
           </p>
           <ButtonLink
             className={styles['aide-stock-button']}
-            Icon={FullExternalSite}
+            Icon={FullLink}
             link={{
               isExternal: true,
               to: 'https://aide.passculture.app/hc/fr/articles/4411999024401--Acteurs-Culturels-Quels-sont-les-livres-%C3%A9ligibles-au-pass-Culture-',

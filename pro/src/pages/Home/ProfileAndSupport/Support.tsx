@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as FullExternalSite } from 'icons/full-external-site.svg'
+import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import { ReactComponent as FullMail } from 'icons/full-mail.svg'
 import { ReactComponent as SettingsIcon } from 'icons/full-parameters.svg'
 import { Button, ButtonLink } from 'ui-kit'
@@ -33,7 +33,7 @@ const Support: () => JSX.Element | null = () => {
                   target: '_blank',
                   rel: 'noopener noreferrer',
                 }}
-                Icon={FullExternalSite}
+                Icon={FullLink}
                 onClick={() =>
                   logEvent?.(Events.CLICKED_HELP_CENTER, {
                     from: location.pathname,
@@ -52,7 +52,7 @@ const Support: () => JSX.Element | null = () => {
                   target: '_blank',
                   rel: 'noopener noreferrer',
                 }}
-                Icon={FullExternalSite}
+                Icon={FullLink}
                 onClick={() =>
                   logEvent?.(Events.CLICKED_BEST_PRACTICES_STUDIES, {
                     from: location.pathname,
@@ -90,7 +90,7 @@ const Support: () => JSX.Element | null = () => {
                   target: '_blank',
                   rel: 'noopener noreferrer',
                 }}
-                Icon={FullExternalSite}
+                Icon={FullLink}
                 onClick={() =>
                   logEvent?.(Events.CLICKED_CONSULT_CGU, {
                     from: location.pathname,

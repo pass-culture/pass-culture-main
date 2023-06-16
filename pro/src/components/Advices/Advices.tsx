@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 
 import { NBSP } from 'core/shared'
-import { ReactComponent as ExternalSite } from 'icons/external-site.svg'
 import { ReactComponent as fullDownIcon } from 'icons/full-down.svg'
+import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import { ReactComponent as fullUpIcon } from 'icons/full-up.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -53,7 +53,7 @@ const Advices = ({ teaserText, hidden = true, setHidden }: AdvicesProps) => {
                   rel: 'noopener noreferrer',
                   target: '_blank',
                 }}
-                Icon={ExternalSite}
+                Icon={FullLink}
               >
                 Pexels
                 <span>{`${NBSP}(nouvel onglet)`}</span>
@@ -67,7 +67,7 @@ const Advices = ({ teaserText, hidden = true, setHidden }: AdvicesProps) => {
                   rel: 'noopener noreferrer',
                   target: '_blank',
                 }}
-                Icon={ExternalSite}
+                Icon={FullLink}
               >
                 Pixabay
                 <span>{`${NBSP}(nouvel onglet)`}</span>
@@ -81,7 +81,7 @@ const Advices = ({ teaserText, hidden = true, setHidden }: AdvicesProps) => {
                   rel: 'noopener noreferrer',
                   target: '_blank',
                 }}
-                Icon={ExternalSite}
+                Icon={FullLink}
               >
                 Shutterstock
                 <span>{`${NBSP}(nouvel onglet)`}</span>
