@@ -143,7 +143,6 @@ class AuthorizePageTest:
 
 class LogoutTest(PostEndpointWithoutPermissionHelper):
     endpoint = "backoffice_v3_web.logout"
-    custom_redirect = "backoffice_v3_web.home"
     needed_permission = None
 
     def test_logout_success(self, authenticated_client):

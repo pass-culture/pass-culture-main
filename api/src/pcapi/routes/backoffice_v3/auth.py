@@ -22,7 +22,6 @@ from pcapi.models import db
 
 from . import blueprint
 from . import utils
-from .forms.login import GetLoginRedirectForm
 
 
 logger = logging.getLogger(__name__)
@@ -33,11 +32,6 @@ def login() -> utils.BackofficeResponse:
     is_testing_or_dev_without_google_credentials = (settings.IS_TESTING or settings.IS_DEV) and (
         not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET
     )
-
-    form = GetLoginRedirectForm(formdata=utils.get_query_params())
-    kwargs = {}
-    if form.validate():
-        kwargs["redirect"] = form.redirect.data
 
     if is_testing_or_dev_without_google_credentials:
         from pcapi.utils import login_manager
@@ -55,20 +49,15 @@ def login() -> utils.BackofficeResponse:
 
         login_user(local_admin, remember=True)
         login_manager.stamp_session(local_admin)
-        return werkzeug.utils.redirect(url_for(".home", **kwargs))
+        return werkzeug.utils.redirect(url_for(".home"))
 
-    redirect_uri = url_for(".authorize", _external=True, **kwargs)
+    redirect_uri = url_for(".authorize", _external=True)
     return oauth.google.authorize_redirect(redirect_uri)
 
 
 @blueprint.backoffice_v3_web.route("/authorize", methods=["GET"])
 def authorize() -> utils.BackofficeResponse:
     from pcapi.utils import login_manager
-
-    form = GetLoginRedirectForm(formdata=utils.get_query_params())
-    kwargs = {}
-    if form.validate():
-        kwargs["redirect"] = form.redirect.data
 
     token = oauth.google.authorize_access_token()
     google_user = oauth.google.parse_id_token(token)
@@ -116,7 +105,7 @@ def authorize() -> utils.BackofficeResponse:
 
     login_user(user, remember=True)
     login_manager.stamp_session(user)
-    return redirect(url_for(".home", **kwargs))
+    return redirect(url_for(".home"))
 
 
 @blueprint.backoffice_v3_web.route("/logout", methods=["POST"])
