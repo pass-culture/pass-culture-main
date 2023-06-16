@@ -403,6 +403,15 @@ class GetPublicAccountTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
+    class ReviewButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
+        button_label = "Revue manuelle"
+
+        @property
+        def path(self):
+            user = users_factories.UserFactory()
+            return url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user.id)
+
     class SuspendButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.SUSPEND_USER
         button_label = "Suspendre le compte"
