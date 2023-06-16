@@ -11,7 +11,7 @@ from pcapi.connectors.titelive import get_by_ean13
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers.api import delete_unwanted_existing_product
-from pcapi.core.offers.api import whitelist_existing_product
+from pcapi.core.offers.api import whitelist_product
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -45,12 +45,12 @@ def search_titelive() -> utils.BackofficeResponse:
 
     try:
         json = get_by_ean13(ean)
+    except offers_exceptions.TiteLiveAPINotExistingEAN:
+        form.ean.errors.append("EAN-13 introuvable")
+        return render_template("titelive/search_result.html", form=form, dst=url_for(".search_titelive")), 400
     except requests.ExternalAPIException as e:
         status_code = e.args[0]["status_code"]
-        if status_code == 404:
-            form.ean.errors.append("EAN-13 introuvable")
-        else:
-            form.ean.errors.append(f"Erreur API Tite Live: {status_code}")
+        form.ean.errors.append(f"Erreur API Tite Live: {status_code}")
         return render_template("titelive/search_result.html", form=form, dst=url_for(".search_titelive")), 400
 
     product_whitelist = (
@@ -94,18 +94,21 @@ def get_add_product_whitelist_confirmation_form(ean: str, title: str) -> utils.B
 def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
     form = forms.OptionalCommentForm()
     try:
-        product_whitelist = fraud_models.ProductWhitelist(
-            comment=form.comment.data, ean=ean, title=title, authorId=current_user.id
-        )
-
-        db.session.add(product_whitelist)
-        db.session.commit()
-        whitelist_existing_product(ean)
-    except sa.exc.IntegrityError:
-        db.session.rollback()
-        flash(f'L\'EAN "{ean}" est déjà dans la whitelist', "warning")
+        whitelist_product(ean)
+    except offers_exceptions.TiteLiveAPINotExistingEAN:
+        flash(f"L'EAN \"{ean}\" n'existe pas chez Titelive", "danger")
     else:
-        flash(f'L\'EAN "{ean}" a été ajouté dans la whitelist', "success")
+        try:
+            product_whitelist = fraud_models.ProductWhitelist(
+                comment=form.comment.data, ean=ean, title=title, authorId=current_user.id
+            )
+            db.session.add(product_whitelist)
+            db.session.commit()
+        except sa.exc.IntegrityError as err:
+            db.session.rollback()
+            flash(f"L'EAN \"{ean}\" n'a pas été rajouté dans la whitelist : {err}", "danger")
+        else:
+            flash(f'L\'EAN "{ean}" a été ajouté dans la whitelist', "success")
 
     return redirect(url_for(".search_titelive", ean=ean), code=303)
 

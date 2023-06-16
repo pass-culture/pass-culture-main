@@ -1,3 +1,4 @@
+import html
 import logging
 import typing
 
@@ -5,6 +6,10 @@ from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
 from pcapi.core import logging as core_logging
+from pcapi.core.categories import subcategories
+from pcapi.core.offers import exceptions as offers_exceptions
+import pcapi.core.offers.models as offers_models
+from pcapi.domain.titelive import read_things_date
 from pcapi.utils import requests
 from pcapi.utils.cache import get_from_cache
 
@@ -88,6 +93,8 @@ def get_by_ean13(ean13: str) -> dict[str, typing.Any]:
         raise requests.ExternalAPIException(is_retryable=True) from e
 
     if not response.ok:
+        if response.status_code == 404:
+            raise offers_exceptions.TiteLiveAPINotExistingEAN()
         if 400 <= response.status_code < 500:
             core_logging.log_for_supervision(
                 logger,
@@ -105,3 +112,32 @@ def get_by_ean13(ean13: str) -> dict[str, typing.Any]:
             raise requests.ExternalAPIException(True, {"status_code": response.status_code})
 
     return response.json()
+
+
+def get_new_product_from_ean13(ean: str) -> offers_models.Product | None:
+    json = get_by_ean13(ean)
+
+    if not json:
+        return None
+
+    oeuvre = json["oeuvre"]
+    article = oeuvre["article"][0]
+    return offers_models.Product(
+        idAtProviders=ean,
+        description=html.unescape(article["resume"]),
+        thumbCount=article["image"],  # 0 or 1
+        extraData=offers_models.OfferExtraData(
+            author=oeuvre["auteurs"],
+            ean=ean,
+            prix_livre=article["prix"],
+            collection=article["collection"],
+            comic_series=article["serie"],
+            date_parution=read_things_date(article["dateparution"]) if article["dateparution"] else None,
+            distributeur=article["distributeur"],
+            editeur=article["editeur"],
+            num_in_collection=article["collection_no"] if article["collection_no"] else None,
+            schoolbook=article["scolaire"] == "1",
+        ),
+        name=oeuvre["titre"],
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
+    )
