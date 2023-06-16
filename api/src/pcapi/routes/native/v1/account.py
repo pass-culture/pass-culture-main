@@ -154,6 +154,21 @@ def confirm_email_update(user: users_models.User, body: serializers.ChangeBenefi
         )
 
 
+@blueprint.native_v1.route("/profile/email_update/cancel", methods=["POST"])
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.api,
+)
+def cancel_email_update(body: serializers.ChangeBeneficiaryEmailBody) -> None:
+    try:
+        email_api.update.cancel_email_update_request(body.token)
+    except exceptions.InvalidToken:
+        raise api_errors.ApiErrors(
+            {"code": "INVALID_TOKEN", "message": "aucune demande de changement d'email en cours"},
+            status_code=404,
+        )
+
+
 @blueprint.native_v1.route("/profile/email_update/validate", methods=["PUT"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
