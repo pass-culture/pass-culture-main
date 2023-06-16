@@ -120,7 +120,6 @@ describe('route VenueEdition', () => {
     ] as IProviders[]
 
     offerer = {
-      id: 'ABCD',
       nonHumanizedId: 13,
     } as GetOffererResponseModel
 

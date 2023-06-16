@@ -6,7 +6,6 @@ describe('transformOffererResponseModelToOfferer', () => {
   it('should instantiate Offerer object with offerer values', () => {
     // Given
     const properties: GetOffererResponseModel = {
-      id: 'B3',
       nonHumanizedId: 5,
       name: 'Offerer 3',
       postalCode: '75001',
@@ -24,7 +23,7 @@ describe('transformOffererResponseModelToOfferer', () => {
     }
 
     expect(transformOffererResponseModelToOfferer(properties)).toMatchObject({
-      id: 'B3',
+      nonHumanizedId: 5,
       postalCode: '75001',
       city: 'PARIS',
     })

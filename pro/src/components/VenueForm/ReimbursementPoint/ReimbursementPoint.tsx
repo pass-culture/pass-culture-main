@@ -117,7 +117,7 @@ const ReimbursementPoint = ({
       setIsLoading(false)
     }
     loadReimbursementPoints(offerer.nonHumanizedId)
-  }, [isCreatingVenue, offerer.id, readOnly, venue])
+  }, [isCreatingVenue, offerer.nonHumanizedId, readOnly, venue])
   const { logEvent } = useAnalytics()
   if (isLoading) {
     return <Spinner />

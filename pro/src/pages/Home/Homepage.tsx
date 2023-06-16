@@ -66,7 +66,6 @@ const Homepage = (): JSX.Element => {
             fieldsUpdated: [],
             hasAvailablePricingPoints: false,
             hasDigitalVenueAtLeastOneOffer: false,
-            id: offererId,
             isActive: false,
             isValidated: false,
             managedVenues: [],

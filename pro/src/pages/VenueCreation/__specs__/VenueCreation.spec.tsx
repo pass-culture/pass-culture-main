@@ -65,7 +65,7 @@ describe('route VenueCreation', () => {
 
   beforeEach(() => {
     offerer = {
-      id: 'ABCD',
+      nonHumanizedId: 1,
     } as GetOffererResponseModel
 
     jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
@@ -75,7 +75,7 @@ describe('route VenueCreation', () => {
 
   it('should display venue form screen with creation title', async () => {
     // When
-    await renderVenueCreation(offerer.id)
+    await renderVenueCreation(offerer.nonHumanizedId.toString())
     // Then
     const venueCreationTitle = await screen.findByText('Création d’un lieu')
     expect(venueCreationTitle).toBeInTheDocument()
@@ -83,7 +83,7 @@ describe('route VenueCreation', () => {
 
   it('should display modal when user try to quite venue creation', async () => {
     // When
-    await renderVenueCreation(offerer.id)
+    await renderVenueCreation(offerer.nonHumanizedId.toString())
     // Then
     const homeNavBarButton = await screen.findByText('Accueil')
     await userEvent.click(homeNavBarButton)
@@ -99,7 +99,7 @@ describe('route VenueCreation', () => {
 
   it('should display modal when user cancel venue creation', async () => {
     // When
-    await renderVenueCreation(offerer.id)
+    await renderVenueCreation(offerer.nonHumanizedId.toString())
     // Then
     const cancelFormButton = await screen.findByText('Annuler et quitter')
     await userEvent.click(cancelFormButton)
@@ -115,7 +115,7 @@ describe('route VenueCreation', () => {
 
   it('should not display modal when user submit venue creation', async () => {
     // When
-    await renderVenueCreation(offerer.id)
+    await renderVenueCreation(offerer.nonHumanizedId.toString())
     // Then
     const homeNavBarButton = await screen.findByText('Enregistrer et continuer')
     await userEvent.click(homeNavBarButton)

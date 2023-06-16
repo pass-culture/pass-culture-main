@@ -9,7 +9,6 @@ export interface Offerer {
   address: string
   apiKey: ApiKeyType
   city: string
-  id: string
   name: string
   postalCode: string
   siren: string
@@ -26,7 +25,6 @@ export const transformOffererResponseModelToOfferer = (
     savedApiKeys: offerer.apiKey ? offerer.apiKey.prefixes : [],
   },
   city: offerer.city || '',
-  id: offerer.id,
   name: offerer.name || '',
   postalCode: offerer.postalCode || '',
   siren: offerer.siren || '',
