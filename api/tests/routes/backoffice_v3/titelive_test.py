@@ -12,8 +12,10 @@ from pcapi.core.fraud.factories import ProductWhitelistFactory
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
+from pcapi.core.testing import override_settings
 from pcapi.routes.backoffice_v3.filters import format_titelive_id_lectorat
 
+from ...connectors.titelive import fixtures
 from ...connectors.titelive.fixtures import EAN_SEARCH_FIXTURE
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -110,7 +112,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
     form_data = {"comment": "OK!"}
 
     @patch("pcapi.routes.backoffice_v3.titelive.blueprint.get_by_ean13")
-    @patch("pcapi.routes.backoffice_v3.titelive.blueprint.whitelist_existing_product")
+    @patch("pcapi.routes.backoffice_v3.titelive.blueprint.whitelist_product")
     @pytest.mark.parametrize(
         "form_data",
         [
@@ -118,9 +120,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
             {"comment": ""},
         ],
     )
-    def test_add_product_whitelist(
-        self, mock_whitelist_existing_product, mock_get_by_ean13, authenticated_client, form_data
-    ):
+    def test_add_product_whitelist(self, mock_whitelist_product, mock_get_by_ean13, authenticated_client, form_data):
         mock_get_by_ean13.return_value = EAN_SEARCH_FIXTURE
         assert not fraud_models.ProductWhitelist.query.filter(
             fraud_models.ProductWhitelist.ean == self.endpoint_kwargs["ean"]
@@ -137,26 +137,61 @@ class AddProductWhitelistTest(PostEndpointHelper):
         assert "a été ajouté dans la whitelist" in alert
         assert product_whitelist.comment == form_data["comment"]
         assert product_whitelist.ean == self.endpoint_kwargs["ean"]
-        mock_whitelist_existing_product.assert_called_with(self.endpoint_kwargs["ean"])
+        mock_whitelist_product.assert_called_with(self.endpoint_kwargs["ean"])
 
     @patch("pcapi.routes.backoffice_v3.titelive.blueprint.get_by_ean13")
-    @patch("pcapi.routes.backoffice_v3.titelive.blueprint.whitelist_existing_product")
-    def test_add_product_whitelist_already_whitelisted(
-        self, mock_whitelist_existing_product, mock_get_by_ean13, authenticated_client
+    @patch("pcapi.routes.backoffice_v3.titelive.blueprint.whitelist_product")
+    def test_create_whitelisted_product_if_not_existing(
+        self, mock_whitelist_product, mock_get_by_ean13, authenticated_client, requests_mock
     ):
         mock_get_by_ean13.return_value = EAN_SEARCH_FIXTURE
-        ProductWhitelistFactory(ean=self.endpoint_kwargs["ean"])
+        requests_mock.post(
+            "https://login.epagine.fr/v1/login/test@example.com/token",
+            json={"token": "XYZ"},
+        )
+        requests_mock.get(
+            f"https://catsearch.epagine.fr/v1/ean/{self.endpoint_kwargs['ean']}",
+            json=fixtures.EAN_SEARCH_FIXTURE,
+        )
+        assert not fraud_models.ProductWhitelist.query.filter(
+            fraud_models.ProductWhitelist.ean == self.endpoint_kwargs["ean"]
+        ).one_or_none()
+
+        response = self.post_to_endpoint(authenticated_client, form=self.form_data, **self.endpoint_kwargs)
+        assert response.status_code == 303
         assert fraud_models.ProductWhitelist.query.filter(
             fraud_models.ProductWhitelist.ean == self.endpoint_kwargs["ean"]
         ).one()
 
-        response = self.post_to_endpoint(authenticated_client, form=self.form_data, **self.endpoint_kwargs)
+        response_redirect = authenticated_client.get(response.location)
+        alert = html_parser.extract_alert(response_redirect.data)
+
+        assert "a été ajouté dans la whitelist" in alert
+        mock_whitelist_product.assert_called_with(self.endpoint_kwargs["ean"])
+
+    @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
+    @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
+    def test_fail_add_product_whitelist_not_existing(self, requests_mock, authenticated_client):
+        requests_mock.post(
+            "https://login.epagine.fr/v1/login/test@example.com/token",
+            json={"token": "XYZ"},
+        )
+        requests_mock.get(
+            f"https://catsearch.epagine.fr/v1/ean/{fixtures.EAN_SEARCH_FIXTURE_NO_RESULT['ean']}",
+            json=fixtures.EAN_SEARCH_FIXTURE_NO_RESULT,
+            status_code=404,
+        )
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=self.form_data,
+            ean=fixtures.EAN_SEARCH_FIXTURE_NO_RESULT["ean"],
+            title=self.endpoint_kwargs["title"],
+        )
         assert response.status_code == 303
         response_redirect = authenticated_client.get(response.location)
         alert = html_parser.extract_alert(response_redirect.data)
 
-        assert "est déjà dans la whitelist" in alert
-        mock_whitelist_existing_product.assert_not_called()
+        assert "n'existe pas chez Titelive" in alert
 
 
 class DeleteProductWhitelistTest(GetEndpointHelper):

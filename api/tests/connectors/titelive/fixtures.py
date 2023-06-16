@@ -190,3 +190,33 @@ EAN_SEARCH_FIXTURE = {
     "changeEncodingTo": "UTF-8",
     "extraparams": {"ws": 1},
 }
+
+
+EAN_SEARCH_FIXTURE_NO_RESULT = {
+    "type": 1,
+    "magid": "7",
+    "compatibility": [],
+    "magOptions": {
+        "Data": {
+            "MagasinId": "7",
+            "MessagerieCommandes": "1",
+            "ComboProduits": '{"produits":{"0":{"id":0,"ordre":1,"search":"paper","libelle":"livres"},"1":{"id":1,"ordre":2,"search":"ebook","libelle":"livres_numeriques"},"3":{"id":3,"ordre":3,"search":"dvd","libelle":"dvd"},"4":{"id":4,"ordre":4,"search":"music","libelle":"musique"},"5":{"id":5,"ordre":5,"search":"jouet","libelle":"recherche_jouet"},"6":{"id":6,"ordre":6,"search":"papeterie","libelle":"recherche_papeterie"},"7":{"id":7,"ordre":7,"search":"jeuvideo","libelle":"jeux_video"},"2":{"id":2,"ordre":8,"search":"liseuse","libelle":"liseuses"}},"options":{"tous_produits":{"affichage":2,"search":"all","libelle":"tous_produits"},"tous_livres":{"affichage":1,"search":"allbooks","libelle":"allbooks"},"ebooks_fr":0,"ebooks_gb":0,"ebooks_nl":0,"livres_fr":0}}',
+            "TvaEtrangere0": "0",
+            "BlocageReimpression": "0",
+            "MATOMO": "Matomo",
+            "DetailTables": "1",
+            "ExtraitsAudio": "0",
+            "SEGMENT": "Segment",
+        },
+        "Keys": [],
+        "LibKeys": [],
+        "Database": "OAI-PMH",
+        "Fields": [],
+        "DateFields": [],
+        "DefaultFields": [],
+        "ReferencedObjects": [],
+    },
+    "ean": "9782067256018",
+    "changeEncodingTo": "UTF-8",
+    "extraparams": {"ws": 1},
+}
