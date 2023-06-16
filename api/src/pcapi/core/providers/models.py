@@ -117,7 +117,7 @@ class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):
 
     provider: sa_orm.Mapped["Provider"] = relationship("Provider", foreign_keys=[providerId], backref="venueProviders")
 
-    venueIdAtOfferProvider: str = Column(String(70), nullable=False)
+    venueIdAtOfferProvider: str = Column(String(70), nullable=True)
 
     lastSyncDate = Column(DateTime, nullable=True)
 
