@@ -15,7 +15,6 @@ export type GetOffererResponseModel = {
   fieldsUpdated: Array<string>;
   hasAvailablePricingPoints: boolean;
   hasDigitalVenueAtLeastOneOffer: boolean;
-  id: string;
   idAtProviders?: string | null;
   isActive: boolean;
   isValidated: boolean;

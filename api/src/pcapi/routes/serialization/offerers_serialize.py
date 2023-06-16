@@ -80,7 +80,6 @@ class GetOffererResponseModel(BaseModel):
     fieldsUpdated: list[str]
     hasAvailablePricingPoints: bool
     hasDigitalVenueAtLeastOneOffer: bool
-    id: str
     idAtProviders: str | None
     isValidated: bool
     isActive: bool
@@ -92,8 +91,6 @@ class GetOffererResponseModel(BaseModel):
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
     siren: str | None
-
-    _humanize_id = humanize_field("id")
 
     @classmethod
     def from_orm(cls, offerer: offerers_models.Offerer) -> "GetOffererResponseModel":

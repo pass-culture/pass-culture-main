@@ -24,7 +24,7 @@ const ReimbursementFields = ({
 }: ReimbursementFieldsProps) => {
   const venueHaveSiret = !!venue.siret
   const offererHaveVenueWithSiret = offerer.hasAvailablePricingPoints
-  const createVenuePath = `/structures/${offerer.id}/lieux/creation`
+  const createVenuePath = `/structures/${offerer.nonHumanizedId}/lieux/creation`
   const [venueHasPricingPoint, setVenueHasPricingPoint] = useState<boolean>(
     !!venue.pricingPoint
   )

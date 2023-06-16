@@ -57,7 +57,7 @@ describe('OffererStatsScreen', () => {
     ]
     offerers = [
       {
-        id: '1',
+        nonHumanizedId: 1,
         hasDigitalVenueAtLeastOneOffer: true,
         managedVenues: [
           {
@@ -71,7 +71,7 @@ describe('OffererStatsScreen', () => {
         ],
       },
       {
-        id: '2',
+        nonHumanizedId: 2,
         managedVenues: [
           { id: 'L1', name: 'Terre de livres', nonHumanizedId: 4 },
           { id: 'L2', name: 'La voie aux chapitres', nonHumanizedId: 5 },
@@ -82,7 +82,7 @@ describe('OffererStatsScreen', () => {
     jest.spyOn(api, 'getOfferer').mockImplementation(offererId => {
       return new CancelablePromise(resolve =>
         resolve(
-          offerers.filter(offerer => offerer.id == offererId.toString())[0]
+          offerers.filter(offerer => offerer.nonHumanizedId == offererId)[0]
         )
       )
     })
@@ -138,7 +138,7 @@ describe('OffererStatsScreen', () => {
   it('should display not display venue select if offerer has no venue', async () => {
     jest
       .spyOn(api, 'getOfferer')
-      .mockResolvedValue({ id: 'A1' } as GetOffererResponseModel)
+      .mockResolvedValue({ nonHumanizedId: 1 } as GetOffererResponseModel)
     renderOffererStatsScreen(offererOptions)
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)

@@ -99,7 +99,7 @@ const Offerers = ({
       const newOffererId = event.target.value
       if (newOffererId === CREATE_OFFERER_SELECT_ID) {
         navigate('/structures/creation')
-      } else if (newOffererId !== selectedOfferer?.id) {
+      } else if (newOffererId !== selectedOfferer?.nonHumanizedId.toString()) {
         onSelectedOffererChange(newOffererId)
         setQuery(newOffererId)
       }
@@ -150,7 +150,7 @@ const Offerers = ({
               icon={SuccessIcon}
               redirectText="Créer une offre"
               redirectLink={{
-                to: `/offre/creation?structure=${selectedOfferer.id}`,
+                to: `/offre/creation?structure=${selectedOfferer.nonHumanizedId}`,
                 isExternal: false,
               }}
               cancelText="Plus tard"

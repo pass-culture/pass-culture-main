@@ -67,7 +67,6 @@ def test_basics(client):
         "hasAvailablePricingPoints": True,
         "hasDigitalVenueAtLeastOneOffer": False,
         "fieldsUpdated": offerer.fieldsUpdated,
-        "id": humanize(offerer.id),
         "idAtProviders": offerer.idAtProviders,
         "isActive": offerer.isActive,
         "isValidated": offerer.isValidated,

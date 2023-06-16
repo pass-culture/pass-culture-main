@@ -20,7 +20,6 @@ const selectedOfferer: GetOffererResponseModel = {
   fieldsUpdated: [],
   hasAvailablePricingPoints: false,
   hasDigitalVenueAtLeastOneOffer: false,
-  id: 'id',
   idAtProviders: null,
   isActive: false,
   isValidated: false,

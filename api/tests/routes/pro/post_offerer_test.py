@@ -142,4 +142,4 @@ def test_create_offerer_action_is_logged(client):
     assert action.actionType == history_models.ActionType.OFFERER_NEW
     assert action.authorUser == user
     assert action.user == user
-    assert action.offererId == dehumanize(response.json["id"])
+    assert action.offererId == response.json["nonHumanizedId"]
