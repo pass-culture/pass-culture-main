@@ -21,7 +21,7 @@ class UserGeneratorForm(utils.PCForm):
         choices=[
             (GeneratedSubscriptionStep.EMAIL_VALIDATION.name, "Email Validé"),
             (GeneratedSubscriptionStep.PHONE_VALIDATION.name, "Téléphone validé"),
-            (GeneratedSubscriptionStep.PROFILE_COMPLETION.name, "Profil completé"),
+            (GeneratedSubscriptionStep.PROFILE_COMPLETION.name, "Profil complété"),
             (GeneratedSubscriptionStep.IDENTITY_CHECK.name, "Identité vérifiée"),
             (GeneratedSubscriptionStep.HONOR_STATEMENT.name, "Attesté sur l'honneur"),
             (GeneratedSubscriptionStep.BENEFICIARY.name, "Bénéficiaire"),
