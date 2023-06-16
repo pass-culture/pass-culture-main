@@ -33,8 +33,9 @@ def create_industrial_provider_external_bookings() -> None:
     create_offerer_with_titelive_venue_provider_and_external_bookings()
 
 
-def _create_offers(provider_name: str, provider: Provider, provider_type: str = None) -> Venue:
-    if provider_type != "book":
+def _create_offers(provider: Provider) -> Venue:
+    provider_name = provider.name
+    if provider_name != "TiteLiveThings":
         cinema_user_offerer = UserOffererFactory(offerer__name=f"Structure du cinéma {provider_name}")
         venue = VenueFactory(
             name=f"Cinéma - {provider_name}",
@@ -57,7 +58,7 @@ def _create_offers(provider_name: str, provider: Provider, provider_type: str = 
 
     user_bene = BeneficiaryGrant18Factory(email=f"jeune-has-{provider_name}-external-bookings@example.com")
     for i in range(9):
-        if provider_type != "book":
+        if provider.isCinemaProvider or provider.isAllocine:
             offer_solo = EventOfferFactory(
                 name=f"Ciné solo ({provider_name}) {i}",
                 venue=venue,
@@ -65,6 +66,9 @@ def _create_offers(provider_name: str, provider: Provider, provider_type: str = 
                 lastProvider=provider,
             )
             stock_solo = CinemaStockProviderFactory(offer=offer_solo)
+            booking_solo = BookingFactory(quantity=1, stock=stock_solo, user=user_bene)
+            if provider.isCinemaProvider:
+                ExternalBookingFactory(booking=booking_solo, seat="A_1")
             offer_duo = EventOfferFactory(
                 name=f"Ciné duo ({provider_name}) {i}",
                 venue=venue,
@@ -77,7 +81,7 @@ def _create_offers(provider_name: str, provider: Provider, provider_type: str = 
                 ExternalBookingFactory(booking=booking_duo, seat="A_1")
                 ExternalBookingFactory(booking=booking_duo, seat="A_2")
         # for allocine we want to be able to test that we can update stock with also a past stock
-        elif provider_type == "allocine":
+        if provider.isAllocine:
             offer_with_past_stock = EventOfferFactory(
                 name=f"Ciné avec stock passé ({provider_name}) {i}",
                 venue=venue,
@@ -90,7 +94,7 @@ def _create_offers(provider_name: str, provider: Provider, provider_type: str = 
                 beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0)
                 - datetime.timedelta(days=5),
             )
-        else:
+        if provider_name == "TiteLiveThings":
             offer_solo = ThingOfferFactory(
                 name=f"Livre ({provider_name}) {i}",
                 venue=venue,
@@ -98,19 +102,14 @@ def _create_offers(provider_name: str, provider: Provider, provider_type: str = 
                 lastProvider=provider,
             )
             stock_solo = ThingStockFactory(offer=offer_solo)
-
-            booking_solo = BookingFactory(quantity=1, stock=stock_solo, user=user_bene)
-        booking_solo = BookingFactory(quantity=1, stock=stock_solo, user=user_bene)
-        if provider.isCinemaProvider:
-            ExternalBookingFactory(booking=booking_solo)
+            BookingFactory(quantity=1, stock=stock_solo, user=user_bene)
     return venue
 
 
 def create_offerer_with_cds_venue_provider_and_external_bookings() -> None:
     logger.info("create_offerer_with_cds_venue_provider_and_external_bookings")
     cds_provider = get_provider_by_local_class("CDSStocks")
-    provider_name = "CDS"
-    venue = _create_offers(provider_name, cds_provider)
+    venue = _create_offers(cds_provider)
     cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
         venue=venue, provider=cds_provider, idAtProvider="cdsdemorc1"
     )
@@ -122,8 +121,7 @@ def create_offerer_with_cds_venue_provider_and_external_bookings() -> None:
 def create_offerer_with_boost_venue_provider_and_external_bookings() -> None:
     logger.info("create_offerer_with_boost_venue_provider_and_external_bookings")
     boost_provider = get_provider_by_local_class("BoostStocks")
-    provider_name = "Boost"
-    venue = _create_offers(provider_name, boost_provider)
+    venue = _create_offers(boost_provider)
     cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
         venue=venue, provider=boost_provider, idAtProvider="passculture"
     )
@@ -135,8 +133,7 @@ def create_offerer_with_boost_venue_provider_and_external_bookings() -> None:
 def create_offerer_with_cgr_provider_and_external_bookings() -> None:
     logger.info("create_offerer_with_cgr_venue_provider_and_external_bookings")
     cgr_provider = get_provider_by_local_class("CGRStocks")
-    provider_name = "CGR"
-    venue = _create_offers(provider_name, cgr_provider)
+    venue = _create_offers(cgr_provider)
     cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
         venue=venue, provider=cgr_provider, idAtProvider="passculture"
     )
@@ -148,7 +145,7 @@ def create_offerer_with_cgr_provider_and_external_bookings() -> None:
 def create_offerer_with_allocine_venue_provider_and_external_bookings() -> None:
     logger.info("create_offerer_with_allocine_venue_provider")
     allocine_provider = get_provider_by_local_class("AllocineStocks")
-    venue = _create_offers(allocine_provider.name, allocine_provider, provider_type="allocine")
+    venue = _create_offers(allocine_provider)
     allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, provider=allocine_provider)
     providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
     providers_factories.AllocinePivotFactory(venue=venue, internalId=allocine_venue_provider.internalId)
@@ -158,7 +155,6 @@ def create_offerer_with_allocine_venue_provider_and_external_bookings() -> None:
 def create_offerer_with_titelive_venue_provider_and_external_bookings() -> None:
     logger.info("create_offerer_with_titelive_venue_provider")
     provider = get_provider_by_local_class("TiteLiveThings")
-    provider_name = "TiteLiveThings"
-    venue = _create_offers(provider_name, provider, provider_type="book")
+    venue = _create_offers(provider)
     providers_factories.VenueProviderFactory(venue=venue, provider=provider)
     logger.info("created Offerer with TiteLive-synced offers")
