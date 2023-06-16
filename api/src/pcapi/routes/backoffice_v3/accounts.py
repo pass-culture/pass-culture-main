@@ -236,7 +236,9 @@ def render_public_account_details(
             {
                 "edit_account_form": edit_account_form,
                 "edit_account_dst": url_for(".update_public_account", user_id=user.id),
-                "manual_review_form": account_forms.ManualReviewForm(),
+                "manual_review_form": account_forms.ManualReviewForm()
+                if utils.has_current_user_permission(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
+                else None,
                 "manual_review_dst": url_for(".review_public_account", user_id=user.id),
                 "send_validation_code_form": empty_forms.EmptyForm(),
                 "manual_phone_validation_form": empty_forms.EmptyForm(),
