@@ -29,7 +29,7 @@ const iconList = [
   // Full icons
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
-  { src: 'icons/full-mail.svg' },
+  { src: 'icons/full-mail.svg' }, // TODO 2 uses left inside ButtonLink, 1 use left inside SubmitButton
   { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
   { src: 'icons/full-duplicate.svg' }, // TODO still used in 1 Button
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
