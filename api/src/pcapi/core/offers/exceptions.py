@@ -249,3 +249,7 @@ class CannotDeleteProductWithBookings(Exception):
 
 class UnexpectedCinemaProvider(Exception):
     pass
+
+
+class TiteLiveAPINotExistingEAN(Exception):
+    pass
