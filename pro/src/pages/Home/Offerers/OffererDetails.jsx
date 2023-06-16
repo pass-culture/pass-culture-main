@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
-import FullExternalSite from 'icons/full-external-site.svg'
+import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import { ReactComponent as ClosedEyeSvg } from 'icons/ico-eye-full-close.svg'
 import { ReactComponent as OpenedEyeSvg } from 'icons/ico-eye-full-open.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
@@ -157,7 +157,7 @@ const OffererDetails = ({
                   {
                     href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
                     linkTitle: 'En savoir plus',
-                    Icon: FullExternalSite,
+                    Icon: FullLink,
                   },
                 ]}
               >
@@ -180,7 +180,7 @@ const OffererDetails = ({
                     href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
                     linkTitle:
                       'En savoir plus sur le fonctionnement du pass Culture',
-                    Icon: FullExternalSite,
+                    Icon: FullLink,
                   },
                 ]}
               >
@@ -201,7 +201,7 @@ const OffererDetails = ({
                   {
                     href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
                     linkTitle: 'En savoir plus',
-                    Icon: FullExternalSite,
+                    Icon: FullLink,
                   },
                 ]}
               >
@@ -268,7 +268,7 @@ const OffererDetails = ({
                   {
                     href: `https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-`,
                     linkTitle: 'En savoir plus sur la création d’un lieu',
-                    Icon: FullExternalSite,
+                    Icon: FullLink,
                   },
                 ]}
               >

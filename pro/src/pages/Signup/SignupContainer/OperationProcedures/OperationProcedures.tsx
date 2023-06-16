@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import fullExternalIcon from 'icons/full-external-site.svg'
+import fullLink from 'icons/full-link.svg'
 import Banner from 'ui-kit/Banners/Banner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -29,7 +29,7 @@ const OperatingProcedures = (): JSX.Element => {
         target="_blank"
       >
         <SvgIcon
-          src={fullExternalIcon}
+          src={fullLink}
           alt="Site aide.passculture.app"
           className={styles.icon}
         />
