@@ -3,7 +3,7 @@ import React from 'react'
 
 import { ReactComponent as CloseIcon } from 'icons/close-dialog.svg'
 import { ReactComponent as IcoClearIcon } from 'icons/ico-clear.svg'
-import TipsIcon from 'icons/shadow-tips.svg'
+import TipsHelpIcon from 'icons/shadow-tips_help.svg'
 import strokeErrorIcon from 'icons/stroke-error.svg'
 import Icon from 'ui-kit/Icon/Icon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -46,7 +46,7 @@ const BannerLayout = ({
       {type === 'notification-info' && showTitle && (
         <div className={styles['container']}>
           <SvgIcon
-            src={TipsIcon}
+            src={TipsHelpIcon}
             alt=""
             className={styles['icon']}
             viewBox="0 0 22 26"

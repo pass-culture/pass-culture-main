@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import React from 'react'
 
 import { ReactComponent as RadioOffIcon } from 'icons/ico-radio-off.svg'
 import { ReactComponent as RadioOnIcon } from 'icons/ico-radio-on.svg'
