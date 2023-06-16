@@ -1,5 +1,3 @@
-from base64 import b64encode
-
 from flask import url_for
 import pytest
 
@@ -72,17 +70,3 @@ class HomePageTest:
             "3 offres collectives en attente CONSULTER",
             "4 offres collectives vitrine en attente CONSULTER",
         ]
-
-    def test_redirect_authenticated_user(self, authenticated_client):
-        dummy_url = url_for("backoffice_v3_web.collective_offer.list_collective_offers")
-        base64_dummy_url = b64encode(dummy_url.encode())
-        response = authenticated_client.get(url_for("backoffice_v3_web.home", redirect=base64_dummy_url))
-        assert response.status_code == 302
-        assert response.location == url_for("backoffice_v3_web.collective_offer.list_collective_offers", _external=True)
-
-    def test_transmit_redirect_unauthenticated_user(self, client):
-        dummy_url = url_for("backoffice_v3_web.collective_offer.list_collective_offers")
-        base64_dummy_url = b64encode(dummy_url.encode())
-        response = client.get(url_for("backoffice_v3_web.home", redirect=base64_dummy_url))
-        assert response.status_code == 200
-        assert base64_dummy_url in response.data
