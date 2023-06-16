@@ -468,9 +468,83 @@ class GetVenueStatsTest(GetEndpointHelper):
 
     # get session (1 query)
     # get user with profile and permissions (1 query)
+    # get venue with reimbursement and pricing points (1 query)
     # get total revenue (1 query)
     # get venue stats (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 5
+
+    def test_get_venue_bank_information(self, authenticated_client, venue_with_accepted_bank_info):
+        venue_id = venue_with_accepted_bank_info.id
+        url = url_for(self.endpoint, venue_id=venue_id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        cards_content = html_parser.extract_cards_text(response.data)
+
+        assert venue_with_accepted_bank_info.name is not None
+        assert f"Point de remboursement : {venue_with_accepted_bank_info.name} " in cards_content[2]
+        assert f"Siret de valorisation : {venue_with_accepted_bank_info.name} " in cards_content[2]
+        assert (
+            venue_with_accepted_bank_info.bic is not None
+            and f"BIC : {venue_with_accepted_bank_info.bic}" in cards_content[2]
+        )
+        assert (
+            venue_with_accepted_bank_info.iban is not None
+            and f"IBAN : {venue_with_accepted_bank_info.iban}" in cards_content[2]
+        )
+
+    def test_get_venue_with_no_bank_info_bank_information(self, authenticated_client, venue_with_no_bank_info):
+        venue_id = venue_with_no_bank_info.id
+        url = url_for(self.endpoint, venue_id=venue_id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        cards_content = html_parser.extract_cards_text(response.data)
+
+        assert len(venue_with_no_bank_info.reimbursement_point_links) == 0
+        assert f"Point de remboursement : {venue_with_no_bank_info.name}" not in cards_content[2]
+
+    def test_get_venue_with_accepted_reimbursement_point_bank_information(
+        self, authenticated_client, venue_with_accepted_reimbursement_point
+    ):
+        venue_id = venue_with_accepted_reimbursement_point.id
+        url = url_for(self.endpoint, venue_id=venue_id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        cards_content = html_parser.extract_cards_text(response.data)
+        expected_reimbursement_point: offerers_models.Venue = (
+            venue_with_accepted_reimbursement_point.reimbursement_point_links[0].reimbursementPoint
+        )
+
+        assert f"Point de remboursement : {expected_reimbursement_point.name}" in cards_content[2]
+        assert f"BIC : {expected_reimbursement_point.bic}" in cards_content[2]
+        assert f"IBAN : {expected_reimbursement_point.iban}" in cards_content[2]
+
+    def test_get_venue_with_expired_reimbursement_point_bank_information(
+        self, authenticated_client, venue_with_expired_reimbursement_point
+    ):
+        venue_id = venue_with_expired_reimbursement_point.id
+        url = url_for(self.endpoint, venue_id=venue_id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        cards_content = html_parser.extract_cards_text(response.data)
+        expired_reimbursement_point = venue_with_expired_reimbursement_point.reimbursement_point_links[
+            0
+        ].reimbursementPoint
+
+        assert f"Point de remboursement : {expired_reimbursement_point.name}" not in cards_content[2]
+        assert f"BIC : {expired_reimbursement_point.bic}" not in cards_content[2]
+        assert f"IBAN : {expired_reimbursement_point.iban}" not in cards_content[2]
 
     def test_get_stats(self, authenticated_client, venue):
         booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
