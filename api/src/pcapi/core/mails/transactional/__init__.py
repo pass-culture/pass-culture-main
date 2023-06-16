@@ -57,6 +57,7 @@ from .users.dms_subscription_emails import send_pre_subscription_from_dms_error_
 from .users.duplicate_beneficiary import send_duplicate_beneficiary_email
 from .users.email_address_change import send_confirmation_email_change_email
 from .users.email_address_change import send_email_change_information_email
+from .users.email_address_change import send_email_update_cancellation_email
 from .users.email_address_change import send_pro_confirmation_email_change_email
 from .users.email_address_change import send_pro_information_email_change_email
 from .users.email_address_change import send_validation_email_change_email

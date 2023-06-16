@@ -2761,6 +2761,30 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
+            "/native/v1/profile/email_update/cancel": {
+                "post": {
+                    "description": "",
+                    "operationId": "post_/native/v1/profile/email_update/cancel",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/ChangeBeneficiaryEmailBody"}}
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "cancel_email_update <POST>",
+                    "tags": [],
+                }
+            },
             "/native/v1/profile/email_update/confirm": {
                 "post": {
                     "description": "",

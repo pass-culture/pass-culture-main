@@ -38,6 +38,9 @@ class TransactionalEmail(Enum):
     EMAIL_CHANGE_CONFIRMATION = models.Template(
         id_prod=253, id_not_prod=134, tags=["changement_email_confirmation"], use_priority_queue=True
     )
+    EMAIL_CHANGE_CANCELLATION = models.Template(
+        id_prod=1001, id_not_prod=136, tags=["changement-email_annulation_suspension_compte"], use_priority_queue=True
+    )
     EMAIL_CHANGE_REQUEST = models.Template(
         id_prod=142, id_not_prod=133, tags=["changement_email_demande"], use_priority_queue=True
     )
