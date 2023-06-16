@@ -19,6 +19,8 @@ $header-grid-template-columns: [col-start] 1fr [col-main]
   minmax(rem.torem(874px), auto) 1fr;
 $header-nav-item-padding: rem.torem(16px);
 $nav-brand-margin-right: 5%;
+$logo-side-width: rem.torem(520px);
+$sign-footer-height: rem.torem(72px);
 
 // Mixin used to "center" with input
 // We are using margin-top and not flex center because when there is an error the

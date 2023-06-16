@@ -3,6 +3,7 @@ import React from 'react'
 import AppLayout from 'app/AppLayout'
 import SkipLinks from 'components/SkipLinks'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
+import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { ROOT_PATH } from 'utils/config'
 
@@ -39,6 +40,7 @@ const SignIn = (): JSX.Element => {
               <SigninForm />
             </div>
           </section>
+          <CookiesFooter className={styles['cookies-footer']} />
         </AppLayout>
       </div>
     </>

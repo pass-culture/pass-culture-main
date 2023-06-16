@@ -8,6 +8,7 @@ import LegalInfos from 'components/LegalInfos/LegalInfos'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
+import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
 import MaybeAppUserDialog from 'pages/Signup/SignupContainer/MaybeAppUserDialog'
 import {
   Button,
@@ -66,7 +67,7 @@ const SignupForm = (): JSX.Element => {
         <MaybeAppUserDialog onCancel={() => setIsModalOpen(false)} />
       )}
 
-      <FormLayout>
+      <FormLayout className={styles['signup-page-form']}>
         <div className={styles['sign-up-form']}>
           <FormLayout.Row>
             <TextInput label="Nom" name="lastName" autoComplete="family-name" />
@@ -141,6 +142,7 @@ const SignupForm = (): JSX.Element => {
           </SubmitButton>
         </div>
         <BannerRGS />
+        <CookiesFooter className={styles['cookie-footer']} />
       </FormLayout>
     </>
   )

@@ -102,9 +102,9 @@ describe('Signup', () => {
       ).toHaveAttribute('href', 'https://pass.culture.fr/cgu-professionnels/')
       // and an external link to GDPR chart
       expect(
-        screen.getByRole('link', {
+        screen.getAllByRole('link', {
           name: /Charte des Données Personnelles/,
-        })
+        })[0]
       ).toHaveAttribute('href', 'https://pass.culture.fr/donnees-personnelles/')
       // and a mail to support
       expect(
