@@ -235,26 +235,6 @@ def check_and_expire_token(user: models.User, token: str, token_type: TokenType)
     app.redis_client.delete(token_key)  # type: ignore [attr-defined]
 
 
-def check_and_expire_or_create_token(
-    user: models.User, expiration_date: datetime
-) -> None:  # TODO Do not use this function replace it with create token and
-    """
-    Use a dummy counter to find out whether the user already has an
-    active token.
-
-    * If the incr command returns 1, there were none. Hence, set a TTL
-      (expiration_date, the lifetime of the validation token).
-    * If not, raise an error because there is already one.
-    """
-    key = get_token_key(user, TokenType.CONFIRMATION)
-    count = app.redis_client.incr(key)  # type: ignore [attr-defined]
-
-    if count > 1:
-        raise exceptions.EmailUpdateTokenExists()
-
-    app.redis_client.expireat(key, expiration_date)  # type: ignore [attr-defined]
-
-
 def get_active_token_expiration(user: models.User) -> datetime | None:
     confirmation_key = get_token_key(user, TokenType.CONFIRMATION)
     validation_key = get_token_key(user, TokenType.VALIDATION)
