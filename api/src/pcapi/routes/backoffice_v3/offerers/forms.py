@@ -1,3 +1,5 @@
+import re
+
 from flask_wtf import FlaskForm
 import sqlalchemy as sa
 import wtforms
@@ -14,6 +16,7 @@ from ..forms.empty import BatchForm
 
 
 TAG_NAME_REGEX = r"^[^\s]+$"
+DIGITS_AND_WHITESPACES_REGEX = re.compile(r"^[\d\s]+$")
 
 
 def _get_all_tags_query() -> sa.orm.Query:
@@ -112,10 +115,14 @@ class OffererValidationListForm(utils.PCForm):
     )
 
     def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
-        if q.data and q.data.isnumeric() and len(q.data) not in (2, 3, 5, 9, 12):
-            raise wtforms.validators.ValidationError(
-                "Le nombre de chiffres ne correspond pas à un SIREN, code postal, département ou ID DMS CB"
-            )
+        if q.data:
+            # Remove spaces from SIREN, IDs, postal code
+            if DIGITS_AND_WHITESPACES_REGEX.match(q.data):
+                q.data = re.sub(r"\s+", "", q.data)
+            if q.data.isnumeric() and len(q.data) not in (2, 3, 5, 9, 12):
+                raise wtforms.validators.ValidationError(
+                    "Le nombre de chiffres ne correspond pas à un SIREN, code postal, département ou ID DMS CB"
+                )
         return q
 
 
@@ -157,10 +164,14 @@ class UserOffererValidationListForm(utils.PCForm):
     )
 
     def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
-        if q.data and q.data.isnumeric() and len(q.data) not in (2, 3, 5, 9):
-            raise wtforms.validators.ValidationError(
-                "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
-            )
+        if q.data:
+            # Remove spaces from SIREN, IDs, postal code
+            if DIGITS_AND_WHITESPACES_REGEX.match(q.data):
+                q.data = re.sub(r"\s+", "", q.data)
+            if q.data.isnumeric() and len(q.data) not in (2, 3, 5, 9):
+                raise wtforms.validators.ValidationError(
+                    "Le nombre de chiffres ne correspond pas à un SIREN, code postal ou département"
+                )
         return q
 
 
