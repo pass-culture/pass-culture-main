@@ -36,10 +36,10 @@ class TransactionalEmail(Enum):
     CREATE_ACCOUNT_AFTER_DMS = models.Template(id_prod=678, id_not_prod=85, tags=["jeunes_creation_compte_apres_dms"])
     EMAIL_ALREADY_EXISTS = models.Template(id_prod=617, id_not_prod=79, tags=["email_existant_en_base"])
     EMAIL_CHANGE_CONFIRMATION = models.Template(
-        id_prod=253, id_not_prod=18, tags=["changement_email_confirmation"], use_priority_queue=True
+        id_prod=253, id_not_prod=134, tags=["changement_email_confirmation"], use_priority_queue=True
     )
     EMAIL_CHANGE_REQUEST = models.Template(
-        id_prod=142, id_not_prod=17, tags=["changement_email_demande"], use_priority_queue=True
+        id_prod=142, id_not_prod=133, tags=["changement_email_demande"], use_priority_queue=True
     )
     EMAIL_CONFIRMATION = models.Template(
         id_prod=201, id_not_prod=15, tags=["jeunes_confirmation_mail"], use_priority_queue=True
