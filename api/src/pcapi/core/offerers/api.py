@@ -914,16 +914,20 @@ def can_offerer_create_educational_offer(offerer_id: int) -> None:
         raise exception
 
 
-def can_provider_create_educational_offer(provider_id: int) -> None:
+def can_venue_create_educational_offer(venue_id: int) -> None:
     import pcapi.core.educational.adage_backends as adage_client
 
-    if settings.CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE:
+    offerer = (
+        offerers_models.Offerer.query.join(offerers_models.Venue, offerers_models.Offerer.managedVenues)
+        .filter(offerers_models.Venue.id == venue_id)
+        .one()
+    )
+
+    if offerers_repository.offerer_has_venue_with_adage_id(offerer.id):
         return
 
-    if offerers_repository.provider_has_venue_with_adage_id(provider_id):
-        return
+    siren = offerers_repository.find_siren_by_offerer_id(offerer.id)
 
-    siren = offerers_repository.find_siren_by_provider_id(provider_id)
     try:
         response = adage_client.get_adage_offerer(siren)
         if len(response) == 0:
