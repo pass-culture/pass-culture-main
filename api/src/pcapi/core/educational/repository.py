@@ -17,9 +17,11 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.providers import models as provider_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.clean_accents import clean_accents
 
 
@@ -541,7 +543,7 @@ def _get_filtered_collective_bookings_query(
 
 
 def list_public_collective_offers(
-    offerer_id: int,
+    required_id: int,
     status: offer_mixin.OfferStatus | None = None,
     venue_id: int | None = None,
     period_beginning_date: str | None = None,
@@ -549,12 +551,22 @@ def list_public_collective_offers(
     limit: int = 500,
 ) -> list[educational_models.CollectiveOffer]:
     query = educational_models.CollectiveOffer.query
-    query = query.join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
-    query = query.join(educational_models.CollectiveStock, educational_models.CollectiveOffer.collectiveStock)
-    filters = [
-        offerers_models.Venue.managingOffererId == offerer_id,
-        educational_models.CollectiveOffer.validation != offer_mixin.OfferValidationStatus.DRAFT,
-    ]
+
+    if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
+        query = query.join(provider_models.Provider, educational_models.CollectiveOffer.provider)
+        query = query.join(educational_models.CollectiveStock, educational_models.CollectiveOffer.collectiveStock)
+        filters = [
+            educational_models.CollectiveOffer.providerId == required_id,
+            educational_models.CollectiveOffer.validation != offer_mixin.OfferValidationStatus.DRAFT,
+        ]
+    else:
+        query = query.join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
+        query = query.join(educational_models.CollectiveStock, educational_models.CollectiveOffer.collectiveStock)
+        filters = [
+            offerers_models.Venue.managingOffererId == required_id,
+            educational_models.CollectiveOffer.validation != offer_mixin.OfferValidationStatus.DRAFT,
+        ]
+
     if status:
         filters.append(educational_models.CollectiveOffer.status == status)  # type: ignore [arg-type]
     if venue_id:
@@ -564,7 +576,6 @@ def list_public_collective_offers(
     if period_ending_date:
         filters.append(educational_models.CollectiveStock.beginningDatetime <= period_ending_date)
     query = query.filter(*filters)
-
     query = query.options(
         sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock),
         sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
@@ -572,7 +583,6 @@ def list_public_collective_offers(
             educational_models.CollectiveStock.collectiveBookings
         ),
     )
-
     query = query.order_by(educational_models.CollectiveOffer.id)
     query = query.limit(limit)
     return query.all()

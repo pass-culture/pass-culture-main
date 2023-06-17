@@ -14,8 +14,6 @@ from pcapi.core.finance.models import BankInformation
 from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
-from pcapi.core.providers.models import Provider
-from pcapi.core.providers.models import VenueProvider
 import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
@@ -200,6 +198,16 @@ def find_venue_by_id(venue_id: int) -> models.Venue | None:
     )
 
 
+def find_venue_and_provider_by_id(venue_id: int) -> models.Venue | None:
+    return (
+        models.Venue.query.filter_by(id=venue_id)
+        .options(sqla.orm.joinedload(models.Venue.venueLabel))
+        .options(sqla.orm.joinedload(models.Venue.managingOfferer))
+        .options(sqla.orm.joinedload(models.Venue.venueProviders))
+        .one_or_none()
+    )
+
+
 def find_relative_venue_by_id(venue_id: int, permanent_only: bool = False) -> list[models.Venue]:
     aliased_venue = sqla.orm.aliased(models.Venue)
 
@@ -347,22 +355,6 @@ def find_siren_by_offerer_id(offerer_id: int) -> str:
     raise exceptions.CannotFindOffererSiren
 
 
-def find_siren_by_provider_id(provider_id: int) -> str:
-    breakpoint()
-    offerer = models.OffererProvider.offerer
-    query = db.session.query(models.OffererProvider)
-    query = query.join(Provider, models.OffererProvider.provider)
-    query = query.filter_by(id=provider_id)
-    query = query.join(models.Offerer, models.OffererProvider)
-    query = query.with_entities(models.Offerer.siren)
-    siren = query.scalar()
-    breakpoint()
-    if siren:
-        return siren
-
-    raise exceptions.CannotFindOffererSiren
-
-
 def venues_have_offers(*venues: models.Venue) -> bool:
     """At least one venue which has email as bookingEmail has at least one active offer"""
     return db.session.query(
@@ -383,18 +375,6 @@ def offerer_has_venue_with_adage_id(offerer_id: int) -> bool:
         models.Venue.adageId.isnot(None),
         models.Venue.adageId != "",
         models.Offerer.id == offerer_id,
-    )
-    return bool(query.count())
-
-
-def provider_has_venue_with_adage_id(provider_id: int) -> bool:
-    query = db.session.query(models.Venue.id)
-    query = query.join(VenueProvider, models.Venue.venueProviders)
-    query = query.join(Provider, VenueProvider.provider)
-    query = query.filter(
-        models.Venue.adageId.isnot(None),
-        models.Venue.adageId != "",
-        Provider.id == provider_id,
     )
     return bool(query.count())
 

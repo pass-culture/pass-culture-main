@@ -3,7 +3,6 @@ import logging
 import typing
 
 from flask_sqlalchemy import BaseQuery
-import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.core import search
@@ -27,10 +26,12 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import validation as offer_validation
+from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
@@ -179,7 +180,7 @@ def list_collective_offers_for_pro_user(
 
 
 def list_public_collective_offers(
-    offerer_id: int,
+    required_id: int,
     venue_id: int | None = None,
     status: offer_mixin.OfferStatus | None = None,
     period_beginning_date: str | None = None,
@@ -187,7 +188,7 @@ def list_public_collective_offers(
     limit: int = 500,
 ) -> list[educational_models.CollectiveOffer]:
     return educational_repository.list_public_collective_offers(
-        offerer_id=offerer_id,
+        required_id=required_id,
         status=status,
         venue_id=venue_id,
         period_beginning_date=period_beginning_date,
@@ -435,15 +436,25 @@ def update_collective_offer_educational_institution(
 
 
 def create_collective_offer_public(
-    provider_id: int,
+    requested_id: int,
     body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel,
 ) -> educational_models.CollectiveOffer:
     from pcapi.core.offers.api import update_offer_fraud_information
 
-    offerers_api.can_provider_create_educational_offer(provider_id)
+    if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
+        offerers_api.can_venue_create_educational_offer(body.venue_id)
+    else:
+        offerer_id = requested_id
+        offerers_api.can_offerer_create_educational_offer(offerer_id)
 
-    venue = offerers_models.Venue.query.filter_by(id=body.venue_id).one_or_none()
-    if venue is None or venue.venueProviders.id != provider_id:
+    venue_query = offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
+    if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
+        venue_query = venue_query.join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
+        venue_query = venue_query.filter(providers_models.VenueProvider.providerId == requested_id)
+    else:
+        venue_query = venue_query.filter(offerers_models.Venue.managingOffererId == requested_id)
+    venue = venue_query.one_or_none()
+    if not venue:
         raise offerers_exceptions.VenueNotFoundException()
     typing.cast(offerers_models.Venue, venue)
 
@@ -478,15 +489,6 @@ def create_collective_offer_public(
     if not institution.isActive:
         raise exceptions.EducationalInstitutionIsNotActive()
 
-    if body.offer_venue.venueId:
-        query = db.session.query(sa.func.count(offerers_models.Venue.id))
-        query = query.filter(
-            offerers_models.Venue.id == body.offer_venue.venueId,
-            offerers_models.Venue.managingOffererId == offerer_id,
-        )
-        if query.scalar() == 0:
-            raise offerers_exceptions.VenueNotFoundException()
-
     offer_venue = {
         "venueId": body.offer_venue.venueId or "",
         "addressType": body.offer_venue.addressType,
@@ -511,8 +513,12 @@ def create_collective_offer_public(
         offerVenue=offer_venue,
         interventionArea=[],
         institution=institution,
-        isPublicApi=True,
     )
+    if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
+        collective_offer.providerId = requested_id
+    else:
+        collective_offer.isPublicApi = True
+
     collective_offer.bookingEmails = body.booking_emails
     collective_stock = educational_models.CollectiveStock(
         collectiveOffer=collective_offer,
