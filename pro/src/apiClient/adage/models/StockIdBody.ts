@@ -3,6 +3,7 @@
 /* eslint-disable */
 
 export type StockIdBody = {
+  AdageHeaderFrom: string;
   stockId: number;
 };
 
