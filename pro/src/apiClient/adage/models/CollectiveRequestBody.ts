@@ -3,6 +3,7 @@
 /* eslint-disable */
 
 export type CollectiveRequestBody = {
+  AdageHeaderFrom: string;
   collectiveOfferTemplateId: number;
   comment: string;
   phoneNumber?: string | null;
