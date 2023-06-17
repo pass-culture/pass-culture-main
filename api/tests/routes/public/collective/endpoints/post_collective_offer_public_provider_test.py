@@ -32,17 +32,16 @@ class CollectiveOffersPublicPostOfferTest:
                     continue
                 child.unlink()
 
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_post_offers(self, client):
         # Given
-        # offerer = offerers_factories.OffererFactory()
-        # offerers_factories.UserOffererFactory(offerer=offerer)
 
-        # venue_provider = provider_factories.VenueProviderFactory()
-        # offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        # domain = educational_factories.EducationalDomainFactory()
-        # educational_institution = educational_factories.EducationalInstitutionFactory()
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        domain = educational_factories.EducationalDomainFactory()
+        educational_institution = educational_factories.EducationalInstitutionFactory()
 
-        # venue = venue_provider.venue
+        venue = venue_provider.venue
         payload = {
             "venueId": venue.id,
             "name": "Un nom en français ævœc des diàcrtîtïqués",
@@ -77,7 +76,7 @@ class CollectiveOffersPublicPostOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_provider_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
                 "/v2/collective/offers/", json=payload
             )
@@ -97,20 +96,21 @@ class CollectiveOffersPublicPostOfferTest:
             "addressType": "offererVenue",
             "otherAddress": "",
         }
-        assert offer.isPublicApi is True
+        assert offer.providerId == venue_provider.providerId
         assert offer.hasImage is True
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
     def test_post_offers_6_5_only(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
 
+        venue = venue_provider.venue
         payload = {
             "venueId": venue.id,
             "name": "Un nom en français ævœc des diàcrtîtïqués",
@@ -146,7 +146,7 @@ class CollectiveOffersPublicPostOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
                 "/v2/collective/offers/", json=payload
             )
@@ -154,15 +154,16 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 403
 
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_post_offers_with_uai(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
 
+        venue = venue_provider.venue
         payload = {
             "venueId": venue.id,
             "name": "Un nom en français ævœc des diàcrtîtïqués",
@@ -197,7 +198,7 @@ class CollectiveOffersPublicPostOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
                 "/v2/collective/offers/", json=payload
             )
@@ -217,18 +218,19 @@ class CollectiveOffersPublicPostOfferTest:
             "addressType": "offererVenue",
             "otherAddress": "",
         }
-        assert offer.isPublicApi is True
+        assert offer.providerId == venue_provider.providerId
         assert offer.hasImage is True
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_post_offers_with_uai_and_institution_id(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
+
+        venue = venue_provider.venue
 
         payload = {
             "venueId": venue.id,
@@ -265,7 +267,7 @@ class CollectiveOffersPublicPostOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
                 "/v2/collective/offers/", json=payload
             )
@@ -273,13 +275,14 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 400
 
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_invalid_api_key(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_provider = provider_factories.VenueProviderFactory()
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
+
+        venue = venue_provider.venue
 
         payload = {
             "venueId": venue.id,
@@ -321,14 +324,15 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 401
 
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_user_cannot_create_collective_offer(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
+
+        venue = venue_provider.venue
 
         payload = {
             "venueId": venue.id,
@@ -363,7 +367,7 @@ class CollectiveOffersPublicPostOfferTest:
 
         # When
         with patch(
-            "pcapi.core.offerers.api.can_offerer_create_educational_offer",
+            "pcapi.core.offerers.api.can_venue_create_educational_offer",
             side_effect=educational_exceptions.CulturalPartnerNotFoundException,
         ):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -373,13 +377,14 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 403
 
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_bad_educational_institution(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
+
+        venue = venue_provider.venue
 
         payload = {
             "venueId": venue.id,
@@ -413,7 +418,7 @@ class CollectiveOffersPublicPostOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
                 "/v2/collective/offers/", json=payload
             )
@@ -421,11 +426,12 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 404
 
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_bad_venue_id(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        # venue = offerers_factories.VenueFactory(id="ohno")
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
 
@@ -461,7 +467,7 @@ class CollectiveOffersPublicPostOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
                 "/v2/collective/offers/", json=payload
             )
@@ -469,14 +475,15 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 404
 
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_invalid_image_size(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
+
+        venue = venue_provider.venue
 
         payload = {
             "venueId": venue.id,
@@ -512,7 +519,7 @@ class CollectiveOffersPublicPostOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
                 "/v2/collective/offers/", json=payload
             )
@@ -520,14 +527,15 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 400
 
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_invalid_image_type(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
+
+        venue = venue_provider.venue
 
         payload = {
             "venueId": venue.id,
@@ -563,7 +571,7 @@ class CollectiveOffersPublicPostOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
                 "/v2/collective/offers/", json=payload
             )
@@ -571,14 +579,15 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 400
 
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_post_offers_institution_not_active(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory(isActive=False)
+
+        venue = venue_provider.venue
 
         payload = {
             "venueId": venue.id,
@@ -614,7 +623,7 @@ class CollectiveOffersPublicPostOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
                 "/v2/collective/offers/", json=payload
             )
@@ -622,13 +631,15 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 403
 
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_post_offers_invalid_domain(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+
         educational_institution = educational_factories.EducationalInstitutionFactory()
+
+        venue = venue_provider.venue
 
         payload = {
             "venueId": venue.id,
@@ -664,7 +675,7 @@ class CollectiveOffersPublicPostOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
                 "/v2/collective/offers/", json=payload
             )
@@ -672,64 +683,15 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 404
 
-    def test_post_offers_bad_institution(self, client):
-        # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        domain = educational_factories.EducationalDomainFactory()
-
-        payload = {
-            "venueId": venue.id,
-            "name": "Un nom en français ævœc des diàcrtîtïqués",
-            "description": "une description d'offre",
-            "subcategoryId": "EVENEMENT_CINE",
-            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
-            "contactEmail": "offerer-contact@example.com",
-            "contactPhone": "+33100992798",
-            "domains": [domain.id],
-            "durationMinutes": 183,
-            "students": [educational_models.StudentLevels.COLLEGE4.name],
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "offerVenue": {
-                "venueId": venue.id,
-                "addressType": "offererVenue",
-                "otherAddress": "",
-            },
-            "isActive": True,
-            # stock part
-            "beginningDatetime": "2022-09-25T11:00",
-            "bookingLimitDatetime": "2022-09-15T11:00",
-            "totalPrice": 35621,
-            "numberOfTickets": 30,
-            "educationalPriceDetail": "Justification du prix",
-            # link to educational institution
-            "educationalInstitutionId": 0,
-            "imageCredit": "pouet",
-            "imageFile": image_data.GOOD_IMAGE,
-        }
-
-        # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-                "/v2/collective/offers/", json=payload
-            )
-
-        # Then
-        assert response.status_code == 404
-
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_post_offers_invalid_subcategory(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
+
+        venue = venue_provider.venue
 
         payload = {
             "venueId": venue.id,
@@ -765,7 +727,7 @@ class CollectiveOffersPublicPostOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
                 "/v2/collective/offers/", json=payload
             )
