@@ -19,7 +19,6 @@ from pcapi.domain.demarches_simplifiees import DMS_TOKEN_PRO_PREFIX
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base
-from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import string_length_validator
 from pcapi.serialization.utils import string_to_boolean_field
 from pcapi.serialization.utils import to_camel
@@ -192,10 +191,8 @@ class LegalStatusResponseModel(BaseModel):
 
 
 class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
-    id: str
     dateCreated: datetime
     nonHumanizedId: int
-
     bannerMeta: BannerMetaModel | None
     bookingEmail: str | None
     comment: str | None
@@ -227,7 +224,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     collectiveDmsApplications: list[DMSApplicationForEAC]
     hasAdageId: bool
     adageInscriptionDate: datetime | None
-    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True

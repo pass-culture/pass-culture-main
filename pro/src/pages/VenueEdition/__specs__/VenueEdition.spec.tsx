@@ -76,7 +76,6 @@ describe('route VenueEdition', () => {
 
   beforeEach(() => {
     venue = {
-      id: 'AE',
       nonHumanizedId: 12,
       publicName: 'Cinéma des iles',
       dmsToken: 'dms-token-12345',
