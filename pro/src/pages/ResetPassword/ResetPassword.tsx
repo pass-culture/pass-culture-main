@@ -5,7 +5,8 @@ import { api } from 'apiClient/api'
 import AppLayout from 'app/AppLayout'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Hero from 'ui-kit/Hero'
-import Logo from 'ui-kit/Logo/Logo'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { ROOT_PATH } from 'utils/config'
 import { parse } from 'utils/query-string'
 import { initReCaptchaScript } from 'utils/recaptcha'
 
@@ -42,7 +43,12 @@ const ResetPassword = (): JSX.Element => {
   return (
     <div className={styles['reset-password']}>
       <header className={styles['logo-side']}>
-        <Logo noLink signPage />
+        <SvgIcon
+          className="logo-unlogged"
+          viewBox="0 0 282 120"
+          alt="Pass Culture pro, l'espace des acteurs culturels"
+          src={`${ROOT_PATH}/icons/logo-pass-culture-primary.svg`}
+        />
       </header>
       <AppLayout
         layoutConfig={{
