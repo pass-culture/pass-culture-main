@@ -368,7 +368,7 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[COLUMN_INDICES["isbn"]] = "9136205982"
+        DATA_LINE_PARTS[COLUMN_INDICES["ean"]] = "9999999999999"
         DATA_LINE_PARTS[COLUMN_INDICES["code_support"]] = "R"
         DATA_LINE_PARTS[COLUMN_INDICES["taux_tva"]] = "2,10"
         data_line_1 = "~".join(DATA_LINE_PARTS)
