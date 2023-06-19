@@ -2,14 +2,14 @@ import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { IEmailSpellCheckInputProps } from 'ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
+import { EmailSpellCheckInputProps } from 'ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
 import { EmailSpellCheckInput } from 'ui-kit/form/index'
 
 export default {
   title: 'ui-kit/forms/EmailSpellCheckInput',
   component: EmailSpellCheckInput,
 }
-type Args = IEmailSpellCheckInputProps<any>
+type Args = EmailSpellCheckInputProps<{ email: string }>
 
 const Template: Story<Args> = args => (
   <Formik initialValues={{}} onSubmit={() => {}}>

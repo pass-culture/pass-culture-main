@@ -74,7 +74,8 @@ const FieldLayout = ({
       <ClearIcon className={styles['clear-button-icon']} />
     </button>
   )
-  const showFooter = !hideFooter || hasError || hasCounter
+  const showFooter =
+    !hideFooter || hasError || hasCounter || Boolean(ErrorDetails)
 
   return (
     <div
@@ -127,13 +128,13 @@ const FieldLayout = ({
 
         {showFooter && (
           <div className={cn(classNameFooter, styles['field-layout-footer'])}>
-            {hasError && (
+            {(hasError || Boolean(ErrorDetails)) && (
               <div
                 className={styles['field-layout-error']}
                 id={`error-details-${name}`}
                 aria-live="polite"
               >
-                <FieldError name={name}>{error}</FieldError>
+                {hasError && <FieldError name={name}>{error}</FieldError>}
                 {ErrorDetails}
               </div>
             )}

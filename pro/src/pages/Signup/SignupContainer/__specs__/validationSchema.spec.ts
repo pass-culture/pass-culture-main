@@ -106,7 +106,7 @@ describe('validationSchema', () => {
     },
     {
       description: 'not valid form with wrong password',
-      formValues: { ...signupFormDefault, password: 'aaaaaaaa' },
+      formValues: { ...signupFormDefault, password: 'aaaaaaaa' }, // NOSONAR
       expectedErrors: ['Veuillez renseigner un mot de passe valide avec : '],
       withoutSiren: true,
     },
