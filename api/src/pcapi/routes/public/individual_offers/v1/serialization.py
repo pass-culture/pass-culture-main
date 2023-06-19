@@ -540,6 +540,7 @@ STOCK_EDITION_FIELD = pydantic.Field(
 
 
 class ProductOfferEdition(OfferEditionBase):
+    offer_id: int
     category_related_fields: product_category_edition_fields | None = pydantic.Field(
         None,
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
@@ -548,6 +549,16 @@ class ProductOfferEdition(OfferEditionBase):
 
     class Config:
         extra = "forbid"
+
+
+class BatchProductOfferEdition(serialization.ConfiguredBaseModel):
+    product_offers: list[ProductOfferEdition]
+
+    @pydantic.validator("product_offers")
+    def validate_product_offer_list(cls, product_offers: list[ProductOfferEdition]) -> list[ProductOfferEdition]:
+        if len(product_offers) > 50:
+            raise ValueError("Maximum number of product offers is 50")
+        return product_offers
 
 
 class ProductOfferByEanEdition(serialization.ConfiguredBaseModel):
