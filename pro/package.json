@@ -144,7 +144,7 @@
     "source-map-explorer": "^2.5.0",
     "storybook": "^6.5.16",
     "storybook-svgr-react-component": "^1.0.1",
-    "stylelint": "^15.7.0",
+    "stylelint": "^15.8.0",
     "stylelint-a11y": "^1.2.3",
     "stylelint-config-standard-scss": "^9.0.0",
     "testcafe": "^2.6.2",
