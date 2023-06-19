@@ -1451,6 +1451,7 @@ class IsSuspiciousLoginTest:
 
 
 class CreateSuspiciousLoginEmailTokenTest:
+    @freeze_time("2023-06-19 10:30:00")
     def should_encode_login_info_in_token(self):
         user = users_factories.UserFactory()
         login_info = users_models.LoginDeviceHistory(
@@ -1458,7 +1459,7 @@ class CreateSuspiciousLoginEmailTokenTest:
             source="iPhone 13",
             os="iOS",
             location="Paris",
-            dateCreated=datetime.datetime(2023, 6, 2, 16, 10),
+            dateCreated=datetime.datetime(2023, 6, 19, 10, 30),
         )
 
         jwt_token = users_api.create_suspicious_login_email_token(login_info, user.id)
@@ -1467,10 +1468,11 @@ class CreateSuspiciousLoginEmailTokenTest:
 
         assert decoded == {
             "userId": user.id,
-            "dateCreated": "2023-06-02T16:10:00.000000Z",
+            "dateCreated": "2023-06-19T10:30:00.000000Z",
             "location": "Paris",
             "source": "iPhone 13",
             "os": "iOS",
+            "exp": datetime.datetime(2023, 6, 26, 10, 30).timestamp(),
         }
 
     @freeze_time("2023-06-02 16:10:00")
@@ -1484,4 +1486,5 @@ class CreateSuspiciousLoginEmailTokenTest:
         assert decoded == {
             "userId": user.id,
             "dateCreated": "2023-06-02T16:10:00.000000Z",
+            "exp": datetime.datetime(2023, 6, 9, 16, 10).timestamp(),
         }

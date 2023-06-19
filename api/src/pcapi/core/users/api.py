@@ -1300,12 +1300,16 @@ def is_suspicious_login(device_info: "account_serialization.TrustedDevice | None
 
 
 def create_suspicious_login_email_token(login_info: users_models.LoginDeviceHistory | None, user_id: int) -> str:
+    current_datetime = datetime.datetime.utcnow()
+    expiration_date = current_datetime + datetime.timedelta(weeks=1)
+
     if login_info is None:
         return users_utils.encode_jwt_payload(
             token_payload={
                 "userId": user_id,
-                "dateCreated": datetime.datetime.utcnow().strftime(date_utils.DATE_ISO_FORMAT),
-            }
+                "dateCreated": current_datetime.strftime(date_utils.DATE_ISO_FORMAT),
+            },
+            expiration_date=expiration_date,
         )
 
     return users_utils.encode_jwt_payload(
@@ -1315,5 +1319,6 @@ def create_suspicious_login_email_token(login_info: users_models.LoginDeviceHist
             "location": login_info.location,
             "os": login_info.os,
             "source": login_info.source,
-        }
+        },
+        expiration_date=expiration_date,
     )
