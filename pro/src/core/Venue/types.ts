@@ -40,7 +40,6 @@ export interface IVenue {
   dateCreated: string
   fieldsUpdated: Array<string>
   isVirtual: boolean
-  managingOffererId: string
   accessibility: IAccessibiltyFormValues
   address: string
   bannerMeta: VenueBannerMetaProps | null | undefined
