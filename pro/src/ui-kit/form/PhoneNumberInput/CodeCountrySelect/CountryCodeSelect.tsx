@@ -35,6 +35,7 @@ const CountryCodeSelect = ({
         disabled={disabled}
         value={value}
         onChange={onChange}
+        autoComplete="tel-country-code"
       >
         {options.map(option => (
           <option key={option.value} value={option.value} label={option.label}>
