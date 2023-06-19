@@ -16,6 +16,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import TiteLiveThings
+from pcapi.local_providers.titelive_things.titelive_things import COLUMN_INDICES
 
 
 BASE_DATA_LINE_PARTS = [
@@ -101,10 +102,10 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[2] = "livre scolaire"
-        DATA_LINE_PARTS[27] = "Littérature scolaire"
-        DATA_LINE_PARTS[39] = "1"
-        DATA_LINE_PARTS[40] = "0"
+        DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
+        DATA_LINE_PARTS[COLUMN_INDICES["libelle_code_rayon_csr"]] = "Littérature scolaire"
+        DATA_LINE_PARTS[COLUMN_INDICES["scolaire"]] = "1"
+        DATA_LINE_PARTS[COLUMN_INDICES["compteur_mp3"]] = "0"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -127,10 +128,10 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[2] = "livre scolaire"
-        DATA_LINE_PARTS[27] = "Littérature scolaire"
-        DATA_LINE_PARTS[39] = "1"
-        DATA_LINE_PARTS[40] = "0"
+        DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
+        DATA_LINE_PARTS[COLUMN_INDICES["libelle_code_rayon_csr"]] = "Littérature scolaire"
+        DATA_LINE_PARTS[COLUMN_INDICES["scolaire"]] = "1"
+        DATA_LINE_PARTS[COLUMN_INDICES["compteur_mp3"]] = "0"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -219,10 +220,10 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[13] = "LE"
-        DATA_LINE_PARTS[27] = "Littérature scolaire"
-        DATA_LINE_PARTS[39] = "1"
-        DATA_LINE_PARTS[40] = "0"
+        DATA_LINE_PARTS[COLUMN_INDICES["code_support"]] = "LE"
+        DATA_LINE_PARTS[COLUMN_INDICES["libelle_code_rayon_csr"]] = "Littérature scolaire"
+        DATA_LINE_PARTS[COLUMN_INDICES["scolaire"]] = "1"
+        DATA_LINE_PARTS[COLUMN_INDICES["compteur_mp3"]] = "0"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -245,10 +246,10 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[2] = "livre scolaire"
-        DATA_LINE_PARTS[4] = "2704"
-        DATA_LINE_PARTS[27] = "Littérature scolaire"
-        DATA_LINE_PARTS[40] = ""
+        DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
+        DATA_LINE_PARTS[COLUMN_INDICES["code_rayon_csr"]] = "2704"
+        DATA_LINE_PARTS[COLUMN_INDICES["libelle_code_rayon_csr"]] = "Littérature scolaire"
+        DATA_LINE_PARTS[COLUMN_INDICES["compteur_mp3"]] = ""
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -271,10 +272,10 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[2] = "livre scolaire"
-        DATA_LINE_PARTS[4] = "2704"
-        DATA_LINE_PARTS[27] = "Littérature scolaire"
-        DATA_LINE_PARTS[40] = ""
+        DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
+        DATA_LINE_PARTS[COLUMN_INDICES["code_rayon_csr"]] = "2704"
+        DATA_LINE_PARTS[COLUMN_INDICES["libelle_code_rayon_csr"]] = "Littérature scolaire"
+        DATA_LINE_PARTS[COLUMN_INDICES["compteur_mp3"]] = ""
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -304,11 +305,11 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[2] = "jeux de société"
-        DATA_LINE_PARTS[4] = "1234"
-        DATA_LINE_PARTS[13] = "O"
-        DATA_LINE_PARTS[27] = "Littérature scolaire"
-        DATA_LINE_PARTS[40] = ""
+        DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "jeux de société"
+        DATA_LINE_PARTS[COLUMN_INDICES["code_rayon_csr"]] = "1234"
+        DATA_LINE_PARTS[COLUMN_INDICES["code_support"]] = "O"
+        DATA_LINE_PARTS[COLUMN_INDICES["libelle_code_rayon_csr"]] = "Littérature scolaire"
+        DATA_LINE_PARTS[COLUMN_INDICES["compteur_mp3"]] = ""
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -337,11 +338,11 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         data_line_parts = BASE_DATA_LINE_PARTS[:]
-        data_line_parts[2] = "jeux de société"
-        data_line_parts[4] = "1234"
-        data_line_parts[13] = "O"
-        data_line_parts[27] = "Littérature scolaire"
-        data_line_parts[40] = ""
+        data_line_parts[COLUMN_INDICES["titre"]] = "jeux de société"
+        data_line_parts[COLUMN_INDICES["code_rayon_csr"]] = "1234"
+        data_line_parts[COLUMN_INDICES["code_support"]] = "O"
+        data_line_parts[COLUMN_INDICES["libelle_code_rayon_csr"]] = "Littérature scolaire"
+        data_line_parts[COLUMN_INDICES["compteur_mp3"]] = ""
         data_line = "~".join(data_line_parts)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -374,12 +375,12 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[1] = "9136205982"
-        DATA_LINE_PARTS[13] = "R"
-        DATA_LINE_PARTS[26] = "2,10"
+        DATA_LINE_PARTS[COLUMN_INDICES["isbn"]] = "9136205982"
+        DATA_LINE_PARTS[COLUMN_INDICES["code_support"]] = "R"
+        DATA_LINE_PARTS[COLUMN_INDICES["taux_tva"]] = "2,10"
         data_line_1 = "~".join(DATA_LINE_PARTS)
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[26] = "2,10"
+        DATA_LINE_PARTS[COLUMN_INDICES["taux_tva"]] = "2,10"
         data_line_2 = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line_1, data_line_2])
 
@@ -405,8 +406,8 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[13] = "R"
-        DATA_LINE_PARTS[26] = "2,10"
+        DATA_LINE_PARTS[COLUMN_INDICES["code_support"]] = "R"
+        DATA_LINE_PARTS[COLUMN_INDICES["taux_tva"]] = "2,10"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -436,8 +437,8 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[13] = "R"
-        DATA_LINE_PARTS[26] = "2,10"
+        DATA_LINE_PARTS[COLUMN_INDICES["code_support"]] = "R"
+        DATA_LINE_PARTS[COLUMN_INDICES["taux_tva"]] = "2,10"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -475,8 +476,8 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[2] = "xxx"
-        DATA_LINE_PARTS[23] = "Xxx"
+        DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "xxx"
+        DATA_LINE_PARTS[COLUMN_INDICES["auteurs"]] = "Xxx"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -500,9 +501,9 @@ class TiteliveThingsTest:
         book_ean = "9782895026310"
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[1] = book_ean
-        DATA_LINE_PARTS[2] = "xxx"
-        DATA_LINE_PARTS[23] = "Xxx"
+        DATA_LINE_PARTS[COLUMN_INDICES["isbn"]] = book_ean
+        DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "xxx"
+        DATA_LINE_PARTS[COLUMN_INDICES["auteurs"]] = "Xxx"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
