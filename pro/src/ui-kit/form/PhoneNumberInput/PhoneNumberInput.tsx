@@ -131,6 +131,7 @@ const PhoneNumberInput = ({
         onChange={onPhoneNumberChange}
         className={styles['phone-number-input']}
         onBlur={onPhoneNumberBlur}
+        autoComplete="tel-national"
       />
       <div className={styles['phone-number-input-footer']}>
         {meta.error && meta.touched && (

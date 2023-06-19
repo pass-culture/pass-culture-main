@@ -13,6 +13,7 @@ interface IPasswordInputProps {
   name: string
   placeholder?: string
   withErrorPreview?: boolean
+  autoComplete?: string
 }
 
 const PasswordInput = ({
@@ -20,6 +21,7 @@ const PasswordInput = ({
   name,
   placeholder,
   withErrorPreview = false,
+  ...props
 }: IPasswordInputProps): JSX.Element => {
   const [isPasswordHidden, setPasswordHidden] = useState(true)
   const [field] = useField({ name })
@@ -52,6 +54,7 @@ const PasswordInput = ({
             )}
           </button>
         )}
+        {...props}
       />
       {displayLocalErrors && <ValidationMessageList name={name} />}
     </div>
