@@ -9,7 +9,6 @@ export type GetVenueManagingOffererResponseModel = {
   dateModifiedAtLastProvider?: string | null;
   demarchesSimplifieesApplicationId?: string | null;
   fieldsUpdated: Array<string>;
-  id: string;
   idAtProviders?: string | null;
   isValidated: boolean;
   lastProviderId?: string | null;
