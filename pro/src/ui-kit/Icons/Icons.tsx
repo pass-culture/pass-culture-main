@@ -46,6 +46,7 @@ const iconList = [
   // Stroke icons
   { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
   { src: 'icons/stroke-error.svg' },
+  { src: 'icons/stroke-valid.svg' }, // TODO 1 use left inside <Banner>
   { src: 'icons/stroke-thing.svg' },
   { src: 'icons/stroke-info-phone.svg' },
   { src: 'icons/stroke-building.svg' },
@@ -188,7 +189,6 @@ const iconList = [
   { src: 'icons/validate.svg', viewBox: '0 0 56 56' },
   { src: 'icons/ico-validate-p.svg', viewBox: '0 0 17 17' },
   { src: 'icons/ico-validate-purple.svg', viewBox: '0 0 15 14' },
-  { src: 'icons/ico-valide-cercle.svg', viewBox: '0 0 88 88' },
   { src: 'icons/visual-disability.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-warning-grey.svg' },
   { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },
@@ -229,7 +229,6 @@ const iconList = [
   { src: 'icons/ico-ticket-plus-full.svg', viewbox: '0 0 20 20' },
   { src: 'icons/ico-trash-filled.svg', viewbox: '0 0 48 48' },
   { src: 'icons/ico-user-circled-w.svg', viewbox: '0 0 40 40' },
-  { src: 'icons/ico-valid.svg', viewbox: '0 0 24 24' },
   { src: 'icons/venue-2.svg', viewbox: '0 0 40 40' },
   { src: 'icons/ico-venue.svg', viewbox: '0 0 28 23' },
   { src: 'icons/ico-virtual-event.svg', viewbox: '0 0 48 48' },
