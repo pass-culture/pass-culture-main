@@ -33,6 +33,7 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
           src={fullExternalIcon}
           alt="Site pass.culture.fr"
           className={styles['icon-legal-infos']}
+          width="22"
         />
         <span>Conditions Générales d’Utilisation</span>
       </a>
@@ -50,6 +51,7 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
           src={fullExternalIcon}
           alt="Site pass.culture.fr"
           className={styles['icon-legal-infos']}
+          width="22"
         />
         <span>Charte des Données Personnelles</span>
       </a>
@@ -73,6 +75,7 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
           src={fullMailIcon}
           alt="Mail à support-pro@passculture.app"
           className={styles['icon-legal-infos']}
+          width="22"
         />
         <span>Contacter notre support.</span>
       </a>

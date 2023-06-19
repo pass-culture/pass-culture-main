@@ -21,6 +21,7 @@ const PasswordInput = ({
   name,
   placeholder,
   withErrorPreview = false,
+  autoComplete,
   ...props
 }: IPasswordInputProps): JSX.Element => {
   const [isPasswordHidden, setPasswordHidden] = useState(true)
@@ -41,6 +42,7 @@ const PasswordInput = ({
         placeholder={placeholder}
         type={isPasswordHidden ? 'password' : 'text'}
         hideFooter={displayLocalErrors}
+        autoComplete={autoComplete}
         rightButton={() => (
           <button onClick={handleToggleHidden} type="button">
             {isPasswordHidden ? (

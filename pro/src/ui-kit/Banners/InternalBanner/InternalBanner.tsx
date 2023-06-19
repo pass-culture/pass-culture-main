@@ -21,7 +21,6 @@ interface IInternalBannerProps extends BannerLayoutProps {
 const InternalBanner = ({
   extraClassName,
   subtitle,
-  children = null,
   to,
   Icon,
   linkTitle,
@@ -43,7 +42,7 @@ const InternalBanner = ({
     {...bannerLayoutProps}
   >
     <p>{subtitle}</p>
-    {children}
+    {bannerLayoutProps.children}
   </BannerLayout>
 )
 
