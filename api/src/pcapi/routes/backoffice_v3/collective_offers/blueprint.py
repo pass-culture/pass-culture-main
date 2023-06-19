@@ -383,7 +383,7 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
 
 
 @blueprint.route("/<int:collective_offer_id>/update-price", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PROVIDERS)
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeResponse:
     redirect_url = request.referrer or url_for(
         "backoffice_v3_web.collective_offer.get_collective_offer_details", collective_offer_id=collective_offer_id
@@ -455,7 +455,7 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
 
 
 @blueprint.route("/<int:collective_offer_id>/update-price", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PROVIDERS)
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_collective_offer_price_form(collective_offer_id: int) -> utils.BackofficeResponse:
     collective_offer = educational_models.CollectiveOffer.query.get_or_404(collective_offer_id)
     form = EditCollectiveOfferPrice(

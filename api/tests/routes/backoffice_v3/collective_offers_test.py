@@ -571,13 +571,13 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
 class GetCollectiveOfferPriceFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.collective_offer.get_collective_offer_price_form"
     endpoint_kwargs = {"collective_offer_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
 
 class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.collective_offer.edit_collective_offer_price"
     endpoint_kwargs = {"collective_offer_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_PROVIDERS
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
     def test_nominal(self, legit_user, authenticated_client):
         # when
