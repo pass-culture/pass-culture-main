@@ -9,7 +9,7 @@
           <div class="row justify-content-start align-items-center">
             <div class="col d-flex align-items-center justify-content-start">
               <h2 class="card-title mb-3 text-primary">{{ collective_offer.name }}</h2>
-              {% if is_collective_offer_price_editable and has_permission("MANAGE_PROVIDERS") %}
+              {% if is_collective_offer_price_editable and has_permission("ADVANCED_PRO_SUPPORT") %}
                 <div class="d-flex row-reverse justify-content-end flex-grow-1">
                   <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end"
                           data-bs-toggle="modal"
