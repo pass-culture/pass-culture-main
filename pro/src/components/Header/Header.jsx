@@ -1,10 +1,10 @@
+import classnames from 'classnames'
 import React, { useCallback } from 'react'
-import { NavLink, useNavigate, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import useCurrentUser from 'hooks/useCurrentUser'
 import { CalendarIcon } from 'icons'
 import { ReactComponent as IconEuro } from 'icons/ico-euro.svg'
 import { ReactComponent as IconHome } from 'icons/ico-home.svg'
@@ -12,11 +12,10 @@ import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
 import { ReactComponent as IconSignout } from 'icons/ico-signout.svg'
 import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
 import deskIcon from 'icons/stroke-desk.svg'
-import Logo from 'ui-kit/Logo/Logo'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { ROOT_PATH } from 'utils/config'
 
 const Header = () => {
-  const { currentUser } = useCurrentUser()
   const navigate = useNavigate()
   const { logEvent } = useAnalytics()
   const location = useLocation()
@@ -30,13 +29,19 @@ const Header = () => {
     <header className="menu-v2" id="header-navigation">
       <nav>
         <div className="nav-brand">
-          <Logo
-            className="nav-item"
-            isUserAdmin={currentUser.isAdmin}
+          <NavLink
+            className={classnames('logo', 'nav-item')}
+            to={'/accueil'}
             onClick={() => {
               logEvent?.(Events.CLICKED_PRO, { from: location.pathname })
             }}
-          />
+          >
+            <SvgIcon
+              alt="Pass Culture pro, l'espace des acteurs culturels"
+              src={`${ROOT_PATH}/icons/logo-pass-culture-header.svg`}
+              viewBox="0 0 119 40"
+            />
+          </NavLink>
         </div>
 
         <div className="nav-menu">

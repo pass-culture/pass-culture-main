@@ -3,7 +3,8 @@ import React from 'react'
 import AppLayout from 'app/AppLayout'
 import SkipLinks from 'components/SkipLinks'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
-import Logo from 'ui-kit/Logo/Logo'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { ROOT_PATH } from 'utils/config'
 
 import styles from './Signin.module.scss'
 import SigninForm from './SigninForm/SigninForm'
@@ -16,7 +17,12 @@ const SignIn = (): JSX.Element => {
       <SkipLinks displayMenu={false} />
       <div className={styles['sign-in']}>
         <header className={styles['logo-side']}>
-          <Logo noLink signPage />
+          <SvgIcon
+            className="logo-unlogged"
+            viewBox="0 0 282 120"
+            alt="Pass Culture pro, l'espace des acteurs culturels"
+            src={`${ROOT_PATH}/icons/logo-pass-culture-primary.svg`}
+          />
         </header>
         <AppLayout
           layoutConfig={{
