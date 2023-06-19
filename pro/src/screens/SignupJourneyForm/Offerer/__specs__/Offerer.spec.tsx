@@ -205,8 +205,8 @@ describe('screens:SignupJourney::Offerer', () => {
   it('should submit the form when clicking the continue button', async () => {
     jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       venues: [
-        { id: '1', name: 'First Venue', isPermanent: true },
-        { id: '2', name: 'Second Venue', isPermanent: true },
+        { id: 1, name: 'First Venue', isPermanent: true },
+        { id: 2, name: 'Second Venue', isPermanent: true },
       ],
     })
     renderOffererScreen(contextValue)
