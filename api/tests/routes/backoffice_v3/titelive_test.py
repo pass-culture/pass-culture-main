@@ -5,8 +5,12 @@ from unittest.mock import patch
 from flask import url_for
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.categories import subcategories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.factories import ProductWhitelistFactory
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.routes.backoffice_v3.filters import format_titelive_id_lectorat
 
@@ -191,3 +195,32 @@ class DeleteProductWhitelistTest(GetEndpointHelper):
 
         assert "n'existe pas dans la whitelist" in alert
         mock_delete_unwanted_existing_product.assert_not_called()
+
+    @patch("pcapi.routes.backoffice_v3.titelive.blueprint.get_by_ean13")
+    def test_delete_product_white_list_but_keep_product_if_booked(self, mock_get_by_ean13, authenticated_client):
+        mock_get_by_ean13.return_value = EAN_SEARCH_FIXTURE
+        ProductWhitelistFactory(ean=self.endpoint_kwargs["ean"])
+
+        product = offers_factories.ProductFactory(
+            idAtProviders=self.endpoint_kwargs["ean"],
+            isGcuCompatible=True,
+            isSynchronizationCompatible=True,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+        bookings_factories.BookingFactory(stock__offer__product=product)
+
+        response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
+
+        assert response.status_code == 303
+        response_redirect = authenticated_client.get(response.location)
+        alert = html_parser.extract_alert(response_redirect.data)
+
+        offer = offers_models.Offer.query.one()
+        assert offer.isActive is False
+        assert offers_models.Product.query.one() == product
+        assert not product.isGcuCompatible
+        assert not product.isSynchronizationCompatible
+        assert (
+            f"Le produit \"{self.endpoint_kwargs['ean']}\" ayant encore des réservations, il a été désactivé au lieu d'être supprimé"
+            in alert
+        )

@@ -9,6 +9,7 @@ from sqlalchemy import orm
 
 from pcapi.connectors.titelive import get_by_ean13
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers.api import delete_unwanted_existing_product
 from pcapi.core.offers.api import whitelist_existing_product
 from pcapi.core.permissions import models as perm_models
@@ -120,7 +121,13 @@ def delete_product_whitelist(ean: str) -> utils.BackofficeResponse:
         else:
             db.session.delete(product_whitelist)
             db.session.commit()
-            delete_unwanted_existing_product(ean)
+            try:
+                delete_unwanted_existing_product(ean)
+            except offers_exceptions.CannotDeleteProductWithBookings:
+                flash(
+                    f'Le produit "{ean}" ayant encore des réservations, il a été désactivé au lieu d\'être supprimé',
+                    "warning",
+                )
     except sa.exc.IntegrityError:
         db.session.rollback()
         flash("Impossible de supprimer l'EAN de la whitelist", "danger")
