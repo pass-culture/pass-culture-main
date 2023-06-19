@@ -52,18 +52,18 @@ describe('FormPracticalInformation', () => {
         managedVenues: [
           {
             ...getOfferVenueFactory({
-              id: 'V1',
               publicName: 'Venue1',
               name: 'Venue1',
             }),
+            id: 'V1',
             nonHumanizedId: 1,
           },
           {
             ...getOfferVenueFactory({
-              id: 'V2',
               publicName: 'Venue2',
               name: 'Venue2',
             }),
+            id: 'V2',
             nonHumanizedId: 1,
           },
         ],
