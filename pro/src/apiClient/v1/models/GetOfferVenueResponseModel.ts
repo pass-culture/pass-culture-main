@@ -10,7 +10,6 @@ export type GetOfferVenueResponseModel = {
   bookingEmail?: string | null;
   city?: string | null;
   departementCode?: string | null;
-  id: string;
   isVirtual: boolean;
   managingOfferer: GetOfferManagingOffererResponseModel;
   mentalDisabilityCompliant?: boolean | null;

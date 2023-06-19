@@ -214,7 +214,6 @@ class Returns200Test:
                 "bookingEmail": "test@test.com",
                 "city": "Paris",
                 "departementCode": "75",
-                "id": humanize(venue.id),
                 "nonHumanizedId": venue.id,
                 "isVirtual": False,
                 "managingOfferer": {

@@ -30,8 +30,8 @@ describe('filter bookings by bookings period', () => {
     props = {
       appliedPreFilters: { ...DEFAULT_PRE_FILTERS },
       applyPreFilters: jest.fn(),
-      venues: [getOfferVenueFactory()].map(({ id, name }) => ({
-        id,
+      venues: [getOfferVenueFactory()].map(({ nonHumanizedId, name }) => ({
+        id: nonHumanizedId.toString(),
         displayName: name,
       })),
       getBookingsCSVFileAdapter: jest.fn(),

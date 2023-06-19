@@ -21,7 +21,6 @@ from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base as base_serializers
-from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_ean_is_valid
@@ -289,15 +288,12 @@ class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     bookingEmail: str | None
     city: str | None
     departementCode: str | None
-    id: str
     nonHumanizedId: int
     isVirtual: bool
     managingOfferer: GetOfferManagingOffererResponseModel
     name: str
     postalCode: str | None
     publicName: str | None
-
-    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True
