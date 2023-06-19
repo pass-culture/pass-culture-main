@@ -6,7 +6,6 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.users import testing as external_testing
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 from tests.routes.pro.post_venue_test import venue_malformed_test_data
@@ -26,7 +25,7 @@ def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Ve
         "postalCode": venue.postalCode,
         "publicName": venue.publicName,
         "siret": venue.siret,
-        "venueLabelId": humanize(venue.venueLabelId),
+        "venueLabelId": venue.venueLabelId,
         "withdrawalDetails": venue.withdrawalDetails,
         "isEmailAppliedOnAllOffers": False,
         "isWithdrawalAppliedOnAllOffers": False,
@@ -51,7 +50,7 @@ class Returns200Test:
             {
                 "name": "Ma librairie",
                 "venueTypeCode": "BOOKSTORE",
-                "venueLabelId": humanize(venue_label.id),
+                "venueLabelId": venue_label.id,
             },
             venue,
         )

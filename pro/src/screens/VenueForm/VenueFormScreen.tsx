@@ -142,13 +142,14 @@ const VenueFormScreen = ({
     request
       .then(response => {
         savedSuccess = true
-
         navigate(
           venueSubmitRedirectUrl(
             hasNewOfferCreationJourney,
             isCreatingVenue,
-            offerer.id,
-            response.id,
+            offerer.nonHumanizedId,
+            // FIXME (mageoffray, 2023-06-19) : once patch response only has numeric ids we can simplify venue.id value
+            // @ts-expect-error
+            isCreatingVenue ? response.id : response.nonHumanizedId,
             currentUser
           )
         )

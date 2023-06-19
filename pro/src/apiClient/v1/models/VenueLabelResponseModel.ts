@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 export type VenueLabelResponseModel = {
-  id: string;
+  id: number;
   label: string;
 };
 

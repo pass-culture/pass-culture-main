@@ -64,7 +64,7 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
     publicName: venue.publicName || '',
     postalCode: venue.postalCode || '',
     siret: venue.siret || '',
-    venueLabel: venue.venueLabelId || null,
+    venueLabel: venue.venueLabelId?.toString() || null,
     venueType: venue.venueTypeCode,
     withdrawalDetails: venue.withdrawalDetails || '',
     collectiveAccessInformation: venue.collectiveAccessInformation || '',

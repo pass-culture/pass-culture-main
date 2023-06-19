@@ -3,8 +3,8 @@ import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 export const venueSubmitRedirectUrl = (
   hasNewOfferCreationJourney: boolean,
   isCreatingVenue: boolean,
-  offererId: string,
-  venueId = '',
+  offererId: number,
+  venueId: number | undefined,
   currentUser: SharedCurrentUserResponseModel
 ) => {
   let venuesUrl

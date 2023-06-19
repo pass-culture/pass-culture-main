@@ -1,6 +1,5 @@
 from pcapi.core.offerers.models import VenueLabel
 from pcapi.routes.serialization.venue_labels_serialize import VenueLabelResponseModel
-from pcapi.utils.human_ids import humanize
 
 
 class SerializeVenueLabelsTest:
@@ -12,4 +11,4 @@ class SerializeVenueLabelsTest:
         serialized_label_response = VenueLabelResponseModel.from_orm(venue_label)
 
         # Then
-        assert serialized_label_response == {"id": humanize(venue_label.id), "label": venue_label.label}
+        assert serialized_label_response == {"id": venue_label.id, "label": venue_label.label}

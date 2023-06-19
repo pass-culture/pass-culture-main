@@ -8,8 +8,8 @@ import { venueSubmitRedirectUrl } from '../utils/venueSubmitRedirectUrl'
 
 let useNewOfferCreationJourney: boolean
 
-const offerer = { id: 'OF' } as IOfferer
-const venue = { id: 'VN' } as VenueResponseModel
+const offerer = { nonHumanizedId: 1 } as IOfferer
+const venue = { id: 12 } as VenueResponseModel
 
 describe('redirect url after submit', () => {
   beforeEach(() => {
@@ -27,12 +27,12 @@ describe('redirect url after submit', () => {
         const url = venueSubmitRedirectUrl(
           useNewOfferCreationJourney,
           creationMode,
-          offerer.id,
+          offerer.nonHumanizedId,
           venue.id,
           { isAdmin: true } as SharedCurrentUserResponseModel
         )
 
-        expect(url).toEqual('/structures/OF')
+        expect(url).toEqual(`/structures/${offerer.nonHumanizedId}`)
       }
     )
 
@@ -40,7 +40,7 @@ describe('redirect url after submit', () => {
       const url = venueSubmitRedirectUrl(
         useNewOfferCreationJourney,
         true,
-        offerer.id,
+        offerer.nonHumanizedId,
         venue.id,
         { isAdmin: false } as SharedCurrentUserResponseModel
       )
@@ -52,7 +52,7 @@ describe('redirect url after submit', () => {
       const url = venueSubmitRedirectUrl(
         useNewOfferCreationJourney,
         false,
-        offerer.id,
+        offerer.nonHumanizedId,
         venue.id,
         { isAdmin: false } as SharedCurrentUserResponseModel
       )
@@ -65,43 +65,47 @@ describe('redirect url after submit', () => {
     const url = venueSubmitRedirectUrl(
       useNewOfferCreationJourney,
       true,
-      offerer.id,
+      offerer.nonHumanizedId,
       venue.id,
       { isAdmin: true } as SharedCurrentUserResponseModel
     )
 
-    expect(url).toEqual('/structures/OF/lieux/VN')
+    expect(url).toEqual(
+      `/structures/${offerer.nonHumanizedId}/lieux/${venue.id}`
+    )
   })
 
   it('Redirect admin user to the right url on update', () => {
     const url = venueSubmitRedirectUrl(
       useNewOfferCreationJourney,
       false,
-      offerer.id,
+      offerer.nonHumanizedId,
       venue.id,
       { isAdmin: true } as SharedCurrentUserResponseModel
     )
 
-    expect(url).toEqual('/structures/OF')
+    expect(url).toEqual(`/structures/${offerer.nonHumanizedId}`)
   })
 
   it('Redirect non admin user to the right url on creation', () => {
     const url = venueSubmitRedirectUrl(
       useNewOfferCreationJourney,
       true,
-      offerer.id,
+      offerer.nonHumanizedId,
       venue.id,
       { isAdmin: false } as SharedCurrentUserResponseModel
     )
 
-    expect(url).toEqual('/structures/OF/lieux/VN')
+    expect(url).toEqual(
+      `/structures/${offerer.nonHumanizedId}/lieux/${venue.id}`
+    )
   })
 
   it('Redirect non admin user to the right url on update', () => {
     const url = venueSubmitRedirectUrl(
       useNewOfferCreationJourney,
       false,
-      offerer.id,
+      offerer.nonHumanizedId,
       venue.id,
       { isAdmin: false } as SharedCurrentUserResponseModel
     )
