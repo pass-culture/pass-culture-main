@@ -327,7 +327,7 @@ describe('screens:StocksEventEdition', () => {
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
-  it.only('should display new stocks banner for several stocks', async () => {
+  it('should display new stocks banner for several stocks', async () => {
     await renderStockEventScreen(apiOffer)
 
     await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
