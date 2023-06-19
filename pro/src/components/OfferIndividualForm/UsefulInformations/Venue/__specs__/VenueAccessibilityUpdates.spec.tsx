@@ -78,7 +78,6 @@ describe('OfferIndividual section: venue', () => {
     ]
 
     venueAccessible = {
-      id: 'AAAA',
       nonHumanizedId: 1,
       name: 'Venue AAAA',
       managingOffererId: 'AE',
@@ -95,7 +94,6 @@ describe('OfferIndividual section: venue', () => {
       hasCreatedOffer: true,
     }
     venueNotAccessible = {
-      id: 'AABB',
       nonHumanizedId: 2,
       name: 'Venue AABB',
       managingOffererId: 'AE',

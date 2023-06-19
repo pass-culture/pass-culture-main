@@ -474,7 +474,6 @@ describe('CollectiveDataEdition', () => {
   describe('prefill', () => {
     it('should prefill form with venue collective data', async () => {
       jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValue({
-        id: 'A1',
         collectiveDomains: [{ id: 1, name: 'domain 1' }],
         collectiveDescription: '',
         collectiveEmail: 'toto@domain.com',

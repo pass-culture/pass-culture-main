@@ -107,7 +107,6 @@ describe('OfferIndividualForm', () => {
     ]
     venueList = [
       {
-        id: 'physical',
         nonHumanizedId: 1,
         name: 'Venue AAAA',
         managingOffererId: 'AE',
@@ -124,7 +123,6 @@ describe('OfferIndividualForm', () => {
         hasCreatedOffer: true,
       },
       {
-        id: 'virtual',
         nonHumanizedId: 2,
         name: 'Venue AAAA',
         managingOffererId: 'AE',

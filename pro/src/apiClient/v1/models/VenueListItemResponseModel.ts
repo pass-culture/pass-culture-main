@@ -8,7 +8,6 @@ export type VenueListItemResponseModel = {
   collectiveSubCategoryId?: string | null;
   hasCreatedOffer: boolean;
   hasMissingReimbursementPoint: boolean;
-  id: string;
   isVirtual: boolean;
   managingOffererId: string;
   mentalDisabilityCompliant?: boolean | null;

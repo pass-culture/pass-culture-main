@@ -121,7 +121,7 @@ export function OfferIndividualContextProvider({
         setVenueList(response.payload.venueList)
         const venuesPopinDisplaying: Record<string, boolean> = {}
         response.payload.venueList.forEach(v => {
-          venuesPopinDisplaying[v.id] =
+          venuesPopinDisplaying[v.nonHumanizedId] =
             !v.hasCreatedOffer && v.hasMissingReimbursementPoint
         })
         setShowVenuePopin(venuesPopinDisplaying)
