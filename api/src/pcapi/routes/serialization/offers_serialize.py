@@ -21,7 +21,6 @@ from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base as base_serializers
-from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -170,9 +169,6 @@ class PatchAllOffersActiveStatusBodyModel(BaseModel):
     status: str | None
     period_beginning_date: datetime | None
     period_ending_date: datetime | None
-
-    _dehumanize_offerer_id = dehumanize_field("offerer_id")
-    _dehumanize_venue_id = dehumanize_field("venue_id")
 
     class Config:
         alias_generator = to_camel

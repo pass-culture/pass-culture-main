@@ -22,7 +22,6 @@ from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -587,7 +586,7 @@ class Returns403Test:
             "isActive": True,
             "offererId": offerer.id,
             "page": 1,
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
         }
 
         with patch(

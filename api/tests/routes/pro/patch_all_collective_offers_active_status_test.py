@@ -11,7 +11,6 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
@@ -29,7 +28,7 @@ class Returns204Test:
 
         # When
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
-        data = {"isActive": True, "page": 1, "venueId": humanize(venue.id)}
+        data = {"isActive": True, "page": 1, "venueId": venue.id}
         with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
             response = client.patch("/collective/offers/all-active-status", json=data)
 
@@ -79,8 +78,8 @@ class Returns204Test:
 
         data = {
             "isActive": False,
-            "offererId": humanize(user_offerer.offerer.id),
-            "venueId": humanize(venue.id),
+            "offererId": user_offerer.offerer.id,
+            "venueId": venue.id,
             "name": "OKAY",
             "periodBeginningDate": "2020-10-09T00:00:00Z",
             "periodEndingDate": "2020-10-11T23:59:59Z",
@@ -108,7 +107,7 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
-        data = {"isActive": True, "page": 1, "venueId": humanize(venue.id)}
+        data = {"isActive": True, "page": 1, "venueId": venue.id}
         with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
             response = client.patch("/collective/offers/all-active-status", json=data)
 
@@ -133,7 +132,7 @@ class Returns403Test:
             "isActive": True,
             "offererId": offerer.id,
             "page": 1,
-            "venueId": humanize(venue.id),
+            "venueId": venue.id,
         }
 
         with patch(
