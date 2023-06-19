@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 def _cinema_stock_features(provider: Provider) -> list[str]:
     features = [random.choice(["VF", "VO"])]
     match provider.name:
-        case "CDSStocks":
+        case "CDSStocks" | "BoostStocks":
             if random.choice([True, False]):
                 features.append("3D")
         case "CGRStocks":
