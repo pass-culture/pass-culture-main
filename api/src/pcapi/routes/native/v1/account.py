@@ -321,10 +321,12 @@ def suspend_account(user: users_models.User) -> None:
 
 
 @blueprint.native_v1.route("/account/suspend/token_validation/<token>", methods=["GET"])
-@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
+@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400, 401])
 def account_suspension_token_validation(token: str) -> None:
     try:
         decode_jwt_token(token)
+    except jwt.ExpiredSignatureError:
+        raise api_errors.ApiErrors({"reason": "Le token a expiré."}, status_code=401)
     except (jwt.InvalidTokenError, jwt.InvalidSignatureError):
         raise api_errors.ApiErrors({"reason": "Le token est invalide."})
 

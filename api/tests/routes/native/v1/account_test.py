@@ -1926,3 +1926,15 @@ class SuspensionTokenValidationTest:
         response = client.get(f"/native/v1/account/suspend/token_validation/{token}")
 
         assert response.status_code == 204
+
+    def test_error_when_token_is_expired(self, client):
+        passed_expiration_date = (datetime.utcnow() - timedelta(days=1)).timestamp()
+        token = jwt.encode(
+            {"userId": 1, "exp": passed_expiration_date},
+            settings.JWT_SECRET_KEY,
+            algorithm=ALGORITHM_HS_256,
+        )
+        response = client.get(f"/native/v1/account/suspend/token_validation/{token}")
+
+        assert response.status_code == 401
+        assert response.json["reason"] == "Le token a expiré."

@@ -2012,6 +2012,7 @@ def test_public_api(client):
                     "responses": {
                         "204": {"description": "No Content"},
                         "400": {"description": "Bad Request"},
+                        "401": {"description": "Unauthorized"},
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
