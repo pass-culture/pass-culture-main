@@ -292,13 +292,19 @@ def offerer_active_individual_offers_fixture(offerer, venue_with_accepted_bank_i
         venue=venue_with_accepted_bank_info,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
-
     rejected_offer = offers_factories.OfferFactory(
         venue=venue_with_accepted_bank_info,
         validation=offers_models.OfferValidationStatus.REJECTED.value,
     )
-
-    return approved_offers + [rejected_offer]
+    pending_offer = offers_factories.OfferFactory(
+        venue=venue_with_accepted_bank_info,
+        validation=offers_models.OfferValidationStatus.PENDING.value,
+    )
+    draft_offer = offers_factories.OfferFactory(
+        venue=venue_with_accepted_bank_info,
+        validation=offers_models.OfferValidationStatus.DRAFT.value,
+    )
+    return approved_offers + [rejected_offer, pending_offer, draft_offer]
 
 
 @pytest.fixture(name="offerer_inactive_individual_offers")
@@ -309,14 +315,22 @@ def offerer_inactive_individual_offers_fixture(offerer, venue_with_accepted_bank
         isActive=False,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
-
     rejected_offer = offers_factories.OfferFactory(
         venue=venue_with_accepted_bank_info,
         isActive=False,
         validation=offers_models.OfferValidationStatus.REJECTED.value,
     )
-
-    return approved_offers + [rejected_offer]
+    pending_offer = offers_factories.OfferFactory(
+        venue=venue_with_accepted_bank_info,
+        isActive=False,
+        validation=offers_models.OfferValidationStatus.PENDING.value,
+    )
+    draft_offer = offers_factories.OfferFactory(
+        venue=venue_with_accepted_bank_info,
+        isActive=False,
+        validation=offers_models.OfferValidationStatus.DRAFT.value,
+    )
+    return approved_offers + [rejected_offer, pending_offer, draft_offer]
 
 
 @pytest.fixture(name="offerer_active_collective_offers")
@@ -326,13 +340,19 @@ def offerer_active_collective_offers_fixture(offerer, venue_with_accepted_bank_i
         venue=venue_with_accepted_bank_info,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
-
     rejected_offer = educational_factories.CollectiveOfferFactory(
         venue=venue_with_accepted_bank_info,
         validation=offers_models.OfferValidationStatus.REJECTED.value,
     )
-
-    return approved_offers + [rejected_offer]
+    pending_offer = educational_factories.CollectiveOfferFactory(
+        venue=venue_with_accepted_bank_info,
+        validation=offers_models.OfferValidationStatus.PENDING.value,
+    )
+    draft_offer = educational_factories.CollectiveOfferFactory(
+        venue=venue_with_accepted_bank_info,
+        validation=offers_models.OfferValidationStatus.DRAFT.value,
+    )
+    return approved_offers + [rejected_offer, pending_offer, draft_offer]
 
 
 @pytest.fixture(name="offerer_inactive_collective_offers")
@@ -343,14 +363,22 @@ def offerer_inactive_collective_offers_fixture(offerer, venue_with_accepted_bank
         isActive=False,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
-
     rejected_offer = educational_factories.CollectiveOfferFactory(
         venue=venue_with_accepted_bank_info,
         isActive=False,
         validation=offers_models.OfferValidationStatus.REJECTED.value,
     )
-
-    return approved_offers + [rejected_offer]
+    pending_offer = educational_factories.CollectiveOfferFactory(
+        venue=venue_with_accepted_bank_info,
+        isActive=False,
+        validation=offers_models.OfferValidationStatus.PENDING.value,
+    )
+    draft_offer = educational_factories.CollectiveOfferFactory(
+        venue=venue_with_accepted_bank_info,
+        isActive=False,
+        validation=offers_models.OfferValidationStatus.DRAFT.value,
+    )
+    return approved_offers + [rejected_offer, pending_offer, draft_offer]
 
 
 @pytest.fixture(name="offerer_active_collective_offer_templates")
@@ -365,7 +393,16 @@ def offerer_active_collective_offer_templates_fixture(offerer, venue_with_accept
         validation=offers_models.OfferValidationStatus.REJECTED.value,
     )
 
-    return [approved_offers, rejected_offer]
+    pending_offer = educational_factories.CollectiveOfferTemplateFactory(
+        venue=venue_with_accepted_bank_info,
+        validation=offers_models.OfferValidationStatus.PENDING.value,
+    )
+
+    draft_offer = educational_factories.CollectiveOfferTemplateFactory(
+        venue=venue_with_accepted_bank_info,
+        validation=offers_models.OfferValidationStatus.DRAFT.value,
+    )
+    return [approved_offers, rejected_offer, pending_offer, draft_offer]
 
 
 @pytest.fixture(name="offerer_inactive_collective_offer_templates")
@@ -383,7 +420,19 @@ def offerer_inactive_collective_offer_templates_fixture(offerer, venue_with_acce
         validation=offers_models.OfferValidationStatus.REJECTED.value,
     )
 
-    return approved_offers + [rejected_offer]
+    pending_offer = educational_factories.CollectiveOfferTemplateFactory(
+        venue=venue_with_accepted_bank_info,
+        isActive=False,
+        validation=offers_models.OfferValidationStatus.PENDING.value,
+    )
+
+    draft_offer = educational_factories.CollectiveOfferTemplateFactory(
+        venue=venue_with_accepted_bank_info,
+        isActive=False,
+        validation=offers_models.OfferValidationStatus.DRAFT.value,
+    )
+
+    return approved_offers + [rejected_offer, pending_offer, draft_offer]
 
 
 @pytest.fixture(name="offerer_stocks")

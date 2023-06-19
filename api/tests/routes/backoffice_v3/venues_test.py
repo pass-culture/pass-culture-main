@@ -440,8 +440,8 @@ class GetVenueStatsDataTest:
 
         assert stats.active.individual == 2
         assert stats.active.collective == 4
-        assert stats.inactive.individual == 3
-        assert stats.inactive.collective == 5
+        assert stats.inactive.individual == 5
+        assert stats.inactive.collective == 7
         assert not stats.lastSync.date
         assert not stats.lastSync.provider
 
@@ -625,7 +625,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         # then
         assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
-        assert "7 offres actives (2 IND / 5 EAC) 10 offres inactives (3 IND / 7 EAC)" in cards_text
+        assert "7 offres actives (2 IND / 5 EAC) 16 offres inactives (5 IND / 11 EAC)" in cards_text
 
     def test_venue_offers_stats_0_if_no_offer(self, authenticated_client, venue_with_accepted_bank_info):
         # when

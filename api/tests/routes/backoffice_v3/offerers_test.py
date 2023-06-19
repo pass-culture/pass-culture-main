@@ -438,8 +438,8 @@ class GetOffererStatsDataTest:
 
         assert stats.active.individual == 2
         assert stats.active.collective == 5
-        assert stats.inactive.individual == 3
-        assert stats.inactive.collective == 7
+        assert stats.inactive.individual == 5
+        assert stats.inactive.collective == 11
 
         total_revenue = data.total_revenue
 
@@ -463,7 +463,7 @@ class GetOffererStatsDataTest:
 
         assert stats.active.individual == 2
         assert stats.active.collective == 0
-        assert stats.inactive.individual == 3
+        assert stats.inactive.individual == 5
         assert stats.inactive.collective == 0
 
         total_revenue = data.total_revenue
@@ -489,7 +489,7 @@ class GetOffererStatsDataTest:
         assert stats.active.individual == 0
         assert stats.active.collective == 4
         assert stats.inactive.individual == 0
-        assert stats.inactive.collective == 5
+        assert stats.inactive.collective == 7
 
         total_revenue = data.total_revenue
 
@@ -536,8 +536,8 @@ class GetOffererStatsDataTest:
 
         assert stats.active.individual == 0
         assert stats.active.collective == 0
-        assert stats.inactive.individual == 3
-        assert stats.inactive.collective == 5
+        assert stats.inactive.individual == 5
+        assert stats.inactive.collective == 7
 
         total_revenue = data.total_revenue
 
