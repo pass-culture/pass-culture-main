@@ -131,7 +131,6 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     dateModifiedAtLastProvider: datetime | None
     demarchesSimplifieesApplicationId: str | None
     fieldsUpdated: list[str]
-    id: str
     nonHumanizedId: int
     idAtProviders: str | None
     isValidated: bool
@@ -140,8 +139,6 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
     siren: str | None
-
-    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True
@@ -197,7 +194,6 @@ class LegalStatusResponseModel(BaseModel):
 class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
     id: str
     dateCreated: datetime
-    managingOffererId: str
     nonHumanizedId: int
 
     bannerMeta: BannerMetaModel | None
@@ -232,7 +228,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     hasAdageId: bool
     adageInscriptionDate: datetime | None
     _humanize_id = humanize_field("id")
-    _humanize_managing_offerer_id = humanize_field("managingOffererId")
 
     class Config:
         orm_mode = True
