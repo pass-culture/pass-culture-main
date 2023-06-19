@@ -144,6 +144,7 @@ class BoostStocksTest:
         assert created_stocks[0].offer == created_offers[0]
         assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2022, 11, 28, 8)
         assert created_stocks[0].beginningDatetime == datetime.datetime(2022, 11, 28, 8)
+        assert created_stocks[0].features == ["VF"]
 
         assert created_offers[1].name == "CHARLOTTE"
         assert created_offers[1].product == created_products[1]
@@ -166,6 +167,7 @@ class BoostStocksTest:
         assert created_stocks[1].offer == created_offers[1]
         assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2022, 11, 28, 8)
         assert created_stocks[1].beginningDatetime == datetime.datetime(2022, 11, 28, 8)
+        assert created_stocks[1].features == ["VO", "3D"]
 
         assert all((category.price == decimal.Decimal("6.9") for category in created_price_categories))
         assert all(
