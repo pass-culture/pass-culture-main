@@ -15,13 +15,11 @@ interface ValidationMessageListProps {
 }
 
 const ValidationMessageList = ({ name }: ValidationMessageListProps) => {
-  const [field, , helpers] = useField({ name })
+  const [field] = useField({ name })
   const [errors, setErrors] = useState<{ [key: string]: boolean }>({})
 
   useEffect(() => {
     setErrors(passwordValidationStatus(field.value))
-    // hide base error message and display only localErrors
-    helpers.setError('')
   }, [field.value])
 
   return (
@@ -30,11 +28,14 @@ const ValidationMessageList = ({ name }: ValidationMessageListProps) => {
         return (
           <div key={k} className={styles['field-layout-error']}>
             {errors[k] ? (
-              <FieldError name={getPasswordRuleLabel(k)}>
+              <FieldError name={getPasswordRuleLabel(k)} iconAlt="Il manque ">
                 {getPasswordRuleLabel(k)}
               </FieldError>
             ) : (
-              <FieldSuccess name={getPasswordRuleLabel(k)}>
+              <FieldSuccess
+                name={getPasswordRuleLabel(k)}
+                iconAlt="Il y a bien "
+              >
                 {getPasswordRuleLabel(k)}
               </FieldSuccess>
             )}

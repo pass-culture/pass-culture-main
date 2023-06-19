@@ -41,7 +41,6 @@ const PasswordInput = ({
         name={name}
         placeholder={placeholder}
         type={isPasswordHidden ? 'password' : 'text'}
-        hideFooter={displayLocalErrors}
         autoComplete={autoComplete}
         rightButton={() => (
           <button onClick={handleToggleHidden} type="button">
@@ -56,9 +55,11 @@ const PasswordInput = ({
             )}
           </button>
         )}
+        ErrorDetails={
+          displayLocalErrors && <ValidationMessageList name={name} />
+        }
         {...props}
       />
-      {displayLocalErrors && <ValidationMessageList name={name} />}
     </div>
   )
 }
