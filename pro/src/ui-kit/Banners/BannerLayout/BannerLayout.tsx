@@ -10,7 +10,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BannerLayout.module.scss'
 
-export interface IBannerLayoutProps {
+export interface BannerLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
   linkNode?: React.ReactNode | React.ReactNode[]
   type?: 'notification-info' | 'attention' | 'light' | 'new' | 'image'
@@ -32,7 +32,7 @@ const BannerLayout = ({
   linkNode,
   showTitle = true,
   isProvider = false,
-}: IBannerLayoutProps): JSX.Element => {
+}: BannerLayoutProps): JSX.Element => {
   return (
     <div
       className={cn(
@@ -60,7 +60,7 @@ const BannerLayout = ({
           <span className={styles['container-title']}>IMPORTANT</span>
         </div>
       )}
-      <span className={styles['border-cut']}>
+      <div className={styles['border-cut']}>
         {closable && (
           <button onClick={handleOnClick} type="button">
             {
@@ -107,7 +107,7 @@ const BannerLayout = ({
             {linkNode}
           </div>
         </div>
-      </span>
+      </div>
     </div>
   )
 }

@@ -3,10 +3,10 @@ import React, { FunctionComponent, SVGProps } from 'react'
 import { ButtonLink } from 'ui-kit/Button'
 
 import BannerLayout from '../BannerLayout'
-import { IBannerLayoutProps } from '../BannerLayout/BannerLayout'
+import { BannerLayoutProps } from '../BannerLayout/BannerLayout'
 import styles from '../BannerLayout/BannerLayout.module.scss'
 
-interface IInternalBannerProps extends IBannerLayoutProps {
+interface IInternalBannerProps extends BannerLayoutProps {
   extraClassName?: string
   Icon?: FunctionComponent<
     SVGProps<SVGSVGElement> & {

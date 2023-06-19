@@ -3,14 +3,14 @@ import React from 'react'
 
 import icon from 'icons/visual-disability.svg'
 
-import BaseCheckbox, { IBaseCheckboxProps } from './BaseCheckbox'
+import BaseCheckbox, { BaseCheckboxProps } from './BaseCheckbox'
 
 export default {
   title: 'ui-kit/forms/shared/BaseCheckbox',
   component: BaseCheckbox,
 }
 
-const Template: Story<IBaseCheckboxProps> = args => (
+const Template: Story<BaseCheckboxProps> = args => (
   <div>
     <BaseCheckbox {...args} />
   </div>
