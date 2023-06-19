@@ -7,7 +7,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -28,9 +27,8 @@ def test_response_serialization(client):
     assert len(response.json["venues"]) == 1
 
     assert response.json["venues"][0] == {
-        "id": humanize(venue.id),
         "nonHumanizedId": venue.id,
-        "managingOffererId": humanize(venue.managingOffererId),
+        "managingOffererId": venue.managingOffererId,
         "collectiveSubCategoryId": venue.collectiveSubCategoryId,
         "name": venue.name,
         "offererName": user_offerer.offerer.name,

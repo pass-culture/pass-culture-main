@@ -142,7 +142,7 @@ describe('OfferIndividualForm', () => {
       {
         nonHumanizedId: physicalVenueId,
         name: 'Venue AAAA',
-        managingOffererId: 'AE',
+        managingOffererId: 1,
         isVirtual: false,
         withdrawalDetails: '',
         accessibility: {
@@ -158,7 +158,7 @@ describe('OfferIndividualForm', () => {
       {
         nonHumanizedId: virtualVenueId,
         name: 'Venue AAAA',
-        managingOffererId: 'AE',
+        managingOffererId: 1,
         isVirtual: true,
         withdrawalDetails: '',
         accessibility: {
