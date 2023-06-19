@@ -214,7 +214,7 @@ const VenueFormScreen = ({
   })
 
   const {
-    id: initialId,
+    nonHumanizedId: initialId,
     isVirtual: initialIsVirtual,
     publicName: publicName,
     name: initialName,
@@ -231,7 +231,7 @@ const VenueFormScreen = ({
           </Title>
           {!isCreatingVenue && (
             <a
-              href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}
+              href={`/offre/creation?lieu=${initialId}&structure=${offerer.nonHumanizedId}`}
             >
               <Button
                 variant={ButtonVariant.PRIMARY}

@@ -108,7 +108,7 @@ AddVenueProviderButton.propTypes = {
   providers: PropTypes.arrayOf(PropTypes.shape()),
   setVenueProviders: PropTypes.func.isRequired,
   venue: PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    nonHumanizedId: PropTypes.number.isRequired,
     siret: PropTypes.string,
   }).isRequired,
 }

@@ -65,10 +65,8 @@ VenueProviderForm.propTypes = {
   afterSubmit: PropTypes.func.isRequired,
   provider: PropTypes.shape().isRequired,
   venue: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    // managingOffererId: PropTypes.string.isRequired,
+    nonHumanizedId: PropTypes.number.isRequired,
     siret: PropTypes.string.isRequired,
-    // departementCode: PropTypes.string.isRequired,
   }).isRequired,
 }
 

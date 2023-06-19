@@ -14,7 +14,6 @@ describe('formatOfferEventAddress', () => {
           venueId: 12,
         },
         {
-          id: 'A1',
           name: 'Offerer venue',
           publicName: '',
           postalCode: '75000',
@@ -34,7 +33,6 @@ describe('formatOfferEventAddress', () => {
           venueId: null,
         },
         {
-          id: 'A1',
           name: 'Offerer venue',
           publicName: '',
           postalCode: '75000',
@@ -54,7 +52,6 @@ describe('formatOfferEventAddress', () => {
           venueId: 12,
         },
         {
-          id: 'A1',
           name: 'Offerer venue',
           publicName: '',
           postalCode: '75000',

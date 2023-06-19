@@ -23,7 +23,7 @@ describe('EACInformation', () => {
   describe('on venue creation', () => {
     it('should display information banner when user is creating venue and can create collective offers', async () => {
       renderWithProviders(
-        <EACInformation venue={null} isCreatingVenue offererId="O1" />
+        <EACInformation venue={null} isCreatingVenue offererId={1} />
       )
 
       expect(
@@ -52,7 +52,7 @@ describe('EACInformation', () => {
         collectiveWebsite: undefined,
       } as unknown as GetVenueResponseModel // we only test for used fields
 
-      renderWithProviders(<EACInformation venue={venue} offererId="O1" />)
+      renderWithProviders(<EACInformation venue={venue} offererId={1} />)
 
       expect(await screen.findByText(/Email/)).toBeInTheDocument()
       expect(
@@ -61,8 +61,10 @@ describe('EACInformation', () => {
     })
 
     it('when venue has no collective data', async () => {
+      const venueId = 1
+      const offererId = 1
       const venue = {
-        id: 'V1',
+        nonHumanizedId: venueId,
         collectiveDescription: '',
         collectiveDomains: [],
         collectiveEmail: '',
@@ -73,14 +75,19 @@ describe('EACInformation', () => {
         collectiveStudents: [],
         collectiveWebsite: undefined,
       } as unknown as GetVenueResponseModel // we only test for used fields
-      renderWithProviders(<EACInformation venue={venue} offererId="O1" />)
+      renderWithProviders(
+        <EACInformation venue={venue} offererId={offererId} />
+      )
 
       expect(screen.queryByText(/Email/)).not.toBeInTheDocument()
       const link = screen.getByRole('link', {
         name: 'Renseigner mes informations',
       })
       expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', `/structures/O1/lieux/V1/eac`)
+      expect(link).toHaveAttribute(
+        'href',
+        `/structures/${offererId}/lieux/${venueId}/eac`
+      )
     })
   })
 })
