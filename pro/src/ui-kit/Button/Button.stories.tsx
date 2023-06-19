@@ -3,8 +3,8 @@ import type { Story } from '@storybook/react'
 import React from 'react'
 
 import { ReactComponent as backFullIcon } from 'icons/full-back.svg'
+import { ReactComponent as FullExternalSite } from 'icons/full-external-site.svg'
 import { ReactComponent as circleArrowIcon } from 'icons/ico-circle-arrow.svg'
-import { ReactComponent as linkIcon } from 'icons/ico-external-site-filled.svg'
 import { ReactComponent as penIcon } from 'icons/ico-pen-black.svg'
 
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
@@ -69,7 +69,7 @@ export const DefaultButtonWithIcon = Template.bind({})
 
 DefaultButtonWithIcon.args = {
   ...DefaultButton.args,
-  Icon: linkIcon,
+  Icon: FullExternalSite,
 }
 
 export const DefaultSecondaryButton = Template.bind({})

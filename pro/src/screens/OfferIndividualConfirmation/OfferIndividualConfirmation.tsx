@@ -10,7 +10,7 @@ import {
 import { OFFER_STATUS_PENDING } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
+import { ReactComponent as FullExternalSite } from 'icons/full-external-site.svg'
 import { ReactComponent as PendingIcon } from 'icons/pending.svg'
 import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
 import { DisplayOfferInAppLink } from 'screens/OfferIndividual/Summary/DisplayOfferInAppLink'
@@ -74,7 +74,7 @@ const OfferIndividualConfirmation = ({
               }),
           }}
           text="Visualiser l’offre dans l’application"
-          Icon={LinkIcon}
+          Icon={FullExternalSite}
         />
       </div>
       <div className={styles['confirmation-actions']}>
