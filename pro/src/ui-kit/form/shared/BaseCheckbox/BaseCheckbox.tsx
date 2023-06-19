@@ -3,7 +3,7 @@ import React from 'react'
 
 import styles from './BaseCheckbox.module.scss'
 
-export interface IBaseCheckboxProps
+export interface BaseCheckboxProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   label: string | React.ReactNode
   description?: string
@@ -21,7 +21,7 @@ const BaseCheckbox = ({
   icon,
   withBorder,
   ...props
-}: IBaseCheckboxProps): JSX.Element => (
+}: BaseCheckboxProps): JSX.Element => (
   <label
     className={cn(
       styles['base-checkbox'],
@@ -31,7 +31,7 @@ const BaseCheckbox = ({
       className
     )}
   >
-    <div className={styles['base-checkbox-label-row']}>
+    <span className={styles['base-checkbox-label-row']}>
       <input
         aria-invalid={hasError}
         type="checkbox"
@@ -47,7 +47,7 @@ const BaseCheckbox = ({
         </span>
       )}
       <span className={styles['base-checkbox-label']}>{label}</span>
-    </div>
+    </span>
     {description && (
       <p className={styles['base-checkbox-description']}>{description}</p>
     )}
