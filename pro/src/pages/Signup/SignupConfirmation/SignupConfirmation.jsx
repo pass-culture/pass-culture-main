@@ -16,8 +16,8 @@ const SignupConfirmation = () => (
               Votre compte est en cours de création.
             </div>
             <div className={styles['confirmation-text']}>
-              Vous allez recevoir un lien de confirmation par email : cliquez
-              sur ce lien pour confirmer la création de votre compte.
+              Vous allez recevoir un lien de confirmation par email. Cliquez sur
+              ce lien pour confirmer la création de votre compte.
             </div>
           </div>
           <Banner type="notification-info">
