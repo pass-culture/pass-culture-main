@@ -1,3 +1,4 @@
+import { Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
@@ -12,9 +13,11 @@ import { getReCaptchaToken, initReCaptchaScript } from 'utils/recaptcha'
 
 import ChangePasswordRequestForm from './ChangePasswordRequestForm'
 import styles from './LostPassword.module.scss'
+import { validationSchema } from './validationSchema'
+
+type FormValues = { email: string }
 
 const ResetPassword = (): JSX.Element => {
-  const [emailValue, setEmailValue] = useState('')
   const [mailSent, setMailSent] = useState(false)
 
   useRedirectLoggedUser()
@@ -29,30 +32,17 @@ const ResetPassword = (): JSX.Element => {
     }
   })
 
-  const submitChangePasswordRequest = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault()
+  const submitChangePasswordRequest = async (formValues: FormValues) => {
     const token = !IS_DEV
       ? await getReCaptchaToken('resetPassword')
       : 'test_token'
 
     try {
-      await api.resetPassword({ token, email: emailValue })
+      await api.resetPassword({ token, email: formValues.email })
       setMailSent(true)
     } catch {
       notification.error('Une erreur est survenue')
     }
-  }
-
-  const handleInputEmailChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setEmailValue(event.target.value)
-  }
-
-  const isChangePasswordRequestSubmitDisabled = () => {
-    return emailValue === ''
   }
 
   return (
@@ -83,14 +73,13 @@ const ResetPassword = (): JSX.Element => {
                   title="Merci !"
                 />
               ) : (
-                <ChangePasswordRequestForm
-                  emailValue={emailValue}
-                  isChangePasswordRequestSubmitDisabled={
-                    isChangePasswordRequestSubmitDisabled
-                  }
-                  onChange={handleInputEmailChange}
+                <Formik
+                  initialValues={{ email: '' }}
                   onSubmit={submitChangePasswordRequest}
-                />
+                  validationSchema={validationSchema}
+                >
+                  <ChangePasswordRequestForm />
+                </Formik>
               )}
             </div>
           </div>
