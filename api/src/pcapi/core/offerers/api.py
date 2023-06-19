@@ -1205,7 +1205,23 @@ def get_offerer_offers_stats(offerer_id: int) -> sa.engine.Row:
             .outerjoin(offer_class)
             .filter(
                 offerers_models.Venue.managingOffererId == offerer_id,
-                offer_class.validation == offers_models.OfferValidationStatus.APPROVED.value,
+                # TODO: remove filter on isActive when all DRAFT and PENDING collective_offers are effectively at isActive = False
+                sa.or_(
+                    sa.and_(
+                        offer_class.isActive.is_(True),  # type: ignore [attr-defined]
+                        offer_class.validation == offers_models.OfferValidationStatus.APPROVED.value,
+                    ),
+                    sa.and_(
+                        offer_class.isActive.is_(False),  # type: ignore [attr-defined]
+                        offer_class.validation.in_(  # type: ignore [attr-defined]
+                            [
+                                offers_models.OfferValidationStatus.APPROVED.value,
+                                offers_models.OfferValidationStatus.PENDING.value,
+                                offers_models.OfferValidationStatus.DRAFT.value,
+                            ]
+                        ),
+                    ),
+                ),
             )
             .group_by(offer_class.isActive)
             .subquery()
@@ -1308,8 +1324,25 @@ def get_venue_offers_stats(venue_id: int) -> sa.engine.Row:
             .select_from(offerers_models.Venue)
             .outerjoin(offer_class)
             .filter(
-                offer_class.venueId == venue_id,
-                offer_class.validation == offers_models.OfferValidationStatus.APPROVED.value,
+                # TODO: remove filter on isActive when all DRAFT and PENDING collective_offers are effectively at isActive = False
+                sa.or_(
+                    sa.and_(
+                        offer_class.isActive.is_(True),  # type: ignore [attr-defined]
+                        offer_class.venueId == venue_id,
+                        offer_class.validation == offers_models.OfferValidationStatus.APPROVED.value,
+                    ),
+                    sa.and_(
+                        offer_class.isActive.is_(False),  # type: ignore [attr-defined]
+                        offer_class.venueId == venue_id,
+                        offer_class.validation.in_(  # type: ignore [attr-defined]
+                            [
+                                offers_models.OfferValidationStatus.APPROVED.value,
+                                offers_models.OfferValidationStatus.PENDING.value,
+                                offers_models.OfferValidationStatus.DRAFT.value,
+                            ]
+                        ),
+                    ),
+                ),
             )
             .group_by(offer_class.isActive)
             .subquery()
