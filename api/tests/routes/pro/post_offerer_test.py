@@ -6,7 +6,6 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.testing as users_testing
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.utils.human_ids import dehumanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

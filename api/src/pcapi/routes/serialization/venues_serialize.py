@@ -19,7 +19,6 @@ from pcapi.domain.demarches_simplifiees import DMS_TOKEN_PRO_PREFIX
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base
-from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import string_length_validator
 from pcapi.serialization.utils import string_to_boolean_field
@@ -71,7 +70,7 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     publicName: base.VenuePublicName | None
     postalCode: base.VenuePostalCode
     siret: base.VenueSiret | None
-    venueLabelId: str | None
+    venueLabelId: int | None
     venueTypeCode: str
     withdrawalDetails: base.VenueWithdrawalDetails | None
     description: base.VenueDescription | None
@@ -110,9 +109,7 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
 
 
 class VenueResponseModel(BaseModel):
-    id: str
-
-    _humanize_id = humanize_field("id")
+    id: int
 
     class Config:
         orm_mode = True
@@ -218,7 +215,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     pricingPoint: GetVenuePricingPointResponseModel | None
     reimbursementPointId: int | None
     siret: str | None
-    venueLabelId: str | None
+    venueLabelId: int | None
     venueTypeCode: offerers_models.VenueTypeCode
     collectiveDescription: str | None
     collectiveStudents: list[educational_models.StudentLevels] | None
@@ -236,7 +233,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     adageInscriptionDate: datetime | None
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
-    _humanize_venue_label_id = humanize_field("venueLabelId")
 
     class Config:
         orm_mode = True
@@ -331,8 +327,6 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     contact: base.VenueContactModel | None
     reimbursementPointId: int | None
     shouldSendMail: bool | None
-
-    _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
 
 
 class EditVenueCollectiveDataBodyModel(BaseModel):

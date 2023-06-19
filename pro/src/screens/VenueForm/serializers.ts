@@ -66,7 +66,7 @@ export const serializePostVenueBodyModel = (
   })
   return {
     ...model,
-    venueLabelId: formValues.venueLabel || null,
+    venueLabelId: Number(formValues.venueLabel) || null,
     managingOffererId: offererId,
   }
 }

@@ -61,7 +61,7 @@ export type GetVenueResponseModel = {
   publicName?: string | null;
   reimbursementPointId?: number | null;
   siret?: string | null;
-  venueLabelId?: string | null;
+  venueLabelId?: number | null;
   venueTypeCode: VenueTypeCode;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;

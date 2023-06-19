@@ -21,7 +21,7 @@ export type PostVenueBodyModel = {
   postalCode: string;
   publicName?: string | null;
   siret?: string | null;
-  venueLabelId?: string | null;
+  venueLabelId?: number | null;
   venueTypeCode: string;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;

@@ -7,8 +7,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.users import testing as external_testing
 from pcapi.core.users.factories import ProFactory
-from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.human_ids import humanize
 
 import tests
 
@@ -36,7 +34,7 @@ def create_valid_venue_data(user=None):
         "longitude": 2.35284,
         "publicName": "Ma venue publique",
         "venueTypeCode": "BOOKSTORE",
-        "venueLabelId": humanize(venue_label.id),
+        "venueLabelId": venue_label.id,
         "description": "Some description",
         "audioDisabilityCompliant": True,
         "mentalDisabilityCompliant": False,
@@ -66,15 +64,14 @@ class Returns201Test:
         response = client.post("/venues", json=venue_data)
 
         assert response.status_code == 201
-        idx = response.json["id"]
 
-        venue = Venue.query.filter_by(id=dehumanize(idx)).one()
+        venue = Venue.query.filter_by(id=response.json["id"]).one()
 
         assert venue.name == venue_data["name"]
         assert venue.publicName == venue_data["publicName"]
         assert venue.siret == venue_data["siret"]
         assert venue.venueTypeCode.name == "BOOKSTORE"
-        assert venue.venueLabelId == dehumanize(venue_data["venueLabelId"])
+        assert venue.venueLabelId == venue_data["venueLabelId"]
         assert venue.description == venue_data["description"]
         assert venue.audioDisabilityCompliant == venue_data["audioDisabilityCompliant"]
         assert venue.mentalDisabilityCompliant == venue_data["mentalDisabilityCompliant"]
@@ -88,7 +85,9 @@ class Returns201Test:
         assert not venue.contact.social_medias
 
         assert len(external_testing.sendinblue_requests) == 1
-        assert external_testing.zendesk_sell_requests == [{"action": "create", "type": "Venue", "id": dehumanize(idx)}]
+        assert external_testing.zendesk_sell_requests == [
+            {"action": "create", "type": "Venue", "id": response.json["id"]}
+        ]
 
 
 class Returns400Test:

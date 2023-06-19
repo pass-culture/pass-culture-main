@@ -17,7 +17,7 @@ const formValues: IVenueFormValues = {
   publicName: 'Melodie Sims',
   siret: '881 457 238 23022',
   venueType: 'GAMES',
-  venueLabel: 'BM',
+  venueLabel: '5',
   departmentCode: '',
   address: 'PARIS',
   addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',

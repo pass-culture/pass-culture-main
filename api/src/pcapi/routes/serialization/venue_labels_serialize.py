@@ -1,12 +1,9 @@
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import humanize_field
 
 
 class VenueLabelResponseModel(BaseModel):
-    id: str
+    id: int
     label: str
-
-    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True
