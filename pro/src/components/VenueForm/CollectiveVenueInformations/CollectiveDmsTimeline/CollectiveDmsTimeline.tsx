@@ -3,11 +3,13 @@ import React from 'react'
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { InfoWrongIcon, ValidCircleIcon } from 'icons'
+import { InfoWrongIcon } from 'icons'
 import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
 import { ReactComponent as FullExternalSite } from 'icons/full-external-site.svg'
+import strokeValidIcon from 'icons/stroke-valid.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Timeline, { TimelineStepType } from 'ui-kit/Timeline/Timeline'
 import { getDateToFrenchText } from 'utils/date'
 
@@ -339,7 +341,7 @@ const CollectiveDmsTimeline = ({
   ) {
     return (
       <div className={styles['timeline-added-in-adage']}>
-        <ValidCircleIcon />
+        <SvgIcon src={strokeValidIcon} alt="" />
         <span>Ce lieu est référencé sur ADAGE</span>
       </div>
     )
@@ -396,7 +398,7 @@ const CollectiveDmsTimeline = ({
 
       return (
         <div className={styles['timeline-added-in-adage']}>
-          <ValidCircleIcon />
+          <SvgIcon src={strokeValidIcon} alt="" />
           <span>Ce lieu est référencé sur ADAGE</span>
         </div>
       )

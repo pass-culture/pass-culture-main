@@ -6,12 +6,14 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { IVenue } from 'core/Venue'
 import { ReactComponent as FullExternalSite } from 'icons/full-external-site.svg'
-import { ReactComponent as ValidCircleIcon } from 'icons/ico-valid.svg'
-import { ReactComponent as ValidIcon } from 'icons/ico-valide-cercle.svg'
+import strokeValidIcon, {
+  ReactComponent as StrokeValidIcon,
+} from 'icons/stroke-valid.svg'
 import { ButtonLink } from 'ui-kit/Button'
 import Button from 'ui-kit/Button/Button'
 import { Select } from 'ui-kit/form'
 import { Banner, Title } from 'ui-kit/index'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './PricingPoint.module.scss'
 
@@ -101,7 +103,7 @@ const PricingPoint = ({
             setIsConfirmSiretDialogOpen(false)
           }}
           onConfirm={handleClick}
-          icon={ValidIcon}
+          icon={StrokeValidIcon}
           title="Êtes-vous sûr de vouloir sélectionner"
           secondTitle={`ce lieu avec SIRET\u00a0?`}
         >
@@ -160,7 +162,11 @@ const PricingPoint = ({
         )}
         {!readOnly && isInputDisabled && (
           <>
-            <ValidCircleIcon className={styles['space-left']} />
+            <SvgIcon
+              src={strokeValidIcon}
+              className={styles['space-left']}
+              alt=""
+            />
             <p
               className={styles['space-text-left']}
               data-testid={'validationText'}
