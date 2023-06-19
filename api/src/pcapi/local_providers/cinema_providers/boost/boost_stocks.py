@@ -11,9 +11,18 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers.models import VenueProvider
+from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
+
+
+ACCEPTED_VERSIONS_MAPPING = {
+    "VF": ShowtimeFeatures.VF.value,
+    "VO": ShowtimeFeatures.VO.value,
+}
+
+ACCEPTED_FORMATS_MAPPING = {"3D": ShowtimeFeatures.THREE_D.value}
 
 
 class BoostStocks(LocalProvider):
@@ -118,6 +127,15 @@ class BoostStocks(LocalProvider):
         if "quantity" not in stock.fieldsUpdated:
             booked_quantity = 0 if is_new_stock_to_insert else stock.dnBookedQuantity
             stock.quantity = self.showtime_details.numberSeatsRemaining + booked_quantity
+
+        features = (
+            [ACCEPTED_VERSIONS_MAPPING.get(self.showtime_details.version["code"])]
+            if self.showtime_details.version["code"] in ACCEPTED_VERSIONS_MAPPING
+            else []
+        )
+        if self.showtime_details.format["title"] in ACCEPTED_FORMATS_MAPPING:
+            features.append(ACCEPTED_FORMATS_MAPPING.get(self.showtime_details.format["title"]))
+        stock.features = features
 
         if "price" not in stock.fieldsUpdated:
             assert self.pcu_pricing  # helps mypy
