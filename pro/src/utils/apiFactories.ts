@@ -92,7 +92,6 @@ export const getOfferVenueFactory = (
   return {
     address: 'Ma Rue',
     city: 'Ma Ville',
-    id: `VENUE${currentVenueId}`,
     nonHumanizedId: currentVenueId,
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
