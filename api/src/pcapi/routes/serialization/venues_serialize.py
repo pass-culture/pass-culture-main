@@ -580,13 +580,11 @@ class AdageCulturalPartnersResponseModel(BaseModel):
 
 
 class VenueOfOffererFromSiretResponseModel(BaseModel):
-    id: str
+    id: int
     name: str
     publicName: str | None
     siret: str | None
     isPermanent: bool
-
-    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True
