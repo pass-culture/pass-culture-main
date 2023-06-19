@@ -89,6 +89,10 @@ def retrieve_offer_query(offer_id: int) -> sqla_orm.Query:
     return _retrieve_offer_tied_to_user_query().filter(offers_models.Offer.id == offer_id)
 
 
+def retrieve_offers_query(offer_ids: list[int]) -> sqla_orm.Query:
+    return _retrieve_offer_tied_to_user_query().filter(offers_models.Offer.id.in_(offer_ids))
+
+
 def _retrieve_offer_tied_to_user_query() -> sqla_orm.Query:
     return (
         offers_models.Offer.query.join(offerers_models.Venue)
