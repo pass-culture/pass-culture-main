@@ -1,5 +1,6 @@
 import datetime
 import logging
+import random
 
 import factory
 
@@ -21,6 +22,17 @@ from pcapi.core.users.factories import BeneficiaryGrant18Factory
 
 
 logger = logging.getLogger(__name__)
+
+
+def _cinema_stock_features(provider: Provider) -> list[str]:
+    features = [random.choice(["VF", "VO"])]
+    match provider.name:
+        case "CDSStocks":
+            if random.choice([True, False]):
+                features.append("3D")
+        case "CGRStocks":
+            features.append(random.choice(["3D", "ICE"]))
+    return features
 
 
 def create_industrial_provider_external_bookings() -> None:
@@ -68,6 +80,7 @@ def _create_offers(provider: Provider) -> Venue:
             stock_solo = CinemaStockProviderFactory(offer=offer_solo)
             booking_solo = BookingFactory(quantity=1, stock=stock_solo, user=user_bene)
             if provider.isCinemaProvider:
+                stock_solo.features = _cinema_stock_features(provider)
                 ExternalBookingFactory(booking=booking_solo, seat="A_1")
             offer_duo = EventOfferFactory(
                 name=f"Ciné duo ({provider_name}) {i}",
@@ -78,6 +91,7 @@ def _create_offers(provider: Provider) -> Venue:
             stock_duo = CinemaStockProviderFactory(offer=offer_duo)
             booking_duo = BookingFactory(quantity=2, stock=stock_duo, user=user_bene)
             if provider.isCinemaProvider:
+                stock_duo.features = _cinema_stock_features(provider)
                 ExternalBookingFactory(booking=booking_duo, seat="A_1")
                 ExternalBookingFactory(booking=booking_duo, seat="A_2")
         # for allocine we want to be able to test that we can update stock with also a past stock
