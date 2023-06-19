@@ -85,36 +85,25 @@ describe('route VenueEdition', () => {
     venueProviders = [
       {
         id: 1,
-        idAtProviders: undefined,
-        dateModifiedAtLastProvider: '2022-09-19T12:01:18.708794Z',
         isActive: true,
         isFromAllocineProvider: false,
-        lastProviderId: undefined,
         lastSyncDate: undefined,
         nOffers: 0,
-        providerId: 1,
         venueId: 2,
         venueIdAtOfferProvider: 'cdsdemorc1',
         provider: {
           name: 'Ciné Office',
           hasOffererProvider: false,
-          enabledForPro: true,
-          id: 'BY',
-          isActive: true,
-          localClass: 'CDSStocks',
+          nonHumanizedId: 1,
         },
         quantity: 0,
         isDuo: true,
         price: 0,
-        fieldsUpdated: [],
       },
     ]
 
     providers = [
       {
-        enabledForPro: true,
-        id: 'AB',
-        isActive: true,
         name: 'name',
       },
     ] as IProviders[]

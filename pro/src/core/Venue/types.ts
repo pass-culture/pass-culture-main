@@ -94,9 +94,6 @@ export interface IVenue {
 }
 
 export type IProviders = {
-  enabledForPro: boolean
-  id: string
-  isActive: boolean
   name: string
   hasOffererProvider: boolean
 }
