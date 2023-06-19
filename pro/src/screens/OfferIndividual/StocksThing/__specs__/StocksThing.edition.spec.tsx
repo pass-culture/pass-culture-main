@@ -149,7 +149,6 @@ describe('screens:StocksThing', () => {
         bookingEmail: 'venue29@example.net',
         city: 'Paris',
         departementCode: '75',
-        id: 'DY',
         nonHumanizedId: 1,
         isVirtual: false,
         managingOfferer: {
