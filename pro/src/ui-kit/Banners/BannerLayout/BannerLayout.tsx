@@ -50,13 +50,19 @@ const BannerLayout = ({
             alt=""
             className={styles['icon']}
             viewBox="0 0 22 26"
+            width="22"
           />
           <span className={styles['container-title']}>À SAVOIR</span>
         </div>
       )}
       {type === 'attention' && showTitle && (
         <div className={styles['container']}>
-          <SvgIcon src={strokeErrorIcon} alt="" className={styles['icon']} />
+          <SvgIcon
+            src={strokeErrorIcon}
+            alt=""
+            className={styles['icon']}
+            width="22"
+          />
           <span className={styles['container-title']}>IMPORTANT</span>
         </div>
       )}

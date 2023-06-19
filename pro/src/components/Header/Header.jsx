@@ -65,12 +65,7 @@ const Header = () => {
             role="menuitem"
             to="/guichet"
           >
-            <SvgIcon
-              className="nav-item-icon"
-              src={deskIcon}
-              alt=""
-              ariaHidden={true}
-            />
+            <SvgIcon className="nav-item-icon" src={deskIcon} alt="" />
             Guichet
           </NavLink>
 
