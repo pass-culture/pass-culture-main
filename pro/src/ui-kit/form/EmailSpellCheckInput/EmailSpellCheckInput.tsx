@@ -9,7 +9,7 @@ import { TextInput } from 'ui-kit/form/index'
 
 import styles from './EmailSpellCheckInput.module.scss'
 
-export interface IEmailSpellCheckInputProps<FormType> {
+export interface EmailSpellCheckInputProps<FormType> {
   // `Extract` needed so the key is a string. See https://stackoverflow.com/a/51808262
   name: Extract<keyof FormType, string>
   placeholder: string
@@ -22,7 +22,7 @@ const EmailSpellCheckInput = <FormType,>({
   placeholder,
   label,
   overrideInitialTip = null,
-}: IEmailSpellCheckInputProps<FormType>): JSX.Element => {
+}: EmailSpellCheckInputProps<FormType>): JSX.Element => {
   const { setFieldValue, setFieldTouched } = useFormikContext<FormType>()
   const [field, meta] = useField<string>(name)
   const [emailValidationTip, setEmailValidationTip] = useState<string | null>(
@@ -60,23 +60,27 @@ const EmailSpellCheckInput = <FormType,>({
         onFocus={resetEmailValidation}
         hideFooter={emailValidationTip != null} // This is needed to hide the footer div that takes some space
         autoComplete="email"
+        ErrorDetails={
+          emailValidationTip ? (
+            <div className={styles['email-validation-error']}>
+              <div className={styles['email-validation-tip']}>
+                Voulez-vous plutôt dire {emailValidationTip} ?
+              </div>
+              <Button
+                variant={ButtonVariant.TERNARY}
+                Icon={CircleArrowIcon}
+                iconPosition={IconPositionEnum.LEFT}
+                onClick={applyTip}
+                autoFocus
+              >
+                Appliquer la modification
+              </Button>
+            </div>
+          ) : (
+            <></>
+          )
+        }
       />
-      {emailValidationTip && (
-        <div className={styles['email-validation-error']}>
-          <div className={styles['email-validation-tip']}>
-            Voulez-vous plutôt dire {emailValidationTip} ?
-          </div>
-          <Button
-            variant={ButtonVariant.TERNARY}
-            Icon={CircleArrowIcon}
-            iconPosition={IconPositionEnum.LEFT}
-            onClick={applyTip}
-            autoFocus
-          >
-            Appliquer la modification
-          </Button>
-        </div>
-      )}
     </>
   )
 }
