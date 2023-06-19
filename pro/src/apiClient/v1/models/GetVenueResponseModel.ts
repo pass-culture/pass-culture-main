@@ -43,7 +43,6 @@ export type GetVenueResponseModel = {
   fieldsUpdated: Array<string>;
   hasAdageId: boolean;
   hasPendingBankInformationApplication?: boolean | null;
-  id: string;
   idAtProviders?: string | null;
   isPermanent?: boolean | null;
   isVirtual: boolean;

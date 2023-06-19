@@ -16,7 +16,7 @@ const EACInformation = ({
   isCreatingVenue = false,
 }: {
   venue: GetVenueResponseModel | null
-  offererId: string
+  offererId: number
   isCreatingVenue?: boolean
 }): JSX.Element => {
   const collectiveDataIsNotEmpty = venue && venueHasCollectiveInformation(venue)
@@ -44,7 +44,7 @@ const EACInformation = ({
 
       <ButtonLink
         link={{
-          to: `/structures/${offererId}/lieux/${venue?.id}/eac`,
+          to: `/structures/${offererId}/lieux/${venue?.nonHumanizedId}/eac`,
           isExternal: false,
         }}
         Icon={collectiveDataIsNotEmpty ? FullEdit : undefined}

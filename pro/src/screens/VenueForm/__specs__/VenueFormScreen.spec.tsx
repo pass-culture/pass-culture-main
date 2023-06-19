@@ -208,7 +208,6 @@ const venueResponse: GetVenueResponseModel = {
   description: 'description',
   departementCode: '75008',
   dmsToken: 'dms-token-12345',
-  id: 'id',
   isPermanent: true,
   latitude: 0,
   longitude: 0,
@@ -323,7 +322,6 @@ describe('screen | VenueForm', () => {
       description: 'description',
       departmentCode: '75008',
       dmsToken: '',
-      id: 'id',
       isPermanent: true,
       isVenueVirtual: false,
       latitude: 0,
@@ -766,7 +764,7 @@ describe('screen | VenueForm', () => {
 
       const editVenue = jest
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ id: 'AA' } as GetVenueResponseModel)
+        .mockResolvedValue({ nonHumanizedId: 1 } as GetVenueResponseModel)
 
       await waitFor(() => {
         expect(
@@ -836,7 +834,7 @@ describe('screen | VenueForm', () => {
 
       const editVenue = jest
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ id: 'AA' } as GetVenueResponseModel)
+        .mockResolvedValue({ nonHumanizedId: 1 } as GetVenueResponseModel)
 
       await waitFor(() => {
         expect(
@@ -910,7 +908,7 @@ describe('screen | VenueForm', () => {
 
       const editVenue = jest
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ id: 'AA' } as GetVenueResponseModel)
+        .mockResolvedValue({ nonHumanizedId: 1 } as GetVenueResponseModel)
 
       await waitFor(() => {
         expect(
@@ -958,7 +956,7 @@ describe('screen | VenueForm', () => {
 
       const editVenue = jest
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ id: 'AA' } as GetVenueResponseModel)
+        .mockResolvedValue({ nonHumanizedId: 1 } as GetVenueResponseModel)
 
       await waitFor(() => {
         expect(

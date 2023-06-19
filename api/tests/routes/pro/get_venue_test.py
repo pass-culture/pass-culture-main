@@ -8,7 +8,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.human_ids import humanize
 from pcapi.utils.image_conversion import DO_NOT_CROP
 
 from tests.conftest import TestClient
@@ -80,7 +79,6 @@ class Returns200Test:
             "description": venue.description,
             "dmsToken": "PRO-" + venue.dmsToken,
             "fieldsUpdated": venue.fieldsUpdated,
-            "id": humanize(venue.id),
             "idAtProviders": venue.idAtProviders,
             "isPermanent": venue.isPermanent,
             "isVirtual": venue.isVirtual,
@@ -94,7 +92,6 @@ class Returns200Test:
                 "dateModifiedAtLastProvider": format_into_utc_date(venue.managingOfferer.dateModifiedAtLastProvider),
                 "demarchesSimplifieesApplicationId": venue.managingOfferer.demarchesSimplifieesApplicationId,
                 "fieldsUpdated": venue.managingOfferer.fieldsUpdated,
-                "id": humanize(venue.managingOfferer.id),
                 "nonHumanizedId": venue.managingOfferer.id,
                 "idAtProviders": venue.managingOfferer.idAtProviders,
                 "isValidated": venue.managingOfferer.isValidated,
@@ -103,7 +100,6 @@ class Returns200Test:
                 "postalCode": venue.managingOfferer.postalCode,
                 "siren": venue.managingOfferer.siren,
             },
-            "managingOffererId": humanize(venue.managingOffererId),
             "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
             "name": venue.name,
