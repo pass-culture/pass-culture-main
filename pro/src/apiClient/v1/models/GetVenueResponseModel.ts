@@ -51,7 +51,6 @@ export type GetVenueResponseModel = {
   latitude?: number | null;
   longitude?: number | null;
   managingOfferer: GetVenueManagingOffererResponseModel;
-  managingOffererId: string;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
