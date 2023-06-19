@@ -250,7 +250,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     const venue: TOfferIndividualVenue = {
       nonHumanizedId: 1,
       name: 'Lieu offline AA',
-      managingOffererId: 'A',
+      managingOffererId: 1,
       isVirtual: false,
       withdrawalDetails: '',
       accessibility: {
@@ -270,7 +270,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         {
           nonHumanizedId: 2,
           name: 'Lieu online BB',
-          managingOffererId: 'A',
+          managingOffererId: 1,
           isVirtual: true,
           withdrawalDetails: '',
           accessibility: {

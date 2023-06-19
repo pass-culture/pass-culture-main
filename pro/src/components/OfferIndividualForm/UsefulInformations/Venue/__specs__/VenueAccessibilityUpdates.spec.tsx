@@ -80,7 +80,7 @@ describe('OfferIndividual section: venue', () => {
     venueAccessible = {
       nonHumanizedId: 1,
       name: 'Venue AAAA',
-      managingOffererId: 'AE',
+      managingOffererId: 1,
       isVirtual: false,
       withdrawalDetails: '',
       accessibility: {
@@ -96,7 +96,7 @@ describe('OfferIndividual section: venue', () => {
     venueNotAccessible = {
       nonHumanizedId: 2,
       name: 'Venue AABB',
-      managingOffererId: 'AE',
+      managingOffererId: 1,
       isVirtual: false,
       withdrawalDetails: '',
       accessibility: {

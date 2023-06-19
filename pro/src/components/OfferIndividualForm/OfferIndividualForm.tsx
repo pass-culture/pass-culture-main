@@ -16,7 +16,6 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { SynchronizedProviderInformation } from 'screens/OfferIndividual/SynchronisedProviderInfos'
-import { dehumanizeId } from 'utils/dehumanize'
 
 import { Accessibility } from './Accessibility'
 import { Categories } from './Categories'
@@ -76,9 +75,7 @@ const OfferIndividualForm = ({
   const isVenueVirtual = venue?.isVirtual || false
 
   const matchOffererId = (venue: TOfferIndividualVenue) => {
-    const dehumanizedId = dehumanizeId(venue.managingOffererId)
-    if (dehumanizedId) return dehumanizedId.toString() == offererId
-    return null
+    return venue.managingOffererId.toString() == offererId
   }
 
   const areAllVenuesVirtual = venueList

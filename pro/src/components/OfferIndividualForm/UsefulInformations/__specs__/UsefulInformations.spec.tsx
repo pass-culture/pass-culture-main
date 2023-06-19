@@ -65,7 +65,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       {
         nonHumanizedId: 1,
         name: 'Venue AAAA',
-        managingOffererId: 'AE',
+        managingOffererId: 1,
         isVirtual: false,
         withdrawalDetails: '',
         accessibility: {
@@ -81,7 +81,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       {
         nonHumanizedId: 2,
         name: 'Venue BBBB',
-        managingOffererId: 'AE',
+        managingOffererId: 1,
         isVirtual: true,
         withdrawalDetails: '',
         accessibility: {

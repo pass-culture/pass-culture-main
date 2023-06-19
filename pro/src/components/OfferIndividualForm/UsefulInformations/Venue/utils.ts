@@ -1,7 +1,6 @@
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
-import { dehumanizeId } from 'utils/dehumanize'
 
 export const buildOffererOptions = (
   offererNames: TOffererName[]
@@ -39,8 +38,7 @@ export const buildVenueOptions = (
     if (!offererId) {
       return false
     }
-    const dehumanizedId = dehumanizeId(venue.managingOffererId) || ''
-    return dehumanizedId.toString() === offererId
+    return venue.managingOffererId.toString() === offererId
   })
 
   let venueOptions = offererVenues

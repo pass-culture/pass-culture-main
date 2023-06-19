@@ -178,7 +178,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         [AccessiblityEnum.VISUAL]: false,
         [AccessiblityEnum.NONE]: true,
       },
-      managingOffererId: 'OFID',
+      managingOffererId: 1,
       withdrawalDetails: '',
       hasMissingReimbursementPoint: false,
       hasCreatedOffer: true,
@@ -258,7 +258,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         {
           nonHumanizedId: virtualVenueId,
           name: 'Lieu online BB',
-          managingOffererId: 'OFID',
+          managingOffererId: 1,
           isVirtual: true,
           withdrawalDetails: '',
           accessibility: {

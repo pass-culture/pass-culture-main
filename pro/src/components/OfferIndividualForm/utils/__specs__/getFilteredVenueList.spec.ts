@@ -57,7 +57,7 @@ describe('getFilteredVenueList', () => {
     {
       nonHumanizedId: secondVenueId,
       name: 'Lieu offline AA',
-      managingOffererId: 'A',
+      managingOffererId: 1,
       isVirtual: false,
       withdrawalDetails: '',
       accessibility: {
@@ -73,7 +73,7 @@ describe('getFilteredVenueList', () => {
     {
       nonHumanizedId: thirdVenueId,
       name: 'Lieu offline BB',
-      managingOffererId: 'A',
+      managingOffererId: 1,
       isVirtual: false,
       withdrawalDetails: '',
       accessibility: {
@@ -92,7 +92,7 @@ describe('getFilteredVenueList', () => {
     virtualVenue = {
       nonHumanizedId: firstVenueId,
       name: 'Lieu online CC',
-      managingOffererId: 'A',
+      managingOffererId: 1,
       isVirtual: true,
       withdrawalDetails: '',
       accessibility: {

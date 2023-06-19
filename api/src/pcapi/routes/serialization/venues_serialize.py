@@ -355,7 +355,7 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
 
 class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     nonHumanizedId: int
-    managingOffererId: str
+    managingOffererId: int
     name: str
     offererName: str
     publicName: str | None
@@ -366,8 +366,6 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasMissingReimbursementPoint: bool
     hasCreatedOffer: bool
     collectiveSubCategoryId: str | None
-
-    _humanize_managing_offerer_id = humanize_field("managingOffererId")
 
     @classmethod
     def from_orm(
