@@ -6,8 +6,8 @@ import SkipLinks from 'components/SkipLinks'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import Hero from 'ui-kit/Hero'
-import Logo from 'ui-kit/Logo/Logo'
-import { IS_DEV } from 'utils/config'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { IS_DEV, ROOT_PATH } from 'utils/config'
 import { getReCaptchaToken, initReCaptchaScript } from 'utils/recaptcha'
 
 import ChangePasswordRequestForm from './ChangePasswordRequestForm'
@@ -60,7 +60,12 @@ const ResetPassword = (): JSX.Element => {
       <SkipLinks displayMenu={false} />
       <div className={styles['lost-password']}>
         <header className={styles['logo-side']}>
-          <Logo noLink signPage />
+          <SvgIcon
+            className="logo-unlogged"
+            viewBox="0 0 282 120"
+            alt="Pass Culture pro, l'espace des acteurs culturels"
+            src={`${ROOT_PATH}/icons/logo-pass-culture-primary.svg`}
+          />
         </header>
         <AppLayout
           layoutConfig={{

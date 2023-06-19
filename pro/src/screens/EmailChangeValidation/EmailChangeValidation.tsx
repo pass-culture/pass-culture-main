@@ -3,7 +3,8 @@ import React from 'react'
 
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Logo from 'ui-kit/Logo/Logo'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { ROOT_PATH } from 'utils/config'
 
 interface IEmailChangeValidationProps {
   isSuccess: boolean
@@ -15,7 +16,12 @@ const EmailChangeValidation = ({
   return (
     <>
       <div className="logo-side">
-        <Logo noLink signPage />
+        <SvgIcon
+          className="logo-unlogged"
+          viewBox="0 0 282 120"
+          alt="Pass Culture pro, l'espace des acteurs culturels"
+          src={`${ROOT_PATH}/icons/logo-pass-culture-primary.svg`}
+        />
       </div>
       <div className="scrollable-content-side">
         <div className="content" id="override-content-width">

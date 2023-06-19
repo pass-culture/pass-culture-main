@@ -11,22 +11,11 @@ a.logo {
 
   svg {
     width: rem.torem(119px);
-    margin: rem.torem(-10px) 0;
-    max-height: rem.torem(40px);
-    vertical-align: middle;
-    
-    path {
-      fill: colors.$white;
-    }
   }
+}
 
-  &.no-link {
-    cursor: inherit;
-
-    .sign-height {
-      width: rem.torem(282px);
-      max-height: rem.torem(120px);
-    }
-
-  }
+.logo-unlogged {
+  color: colors.$white;
+  width: rem.torem(282px);
+  max-height: rem.torem(120px);
 }

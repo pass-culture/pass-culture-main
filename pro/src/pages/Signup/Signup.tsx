@@ -1,12 +1,13 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
 import { IRoute } from 'app/AppRouter/routesMap'
 import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
 import SkipLinks from 'components/SkipLinks'
 import useActiveFeature from 'hooks/useActiveFeature'
-import Logo from 'ui-kit/Logo/Logo'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { ROOT_PATH } from 'utils/config'
 
 import styles from './Signup.module.scss'
 import SignupUnavailable from './SignupUnavailable/SignupUnavailable'
@@ -20,7 +21,12 @@ const Signup = () => {
       <SkipLinks displayMenu={false} />
       <div className={styles['sign-up']}>
         <header className={styles['logo-side']}>
-          <Logo noLink signPage />
+          <SvgIcon
+            className="logo-unlogged"
+            viewBox="0 0 282 120"
+            alt="Pass Culture pro, l'espace des acteurs culturels"
+            src={`${ROOT_PATH}/icons/logo-pass-culture-primary.svg`}
+          />
         </header>
         <AppLayout
           layoutConfig={{
