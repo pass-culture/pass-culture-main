@@ -133,7 +133,7 @@ const PhoneNumberInput = ({
         onBlur={onPhoneNumberBlur}
       />
       <div className={styles['phone-number-input-footer']}>
-        {meta.error && (
+        {meta.error && meta.touched && (
           <div className={styles['phone-number-input-error']}>
             <FieldError name={name}>{meta.error}</FieldError>
           </div>

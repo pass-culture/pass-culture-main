@@ -5,7 +5,7 @@ import styles from 'ui-kit/Banners/BannerLayout/BannerLayout.module.scss'
 import { ButtonLink } from 'ui-kit/Button'
 
 import BannerLayout from '../BannerLayout'
-import { IBannerLayoutProps } from '../BannerLayout/BannerLayout'
+import { BannerLayoutProps } from '../BannerLayout/BannerLayout'
 
 export type Link = {
   Icon?: FunctionComponent<
@@ -19,7 +19,7 @@ export type Link = {
   hideLinkIcon?: boolean
   isExternal?: boolean
 }
-export interface IBannerProps extends IBannerLayoutProps {
+export interface IBannerProps extends BannerLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
   links?: Link[]
 }
