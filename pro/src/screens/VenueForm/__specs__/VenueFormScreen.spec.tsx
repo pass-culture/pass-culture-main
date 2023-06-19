@@ -220,7 +220,7 @@ const venueResponse: GetVenueResponseModel = {
   publicName: 'name',
   siret: '88145723823022',
   venueTypeCode: VenueTypeCode.COURS_ET_PRATIQUE_ARTISTIQUES,
-  venueLabelId: 'AE',
+  venueLabelId: 1,
   reimbursementPointId: 0,
   withdrawalDetails: 'string',
   collectiveAccessInformation: 'string',
@@ -378,7 +378,7 @@ describe('screen | VenueForm', () => {
       })
 
       it('User should be redirected with the new creation journey', async () => {
-        jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: '56' })
+        jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
         renderForm(
           {
             nonHumanizedId: 12,
@@ -407,7 +407,7 @@ describe('screen | VenueForm', () => {
           true,
           undefined
         )
-        jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: '56' })
+        jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
 
         await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
 
@@ -429,7 +429,7 @@ describe('screen | VenueForm', () => {
         true,
         undefined
       )
-      jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: '56' })
+      jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
 
       await userEvent.click(screen.getByText(/Enregistrer et continuer/))
 

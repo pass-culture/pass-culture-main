@@ -90,8 +90,8 @@ const VenueForm = ({
     const url = venueSubmitRedirectUrl(
       isNewOfferCreationJourney,
       isCreatingVenue,
-      offerer.id,
-      venue?.id,
+      offerer.nonHumanizedId,
+      venue?.nonHumanizedId,
       user.currentUser
     )
     if (

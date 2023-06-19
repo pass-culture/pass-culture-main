@@ -5,7 +5,6 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetVenueResponseModel } from 'apiClient/v1'
 import { IVenueFormValues } from 'components/VenueForm'
 import {
   Events,
@@ -161,8 +160,8 @@ describe('venue form trackers', () => {
   it('Tracking success form submit', async () => {
     renderForm(true)
     jest.spyOn(api, 'postCreateVenue').mockResolvedValue({
-      id: 'ID',
-    } as GetVenueResponseModel)
+      id: 1,
+    })
 
     await userEvent.click(screen.getByText(/Enregistrer/))
 

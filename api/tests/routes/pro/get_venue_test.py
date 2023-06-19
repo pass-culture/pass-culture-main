@@ -110,7 +110,7 @@ class Returns200Test:
             "postalCode": venue.postalCode,
             "publicName": venue.publicName,
             "siret": venue.siret,
-            "venueLabelId": humanize(venue.venueLabelId),
+            "venueLabelId": venue.venueLabelId,
             "venueTypeCode": venue.venueTypeCode.name,
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "withdrawalDetails": None,

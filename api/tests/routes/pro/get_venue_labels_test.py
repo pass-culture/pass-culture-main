@@ -2,7 +2,6 @@ import pytest
 
 from pcapi.core.offerers.factories import VenueLabelFactory
 from pcapi.core.users.factories import ProFactory
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
@@ -32,6 +31,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(response.json) == 2
         assert response.json == [
-            {"id": humanize(venue_label_1.id), "label": venue_label_1.label},
-            {"id": humanize(venue_label_2.id), "label": venue_label_2.label},
+            {"id": venue_label_1.id, "label": venue_label_1.label},
+            {"id": venue_label_2.id, "label": venue_label_2.label},
         ]

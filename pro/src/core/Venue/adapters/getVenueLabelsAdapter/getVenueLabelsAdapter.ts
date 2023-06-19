@@ -17,7 +17,7 @@ const getVenueLabelsAdapter: GetVenueLabelsAdapter = async () => {
       isOk: true,
       message: '',
       payload: venueLabels.map(type => ({
-        value: type.id,
+        value: type.id.toString(),
         label: type.label,
       })),
     }
