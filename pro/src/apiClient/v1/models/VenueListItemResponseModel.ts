@@ -9,7 +9,7 @@ export type VenueListItemResponseModel = {
   hasCreatedOffer: boolean;
   hasMissingReimbursementPoint: boolean;
   isVirtual: boolean;
-  managingOffererId: string;
+  managingOffererId: number;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;

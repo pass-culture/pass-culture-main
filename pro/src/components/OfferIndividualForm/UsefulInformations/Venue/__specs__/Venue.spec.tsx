@@ -67,7 +67,7 @@ describe('OfferIndividual section: venue', () => {
       {
         nonHumanizedId: 1,
         name: 'Venue AAAA',
-        managingOffererId: 'AE',
+        managingOffererId: 1,
         isVirtual: false,
         withdrawalDetails: '',
         accessibility: {
@@ -83,7 +83,7 @@ describe('OfferIndividual section: venue', () => {
       {
         nonHumanizedId: 2,
         name: 'Venue BBAA',
-        managingOffererId: 'A9',
+        managingOffererId: 2,
         isVirtual: false,
         withdrawalDetails: '',
         accessibility: {
@@ -99,7 +99,7 @@ describe('OfferIndividual section: venue', () => {
       {
         nonHumanizedId: 3,
         name: 'Venue CCAA',
-        managingOffererId: 'AM',
+        managingOffererId: 3,
         isVirtual: false,
         withdrawalDetails: '',
         accessibility: {
@@ -115,7 +115,7 @@ describe('OfferIndividual section: venue', () => {
       {
         nonHumanizedId: 4,
         name: 'Venue CCBB',
-        managingOffererId: 'AM',
+        managingOffererId: 3,
         isVirtual: false,
         withdrawalDetails: '',
         accessibility: {

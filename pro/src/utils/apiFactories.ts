@@ -112,7 +112,7 @@ export const getVenueListItemFactory = (
     nonHumanizedId: currentVenueId,
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
-    managingOffererId: customOfferer.nonHumanizedId.toString(),
+    managingOffererId: customOfferer.nonHumanizedId,
     publicName: 'Mon Lieu',
     hasCreatedOffer: true,
     hasMissingReimbursementPoint: true,

@@ -33,7 +33,7 @@ describe('setDefaultInitialFormValues', () => {
     venueList = [
       {
         nonHumanizedId: 1,
-        managingOffererId: 'AE',
+        managingOffererId: 1,
         name: 'Venue Name',
         isVirtual: true,
         withdrawalDetails: 'détails de retrait',
@@ -49,7 +49,7 @@ describe('setDefaultInitialFormValues', () => {
       },
       {
         nonHumanizedId: 2,
-        managingOffererId: 'AE',
+        managingOffererId: 1,
         name: 'Venue Name 2',
         isVirtual: true,
         withdrawalDetails: 'détails de retrait',
