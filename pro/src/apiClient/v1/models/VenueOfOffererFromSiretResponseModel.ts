@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 export type VenueOfOffererFromSiretResponseModel = {
-  id: string;
+  id: number;
   isPermanent: boolean;
   name: string;
   publicName?: string | null;
