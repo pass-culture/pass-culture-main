@@ -56,7 +56,6 @@ export interface IVenue {
   description: string
   departmentCode: string
   dmsToken: string
-  id: string
   isPermanent: boolean
   isVenueVirtual: boolean
   latitude: number

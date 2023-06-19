@@ -3,7 +3,6 @@ import pytest
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
@@ -25,7 +24,7 @@ class Returns200Test:
             collectiveSubCategoryId="SEANCE_CINE",
         )
         expected_serialized_venue = {
-            "id": humanize(venue.id),
+            "id": venue.id,
             "collectiveAccessInformation": None,
             "collectiveDescription": venue.collectiveDescription,
             "collectiveDomains": [

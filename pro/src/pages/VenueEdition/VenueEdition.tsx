@@ -64,7 +64,7 @@ const VenueEdition = (): JSX.Element | null => {
   const apiFilters = {
     ...DEFAULT_SEARCH_FILTERS,
     status: OfferStatus.ACTIVE,
-    venueId: venue?.id ?? '',
+    venueId: venue?.nonHumanizedId.toString() ?? '',
   }
 
   const { isLoading: isLoadingVenueOffers, data: venueOffers } = useAdapter<
@@ -120,7 +120,7 @@ const VenueEdition = (): JSX.Element | null => {
       providers={providers}
       venue={venue}
       venueProviders={venueProviders}
-      hasBookingQuantity={venue?.id ? hasBookingQuantity : false}
+      hasBookingQuantity={venue?.nonHumanizedId ? hasBookingQuantity : false}
     />
   )
 }

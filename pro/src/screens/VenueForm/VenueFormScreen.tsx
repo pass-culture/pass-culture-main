@@ -215,7 +215,7 @@ const VenueFormScreen = ({
   })
 
   const {
-    id: initialId,
+    nonHumanizedId: initialId,
     isVirtual: initialIsVirtual,
     publicName: publicName,
     name: initialName,

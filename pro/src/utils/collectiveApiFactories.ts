@@ -330,7 +330,6 @@ export const defaultCollectiveDmsApplication: DMSApplicationForEAC = {
 
 // FIXME : to remove while this type should be used in the future
 export const defaultIVenue: IVenue = {
-  id: 'V1',
   name: 'Lieu de test',
   address: '1 rue de test',
   city: 'Paris',
@@ -406,7 +405,6 @@ export const defaultVenueResponseModel: GetVenueResponseModel = {
   dmsToken: 'fakeDmsToken',
   fieldsUpdated: [],
   hasAdageId: true,
-  id: '1',
   collectiveDmsApplications: [],
   isVirtual: false,
   collectiveDomains: [],

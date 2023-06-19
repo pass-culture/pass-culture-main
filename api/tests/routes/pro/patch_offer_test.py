@@ -13,7 +13,6 @@ from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import serialize
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -39,7 +38,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert response.json["nonHumanizedId"] == offer.id
-        assert response.json["venue"]["id"] == humanize(offer.venue.id)
+        assert response.json["venue"]["nonHumanizedId"] == offer.venue.id
 
         updated_offer = Offer.query.get(offer.id)
         assert updated_offer.name == "New name"
