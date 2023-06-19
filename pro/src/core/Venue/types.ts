@@ -11,7 +11,7 @@ import { IAccessibiltyFormValues } from 'core/shared'
 
 export type TOfferIndividualVenue = {
   nonHumanizedId: number
-  managingOffererId: string
+  managingOffererId: number
   name: string
   isVirtual: boolean
   withdrawalDetails: string | null
