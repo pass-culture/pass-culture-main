@@ -77,43 +77,43 @@ describe('screens:SignupJourney::Offerers', () => {
 
     venues = [
       {
-        id: '0',
+        id: 0,
         siret: '12345678913333',
         name: 'venue 0',
         isPermanent: false,
       },
       {
-        id: '1',
+        id: 1,
         siret: '12345678913333',
         name: 'venue 1',
         isPermanent: true,
       },
       {
-        id: '2',
+        id: 2,
         siret: '12345678923333',
         name: 'venue 2',
         isPermanent: true,
       },
       {
-        id: '3',
+        id: 3,
         siret: '12345678933333',
         name: 'venue 3',
         isPermanent: true,
       },
       {
-        id: '4',
+        id: 4,
         siret: '12345678943333',
         name: 'venue 4',
         isPermanent: true,
       },
       {
-        id: '5',
+        id: 5,
         siret: '12345678953333',
         name: 'venue 5',
         isPermanent: true,
       },
       {
-        id: '6',
+        id: 6,
         siret: '12345678963333',
         name: 'venue 6',
         publicName: 'public venue 6',
