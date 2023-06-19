@@ -24,7 +24,6 @@ jest.mock('apiClient/api', () => ({
 const venueId = 12
 const BASE_VENUES: VenueListItemResponseModel[] = [
   {
-    id: 'VENUE1',
     managingOffererId: 'MO1',
     name: 'name venue 1',
     offererName: 'Offerer name venue 1',
@@ -37,7 +36,6 @@ const BASE_VENUES: VenueListItemResponseModel[] = [
     nonHumanizedId: venueId,
   },
   {
-    id: 'VENUE2',
     managingOffererId: 'MO1',
     name: 'Offre numérique',
     offererName: 'Offerer name venue 2',

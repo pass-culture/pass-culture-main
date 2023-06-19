@@ -168,7 +168,6 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     ]
 
     const venue: TOfferIndividualVenue = {
-      id: 'AE',
       nonHumanizedId: physicalVenueId,
       name: 'Venue name',
       isVirtual: false,
@@ -256,7 +255,6 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       venueList: [
         venue,
         {
-          id: 'A9',
           nonHumanizedId: virtualVenueId,
           name: 'Lieu online BB',
           managingOffererId: 'OFID',
