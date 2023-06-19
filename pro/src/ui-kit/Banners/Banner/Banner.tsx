@@ -1,6 +1,6 @@
 import React, { FunctionComponent, SVGProps } from 'react'
 
-import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
+import { ReactComponent as FullExternalSite } from 'icons/full-external-site.svg'
 import styles from 'ui-kit/Banners/BannerLayout/BannerLayout.module.scss'
 import { ButtonLink } from 'ui-kit/Button'
 
@@ -41,7 +41,7 @@ const Banner = ({
       }}
       Icon={
         /* istanbul ignore next: DEBT to fix */
-        link.hideLinkIcon ? undefined : link.Icon || ExternalSiteIcon
+        link.hideLinkIcon ? undefined : link.Icon || FullExternalSite
       }
       className={styles['bi-link']}
     >

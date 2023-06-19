@@ -1,0 +1,10 @@
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+
+.description {
+  margin-bottom: rem.torem(12px);
+}
+
+.icon {
+  color: colors.$black;
+}

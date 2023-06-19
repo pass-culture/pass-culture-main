@@ -3,8 +3,9 @@ import React from 'react'
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ExternalSiteIcon, InfoWrongIcon, ValidCircleIcon } from 'icons'
+import { InfoWrongIcon, ValidCircleIcon } from 'icons'
 import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
+import { ReactComponent as FullExternalSite } from 'icons/full-external-site.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Timeline, { TimelineStepType } from 'ui-kit/Timeline/Timeline'
@@ -87,7 +88,7 @@ const CollectiveDmsTimeline = ({
             to: collectiveDmsApplicationLink,
             isExternal: true,
           }}
-          Icon={ExternalSiteIcon}
+          Icon={FullExternalSite}
           onClick={() =>
             logClickOnDmsLink(DMSApplicationstatus.EN_CONSTRUCTION)
           }
@@ -100,7 +101,7 @@ const CollectiveDmsTimeline = ({
             to: collectiveDmsContactSupport,
             isExternal: true,
           }}
-          Icon={ExternalSiteIcon}
+          Icon={FullExternalSite}
         >
           Contacter les services des Ministères de l’Education Nationale et de
           la Culture
@@ -132,7 +133,7 @@ const CollectiveDmsTimeline = ({
             to: collectiveDmsApplicationLink,
             isExternal: true,
           }}
-          Icon={ExternalSiteIcon}
+          Icon={FullExternalSite}
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.EN_INSTRUCTION)}
         >
           Consulter ma messagerie sur Démarches Simplifiées
@@ -174,7 +175,7 @@ const CollectiveDmsTimeline = ({
             to: collectiveDmsApplicationLink,
             isExternal: true,
           }}
-          Icon={ExternalSiteIcon}
+          Icon={FullExternalSite}
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.ACCEPTE)}
         >
           Consulter ma messagerie sur Démarches Simplifiées
@@ -276,7 +277,7 @@ const CollectiveDmsTimeline = ({
               to: collectiveDmsApplicationLink,
               isExternal: true,
             }}
-            Icon={ExternalSiteIcon}
+            Icon={FullExternalSite}
             onClick={() => logClickOnDmsLink(DMSApplicationstatus.REFUSE)}
           >
             Consulter ma messagerie sur Démarches Simplifiées
@@ -287,7 +288,7 @@ const CollectiveDmsTimeline = ({
               to: collectiveDmsContactSupport,
               isExternal: true,
             }}
-            Icon={ExternalSiteIcon}
+            Icon={FullExternalSite}
           >
             Contacter les services des Ministères de l’Education Nationale et de
             la Culture
@@ -312,7 +313,7 @@ const CollectiveDmsTimeline = ({
               to: collectiveDmsApplicationLink,
               isExternal: true,
             }}
-            Icon={ExternalSiteIcon}
+            Icon={FullExternalSite}
             onClick={() => logClickOnDmsLink(DMSApplicationstatus.SANS_SUITE)}
           >
             Consulter ma messagerie sur Démarches Simplifiées
@@ -323,7 +324,7 @@ const CollectiveDmsTimeline = ({
               to: collectiveDmsContactSupport,
               isExternal: true,
             }}
-            Icon={ExternalSiteIcon}
+            Icon={FullExternalSite}
           >
             Contacter les services des Ministères de l’Education Nationale et de
             la Culture

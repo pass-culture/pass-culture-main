@@ -1,12 +1,13 @@
-import './OperationProcedures.scss'
-
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
+import fullExternalIcon from 'icons/full-external-site.svg'
 import Banner from 'ui-kit/Banners/Banner'
-import Icon from 'ui-kit/Icon/Icon'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import styles from './OperationProcedures.module.scss'
 
 const OperatingProcedures = (): JSX.Element => {
   const location = useLocation()
@@ -14,7 +15,7 @@ const OperatingProcedures = (): JSX.Element => {
 
   return (
     <Banner type={'notification-info'}>
-      <p className="description">
+      <p className={styles.description}>
         Nous vous invitons à prendre connaissance des modalités de
         fonctionnement avant de renseigner les champs suivants.
       </p>
@@ -27,7 +28,11 @@ const OperatingProcedures = (): JSX.Element => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <Icon svg="ico-external-site" />
+        <SvgIcon
+          src={fullExternalIcon}
+          alt="Site aide.passculture.app"
+          className={styles.icon}
+        />
         <span>Consulter notre centre d’aide</span>
       </a>
     </Banner>

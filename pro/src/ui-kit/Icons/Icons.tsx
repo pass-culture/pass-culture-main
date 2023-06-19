@@ -29,6 +29,7 @@ const iconList = [
   // Full icons
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
+  { src: 'icons/full-external-site.svg' }, // TODO 17 uses left inside <ButtonLink> and <Banner> and <InternalBanner>
   { src: 'icons/full-mail.svg' }, // TODO 2 uses left inside ButtonLink, 1 use left inside SubmitButton
   { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
   { src: 'icons/full-duplicate.svg' }, // TODO still used in 1 Button
@@ -82,9 +83,7 @@ const iconList = [
   { src: 'icons/error.svg', viewBox: '0 0 18 18' },
   { src: 'icons/ico-euro-grey.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-euro-v2.svg', viewBox: '0 0 24 25' },
-  { src: 'icons/ico-external-site-filled.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-fill-external-link.svg', viewBox: '0 0 25 24' },
-  { src: 'icons/ico-external-site-red.svg', viewBox: '0 0 25 24' },
   { src: 'icons/external-site.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-eye-full-close.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-eye-full-open.svg', viewBox: '0 0 20 20' },
@@ -214,14 +213,13 @@ const iconList = [
   { src: 'icons/ico-disconnect-full.svg', viewbox: '0 0 40 40' },
   { src: 'icons/ico-euro.svg', viewbox: '0 0 24 24' },
   { src: 'icons/ico-events.svg', viewbox: '0 0 24 24' },
-  { src: 'icons/ico-external-site.svg', viewbox: '0 0 20 20' },
-  { src: 'icons/ico-external-site-red-filled.svg', viewbox: '0 0 20 20' },
   { src: 'icons/ico-eye-close.svg', viewbox: '0 0 20 20' },
   { src: 'icons/ico-eye-open.svg', viewbox: '0 0 20 20' },
   { src: 'icons/ico-help-S.svg', viewbox: '0 0 48 48' },
   { src: 'icons/ico-info-wrong.svg', viewbox: '0 0 78 78' },
   { src: 'icons/ico-key.svg', viewbox: '0 0 20 20' },
   { src: 'icons/logo-pass-culture-dark.svg', viewbox: '0 0 71 24' },
+
   { src: 'icons/ico-mail-outline.svg', viewbox: '0 0 82 67' },
   { src: 'icons/ico-notification-error.svg', viewbox: '0 0 24 24' },
   { src: 'icons/offer-card-euro.svg', viewbox: '0 0 30 30' },

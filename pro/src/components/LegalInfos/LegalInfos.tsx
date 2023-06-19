@@ -1,12 +1,14 @@
+import cn from 'classnames'
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ExternalSiteRedFilledIcon } from 'icons'
+import fullExternalIcon from 'icons/full-external-site.svg'
 import fullMailIcon from 'icons/full-mail.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import styles from './LegalInfos.module.scss'
 interface ILegalInfoProps {
   title: string
   className: string
@@ -16,10 +18,10 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
   return (
-    <div className={`legal-infos ${className}`}>
+    <div className={cn(styles['legal-infos'], className)}>
       <span>{`En cliquant sur ${title}, vous acceptez nos `}</span>
       <a
-        className="quaternary-link"
+        className={styles['quaternary-link']}
         href="https://pass.culture.fr/cgu-professionnels/"
         onClick={() =>
           logEvent?.(Events.CLICKED_CONSULT_CGU, { from: location.pathname })
@@ -27,12 +29,16 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <ExternalSiteRedFilledIcon className="icon-legal-infos" />
+        <SvgIcon
+          src={fullExternalIcon}
+          alt="Site pass.culture.fr"
+          className={styles['icon-legal-infos']}
+        />
         <span>Conditions Générales d’Utilisation</span>
       </a>
       <span>{' ainsi que notre '}</span>
       <a
-        className="quaternary-link"
+        className={styles['quaternary-link']}
         href="https://pass.culture.fr/donnees-personnelles/"
         onClick={() =>
           logEvent?.(Events.CLICKED_PERSONAL_DATA, { from: location.pathname })
@@ -40,7 +46,11 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <ExternalSiteRedFilledIcon className="icon-legal-infos" />
+        <SvgIcon
+          src={fullExternalIcon}
+          alt="Site pass.culture.fr"
+          className={styles['icon-legal-infos']}
+        />
         <span>Charte des Données Personnelles</span>
       </a>
       <span>
@@ -49,7 +59,7 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
         }
       </span>
       <a
-        className="quaternary-link"
+        className={styles['quaternary-link']}
         href="mailto:support-pro@passculture.app"
         onClick={() =>
           logEvent?.(Events.CLICKED_CONSULT_SUPPORT, {
@@ -59,7 +69,11 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <SvgIcon src={fullMailIcon} alt="" className="icon-legal-infos" />
+        <SvgIcon
+          src={fullMailIcon}
+          alt="Mail à support-pro@passculture.app"
+          className={styles['icon-legal-infos']}
+        />
         <span>Contacter notre support.</span>
       </a>
     </div>

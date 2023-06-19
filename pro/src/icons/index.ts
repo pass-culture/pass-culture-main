@@ -13,8 +13,6 @@ export { ReactComponent as DisconnectFullIcon } from 'icons/ico-disconnect-full.
 export { ReactComponent as EuroIcon } from 'icons/ico-euro.svg'
 export { ReactComponent as EventsIcon } from 'icons/ico-events.svg'
 export { ReactComponent as ExternalLinkIcon } from 'icons/ico-fill-external-link.svg'
-export { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site.svg'
-export { ReactComponent as ExternalSiteRedFilledIcon } from 'icons/ico-external-site-red-filled.svg'
 export { ReactComponent as EyeCloseIcon } from 'icons/ico-eye-close.svg'
 export { ReactComponent as EyeOpenIcon } from 'icons/ico-eye-open.svg'
 export { ReactComponent as HelpSIcon } from 'icons/ico-help-S.svg'
