@@ -34,7 +34,9 @@ const BaseInput = forwardRef(
           <input
             {...props}
             aria-invalid={hasError}
-            {...(hasError ? { 'aria-describedby': `error-${name}` } : {})}
+            {...(hasError
+              ? { 'aria-describedby': `error-details-${name}` }
+              : {})}
             className={cn(
               styles['base-input'],
               styles['base-input-with-right-icon'],

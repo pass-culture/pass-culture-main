@@ -27,6 +27,7 @@ export type FieldLayoutBaseProps = {
   clearButtonProps?: React.ButtonHTMLAttributes<HTMLButtonElement> & {
     tooltip: string
   }
+  ErrorDetails?: React.ReactNode
 }
 
 type FieldLayoutProps = FieldLayoutBaseProps & {
@@ -57,6 +58,7 @@ const FieldLayout = ({
   classNameFooter,
   description,
   clearButtonProps,
+  ErrorDetails,
 }: FieldLayoutProps): JSX.Element => {
   const hasError = showError && !!error
   const hasCounter = count !== undefined && maxLength !== undefined
@@ -126,8 +128,13 @@ const FieldLayout = ({
         {showFooter && (
           <div className={cn(classNameFooter, styles['field-layout-footer'])}>
             {hasError && (
-              <div className={styles['field-layout-error']}>
+              <div
+                className={styles['field-layout-error']}
+                id={`error-details-${name}`}
+                aria-live="polite"
+              >
                 <FieldError name={name}>{error}</FieldError>
+                {ErrorDetails}
               </div>
             )}
             {hasCounter && (

@@ -1,6 +1,8 @@
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
+import { passwordValidationStatus } from 'core/shared/utils/validation'
+
 export const validationSchema = (newOnboardingActive: boolean) =>
   yup.object().shape({
     email: yup
@@ -8,7 +10,18 @@ export const validationSchema = (newOnboardingActive: boolean) =>
       .max(120)
       .email('Veuillez renseigner un email valide')
       .required('Veuillez renseigner une adresse email'),
-    password: yup.string().required('Veuillez renseigner un mot de passe'),
+    password: yup
+      .string()
+      .required('Veuillez renseigner un mot de passe')
+      .test(
+        'isPasswordValid',
+        'Veuillez renseigner un mot de passe valide avec : ',
+        paswordValue => {
+          const errors = passwordValidationStatus(paswordValue)
+          const hasError = Object.values(errors).some(e => e === true)
+          return !hasError
+        }
+      ),
     lastName: yup.string().max(128).required('Veuillez renseigner votre nom'),
     firstName: yup
       .string()
