@@ -823,8 +823,8 @@ class ShowtimeDetailsEndpointResponse:
                 "userLastModification": "boost",
                 "lastModification": "2022-11-21T13:25:28+01:00",
             },
-            "format": {"id": 1, "title": "2D"},
-            "version": {"id": 1, "title": "Film Français", "code": "VF"},
+            "format": {"id": 1, "title": "3D"},
+            "version": {"id": 1, "title": "Film Français", "code": "VO"},
             "screen": {
                 "id": 5,
                 "auditoriumNumber": 5,
