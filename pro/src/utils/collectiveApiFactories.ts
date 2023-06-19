@@ -250,7 +250,6 @@ export const venueCollectiveDataFactory = (
   customCollectiveData: Partial<GetCollectiveVenueResponseModel> = {}
 ): GetCollectiveVenueResponseModel => {
   return {
-    id: 'A1',
     collectiveDomains: [],
     collectiveDescription: '',
     collectiveEmail: '',

@@ -32,7 +32,6 @@ describe('setDefaultInitialFormValues', () => {
     venueId = '1'
     venueList = [
       {
-        id: 'C',
         nonHumanizedId: 1,
         managingOffererId: 'AE',
         name: 'Venue Name',
@@ -49,7 +48,6 @@ describe('setDefaultInitialFormValues', () => {
         hasCreatedOffer: true,
       },
       {
-        id: 'D',
         nonHumanizedId: 2,
         managingOffererId: 'AE',
         name: 'Venue Name 2',

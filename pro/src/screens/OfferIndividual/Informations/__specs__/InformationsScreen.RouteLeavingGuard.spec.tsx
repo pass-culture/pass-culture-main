@@ -248,7 +248,6 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     ]
 
     const venue: TOfferIndividualVenue = {
-      id: 'AA',
       nonHumanizedId: 1,
       name: 'Lieu offline AA',
       managingOffererId: 'A',
@@ -269,7 +268,6 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       venueList: [
         venue,
         {
-          id: 'BB',
           nonHumanizedId: 2,
           name: 'Lieu online BB',
           managingOffererId: 'A',

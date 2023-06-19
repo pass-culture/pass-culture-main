@@ -10,7 +10,6 @@ import { VenueBannerMetaProps } from 'components/VenueForm/ImageUploaderVenue/Im
 import { IAccessibiltyFormValues } from 'core/shared'
 
 export type TOfferIndividualVenue = {
-  id: string
   nonHumanizedId: number
   managingOffererId: string
   name: string

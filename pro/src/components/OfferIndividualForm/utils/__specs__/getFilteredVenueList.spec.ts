@@ -7,6 +7,9 @@ import { getFilteredVenueList } from '../getFilteredVenueList'
 
 describe('getFilteredVenueList', () => {
   let virtualVenue: TOfferIndividualVenue
+  const firstVenueId = 1
+  const secondVenueId = 2
+  const thirdVenueId = 3
 
   const subCategories: IOfferSubCategory[] = [
     {
@@ -52,8 +55,7 @@ describe('getFilteredVenueList', () => {
 
   const venueList = [
     {
-      id: 'AA',
-      nonHumanizedId: 2,
+      nonHumanizedId: secondVenueId,
       name: 'Lieu offline AA',
       managingOffererId: 'A',
       isVirtual: false,
@@ -69,8 +71,7 @@ describe('getFilteredVenueList', () => {
       hasCreatedOffer: true,
     },
     {
-      id: 'BB',
-      nonHumanizedId: 3,
+      nonHumanizedId: thirdVenueId,
       name: 'Lieu offline BB',
       managingOffererId: 'A',
       isVirtual: false,
@@ -89,8 +90,7 @@ describe('getFilteredVenueList', () => {
 
   beforeEach(() => {
     virtualVenue = {
-      nonHumanizedId: 1,
-      id: 'CC',
+      nonHumanizedId: firstVenueId,
       name: 'Lieu online CC',
       managingOffererId: 'A',
       isVirtual: true,
@@ -113,9 +113,9 @@ describe('getFilteredVenueList', () => {
       virtualVenue,
     ])
     expect(result.length).toEqual(3)
-    expect(result[0].id).toEqual('AA')
-    expect(result[1].id).toEqual('BB')
-    expect(result[2].id).toEqual('CC')
+    expect(result[0].nonHumanizedId).toEqual(secondVenueId)
+    expect(result[1].nonHumanizedId).toEqual(thirdVenueId)
+    expect(result[2].nonHumanizedId).toEqual(firstVenueId)
   })
 
   it('should not filter venue on isVirtual when subCatagory is ONLINE or OFFLINE', async () => {
@@ -124,9 +124,9 @@ describe('getFilteredVenueList', () => {
       virtualVenue,
     ])
     expect(result.length).toEqual(3)
-    expect(result[0].id).toEqual('AA')
-    expect(result[1].id).toEqual('BB')
-    expect(result[2].id).toEqual('CC')
+    expect(result[0].nonHumanizedId).toEqual(secondVenueId)
+    expect(result[1].nonHumanizedId).toEqual(thirdVenueId)
+    expect(result[2].nonHumanizedId).toEqual(firstVenueId)
   })
 
   it('should filter venue on isVirtual when subCatagory is ONLINE only', async () => {
@@ -135,7 +135,7 @@ describe('getFilteredVenueList', () => {
       virtualVenue,
     ])
     expect(result.length).toEqual(1)
-    expect(result[0].id).toEqual('CC')
+    expect(result[0].nonHumanizedId).toEqual(firstVenueId)
   })
 
   it('should filter venue on not isVirtual when subCatagory is OFFLINE only', async () => {
@@ -144,7 +144,7 @@ describe('getFilteredVenueList', () => {
       virtualVenue,
     ])
     expect(result.length).toEqual(2)
-    expect(result[0].id).toEqual('AA')
-    expect(result[1].id).toEqual('BB')
+    expect(result[0].nonHumanizedId).toEqual(secondVenueId)
+    expect(result[1].nonHumanizedId).toEqual(thirdVenueId)
   })
 })

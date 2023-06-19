@@ -29,7 +29,6 @@ const getOfferIndividualVenuesAdapter: TGetOfferIndividualVenuesAdapter =
           [AccessiblityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
         }
         return {
-          id: venue.id,
           nonHumanizedId: venue.nonHumanizedId,
           managingOffererId: venue.managingOffererId,
           name: venue.publicName || venue.name,
