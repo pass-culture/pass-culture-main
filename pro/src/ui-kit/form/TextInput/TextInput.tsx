@@ -16,6 +16,7 @@ export type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
     step?: number | string
     hasDecimal?: boolean
     refForInput?: ForwardedRef<HTMLInputElement>
+    ErrorDetails?: React.ReactNode
   }
 
 const TextInput = ({
@@ -42,6 +43,7 @@ const TextInput = ({
   inline = false,
   description,
   clearButtonProps,
+  ErrorDetails,
   ...props
 }: TextInputProps): JSX.Element => {
   const [field, meta] = useField({
@@ -72,6 +74,7 @@ const TextInput = ({
       hideFooter={hideFooter}
       description={description}
       clearButtonProps={clearButtonProps}
+      ErrorDetails={ErrorDetails}
     >
       {readOnly ? (
         <span
