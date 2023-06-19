@@ -26,6 +26,55 @@ DATE_REGEXP = re.compile(r"([a-zA-Z]+)(\d+).tit")
 THINGS_FOLDER_NAME_TITELIVE = "livre3_11"
 NUMBER_OF_ELEMENTS_PER_LINE = 46  # (45 elements from line + \n)
 PAPER_PRESS_TVA = "2,10"
+COLUMN_INDICES = (
+    {  #  this list all field as per in the v11 documentation provided by titelive, without renaming fields.
+        "ean": 0,
+        "isbn": 1,  #  deprecated, do not use, also not use at pass culture except in one unit test
+        "titre": 2,
+        "titre_court": 3,
+        "code_rayon_csr": 4,
+        "disponibilite": 5,
+        "collection": 6,
+        "num_in_collection": 7,
+        "categorie_de_prix": 8,  #  deprecated, do not use, also not use at pass culture
+        "prix_ttc": 9,
+        "editeur": 10,
+        "distributeur": 11,
+        "date_commercialisation": 12,
+        "code_support": 13,
+        "code_tva": 14,
+        "nb_pages": 15,
+        "longueur": 16,
+        "largeur": 17,
+        "epaisseur": 18,
+        "poids": 19,
+        "sujet": 20,  # not used at pass culture
+        "statut_fiche": 21,
+        "mise_en_vente": 22,  #  deprecated, do not use, also not used at pass culture
+        "auteurs": 23,
+        "date_creation": 24,
+        "date_derniere_maj": 25,
+        "taux_tva": 26,
+        "libelle_code_rayon_csr": 27,
+        "traducteur": 28,
+        "langue_vo": 29,
+        "critique_presse": 30,  #  deprecated, do not use, also not used at pass culture
+        "commentaire": 31,
+        "palmares_pro": 32,
+        "image": 33,
+        "code_edi_fournisseur": 34,
+        "libelle_serie": 35,
+        "id_genre_bd": 36,  #  deprecated, do not use, also not used at pass culture
+        "libelle_genre_bd": 37,  #  deprecated, do not use, also not used at pass culture
+        "numero_de_catalogue": 38,
+        "scolaire": 39,
+        "compteur_mp3": 40,
+        "url_feuilleteur": 41,
+        "id_auteur": 42,
+        "indice_dewey": 43,
+        "code_regroupement": 44,
+    }
+)
 PAPER_PRESS_SUPPORT_CODE = "R"
 SCHOOL_RELATED_CSR_CODE = [
     "2700",
@@ -288,44 +337,44 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type: str) -> tup
 
 def get_infos_from_data_line(elts: list) -> dict:
     infos = {}
-    infos["ean13"] = elts[0]
-    infos["titre"] = elts[2]
-    infos["titre_court"] = elts[3]
-    infos["code_csr"] = elts[4]
-    infos["code_dispo"] = elts[5]
-    infos["collection"] = elts[6]
-    infos["num_in_collection"] = elts[7]
-    infos["prix"] = elts[9]
-    infos["editeur"] = elts[10]
-    infos["distributeur"] = elts[11]
-    infos["date_parution"] = elts[12]
-    infos["code_support"] = elts[13]
-    infos["code_tva"] = elts[14]
-    infos["n_pages"] = elts[15]
-    infos["longueur"] = elts[16]
-    infos["largeur"] = elts[17]
-    infos["epaisseur"] = elts[18]
-    infos["poids"] = elts[19]
-    infos["is_update"] = elts[21]
-    infos["auteurs"] = elts[23]
-    infos["datetime_created"] = elts[24]
-    infos["date_updated"] = elts[25]
-    infos["taux_tva"] = elts[26]
-    infos["libelle_csr"] = elts[27]
-    infos["traducteur"] = elts[28]
-    infos["langue_orig"] = elts[29]
-    infos["commentaire"] = elts[31]
-    infos["classement_top"] = elts[32]
-    infos["has_image"] = elts[33]
-    infos["code_edi_fournisseur"] = elts[34]
-    infos["libelle_serie_bd"] = elts[35]
-    infos["ref_editeur"] = elts[38]
-    infos["is_scolaire"] = elts[39]
-    infos["n_extraits_mp3"] = elts[40]
-    infos["url_extrait_pdf"] = elts[41]
-    infos["id_auteur"] = elts[42]
-    infos["indice_dewey"] = elts[43]
-    infos["code_regroupement"] = elts[44]
+    infos["ean13"] = elts[COLUMN_INDICES["ean"]]
+    infos["titre"] = elts[COLUMN_INDICES["titre"]]
+    infos["titre_court"] = elts[COLUMN_INDICES["titre_court"]]
+    infos["code_csr"] = elts[COLUMN_INDICES["code_rayon_csr"]]
+    infos["code_dispo"] = elts[COLUMN_INDICES["disponibilite"]]
+    infos["collection"] = elts[COLUMN_INDICES["collection"]]
+    infos["num_in_collection"] = elts[COLUMN_INDICES["num_in_collection"]]
+    infos["prix"] = elts[COLUMN_INDICES["prix_ttc"]]
+    infos["editeur"] = elts[COLUMN_INDICES["editeur"]]
+    infos["distributeur"] = elts[COLUMN_INDICES["distributeur"]]
+    infos["date_parution"] = elts[COLUMN_INDICES["date_commercialisation"]]
+    infos["code_support"] = elts[COLUMN_INDICES["code_support"]]
+    infos["code_tva"] = elts[COLUMN_INDICES["code_tva"]]
+    infos["n_pages"] = elts[COLUMN_INDICES["nb_pages"]]
+    infos["longueur"] = elts[COLUMN_INDICES["longueur"]]
+    infos["largeur"] = elts[COLUMN_INDICES["largeur"]]
+    infos["epaisseur"] = elts[COLUMN_INDICES["epaisseur"]]
+    infos["poids"] = elts[COLUMN_INDICES["poids"]]
+    infos["is_update"] = elts[COLUMN_INDICES["statut_fiche"]]
+    infos["auteurs"] = elts[COLUMN_INDICES["auteurs"]]
+    infos["datetime_created"] = elts[COLUMN_INDICES["date_creation"]]
+    infos["date_updated"] = elts[COLUMN_INDICES["date_derniere_maj"]]
+    infos["taux_tva"] = elts[COLUMN_INDICES["taux_tva"]]
+    infos["libelle_csr"] = elts[COLUMN_INDICES["libelle_code_rayon_csr"]]
+    infos["traducteur"] = elts[COLUMN_INDICES["traducteur"]]
+    infos["langue_orig"] = elts[COLUMN_INDICES["langue_vo"]]
+    infos["commentaire"] = elts[COLUMN_INDICES["commentaire"]]
+    infos["classement_top"] = elts[COLUMN_INDICES["palmares_pro"]]
+    infos["has_image"] = elts[COLUMN_INDICES["image"]]
+    infos["code_edi_fournisseur"] = elts[COLUMN_INDICES["code_edi_fournisseur"]]
+    infos["libelle_serie_bd"] = elts[COLUMN_INDICES["libelle_genre_bd"]]
+    infos["ref_editeur"] = elts[COLUMN_INDICES["numero_de_catalogue"]]
+    infos["is_scolaire"] = elts[COLUMN_INDICES["scolaire"]]
+    infos["n_extraits_mp3"] = elts[COLUMN_INDICES["compteur_mp3"]]
+    infos["url_extrait_pdf"] = elts[COLUMN_INDICES["url_feuilleteur"]]
+    infos["id_auteur"] = elts[COLUMN_INDICES["id_auteur"]]
+    infos["indice_dewey"] = elts[COLUMN_INDICES["indice_dewey"]]
+    infos["code_regroupement"] = elts[COLUMN_INDICES["code_regroupement"]]
     return infos
 
 
