@@ -280,7 +280,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
 
 
 class GetCollectiveVenueResponseModel(BaseModel):
-    id: str
     collectiveDescription: str | None
     collectiveStudents: list[educational_models.StudentLevels] | None
     collectiveWebsite: str | None
@@ -293,8 +292,6 @@ class GetCollectiveVenueResponseModel(BaseModel):
     collectiveEmail: str | None
     collectiveSubCategoryId: str | None
     siret: str | None
-
-    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True
@@ -357,7 +354,6 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
 
 
 class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
-    id: str
     nonHumanizedId: int
     managingOffererId: str
     name: str
@@ -371,7 +367,6 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasCreatedOffer: bool
     collectiveSubCategoryId: str | None
 
-    _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
 
     @classmethod

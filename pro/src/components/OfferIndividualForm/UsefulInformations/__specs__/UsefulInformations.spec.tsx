@@ -63,7 +63,6 @@ describe('OfferIndividual section: UsefulInformations', () => {
 
     venueList = [
       {
-        id: 'AAAA',
         nonHumanizedId: 1,
         name: 'Venue AAAA',
         managingOffererId: 'AE',
@@ -80,7 +79,6 @@ describe('OfferIndividual section: UsefulInformations', () => {
         hasCreatedOffer: true,
       },
       {
-        id: 'BBBB',
         nonHumanizedId: 2,
         name: 'Venue BBBB',
         managingOffererId: 'AE',

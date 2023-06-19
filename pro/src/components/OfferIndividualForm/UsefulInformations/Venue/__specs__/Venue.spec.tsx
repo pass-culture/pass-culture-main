@@ -65,7 +65,6 @@ describe('OfferIndividual section: venue', () => {
 
     venueList = [
       {
-        id: 'AAAA',
         nonHumanizedId: 1,
         name: 'Venue AAAA',
         managingOffererId: 'AE',
@@ -82,7 +81,6 @@ describe('OfferIndividual section: venue', () => {
         hasCreatedOffer: true,
       },
       {
-        id: 'BBAA',
         nonHumanizedId: 2,
         name: 'Venue BBAA',
         managingOffererId: 'A9',
@@ -99,7 +97,6 @@ describe('OfferIndividual section: venue', () => {
         hasCreatedOffer: true,
       },
       {
-        id: 'CCAA',
         nonHumanizedId: 3,
         name: 'Venue CCAA',
         managingOffererId: 'AM',
@@ -116,7 +113,6 @@ describe('OfferIndividual section: venue', () => {
         hasCreatedOffer: true,
       },
       {
-        id: 'CCBB',
         nonHumanizedId: 4,
         name: 'Venue CCBB',
         managingOffererId: 'AM',
