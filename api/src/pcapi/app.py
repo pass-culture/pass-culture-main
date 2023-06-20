@@ -16,7 +16,7 @@ app.config["PERMANENT_SESSION_LIFETIME"] = 90 * 24 * 3600
 app.config["FLASK_ADMIN_SWATCH"] = "flatly"
 app.config["FLASK_ADMIN_FLUID_LAYOUT"] = True
 app.config["JWT_SECRET_KEY"] = settings.JWT_SECRET_KEY
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = settings.JWT_ACCESS_TOKEN_EXPIRES
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 60
 app.config["WTF_CSRF_ENABLED"] = False
 
 jwt = JWTManager(app)

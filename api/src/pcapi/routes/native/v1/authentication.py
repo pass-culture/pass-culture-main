@@ -79,6 +79,19 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
 @jwt_required(refresh=True)
 @spectree_serialize(response_model=authentication.RefreshResponse, api=blueprint.api, on_error_statuses=[401])
 def refresh() -> authentication.RefreshResponse:
+    import random
+    from time import sleep
+
+    sleep(random.randint(0, 3))
+
+    if random.randint(0, 100) > 50:
+        raise ApiErrors(
+            {
+                "code": "WTF",
+            },
+            status_code=418,
+        )
+
     email = get_jwt_identity()
     user = find_user_by_email(email)
     if not user:
