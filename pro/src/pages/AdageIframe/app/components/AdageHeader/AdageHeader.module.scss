@@ -2,12 +2,16 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 
+.adage-header-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: rem.torem(48px);
+}
+
 .adage-header {
   display: flex;
   gap: rem.torem(48px);
   background: colors.$white;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 25%);
-  margin-bottom: rem.torem(48px);
   padding-left: rem.torem(16px);
   border-radius: rem.torem(8px) rem.torem(8px) 0 0;
 
@@ -47,6 +51,20 @@
     color: colors.$white;
     border-radius: rem.torem(22px);
     margin-left: rem.torem(4px);
+  }
+}
+
+.adage-header-help {
+  display: flex;
+  box-shadow: inset 0 5px 3px -3px rgb(0 0 0 / 25%);
+  background-color: colors.$grey-light;
+  justify-content: center;
+  padding: rem.torem(16px) 0;
+  gap: rem.torem(16px);
+
+  &-icon {
+    width: rem.torem(20px);
+    height: rem.torem(20px);
   }
 }
 

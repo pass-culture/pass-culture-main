@@ -12,6 +12,7 @@ import {
   defaultAlgoliaHits,
   defaultEducationalInstitution,
 } from 'utils/adageFactories'
+import { formatPrice } from 'utils/formatPrice'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { ResultType } from 'utils/types'
 
@@ -89,7 +90,7 @@ describe('AdageHeader', () => {
       expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
     )
 
-    expect(screen.getByText(/1,000/)).toBeInTheDocument()
+    expect(screen.getByText(formatPrice(1000))).toBeInTheDocument()
   })
 
   it('should return an error when the institution budget could not be retrieved', async () => {
