@@ -38,4 +38,9 @@ $dialog-box-padding: rem.torem(32px);
   margin: rem.torem(-2px) rem.torem(-2px) rem.torem(-9px) 0;
   width: rem.torem(44px);
   position: absolute;
+
+  &-icon {
+    width: rem.torem(24px);
+    height: rem.torem(24px);
+  }
 }

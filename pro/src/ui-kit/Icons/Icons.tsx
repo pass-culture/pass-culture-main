@@ -52,6 +52,7 @@ const iconList = [
   { src: 'icons/stroke-code.svg' },
   { src: 'icons/stroke-accessibility-ear.svg' },
   { src: 'icons/stroke-desk.svg' },
+  { src: 'icons/stroke-close.svg' },
 
   // Shadow icons
   { src: 'icons/shadow-tips-help.svg', viewBox: '0 0 22 26' },
@@ -64,11 +65,6 @@ const iconList = [
   { src: 'icons/ico-caret-right.svg', viewBox: '0 0 10 13' },
   { src: 'icons/checkbox-check.svg', viewBox: '0 0 10 8' },
   { src: 'icons/checkbox.svg', viewBox: '0 0 10 8' },
-  { src: 'icons/ico-clear-red.svg', viewBox: '0 0 15 14' },
-  { src: 'icons/ico-close-b.svg', viewBox: '0 0 17 16' },
-  { src: 'icons/close-dialog.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/icons-close.svg', viewBox: '0 0 18 18' },
-  { src: 'icons/ico-close-r.svg', viewBox: '0 0 17 16' },
   { src: 'icons/close-tag.svg', viewBox: '0 0 10 10' },
   { src: 'icons/ico-compta.svg', viewBox: '0 0 20 23' },
   { src: 'icons/ico-double-check.svg' },
@@ -206,7 +202,6 @@ const iconList = [
   { src: 'icons/ico-case.svg', viewbox: '0 0 48 48' },
   { src: 'icons/ico-clear.svg', viewbox: '4 4 40 40' },
   { src: 'icons/ico-clock.svg', viewbox: '0 0 24 24' },
-  { src: 'icons-close.svg', viewbox: '0 0 18 18' },
   { src: 'icons/ico-date.svg', viewbox: '0 0 48 48' },
   { src: 'icons/ico-disconnect-full.svg', viewbox: '0 0 40 40' },
   { src: 'icons/ico-euro.svg', viewbox: '0 0 24 24' },

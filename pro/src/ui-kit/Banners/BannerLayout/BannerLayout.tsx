@@ -1,9 +1,9 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as CloseIcon } from 'icons/close-dialog.svg'
 import { ReactComponent as IcoClearIcon } from 'icons/ico-clear.svg'
 import TipsHelpIcon from 'icons/shadow-tips_help.svg'
+import strokeCloseIcon from 'icons/stroke-close.svg'
 import strokeErrorIcon from 'icons/stroke-error.svg'
 import Icon from 'ui-kit/Icon/Icon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -77,8 +77,9 @@ const BannerLayout = ({
                   className={cn(styles['close-icon-banner'])}
                 />
               ) : (
-                <CloseIcon
-                  title="Masquer le bandeau"
+                <SvgIcon
+                  src={strokeCloseIcon}
+                  alt="Masquer le bandeau"
                   className={styles['close-icon']}
                 />
               )

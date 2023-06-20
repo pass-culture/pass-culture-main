@@ -22,3 +22,9 @@
   display: flex;
   justify-content: flex-end;
 }
+
+.offerer-close-icon {
+  width: rem.torem(14px);
+  height: rem.torem(14px);
+  color: colors.$black;
+}

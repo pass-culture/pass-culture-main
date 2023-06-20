@@ -300,9 +300,7 @@ describe('route CollectiveOffers', () => {
             }
             await renderOffers(store, filters)
             // When
-            await userEvent.click(
-              screen.getByAltText('Supprimer le filtre par structure')
-            )
+            await userEvent.click(screen.getByTestId('remove-offerer-filter'))
             // Then
             const statusFiltersIcon = screen.getByAltText(
               'Afficher ou masquer le filtre par statut'
@@ -334,9 +332,7 @@ describe('route CollectiveOffers', () => {
             }
             await renderOffers(store, filters)
             // When
-            await userEvent.click(
-              screen.getByAltText('Supprimer le filtre par structure')
-            )
+            await userEvent.click(screen.getByTestId('remove-offerer-filter'))
             // Then
             const statusFiltersIcon = screen.getByAltText(
               'Afficher ou masquer le filtre par statut'
