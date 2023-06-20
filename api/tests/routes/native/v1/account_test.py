@@ -648,7 +648,9 @@ class ConfirmUpdateUserEmailTest:
         expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
         token = encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
         app.redis_client.set(
-            email_update.get_token_key(user, email_update.TokenType.CONFIRMATION), token, exat=expiration_date
+            email_update.get_token_key(user, email_update.TokenType.CONFIRMATION),
+            token,
+            ex=users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
         )
         return token
 
