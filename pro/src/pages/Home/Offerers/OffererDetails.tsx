@@ -4,19 +4,13 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
-import useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
-import { ReactComponent as ClosedEyeSvg } from 'icons/ico-eye-full-close.svg'
-import { ReactComponent as OpenedEyeSvg } from 'icons/ico-eye-full-open.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
-import { Banner, Button, ButtonLink } from 'ui-kit'
+import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 
 import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
-
-import MissingReimbursementPoints from './MissingReimbursementPoints/MissingReimbursementPoints'
-import VenueCreationLinks from './VenueCreationLinks'
 
 interface OffererDetailsProps {
   handleChangeOfferer: (event: React.ChangeEvent<HTMLSelectElement>) => void
@@ -31,16 +25,10 @@ const OffererDetails = ({
   offererOptions,
   selectedOfferer,
 }: OffererDetailsProps) => {
-  const newOfferCreation = useNewOfferCreationJourney()
   const { logEvent } = useAnalytics()
 
   const hasAtLeastOnePhysicalVenue = selectedOfferer.managedVenues
     ?.filter(venue => !venue.isVirtual)
-    .map(venue => venue.id)
-    .some(Boolean)
-
-  const hasAtLeastOneVirtualVenue = selectedOfferer.managedVenues
-    ?.filter(venue => venue.isVirtual)
     .map(venue => venue.id)
     .some(Boolean)
 
@@ -95,23 +83,10 @@ const OffererDetails = ({
     ]
   )
 
-  const toggleVisibility = () => {
-    logEvent?.(Events.CLICKED_TOGGLE_HIDE_OFFERER_NAME, {
-      isExpanded: isExpanded,
-    })
-    setIsExpanded(currentVisibility => !currentVisibility)
-  }
-
   return (
     <div className="h-card h-card-secondary" data-testid="offerrer-wrapper">
-      <div
-        className={`h-card-inner${
-          isExpanded && !newOfferCreation ? '' : ' h-no-bottom'
-        }`}
-      >
-        <div
-          className={`${!newOfferCreation ? 'od-header' : 'od-header-large'}`}
-        >
+      <div className={`h-card-inner${isExpanded && ' h-no-bottom'}`}>
+        <div className="od-header-large">
           <div className="venue-select">
             <SelectInput
               onChange={handleChangeOfferer}
@@ -123,21 +98,6 @@ const OffererDetails = ({
           </div>
 
           <div className="od-separator vertical" />
-          {!newOfferCreation && (
-            <>
-              <Button
-                className={isExpanded ? ' od-primary' : ''}
-                variant={ButtonVariant.TERNARY}
-                Icon={isExpanded ? ClosedEyeSvg : OpenedEyeSvg}
-                onClick={toggleVisibility}
-                type="button"
-              >
-                {isExpanded ? 'Masquer' : 'Afficher'}
-              </Button>
-
-              <div className="od-separator vertical small" />
-            </>
-          )}
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
@@ -230,49 +190,6 @@ const OffererDetails = ({
                 validation de votre structure.
               </Banner>
             )}
-
-            {selectedOfferer.isValidated && !newOfferCreation && (
-              <div className="h-card-cols">
-                <div className="h-card-col">
-                  <h3 className="h-card-secondary-title">
-                    Informations pratiques
-                  </h3>
-                  <div className="h-card-content">
-                    <ul className="h-description-list">
-                      <li className="h-dl-row">
-                        <span className="h-dl-title">Siren :</span>
-                        <span className="h-dl-description">
-                          {selectedOfferer.siren}
-                        </span>
-                      </li>
-
-                      <li className="h-dl-row">
-                        <span className="h-dl-title">Désignation :</span>
-                        <span className="h-dl-description">
-                          {selectedOfferer.name}
-                        </span>
-                      </li>
-
-                      <li className="h-dl-row">
-                        <span className="h-dl-title">{'Siège social : '}</span>
-                        <address className="od-address">
-                          {`${selectedOfferer.address} `}
-                          {showMissingReimbursmentPointsBanner && <br />}
-                          {`${selectedOfferer.postalCode} ${selectedOfferer.city}`}
-                        </address>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                {showMissingReimbursmentPointsBanner && (
-                  <div className="h-card-col">
-                    <MissingReimbursementPoints />
-                  </div>
-                )}
-              </div>
-            )}
-
             {showCreateVenueBanner && (
               <Banner
                 type="notification-info"
@@ -297,16 +214,6 @@ const OffererDetails = ({
                 </p>
               </Banner>
             )}
-
-            {isUserOffererValidated &&
-              !hasAtLeastOnePhysicalVenue &&
-              !newOfferCreation && (
-                <VenueCreationLinks
-                  hasPhysicalVenue={hasAtLeastOnePhysicalVenue}
-                  hasVirtualOffers={hasAtLeastOneVirtualVenue}
-                  offererId={selectedOfferer.nonHumanizedId}
-                />
-              )}
           </>
         )}
       </div>

@@ -12,10 +12,7 @@ import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapte
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
-import {
-  useNewOfferCreationJourney,
-  useScrollToFirstErrorAfterSubmit,
-} from 'hooks'
+import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { venueSubmitRedirectUrl } from 'screens/VenueForm/utils/venueSubmitRedirectUrl'
@@ -51,7 +48,6 @@ interface VenueFormProps {
 
 interface ShouldBlockVenueNavigationProps {
   isCreatingVenue: boolean
-  isNewOfferCreationJourney: boolean
   offererId: number
   user: SharedCurrentUserResponseModel
 }
@@ -63,7 +59,6 @@ type ShouldBlockVenueNavigation = (
 export const shouldBlockVenueNavigation: ShouldBlockVenueNavigation =
   ({
     isCreatingVenue,
-    isNewOfferCreationJourney,
     offererId,
     user,
   }: ShouldBlockVenueNavigationProps): BlockerFunction =>
@@ -72,13 +67,7 @@ export const shouldBlockVenueNavigation: ShouldBlockVenueNavigation =
       return false
     }
 
-    const url = venueSubmitRedirectUrl(
-      isNewOfferCreationJourney,
-      isCreatingVenue,
-      offererId,
-      undefined,
-      user
-    )
+    const url = venueSubmitRedirectUrl(isCreatingVenue, offererId, user)
     const nextUrl = nextLocation.pathname + nextLocation.search
 
     return !nextUrl.startsWith(url)
@@ -117,7 +106,6 @@ const VenueForm = ({
     )
   }, [])
 
-  const isNewOfferCreationJourney = useNewOfferCreationJourney()
   const isCollectiveDmsTrackingActive = useActiveFeature(
     'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
   )
@@ -165,14 +153,12 @@ const VenueForm = ({
           venueLabels={venueLabels}
           isVenueVirtual={initialIsVirtual}
           isCreatingVenue={isCreatingVenue}
-          isNewOfferCreationJourney={isNewOfferCreationJourney}
           isNewOnboardingActive={isNewOnboardingActive}
         />
         {!initialIsVirtual && (
           <>
             <Accessibility isCreatingVenue={isCreatingVenue} />
-            {((isCreatingVenue && !isNewOfferCreationJourney) ||
-              !isCreatingVenue) && (
+            {!isCreatingVenue && (
               <WithdrawalDetails isCreatedEntity={isCreatingVenue} />
             )}
           </>
@@ -180,7 +166,6 @@ const VenueForm = ({
         <Contact
           isVenueVirtual={initialIsVirtual}
           isCreatingVenue={isCreatingVenue}
-          isNewOfferCreationJourney={isNewOfferCreationJourney}
         />
         {
           /* istanbul ignore next: DEBT, TO FIX */ canOffererCreateCollectiveOffer &&
@@ -210,7 +195,6 @@ const VenueForm = ({
         <RouteLeavingGuard
           shouldBlockNavigation={shouldBlockVenueNavigation({
             isCreatingVenue,
-            isNewOfferCreationJourney,
             offererId: offerer.nonHumanizedId,
             user: user.currentUser,
           })}

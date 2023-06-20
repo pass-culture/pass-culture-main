@@ -1,11 +1,5 @@
-"""FIXME: the comment below appears in the output of `alembic history`.
-Remove this FIXME and make the comment below easily readable.
-
-remove_wip_new_enable_new_offer_creation_journey
+"""Remove WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY feature flag
 """
-from alembic import op
-import sqlalchemy as sa
-
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.

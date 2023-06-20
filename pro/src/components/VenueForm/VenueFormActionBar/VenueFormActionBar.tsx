@@ -7,7 +7,6 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import { ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import useNewOfferCreationJourney from '../../../hooks/useNewOfferCreationJourney'
 import { VenueFormValues } from '../types'
 
 interface VenueFormActionBarProps {
@@ -21,8 +20,6 @@ const VenueFormActionBar = ({
 }: VenueFormActionBarProps) => {
   const { currentUser } = useCurrentUser()
   const { isSubmitting } = useFormikContext<VenueFormValues>()
-
-  const newOfferCreation = useNewOfferCreationJourney()
 
   return (
     <FormLayout.Actions>
@@ -41,11 +38,7 @@ const VenueFormActionBar = ({
         <ActionsBarSticky.Right>
           <SubmitButton isLoading={isSubmitting}>
             Enregistrer et
-            {isCreatingVenue
-              ? newOfferCreation
-                ? ' créer le lieu'
-                : ' continuer'
-              : ' quitter'}
+            {isCreatingVenue ? ' créer le lieu' : ' quitter'}
           </SubmitButton>
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
