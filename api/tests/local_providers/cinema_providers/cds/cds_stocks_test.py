@@ -237,7 +237,7 @@ class CDSStocksTest:
         assert created_stocks[0].offer == created_offers[0]
         assert created_stocks[0].bookingLimitDatetime == datetime(2022, 6, 20, 9)
         assert created_stocks[0].beginningDatetime == datetime(2022, 6, 20, 9)
-        assert created_stocks[0].features == ["3D", "VF"]
+        assert created_stocks[0].features == ["VF", "3D"]
 
         assert created_offers[1].name == "Top Gun"
         assert created_offers[1].product == created_products[1]
