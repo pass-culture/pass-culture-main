@@ -70,7 +70,7 @@ def create_data_thing_products() -> dict[str, offers_models.Product]:
                     music_sub_type = music_type.children[music_sub_type_index]
                     extraData["musicSubType"] = str(music_sub_type.code)
                 elif conditionalField == "ean":
-                    extraData["ean"] = "".join(random.choices("123456789-", k=13))
+                    extraData["ean"] = "".join(random.choices("123456789", k=13))
                 extra_data_index += 1
             thing_product.extraData = extraData
             thing_products_by_name[name] = thing_product
