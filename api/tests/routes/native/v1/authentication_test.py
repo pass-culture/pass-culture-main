@@ -160,19 +160,20 @@ class TrustedDeviceFeatureTest:
             "os": "iOS",
         },
     }
+    headers = {"X-City": "Paris", "X-Country": "France"}
 
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def test_save_login_device_history_on_signin(self, client):
         users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
 
-        client.post("/native/v1/signin", json=self.data)
+        client.post("/native/v1/signin", json=self.data, headers=self.headers)
 
         login_device = LoginDeviceHistory.query.one()
 
         assert login_device.deviceId == self.data["deviceInfo"]["deviceId"]
         assert login_device.source == "iPhone 13"
         assert login_device.os == "iOS"
-        assert login_device.location is None
+        assert login_device.location == "Paris, France"
 
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def should_not_save_login_device_history_on_signin_when_no_device_info(self, client):
@@ -237,11 +238,11 @@ class TrustedDeviceFeatureTest:
     def should_send_email_when_login_is_suspicious(self, client):
         users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
 
-        client.post("/native/v1/signin", json=self.data)
+        client.post("/native/v1/signin", json=self.data, headers=self.headers)
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-        assert mails_testing.outbox[0].sent_data["params"]["LOCATION"] == None
+        assert mails_testing.outbox[0].sent_data["params"]["LOCATION"] == "Paris, France"
         assert mails_testing.outbox[0].sent_data["params"]["OS"] == "iOS"
         assert mails_testing.outbox[0].sent_data["params"]["SOURCE"] == "iPhone 13"
         assert mails_testing.outbox[0].sent_data["params"]["LOGIN_DATE"]
