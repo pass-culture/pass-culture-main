@@ -413,7 +413,7 @@ class ChangeUserEmailTest:
         new_email = "newemail@mail.com"
 
         # When
-        users_api.change_user_email(old_email, new_email)
+        users_api.change_beneficiary_user_email(old_email, new_email)
 
         # Then
         reloaded_user = users_models.User.query.get(user.id)
@@ -436,7 +436,7 @@ class ChangeUserEmailTest:
 
         # When
         with pytest.raises(users_exceptions.EmailExistsError):
-            users_api.change_user_email(user.email, other_user.email)
+            users_api.change_beneficiary_user_email(user.email, other_user.email)
 
         # Then
         user = users_models.User.query.get(user.id)
@@ -448,7 +448,7 @@ class ChangeUserEmailTest:
     def test_change_email_user_not_existing(self):
         # When
         with pytest.raises(users_exceptions.UserDoesNotExist):
-            users_api.change_user_email("oldemail@mail.com", "newemail@mail.com")
+            users_api.change_beneficiary_user_email("oldemail@mail.com", "newemail@mail.com")
 
         # Then
         old_user = users_models.User.query.filter_by(email="oldemail@mail.com").first()
@@ -466,7 +466,7 @@ class ChangeUserEmailTest:
 
         # When
         with pytest.raises(users_exceptions.UserDoesNotExist):
-            users_api.change_user_email(old_email + "_error", new_email)
+            users_api.change_beneficiary_user_email(old_email + "_error", new_email)
 
         # Then
         reloaded_user = users_models.User.query.get(user.id)
@@ -487,7 +487,7 @@ class ChangeUserEmailTest:
         users_factories.UserSessionFactory(user=user)
 
         # first call, email is updated as expected
-        users_api.change_user_email(old_email, new_email)
+        users_api.change_beneficiary_user_email(old_email, new_email)
         db.session.commit()
 
         reloaded_user = users_models.User.query.get(user.id)
@@ -495,7 +495,7 @@ class ChangeUserEmailTest:
         assert len(reloaded_user.email_history) == 1
 
         # second call, no error, no update
-        users_api.change_user_email(old_email, new_email)
+        users_api.change_beneficiary_user_email(old_email, new_email)
 
         reloaded_user = users_models.User.query.get(user.id)
         assert reloaded_user.email == new_email

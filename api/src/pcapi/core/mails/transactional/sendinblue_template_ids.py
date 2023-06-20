@@ -41,6 +41,9 @@ class TransactionalEmail(Enum):
     EMAIL_CHANGE_REQUEST = models.Template(
         id_prod=142, id_not_prod=133, tags=["changement_email_demande"], use_priority_queue=True
     )
+    EMAIL_CHANGE_INFORMATION = models.Template(
+        id_prod=944, id_not_prod=135, tags=["changement_email_information"], use_priority_queue=True
+    )
     EMAIL_CONFIRMATION = models.Template(
         id_prod=201, id_not_prod=15, tags=["jeunes_confirmation_mail"], use_priority_queue=True
     )

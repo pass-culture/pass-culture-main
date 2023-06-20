@@ -36,6 +36,18 @@ def send_validation_email_change_email(user: User, new_email: str, confirmation_
     return mails.send(recipients=[new_email], data=data)
 
 
+def get_email_change_information_data(first_name: str | None) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
+        template=TransactionalEmail.EMAIL_CHANGE_INFORMATION.value,
+        params={"FIRSTNAME": first_name},
+    )
+
+
+def send_email_change_information_email(user: User) -> bool:
+    data = get_email_change_information_data(user.firstName)
+    return mails.send(recipients=[user.email], data=data)
+
+
 def send_pro_confirmation_email_change_email(new_email: str, confirmation_link: str) -> bool:
     data = get_pro_confirmation_email_change_data(confirmation_link)
     return mails.send(recipients=[new_email], data=data)
