@@ -13,6 +13,7 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
+import { SelectOption } from 'custom_types/form'
 import { useNewOfferCreationJourney } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as StatusPendingFullIcon } from 'icons/ico-status-pending-full.svg'
@@ -20,7 +21,7 @@ import { ReactComponent as SuccessIcon } from 'icons/ico-success.svg'
 import { OffererVenues } from 'pages/Home/OffererVenues'
 import { VenueList } from 'pages/Home/Venues'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { sortByDisplayName } from 'utils/strings'
+import { sortByLabel } from 'utils/strings'
 
 import OffererCreationLinks from './OffererCreationLinks'
 import OffererDetails from './OffererDetails'
@@ -47,7 +48,7 @@ const Offerers = ({
   isUserOffererValidated,
   venues,
 }: OfferersProps) => {
-  const [offererOptions, setOffererOptions] = useState<SelectOptionsRFF>([])
+  const [offererOptions, setOffererOptions] = useState<SelectOption[]>([])
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
 
   const location = useLocation()
@@ -68,18 +69,18 @@ const Offerers = ({
   useEffect(() => {
     if (receivedOffererNames) {
       if (receivedOffererNames.offerersNames.length > 0) {
-        const initialOffererOptions = sortByDisplayName(
+        const initialOffererOptions = sortByLabel(
           receivedOffererNames.offerersNames.map(item => ({
-            id: item['nonHumanizedId'].toString(),
-            displayName: item['name'],
+            value: item['nonHumanizedId'].toString(),
+            label: item['name'],
           }))
         )
-        onSelectedOffererChange(offererId ?? initialOffererOptions[0].id)
+        onSelectedOffererChange(offererId ?? initialOffererOptions[0].value)
         setOffererOptions([
           ...initialOffererOptions,
           {
-            displayName: '+ Ajouter une structure',
-            id: CREATE_OFFERER_SELECT_ID,
+            label: '+ Ajouter une structure',
+            value: CREATE_OFFERER_SELECT_ID,
           },
         ])
       } else {
