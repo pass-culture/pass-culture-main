@@ -20,6 +20,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.factories import UserFactory
+import pcapi.local_providers.cinema_providers.constants as cinema_providers_constants
 from pcapi.models.offer_mixin import OfferValidationStatus
 import pcapi.notifications.push.testing as notifications_testing
 
@@ -68,24 +69,38 @@ class OffersTest:
             price=12.34,
             quantity=2,
             priceCategory__priceCategoryLabel__label="bookable",
+            features=[
+                cinema_providers_constants.ShowtimeFeatures.VF.value,
+                cinema_providers_constants.ShowtimeFeatures.THREE_D.value,
+                cinema_providers_constants.ShowtimeFeatures.ICE.value,
+            ],
         )
         another_bookable_stock = offers_factories.EventStockFactory(
             offer=offer,
             price=12.34,
             quantity=3,
             priceCategory=bookable_stock.priceCategory,
+            features=[
+                cinema_providers_constants.ShowtimeFeatures.VO.value,
+                cinema_providers_constants.ShowtimeFeatures.THREE_D.value,
+            ],
         )
         expired_stock = offers_factories.EventStockFactory(
             offer=offer,
             price=45.67,
             beginningDatetime=datetime.utcnow() - timedelta(days=1),
             priceCategory__priceCategoryLabel__label="expired",
+            features=[
+                cinema_providers_constants.ShowtimeFeatures.VF.value,
+                cinema_providers_constants.ShowtimeFeatures.ICE.value,
+            ],
         )
         exhausted_stock = offers_factories.EventStockFactory(
             offer=offer,
             price=89.00,
             quantity=1,
             priceCategory__priceCategoryLabel__label="exhausted",
+            features=[cinema_providers_constants.ShowtimeFeatures.VO.value],
         )
 
         BookingFactory(stock=bookable_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
@@ -112,6 +127,7 @@ class OffersTest:
                     "beginningDatetime": "2020-01-31T00:00:00Z",
                     "bookingLimitDatetime": "2020-01-30T23:00:00Z",
                     "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+                    "features": ["VF", "3D", "ICE"],
                     "isBookable": True,
                     "isForbiddenToUnderage": False,
                     "isSoldOut": False,
@@ -126,6 +142,7 @@ class OffersTest:
                     "beginningDatetime": "2020-01-31T00:00:00Z",
                     "bookingLimitDatetime": "2020-01-30T23:00:00Z",
                     "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+                    "features": ["VO", "3D"],
                     "isBookable": True,
                     "isForbiddenToUnderage": False,
                     "isSoldOut": False,
@@ -140,6 +157,7 @@ class OffersTest:
                     "beginningDatetime": "2019-12-31T00:00:00Z",
                     "bookingLimitDatetime": "2019-12-30T23:00:00Z",
                     "cancellationLimitDatetime": "2020-01-01T00:00:00Z",
+                    "features": ["VF", "ICE"],
                     "isBookable": False,
                     "isForbiddenToUnderage": False,
                     "isSoldOut": True,
@@ -154,6 +172,7 @@ class OffersTest:
                     "beginningDatetime": "2020-01-31T00:00:00Z",
                     "bookingLimitDatetime": "2020-01-30T23:00:00Z",
                     "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+                    "features": ["VO"],
                     "isBookable": False,
                     "isForbiddenToUnderage": False,
                     "isSoldOut": True,
@@ -240,6 +259,7 @@ class OffersTest:
         assert response.json["isEducational"] is False
         assert not response.json["isExpired"]
         assert response.json["venue"]["isPermanent"]
+        assert response.json["stocks"][0]["features"] == []
 
     def test_get_digital_offer_with_available_activation_and_no_expiration_date(self, app):
         # given
