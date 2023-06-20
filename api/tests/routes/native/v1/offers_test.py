@@ -307,7 +307,7 @@ class OffersTest:
 
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
-    def test_get_cds_synchonized_offer(self, mocked_get_shows_stock, app):
+    def test_get_cds_sync_offer_updates_stock(self, mocked_get_shows_stock, app):
         movie_id = 54
         show_id = 5008
 
@@ -341,10 +341,10 @@ class OffersTest:
     @freeze_time("2023-01-01")
     @override_features(ENABLE_BOOST_API_INTEGRATION=True)
     @patch("pcapi.connectors.boost.requests.get")
-    def test_get_boost_synchonized_offer(self, request_get, client):
+    def test_get_boost_sync_offer_updates_stock(self, request_get, client):
         movie_id = 207
         first_show_id = 36683
-        second_show_id = 36684
+        will_be_sold_out_show = 36684
 
         response_return_value = mock.MagicMock(status_code=200, text="", headers={"Content-Type": "application/json"})
         response_return_value.json = mock.MagicMock(
@@ -372,21 +372,20 @@ class OffersTest:
         first_show_stock = offers_factories.EventStockFactory(
             offer=offer, idAtProviders=f"{offer_id_at_provider}#{first_show_id}", quantity=96
         )
-        second_show_stock = offers_factories.EventStockFactory(
-            offer=offer, idAtProviders=f"{offer_id_at_provider}#{second_show_id}", quantity=96
+        will_be_sold_out_show_stock = offers_factories.EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{will_be_sold_out_show}", quantity=96
         )
 
         response = client.get(f"/native/v1/offer/{offer.id}")
         assert response.status_code == 200
         assert first_show_stock.remainingQuantity == 96
-        assert second_show_stock.remainingQuantity == 0
+        assert will_be_sold_out_show_stock.remainingQuantity == 0
 
     @override_features(ENABLE_CGR_INTEGRATION=True)
-    def test_get_cgr_synchronized_offer(self, requests_mock, app):
+    def test_get_cgr_sync_offer_updates_stock(self, requests_mock, app):
         allocine_movie_id = 234099
-        first_show_id = 182021
-        second_show_id = 182022
-
+        still_scheduled_show = 182021
+        descheduled_show = 182022
         requests_mock.get(
             "https://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
         )
@@ -412,18 +411,18 @@ class OffersTest:
             lastProviderId=venue_provider.providerId,
             venue=venue_provider.venue,
         )
-        first_show_stock = offers_factories.EventStockFactory(
-            offer=offer, idAtProviders=f"{offer_id_at_provider}#{first_show_id}", quantity=95
+        still_scheduled_show_stock = offers_factories.EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{still_scheduled_show}", quantity=95
         )
-        second_show_stock = offers_factories.EventStockFactory(
-            offer=offer, idAtProviders=f"{offer_id_at_provider}#{second_show_id}", quantity=95
+        descheduled_show_stock = offers_factories.EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{descheduled_show}", quantity=95
         )
 
         response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
 
         assert response.status_code == 200
-        assert first_show_stock.remainingQuantity == 95
-        assert second_show_stock.remainingQuantity == 0
+        assert still_scheduled_show_stock.remainingQuantity == 95
+        assert descheduled_show_stock.remainingQuantity == 0
 
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_inactive_cinema_provider_offer(self, app):
