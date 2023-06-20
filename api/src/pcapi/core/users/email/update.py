@@ -224,7 +224,7 @@ def generate_email_change_token(
 ) -> str:
     token = encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
     key = get_token_key(user, token_type)
-    app.redis_client.set(key, token, exat=expiration_date)  # type: ignore [attr-defined]
+    app.redis_client.set(key, token, ex=constants.EMAIL_CHANGE_TOKEN_LIFE_TIME)  # type: ignore [attr-defined]
     return token
 
 
