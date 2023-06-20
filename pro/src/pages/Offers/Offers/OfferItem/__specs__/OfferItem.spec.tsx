@@ -263,7 +263,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       ).toBeInTheDocument()
     })
 
-    it('should display the isbn when given', () => {
+    it('should display the ean when given', () => {
       // given
       eventOffer.productIsbn = '123456789'
 

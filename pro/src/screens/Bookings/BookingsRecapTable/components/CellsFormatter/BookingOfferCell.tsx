@@ -52,7 +52,6 @@ const BookingOfferCell = ({
     true
   )
   const eventBeginningDatetime = offer.eventBeginningDatetime
-  const isbn = offer.offerIsbn
 
   const eventDatetimeFormatted = eventBeginningDatetime
     ? format(
@@ -92,10 +91,10 @@ const BookingOfferCell = ({
           {offer.offerName}
         </div>
       </a>
-      {isbn ||
+      {offer.offerIsbn ||
         (eventBeginningDatetime && (
           <div className={styles['booking-offer-additional-info']}>
-            {eventDatetimeFormatted || isbn}
+            {eventDatetimeFormatted || offer.offerIsbn}
             <span className={styles['stocks']}>
               {shouldShowCollectiveWarning && (
                 <div className={styles['sold-out-container']}>

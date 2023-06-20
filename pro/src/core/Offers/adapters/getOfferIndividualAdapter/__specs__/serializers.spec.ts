@@ -262,7 +262,6 @@ describe('serializer', () => {
     const offerApi = {
       extraData: {
         author: 'test author',
-        isbn: 'test isbn',
         musicType: 'test musicType',
         musicSubType: 'test musicSubType',
         performer: 'test performer',
@@ -277,7 +276,6 @@ describe('serializer', () => {
 
     expect(serializeOfferApiExtraData(offerApi)).toEqual({
       author: 'test author',
-      isbn: 'test isbn',
       musicType: 'test musicType',
       musicSubType: 'test musicSubType',
       performer: 'test performer',
@@ -325,7 +323,6 @@ describe('serializer', () => {
       isDuo: true,
       isEvent: false,
       isNational: true,
-      isbn: '',
       lastProvider: null,
       lastProviderName: null,
       musicSubType: '',

@@ -53,7 +53,6 @@ const setInitialFormValues = (
     bookingEmail: offer.bookingEmail,
     receiveNotificationEmails: !!offer.bookingEmail,
     author: offer.author,
-    isbn: offer.isbn,
     performer: offer.performer,
     ean: offer.ean,
     speaker: offer.speaker,

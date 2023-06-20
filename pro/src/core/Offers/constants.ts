@@ -125,19 +125,6 @@ export const ADMINS_DISABLED_FILTERS_MESSAGE =
 
 export const LIVRE_PAPIER_SUBCATEGORY_ID = 'LIVRE_PAPIER'
 
-export const EXTRA_DATA_FIELDS = [
-  'author',
-  'isbn',
-  'musicType',
-  'musicSubType',
-  'performer',
-  'showType',
-  'showSubType',
-  'speaker',
-  'stageDirector',
-  'visa',
-]
-
 export const SYNCHRONIZED_OFFER_EDITABLE_FIELDS = {
   ALL_PROVIDERS: [
     'audioDisabilityCompliant',

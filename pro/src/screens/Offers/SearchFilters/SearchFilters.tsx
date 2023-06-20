@@ -105,11 +105,11 @@ const SearchFilters = ({
 
   const searchByOfferNameLabel =
     audience === Audience.INDIVIDUAL
-      ? 'Nom de l’offre ou ISBN'
+      ? 'Nom de l’offre ou EAN'
       : 'Nom de l’offre'
   const searchByOfferNamePlaceholder =
     audience === Audience.INDIVIDUAL
-      ? 'Rechercher par nom d’offre ou par ISBN'
+      ? 'Rechercher par nom d’offre ou par EAN'
       : 'Rechercher par nom d’offre'
   const resetFilterButtonProps = !hasSearchFilters(selectedFilters)
     ? { 'aria-current': 'page', isDisabled: true }

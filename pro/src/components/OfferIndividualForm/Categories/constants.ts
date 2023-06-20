@@ -4,7 +4,6 @@ export const SUBCATEGORIES_FIELDS_DEFAULT_VALUES = {
   showType: '',
   showSubType: '',
   author: '',
-  isbn: '',
   ean: '',
   performer: '',
   speaker: '',

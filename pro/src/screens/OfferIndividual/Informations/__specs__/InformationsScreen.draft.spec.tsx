@@ -176,7 +176,6 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
       durationMinutes: 140,
-      isbn: '',
       isActive: true,
       isDuo: false,
       isEvent: false,

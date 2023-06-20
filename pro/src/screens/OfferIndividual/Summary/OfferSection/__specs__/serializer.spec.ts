@@ -22,7 +22,6 @@ describe('routes::Summary::serializers', () => {
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
       durationMinutes: 140,
-      isbn: '',
       isActive: true,
       isDuo: false,
       isEvent: true,
@@ -169,7 +168,6 @@ describe('routes::Summary::serializers', () => {
       isDuo: false,
       url: 'https://offer.example.com',
       externalTicketOfficeUrl: 'https://external.example.com',
-
       author: 'Offer author',
       stageDirector: 'Offer stageDirector',
       musicTypeName: '',
@@ -179,7 +177,7 @@ describe('routes::Summary::serializers', () => {
       speaker: 'Offer speaker',
       visa: '',
       performer: 'Offer performer',
-      isbn: '',
+      ean: '',
       durationMinutes: '140',
       status: OfferStatus.ACTIVE,
     })

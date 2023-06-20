@@ -21,7 +21,7 @@ describe('test updateIndividualOffer::serializers', () => {
   it('test serializeExtraData', () => {
     const formValues: IOfferIndividualFormValues = {
       author: 'author value',
-      isbn: 'isbn value',
+      ean: 'ean value',
       musicType: 'musicType value',
       musicSubType: 'musicSubType value',
       performer: 'performer value',
@@ -37,7 +37,7 @@ describe('test updateIndividualOffer::serializers', () => {
 
     const extraData: IOfferExtraData = {
       author: 'author value',
-      isbn: 'isbn value',
+      ean: 'ean value',
       musicType: 'musicType value',
       musicSubType: 'musicSubType value',
       performer: 'performer value',
@@ -79,7 +79,7 @@ describe('test updateIndividualOffer::serializers', () => {
           [AccessiblityEnum.NONE]: false,
         },
         author: 'test author',
-        isbn: 'test isbn',
+        ean: 'test ean',
         performer: 'test performer',
         speaker: 'test speaker',
         stageDirector: 'test stageDirector',
