@@ -2,7 +2,7 @@ import React from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
-import phoneInfoStrokeIcon from 'icons/stroke-info-phone.svg'
+import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import Icon from 'ui-kit/Icon/Icon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -59,7 +59,7 @@ const CollectiveBookingDetails = ({
                   <SvgIcon
                     className={styles['contact-detail-icon']}
                     alt="Téléphone"
-                    src={phoneInfoStrokeIcon}
+                    src={phoneStrokeIcon}
                   />
                 </dt>
                 <dd>{educationalInstitution.phoneNumber}</dd>

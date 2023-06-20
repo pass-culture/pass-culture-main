@@ -32,7 +32,8 @@ import newOfferIcon from 'icons/ico-new-offer.svg'
 import templateOfferIcon from 'icons/ico-template-offer.svg'
 import virtualEventIcon from 'icons/ico-virtual-event.svg'
 import virtualThingIcon from 'icons/ico-virtual-thing.svg'
-import phoneInfoStrokeIcon from 'icons/stroke-info-phone.svg'
+import duplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
+import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import thingStrokeIcon from 'icons/stroke-thing.svg'
 import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
 import { Banner } from 'ui-kit'
@@ -190,7 +191,7 @@ const OfferType = (): JSX.Element => {
               <FormLayout.Row inline>
                 <RadioButtonWithImage
                   name="offerType"
-                  icon={phoneInfoStrokeIcon}
+                  icon={phoneStrokeIcon}
                   isChecked={values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO}
                   label="Au grand public"
                   onChange={handleChange}
