@@ -4,7 +4,7 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
-import { Option } from 'core/Offers/types'
+import { SelectOption } from 'custom_types/form'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererStatsScreen from '../OffererStatsScreen'
@@ -17,7 +17,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOffererStatsScreen = (offererOptions: Option[]) => {
+const renderOffererStatsScreen = (offererOptions: SelectOption[]) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -40,19 +40,19 @@ const renderOffererStatsScreen = (offererOptions: Option[]) => {
 }
 
 describe('OffererStatsScreen', () => {
-  let offererOptions: Option[]
+  let offererOptions: SelectOption[]
   let offerers: GetOffererResponseModel[]
   const venueId = 1
 
   beforeEach(() => {
     offererOptions = [
       {
-        id: '1',
-        displayName: 'Mon super cinéma',
+        value: '1',
+        label: 'Mon super cinéma',
       },
       {
-        id: '2',
-        displayName: 'Ma super librairie',
+        value: '2',
+        label: 'Ma super librairie',
       },
     ]
     offerers = [
