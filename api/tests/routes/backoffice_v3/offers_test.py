@@ -62,8 +62,7 @@ def offers_fixture(criteria) -> tuple:
         venue__postalCode="74000",
         venue__departementCode="74",
         product__subcategoryId=subcategories.LIVRE_PAPIER.id,
-        # FIXME (mageoffray, 31-05-2023) : temporary duplication, isbn field should be deleted soon
-        extraData={"isbn": "9781234567890", "ean": "9781234567890"},
+        extraData={"ean": "9781234567890"},
     )
     offers_factories.StockFactory(quantity=None, offer=offer_with_unlimited_stock)
     offers_factories.StockFactory(offer=offer_with_unlimited_stock)

@@ -134,11 +134,11 @@ class ProviderAPI:
     def _build_local_provider_url(self, siret: str) -> str:
         return f"{self.api_url}/{siret}"
 
-    def _build_local_provider_params(self, last_processed_isbn: str, modified_since: str, limit: int) -> dict:
+    def _build_local_provider_params(self, last_processed_ean: str, modified_since: str, limit: int) -> dict:
         params = {"limit": str(limit)}
 
-        if last_processed_isbn:
-            params["after"] = last_processed_isbn
+        if last_processed_ean:
+            params["after"] = last_processed_ean
         if modified_since:
             params["modifiedSince"] = modified_since
 

@@ -29,14 +29,14 @@ class StocksTest:
         # Given
         siret = "1234"
         modified_since = "2019-12-16T00:00:00"
-        last_processed_isbn = "789"
+        last_processed_ean = "789"
         stock_response_data = {"some": "data"}
 
         # When
-        expected_url = f"{self.api_url}/{siret}?limit=1000&after={last_processed_isbn}&modifiedSince={modified_since}"
+        expected_url = f"{self.api_url}/{siret}?limit=1000&after={last_processed_ean}&modifiedSince={modified_since}"
         with requests_mock.Mocker() as mock:
             mock.get(expected_url, json=stock_response_data)
-            response = self.provider_api.stocks(siret, last_processed_isbn, modified_since)
+            response = self.provider_api.stocks(siret, last_processed_ean, modified_since)
 
         # Then
         assert response == stock_response_data

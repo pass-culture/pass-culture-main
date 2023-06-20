@@ -492,7 +492,7 @@ class CheckOfferExtraDataTest:
             "Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l’onglet Offres."
         ]
 
-    def test_allow_creation_with_inactive_isbn(self):
+    def test_allow_creation_with_inactive_ean(self):
         offer = offers_factories.OfferFactory(extraData={"ean": "1234567891234"}, isActive=False)
         assert (
             validation.check_offer_extra_data(subcategories.LIVRE_PAPIER.id, {"ean": "1234567891234"}, offer.venue)
