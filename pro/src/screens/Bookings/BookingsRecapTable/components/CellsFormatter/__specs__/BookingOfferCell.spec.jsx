@@ -18,7 +18,7 @@ jest.mock('hooks/useActiveFeature', () => ({
 describe('bookings offer cell', () => {
   const offerId = 1
   describe('should always display', () => {
-    it('offer name and isbn with a link to the offer when stock is a book', () => {
+    it('offer name and ean with a link to the offer when stock is a book', () => {
       // Given
       const props = {
         offer: {
@@ -36,8 +36,8 @@ describe('bookings offer cell', () => {
       renderOfferCell(props)
 
       // Then
-      const isbn = screen.getByText('97834567654')
-      expect(isbn).toBeInTheDocument()
+      const ean = screen.getByText('97834567654')
+      expect(ean).toBeInTheDocument()
       const title = screen.getByText('La Guitare pour les nuls')
       const title_link = title.closest('a')
       expect(title_link.href).toContain(`offre/individuelle/${offerId}`)

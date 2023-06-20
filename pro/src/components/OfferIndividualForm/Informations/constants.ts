@@ -4,7 +4,6 @@ export const INFORMATIONS_DEFAULT_VALUES = {
   name: '',
   description: '',
   author: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['author'],
-  isbn: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['isbn'],
   ean: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['ean'],
   performer: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['performer'],
   speaker: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['speaker'],

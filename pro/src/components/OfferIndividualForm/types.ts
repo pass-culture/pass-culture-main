@@ -22,7 +22,6 @@ export interface IOfferIndividualFormValues {
   withdrawalType?: WithdrawalTypeEnum | null
   accessibility: IAccessibiltyFormValues
   author?: string
-  isbn?: string
   performer?: string
   ean?: string
   speaker?: string

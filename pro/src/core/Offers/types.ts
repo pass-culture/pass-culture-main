@@ -130,7 +130,6 @@ export interface IOfferIndividualVenue {
 // TODO: this should be generated in openapi schema
 export interface IOfferExtraData {
   author?: string
-  isbn?: string
   musicType?: string
   musicSubType?: string
   performer?: string
@@ -164,7 +163,6 @@ export interface IOfferIndividual {
   bookingEmail: string
   description: string
   durationMinutes: number | null
-  isbn: string
   isActive: boolean
   isDuo: boolean
   isEvent: boolean
