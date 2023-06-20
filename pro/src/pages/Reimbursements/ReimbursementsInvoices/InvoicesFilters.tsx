@@ -1,7 +1,10 @@
 import React, { Dispatch, SetStateAction } from 'react'
 
+import FormLayout from 'components/FormLayout/FormLayout'
+import { SelectOption } from 'custom_types/form'
+import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { FieldLayout } from 'ui-kit/form/shared'
 import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
-import Select from 'ui-kit/form_raw/Select'
 import { getToday } from 'utils/date'
 
 import { TFiltersType } from './types'
@@ -13,7 +16,7 @@ interface ReimbursementsSectionHeaderProps {
   disable: boolean
   initialFilters: TFiltersType
   loadInvoices: (shouldReset: boolean) => void
-  selectableOptions: SelectOptionsRFF
+  selectableOptions: SelectOption[]
   setAreFiltersDefault: Dispatch<SetStateAction<boolean>>
   setFilters: Dispatch<SetStateAction<TFiltersType>>
 }
@@ -84,19 +87,20 @@ const InvoicesFilters = ({
         </button>
       </div>
 
-      <div className="filters">
-        <Select
-          defaultOption={{
-            displayName: 'Tous les points de remboursement',
-            id: 'all',
-          }}
-          handleSelection={setReimbursementPointFilter}
-          isDisabled={disable}
-          label="Point de remboursement"
-          name="reimbursementPoint"
-          options={selectableOptions}
-          selectedValue={selectedReimbursementPoint}
-        />
+      <FormLayout.Row inline>
+        <FieldLayout label="Point de remboursement" name="reimbursementPoint">
+          <SelectInput
+            defaultOption={{
+              label: 'Tous les points de remboursement',
+              value: 'all',
+            }}
+            onChange={setReimbursementPointFilter}
+            disabled={disable}
+            name="reimbursementPoint"
+            options={selectableOptions}
+            value={selectedReimbursementPoint}
+          />
+        </FieldLayout>
 
         <PeriodSelector
           changePeriodBeginningDateValue={setStartDateFilter}
@@ -107,7 +111,7 @@ const InvoicesFilters = ({
           periodBeginningDate={selectedPeriodStart}
           periodEndingDate={selectedPeriodEnd}
         />
-      </div>
+      </FormLayout.Row>
 
       <div className="button-group">
         <span className="button-group-separator" />
