@@ -8,6 +8,7 @@ import FormLayout from 'components/FormLayout'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
+import { SelectOption } from 'custom_types/form'
 import {
   useNewOfferCreationJourney,
   useScrollToFirstErrorAfterSubmit,
@@ -30,7 +31,7 @@ import { OffersSynchronization } from './OffersSynchronization'
 import { VenueFormActionBar } from './VenueFormActionBar'
 import { WithdrawalDetails } from './WithdrawalDetails'
 
-import { IVenueFormValues } from '.'
+import { VenueFormValues } from '.'
 
 interface VenueFormProps {
   isCreatingVenue: boolean
@@ -59,7 +60,7 @@ const VenueForm = ({
 }: VenueFormProps) => {
   const {
     values: { isPermanent },
-  } = useFormikContext<IVenueFormValues>()
+  } = useFormikContext<VenueFormValues>()
   const shouldDisplayImageVenueUploaderSection = isPermanent
   useScrollToFirstErrorAfterSubmit()
   const location = useLocation()

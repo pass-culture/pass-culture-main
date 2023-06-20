@@ -15,13 +15,14 @@ import {
   isCollectiveOffer,
   Mode,
 } from 'core/OfferEducational'
+import { SelectOption } from 'custom_types/form'
 import { Banner, Select } from 'ui-kit'
 
 import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'
 
-interface IFormVenueProps {
+interface FormVenueProps {
   userOfferers: GetEducationalOffererResponseModel[]
-  venuesOptions: SelectOptions
+  venuesOptions: SelectOption[]
   isEligible: boolean | undefined
   mode: Mode
   isOfferCreated: boolean
@@ -39,7 +40,7 @@ const FormVenue = ({
   offer,
   categories,
   onChangeOfferer,
-}: IFormVenueProps): JSX.Element => {
+}: FormVenueProps): JSX.Element => {
   const lastBookingStatus = isCollectiveOffer(offer)
     ? offer.lastBookingStatus
     : null

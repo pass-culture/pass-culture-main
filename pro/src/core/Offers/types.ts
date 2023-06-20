@@ -62,11 +62,6 @@ export type Offer = {
   educationalBooking?: CollectiveOffersBookingResponseModel | null
 }
 
-export type Option = {
-  id: string
-  displayName: string
-}
-
 export interface ICategorySubtypeItem {
   code: number
   label: string

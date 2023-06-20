@@ -1,7 +1,7 @@
 import { DEFAULT_FORM_VALUES } from '../constants'
-import { IVenueFormValues } from '../types'
+import { VenueFormValues } from '../types'
 
-const setDefaultInitialFormValues = (): IVenueFormValues => {
+const setDefaultInitialFormValues = (): VenueFormValues => {
   return { ...DEFAULT_FORM_VALUES }
 }
 

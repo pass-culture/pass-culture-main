@@ -10,7 +10,7 @@ import {
   managedVenuesFactory,
   userOfferersFactory,
 } from '../__tests-utils__'
-import { IOfferEducationalProps } from '../OfferEducational'
+import { OfferEducationalProps } from '../OfferEducational'
 const eligibilityResponse = (
   eligible: boolean,
   override: Record<string, unknown> = {}
@@ -22,8 +22,8 @@ const eligibilityResponse = (
 })
 
 describe('screens | OfferEducational : creation offerer step', () => {
-  let props: IOfferEducationalProps
-  let getIsOffererEligible: IOfferEducationalProps['getIsOffererEligible']
+  let props: OfferEducationalProps
+  let getIsOffererEligible: OfferEducationalProps['getIsOffererEligible']
   describe('when there is only one offerer associated with the account', () => {
     beforeEach(() => {
       props = {

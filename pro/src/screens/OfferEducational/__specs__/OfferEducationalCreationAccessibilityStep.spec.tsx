@@ -13,9 +13,9 @@ import {
   subCategoriesFactory,
 } from '../__tests-utils__'
 import { userOffererFactory } from '../__tests-utils__/userOfferersFactory'
-import { IOfferEducationalProps } from '../OfferEducational'
+import { OfferEducationalProps } from '../OfferEducational'
 describe('screens | OfferEducational : event address step', () => {
-  let props: IOfferEducationalProps
+  let props: OfferEducationalProps
   let store: Partial<RootState>
 
   const firstVenueId = 12

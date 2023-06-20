@@ -7,6 +7,7 @@ import {
   IOfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
+import { SelectOption } from 'custom_types/form'
 import { Select } from 'ui-kit'
 
 interface IShowTypesProps {
@@ -21,8 +22,8 @@ const ShowTypes = ({ readOnly = false }: IShowTypesProps): JSX.Element => {
     setFieldValue,
   } = useFormikContext<IOfferIndividualFormValues>()
   const [showTypesOptions, setShowTypesOptions] = useState<{
-    showType: SelectOptions
-    showSubType: SelectOptions
+    showType: SelectOption[]
+    showSubType: SelectOption[]
   }>({
     showType: showOptionsTree
       .map(data => ({
@@ -35,7 +36,7 @@ const ShowTypes = ({ readOnly = false }: IShowTypesProps): JSX.Element => {
 
   useEffect(() => {
     setFieldValue('showSubType', initialValues.showSubType)
-    let newShowSubTypeOptions: SelectOptions = []
+    let newShowSubTypeOptions: SelectOption[] = []
     if (showType !== FORM_DEFAULT_VALUES.showType) {
       const selectedShowTypeChildren = showOptionsTree.find(
         showTypeOption => showTypeOption.code === parseInt(showType)

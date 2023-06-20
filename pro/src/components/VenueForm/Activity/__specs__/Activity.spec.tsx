@@ -4,10 +4,10 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IVenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueForm'
 import { SubmitButton } from 'ui-kit'
 
-import Activity, { IActivity } from '../Activity'
+import Activity, { ActivityProps } from '../Activity'
 import { DEFAULT_ACTIVITY_FORM_VALUES } from '../constants'
 import informationsValidationSchema from '../validationSchema'
 
@@ -16,9 +16,9 @@ const renderInformations = ({
   onSubmit = jest.fn(),
   props,
 }: {
-  initialValues: Partial<IVenueFormValues>
+  initialValues: Partial<VenueFormValues>
   onSubmit: () => void
-  props: IActivity
+  props: ActivityProps
 }) => {
   const validationSchema = yup
     .object()
@@ -39,8 +39,8 @@ const renderInformations = ({
 }
 
 describe('Activity', () => {
-  let props: IActivity
-  let initialValues: Partial<IVenueFormValues>
+  let props: ActivityProps
+  let initialValues: Partial<VenueFormValues>
   const onSubmit = jest.fn()
 
   beforeEach(() => {

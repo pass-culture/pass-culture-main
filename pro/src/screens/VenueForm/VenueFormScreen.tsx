@@ -7,7 +7,7 @@ import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { VenueProviderResponse } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import {
-  IVenueFormValues,
+  VenueFormValues,
   validationSchema,
   VenueForm,
 } from 'components/VenueForm'
@@ -20,6 +20,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
+import { SelectOption } from 'custom_types/form'
 import { useNewOfferCreationJourney } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -39,7 +40,7 @@ import style from './VenueFormScreen.module.scss'
 
 interface IVenueEditionProps {
   isCreatingVenue: boolean
-  initialValues: IVenueFormValues
+  initialValues: VenueFormValues
   offerer: IOfferer
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
@@ -108,7 +109,7 @@ const VenueFormScreen = ({
     return true
   }
 
-  const onSubmit = async (value: IVenueFormValues) => {
+  const onSubmit = async (value: VenueFormValues) => {
     if (
       isWithdrawalUpdatedMailActive &&
       !isCreatingVenue &&

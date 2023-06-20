@@ -15,10 +15,10 @@ import {
   managedVenuesFactory,
   userOfferersFactory,
 } from '../__tests-utils__'
-import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
+import OfferEducational, { OfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : edition offerer step', () => {
-  let props: IOfferEducationalProps
+  let props: OfferEducationalProps
   const firstvenueId = 34
   const secondVenueId = 56
   const thirdVenueId = 67

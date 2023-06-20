@@ -8,14 +8,14 @@ import { DEFAULT_ACTIVITY_FORM_VALUES } from '../../Activity'
 import informationsValidationSchema from '../../Activity/validationSchema'
 import { Contact } from '../../Contact'
 import { IContactProps } from '../../Contact/Contact'
-import { IVenueFormValues } from '../../types'
+import { VenueFormValues } from '../../types'
 
 const renderContact = ({
   initialValues,
   onSubmit = jest.fn(),
   props,
 }: {
-  initialValues: Partial<IVenueFormValues>
+  initialValues: Partial<VenueFormValues>
   onSubmit: () => void
   props: IContactProps
 }) => {
@@ -38,7 +38,7 @@ const renderContact = ({
 }
 describe('Contacts', () => {
   let props: IContactProps
-  let initialValues: Partial<IVenueFormValues>
+  let initialValues: Partial<VenueFormValues>
   const onSubmit = jest.fn()
 
   beforeEach(() => {

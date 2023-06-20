@@ -2,6 +2,8 @@ import cx from 'classnames'
 import { useField, useFormikContext } from 'formik'
 import React, { KeyboardEventHandler, useEffect, useRef, useState } from 'react'
 
+import { SelectOption } from 'custom_types/form'
+
 import { BaseInput } from '../shared'
 import FieldLayout from '../shared/FieldLayout'
 import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
@@ -140,7 +142,7 @@ const SelectAutocomplete = ({
       case 'Enter':
         if (isOpen && hoveredOptionIndex !== null) {
           event.preventDefault()
-          selectOption(filteredOptions[hoveredOptionIndex].value)
+          selectOption(String(filteredOptions[hoveredOptionIndex].value))
         }
         break
       case 'Escape':

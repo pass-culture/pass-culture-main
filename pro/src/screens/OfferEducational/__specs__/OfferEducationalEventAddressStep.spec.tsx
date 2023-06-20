@@ -13,10 +13,10 @@ import {
 } from '../__tests-utils__'
 import { userOffererFactory } from '../__tests-utils__/userOfferersFactory'
 import { INTERVENTION_AREA_LABEL } from '../constants/labels'
-import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
+import OfferEducational, { OfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : event address step', () => {
-  let props: IOfferEducationalProps
+  let props: OfferEducationalProps
 
   describe('when there is only one venue managed by the offerer', () => {
     beforeEach(() => {

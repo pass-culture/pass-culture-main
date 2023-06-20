@@ -17,6 +17,7 @@ import {
   VisibilityFormValues,
 } from 'core/OfferEducational'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
+import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import { TrashFilledIcon } from 'icons'
 import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'

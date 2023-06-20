@@ -1,5 +1,6 @@
 import { api } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { SelectOption } from 'custom_types/form'
 import { sortByLabel } from 'utils/strings'
 
 type GetVenueTypesAdapter = Adapter<void, SelectOption[], SelectOption[]>

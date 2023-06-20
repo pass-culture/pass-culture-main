@@ -1,17 +1,18 @@
 import { useField, useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
+import { SelectOption } from 'custom_types/form'
 import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete2/SelectAutocomplete'
 import { IAutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
 
 import { getAdressDataAdapter } from './adapter'
 
-interface IAddressProps {
+interface AddressProps {
   description?: string
   suggestionLimit?: number
 }
 
-const Address = ({ description, suggestionLimit }: IAddressProps) => {
+const Address = ({ description, suggestionLimit }: AddressProps) => {
   const { setFieldValue } = useFormikContext()
   const [options, setOptions] = useState<SelectOption[]>([])
   const [addressesMap, setAddressesMap] = useState<

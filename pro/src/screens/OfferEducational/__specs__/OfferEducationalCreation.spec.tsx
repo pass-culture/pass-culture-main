@@ -11,7 +11,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferEducational from '../'
 import { defaultCreationProps } from '../__tests-utils__'
-import { IOfferEducationalProps } from '../OfferEducational'
+import { OfferEducationalProps } from '../OfferEducational'
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -33,7 +33,7 @@ Element.prototype.scrollIntoView = jest.fn()
 window.matchMedia = jest.fn().mockReturnValue({ matches: true })
 
 describe('screens | OfferEducational : event address step', () => {
-  let props: IOfferEducationalProps
+  let props: OfferEducationalProps
   let store: Partial<RootState>
   let offer: CollectiveOffer
   const mockNavigate = jest.fn()

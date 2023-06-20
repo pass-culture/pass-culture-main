@@ -10,6 +10,7 @@ import {
   SignupJourneyContext,
 } from 'context/SignupJourneyContext'
 import { IActivity } from 'context/SignupJourneyContext/SignupJourneyContext'
+import { SelectOption } from 'custom_types/form'
 import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
 

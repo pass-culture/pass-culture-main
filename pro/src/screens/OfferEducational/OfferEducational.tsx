@@ -30,7 +30,7 @@ import OfferEducationalForm from './OfferEducationalForm'
 import { useCollectiveOfferImageUpload } from './useCollectiveOfferImageUpload'
 import { validationSchema } from './validationSchema'
 
-export interface IOfferEducationalProps {
+export interface OfferEducationalProps {
   offer?: CollectiveOffer | CollectiveOfferTemplate
   setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
   categories: EducationalCategories
@@ -56,7 +56,7 @@ const OfferEducational = ({
   isOfferBooked = false,
   isTemplate,
   reloadCollectiveOffer,
-}: IOfferEducationalProps): JSX.Element => {
+}: OfferEducationalProps): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
   const location = useLocation()
