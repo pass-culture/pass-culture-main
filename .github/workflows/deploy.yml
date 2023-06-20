@@ -17,10 +17,6 @@ on:
       teleport_kubernetes_cluster:
         type: string
         required: true
-      deploy_adage:
-        type: boolean
-        required: false
-        default: false
       deploy_api:
         type: boolean
         required: false
@@ -168,23 +164,6 @@ jobs:
     with:
       ENV: ${{ inputs.environment }}
       VERSION: ${{ inputs.app_version }}
-
-  deploy-adage-front:
-    name: Deploy adage
-    needs: deploy-api
-    if: |
-      always() &&
-      (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
-      inputs.deploy_adage == true && inputs.environment == 'production'
-    uses: ./.github/workflows/deploy-gcs-front.yml
-    with:
-      app_name: adage
-      app_directory: adage-front
-      environment: ${{ inputs.environment }}
-    secrets:
-      gcp_project: ${{ secrets.METIER_GCP_PROJECT }}
-      service_account: ${{ secrets.METIER_CIRCLECI_SERVICE_ACCOUNT }}
-      workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
 
   apply-algolia-config:
     name: "apply Algolia settings"
