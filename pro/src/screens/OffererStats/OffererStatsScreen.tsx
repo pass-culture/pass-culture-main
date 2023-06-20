@@ -1,30 +1,31 @@
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { Option } from 'core/Offers/types'
+import { SelectOption } from 'custom_types/form'
 import { ReactComponent as StatsIconGrey } from 'icons/ico-stats-grey.svg'
-import Select from 'ui-kit/form_raw/Select'
+import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { FieldLayout } from 'ui-kit/form/shared'
 import Titles from 'ui-kit/Titles/Titles'
-import { sortByDisplayName } from 'utils/strings'
+import { sortByLabel } from 'utils/strings'
 
 import OffererStatsNoResult from '../../components/OffererStatsNoResult'
 
 import styles from './OffererStatsScreen.module.scss'
 
-interface IOffererStatsScreenProps {
-  offererOptions: Option[]
+interface OffererStatsScreenProps {
+  offererOptions: SelectOption[]
 }
 
-const OffererStatsScreen = ({ offererOptions }: IOffererStatsScreenProps) => {
+const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
   const [iframeUrl, setIframeUrl] = useState('')
   const [selectedOffererId, setSelectedOffererId] = useState(
-    offererOptions[0].id
+    offererOptions[0].value
   )
   const [selectedVenueId, setSelectedVenueId] = useState('')
-  const [venueOptions, setVenueOptions] = useState<Option[]>([])
+  const [venueOptions, setVenueOptions] = useState<SelectOption[]>([])
   const ALL_VENUES_OPTION = {
-    id: 'all',
-    displayName: 'Tous les lieux',
+    value: 'all',
+    label: 'Tous les lieux',
   }
 
   const handleChangeOfferer = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -39,20 +40,20 @@ const OffererStatsScreen = ({ offererOptions }: IOffererStatsScreenProps) => {
   useEffect(() => {
     api.getOfferer(Number(selectedOffererId)).then(offerer => {
       if (offerer.managedVenues) {
-        const sortedVenueOptions = sortByDisplayName(
+        const sortedVenueOptions = sortByLabel(
           offerer.managedVenues
             .filter(
               venue =>
                 offerer.hasDigitalVenueAtLeastOneOffer || !venue.isVirtual
             )
             .map(venue => ({
-              id: venue.nonHumanizedId.toString(),
-              displayName: venue.publicName || venue.name,
+              value: venue.nonHumanizedId.toString(),
+              label: venue.publicName || venue.name,
             }))
         )
         setVenueOptions([ALL_VENUES_OPTION, ...sortedVenueOptions])
 
-        setSelectedVenueId(sortedVenueOptions[0].id.toString())
+        setSelectedVenueId(sortedVenueOptions[0].value.toString())
       } else {
         setVenueOptions([])
       }
@@ -85,26 +86,29 @@ const OffererStatsScreen = ({ offererOptions }: IOffererStatsScreenProps) => {
         Vos statistiques sont calculées et mises à jour quotidiennement dans la
         nuit.
       </p>
-      <Select
-        handleSelection={handleChangeOfferer}
-        label="Structure"
-        name="offererId"
-        options={offererOptions}
-        selectedValue={selectedOffererId}
-        isDisabled={offererOptions.length <= 1}
-        className={styles['offerer-stats-select-offerer']}
-      />
+
+      <FieldLayout label="Structure" name="offererId">
+        <SelectInput
+          onChange={handleChangeOfferer}
+          name="offererId"
+          options={offererOptions}
+          value={String(selectedOffererId)}
+          disabled={offererOptions.length <= 1}
+        />
+      </FieldLayout>
+
       {venueOptions.length > 0 && iframeUrl ? (
         <>
-          <Select
-            handleSelection={handleChangeVenue}
-            label="Lieu"
-            name="venueId"
-            options={venueOptions}
-            selectedValue={selectedVenueId}
-            isDisabled={venueOptions.length <= 1}
-            className={styles['offerer-stats-select-venue']}
-          />
+          <FieldLayout label="Lieu" name="venueId">
+            <SelectInput
+              onChange={handleChangeVenue}
+              name="venueId"
+              options={venueOptions}
+              value={selectedVenueId}
+              disabled={venueOptions.length <= 1}
+            />
+          </FieldLayout>
+
           <div className={styles['iframe-container']}>
             <iframe
               title="Tableau des statistiques"
