@@ -1,7 +1,6 @@
 import cn from 'classnames'
 import { addDays, isBefore } from 'date-fns'
 import React, { Fragment, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
@@ -14,10 +13,9 @@ import {
   VenueEvents,
 } from 'core/FirebaseEvents/constants'
 import { venueCreateOfferLink } from 'core/Venue/utils'
-import { useNewOfferCreationJourney } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { CircleArrowIcon, NotificationErrorIcon } from 'icons'
+import { NotificationErrorIcon } from 'icons'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
 import { ReactComponent as IcoPlus } from 'icons/full-more.svg'
@@ -29,7 +27,6 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { VenueOfferSteps } from '../VenueOfferSteps'
-import styles from '../VenueOfferSteps/VenueOfferSteps.module.scss'
 
 import VenueStat from './VenueStat'
 
@@ -58,7 +55,6 @@ const Venue = ({
   hasAdageId,
   adageInscriptionDate,
 }: IVenueProps) => {
-  const hasNewOfferCreationJourney = useNewOfferCreationJourney()
   const isCollectiveDmsTrackingActive = useActiveFeature(
     'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
   )
@@ -83,8 +79,7 @@ const Venue = ({
     !hasRefusedApplicationForMoreThan30Days
 
   const initialOpenState =
-    shouldDisplayEACInformationSection ||
-    (hasNewOfferCreationJourney && !hasCreatedOffer)
+    shouldDisplayEACInformationSection || !hasCreatedOffer
 
   const [prevInitialOpenState, setPrevInitialOpenState] =
     useState(initialOpenState)
@@ -242,19 +237,9 @@ const Venue = ({
                   viewBox="0 0 16 16"
                   src={isStatOpen ? fullDisclosureOpen : fullDisclosureClose}
                 />
-                {hasNewOfferCreationJourney ? (
-                  <span className="align-baseline">{publicName || name}</span>
-                ) : (
-                  <Link
-                    className="title-text align-baseline"
-                    title={publicName || name}
-                    to={editVenueLink}
-                  >
-                    {publicName || name}
-                  </Link>
-                )}
+                <span className="align-baseline">{publicName || name}</span>
               </button>
-              {hasNewOfferCreationJourney && initialOpenState && !isVirtual && (
+              {initialOpenState && !isVirtual && (
                 <Button
                   Icon={NotificationErrorIcon}
                   className="needs-payment-icon"
@@ -311,7 +296,7 @@ const Venue = ({
                   )
                 }
               >
-                {hasNewOfferCreationJourney ? 'Éditer le lieu' : 'Modifier'}
+                Éditer le lieu
               </ButtonLink>
             </div>
           </div>
@@ -319,58 +304,18 @@ const Venue = ({
             <>
               {isStatLoaded ? (
                 <>
-                  {hasNewOfferCreationJourney && (
-                    <VenueOfferSteps
-                      venueId={venueId}
-                      hasVenue={true}
-                      offererId={offererId}
-                      hasCreatedOffer={hasCreatedOffer}
-                      hasMissingReimbursementPoint={
-                        hasMissingReimbursementPoint
-                      }
-                      hasAdageId={hasAdageId}
-                      shouldDisplayEACInformationSection={
-                        shouldDisplayEACInformationSection
-                      }
-                    />
-                  )}
-                  {!hasNewOfferCreationJourney &&
-                    shouldDisplayEACInformationSection && (
-                      <div
-                        className={cn(
-                          styles['card-wrapper'],
-                          styles['no-shadow'],
-                          styles['dms-container'],
-                          'h-card'
-                        )}
-                        data-testid={'venue-offer-steps'}
-                      >
-                        <div className="h-card-inner">
-                          <h4>Démarche en cours : </h4>
+                  <VenueOfferSteps
+                    venueId={venueId}
+                    hasVenue={true}
+                    offererId={offererId}
+                    hasCreatedOffer={hasCreatedOffer}
+                    hasMissingReimbursementPoint={hasMissingReimbursementPoint}
+                    hasAdageId={hasAdageId}
+                    shouldDisplayEACInformationSection={
+                      shouldDisplayEACInformationSection
+                    }
+                  />
 
-                          <div className={styles['venue-offer-steps']}>
-                            <div className={styles['step-venue-creation']}>
-                              <ButtonLink
-                                className={styles['step-button-width']}
-                                variant={ButtonVariant.BOX}
-                                Icon={CircleArrowIcon}
-                                link={{
-                                  to: `/structures/${offererId}/lieux/${venueId}#venue-collective-data`,
-                                  isExternal: false,
-                                }}
-                                onClick={() => {
-                                  logEvent?.(Events.CLICKED_EAC_DMS_TIMELINE, {
-                                    from: location.pathname,
-                                  })
-                                }}
-                              >
-                                Suivre ma demande de référencement ADAGE
-                              </ButtonLink>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   <div className="venue-stats">
                     {venueStatData.map(stat => (
                       <Fragment key={stat.label}>

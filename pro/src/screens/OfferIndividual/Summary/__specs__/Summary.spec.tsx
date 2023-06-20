@@ -21,7 +21,6 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
-import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import {
   individualOfferCategoryFactory,
   individualOfferFactory,
@@ -136,11 +135,6 @@ const renderSummary = (
     { storeOverrides, initialRouterEntries: [url] }
   )
 }
-
-jest.mock('hooks/useNewOfferCreationJourney', () => ({
-  __esModule: true,
-  default: jest.fn().mockReturnValue(false),
-}))
 
 const categories = [individualOfferCategoryFactory({ id: 'A' })]
 
@@ -400,8 +394,6 @@ describe('Summary', () => {
     })
 
     it('should display redirect modal if first offer', async () => {
-      jest.spyOn(useNewOfferCreationJourney, 'default').mockReturnValue(true)
-
       const context = {
         offer: individualOfferFactory(),
         venueId: 1,

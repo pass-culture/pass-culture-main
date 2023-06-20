@@ -20,7 +20,6 @@ import { VenueFormValues } from 'components/VenueForm'
 import { IOfferer } from 'core/Offerers/types'
 import { IVenue } from 'core/Venue'
 import { SelectOption } from 'custom_types/form'
-import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -373,50 +372,44 @@ describe('screen | VenueForm', () => {
     }
   })
   describe('Navigation', () => {
-    describe('With new offer creation journey', () => {
-      beforeEach(() => {
-        jest.spyOn(useNewOfferCreationJourney, 'default').mockReturnValue(true)
+    it('User should be redirected with the new creation journey', async () => {
+      jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
+      renderForm(
+        {
+          nonHumanizedId: 12,
+          isAdmin: true,
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        true,
+        undefined
+      )
+
+      await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
+      await waitFor(() => {
+        expect(
+          screen.getByText('Vos modifications ont bien été enregistrées')
+        ).toBeInTheDocument()
       })
+    })
 
-      it('User should be redirected with the new creation journey', async () => {
-        jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
-        renderForm(
-          {
-            nonHumanizedId: 12,
-            isAdmin: true,
-          } as SharedCurrentUserResponseModel,
-          formValues,
-          true,
-          undefined
-        )
+    it('User should be redirected with the creation popin displayed', async () => {
+      renderForm(
+        {
+          nonHumanizedId: 12,
+          isAdmin: false,
+        } as SharedCurrentUserResponseModel,
+        formValues,
+        true,
+        undefined
+      )
+      jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
 
-        await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
-        await waitFor(() => {
-          expect(
-            screen.getByText('Vos modifications ont bien été enregistrées')
-          ).toBeInTheDocument()
-        })
-      })
+      await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
 
-      it('User should be redirected with the creation popin displayed', async () => {
-        renderForm(
-          {
-            nonHumanizedId: 12,
-            isAdmin: false,
-          } as SharedCurrentUserResponseModel,
-          formValues,
-          true,
-          undefined
-        )
-        jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
-
-        await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
-
-        await waitFor(() => {
-          expect(
-            screen.queryByText('Vos modifications ont bien été enregistrées')
-          ).not.toBeInTheDocument()
-        })
+      await waitFor(() => {
+        expect(
+          screen.queryByText('Vos modifications ont bien été enregistrées')
+        ).not.toBeInTheDocument()
       })
     })
 
@@ -432,7 +425,7 @@ describe('screen | VenueForm', () => {
       )
       jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
 
-      await userEvent.click(screen.getByText(/Enregistrer et continuer/))
+      await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
 
       await waitFor(() => {
         expect(
@@ -698,7 +691,7 @@ describe('screen | VenueForm', () => {
         features
       )
 
-      await userEvent.click(screen.getByText(/Enregistrer et continuer/))
+      await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
 
       expect(
         await screen.findByText(
@@ -759,7 +752,7 @@ describe('screen | VenueForm', () => {
       renderForm(
         {
           nonHumanizedId: 12,
-          isAdmin: false,
+          isAdmin: true,
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
@@ -889,12 +882,6 @@ describe('screen | VenueForm', () => {
       })
 
       expect(editVenue).toHaveBeenCalledWith(15, expectedEditVenue)
-
-      await waitFor(() => {
-        expect(
-          screen.getByText('Vos modifications ont bien été enregistrées')
-        ).toBeInTheDocument()
-      })
     })
 
     it("should not display withdrawal if offer has no bookingQuantity or withdrawalDetails doesn't change or isWithdrawalAppliedOnAllOffers is not check", async () => {
@@ -939,12 +926,6 @@ describe('screen | VenueForm', () => {
 
       await userEvent.click(screen.getByText(/Enregistrer et quitter/))
       expect(editVenue).toHaveBeenCalledWith(15, expectedEditVenue)
-
-      await waitFor(() => {
-        expect(
-          screen.getByText('Vos modifications ont bien été enregistrées')
-        ).toBeInTheDocument()
-      })
     })
 
     it('should close withdrawal dialog and not submit if user close dialog', async () => {

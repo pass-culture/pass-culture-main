@@ -13,8 +13,6 @@ import useRemoteConfig from 'hooks/useRemoteConfig'
 import { INITIAL_OFFERER_VENUES } from 'pages/Home/OffererVenues'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
-import useNewOfferCreationJourney from '../../hooks/useNewOfferCreationJourney'
-
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
 import { OffererStats } from './OffererStats'
@@ -83,7 +81,6 @@ const Homepage = (): JSX.Element => {
   }, [selectedOffererId])
 
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
-  const withNewOfferCreationJourney = useNewOfferCreationJourney()
 
   useEffect(function fetchData() {
     api.listOfferersNames().then(async offererNames => {
@@ -123,16 +120,14 @@ const Homepage = (): JSX.Element => {
           />
         </section>
 
-        {isUserOffererValidated &&
-          withNewOfferCreationJourney &&
-          hasNoVenueVisible && (
-            <section className="step-section">
-              <VenueOfferSteps
-                hasVenue={!hasNoVenueVisible}
-                offererId={Number(selectedOffererId)}
-              />
-            </section>
-          )}
+        {isUserOffererValidated && hasNoVenueVisible && (
+          <section className="step-section">
+            <VenueOfferSteps
+              hasVenue={!hasNoVenueVisible}
+              offererId={Number(selectedOffererId)}
+            />
+          </section>
+        )}
 
         {isOffererStatsActive && (
           <section className="h-section" ref={statsRef}>

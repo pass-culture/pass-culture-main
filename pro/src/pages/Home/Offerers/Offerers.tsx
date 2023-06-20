@@ -14,7 +14,6 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
-import { useNewOfferCreationJourney } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as StatusPendingFullIcon } from 'icons/ico-status-pending-full.svg'
 import { ReactComponent as SuccessIcon } from 'icons/ico-success.svg'
@@ -54,7 +53,6 @@ const Offerers = ({
   const location = useLocation()
   const navigate = useNavigate()
 
-  const hasNewOfferCreationJourney = useNewOfferCreationJourney()
   const { logEvent } = useAnalytics()
 
   const setQuery = (offererId: string) => {
@@ -90,10 +88,8 @@ const Offerers = ({
   }, [offererId, receivedOffererNames])
 
   useEffect(() => {
-    if (hasNewOfferCreationJourney) {
-      location.search === '?success' && setOpenSuccessDialog(true)
-    }
-  }, [hasNewOfferCreationJourney])
+    location.search === '?success' && setOpenSuccessDialog(true)
+  }, [])
 
   const handleChangeOfferer = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newOffererId = event.target.value
@@ -116,29 +112,22 @@ const Offerers = ({
   }
 
   const removeSuccessParams = () => {
-    if (hasNewOfferCreationJourney) {
-      const queryParams = new URLSearchParams(location.search)
-      if (queryParams.has('success')) {
-        queryParams.delete('success')
-        navigate(
-          {
-            search: queryParams.toString(),
-          },
-          { replace: true }
-        )
-      }
+    const queryParams = new URLSearchParams(location.search)
+    if (queryParams.has('success')) {
+      queryParams.delete('success')
+      navigate(
+        {
+          search: queryParams.toString(),
+        },
+        { replace: true }
+      )
     }
   }
 
   const isOffererSoftDeleted =
     selectedOfferer && selectedOfferer.isActive === false
   const userHasOfferers = offererOptions.length > 0
-  const creationLinkCondition =
-    (hasNewOfferCreationJourney && venues.physicalVenues.length > 0) ||
-    (!hasNewOfferCreationJourney &&
-      isUserOffererValidated &&
-      !isOffererSoftDeleted &&
-      venues.physicalVenues.length > 0)
+
   return (
     <>
       {userHasOfferers && selectedOfferer && (
@@ -209,7 +198,7 @@ const Offerers = ({
 
       {!userHasOfferers && <OffererCreationLinks />}
 
-      {creationLinkCondition && (
+      {venues.physicalVenues.length > 0 && (
         <VenueCreationLinks
           hasPhysicalVenue={venues.physicalVenues.length > 0}
           hasVirtualOffers={

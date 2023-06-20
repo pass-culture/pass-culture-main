@@ -117,7 +117,9 @@ describe('route VenueCreation', () => {
     // When
     await renderVenueCreation(offerer.nonHumanizedId.toString())
     // Then
-    const homeNavBarButton = await screen.findByText('Enregistrer et continuer')
+    const homeNavBarButton = await screen.findByText(
+      'Enregistrer et créer le lieu'
+    )
     await userEvent.click(homeNavBarButton)
     const modal = await screen.queryByText(
       'Voulez-vous quitter la création de lieu ?'

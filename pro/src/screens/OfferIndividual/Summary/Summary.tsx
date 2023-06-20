@@ -19,7 +19,6 @@ import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOf
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
-import useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import useNotification from 'hooks/useNotification'
 import { PartyIcon } from 'icons'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
@@ -50,7 +49,6 @@ const Summary = () => {
     offer,
     subCategories,
   } = useOfferIndividualContext()
-  const newOfferCreation = useNewOfferCreationJourney()
   const { logEvent } = useAnalytics()
 
   if (offer === null) {
@@ -90,7 +88,7 @@ const Summary = () => {
         isDraft: true,
         offerId: offer.nonHumanizedId,
       })
-      if (newOfferCreation && showVenuePopin[venueId || '']) {
+      if (showVenuePopin[venueId || '']) {
         setDisplayRedirectDialog(true)
       } else {
         navigate(offerConfirmationStepUrl)
@@ -208,7 +206,7 @@ const Summary = () => {
         </SummaryLayout.Side>
       </SummaryLayout>
 
-      {newOfferCreation && displayRedirectDialog && (
+      {displayRedirectDialog && (
         <RedirectDialog
           icon={PartyIcon}
           onCancel={() => {
