@@ -153,7 +153,6 @@ describe('OfferIndividual section: Categories', () => {
         categoryId: 'C',
         durationMinutes: '',
         isEvent: false,
-        isbn: '',
         ean: '',
         musicSubType: '',
         musicType: '',

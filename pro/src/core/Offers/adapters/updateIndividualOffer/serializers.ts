@@ -13,7 +13,6 @@ export const serializeExtraData = (
 
   const extraData: IOfferExtraData = {}
   extraData.author = formValues.author
-  extraData.isbn = formValues.isbn
   extraData.musicType = formValues.musicType
   extraData.musicSubType = formValues.musicSubType
   extraData.performer = formValues.performer

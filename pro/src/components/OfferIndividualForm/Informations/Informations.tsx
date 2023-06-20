@@ -20,7 +20,6 @@ const Informations = ({
   } = useFormikContext<IOfferIndividualFormValues>()
 
   const hasAuthor = subCategoryFields.includes('author')
-  const hasIsbn = subCategoryFields.includes('isbn')
   const hasPerformer = subCategoryFields.includes('performer')
   const hasEan = subCategoryFields.includes('ean')
   const hasSpeaker = subCategoryFields.includes('speaker')
@@ -79,17 +78,6 @@ const Informations = ({
             maxLength={1000}
             name="visa"
             disabled={readOnlyFields.includes('visa')}
-          />
-        </FormLayout.Row>
-      )}
-      {hasIsbn && (
-        <FormLayout.Row>
-          <TextInput
-            isOptional
-            label="ISBN"
-            maxLength={1000}
-            name="isbn"
-            disabled={readOnlyFields.includes('isbn')}
           />
         </FormLayout.Row>
       )}

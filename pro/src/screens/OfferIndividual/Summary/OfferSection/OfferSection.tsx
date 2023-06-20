@@ -143,8 +143,8 @@ const OfferSummary = ({
         }
         {
           /* istanbul ignore next: DEBT, TO FIX */
-          conditionalFields.includes('isbn') && (
-            <SummaryLayout.Row title="ISBN" description={offerData.isbn} />
+          conditionalFields.includes('ean') && (
+            <SummaryLayout.Row title="EAN" description={offerData.ean} />
           )
         }
         {

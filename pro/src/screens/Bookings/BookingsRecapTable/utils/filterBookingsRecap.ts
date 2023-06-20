@@ -104,15 +104,15 @@ const doesBookingTokenMatchFilter = <
   }
 }
 
-const doesISBNMatchFilter = <
+const doesEANMatchFilter = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 >(
-  isbn: string,
+  ean: string,
   booking: T
 ): boolean => {
-  if (isbn !== EMPTY_FILTER_VALUE) {
+  if (ean !== EMPTY_FILTER_VALUE) {
     return Boolean(
-      booking.stock.offerIsbn && booking.stock.offerIsbn.includes(isbn.trim())
+      booking.stock.offerIsbn && booking.stock.offerIsbn.includes(ean.trim())
     )
   }
   return true
@@ -168,7 +168,7 @@ const filterBookingsRecap = <
       matchFilters &&
       doesBookingBeneficiaryMatchFilter(bookingBeneficiary, booking) &&
       doesBookingTokenMatchFilter(bookingToken, booking) &&
-      doesISBNMatchFilter(offerISBN, booking)
+      doesEANMatchFilter(offerISBN, booking)
     )
   })
 }

@@ -391,7 +391,7 @@ describe('route Offers', () => {
           await renderOffers(store)
           await userEvent.type(
             screen.getByPlaceholderText(
-              'Rechercher par nom d’offre ou par ISBN'
+              'Rechercher par nom d’offre ou par EAN'
             ),
             'Any word'
           )
@@ -551,7 +551,7 @@ describe('route Offers', () => {
       // Given
       await renderOffers(store)
       const searchInput = screen.getByPlaceholderText(
-        'Rechercher par nom d’offre ou par ISBN'
+        'Rechercher par nom d’offre ou par EAN'
       )
       // When
       await userEvent.type(searchInput, 'search string')
@@ -574,7 +574,7 @@ describe('route Offers', () => {
       await renderOffers(store)
       // When
       await userEvent.clear(
-        screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN')
+        screen.getByPlaceholderText('Rechercher par nom d’offre ou par EAN')
       )
       await userEvent.click(screen.getByText('Lancer la recherche'))
 

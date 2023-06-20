@@ -12,9 +12,6 @@ const serializeExtraData = (
   if (formValues.author) {
     extraData.author = formValues.author
   }
-  if (formValues.isbn) {
-    extraData.isbn = formValues.isbn
-  }
   if (formValues.musicType) {
     extraData.musicType = formValues.musicType
   }
