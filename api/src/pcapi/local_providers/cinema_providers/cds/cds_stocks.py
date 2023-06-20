@@ -169,7 +169,10 @@ class CDSStocks(LocalProvider):
             if self.media_options.get(option.media_options_id.id) in ACCEPTED_MEDIA_OPTIONS_TICKET_LABEL
         ]
 
-        cds_stock.features = [ACCEPTED_MEDIA_OPTIONS_TICKET_LABEL.get(feature) for feature in features if feature]
+        # sort features list to have always same order for all providers VO/VF then 3D
+        cds_stock.features = sorted(
+            [ACCEPTED_MEDIA_OPTIONS_TICKET_LABEL.get(feature) for feature in features if feature], reverse=True
+        )
 
         if "price" not in cds_stock.fieldsUpdated:
             cds_stock.price = show_price
