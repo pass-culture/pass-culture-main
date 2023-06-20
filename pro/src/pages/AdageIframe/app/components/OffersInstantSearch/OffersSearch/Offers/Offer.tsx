@@ -17,6 +17,7 @@ import {
 } from 'pages/AdageIframe/app/types/offers'
 import { Button, Tag } from 'ui-kit'
 import { LOGS_DATA } from 'utils/config'
+import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import ContactButton from './ContactButton'
 import style from './Offer.module.scss'
@@ -50,14 +51,23 @@ const Offer = ({
   ) => {
     if (LOGS_DATA) {
       !offer.isTemplate
-        ? apiAdage.logOfferDetailsButtonClick({ stockId: offer.stock.id })
-        : apiAdage.logOfferTemplateDetailsButtonClick({ offerId: offer.id })
+        ? apiAdage.logOfferDetailsButtonClick({
+            AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+            stockId: offer.stock.id,
+          })
+        : apiAdage.logOfferTemplateDetailsButtonClick({
+            AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+            offerId: offer.id,
+          })
     }
     setDisplayDetails(!displayDetails)
   }
 
   const handleLikeClick = () => {
-    apiAdage.logFavOfferButtonClick({ offerId: offer.id })
+    apiAdage.logFavOfferButtonClick({
+      AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+      offerId: offer.id,
+    })
     setIsModalLikeOpen(true)
   }
 

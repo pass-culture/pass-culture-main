@@ -73,6 +73,7 @@ export const App = (): JSX.Element => {
         setIsLoading(false)
         if (LOGS_DATA) {
           api.logCatalogView({
+            AdageHeaderFrom: location.pathname,
             source: siret || venueId ? 'partnersMap' : 'homepage',
           })
         }

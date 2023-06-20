@@ -166,6 +166,7 @@ describe('RequestFormDialog', () => {
     )
 
     expect(apiAdage.logRequestFormPopinDismiss).toHaveBeenCalledWith({
+      AdageHeaderFrom: '/',
       collectiveOfferTemplateId: 1,
       comment: 'Test description',
       phoneNumber: undefined,

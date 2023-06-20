@@ -11,6 +11,7 @@ import { ReactComponent as FullMail } from 'icons/full-mail.svg'
 import { Button, DatePicker, SubmitButton, TextArea, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
+import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import { createCollectiveRequestAdapter } from './adapter/createCollectiveRequestAdapter'
 import styles from './RequestFormDialog.module.scss'
@@ -58,6 +59,7 @@ const RequestFormDialog = ({
   }
   const closeRequestFormDialog = () => {
     apiAdage.logRequestFormPopinDismiss({
+      AdageHeaderFrom: removeParamsFromUrl(location.pathname),
       collectiveOfferTemplateId: offerId,
       comment: formik.values.description,
       phoneNumber: formik.values.teacherPhone,

@@ -5,6 +5,7 @@ import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { logClickOnOffer } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit'
+import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import ContactDialog from './ContactDialog'
 import RequestFormDialog from './RequestFormDialog'
@@ -38,7 +39,10 @@ const ContactButton = ({
 
   const handleButtonClick = () => {
     setIsModalOpen(true)
-    apiAdage.logContactModalButtonClick({ offerId })
+    apiAdage.logContactModalButtonClick({
+      AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+      offerId,
+    })
     logClickOnOffer(offerId.toString(), position, queryId)
   }
 

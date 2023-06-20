@@ -10,6 +10,7 @@ import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
 import { CalendarCheckIcon, InstitutionIcon, SearchIcon } from 'icons'
 import Icon from 'ui-kit/Icon/Icon'
+import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 import { ResultType } from 'utils/types'
 
 import { getEducationalInstitutionWithBudgetAdapter } from '../../adapters/getEducationalInstitutionWithBudgetAdapter'
@@ -45,7 +46,10 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
   }, [adageUser.role])
 
   const logAdageLinkClick = (headerLinkName: AdageHeaderLink) => {
-    apiAdage.logHeaderLinkClick({ header_link_name: headerLinkName })
+    apiAdage.logHeaderLinkClick({
+      AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+      header_link_name: headerLinkName,
+    })
   }
   return (
     <nav className={styles['adage-header']}>

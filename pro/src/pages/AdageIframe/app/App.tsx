@@ -9,6 +9,7 @@ import {
 import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { LOGS_DATA } from 'utils/config'
+import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import { initAlgoliaAnalytics } from '../libs/initAlgoliaAnalytics'
 
@@ -73,6 +74,7 @@ export const App = (): JSX.Element => {
         setIsLoading(false)
         if (LOGS_DATA) {
           apiAdage.logCatalogView({
+            AdageHeaderFrom: removeParamsFromUrl(location.pathname),
             source: siret || venueId ? 'partnersMap' : 'homepage',
           })
         }
