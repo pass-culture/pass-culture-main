@@ -56,6 +56,7 @@ def create_industrial_thing_offers(
                 product=thing_product,
                 isActive=is_active,
                 idAtProvider=str(id_at_provider),
+                extraData=thing_product.extraData,
             )
             offer_index += 1
             id_at_provider += 1
