@@ -4,12 +4,13 @@ import { TPreFilters } from 'core/Bookings'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
+import fullDownIcon from 'icons/full-down.svg'
 import { ReactComponent as DownloadSvg } from 'icons/full-download.svg'
+import fullUpIcon from 'icons/full-up.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { ReactComponent as DropDownIcon } from './assets/dropdown-disclosure-down-w.svg'
-import { ReactComponent as DropUpIcon } from './assets/dropdown-disclosure-up-w.svg'
 import style from './MultiDownloadButtonsModal.module.scss'
 
 interface MultiDownloadButtonsModalType {
@@ -54,12 +55,13 @@ const MultiDownloadButtonsModal = ({
         >
           Télécharger
           {isDownloadModalOptionOpen ? (
-            <DropUpIcon className={style['drop-icon']} />
+            <SvgIcon src={fullUpIcon} alt="" className={style['drop-icon']} />
           ) : (
-            <DropDownIcon className={style['drop-icon']} />
+            <SvgIcon src={fullDownIcon} alt="" className={style['drop-icon']} />
           )}
         </button>
       </div>
+
       {isDownloadModalOptionOpen && (
         <div className={style['download-modal-option']}>
           <Button
@@ -76,6 +78,7 @@ const MultiDownloadButtonsModal = ({
           >
             Microsoft Excel (.xls)
           </Button>
+
           <Button
             variant={ButtonVariant.TERNARY}
             Icon={DownloadSvg}
