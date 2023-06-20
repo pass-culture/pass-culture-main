@@ -1,13 +1,11 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
 
+import FormLayout from 'components/FormLayout/FormLayout'
+import { SelectOption } from 'custom_types/form'
+import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { FieldLayout } from 'ui-kit/form/shared'
 import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
-import Select from 'ui-kit/form_raw/Select'
 import { getToday } from 'utils/date'
-
-type SelectableOptionsType = {
-  id: string
-  displayName: string
-}
 
 type FiltersType = {
   venue: string
@@ -25,7 +23,7 @@ interface ReimbursementsSectionHeaderProps {
   selectLabel: string
   selectName: string
   setFilters: Dispatch<SetStateAction<FiltersType>>
-  selectableOptions: SelectableOptionsType[]
+  selectableOptions: SelectOption[]
 }
 
 const DetailsFilters = ({
@@ -92,18 +90,19 @@ const DetailsFilters = ({
         </button>
       </div>
 
-      <div className="filters">
-        <Select
-          defaultOption={{
-            displayName: defaultSelectDisplayName,
-            id: defaultSelectId,
-          }}
-          handleSelection={setVenueFilter}
-          label={selectLabel}
-          name={selectName}
-          options={selectableOptions}
-          selectedValue={selectedVenue}
-        />
+      <FormLayout.Row inline>
+        <FieldLayout label={selectLabel} name={selectName}>
+          <SelectInput
+            defaultOption={{
+              label: defaultSelectDisplayName,
+              value: defaultSelectId,
+            }}
+            onChange={setVenueFilter}
+            name={selectName}
+            options={selectableOptions}
+            value={selectedVenue}
+          />
+        </FieldLayout>
 
         <PeriodSelector
           changePeriodBeginningDateValue={setStartDateFilter}
@@ -114,7 +113,7 @@ const DetailsFilters = ({
           periodBeginningDate={selectedPeriodStart}
           periodEndingDate={selectedPeriodEnd}
         />
-      </div>
+      </FormLayout.Row>
 
       <div className="button-group">
         <span className="button-group-separator" />

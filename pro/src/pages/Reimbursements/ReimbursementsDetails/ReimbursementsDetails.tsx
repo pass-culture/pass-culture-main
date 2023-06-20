@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import ButtonDownloadCSV from 'components/ButtonDownloadCSV'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
+import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { ButtonLink } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -15,14 +16,9 @@ import {
   getToday,
 } from 'utils/date'
 import { stringify } from 'utils/query-string'
-import { sortByDisplayName } from 'utils/strings'
+import { sortByLabel } from 'utils/strings'
 
 import DetailsFilters from './DetailsFilters'
-
-type VenueOptionType = {
-  id: string
-  displayName: string
-}
 
 interface ICsvQueryParams {
   venueId?: string
@@ -48,7 +44,7 @@ const ReimbursementsDetails = (): JSX.Element => {
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const { venue, periodStart, periodEnd } = filters
   const [csvQueryParams, setCsvQueryParams] = useState('')
-  const [venuesOptions, setVenuesOptions] = useState<VenueOptionType[]>([])
+  const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const dateFilterFormat = (date: Date) =>
@@ -62,10 +58,10 @@ const ReimbursementsDetails = (): JSX.Element => {
   const buildAndSortVenueFilterOptions = (
     venues: VenueListItemResponseModel[]
   ) =>
-    sortByDisplayName(
+    sortByLabel(
       venues.map(venue => ({
-        id: venue.nonHumanizedId.toString(),
-        displayName: venue.isVirtual
+        value: venue.nonHumanizedId.toString(),
+        label: venue.isVirtual
           ? `${venue.offererName} - Offre numérique`
           : /* istanbul ignore next: TO FIX */
             venue.publicName || venue.name,

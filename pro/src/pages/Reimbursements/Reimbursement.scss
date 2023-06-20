@@ -6,8 +6,7 @@
   .header {
     display: flex;
     justify-content: space-between;
-    margin-top: rem.torem(34px);
-    padding-bottom: rem.torem(36px);
+    margin-top: rem.torem(32px);
 
     &-title {
       @include fonts.title3;
@@ -37,26 +36,6 @@
         cursor: auto;
         text-decoration: none;
       }
-    }
-  }
-
-  .filters {
-    align-content: stretch;
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: rem.torem(32px);
-
-    .input-select {
-      flex: 1;
-      margin-right: rem.torem(24px);
-
-      select {
-        width: 100%;
-      }
-    }
-
-    .period-filter-inputs {
-      margin-top: rem.torem(8px);
     }
   }
 
