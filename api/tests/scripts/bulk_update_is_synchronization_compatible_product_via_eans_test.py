@@ -9,10 +9,10 @@ from pcapi.scripts.bulk_update_is_synchronization_compatible_product_via_eans im
 
 @pytest.mark.usefixtures("db_session")
 def test_should_mark_synchronized_offers_and_products_as_not_synchronization_compatible_via_ean():
-    product_1 = ProductFactory(id=1, extraData={"isbn": "5555555555555", "ean": "5555555555555"})
-    product_2 = ProductFactory(id=2, extraData={"isbn": "6666666666666", "ean": "6666666666666"})
-    product_3 = ProductFactory(id=3, extraData={"isbn": "2222222222222", "ean": "2222222222222"})
-    product_4 = ProductFactory(id=4, extraData={"isbn": "7777777777777", "ean": "7777777777777"})
+    product_1 = ProductFactory(id=1, extraData={"ean": "5555555555555"})
+    product_2 = ProductFactory(id=2, extraData={"ean": "6666666666666"})
+    product_3 = ProductFactory(id=3, extraData={"ean": "2222222222222"})
+    product_4 = ProductFactory(id=4, extraData={"ean": "7777777777777"})
 
     eans_list = ["5555555555555", "6666666666666", "8888888888888", "7777777777777"]
 
@@ -26,19 +26,11 @@ def test_should_mark_synchronized_offers_and_products_as_not_synchronization_com
 
 
 @pytest.mark.usefixtures("db_session")
-def test_should_mark_products_as_synchronization_compatible_via_isbn():
-    product_1 = ProductFactory(
-        id=1, extraData={"isbn": "5555555555555", "ean": "5555555555555"}, isSynchronizationCompatible=False
-    )
-    product_2 = ProductFactory(
-        id=2, extraData={"isbn": "6666666666666", "ean": "6666666666666"}, isSynchronizationCompatible=False
-    )
-    product_3 = ProductFactory(
-        id=3, extraData={"isbn": "2222222222222", "ean": "2222222222222"}, isSynchronizationCompatible=False
-    )
-    product_4 = ProductFactory(
-        id=4, extraData={"isbn": "7777777777777", "ean": "7777777777777"}, isSynchronizationCompatible=True
-    )
+def test_should_mark_products_as_synchronization_compatible_via_ean():
+    product_1 = ProductFactory(id=1, extraData={"ean": "5555555555555"}, isSynchronizationCompatible=False)
+    product_2 = ProductFactory(id=2, extraData={"ean": "6666666666666"}, isSynchronizationCompatible=False)
+    product_3 = ProductFactory(id=3, extraData={"ean": "2222222222222"}, isSynchronizationCompatible=False)
+    product_4 = ProductFactory(id=4, extraData={"ean": "7777777777777"}, isSynchronizationCompatible=True)
 
     eans_list = ["5555555555555", "8888888888888", "2222222222222"]
 

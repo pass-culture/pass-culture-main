@@ -9,15 +9,15 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.scripts.bulk_mark_incompatible_via_eans import bulk_update_is_gcu_compatible_via_eans
 
 
-class BulkUpdateIsGcuCompatibleViaIsbnsTest:
+class BulkUpdateIsGcuCompatibleViaEansTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.scripts.bulk_mark_incompatible_via_eans.search.unindex_offer_ids")
     def test_should_mark_offers_and_products_as_incompatible_via_ean(self, mocked_unindex_offer_ids):
         # Given
-        product = ProductFactory(id=1, extraData={"isbn": "ABCDEFG", "ean": "ABCDEFG"})
-        product_1 = ProductFactory(id=2, extraData={"isbn": "HIJKLMN", "ean": "HIJKLMN"})
-        product_2 = ProductFactory(id=3, extraData={"isbn": "VWXYZ", "ean": "VWXYZ"})
-        product_3 = ProductFactory(id=4, extraData={"isbn": "HFGDS", "ean": "HFGDS"})
+        product = ProductFactory(id=1, extraData={"ean": "ABCDEFG"})
+        product_1 = ProductFactory(id=2, extraData={"ean": "HIJKLMN"})
+        product_2 = ProductFactory(id=3, extraData={"ean": "VWXYZ"})
+        product_3 = ProductFactory(id=4, extraData={"ean": "HFGDS"})
         offer = OfferFactory(id=1, product=product)
         offer_1 = OfferFactory(id=2, product=product_1)
         offer_2 = OfferFactory(id=3, product=product_2)
@@ -51,10 +51,10 @@ class BulkUpdateIsGcuCompatibleViaIsbnsTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_should_mark_products_as_compatible_via_ean(self):
-        product = ProductFactory(id=1, extraData={"isbn": "ABCDEFG", "ean": "ABCDEFG"}, isGcuCompatible=False)
-        product_1 = ProductFactory(id=2, extraData={"isbn": "HIJKLMN", "ean": "HIJKLMN"}, isGcuCompatible=False)
-        product_2 = ProductFactory(id=3, extraData={"isbn": "VWXYZ", "ean": "VWXYZ"}, isGcuCompatible=False)
-        product_3 = ProductFactory(id=4, extraData={"isbn": "HFGDS", "ean": "HFGDS"}, isGcuCompatible=False)
+        product = ProductFactory(id=1, extraData={"ean": "ABCDEFG"}, isGcuCompatible=False)
+        product_1 = ProductFactory(id=2, extraData={"ean": "HIJKLMN"}, isGcuCompatible=False)
+        product_2 = ProductFactory(id=3, extraData={"ean": "VWXYZ"}, isGcuCompatible=False)
+        product_3 = ProductFactory(id=4, extraData={"ean": "HFGDS"}, isGcuCompatible=False)
 
         eans_list = ["ABCDEFG", "HIJKLMN", "OPQRSTU", "HFGDS"]
 

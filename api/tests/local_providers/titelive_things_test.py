@@ -511,7 +511,7 @@ class TiteliveThingsTest:
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
             lastProviderId=titelive_provider.id,
-            extraData={"isbn": book_ean, "ean": book_ean},
+            extraData={"ean": book_ean},
         )
         offer = ThingOfferFactory(product=product, venue=venue, isActive=True)
 

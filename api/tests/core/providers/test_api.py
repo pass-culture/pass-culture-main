@@ -76,21 +76,21 @@ class CreateVenueProviderTest:
         assert venue.isPermanent == is_permanent
 
 
-def create_product(isbn, **kwargs):
+def create_product(ean, **kwargs):
     return offers_factories.ProductFactory(
-        idAtProviders=isbn,
+        idAtProviders=ean,
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         extraData={"prix_livre": 12},
         **kwargs,
     )
 
 
-def create_offer(isbn, venue: offerers_models.Venue):
-    return offers_factories.OfferFactory(product=create_product(isbn), idAtProvider=isbn, venue=venue)
+def create_offer(ean, venue: offerers_models.Venue):
+    return offers_factories.OfferFactory(product=create_product(ean), idAtProvider=ean, venue=venue)
 
 
-def create_stock(isbn, siret, venue: offerers_models.Venue, **kwargs):
-    return offers_factories.StockFactory(offer=create_offer(isbn, venue), idAtProviders=f"{isbn}@{siret}", **kwargs)
+def create_stock(ean, siret, venue: offerers_models.Venue, **kwargs):
+    return offers_factories.StockFactory(offer=create_offer(ean, venue), idAtProviders=f"{ean}@{siret}", **kwargs)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -255,7 +255,7 @@ class SynchronizeStocksTest:
                 available_quantity=1,
                 offers_provider_reference="offer_ref1",
                 venue_reference="venue_ref1",
-                products_provider_reference="isbn_product_ref",
+                products_provider_reference="ean_product_ref",
                 stocks_provider_reference="stock_ref",
                 price=28.989,
             ),
@@ -263,7 +263,7 @@ class SynchronizeStocksTest:
                 available_quantity=17,
                 offers_provider_reference="offer_ref_2",
                 price=28.989,
-                products_provider_reference="isbn_product_ref",
+                products_provider_reference="ean_product_ref",
                 stocks_provider_reference="stock_ref",
                 venue_reference="venue_ref2",
             ),
@@ -272,7 +272,7 @@ class SynchronizeStocksTest:
                 available_quantity=0,
                 offers_provider_reference="offer_ref_3",
                 price=28.989,
-                products_provider_reference="isbn_product_ref",
+                products_provider_reference="ean_product_ref",
                 stocks_provider_reference="stock_ref",
                 venue_reference="venue_ref3",
             ),
@@ -289,7 +289,7 @@ class SynchronizeStocksTest:
             extraData={"extra": "data"},
             subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
-        products_by_provider_reference = {"isbn_product_ref": product}
+        products_by_provider_reference = {"ean_product_ref": product}
 
         # When
         new_offers = api._build_new_offers_from_stock_details(
@@ -307,7 +307,7 @@ class SynchronizeStocksTest:
         assert new_offer.bookingEmail == "booking_email"
         assert new_offer.description == "product_desc"
         assert new_offer.extraData == {"extra": "data"}
-        assert new_offer.idAtProvider == "isbn_product_ref"
+        assert new_offer.idAtProvider == "ean_product_ref"
         assert new_offer.lastProviderId == provider.id
         assert new_offer.name == "product_name"
         assert new_offer.productId == 456
