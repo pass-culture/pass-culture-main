@@ -285,4 +285,25 @@ describe('offersSearch component', () => {
     expect(parisFilterTag).not.toBeInTheDocument()
     expect(gardFilterTag).toBeInTheDocument()
   })
+
+  it('should not check only in my dpt checkbox when venue filter is selected', async () => {
+    renderOffersSearchComponent(
+      {
+        ...props,
+        venueFilter: {
+          id: 1,
+          name: 'Mon lieu',
+          relative: [],
+        },
+      },
+      user
+    )
+
+    const checkbox = screen.getByLabelText(
+      'Les acteurs qui se déplacent dans mon établissement',
+      { exact: false }
+    )
+
+    expect(checkbox).not.toBeChecked()
+  })
 })
