@@ -103,6 +103,7 @@ class Returns200Test:
         assert len(response.json["bookingsRecap"]) == 1
 
     def test_when_user_is_linked_to_a_valid_offerer(self, app):
+        stock = offers_factories.StockFactory(offer__extraData={"ean": "1234567891234"})
         booking = bookings_factories.UsedBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             dateUsed=datetime(2020, 8, 13, 12, 0, 0),
@@ -111,6 +112,7 @@ class Returns200Test:
             user__firstName="Hermione",
             user__lastName="Granger",
             user__phoneNumber="0100000000",
+            stock=stock,
         )
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
@@ -126,7 +128,7 @@ class Returns200Test:
                     "offerId": booking.stock.offer.id,
                     "offerIsEducational": False,
                     "eventBeginningDatetime": None,
-                    "offerIsbn": None,
+                    "offerIsbn": "1234567891234",
                 },
                 "beneficiary": {
                     "email": "beneficiary@example.com",
