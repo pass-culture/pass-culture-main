@@ -75,8 +75,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/error.svg', viewBox: '0 0 18 18' },
   { src: 'icons/ico-euro-grey.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-euro-v2.svg', viewBox: '0 0 24 25' },
-  { src: 'icons/ico-eye-full-close.svg', viewBox: '0 0 20 20' },
-  { src: 'icons/ico-eye-full-open.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-eye-open-filled-black.svg' },
   { src: 'icons/fraud.svg', viewBox: '0 0 88 88' },
   { src: 'icons/ico-guichet-full.svg' },
