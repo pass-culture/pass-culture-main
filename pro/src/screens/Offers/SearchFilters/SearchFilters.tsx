@@ -15,12 +15,13 @@ import { Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
+import strokeCloseIcon from 'icons/stroke-close.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
 import Select from 'ui-kit/form_raw/Select'
 import TextInput from 'ui-kit/form_raw/TextInput/TextInput'
-import Icon from 'ui-kit/Icon/Icon'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
 
 import styles from './SearchFilters.module.scss'
@@ -144,8 +145,16 @@ const SearchFilters = ({
       {offerer && (
         <span className="offerer-filter">
           {offerer.name}
-          <button onClick={removeOfferer} type="button">
-            <Icon alt="Supprimer le filtre par structure" svg="ico-close-b" />
+          <button
+            onClick={removeOfferer}
+            type="button"
+            data-testid="remove-offerer-filter"
+          >
+            <SvgIcon
+              src={strokeCloseIcon}
+              alt="Supprimer le filtre par structure"
+              className={styles['offerer-close-icon']}
+            />
           </button>
         </span>
       )}

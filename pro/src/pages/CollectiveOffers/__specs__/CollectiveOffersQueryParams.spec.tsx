@@ -342,9 +342,7 @@ describe('route CollectiveOffers', () => {
       })
       await renderOffers(store, filters)
       // When
-      await userEvent.click(
-        screen.getByAltText('Supprimer le filtre par structure')
-      )
+      await userEvent.click(screen.getByTestId('remove-offerer-filter'))
       // Then
       expect(screen.queryByText('La structure')).not.toBeInTheDocument()
     })

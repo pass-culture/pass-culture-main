@@ -1,6 +1,7 @@
 import React, { RefObject } from 'react'
 
-import { ReactComponent as CloseDialogIcon } from 'icons/close-dialog.svg'
+import strokeCloseIcon from 'icons/stroke-close.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './DialogBox.module.scss'
 
@@ -17,7 +18,11 @@ const CloseButton = ({ onCloseClick, ref }: ICloseButtonProps): JSX.Element => (
     type="button"
     ref={ref}
   >
-    <CloseDialogIcon />
+    <SvgIcon
+      src={strokeCloseIcon}
+      alt=""
+      className={styles['dialog-box-close-icon']}
+    />
   </button>
 )
 
