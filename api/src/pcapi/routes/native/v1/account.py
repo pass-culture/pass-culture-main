@@ -166,7 +166,7 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
             raise exceptions.InvalidEmailError()
         check_email_address_does_not_exist(new_email)
         check_and_expire_token(user, body.token, TokenType.VALIDATION)
-        api.change_user_email(current_email, new_email)
+        api.change_beneficiary_user_email(current_email, new_email)
     except pydantic.ValidationError:
         raise api_errors.ApiErrors(
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},

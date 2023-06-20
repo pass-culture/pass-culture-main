@@ -496,7 +496,7 @@ def change_email(
     logger.info("User has changed their email", extra={"user": current_user.id})
 
 
-def change_user_email(
+def change_beneficiary_user_email(
     current_email: str,
     new_email: str,
     by_admin: bool = False,
@@ -519,6 +519,7 @@ def change_user_email(
             raise exceptions.UserDoesNotExist()
     else:
         change_email(current_user, new_email, by_admin)
+        transactional_mails.send_email_change_information_email(current_user)
 
 
 def change_pro_user_email(
