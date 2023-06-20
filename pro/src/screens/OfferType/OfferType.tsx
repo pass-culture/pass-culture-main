@@ -27,7 +27,6 @@ import useNotification from 'hooks/useNotification'
 import calendarCheckIcon from 'icons/ico-calendar-check.svg'
 import caseIcon from 'icons/ico-case.svg'
 import dateIcon from 'icons/ico-date.svg'
-import duplicateOfferIcon from 'icons/ico-duplicate-offer.svg'
 import newOfferIcon from 'icons/ico-new-offer.svg'
 import templateOfferIcon from 'icons/ico-template-offer.svg'
 import virtualEventIcon from 'icons/ico-virtual-event.svg'
@@ -349,7 +348,6 @@ const OfferType = (): JSX.Element => {
                   <FormLayout.Row inline mdSpaceAfter>
                     <RadioButtonWithImage
                       name="collectiveOfferSubtypeDuplicate"
-                      transparent
                       icon={duplicateOfferIcon}
                       isChecked={
                         values.collectiveOfferSubtypeDuplicate ===
