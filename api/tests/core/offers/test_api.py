@@ -908,6 +908,36 @@ class UpdateOfferTest:
         assert offer.name == "New name"
         assert product.name == "Old name"
 
+    def test_update_offer_with_existing_ean(self):
+        offer = factories.OfferFactory(
+            name="Old name",
+            extraData={"ean": "1234567890123"},
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        )
+
+        offer = api.update_offer(offer, name="New name", description="new Description")
+
+        assert offer.name == "New name"
+        assert offer.description == "new Description"
+
+    def test_raise_error_if_update_ean_for_offer_with_existing_ean(self):
+        offer = factories.OfferFactory(
+            name="Old name",
+            extraData={"ean": "1234567890123", "musicSubType": 524, "musicType": 520},
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        )
+
+        offer = api.update_offer(
+            offer,
+            name="New name",
+            description="new Description",
+            extraData={"ean": "1234567890124", "musicType": 520, "musicSubType": 524},
+        )
+
+        assert offer.name == "New name"
+        assert offer.description == "new Description"
+        assert offer.extraData == {"ean": "1234567890124", "musicType": 520, "musicSubType": 524}
+
     def test_cannot_update_with_name_too_long(self):
         offer = factories.OfferFactory(name="Old name")
 

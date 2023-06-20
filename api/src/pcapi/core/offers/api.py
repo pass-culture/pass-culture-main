@@ -267,7 +267,7 @@ def update_offer(
     validation.check_validation_status(offer)
     if extraData is not UNCHANGED:
         formatted_extra_data = _format_extra_data(offer.subcategoryId, extraData)
-        validation.check_offer_extra_data(offer.subcategoryId, formatted_extra_data, offer.venue)
+        validation.check_offer_extra_data(offer.subcategoryId, formatted_extra_data, offer.venue, offer)
     if isDuo is not UNCHANGED:
         validation.check_is_duo_compliance(isDuo, offer.subcategory)
 
