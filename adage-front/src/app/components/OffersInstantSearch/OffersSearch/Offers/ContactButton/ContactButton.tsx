@@ -25,7 +25,10 @@ const ContactButton = ({
 
   const handleButtonClick = () => {
     setIsModalOpen(true)
-    api.logContactModalButtonClick({ offerId })
+    api.logContactModalButtonClick({
+      AdageHeaderFrom: location.pathname,
+      offerId,
+    })
     logClickOnOffer(offerId.toString(), position, queryId)
   }
 

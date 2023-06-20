@@ -23,6 +23,7 @@ import {
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { LOGS_DATA } from 'utils/config'
+import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 import { ResultType } from 'utils/types'
 
 import { Spinner } from '../../../Layout/Spinner/Spinner'
@@ -75,6 +76,7 @@ export const OffersComponent = ({
     // wait for nbHits to update before sending data results
     if (LOGS_DATA && hasClickedSearch) {
       apiAdage.logSearchButtonClick({
+        AdageHeaderFrom: removeParamsFromUrl(location.pathname),
         filters: filtersKeys,
         resultsCount: nbHits,
       })

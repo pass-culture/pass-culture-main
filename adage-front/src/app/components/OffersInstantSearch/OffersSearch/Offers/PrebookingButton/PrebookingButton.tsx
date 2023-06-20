@@ -36,7 +36,10 @@ const PrebookingButton = ({
 
   const handleBookingModalButtonClick = (stockId: number) => {
     if (LOGS_DATA) {
-      api.logBookingModalButtonClick({ stockId })
+      api.logBookingModalButtonClick({
+        AdageHeaderFrom: location.pathname,
+        stockId,
+      })
     }
     setIsModalOpen(true)
   }
