@@ -21,7 +21,7 @@ const serializerOfferSubCategoryFields = (
   speaker: string
   visa: string
   performer: string
-  isbn: string
+  ean: string
   durationMinutes: string
 } => {
   if (subCategory === undefined) {
@@ -35,7 +35,7 @@ const serializerOfferSubCategoryFields = (
       speaker: '',
       visa: '',
       performer: '',
-      isbn: '',
+      ean: '',
       durationMinutes: '',
     }
   }
@@ -65,7 +65,7 @@ const serializerOfferSubCategoryFields = (
     speaker: offer.speaker || defaultValue('speaker'),
     visa: offer.visa || defaultValue('visa'),
     performer: offer.performer || defaultValue('performer'),
-    isbn: offer.isbn || defaultValue('isbn'),
+    ean: offer.ean || defaultValue('ean'),
     durationMinutes:
       offer.durationMinutes?.toString() || defaultValue('durationMinutes'),
   }

@@ -191,7 +191,6 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
       durationMinutes: 140,
-      isbn: '',
       isActive: true,
       isDuo: false,
       isEvent: true,
@@ -323,7 +322,6 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       externalTicketOfficeUrl: 'https://external.example.com',
       extraData: {
         author: 'Offer author',
-        isbn: '',
         musicSubType: '',
         musicType: '',
         performer: 'Offer performer',
@@ -386,7 +384,6 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       externalTicketOfficeUrl: 'https://external.example.com',
       extraData: {
         author: 'Offer author',
-        isbn: '',
         musicSubType: '',
         musicType: '',
         performer: 'Offer performer',
@@ -542,7 +539,6 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         externalTicketOfficeUrl: 'https://external.example.com',
         extraData: {
           author: 'Offer author',
-          isbn: '',
           musicSubType: '',
           musicType: '',
           performer: 'Offer performer',

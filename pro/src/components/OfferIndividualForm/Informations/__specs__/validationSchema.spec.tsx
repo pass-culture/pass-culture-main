@@ -49,7 +49,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     initialValues = {
       subCategoryFields: [
         'author',
-        'isbn',
+        'ean',
         'performer',
         'speaker',
         'stageDirector',
@@ -59,7 +59,6 @@ describe('OfferIndividual section: UsefulInformations', () => {
       name: '',
       description: '',
       author: '',
-      isbn: '',
       performer: '',
       speaker: '',
       stageDirector: '',
@@ -90,14 +89,13 @@ describe('OfferIndividual section: UsefulInformations', () => {
         author: '',
         description: '',
         durationMinutes: '',
-        isbn: '',
         name: 'Mon super titre',
         performer: '',
         speaker: '',
         stageDirector: '',
         subCategoryFields: [
           'author',
-          'isbn',
+          'ean',
           'performer',
           'speaker',
           'stageDirector',
@@ -127,7 +125,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     ).toBeInTheDocument()
 
     expect(screen.queryByTestId('error-author')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('error-isbn')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('error-ean')).not.toBeInTheDocument()
     expect(screen.queryByTestId('error-performer')).not.toBeInTheDocument()
     expect(screen.queryByTestId('error-speaker')).not.toBeInTheDocument()
     expect(screen.queryByTestId('error-stageDirector')).not.toBeInTheDocument()

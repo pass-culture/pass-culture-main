@@ -80,7 +80,6 @@ export const serializeOfferApiExtraData = (
   apiOffer: GetIndividualOfferResponseModel
 ) => ({
   author: apiOffer.extraData?.author || '',
-  isbn: apiOffer.extraData?.isbn || '',
   musicType: apiOffer.extraData?.musicType || '',
   musicSubType: apiOffer.extraData?.musicSubType || '',
   performer: apiOffer.extraData?.performer || '',

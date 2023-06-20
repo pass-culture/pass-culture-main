@@ -39,7 +39,6 @@ describe('OfferIndividual section: UsefulInformations', () => {
       name: '',
       description: '',
       author: '',
-      isbn: '',
       performer: '',
       speaker: '',
       stageDirector: '',
@@ -61,7 +60,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       screen.queryByLabelText('Auteur', { exact: false })
     ).not.toBeInTheDocument()
     expect(
-      screen.queryByLabelText('ISBN', { exact: false })
+      screen.queryByLabelText('EAN', { exact: false })
     ).not.toBeInTheDocument()
     expect(
       screen.queryByLabelText('Intervenant', { exact: false })
@@ -83,7 +82,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
   it('should also render sub categories fields', async () => {
     initialValues.subCategoryFields = [
       'author',
-      'isbn',
+      'ean',
       'performer',
       'speaker',
       'stageDirector',
@@ -97,8 +96,8 @@ describe('OfferIndividual section: UsefulInformations', () => {
     expect(screen.getByLabelText(/Description/)).not.toBeDisabled()
     expect(screen.getByLabelText(/Auteur/)).toBeInTheDocument()
     expect(screen.getByLabelText(/Auteur/)).not.toBeDisabled()
-    expect(screen.getByLabelText(/ISBN/)).toBeInTheDocument()
-    expect(screen.getByLabelText(/ISBN/)).not.toBeDisabled()
+    expect(screen.getByLabelText(/EAN/)).toBeInTheDocument()
+    expect(screen.getByLabelText(/EAN/)).not.toBeDisabled()
     expect(screen.getByLabelText(/Intervenant/)).toBeInTheDocument()
     expect(screen.getByLabelText(/Intervenant/)).not.toBeDisabled()
     expect(screen.getByLabelText(/Visa d’exploitation/)).toBeInTheDocument()
@@ -116,7 +115,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       'name',
       'description',
       'author',
-      'isbn',
+      'ean',
       'performer',
       'speaker',
       'stageDirector',
@@ -126,7 +125,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
 
     initialValues.subCategoryFields = [
       'author',
-      'isbn',
+      'ean',
       'performer',
       'speaker',
       'stageDirector',
@@ -137,7 +136,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     expect(screen.getByLabelText(/Titre de l’offre/)).toBeDisabled()
     expect(screen.getByLabelText(/Description/)).toBeDisabled()
     expect(screen.getByLabelText(/Auteur/)).toBeDisabled()
-    expect(screen.getByLabelText(/ISBN/)).toBeDisabled()
+    expect(screen.getByLabelText(/EAN/)).toBeDisabled()
     expect(screen.getByLabelText(/Intervenant/)).toBeDisabled()
     expect(screen.getByLabelText(/Visa d’exploitation/)).toBeDisabled()
     expect(screen.getByLabelText(/Metteur en scène/)).toBeDisabled()
