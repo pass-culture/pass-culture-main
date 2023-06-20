@@ -2,6 +2,8 @@ import cx from 'classnames'
 import { useField, useFormikContext } from 'formik'
 import React, { useEffect, useRef, useState } from 'react'
 
+import { SelectOption } from 'custom_types/form'
+
 import { BaseCheckbox, BaseInput, FieldLayout } from '../shared'
 import AutocompleteList from '../shared/AutocompleteList/AutocompleteList'
 import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'

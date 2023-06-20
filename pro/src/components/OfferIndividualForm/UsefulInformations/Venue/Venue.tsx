@@ -57,7 +57,7 @@ const Venue = ({
     )
     if (newVenueOptions.length === 1) {
       setFieldValue('venueId', newVenueOptions[0].value)
-      onVenueChange(setFieldValue, venueList, newVenueOptions[0].value)
+      onVenueChange(setFieldValue, venueList, String(newVenueOptions[0].value))
     }
   }
 

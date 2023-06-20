@@ -3,6 +3,7 @@ import { FieldArray, useFormikContext } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
+import { SelectOption } from 'custom_types/form'
 import { PlusCircleIcon } from 'icons'
 import trashFilledIcon from 'icons/ico-trash-filled.svg'
 import { Button, CheckboxGroup, Select, TextInput } from 'ui-kit'

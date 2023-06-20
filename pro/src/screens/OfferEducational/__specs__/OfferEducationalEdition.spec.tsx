@@ -24,10 +24,10 @@ import {
   TITLE_LABEL,
   VENUE_LABEL,
 } from '../constants/labels'
-import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
+import OfferEducational, { OfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational', () => {
-  let props: IOfferEducationalProps
+  let props: OfferEducationalProps
 
   beforeEach(() => {
     props = defaultEditionProps

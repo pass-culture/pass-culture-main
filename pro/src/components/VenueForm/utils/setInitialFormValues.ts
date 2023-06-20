@@ -1,8 +1,8 @@
 import { humanizeSiret, IVenue } from 'core/Venue'
 
-import { IVenueFormValues } from '../types'
+import { VenueFormValues } from '../types'
 
-const setInitialFormValues = (venue: IVenue): IVenueFormValues => {
+const setInitialFormValues = (venue: IVenue): VenueFormValues => {
   return {
     reimbursementPointId: venue.reimbursementPointId,
     accessibility: venue.accessibility,

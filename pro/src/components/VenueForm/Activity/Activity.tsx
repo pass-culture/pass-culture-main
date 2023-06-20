@@ -1,9 +1,10 @@
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
+import { SelectOption } from 'custom_types/form'
 import { Select, TextArea } from 'ui-kit'
 
-export interface IActivity {
+export interface ActivityProps {
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
   isVenueVirtual?: boolean
@@ -19,7 +20,7 @@ const Activity = ({
   isVenueVirtual = false,
   isNewOfferCreationJourney,
   isNewOnboardingActive,
-}: IActivity) => {
+}: ActivityProps) => {
   return (
     <>
       <FormLayout.Section

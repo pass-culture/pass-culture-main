@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { getAdressDataAdapter } from 'components/Address/adapter'
 import { handleAddressSelect } from 'components/Address/Address'
 import FormLayout from 'components/FormLayout'
-import { IVenueFormValues } from 'components/VenueForm/types'
+import { VenueFormValues } from 'components/VenueForm/types'
 import { humanizeSiret, unhumanizeSiret } from 'core/Venue'
 import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
 import { InfoBox, TextArea, TextInput } from 'ui-kit'
@@ -36,7 +36,7 @@ const SiretOrCommentFields = ({
   const [isSiretSelected, setIsSiretSelected] = useState(
     !isToggleDisabled || initialSiret.length > 0
   )
-  const { setFieldValue } = useFormikContext<IVenueFormValues>()
+  const { setFieldValue } = useFormikContext<VenueFormValues>()
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handleToggleClick = () => {

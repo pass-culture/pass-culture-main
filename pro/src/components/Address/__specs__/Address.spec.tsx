@@ -5,7 +5,7 @@ import React from 'react'
 import * as yup from 'yup'
 
 import { apiAdresse } from 'apiClient/adresse'
-import { IVenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueForm'
 import { SubmitButton } from 'ui-kit'
 
 import { Address, validationSchema as addressValidationSchema } from '../'
@@ -44,7 +44,7 @@ const renderAddress = async ({
   initialValues,
   onSubmit = jest.fn(),
 }: {
-  initialValues: Partial<IVenueFormValues>
+  initialValues: Partial<VenueFormValues>
   onSubmit: () => void
 }) => {
   const validationSchema = yup.object().shape(addressValidationSchema)
@@ -72,7 +72,7 @@ const renderAddress = async ({
 }
 
 describe('components | Address', () => {
-  let initialValues: Partial<IVenueFormValues>
+  let initialValues: Partial<VenueFormValues>
   const onSubmit = jest.fn()
 
   beforeEach(() => {

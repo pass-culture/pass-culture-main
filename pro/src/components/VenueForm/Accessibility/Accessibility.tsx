@@ -6,14 +6,14 @@ import FormLayout from 'components/FormLayout'
 import { useAccessibilityOptions } from 'hooks'
 import { Checkbox, CheckboxGroup, InfoBox } from 'ui-kit'
 
-import { IVenueFormValues } from '..'
+import { VenueFormValues } from '..'
 interface IAccessiblityProps {
   isCreatingVenue: boolean
 }
 
 const Accessibility = ({ isCreatingVenue }: IAccessiblityProps) => {
   const { values, setFieldValue, initialValues } =
-    useFormikContext<IVenueFormValues>()
+    useFormikContext<VenueFormValues>()
 
   const hasChangedSinceLastSubmit = useMemo(
     () => !isEqual(values.accessibility, initialValues.accessibility),

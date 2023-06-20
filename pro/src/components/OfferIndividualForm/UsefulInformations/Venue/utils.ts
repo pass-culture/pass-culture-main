@@ -1,11 +1,12 @@
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import { SelectOption } from 'custom_types/form'
 import { dehumanizeId } from 'utils/dehumanize'
 
 export const buildOffererOptions = (
   offererNames: TOffererName[]
 ): {
-  offererOptions: SelectOptions
+  offererOptions: SelectOption[]
   isDisabled: boolean
 } => {
   let offererOptions = offererNames
@@ -31,7 +32,7 @@ export const buildVenueOptions = (
   offererId: string,
   venueList: TOfferIndividualVenue[]
 ): {
-  venueOptions: SelectOptions
+  venueOptions: SelectOption[]
   isDisabled: boolean
 } => {
   const offererVenues = venueList.filter((venue: TOfferIndividualVenue) => {

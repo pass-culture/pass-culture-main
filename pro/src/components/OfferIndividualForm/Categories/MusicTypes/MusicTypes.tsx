@@ -7,6 +7,7 @@ import {
   IOfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
 import { musicOptionsTree } from 'core/Offers/categoriesSubTypes'
+import { SelectOption } from 'custom_types/form'
 import { Select } from 'ui-kit'
 
 interface IMusicTypesProps {
@@ -15,8 +16,8 @@ interface IMusicTypesProps {
 
 const MusicTypes = ({ readOnly = false }: IMusicTypesProps): JSX.Element => {
   const [musicTypesOptions, setMusicTypesOptions] = useState<{
-    musicType: SelectOptions
-    musicSubType: SelectOptions
+    musicType: SelectOption[]
+    musicSubType: SelectOption[]
   }>({
     musicType: musicOptionsTree
       .map(data => ({
@@ -35,7 +36,7 @@ const MusicTypes = ({ readOnly = false }: IMusicTypesProps): JSX.Element => {
 
   useEffect(() => {
     setFieldValue('musicSubType', initialValues.musicSubType)
-    let newMusicSubTypeOptions: SelectOptions = []
+    let newMusicSubTypeOptions: SelectOption[] = []
     if (musicType !== FORM_DEFAULT_VALUES.musicType) {
       const selectedMusicTypeChildren = musicOptionsTree.find(
         musicTypeOption => musicTypeOption.code === parseInt(musicType)

@@ -12,11 +12,11 @@ import {
 import { offererFactory, getOfferVenueFactory } from 'utils/apiFactories'
 
 import FormPracticalInformation, {
-  IFormPracticalInformationProps,
+  FormPracticalInformationProps,
 } from '../FormPracticalInformation'
 
 const renderFormPracticalInformation = (
-  props: IFormPracticalInformationProps,
+  props: FormPracticalInformationProps,
   initialValues: Pick<
     IOfferEducationalFormValues,
     'eventAddress' | 'priceDetail' | 'interventionArea'
@@ -30,7 +30,7 @@ const renderFormPracticalInformation = (
 }
 
 describe('FormPracticalInformation', () => {
-  let props: IFormPracticalInformationProps
+  let props: FormPracticalInformationProps
   let initialValues: Pick<
     IOfferEducationalFormValues,
     | 'eventAddress'

@@ -6,7 +6,7 @@ import * as yup from 'yup'
 
 import { apiAdresse } from 'apiClient/adresse'
 import { api } from 'apiClient/api'
-import { IVenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueForm'
 import { SubmitButton } from 'ui-kit'
 
 import { DEFAULT_INFORMATIONS_FORM_VALUES } from '../constants'
@@ -40,7 +40,7 @@ const renderInformations = ({
   onSubmit = jest.fn(),
   props,
 }: {
-  initialValues: Partial<IVenueFormValues>
+  initialValues: Partial<VenueFormValues>
   onSubmit: () => void
   props: IInformations
 }) => {
@@ -76,7 +76,7 @@ const renderInformations = ({
 
 describe('components | Informations', () => {
   let props: IInformations
-  let initialValues: Partial<IVenueFormValues>
+  let initialValues: Partial<VenueFormValues>
   const onSubmit = jest.fn()
 
   beforeEach(() => {

@@ -3,7 +3,7 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IVenueFormValues } from 'components/VenueForm/index'
+import { VenueFormValues } from 'components/VenueForm/index'
 
 import {
   validationSchema as withdrawalDetailsValidationSchema,
@@ -16,7 +16,7 @@ const renderWithdrawalDetails = async ({
   onSubmit = jest.fn(),
 }: {
   isCreatedEntity: boolean
-  initialValues: Partial<IVenueFormValues>
+  initialValues: Partial<VenueFormValues>
   onSubmit: () => void
 }) => {
   const validationSchema = yup.object().shape(withdrawalDetailsValidationSchema)
@@ -36,7 +36,7 @@ const renderWithdrawalDetails = async ({
 }
 
 describe('components | WithdrawalDetails', () => {
-  let initialValues: Partial<IVenueFormValues>
+  let initialValues: Partial<VenueFormValues>
   const onSubmit = jest.fn()
 
   it('should not display checkbox', async () => {

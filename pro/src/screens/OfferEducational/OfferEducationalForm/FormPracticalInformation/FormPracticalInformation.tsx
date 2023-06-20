@@ -14,6 +14,7 @@ import {
 } from 'core/OfferEducational'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { offerInterventionOptions } from 'core/shared/interventionOptions'
+import { SelectOption } from 'custom_types/form'
 import {
   RadioGroup,
   Select,
@@ -35,8 +36,8 @@ import {
 } from '../../constants/labels'
 import styles from '../OfferEducationalForm.module.scss'
 
-export interface IFormPracticalInformationProps {
-  venuesOptions: SelectOptions
+export interface FormPracticalInformationProps {
+  venuesOptions: SelectOption[]
   currentOfferer: GetEducationalOffererResponseModel | null
   disableForm: boolean
   isTemplate: boolean
@@ -62,7 +63,7 @@ const FormPracticalInformation = ({
   currentOfferer,
   disableForm,
   isTemplate,
-}: IFormPracticalInformationProps): JSX.Element => {
+}: FormPracticalInformationProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<IOfferEducationalFormValues>()
 

@@ -10,10 +10,10 @@ import {
   defaultCreationProps,
   subCategoriesFactory,
 } from '../__tests-utils__'
-import { IOfferEducationalProps } from '../OfferEducational'
+import { OfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : creation offer type step', () => {
-  let props: IOfferEducationalProps
+  let props: OfferEducationalProps
   let store: any
 
   beforeEach(() => {
