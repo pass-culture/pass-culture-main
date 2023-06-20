@@ -72,12 +72,6 @@ const iconList = [
   { src: 'icons/close-tag.svg', viewBox: '0 0 10 10' },
   { src: 'icons/ico-compta.svg', viewBox: '0 0 20 23' },
   { src: 'icons/ico-double-check.svg' },
-  {
-    src: 'icons/dropdown-disclosure-down-b-disabled.svg',
-    viewBox: '0 0 14 7',
-  },
-  { src: 'icons/dropdown-disclosure-down-b.svg', viewBox: '0 0 14 7' },
-  { src: 'icons/dropdown-disclosure-down-s-w.svg', viewBox: '0 0 14 7' },
   { src: 'icons/ico-email-red.svg', viewBox: '0 0 25 24' },
   { src: 'icons/error.svg', viewBox: '0 0 18 18' },
   { src: 'icons/ico-euro-grey.svg', viewBox: '0 0 24 24' },
