@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { IVenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueForm'
 import * as siretApiValidate from 'core/Venue/siretApiValidate'
 import { SubmitButton } from 'ui-kit'
 
@@ -27,7 +27,7 @@ const renderSiretOrComment = async ({
   props,
   validationSchema,
 }: {
-  initialValues: Partial<IVenueFormValues>
+  initialValues: Partial<VenueFormValues>
   onSubmit: () => void
   props: SiretOrCommentInterface
   validationSchema: any
@@ -59,7 +59,7 @@ const renderSiretOrComment = async ({
 
 describe('components | SiretOrCommentFields', () => {
   let props: SiretOrCommentInterface
-  let initialValues: Partial<IVenueFormValues>
+  let initialValues: Partial<VenueFormValues>
   let validationSchema: any
   const onSubmit = jest.fn()
 

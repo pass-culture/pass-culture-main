@@ -16,9 +16,10 @@ import {
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
-import { IVenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueForm'
 import { IOfferer } from 'core/Offerers/types'
 import { IVenue } from 'core/Venue'
+import { SelectOption } from 'custom_types/form'
 import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -40,7 +41,7 @@ const venueLabels: SelectOption[] = [
 
 const renderForm = (
   currentUser: SharedCurrentUserResponseModel,
-  initialValues: IVenueFormValues,
+  initialValues: VenueFormValues,
   isCreatingVenue: boolean,
   venue?: IVenue | undefined,
   features?: { list: { isActive: true; nameKey: string }[] },
@@ -254,7 +255,7 @@ const venueResponse: GetVenueResponseModel = {
 }
 
 describe('screen | VenueForm', () => {
-  let formValues: IVenueFormValues
+  let formValues: VenueFormValues
   let expectedEditVenue: Partial<EditVenueBodyModel>
   let venue: IVenue
   beforeEach(() => {

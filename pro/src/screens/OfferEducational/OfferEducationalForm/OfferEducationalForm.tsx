@@ -13,13 +13,14 @@ import {
   Mode,
 } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
+import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import { Banner, ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { sortByLabel } from 'utils/strings'
 
-import { IOfferEducationalProps } from '../OfferEducational'
+import { OfferEducationalProps } from '../OfferEducational'
 
 import FormAccessibility from './FormAccessibility'
 import FormContact from './FormContact'
@@ -32,8 +33,8 @@ import FormPracticalInformation from './FormPracticalInformation'
 import FormVenue from './FormVenue'
 import styles from './OfferEducationalForm.module.scss'
 
-type IOfferEducationalFormProps = Omit<
-  IOfferEducationalProps,
+type OfferEducationalFormProps = Omit<
+  OfferEducationalProps,
   | 'offer'
   | 'setOffer'
   | 'initialValues'
@@ -62,10 +63,10 @@ const OfferEducationalForm = ({
   onImageDelete,
   isOfferCreated = false,
   offer,
-}: IOfferEducationalFormProps): JSX.Element => {
+}: OfferEducationalFormProps): JSX.Element => {
   const notify = useNotification()
 
-  const [venuesOptions, setVenuesOptions] = useState<SelectOptions>([])
+  const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
   const [currentOfferer, setCurrentOfferer] =
     useState<GetEducationalOffererResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(false)

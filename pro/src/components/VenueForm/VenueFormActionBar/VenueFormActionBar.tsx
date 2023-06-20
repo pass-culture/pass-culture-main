@@ -8,7 +8,7 @@ import { ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import useNewOfferCreationJourney from '../../../hooks/useNewOfferCreationJourney'
-import { IVenueFormValues } from '../types'
+import { VenueFormValues } from '../types'
 
 interface VenueFormActionBarProps {
   offererId: string
@@ -20,7 +20,7 @@ const VenueFormActionBar = ({
   isCreatingVenue,
 }: VenueFormActionBarProps) => {
   const { currentUser } = useCurrentUser()
-  const { isSubmitting } = useFormikContext<IVenueFormValues>()
+  const { isSubmitting } = useFormikContext<VenueFormValues>()
 
   const newOfferCreation = useNewOfferCreationJourney()
 

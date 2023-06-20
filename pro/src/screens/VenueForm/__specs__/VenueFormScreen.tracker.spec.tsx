@@ -5,7 +5,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { IVenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueForm'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -13,6 +13,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { IOfferer } from 'core/Offerers/types'
+import { SelectOption } from 'custom_types/form'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -31,7 +32,7 @@ const venueLabels: SelectOption[] = [
   },
 ]
 
-const formValues: IVenueFormValues = {
+const formValues: VenueFormValues = {
   bannerMeta: undefined,
   comment: '',
   description: '',

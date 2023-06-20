@@ -10,7 +10,7 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import useNotification from 'hooks/useNotification'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
 
-import { IVenueFormValues } from '../types'
+import { VenueFormValues } from '../types'
 
 interface VenueBannerMetaCropParamsProps {
   x_crop_percent: number
@@ -54,7 +54,7 @@ const ImageUploaderVenue = () => {
   const {
     setFieldValue,
     values: { id: venueId, bannerUrl, bannerMeta },
-  } = useFormikContext<IVenueFormValues>()
+  } = useFormikContext<VenueFormValues>()
 
   const handleOnImageUpload = async ({
     imageFile,

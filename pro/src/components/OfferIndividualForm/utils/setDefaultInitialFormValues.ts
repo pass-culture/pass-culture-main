@@ -55,7 +55,7 @@ const setDefaultInitialFormValues = (
   return {
     ...values,
     offererId: initialOffererId,
-    venueId: initialVenueId,
+    venueId: String(initialVenueId),
     withdrawalDetails: initialWithdrawalDetails,
     accessibility: initialAccessibility,
     isVenueVirtual: initialIsVenueVirtual,

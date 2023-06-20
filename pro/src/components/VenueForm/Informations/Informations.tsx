@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import FormLayout from 'components/FormLayout'
 import { InfoBox, TextInput } from 'ui-kit'
 
-import { IVenueFormValues } from '..'
+import { VenueFormValues } from '..'
 
 import SiretOrCommentFields from './SiretOrCommentFields'
 
@@ -27,7 +27,7 @@ const Informations = ({
   siren,
   isNewOnboardingActive,
 }: IInformations) => {
-  const { initialValues } = useFormikContext<IVenueFormValues>()
+  const { initialValues } = useFormikContext<VenueFormValues>()
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
 
   return (

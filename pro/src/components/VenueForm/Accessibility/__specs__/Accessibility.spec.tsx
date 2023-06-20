@@ -4,7 +4,7 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IVenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueForm'
 import { AccessiblityEnum } from 'core/shared'
 import { SubmitButton } from 'ui-kit'
 
@@ -15,7 +15,7 @@ const renderAccessibility = ({
   isCreatingVenue,
   onSubmit = jest.fn(),
 }: {
-  initialValues: Partial<IVenueFormValues>
+  initialValues: Partial<VenueFormValues>
   isCreatingVenue: boolean
   onSubmit: () => void
 }) => {
@@ -34,7 +34,7 @@ const renderAccessibility = ({
 }
 
 describe('Accessibility', () => {
-  let initialValues: Partial<IVenueFormValues>
+  let initialValues: Partial<VenueFormValues>
   let isCreatingVenue: boolean
   const onSubmit = jest.fn()
 

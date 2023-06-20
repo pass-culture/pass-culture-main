@@ -1,5 +1,5 @@
 import { EditVenueBodyModel } from 'apiClient/v1'
-import { IVenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueForm'
 
 import {
   EditVirtualVenueBodyModel,
@@ -7,7 +7,7 @@ import {
   serializePostVenueBodyModel,
 } from '../serializers'
 
-const formValues: IVenueFormValues = {
+const formValues: VenueFormValues = {
   bannerMeta: undefined,
   comment: 'Commentaire',
   description: '',
@@ -84,7 +84,7 @@ describe('screen | VenueForm | serializers', () => {
   })
 
   it('Serialize form value for venue creation without venueLabelId', async () => {
-    const formValues: IVenueFormValues = {
+    const formValues: VenueFormValues = {
       bannerMeta: undefined,
       comment: 'Commentaire',
       description: '',
@@ -400,7 +400,7 @@ describe('screen | VenueForm | serializers', () => {
       const result: EditVirtualVenueBodyModel = serializeEditVenueBodyModel(
         {
           isVenueVirtual: true,
-        } as IVenueFormValues,
+        } as VenueFormValues,
         {
           hideSiret: false,
         }

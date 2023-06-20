@@ -4,7 +4,7 @@ import { useGetOffererNames } from 'core/Offerers/adapters'
 import useNotification from 'hooks/useNotification'
 import { OffererStatsScreen } from 'screens/OffererStats'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { sortByDisplayName } from 'utils/strings'
+import { sortByLabel } from 'utils/strings'
 
 const OffererStats = (): JSX.Element | null => {
   const notify = useNotification()
@@ -17,10 +17,10 @@ const OffererStats = (): JSX.Element | null => {
     return null
   }
 
-  const offererOptions = sortByDisplayName(
+  const offererOptions = sortByLabel(
     offererNames.map(offerer => ({
-      id: offerer.nonHumanizedId.toString(),
-      displayName: offerer.name,
+      value: offerer.nonHumanizedId.toString(),
+      label: offerer.name,
     }))
   )
   return <OffererStatsScreen offererOptions={offererOptions} />

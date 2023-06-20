@@ -1,6 +1,7 @@
 import cx from 'classnames'
 import React, { Ref } from 'react'
 
+import { SelectOption } from 'custom_types/form'
 import BaseCheckbox from 'ui-kit/form/shared/BaseCheckbox'
 import baseCheckboxStyles from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox.module.scss'
 
@@ -58,7 +59,7 @@ const OptionsList = ({
       >
         {filteredOptions.map(
           ({ value, label }: SelectOption, index: number) => {
-            const isSelected = selectedValues.includes(value)
+            const isSelected = selectedValues.includes(String(value))
             return (
               <li
                 aria-selected={isSelected}
@@ -80,13 +81,13 @@ const OptionsList = ({
                     label={label}
                     checked={isSelected}
                     onChange={() => {
-                      selectOption(value)
+                      selectOption(String(value))
                     }}
                   />
                 ) : (
                   <span
                     onClick={() => {
-                      selectOption(value)
+                      selectOption(String(value))
                     }}
                     className={cx(
                       baseCheckboxStyles['base-checkbox-label'],

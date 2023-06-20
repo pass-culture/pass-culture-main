@@ -1,7 +1,7 @@
 import { Mode } from 'core/OfferEducational'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 
-import { IOfferEducationalProps } from '../OfferEducational'
+import { OfferEducationalProps } from '../OfferEducational'
 
 import { categoriesFactory, subCategoriesFactory } from './categoryFactory'
 import { userOfferersFactory } from './userOfferersFactory'
@@ -37,7 +37,7 @@ const mockEducationalSubcategories = subCategoriesFactory([
 
 const mockUserOfferers = userOfferersFactory([{}])
 
-export const defaultCreationProps: IOfferEducationalProps = {
+export const defaultCreationProps: OfferEducationalProps = {
   userOfferers: mockUserOfferers,
   categories: {
     educationalCategories: mockEducationalCategories,
@@ -54,7 +54,7 @@ export const defaultCreationProps: IOfferEducationalProps = {
   setOffer: jest.fn(),
 }
 
-export const defaultEditionProps: IOfferEducationalProps = {
+export const defaultEditionProps: OfferEducationalProps = {
   offer: collectiveOfferFactory(),
   userOfferers: mockUserOfferers,
   categories: {
