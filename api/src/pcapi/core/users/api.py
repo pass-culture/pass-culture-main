@@ -7,6 +7,7 @@ import secrets
 import typing
 
 from dateutil.relativedelta import relativedelta
+from flask import request
 from flask_jwt_extended import create_access_token
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -1253,11 +1254,14 @@ def update_login_device_history(
         )
         return None
 
+    location = users_utils.format_login_location(request.headers.get("X-Country"), request.headers.get("X-City"))
+
     login_device = users_models.LoginDeviceHistory(
         deviceId=device_info.device_id,
         os=device_info.os,
         source=device_info.source,
         user=user,
+        location=location,
     )
     repository.save(login_device)
 
