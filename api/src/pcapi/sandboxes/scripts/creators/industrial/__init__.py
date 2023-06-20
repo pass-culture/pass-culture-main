@@ -47,6 +47,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_offerer_with_several_ven
 from pcapi.sandboxes.scripts.creators.industrial.create_offerer_with_venue_provider_and_external_bookings import (
     create_industrial_provider_external_bookings,
 )
+from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_ean import create_offers_with_ean
 from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_price_categories import (
     create_offers_with_price_categories,
 )
@@ -135,5 +136,7 @@ def save_industrial_sandbox() -> None:
     create_industrial_offerer_with_custom_reimbursement_rule()
 
     create_offerer_providers_for_apis()
+
+    create_offers_with_ean()
 
     create_industrial_offer_validation_rules()
