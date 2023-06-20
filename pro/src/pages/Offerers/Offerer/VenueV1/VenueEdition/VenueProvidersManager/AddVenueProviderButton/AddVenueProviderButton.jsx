@@ -1,15 +1,16 @@
 import './AddVenueProviderButton.scss'
 
 import PropTypes from 'prop-types'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import { MoreCircleIcon } from 'icons'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Select from 'ui-kit/form_raw/Select'
-import { sortByDisplayName } from 'utils/strings'
+import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { FieldLayout } from 'ui-kit/form/shared'
+import { sortByLabel } from 'utils/strings'
 
 import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
 import VenueProviderForm from '../VenueProviderForm/VenueProviderForm'
@@ -20,15 +21,11 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
   const [selectedProvider, setSelectedProvider] = useState(
     DEFAULT_PROVIDER_OPTION
   )
-  const providersOptions = useMemo(
-    () =>
-      sortByDisplayName(
-        providers.map(item => ({
-          id: item['id'].toString(),
-          displayName: item['name'],
-        }))
-      ),
-    [providers]
+  const providersOptions = sortByLabel(
+    providers.map(item => ({
+      value: item['id'].toString(),
+      label: item['name'],
+    }))
   )
 
   const setCreationMode = useCallback(() => {
@@ -80,14 +77,16 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
 
   const VenueProviderSelection = (
     <>
-      <Select
-        defaultOption={DEFAULT_PROVIDER_OPTION}
-        handleSelection={handleChange}
-        label="Source"
-        name="provider"
-        options={providersOptions}
-        selectedValue={selectedProvider.id.toString()}
-      />
+      <FieldLayout label="Source" name="provider">
+        <SelectInput
+          defaultOption={DEFAULT_PROVIDER_OPTION}
+          onChange={handleChange}
+          name="provider"
+          options={providersOptions}
+          value={selectedProvider.value.toString()}
+        />
+      </FieldLayout>
+
       {selectedProvider.id !== DEFAULT_PROVIDER_OPTION.id && (
         <VenueProviderForm
           afterSubmit={afterSubmit}
