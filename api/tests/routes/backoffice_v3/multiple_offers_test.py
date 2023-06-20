@@ -50,7 +50,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
     def test_search_product_with_offers(self, authenticated_client):
         offers_factories.ThingOfferFactory(
             product__name="Product with EAN",
-            product__extraData={"isbn": "9783161484100", "ean": "9783161484100"},
+            product__extraData={"ean": "9783161484100"},
             product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
 
@@ -75,7 +75,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
     def test_search_product_without_offer(self, authenticated_client):
         offers_factories.ThingProductFactory(
             name="Product without offer",
-            extraData={"isbn": "9783161484100", "ean": "9783161484100"},
+            extraData={"ean": "9783161484100"},
             subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
 
@@ -109,12 +109,12 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         self, authenticated_client, first_compatibility, second_compatibility, expected_cgu_display
     ):
         offers_factories.ThingProductFactory(
-            extraData={"isbn": "9781234567890", "ean": "9781234567890"},
+            extraData={"ean": "9781234567890"},
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             isGcuCompatible=first_compatibility,
         )
         offers_factories.ThingProductFactory(
-            extraData={"isbn": "9781234567890", "ean": "9781234567890"},
+            extraData={"ean": "9781234567890"},
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             isGcuCompatible=second_compatibility,
         )
@@ -130,7 +130,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
     def test_get_current_criteria_on_active_offers(self, authenticated_client):
         criterion1 = criteria_models.Criterion(name="One criterion")
         criterion2 = criteria_models.Criterion(name="Another criterion")
-        product = offers_factories.ThingProductFactory(extraData={"isbn": "9783161484100", "ean": "9783161484100"})
+        product = offers_factories.ThingProductFactory(extraData={"ean": "9783161484100"})
         offers_factories.ThingOfferFactory(product=product, criteria=[criterion1], isActive=True)
         offers_factories.ThingOfferFactory(product=product, criteria=[criterion1, criterion2], isActive=True)
         offers_factories.ThingOfferFactory(product=product, criteria=[], isActive=True)
@@ -163,15 +163,13 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
     def test_edit_product_offers_criteria_from_ean(self, mocked_async_index_offer_ids, authenticated_client):
         criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
         criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
-        product = offers_factories.ProductFactory(extraData={"isbn": "9783161484100", "ean": "9783161484100"})
+        product = offers_factories.ProductFactory(extraData={"ean": "9783161484100"})
         offer1 = offers_factories.OfferFactory(
-            product=product, extraData={"isbn": "9783161484100", "ean": "9783161484100"}, criteria=[criterion1]
+            product=product, extraData={"ean": "9783161484100"}, criteria=[criterion1]
         )
-        offer2 = offers_factories.OfferFactory(
-            product=product, extraData={"isbn": "9783161484100", "ean": "9783161484100"}
-        )
+        offer2 = offers_factories.OfferFactory(product=product, extraData={"ean": "9783161484100"})
         inactive_offer = offers_factories.OfferFactory(
-            product=product, extraData={"isbn": "9783161484100", "ean": "9783161484100"}, isActive=False
+            product=product, extraData={"ean": "9783161484100"}, isActive=False
         )
         unmatched_offer = offers_factories.OfferFactory()
 
@@ -190,7 +188,7 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
         mocked_async_index_offer_ids.assert_called_once_with([offer1.id, offer2.id])
 
     def test_edit_product_offers_criteria_from_ean_without_offers(self, authenticated_client):
-        offers_factories.ProductFactory(extraData={"isbn": "9783161484100", "ean": "9783161484100"})
+        offers_factories.ProductFactory(extraData={"ean": "9783161484100"})
         criterion = criteria_factories.CriterionFactory(name="Pretty good books")
 
         response = self.post_to_endpoint(
@@ -206,7 +204,7 @@ class SetProductGcuIncompatibleButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        offers_factories.ThingProductFactory(extraData={"isbn": "9781234567890", "ean": "9781234567890"})
+        offers_factories.ThingProductFactory(extraData={"ean": "9781234567890"})
         return url_for("backoffice_v3_web.multiple_offers.search_multiple_offers", ean="9781234567890")
 
 
@@ -230,7 +228,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
     ):
         product_1 = offers_factories.ThingProductFactory(
             description="premier produit inapproprié",
-            extraData={"isbn": "9781234567890", "ean": "9781234567890"},
+            extraData={"ean": "9781234567890"},
             isGcuCompatible=not validation_status == OfferValidationStatus.REJECTED,
         )
         venue = offerers_factories.VenueFactory()

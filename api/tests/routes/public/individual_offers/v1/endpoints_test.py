@@ -718,7 +718,6 @@ class PostProductTest:
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                             "performer": "Ichika Nito",
-                            "isbn": "1234567891123",  # this field is not applicable and not added to extraData
                         },
                         "accessibility": ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",

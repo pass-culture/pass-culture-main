@@ -2058,17 +2058,17 @@ class UnindexExpiredOffersTest:
 
 @pytest.mark.usefixtures("db_session")
 class DeleteUnwantedExistingProductTest:
-    def test_delete_product_when_isbn_found(self):
-        isbn = "1111111111111"
+    def test_delete_product_when_ean_found(self):
+        ean = "1111111111111"
         product_to_delete = factories.ProductFactory(
-            idAtProviders=isbn,
+            idAtProviders=ean,
             isSynchronizationCompatible=True,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         offer_to_delete = factories.OfferFactory(product=product_to_delete)
         factories.MediationFactory(offer=offer_to_delete)
         users_factories.FavoriteFactory(offer=offer_to_delete)
-        product_to_keep_other_isbn = factories.ProductFactory(
+        product_to_keep_other_ean = factories.ProductFactory(
             idAtProviders="something-else",
             isSynchronizationCompatible=True,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -2076,15 +2076,15 @@ class DeleteUnwantedExistingProductTest:
 
         api.delete_unwanted_existing_product("1111111111111")
 
-        assert models.Product.query.all() == [product_to_keep_other_isbn]
+        assert models.Product.query.all() == [product_to_keep_other_ean]
         assert models.Mediation.query.count() == 0
         assert models.Offer.query.count() == 0
         assert users_models.Favorite.query.count() == 0
 
     def test_keep_but_modify_product_if_booked(self):
-        isbn = "1111111111111"
+        ean = "1111111111111"
         product = factories.ProductFactory(
-            idAtProviders=isbn,
+            idAtProviders=ean,
             isGcuCompatible=True,
             isSynchronizationCompatible=True,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -2104,13 +2104,13 @@ class DeleteUnwantedExistingProductTest:
 @pytest.mark.usefixtures("db_session")
 class WhitelistExistingProductTest:
     def test_modify_product_if_existing_and_not_cgcompatible_nor_synchronizable(self):
-        isbn = "1111111111111"
+        ean = "1111111111111"
         product = factories.ProductFactory(
-            idAtProviders=isbn,
+            idAtProviders=ean,
             isGcuCompatible=False,
             isSynchronizationCompatible=False,
         )
-        api.whitelist_existing_product(isbn)
+        api.whitelist_existing_product(ean)
         assert models.Product.query.one() == product
         assert product.isGcuCompatible
         assert product.isSynchronizationCompatible

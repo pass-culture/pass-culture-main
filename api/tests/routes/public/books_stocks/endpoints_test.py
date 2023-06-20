@@ -15,19 +15,19 @@ NOT_SENT = object()
 
 def test_basics(client):
     venue = offerers_factories.VenueFactory()
-    isbn = "123456789"
+    ean = "123456789"
     offer = offers_factories.OfferFactory(
-        product__idAtProviders=isbn,
+        product__idAtProviders=ean,
         product__extraData={"prix_livre": 12.34},
         product__subcategoryId="LIVRE_PAPIER",
-        idAtProvider=isbn,
+        idAtProvider=ean,
         venue=venue,
     )
     offerers_factories.ApiKeyFactory(offerer=venue.managingOfferer)
 
     data = {
         "stocks": [
-            {"ref": isbn, "available": 4, "price": 30},
+            {"ref": ean, "available": 4, "price": 30},
             {"ref": "unknown", "available": 0, "price": 10},
         ]
     }
@@ -53,18 +53,18 @@ def test_basics(client):
 )
 def test_require_price(price, error, client):
     venue = offerers_factories.VenueFactory()
-    isbn = "123456789"
+    ean = "123456789"
     product_price = decimal.Decimal("12.34")
     offers_factories.OfferFactory(
-        product__idAtProviders=isbn,
+        product__idAtProviders=ean,
         product__subcategoryId="LIVRE_PAPIER",
-        idAtProvider=isbn,
+        idAtProvider=ean,
         product__extraData={"prix_livre": product_price},
         venue=venue,
     )
     offerers_factories.ApiKeyFactory(offerer=venue.managingOfferer)
 
-    data = {"stocks": [{"ref": isbn, "available": 4, "price": price}]}
+    data = {"stocks": [{"ref": ean, "available": 4, "price": price}]}
     if price == NOT_SENT:
         del data["stocks"][0]["price"]
     client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
