@@ -42,11 +42,6 @@
     margin-bottom: rem.torem(20px);
   }
 
-  .input-select {
-    margin-top: rem.torem(24px);
-    width: rem.torem(173.44px);
-  }
-
   .period-filter {
     margin-left: rem.torem(10px);
   }
@@ -66,14 +61,6 @@
   .form-row {
     display: flex;
     flex-direction: row;
-
-    .input-select {
-      margin-left: rem.torem(10px);
-
-      &:first-child {
-        margin-left: 0;
-      }
-    }
   }
 
   table {
