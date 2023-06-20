@@ -113,6 +113,14 @@ export const OfferFilters = ({
   }
 
   useEffect(() => {
+    if (venueFilter) {
+      dispatchCurrentFilters({
+        type: 'RESET_ONLY_IN_MY_DEPARTMENT',
+      })
+    }
+  }, [venueFilter])
+
+  useEffect(() => {
     const loadFiltersOptions = async () => {
       const [categoriesResponse, domainsResponse] = await Promise.all([
         getEducationalCategoriesOptionsAdapter(null),
