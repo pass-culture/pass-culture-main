@@ -103,7 +103,6 @@ jobs:
       teleport_version: 11.1.1
       teleport_proxy: teleport.ehp.passculture.team:443
       teleport_kubernetes_cluster: passculture-metier-ehp
-      deploy_adage: ${{ needs.check-adage-folder-changes.outputs.folder_changed == 'true' }}
       deploy_api: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }}
       deploy_pro: ${{ needs.check-pro-folder-changes.outputs.folder_changed == 'true' }}
     secrets: inherit
