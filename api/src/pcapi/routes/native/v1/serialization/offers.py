@@ -47,6 +47,7 @@ class OfferStockResponse(BaseModel):
     beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
     cancellation_limit_datetime: datetime | None
+    features: list[str]
     isBookable: bool
     is_forbidden_to_underage: bool
     isSoldOut: bool
