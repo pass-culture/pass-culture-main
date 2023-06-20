@@ -21,7 +21,6 @@ import {
 import { IOfferer } from 'core/Offerers/types'
 import { IProviders, IVenue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
-import { useNewOfferCreationJourney } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -67,8 +66,6 @@ const VenueFormScreen = ({
   const [isSiretValued, setIsSiretValued] = useState(
     isCreatingVenue || !!venue?.siret
   )
-
-  const hasNewOfferCreationJourney = useNewOfferCreationJourney()
 
   const isNewOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
   const isWithdrawalUpdatedMailActive = useActiveFeature(
@@ -142,21 +139,17 @@ const VenueFormScreen = ({
 
     let savedSuccess: boolean
     request
-      .then(response => {
+      .then(() => {
         savedSuccess = true
         navigate(
           venueSubmitRedirectUrl(
-            hasNewOfferCreationJourney,
             isCreatingVenue,
             offerer.nonHumanizedId,
-            // FIXME (mageoffray, 2023-06-19) : once patch response only has numeric ids we can simplify venue.id value
-            // @ts-expect-error
-            isCreatingVenue ? response.id : response.nonHumanizedId,
             currentUser
           )
         )
 
-        if (!hasNewOfferCreationJourney || currentUser.isAdmin) {
+        if (currentUser.isAdmin) {
           notify.success('Vos modifications ont bien été enregistrées')
         }
       })

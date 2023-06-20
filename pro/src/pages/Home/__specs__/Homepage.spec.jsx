@@ -10,7 +10,6 @@ import { api } from 'apiClient/api'
 import { RemoteContextProvider } from 'context/remoteConfigContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
@@ -37,11 +36,6 @@ jest.mock('@firebase/remote-config', () => ({
 jest.mock('hooks/useRemoteConfig', () => ({
   __esModule: true,
   default: () => ({ remoteConfig: {}, remoteConfigData: { toto: 'tata' } }),
-}))
-
-jest.mock('hooks/useNewOfferCreationJourney', () => ({
-  __esModule: true,
-  default: jest.fn().mockReturnValue(false),
 }))
 
 const renderHomePage = storeOverrides => {
@@ -180,29 +174,23 @@ describe('homepage', () => {
       })
     })
 
-    describe('new venue offer journey', () => {
-      beforeEach(() => {
-        jest.spyOn(useNewOfferCreationJourney, 'default').mockReturnValue(true)
+    it('the user should see the home offer steps if they do not have any venues', async () => {
+      api.getOfferer.mockResolvedValue(baseOfferers[1])
+      api.listOfferersNames.mockResolvedValue({
+        offerersNames: [baseOfferersNames[1]],
       })
 
-      it('the user should see the home offer steps if they do not have any venues', async () => {
-        api.getOfferer.mockResolvedValue(baseOfferers[1])
-        api.listOfferersNames.mockResolvedValue({
-          offerersNames: [baseOfferersNames[1]],
-        })
+      renderHomePage(store)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-        renderHomePage(store)
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+      expect(screen.getByTestId('home-offer-steps')).toBeInTheDocument()
+    })
 
-        expect(screen.getByTestId('home-offer-steps')).toBeInTheDocument()
-      })
+    it('the user should not see the home offer steps if they have some venues', async () => {
+      renderHomePage(store)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-      it('the user should not see the home offer steps if they have some venues', async () => {
-        renderHomePage(store)
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-        expect(screen.queryByTestId('home-offer-steps')).not.toBeInTheDocument()
-      })
+      expect(screen.queryByTestId('home-offer-steps')).not.toBeInTheDocument()
     })
 
     describe('when clicking on anchor link to profile', () => {

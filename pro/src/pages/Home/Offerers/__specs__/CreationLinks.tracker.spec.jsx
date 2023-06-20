@@ -143,37 +143,6 @@ describe('trackers creationLinks', () => {
     }))
   })
 
-  it('should track offer creation link', async () => {
-    // Given
-    baseOfferers = [
-      {
-        ...baseOfferers[1],
-        hasDigitalVenueAtLeastOneOffer: false,
-        managedVenues: [virtualVenue],
-      },
-    ]
-    api.getOfferer.mockResolvedValue(baseOfferers[0])
-    renderHomePage()
-    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-    const createOfferButton = screen.queryByText('Créer une offre')
-
-    await userEvent.click(createOfferButton)
-
-    // Then
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'Home',
-        isEdition: false,
-        to: 'OfferFormHomepage',
-        used: 'HomeButton',
-      }
-    )
-  })
-
   it('should track venue creation link', async () => {
     // Given
     baseOfferers = [

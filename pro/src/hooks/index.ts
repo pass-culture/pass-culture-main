@@ -3,4 +3,3 @@ export { default as useScrollToFirstErrorAfterSubmit } from './useScrollToFirstE
 export { default as useAdapter } from './useAdapter'
 export { default as useAccessibilityOptions } from './useAccessibilityOptions'
 export { default as useOfferWizardMode } from './useOfferWizardMode'
-export { default as useNewOfferCreationJourney } from './useNewOfferCreationJourney'

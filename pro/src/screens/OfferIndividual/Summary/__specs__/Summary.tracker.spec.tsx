@@ -15,7 +15,6 @@ import {
   IOfferIndividualContext,
   OfferIndividualContext,
 } from '../../../../context/OfferIndividualContext'
-import * as useNewOfferCreationJourney from '../../../../hooks/useNewOfferCreationJourney'
 import Summary from '../Summary'
 
 const mockLogEvent = jest.fn()
@@ -467,7 +466,6 @@ describe('Summary trackers', () => {
         .spyOn(useOfferWizardMode, 'default')
         .mockImplementation(() => OFFER_WIZARD_MODE.CREATION)
 
-      jest.spyOn(useNewOfferCreationJourney, 'default').mockReturnValue(true)
       jest.spyOn(api, 'patchPublishOffer').mockResolvedValue()
 
       const context = {

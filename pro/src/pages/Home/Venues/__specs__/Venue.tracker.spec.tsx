@@ -8,13 +8,18 @@ import React from 'react'
 
 import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Venue, { IVenueProps } from '../Venue'
 
 const mockLogEvent = jest.fn()
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getVenueStats: jest.fn().mockResolvedValue({}),
+  },
+}))
 
 const renderVenue = async (props: IVenueProps) =>
   renderWithProviders(<Venue {...props} />)
@@ -69,18 +74,16 @@ describe('venue create offer link', () => {
 
     // When
     await renderVenue(props)
-    await userEvent.click(
-      screen.getByTitle('Afficher les statistiques de My venue')
-    )
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
     await userEvent.click(
       screen.getByRole('link', { name: 'Créer une nouvelle offre numérique' })
     )
 
     // Then
-    expect(mockLogEvent).toHaveBeenCalledTimes(2)
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
-      2,
+      1,
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
         from: 'Home',
@@ -97,18 +100,16 @@ describe('venue create offer link', () => {
 
     // When
     await renderVenue(props)
-    await userEvent.click(
-      screen.getByTitle('Afficher les statistiques de My venue')
-    )
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
     await userEvent.click(
       screen.getByRole('link', { name: 'Créer une nouvelle offre' })
     )
 
     // Then
-    expect(mockLogEvent).toHaveBeenCalledTimes(2)
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
-      2,
+      1,
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
         from: 'Home',
@@ -125,7 +126,9 @@ describe('venue create offer link', () => {
 
     // When
     await renderVenue(props)
-    await userEvent.click(screen.getByRole('link', { name: 'Modifier' }))
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    await userEvent.click(screen.getByRole('link', { name: 'Éditer le lieu' }))
 
     // Then
     expect(mockLogEvent).toHaveBeenCalledWith(
@@ -161,9 +164,6 @@ describe('venue create offer link', () => {
     props.isVirtual = false
 
     // When
-    await jest
-      .spyOn(useNewOfferCreationJourney, 'default')
-      .mockReturnValue(true)
     await renderVenue(props)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
     expect(
@@ -179,22 +179,14 @@ describe('venue create offer link', () => {
     async ({ index, event }) => {
       props.isVirtual = true
       await renderVenue(props)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-      await userEvent.click(
-        screen.getByTitle('Afficher les statistiques de My venue')
-      )
-      expect(mockLogEvent).toHaveBeenCalledWith(
-        VenueEvents.CLICKED_VENUE_ACCORDION_BUTTON,
-        {
-          venue_id: props.venueId,
-        }
-      )
       const stats = screen.getAllByTestId('venue-stat')
       await userEvent.click(
         within(stats[index]).getByRole('link', { name: 'Voir' })
       )
-      expect(mockLogEvent).toHaveBeenCalledTimes(2)
-      expect(mockLogEvent).toHaveBeenNthCalledWith(2, event, {
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, event, {
         venue_id: props.venueId,
       })
     }

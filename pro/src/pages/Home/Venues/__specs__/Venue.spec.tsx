@@ -3,15 +3,11 @@ import {
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 import React from 'react'
 
 import { api } from 'apiClient/api'
 import { DMSApplicationstatus } from 'apiClient/v1'
-import { Events } from 'core/FirebaseEvents/constants'
-import * as useAnalytics from 'hooks/useAnalytics'
-import * as useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -59,10 +55,7 @@ describe('venues', () => {
   it('should display stats tiles', async () => {
     // When
     renderVenue(props)
-
-    await userEvent.click(
-      screen.getByTitle('Afficher les statistiques de My venue')
-    )
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     // Then
     expect(api.getVenueStats).toHaveBeenCalledWith(props.venueId)
@@ -99,9 +92,8 @@ describe('venues', () => {
   it('should contain a link for each stats', async () => {
     // When
     renderVenue(props)
-    await userEvent.click(
-      screen.getByTitle('Afficher les statistiques de My venue')
-    )
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
     const [activeOffersStat] = screen.getAllByTestId('venue-stat')
     expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
 
@@ -109,104 +101,11 @@ describe('venues', () => {
     expect(screen.getAllByRole('link', { name: 'Voir' })).toHaveLength(4)
   })
 
-  it('should redirect to filtered bookings when clicking on link', async () => {
-    // When
-    renderVenue(props)
-    await userEvent.click(
-      screen.getByTitle('Afficher les statistiques de My venue')
-    )
-    // Then
-    const [
-      activeOffersStat,
-      activeBookingsStat,
-      validatedBookingsStat,
-      outOfStockOffersStat,
-    ] = screen.getAllByTestId('venue-stat')
-
-    expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
-
-    expect(
-      within(activeOffersStat).getByRole('link', { name: 'Voir' })
-    ).toHaveAttribute('href', `/offres?lieu=${venueId}&statut=active`)
-    const byRole = within(validatedBookingsStat).getByRole('link', {
-      name: 'Voir',
-    })
-    expect(byRole).toHaveAttribute(
-      'href',
-      `/reservations?page=1&bookingStatusFilter=validated&offerVenueId=${venueId}`
-    )
-    expect(
-      within(activeBookingsStat).getByRole('link', { name: 'Voir' })
-    ).toHaveAttribute('href', `/reservations?page=1&offerVenueId=${venueId}`)
-    expect(
-      within(outOfStockOffersStat).getByRole('link', { name: 'Voir' })
-    ).toHaveAttribute('href', `/offres?lieu=${venueId}&statut=epuisee`)
-  })
-
-  describe('virtual venue section', () => {
-    it('should display create offer link', async () => {
-      // Given
-      props.isVirtual = true
-
-      // When
-      renderVenue(props)
-      await userEvent.click(
-        screen.getByTitle('Afficher les statistiques de My venue')
-      )
-      const [activeOffersStat] = screen.getAllByTestId('venue-stat')
-      expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
-
-      // Then
-      expect(
-        screen.getByRole('link', { name: 'Créer une nouvelle offre numérique' })
-      ).toBeInTheDocument()
-    })
-  })
-
   describe('physical venue section', () => {
-    it('should display create offer link', async () => {
-      // Given
-      props.isVirtual = false
-
-      // When
-      renderVenue(props)
-      await userEvent.click(
-        screen.getByTitle('Afficher les statistiques de My venue')
-      )
-      const [activeOffersStat] = screen.getAllByTestId('venue-stat')
-      expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
-
-      // Then
-      expect(
-        screen.getByRole('link', { name: 'Créer une nouvelle offre' })
-      ).toBeInTheDocument()
-    })
-
     it('should display edition venue link', async () => {
       // Given
       props.isVirtual = false
 
-      // When
-      renderVenue(props)
-      await userEvent.click(
-        screen.getByTitle('Afficher les statistiques de My venue')
-      )
-      const [activeOffersStat] = screen.getAllByTestId('venue-stat')
-      expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
-
-      // Then
-      expect(screen.getByRole('link', { name: 'Modifier' })).toHaveAttribute(
-        'href',
-        `/structures/${offererId}/lieux/${venueId}?modification`
-      )
-    })
-
-    it('should display edition venue link with new offer creation journey', async () => {
-      // Given
-      props.isVirtual = false
-      await jest
-        .spyOn(useNewOfferCreationJourney, 'default')
-        .mockReturnValue(true)
       // When
       renderVenue(props)
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
@@ -237,197 +136,147 @@ describe('venues', () => {
       )
     })
   })
-  describe('when new offer creation journey is enabled', () => {
-    beforeEach(() => {
-      jest.spyOn(useNewOfferCreationJourney, 'default').mockReturnValue(true)
-    })
 
-    it('should not display dms timeline link if venue has no dms application', async () => {
-      renderVenue(
-        {
-          ...props,
-          hasAdageId: false,
-          dmsInformations: null,
-        },
-        {
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
-            },
-          ],
-        }
-      )
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      // Then
-      expect(
-        screen.queryByRole('link', {
-          name: 'Suivre ma demande de référencement ADAGE',
-        })
-      ).not.toBeInTheDocument()
-    })
-    it('should display dms timeline link when venue has dms applicaiton and adage id less than 30 days', async () => {
-      renderVenue(
-        {
-          ...props,
-          hasAdageId: true,
-          adageInscriptionDate: addDays(new Date(), -15).toISOString(),
-          dmsInformations: {
-            ...defaultCollectiveDmsApplication,
-            state: DMSApplicationstatus.ACCEPTE,
+  it('should not display dms timeline link if venue has no dms application', async () => {
+    renderVenue(
+      {
+        ...props,
+        hasAdageId: false,
+        dmsInformations: null,
+      },
+      {
+        list: [
+          {
+            isActive: true,
+            nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
           },
-        },
-        {
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
-            },
-          ],
-        }
-      )
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+        ],
+      }
+    )
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-      // Then
-      expect(
-        screen.getByRole('link', {
-          name: 'Suivre ma demande de référencement ADAGE',
-        })
-      ).toHaveAttribute(
-        'href',
-        `/structures/${offererId}/lieux/${venueId}#venue-collective-data`
-      )
-    })
-    it('should not display dms timeline link if venue has adageId for more than 30days', async () => {
-      renderVenue(
-        {
-          ...props,
-          hasAdageId: true,
-          adageInscriptionDate: addDays(new Date(), -32).toISOString(),
-          dmsInformations: {
-            ...defaultCollectiveDmsApplication,
-            state: DMSApplicationstatus.ACCEPTE,
-          },
-        },
-        {
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
-            },
-          ],
-        }
-      )
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      // Then
-      expect(
-        screen.queryByRole('link', {
-          name: 'Suivre ma demande de référencement ADAGE',
-        })
-      ).not.toBeInTheDocument()
-    })
-    it('should display dms timeline link if venue has refused application for less than 30days', async () => {
-      renderVenue(
-        {
-          ...props,
-          dmsInformations: {
-            ...defaultCollectiveDmsApplication,
-            state: DMSApplicationstatus.REFUSE,
-            processingDate: addDays(new Date(), -15).toISOString(),
-          },
-        },
-        {
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
-            },
-          ],
-        }
-      )
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      // Then
-      expect(
-        screen.getByRole('link', {
-          name: 'Suivre ma demande de référencement ADAGE',
-        })
-      ).toBeInTheDocument()
-    })
-    it('should not display dms timeline link if venue has refused application for more than 30days', async () => {
-      renderVenue(
-        {
-          ...props,
-          dmsInformations: {
-            ...defaultCollectiveDmsApplication,
-            state: DMSApplicationstatus.REFUSE,
-            processingDate: addDays(new Date(), -31).toISOString(),
-          },
-        },
-        {
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
-            },
-          ],
-        }
-      )
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      // Then
-      expect(
-        screen.queryByRole('link', {
-          name: 'Suivre ma demande de référencement ADAGE',
-        })
-      ).not.toBeInTheDocument()
-    })
-
-    it('should log event when clicking on dms timeline link', async () => {
-      // When
-      const mockLogEvent = jest.fn()
-      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-        ...jest.requireActual('hooks/useAnalytics'),
-        logEvent: mockLogEvent,
-      }))
-      await jest
-        .spyOn(useNewOfferCreationJourney, 'default')
-        .mockReturnValue(false)
-      renderVenue(
-        {
-          ...props,
-          hasAdageId: true,
-          adageInscriptionDate: addDays(new Date(), -15).toISOString(),
-          dmsInformations: {
-            ...defaultCollectiveDmsApplication,
-            state: DMSApplicationstatus.ACCEPTE,
-          },
-        },
-        {
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
-            },
-          ],
-        }
-      )
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      // Then
-      const dmsLink = screen.getByRole('link', {
+    // Then
+    expect(
+      screen.queryByRole('link', {
         name: 'Suivre ma demande de référencement ADAGE',
       })
-      expect(dmsLink).toBeInTheDocument()
-      await userEvent.click(dmsLink)
-      expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_EAC_DMS_TIMELINE,
-        {
-          from: '/',
-        }
-      )
-    })
+    ).not.toBeInTheDocument()
+  })
+  it('should display dms timeline link when venue has dms applicaiton and adage id less than 30 days', async () => {
+    renderVenue(
+      {
+        ...props,
+        hasAdageId: true,
+        adageInscriptionDate: addDays(new Date(), -15).toISOString(),
+        dmsInformations: {
+          ...defaultCollectiveDmsApplication,
+          state: DMSApplicationstatus.ACCEPTE,
+        },
+      },
+      {
+        list: [
+          {
+            isActive: true,
+            nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
+          },
+        ],
+      }
+    )
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    // Then
+    expect(
+      screen.getByRole('link', {
+        name: 'Suivre ma demande de référencement ADAGE',
+      })
+    ).toHaveAttribute(
+      'href',
+      `/structures/${offererId}/lieux/${venueId}#venue-collective-data`
+    )
+  })
+  it('should not display dms timeline link if venue has adageId for more than 30days', async () => {
+    renderVenue(
+      {
+        ...props,
+        hasAdageId: true,
+        adageInscriptionDate: addDays(new Date(), -32).toISOString(),
+        dmsInformations: {
+          ...defaultCollectiveDmsApplication,
+          state: DMSApplicationstatus.ACCEPTE,
+        },
+      },
+      {
+        list: [
+          {
+            isActive: true,
+            nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
+          },
+        ],
+      }
+    )
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    // Then
+    expect(
+      screen.queryByRole('link', {
+        name: 'Suivre ma demande de référencement ADAGE',
+      })
+    ).not.toBeInTheDocument()
+  })
+  it('should display dms timeline link if venue has refused application for less than 30days', async () => {
+    renderVenue(
+      {
+        ...props,
+        dmsInformations: {
+          ...defaultCollectiveDmsApplication,
+          state: DMSApplicationstatus.REFUSE,
+          processingDate: addDays(new Date(), -15).toISOString(),
+        },
+      },
+      {
+        list: [
+          {
+            isActive: true,
+            nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
+          },
+        ],
+      }
+    )
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    // Then
+    expect(
+      screen.getByRole('link', {
+        name: 'Suivre ma demande de référencement ADAGE',
+      })
+    ).toBeInTheDocument()
+  })
+  it('should not display dms timeline link if venue has refused application for more than 30days', async () => {
+    renderVenue(
+      {
+        ...props,
+        dmsInformations: {
+          ...defaultCollectiveDmsApplication,
+          state: DMSApplicationstatus.REFUSE,
+          processingDate: addDays(new Date(), -31).toISOString(),
+        },
+      },
+      {
+        list: [
+          {
+            isActive: true,
+            nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
+          },
+        ],
+      }
+    )
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    // Then
+    expect(
+      screen.queryByRole('link', {
+        name: 'Suivre ma demande de référencement ADAGE',
+      })
+    ).not.toBeInTheDocument()
   })
 })
