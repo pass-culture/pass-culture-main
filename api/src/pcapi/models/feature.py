@@ -42,6 +42,7 @@ class FeatureToggle(enum.Enum):
     DISABLE_BOOST_EXTERNAL_BOOKINGS = "Désactiver les réservations externes Boost"
     DISABLE_CDS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CDS"
     DISABLE_CGR_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CGR"
+    DISABLE_EMS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes EMS"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
     ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING = (
         "Valide automatiquement après 48h les offres issues de l'api billeterie cinéma"
@@ -103,6 +104,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_ZENDESK_SELL_CREATION = "Activer la création de nouvelles entrées dans Zendesk Sell (structures et lieux)"
     ENABLE_BOOST_API_INTEGRATION = "Active la réservation de places de cinéma via l'API Boost"
     ENABLE_OFFERER_STATS = "Active l'affichage des statistiques d'une structure sur le portail pro"
+    ENABLE_EMS_INTEGRATION = "Active la synchronisation de stocks et la réservation via EMS"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY = "Nouveau parcours de creation d'offre optimisé"
     WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
@@ -154,6 +156,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.DISABLE_BOOST_EXTERNAL_BOOKINGS,
     FeatureToggle.DISABLE_CDS_EXTERNAL_BOOKINGS,
     FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS,
+    FeatureToggle.DISABLE_EMS_EXTERNAL_BOOKINGS,
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,
     FeatureToggle.ENABLE_CULTURAL_SURVEY,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE,
@@ -171,6 +174,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.ENABLE_OFFERER_STATS,
+    FeatureToggle.ENABLE_EMS_INTEGRATION,
     FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY,
     FeatureToggle.ENABLE_CGR_INTEGRATION,
     FeatureToggle.WIP_ADD_CLG_6_5_COLLECTIVE_OFFER,
