@@ -13,6 +13,7 @@ import './PrebookingButton.scss'
 import { logOfferConversion } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit'
 import { LOGS_DATA } from 'utils/config'
+import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import { postBookingAdapater } from './adapters/postBookingAdapter'
 import PrebookingModal from './PrebookingModal'
@@ -36,7 +37,10 @@ const PrebookingButton = ({
 
   const handleBookingModalButtonClick = (stockId: number) => {
     if (LOGS_DATA) {
-      apiAdage.logBookingModalButtonClick({ stockId })
+      apiAdage.logBookingModalButtonClick({
+        AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+        stockId,
+      })
     }
     setIsModalOpen(true)
   }

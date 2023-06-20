@@ -44,14 +44,23 @@ export const Offer = ({
   ) => {
     if (LOGS_DATA) {
       !offer.isTemplate
-        ? api.logOfferDetailsButtonClick({ stockId: offer.stock.id })
-        : api.logOfferTemplateDetailsButtonClick({ offerId: offer.id })
+        ? api.logOfferDetailsButtonClick({
+            AdageHeaderFrom: location.pathname,
+            stockId: offer.stock.id,
+          })
+        : api.logOfferTemplateDetailsButtonClick({
+            AdageHeaderFrom: location.pathname,
+            offerId: offer.id,
+          })
     }
     setDisplayDetails(!displayDetails)
   }
 
   const handleLikeClick = () => {
-    api.logFavOfferButtonClick({ offerId: offer.id })
+    api.logFavOfferButtonClick({
+      AdageHeaderFrom: location.pathname,
+      offerId: offer.id,
+    })
     setIsModalLikeOpen(true)
   }
 
