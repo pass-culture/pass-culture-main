@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { InvoiceResponseModel } from 'apiClient/v1'
+import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
 import Icon from 'ui-kit/Icon/Icon'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -10,7 +11,7 @@ import {
   FORMAT_ISO_DATE_ONLY,
   getToday,
 } from 'utils/date'
-import { sortByDisplayName } from 'utils/strings'
+import { sortByLabel } from 'utils/strings'
 
 import { DEFAULT_INVOICES_FILTERS } from '../_constants'
 
@@ -20,11 +21,6 @@ import InvoicesNoResult from './InvoicesNoResult'
 import InvoicesServerError from './InvoicesServerError'
 import { InvoiceTable } from './InvoiceTable'
 import NoInvoicesYet from './NoInvoicesYet'
-
-interface SelectOptions {
-  id: string
-  displayName: string
-}
 
 const ReimbursementsInvoices = (): JSX.Element => {
   const ALL_REIMBURSEMENT_POINT_OPTION_ID = 'all'
@@ -52,7 +48,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
   const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
   const isCalledOnceRef = useRef(false)
   const [reimbursementPointsOptions, setReimbursementPointsOptions] = useState<
-    SelectOptions[]
+    SelectOption[]
   >([])
 
   const {
@@ -141,10 +137,10 @@ const ReimbursementsInvoices = (): JSX.Element => {
       /* istanbul ignore next: TO FIX */
       api.getReimbursementPoints().then(reimbursementPointsResponse =>
         setReimbursementPointsOptions(
-          sortByDisplayName(
+          sortByLabel(
             reimbursementPointsResponse.map(item => ({
-              id: String(item.id),
-              displayName: item.publicName || item.name,
+              value: String(item.id),
+              label: item.publicName || item.name,
             }))
           )
         )
