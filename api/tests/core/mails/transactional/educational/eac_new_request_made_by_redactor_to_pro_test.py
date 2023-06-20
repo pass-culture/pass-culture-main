@@ -46,5 +46,5 @@ class SendEacNewBookingEmailToProTest:
             "REDACTOR_LASTNAME": "Khteur",
             "REDACTOR_EMAIL": request.educationalRedactor.email,
             "REDACTOR_PHONE_NUMBER": None,
-            "OFFER_CREATION_URL": f"{settings.PRO_URL}/offre/collectif/creation/{request.id}/requete",
+            "OFFER_CREATION_URL": f"{settings.PRO_URL}/offre/collectif/creation/{request.collectiveOfferTemplateId}/requete/{request.id}",
         }
