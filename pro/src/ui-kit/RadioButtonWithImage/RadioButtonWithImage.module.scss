@@ -42,11 +42,6 @@ $border-size-selected: rem.torem(2px);
     fill: colors.$tertiary; // TODO: delete after all icons update
   }
 
-  &-icon-transparent {
-    color: transparent;
-    fill: transparent; // TODO: delete after all icons update
-  }
-
   &:hover {
     box-shadow: forms.$input-hover-shadow;
     cursor: pointer;
