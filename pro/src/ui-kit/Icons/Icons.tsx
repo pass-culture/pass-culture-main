@@ -49,7 +49,7 @@ const iconList = [
   { src: 'icons/stroke-valid.svg' }, // TODO 1 use left inside <Banner>
   { src: 'icons/stroke-thing.svg' },
   { src: 'icons/stroke-duo.svg' },
-  { src: 'icons/stroke-info-phone.svg' },
+  { src: 'icons/stroke-phone.svg' },
   { src: 'icons/stroke-building.svg' },
   { src: 'icons/stroke-desk.svg' },
   { src: 'icons/stroke-code.svg' },
