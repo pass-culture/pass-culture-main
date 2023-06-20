@@ -10,7 +10,7 @@ import { ReactComponent as OpenedEyeSvg } from 'icons/ico-eye-full-open.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { Banner, Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Select from 'ui-kit/form_raw/Select'
+import SelectInput from 'ui-kit/form/Select/SelectInput'
 
 import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
 
@@ -104,14 +104,16 @@ const OffererDetails = ({
         <div
           className={`${!newOfferCreation ? 'od-header' : 'od-header-large'}`}
         >
-          <Select
-            handleSelection={handleChangeOfferer}
-            id={STEP_OFFERER_HASH}
-            label=""
-            name="offererId"
-            options={offererOptions}
-            selectedValue={selectedOfferer.nonHumanizedId.toString()}
-          />
+          <div className="venue-select">
+            <SelectInput
+              onChange={handleChangeOfferer}
+              id={STEP_OFFERER_HASH}
+              name="offererId"
+              options={offererOptions}
+              value={selectedOfferer.nonHumanizedId.toString()}
+            />
+          </div>
+
           <div className="od-separator vertical" />
           {!newOfferCreation && (
             <>
@@ -171,6 +173,7 @@ const OffererDetails = ({
                 fonctionnalités du pass Culture Pro.
               </Banner>
             )}
+
             {showOffererNotValidatedAndPhysicalVenue && (
               <Banner
                 type="notification-info"
@@ -193,6 +196,7 @@ const OffererDetails = ({
                 publiées sous réserve de validation de votre structure.
               </Banner>
             )}
+
             {showOffererNotValidatedAndNoPhysicalVenue && (
               <Banner
                 type="notification-info"
@@ -260,6 +264,7 @@ const OffererDetails = ({
                 )}
               </div>
             )}
+
             {showCreateVenueBanner && (
               <Banner
                 type="notification-info"
@@ -284,6 +289,7 @@ const OffererDetails = ({
                 </p>
               </Banner>
             )}
+
             {isUserOffererValidated &&
               !hasAtLeastOnePhysicalVenue &&
               !newOfferCreation && (
@@ -305,8 +311,8 @@ OffererDetails.propTypes = {
   isUserOffererValidated: PropTypes.bool.isRequired,
   offererOptions: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      displayName: PropTypes.string.isRequired,
+      value: PropTypes.any.isRequired,
+      label: PropTypes.string.isRequired,
     })
   ).isRequired,
   selectedOfferer: PropTypes.shape().isRequired,
