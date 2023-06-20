@@ -419,7 +419,10 @@ def check_booking_limit_datetime(
 
 
 def check_offer_extra_data(
-    subcategory_id: str, extra_data: models.OfferExtraData | None, venue: offerers_models.Venue
+    subcategory_id: str,
+    extra_data: models.OfferExtraData | None,
+    venue: offerers_models.Venue,
+    offer: models.Offer | None = None,
 ) -> None:
     errors = api_errors.ApiErrors()
 
@@ -438,7 +441,7 @@ def check_offer_extra_data(
 
     try:
         ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
-        if ean:
+        if ean and (not offer or (offer.extraData and ean != offer.extraData.get(ExtraDataFieldEnum.EAN.value))):
             _check_ean_field(extra_data, ExtraDataFieldEnum.EAN.value)
             check_ean_does_not_exist(ean, venue)
     except (exceptions.EanFormatException, exceptions.OfferAlreadyExists) as e:
