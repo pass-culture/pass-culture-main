@@ -1,6 +1,7 @@
 import enum
 import logging
 import typing
+from typing import TYPE_CHECKING
 from typing import Type
 
 import sqlalchemy as sa
@@ -11,6 +12,9 @@ from pcapi.models.pc_object import PcObject
 
 
 logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from pcapi.core.users.models import User
 
 
 class Permissions(enum.Enum):
@@ -171,10 +175,12 @@ class Role(PcObject, Base, Model):
     __tablename__ = "role"
 
     name: str = sa.Column(sa.String(140), nullable=False, unique=True)
-    permissions = sa.orm.relationship(  # type: ignore [misc]
+    permissions: sa.orm.Mapped["Permission"] = sa.orm.relationship(
         Permission, secondary="role_permission", back_populates="roles"
     )
-    profiles = sa.orm.relationship("BackOfficeUserProfile", secondary=role_backoffice_profile_table, back_populates="roles")  # type: ignore
+    profiles: sa.orm.Mapped["BackOfficeUserProfile"] = sa.orm.relationship(
+        "BackOfficeUserProfile", secondary=role_backoffice_profile_table, back_populates="roles"
+    )
 
     def has_permission(self, needed_permission: Permissions) -> bool:
         for permission in self.permissions:
@@ -191,8 +197,12 @@ class BackOfficeUserProfile(Base, Model):
     userId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
     )
-    user = sa.orm.relationship("User", foreign_keys=[userId], uselist=False, back_populates="backoffice_profile")  # type: ignore
-    roles = sa.orm.relationship("Role", secondary=role_backoffice_profile_table, back_populates="profiles")  # type: ignore
+    user: sa.orm.Mapped["User"] = sa.orm.relationship(
+        "User", foreign_keys=[userId], uselist=False, back_populates="backoffice_profile"
+    )
+    roles: sa.orm.Mapped["Role"] = sa.orm.relationship(
+        "Role", secondary=role_backoffice_profile_table, back_populates="profiles"
+    )
 
     @property
     def permissions(self) -> typing.Collection[Permissions]:

@@ -108,7 +108,9 @@ class Booking(PcObject, Base, Model):
 
     userId: int = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
 
-    activationCode = relationship("ActivationCode", uselist=False, back_populates="booking")  # type: ignore [misc]
+    activationCode: Mapped["offers_models.ActivationCode"] = relationship(
+        "ActivationCode", uselist=False, back_populates="booking"
+    )
 
     user: Mapped["users_models.User"] = relationship("User", foreign_keys=[userId], backref="userBookings")
 
