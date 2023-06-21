@@ -13,6 +13,7 @@ import {
   AdageFrontRoles,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { getCollectiveOfferAdapter } from 'pages/AdageIframe/app/adapters/getCollectiveOfferAdapter'
 import { getCollectiveOfferTemplateAdapter } from 'pages/AdageIframe/app/adapters/getCollectiveOfferTemplateAdapter'
 import { AnalyticsContext } from 'pages/AdageIframe/app/providers/AnalyticsContextProvider'
@@ -69,6 +70,9 @@ export const OffersComponent = ({
   >([])
   const [queryId, setQueryId] = useState('')
   const [fetchedOffers, setFetchedOffers] = useState<OfferMap>(new Map())
+  const isSatisfactionSurveyActive = useActiveFeature(
+    'WIP_ENABLE_SATISFACTION_SURVEY'
+  )
 
   const { filtersKeys, hasClickedSearch, setHasClickedSearch } =
     useContext(AnalyticsContext)
@@ -162,7 +166,9 @@ export const OffersComponent = ({
               userEmail={userEmail}
               userRole={userRole}
             />
-            {index === 1 && <SurveySatisfaction />}
+            {index === 1 && isSatisfactionSurveyActive && (
+              <SurveySatisfaction />
+            )}
           </div>
         ))}
         <div className={styles['offers-load-more']}>
