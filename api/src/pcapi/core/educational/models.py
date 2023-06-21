@@ -323,8 +323,6 @@ class CollectiveOffer(
         "CollectiveOfferTemplate", foreign_keys=[templateId], back_populates="collectiveOffers"
     )
 
-    isPublicApi: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False)
-
     teacherId: int | None = sa.Column(
         sa.BigInteger,
         sa.ForeignKey("educational_redactor.id"),
