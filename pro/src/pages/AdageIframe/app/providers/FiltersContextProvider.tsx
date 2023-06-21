@@ -1,5 +1,7 @@
 import React, { createContext, ReactNode, useMemo, useReducer } from 'react'
 
+import { VenueResponse } from 'apiClient/adage'
+
 import {
   filtersReducer,
   FiltersReducerAction,
@@ -22,14 +24,16 @@ export const FiltersContext = createContext<FiltersContextType>(
 )
 
 export const FiltersContextProvider = ({
+  venueFilter,
   children,
 }: {
+  venueFilter?: VenueResponse | null
   children: ReactNode | ReactNode[]
 }): JSX.Element => {
-  const [currentFilters, dispatchCurrentFilters] = useReducer(
-    filtersReducer,
-    INITIAL_FILTERS
-  )
+  const [currentFilters, dispatchCurrentFilters] = useReducer(filtersReducer, {
+    ...INITIAL_FILTERS,
+    onlyInMyDpt: venueFilter ? false : INITIAL_FILTERS.onlyInMyDpt,
+  })
 
   const value = useMemo(
     () => ({
