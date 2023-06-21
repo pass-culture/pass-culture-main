@@ -114,24 +114,9 @@
         font-weight: inherit;
         outline: none;
 
-        img {
-          filter: brightness(0) invert(0);
-          height: rem.torem(16px);
+        svg {
           margin-left: rem.torem(10px);
           margin-top: rem.torem(2px);
-          width: rem.torem(16px);
-
-          &.active-status-filter {
-            filter: unset;
-          }
-        }
-
-        &:focus {
-          & img {
-            border: rem.torem(1px) solid colors.$primary;
-            border-radius: rem.torem(4px);
-            filter: unset;
-          }
         }
 
         &:disabled {

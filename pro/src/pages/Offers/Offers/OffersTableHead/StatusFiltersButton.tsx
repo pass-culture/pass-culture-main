@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { Fragment, useState } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
@@ -7,7 +8,8 @@ import {
   OFFER_STATUS_LIST,
 } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
-import Icon from 'ui-kit/Icon/Icon'
+import fullSortIcon from 'icons/full-sort.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { OffersStatusFiltersModal } from '../OffersStatusFiltersModal/OffersStatusFiltersModal'
 
@@ -47,15 +49,17 @@ const StatusFiltersButton = ({
         type="button"
       >
         Statut
-        <Icon
-          alt="Afficher ou masquer le filtre par statut"
-          className={isFilteredByStatus ? 'active-status-filter' : undefined}
-          svg={
-            isFilteredByStatus
-              ? 'ico-filter-status-active'
-              : 'ico-filter-status-red'
-          }
-        />
+        <span className="status-container">
+          <SvgIcon
+            alt="Afficher ou masquer le filtre par statut"
+            src={fullSortIcon}
+            className={cn(
+              'status-icon',
+              (isFilteredByStatus || isStatusFiltersVisible) && 'active'
+            )}
+          />
+          {isFilteredByStatus && <span className="status-badge-icon"></span>}
+        </span>
       </button>
       <OffersStatusFiltersModal
         applyFilters={applyFilters}

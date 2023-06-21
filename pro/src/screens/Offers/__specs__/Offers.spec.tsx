@@ -376,7 +376,9 @@ describe('screen Offers', () => {
           renderOffers(props, store)
           // When
           await userEvent.click(
-            screen.getByAltText('Afficher ou masquer le filtre par statut')
+            screen.getByRole('button', {
+              name: 'Statut Afficher ou masquer le filtre par statut',
+            })
           )
           // Then
           expect(screen.queryByText('Afficher les offres')).toBeInTheDocument()
@@ -399,8 +401,11 @@ describe('screen Offers', () => {
           // Given
           renderOffers(props, store)
           await userEvent.click(
-            screen.getByAltText('Afficher ou masquer le filtre par statut')
+            screen.getByRole('button', {
+              name: 'Statut Afficher ou masquer le filtre par statut',
+            })
           )
+
           // When
           await userEvent.click(
             screen.getByRole('heading', {
@@ -434,10 +439,11 @@ describe('screen Offers', () => {
             // When
             renderOffers(props, store)
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).toBeDisabled()
           })
 
           it('should disable status filters when no venue filter is selected, even if one venue filter is currently applied', async () => {
@@ -458,10 +464,11 @@ describe('screen Offers', () => {
               'all'
             )
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).toBeDisabled()
           })
 
           it('should enable status filters when venue is selected but filter is not applied', async () => {
@@ -476,10 +483,11 @@ describe('screen Offers', () => {
               venueOptionToSelect
             )
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).not.toBeDisabled()
           })
         })
         describe('select all offers checkbox', () => {
