@@ -127,8 +127,6 @@ describe('app', () => {
   })
 
   it('should reset filters', async () => {
-    const siret = '123456789'
-    window.location.search = `?siret=${siret}`
     renderApp()
 
     const departmentFilter = await screen.findByLabelText('Département')
@@ -169,10 +167,10 @@ describe('app', () => {
     await userEvent.click(launchSearchButton)
 
     // Then
-    await waitFor(() => expect(Configure).toHaveBeenCalledTimes(4))
+    await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
 
     const searchConfigurationLastCall = (Configure as jest.Mock).mock
-      .calls[3][0]
+      .calls[2][0]
     expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
       [
         'offer.educationalInstitutionUAICode:all',
@@ -194,15 +192,10 @@ describe('app', () => {
     expect(
       screen.queryByRole('button', { name: 'Cinéma' })
     ).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: `Lieu : ${venue?.publicName}` })
-    ).not.toBeInTheDocument()
   })
 
   it('should reset all filters and launch search when no result and click on button', async () => {
     // Given
-    const siret = '123456789'
-    window.location.search = `?siret=${siret}`
     renderApp()
 
     const textInput = await screen.findByPlaceholderText(
@@ -236,7 +229,6 @@ describe('app', () => {
       .calls[1][0]
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
       ['venue.departmentCode:01', 'offer.interventionArea:01'],
-      ['venue.id:1436'],
       [
         'offer.educationalInstitutionUAICode:all',
         'offer.educationalInstitutionUAICode:uai',

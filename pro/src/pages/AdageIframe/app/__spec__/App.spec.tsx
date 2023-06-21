@@ -86,9 +86,9 @@ jest.mock('apiClient/api', () => ({
 
 const features: FeaturesContextType = []
 
-const renderApp = () => {
+const renderApp = (venueFilter: VenueResponse | null) => {
   renderWithProviders(
-    <FiltersContextProvider>
+    <FiltersContextProvider venueFilter={venueFilter}>
       <AlgoliaQueryContextProvider>
         <FacetFiltersContextProvider>
           <FeaturesContext.Provider value={features}>
@@ -134,7 +134,7 @@ describe('app', () => {
 
     it('should show search offers input with no filter on venue when no siret or venueId is provided', async () => {
       // When
-      renderApp()
+      renderApp(venue)
 
       // Then
       const contentTitle = await screen.findByText('Rechercher une offre', {
@@ -164,7 +164,7 @@ describe('app', () => {
       window.location.search = `?siret=${siret}`
 
       // When
-      renderApp()
+      renderApp(venue)
 
       // Then
       const contentTitle = await screen.findByText('Rechercher une offre', {
@@ -194,7 +194,7 @@ describe('app', () => {
       window.location.search = `?siret=${siret}`
 
       // When
-      renderApp()
+      renderApp(venue)
 
       // Then
       const venueFilter = await screen.findByText(`Lieu : ${venue.name}`)
@@ -208,7 +208,7 @@ describe('app', () => {
       window.location.search = `?venue=${venueId}`
 
       // When
-      renderApp()
+      renderApp(venue)
 
       // Then
       const contentTitle = await screen.findByText('Rechercher une offre', {
@@ -238,7 +238,7 @@ describe('app', () => {
       window.location.search = `?venue=${venueId}`
 
       // When
-      renderApp()
+      renderApp(venue)
 
       // Then
       const venueFilter = await screen.findByText(`Lieu : ${venue.name}`)
@@ -255,7 +255,7 @@ describe('app', () => {
         .mockRejectedValue('Unrecognized SIRET')
 
       // When
-      renderApp()
+      renderApp(venue)
 
       // Then
       const contentTitle = await screen.findByText('Rechercher une offre', {
@@ -292,7 +292,7 @@ describe('app', () => {
       })
 
       // When
-      renderApp()
+      renderApp(venue)
 
       const contentTitle = await screen.findByText('Rechercher une offre', {
         selector: 'h2',
@@ -321,7 +321,7 @@ describe('app', () => {
       })
 
       // When
-      renderApp()
+      renderApp(venue)
 
       const contentTitle = await screen.findByText('Rechercher une offre', {
         selector: 'h2',
@@ -344,10 +344,9 @@ describe('app', () => {
 
     it('should remove venue filter on click', async () => {
       // Given
-      const siret = '123456789'
-      window.location.search = `?siret=${siret}`
+      window.location.search = `?venue=${venue.id}&all=true`
 
-      renderApp()
+      renderApp(venue)
 
       const venueFilter = await screen.findByText(`Lieu : ${venue?.publicName}`)
       const launchSearchButton = screen.getByRole('button', {
@@ -363,7 +362,6 @@ describe('app', () => {
       const searchConfigurationCall = (Configure as jest.Mock).mock.calls[2][0]
 
       expect(searchConfigurationCall.facetFilters).toStrictEqual([
-        ['venue.departmentCode:30'],
         [
           'offer.educationalInstitutionUAICode:all',
           'offer.educationalInstitutionUAICode:uai',
@@ -375,10 +373,10 @@ describe('app', () => {
     })
 
     it('should uncheck on department only and search on intervention area also when only in my department is unchecked', async () => {
-      renderApp()
+      window.location.search = ''
+      renderApp(null)
 
-      await screen.findByText(`Lieu : ${venue?.publicName}`)
-      const onlyInMyDptFilter = await screen.getByLabelText(
+      const onlyInMyDptFilter = await screen.findByLabelText(
         'Les acteurs culturels de mon département : ALES (30)'
       )
       const launchSearchButton = screen.getByRole('button', {
@@ -394,7 +392,6 @@ describe('app', () => {
         .calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         ['venue.departmentCode:30', 'offer.interventionArea:30'],
-        ['venue.id:1436'],
         [
           'offer.educationalInstitutionUAICode:all',
           'offer.educationalInstitutionUAICode:uai',
@@ -404,8 +401,10 @@ describe('app', () => {
 
     describe('tabs', () => {
       it('should display tabs if user has UAI code', async () => {
+        const siret = '123456789'
+        window.location.search = `?siret=${siret}`
         // Given
-        renderApp()
+        renderApp(venue)
 
         const firstTab = await screen.findByText('Toutes les offres')
         const secondTab = await screen.findByText(
@@ -422,7 +421,7 @@ describe('app', () => {
           role: AdageFrontRoles.REDACTOR,
           uai: null,
         })
-        renderApp()
+        renderApp(venue)
 
         // wait that app is rendered
         await screen.findByText('Rechercher une offre', {
@@ -438,7 +437,7 @@ describe('app', () => {
 
       it('should add a facet filter when user clicks on "Partagé avec mon établissement"', async () => {
         // Given
-        renderApp()
+        renderApp(venue)
 
         const secondTab = await screen.findByText(
           'Partagé avec mon établissement'
@@ -450,7 +449,6 @@ describe('app', () => {
 
           expect.objectContaining({
             facetFilters: [
-              [`venue.departmentCode:30`],
               ['venue.id:1436'],
               ['offer.educationalInstitutionUAICode:uai'],
             ],
@@ -470,7 +468,7 @@ describe('app', () => {
 
     it('should show error page', async () => {
       // When
-      renderApp()
+      renderApp(null)
 
       // Then
       const contentTitle = await screen.findByText(

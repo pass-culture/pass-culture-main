@@ -22,7 +22,10 @@ import {
 import { LoaderPage } from './components/LoaderPage/LoaderPage'
 import { UnauthenticatedError } from './components/UnauthenticatedError/UnauthenticatedError'
 import { OldAppLayout } from './OldAppLayout'
-import { FacetFiltersContextProvider } from './providers'
+import {
+  FacetFiltersContextProvider,
+  FiltersContextProvider,
+} from './providers'
 import { AdageUserContext } from './providers/AdageUserContext'
 
 export const App = (): JSX.Element => {
@@ -99,31 +102,35 @@ export const App = (): JSX.Element => {
 
   return (
     <AdageUserContext.Provider value={{ adageUser: user }}>
-      <FacetFiltersContextProvider
-        departmentCode={user?.departmentCode}
-        uai={user?.uai}
-        venueFilter={venueFilter}
-      >
-        {notification && <NotificationComponent notification={notification} />}
-        {user?.role &&
-        [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
-          user.role
-        ) ? (
-          isNewHeaderActive ? (
-            <AppLayout
-              removeVenueFilter={removeVenueFilter}
-              venueFilter={venueFilter}
-            />
+      <FiltersContextProvider venueFilter={venueFilter}>
+        <FacetFiltersContextProvider
+          departmentCode={user?.departmentCode}
+          uai={user?.uai}
+          venueFilter={venueFilter}
+        >
+          {notification && (
+            <NotificationComponent notification={notification} />
+          )}
+          {user?.role &&
+          [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
+            user.role
+          ) ? (
+            isNewHeaderActive ? (
+              <AppLayout
+                removeVenueFilter={removeVenueFilter}
+                venueFilter={venueFilter}
+              />
+            ) : (
+              <OldAppLayout
+                removeVenueFilter={removeVenueFilter}
+                venueFilter={venueFilter}
+              />
+            )
           ) : (
-            <OldAppLayout
-              removeVenueFilter={removeVenueFilter}
-              venueFilter={venueFilter}
-            />
-          )
-        ) : (
-          <UnauthenticatedError />
-        )}
-      </FacetFiltersContextProvider>
+            <UnauthenticatedError />
+          )}
+        </FacetFiltersContextProvider>
+      </FiltersContextProvider>
     </AdageUserContext.Provider>
   )
 }
