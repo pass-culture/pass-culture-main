@@ -6,6 +6,7 @@ export interface SvgIconProps {
   className?: string
   viewBox?: string
   width?: string
+  style?: React.CSSProperties
 }
 
 // This is component is used to display svg icons that can change color and have a text alternative
@@ -19,6 +20,7 @@ export const SvgIcon = ({
   className,
   viewBox = '0 0 48 48',
   width,
+  style,
 }: SvgIconProps) => {
   return (
     <svg
@@ -28,6 +30,7 @@ export const SvgIcon = ({
         ? { 'aria-label': alt, role: 'img' }
         : { 'aria-hidden': true })}
       {...(width ? { width } : {})}
+      style={style}
     >
       <use xlinkHref={`${src}#icon`}></use>
     </svg>
