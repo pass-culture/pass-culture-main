@@ -839,8 +839,7 @@ class Reason(enum.Enum):
     The whole meta part is only consumed by the api client, it has no meaning
     inside the whole API code.
 
-    Note: when adding a new enum symbol, do not forget to update the meta
-    method.
+    Note: when adding a new enum symbol, do not forget to update the meta method.
     """
 
     IMPROPER = "IMPROPER"

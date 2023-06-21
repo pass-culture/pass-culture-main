@@ -1089,7 +1089,7 @@ def test_public_api(client):
                     "type": "object",
                 },
                 "Reason": {
-                    "description": "\n    Describe possible reason codes to used when reporting an offer.\n\n    The whole meta part is only consumed by the api client, it has no meaning\n    inside the whole API code.\n\n    Note: when adding a new enum symbol, do not forget to update the meta\n    method.\n    ",
+                    "description": "Describe possible reason codes to used when reporting an offer.\n\nThe whole meta part is only consumed by the api client, it has no meaning\ninside the whole API code.\n\nNote: when adding a new enum symbol, do not forget to update the meta method.",
                     "enum": ["IMPROPER", "PRICE_TOO_HIGH", "INAPPROPRIATE", "OTHER"],
                     "title": "Reason",
                 },
