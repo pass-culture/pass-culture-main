@@ -182,6 +182,89 @@ def clear_tests_invoices_bucket():
         object_storage_testing.reset_bucket()
 
 
+from flask_sqlalchemy import SignallingSession
+from sqlalchemy import exc as sa_exc
+from sqlalchemy.orm.session import Session
+from sqlalchemy.orm.session import SessionTransaction
+
+
+class TestSession(SignallingSession):
+    def __init__(self, *args, **kwargs):
+        self._pc_open = None
+        self._pc_begin_count = 0
+        super().__init__(*args, **kwargs)
+
+    def _autobegin(self):
+        if not self.autocommit and self._transaction is None:
+            SessionTransaction(self, autobegin=True)
+            self._pc_open = "PCSAVEPOINTTEST"
+            self.execute(f"SAVEPOINT {self._pc_open}")
+            return True
+        return False
+
+    def begin(self, *args, **kwargs):
+        self._pc_begin_count += 1
+        transaction = super().begin(*args, **kwargs)
+        if self._pc_begin_count == 1:
+            self._pc_begin_count += 1
+            return super().begin(nested=True)
+        return transaction
+
+    def rollback(self):
+        if self._pc_begin_count > 1:
+            self._pc_begin_count -= 1
+            super().rollback()
+
+    def commit(self):
+        if self._pc_begin_count > 1:
+            self._pc_begin_count -= 1
+            super().commit()
+
+    def close(self):
+        while self._pc_begin_count > 1:
+            self.rollback()
+        self.execute(f"ROLLBACK TO SAVEPOINT {self._pc_open}")
+        self._pc_open = None
+        self._pc_begin_count = 0
+        super().rollback()
+        return super().close()
+
+
+@pytest.fixture(scope="function", autouse=True)
+def sql_magic(app, _db, pytestconfig, mocker):
+    mocker.patch("flask_sqlalchemy.SignallingSession", TestSession)
+    connection = _db.engine.connect()
+    transaction = connection.begin()
+
+    # Bind a session to the transaction. The empty `binds` dict is necessary
+    # when specifying a `bind` option, or else Flask-SQLAlchemy won't scope
+    # the connection properly
+    options = dict(bind=connection, binds={})
+    session = _db.create_scoped_session(options=options)
+
+    # Whenever the code tries to access a Flask session, use the Session object
+    # instead
+    for mocked_session in pytestconfig._mocked_sessions:
+        mocker.patch(mocked_session, new=session)
+
+    # tres chelou mais ça fait marcher pytest tests/admin/custom_views/user_email_history_view_test.py
+    session.begin(nested=True)
+    session.begin(nested=True)
+    session.begin(nested=True)
+    session.begin(nested=True)
+    session.begin(nested=True)
+    session.begin(nested=True)
+    session.begin(nested=True)
+    session.begin(nested=True)
+    session.begin(nested=True)
+    session.begin(nested=True)
+    session.begin(nested=True)
+    session.begin(nested=True)
+    session.begin(nested=True)
+    yield
+    connection.close()
+
+
 def clean_database(f: object) -> object:
     @wraps(f)
     def decorated_function(*args, **kwargs):
