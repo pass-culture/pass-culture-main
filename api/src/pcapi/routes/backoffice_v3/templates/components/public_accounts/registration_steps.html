@@ -46,26 +46,28 @@
                 {% endif %}
               </td>
               <td>
-                {% if fraud_action['status'].lower() == 'ok' %}
-                  <span class="badge rounded-pill text-bg-success align-middle px-3 py-2">
-                    <i class="bi bi-check-circle"></i> {{ fraud_action['status'].upper() }}
-                  </span>
-                {% elif fraud_action['status'].lower() == 'ko' %}
-                  <span class="badge rounded-pill text-bg-danger align-middle px-3 py-2">
-                    <i class="bi bi-exclamation-circle"></i> {{ fraud_action['status'].upper() }}
-                  </span>
-                {% elif fraud_action['status'].lower() == 'suspicious' %}
-                  <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
-                    <i class="bi bi-shield-shaded"></i> {{ fraud_action['status'].upper() }}
-                  </span>
-                {% elif fraud_action['status'].lower() == 'redirected_to_dms' %}
-                  <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
-                    <i class="bi bi-person-circle"></i> {{ fraud_action['status'].upper() }}
-                  </span>
-                {% elif fraud_action['status'] %}
-                  <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
-                    <i class="bi bi-exclamation-circle"></i> {{ fraud_action['status'].upper() }}
-                  </span>
+                {% if fraud_action['status'] %}
+                  {% if fraud_action['status'].lower() == 'ok' %}
+                    <span class="badge rounded-pill text-bg-success align-middle px-3 py-2">
+                      <i class="bi bi-check-circle"></i> {{ fraud_action['status'].upper() }}
+                    </span>
+                  {% elif fraud_action['status'].lower() == 'ko' %}
+                    <span class="badge rounded-pill text-bg-danger align-middle px-3 py-2">
+                      <i class="bi bi-exclamation-circle"></i> {{ fraud_action['status'].upper() }}
+                    </span>
+                  {% elif fraud_action['status'].lower() == 'suspicious' %}
+                    <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
+                      <i class="bi bi-shield-shaded"></i> {{ fraud_action['status'].upper() }}
+                    </span>
+                  {% elif fraud_action['status'].lower() == 'redirected_to_dms' %}
+                    <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
+                      <i class="bi bi-person-circle"></i> {{ fraud_action['status'].upper() }}
+                    </span>
+                  {% else %}
+                    <span class="badge rounded-pill text-bg-warning align-middle px-3 py-2">
+                      <i class="bi bi-exclamation-circle"></i> {{ fraud_action['status'].upper() }}
+                    </span>
+                  {% endif %}
                 {% endif %}
               </td>
               <td>{{ fraud_action['reason'] | empty_string_if_null | pc_backoffice_public_account_link_in_comment | safe }}</td>
