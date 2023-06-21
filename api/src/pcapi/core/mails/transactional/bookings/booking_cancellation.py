@@ -1,3 +1,5 @@
+import logging
+
 from flask import render_template
 
 from pcapi.core import mails
@@ -13,10 +15,15 @@ from .booking_cancellation_by_beneficiary_to_pro import send_booking_cancellatio
 from .booking_cancellation_by_pro_to_beneficiary import send_booking_cancellation_by_pro_to_beneficiary_email
 
 
+logger = logging.getLogger(__name__)
+
+
 def send_booking_cancellation_emails_to_user_and_offerer(
     booking: Booking,
-    reason: BookingCancellationReasons,
+    reason: BookingCancellationReasons | None,
 ) -> bool:
+    if reason is None:
+        logger.error("Booking cancellation email sending failed because no reason was given")
     if reason == BookingCancellationReasons.BENEFICIARY:
         send_booking_cancellation_by_beneficiary_email(booking)
         return send_booking_cancellation_by_beneficiary_to_pro_email(booking)
