@@ -8,8 +8,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SurveySatisfaction.module.scss'
 
-export const LOCAL_STORAGE_HAS_SEEN_SATISFACTION_KEY =
-  'SURVEY_SATISFACTION_ADAGE_SEEN'
+const LOCAL_STORAGE_HAS_SEEN_SATISFACTION_KEY = 'SURVEY_SATISFACTION_ADAGE_SEEN'
 
 export const SurveySatisfaction = (): JSX.Element => {
   const [shouldHideSurveySatisfaction, setShouldHideSurveySatisfaction] =

@@ -11,7 +11,7 @@ import { ENV_WORDING } from 'utils/config'
 
 import styles from './ApiKey.module.scss'
 
-export interface ApiKeyProps {
+interface ApiKeyProps {
   maxAllowedApiKeys: number
   offererId: number
   reloadOfferer: (offererId: number) => void
