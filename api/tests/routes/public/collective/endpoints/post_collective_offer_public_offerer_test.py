@@ -9,6 +9,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import override_features
 
 import tests
@@ -36,7 +37,7 @@ class CollectiveOffersPublicPostOfferOffererTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        offerers_factories.ApiKeyFactory(offerer=offerer, provider=providers_factories.APIProviderFactory())
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
@@ -95,8 +96,8 @@ class CollectiveOffersPublicPostOfferOffererTest:
             "addressType": "offererVenue",
             "otherAddress": "",
         }
-        assert offer.isPublicApi is True
         assert offer.hasImage is True
+        assert offer.isPublicApi
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
     @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=False)
@@ -158,7 +159,7 @@ class CollectiveOffersPublicPostOfferOffererTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        offerers_factories.ApiKeyFactory(offerer=offerer, provider=providers_factories.APIProviderFactory())
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
@@ -217,8 +218,8 @@ class CollectiveOffersPublicPostOfferOffererTest:
             "addressType": "offererVenue",
             "otherAddress": "",
         }
-        assert offer.isPublicApi is True
         assert offer.hasImage is True
+        assert offer.isPublicApi
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
     @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=False)

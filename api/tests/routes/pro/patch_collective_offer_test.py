@@ -17,6 +17,7 @@ from pcapi.core.educational.models import StudentLevels
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -509,7 +510,8 @@ class Returns403Test:
 
     def test_cannot_update_offer_created_by_public_api(self, client):
         # Given
-        offer = CollectiveOfferFactory(isPublicApi=True)
+        provider = providers_factories.ProviderFactory()
+        offer = CollectiveOfferFactory(provider=provider)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
