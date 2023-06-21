@@ -85,7 +85,7 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer) -
         and deposit.specific_caps.physical_cap_applies(offer)
         and requested_amount > domains_credit.physical.remaining
     ):
-        raise exceptions.PhysicalExpenseLimitHasBeenReached(domains_credit.physical.initial)  # type: ignore [arg-type]
+        raise exceptions.PhysicalExpenseLimitHasBeenReached(int(domains_credit.physical.initial))
 
 
 def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
@@ -147,9 +147,9 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         raise forbidden
 
     if booking.status == BookingStatus.CANCELLED:
-        forbidden = api_errors.ResourceGoneError()  # type: ignore [assignment]
-        forbidden.add_error("booking", "Cette réservation a été annulée")
-        raise forbidden
+        resource_gone = api_errors.ResourceGoneError()
+        resource_gone.add_error("booking", "Cette réservation a été annulée")
+        raise resource_gone
 
     if finance_repository.has_reimbursement(booking):
         gone = api_errors.ResourceGoneError()
