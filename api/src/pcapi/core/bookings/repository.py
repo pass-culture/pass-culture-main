@@ -372,8 +372,8 @@ def get_export(
 ) -> str | bytes:
     bookings_query = _get_filtered_booking_report(
         pro_user=user,
-        period=booking_period,  # type: ignore [arg-type]
-        status_filter=status_filter,  # type: ignore [arg-type]
+        period=booking_period,
+        status_filter=status_filter,
         event_date=event_date,
         venue_id=venue_id,
         offer_type=offer_type,
@@ -455,8 +455,8 @@ def _get_filtered_bookings_count(
 
 def _get_filtered_booking_report(
     pro_user: User,
-    period: tuple[date, date],
-    status_filter: BookingStatusFilter,
+    period: tuple[date, date] | None,
+    status_filter: BookingStatusFilter | None,
     event_date: datetime | None = None,
     venue_id: int | None = None,
     offer_type: OfferType | None = None,
