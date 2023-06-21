@@ -246,7 +246,7 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
     if show_sub_type:
         serialized_data["showType"] = ShowTypeEnum(show_types.SHOW_SUB_TYPES_BY_CODE[int(show_sub_type)].slug)
 
-    return category_fields_model(**serialized_data, subcategory_id=offer.subcategory.id)  # type: ignore [misc]
+    return category_fields_model(**serialized_data, subcategory_id=offer.subcategory.id)
 
 
 def deserialize_extra_data(
@@ -668,7 +668,7 @@ class DateResponse(BaseStockResponse):
         stock_response = BaseStockResponse.build_stock(stock)
         return cls(
             id=stock.id,
-            beginning_datetime=stock.beginningDatetime,  # type: ignore [arg-type]
+            beginning_datetime=stock.beginningDatetime,
             price_category=PriceCategoryResponse.from_orm(stock.priceCategory)
             if stock.priceCategory
             else PartialPriceCategoryResponse.build_partial_price_category(stock.price),
@@ -710,15 +710,15 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     def build_offer(cls, offer: offers_models.Offer) -> "OfferResponse":
         return cls(
             id=offer.id,
-            booking_email=offer.bookingEmail,  # type: ignore [arg-type]
+            booking_email=offer.bookingEmail,
             description=offer.description,
             accessibility=Accessibility.from_orm(offer),
-            external_ticket_office_url=offer.externalTicketOfficeUrl,  # type: ignore [arg-type]
-            image=offer.image,  # type: ignore [arg-type]
+            external_ticket_office_url=offer.externalTicketOfficeUrl,
+            image=offer.image,
             is_duo=offer.isDuo,
             location=DigitalLocation.from_orm(offer) if offer.isDigital else PhysicalLocation.from_orm(offer),
             name=offer.name,
-            status=offer.status,  # type: ignore [arg-type]
+            status=offer.status,
             withdrawal_details=offer.withdrawalDetails,
         )
 
@@ -764,9 +764,9 @@ def _serialize_ticket_collection(
         logger.error("Missing withdrawal delay for offer %s", offer.id)
         return None
     if offer.withdrawalType == offers_models.WithdrawalTypeEnum.ON_SITE:
-        return OnSiteCollectionDetailsResponse(minutesBeforeEvent=offer.withdrawalDelay / 60)  # type: ignore [arg-type]
+        return OnSiteCollectionDetailsResponse(minutesBeforeEvent=offer.withdrawalDelay / 60)
     if offer.withdrawalType == offers_models.WithdrawalTypeEnum.BY_EMAIL:
-        return SentByEmailDetailsResponse(daysBeforeEvent=offer.withdrawalDelay / (24 * 3600))  # type: ignore [arg-type]
+        return SentByEmailDetailsResponse(daysBeforeEvent=offer.withdrawalDelay / (24 * 3600))
     logger.error("Unknown withdrawal type %s for offer %s", offer.withdrawalType, offer.id)
     return None
 

@@ -64,7 +64,7 @@ def _create_beneficiary(row: dict, role: UserRole | None) -> User:
 
 def _create_pro_user(row: dict) -> User:
     user = users_api.create_pro_user_and_offerer(
-        ProUserCreationBodyModel(  # type: ignore [call-arg]
+        ProUserCreationBodyModel(
             firstName=row["Prénom"],
             lastName=row["Nom"],
             address="1 avenue des pros",

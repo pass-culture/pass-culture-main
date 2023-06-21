@@ -49,7 +49,7 @@ def next_subscription_step(
         allowed_identity_check_methods=subscription_api.get_allowed_identity_check_methods(user),
         maintenance_page_type=subscription_api.get_maintenance_page_type(user),
         has_identity_check_pending=fraud_api.has_user_pending_identity_check(user),
-        subscription_message=user_subscription_state.subscription_message,  # type: ignore [arg-type]
+        subscription_message=user_subscription_state.subscription_message,
     )
 
 
@@ -191,7 +191,7 @@ def start_identification_session(
         identification_url = ubble_subscription_api.start_ubble_workflow(
             user, declared_names[0], declared_names[1], body.redirectUrl
         )
-        return serializers.IdentificationSessionResponse(identificationUrl=identification_url)  # type: ignore [arg-type]
+        return serializers.IdentificationSessionResponse(identificationUrl=identification_url)
 
     except requests_utils.ExternalAPIException as exception:
         if exception.is_retryable:

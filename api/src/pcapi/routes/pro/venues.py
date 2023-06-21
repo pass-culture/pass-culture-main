@@ -247,7 +247,7 @@ def get_venue_stats(venue_id: int) -> venues_serialize.VenueStatsResponseModel:
 )
 def get_venues_educational_statuses() -> venues_serialize.VenuesEducationalStatusesResponseModel:
     statuses = offerers_api.get_venues_educational_statuses()
-    return venues_serialize.VenuesEducationalStatusesResponseModel(statuses=statuses)  # type: ignore [arg-type]
+    return venues_serialize.VenuesEducationalStatusesResponseModel(statuses=statuses)
 
 
 @private_api.route("/venues/<int:venue_id>/dashboard", methods=["GET"])
