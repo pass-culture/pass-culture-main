@@ -3,6 +3,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 $action-gap: rem.torem(10px);
 
@@ -23,6 +24,13 @@ $action-gap: rem.torem(10px);
   padding: rem.torem(10px) rem.torem(24px);
   line-height: fonts.$body-line-height;
   background: colors.$primary;
+  cursor: pointer;
+
+  &:hover,
+  &:focus {
+    background-color: colors.$primary-dark;
+    border-color: colors.$primary-dark;
+  }
 
   @include fonts.button;
 }
@@ -75,7 +83,14 @@ $action-gap: rem.torem(10px);
 
       button {
         background: colors.$white;
-        color: colors.$primary
+        color: colors.$primary;
+
+        &:hover,
+        &:focus {
+          color: colors.$white;
+          background-color: colors.$primary-dark;
+          border-color: colors.$primary-dark;
+        }
       }
     }
   }
@@ -114,6 +129,7 @@ $action-gap: rem.torem(10px);
   button {
     background: colors.$white;
     color: colors.$primary;
+    cursor: pointer;
 
     &[disabled] {
       background: colors.$grey-light;
@@ -121,6 +137,15 @@ $action-gap: rem.torem(10px);
       color: colors.$grey-dark;
       border-radius: 30px;
       opacity: 1;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    &:hover,
+    &:focus {
+      color: colors.$white;
+      background-color: colors.$primary-dark;
+      border-color: colors.$primary-dark;
     }
   }
 }
@@ -128,7 +153,7 @@ $action-gap: rem.torem(10px);
 .orejime-CategorizedAppList {
   .orejime-AppItem {
     input[type="checkbox"] {
-      display: none;
+      @include a11y.visually-hidden;
     }
 
     &-input:checked + .orejime-AppItem-label .orejime-AppItem-slider {
