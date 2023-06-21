@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_colors.scss" as colors;
 
 .confirmation {
   text-align: center;
@@ -9,6 +10,7 @@
   &-icon {
     height: rem.torem(56px);
     margin-bottom: rem.torem(19px);
+    color: colors.$green-valid;
   }
 
   &-section {

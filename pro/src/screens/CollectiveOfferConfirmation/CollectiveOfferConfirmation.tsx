@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
+import { ReactComponent as FullValidateIcon } from 'icons/full-validate.svg'
 import { ReactComponent as PendingIcon } from 'icons/pending.svg'
-import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
 import { Banner, ButtonLink, Title } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -36,7 +36,7 @@ const activeOffer = (institutionDisplayName?: string) => ({
       )}
     </>
   ),
-  Icon: ValidateIcon,
+  Icon: FullValidateIcon,
 })
 
 const pendingOffer = {
@@ -60,7 +60,7 @@ const showcaseOffer = {
       contact avec vous pour co-construire une offre adaptée à leurs classes.
     </>
   ),
-  Icon: ValidateIcon,
+  Icon: FullValidateIcon,
 }
 
 const mapOfferStatusToData = (
