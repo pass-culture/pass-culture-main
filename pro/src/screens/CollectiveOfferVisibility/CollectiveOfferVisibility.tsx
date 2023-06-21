@@ -212,6 +212,7 @@ const CollectiveOfferVisibility = ({
     formik.setFieldValue('search-teacher', '')
     formik.setFieldValue('teacher', '')
   }
+
   const noInstitutionSelected =
     formik.values.visibility === 'one' && formik.values.institution.length === 0
   const nextStepDisabled =
