@@ -18,13 +18,15 @@ import { useNewOfferCreationJourney } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { CircleArrowIcon, NotificationErrorIcon } from 'icons'
+import fullDisclosureClose from 'icons/full-disclosure-closed.svg'
+import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
 import { ReactComponent as IcoPlus } from 'icons/full-more.svg'
 import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { ReactComponent as IcoPlusCircle } from 'icons/ico-plus-circle.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Icon from 'ui-kit/Icon/Icon'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { VenueOfferSteps } from '../VenueOfferSteps'
 import styles from '../VenueOfferSteps/VenueOfferSteps.module.scss'
@@ -234,10 +236,11 @@ const Venue = ({
                   )
                 }}
               >
-                <Icon
-                  alt="icon"
-                  className="h-card-title-ico align-baseline"
-                  svg={isStatOpen ? 'ico-caret-down' : 'ico-caret-right'}
+                <SvgIcon
+                  alt=""
+                  className="h-card-title-ico"
+                  viewBox="0 0 16 16"
+                  src={isStatOpen ? fullDisclosureOpen : fullDisclosureClose}
                 />
                 {hasNewOfferCreationJourney ? (
                   <span className="align-baseline">{publicName || name}</span>

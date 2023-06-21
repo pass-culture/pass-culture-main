@@ -60,11 +60,6 @@ const shadowIcons: IconListItem[] = [
 
 const notCleandIcons: IconListItem[] = [
   // Not cleaned
-  { src: 'icons/ico-calendar-big.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-calendar-disabled.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-calendar-v2.svg', viewBox: '0 0 24 25' },
-  { src: 'icons/ico-caret-down.svg', viewBox: '0 0 13 10' },
-  { src: 'icons/ico-caret-right.svg', viewBox: '0 0 10 13' },
   { src: 'icons/checkbox-check.svg', viewBox: '0 0 10 8' },
   { src: 'icons/checkbox.svg', viewBox: '0 0 10 8' },
   { src: 'icons/close-tag.svg', viewBox: '0 0 10 10' },
