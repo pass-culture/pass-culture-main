@@ -437,7 +437,8 @@ def update_collective_offer_educational_institution(
 
 
 def create_collective_offer_public(
-    requested_id: int,
+    provider_id: int,
+    offerer_id: int,
     body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel,
 ) -> educational_models.CollectiveOffer:
     from pcapi.core.offers.api import update_offer_fraud_information
@@ -445,15 +446,14 @@ def create_collective_offer_public(
     if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
         offerers_api.can_venue_create_educational_offer(body.venue_id)
     else:
-        offerer_id = requested_id
         offerers_api.can_offerer_create_educational_offer(offerer_id)
 
     venue_query = offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
     if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
         venue_query = venue_query.join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
-        venue_query = venue_query.filter(providers_models.VenueProvider.providerId == requested_id)
+        venue_query = venue_query.filter(providers_models.VenueProvider.providerId == provider_id)
     else:
-        venue_query = venue_query.filter(offerers_models.Venue.managingOffererId == requested_id)
+        venue_query = venue_query.filter(offerers_models.Venue.managingOffererId == offerer_id)
     venue = venue_query.one_or_none()
     if not venue:
         raise offerers_exceptions.VenueNotFoundException()
@@ -514,11 +514,8 @@ def create_collective_offer_public(
         offerVenue=offer_venue,
         interventionArea=[],
         institution=institution,
+        providerId=provider_id,
     )
-    if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
-        collective_offer.providerId = requested_id
-    else:
-        collective_offer.isPublicApi = True
 
     collective_offer.bookingEmails = body.booking_emails
     collective_stock = educational_models.CollectiveStock(
@@ -543,7 +540,7 @@ def create_collective_offer_public(
 
 
 def edit_collective_offer_public(
-    offerer_id: int,
+    provider_id: int,
     new_values: dict,
     offer: educational_models.CollectiveOffer,
 ) -> educational_models.CollectiveOffer:
@@ -553,7 +550,7 @@ def edit_collective_offer_public(
     if not (offer.isEditable and offer.collectiveStock.isEditable):
         raise exceptions.CollectiveOfferNotEditable()
 
-    if not offer.isPublicApi:
+    if provider_id != offer.providerId:
         raise exceptions.CollectiveOfferNotEditable()
 
     beginning = new_values.get("beginningDatetime", offer.collectiveStock.beginningDatetime)

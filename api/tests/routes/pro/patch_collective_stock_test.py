@@ -11,6 +11,7 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import StudentLevels
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import override_settings
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
@@ -301,7 +302,7 @@ class Return403Test:
 
     def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api(self, client):
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True,
+            collectiveOffer__provider=providers_factories.ProviderFactory(),
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",

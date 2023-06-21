@@ -353,6 +353,12 @@ class CollectiveOffer(
         "OfferValidationRule", secondary="validation_rule_collective_offer_link", back_populates="collectiveOffers"
     )
 
+    # TODO(jeremieb): remove this property once the front end client
+    # does not need this field anymore.
+    @property
+    def isPublicApi(self) -> bool:
+        return self.providerId is not None
+
     @property
     def isEducational(self) -> bool:
         # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer

@@ -95,6 +95,7 @@ class Returns200Test:
             "offerId": None,
             "isActive": False,
             "isEditable": True,
+            "isPublicApi": False,
             "id": duplicate.id,
             "name": offer.name,
             "subcategoryId": offer.subcategoryId,
@@ -141,7 +142,6 @@ class Returns200Test:
             "lastBookingStatus": None,
             "lastBookingId": None,
             "teacher": None,
-            "isPublicApi": False,
         }
 
     def test_duplicate_collective_offer_draft_offer(self, client):

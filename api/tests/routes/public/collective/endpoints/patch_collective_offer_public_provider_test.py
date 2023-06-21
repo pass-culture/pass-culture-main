@@ -12,6 +12,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
 from pcapi.core.testing import override_features
+from pcapi.models.offer_mixin import OfferValidationStatus
 
 import tests
 from tests.routes import image_data
@@ -44,7 +45,7 @@ class CollectiveOffersPublicPatchOfferTest:
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True, imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
+            imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
@@ -152,7 +153,6 @@ class CollectiveOffersPublicPatchOfferTest:
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True,
             imageCredit="pouet",
             imageId="123456789",
             venue=venue,
@@ -192,7 +192,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True, imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
+            imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
@@ -233,9 +233,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         educational_institution = educational_factories.EducationalInstitutionFactory()
-        offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True, venue=venue, provider=venue_provider.provider
-        )
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
         )
@@ -263,10 +261,10 @@ class CollectiveOffersPublicPatchOfferTest:
         venue_provider = provider_factories.VenueProviderFactory()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        api_key = offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
         offer = educational_factories.CollectiveOfferFactory(
-            name="old_name", isPublicApi=False, venue=venue, provider=venue_provider.provider
+            validation=OfferValidationStatus.PENDING, name="old_name", venue=venue, provider=api_key.provider
         )
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
@@ -296,7 +294,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True, imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
+            imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
@@ -331,7 +329,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         educational_institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
         offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True, imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
+            imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
@@ -363,7 +361,7 @@ class CollectiveOffersPublicPatchOfferTest:
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True, imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
+            imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
@@ -412,7 +410,7 @@ class CollectiveOffersPublicPatchOfferTest:
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True, imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
+            imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
@@ -461,10 +459,7 @@ class CollectiveOffersPublicPatchOfferTest:
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
-        offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True,
-            venue=venue,
-        )
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=provider_factories.ProviderFactory())
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
         )
@@ -511,9 +506,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True, venue=venue, provider=venue_provider.provider
-        )
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
         )
@@ -542,7 +535,7 @@ class CollectiveOffersPublicPatchOfferTest:
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory(isActive=False)
         offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True, imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
+            imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
@@ -595,9 +588,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True, venue=venue, provider=venue_provider.provider
-        )
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
         )
@@ -625,9 +616,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True, venue=venue, provider=venue_provider.provider
-        )
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
         )
@@ -655,9 +644,7 @@ class CollectiveOffersPublicPatchOfferTest:
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True, venue=venue, provider=venue_provider.provider
-        )
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
         )
@@ -685,9 +672,7 @@ class CollectiveOffersPublicPatchOfferTest:
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True, venue=venue, provider=venue_provider.provider
-        )
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
         )
@@ -724,7 +709,6 @@ class CollectiveOffersPublicPatchOfferTest:
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
         offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True,
             imageCredit="pouet",
             imageId="123456789",
             venue=venue,
@@ -759,7 +743,6 @@ class CollectiveOffersPublicPatchOfferTest:
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True,
             venue=venue,
             imageId="123456789",
             imageCredit="pouet",
@@ -794,7 +777,6 @@ class CollectiveOffersPublicPatchOfferTest:
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         offer = educational_factories.CollectiveOfferFactory(
-            isPublicApi=True,
             imageCredit="pouet",
             imageId="123456789",
             venue=venue,
