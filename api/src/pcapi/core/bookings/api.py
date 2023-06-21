@@ -317,10 +317,13 @@ def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Book
 
 def cancel_booking_for_fraud(booking: Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
-    _cancel_booking(booking, BookingCancellationReasons.FRAUD)
+    cancelled = _cancel_booking(booking, BookingCancellationReasons.FRAUD)
+    if not cancelled:
+        return
     logger.info("Cancelled booking for fraud reason", extra={"booking": booking.id})
-
-    if not transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):  # type: ignore [arg-type]
+    if not transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
+        booking, booking.cancellationReason
+    ):
         logger.warning(
             "Could not send booking cancellation emails to offerer",
             extra={"booking": booking.id},
@@ -331,8 +334,9 @@ def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> Non
     validation.check_booking_can_be_cancelled(booking)
     _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
     logger.info("Cancelled booking on user-requested account suspension", extra={"booking": booking.id})
-
-    if not transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):  # type: ignore [arg-type]
+    if not transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
+        booking, booking.cancellationReason
+    ):
         logger.warning(
             "Could not send booking= cancellation emails to offerer and beneficiary",
             extra={"booking": booking.id},
