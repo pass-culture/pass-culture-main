@@ -997,7 +997,14 @@ def resolve_offer_validation_sub_rule(sub_rule: models.OfferValidationSubRule, o
 
 
 def rule_flags_offer(rule: models.OfferValidationRule, offer: AnyOffer) -> bool:
-    is_offer_flagged = all(resolve_offer_validation_sub_rule(sub_rule, offer) for sub_rule in rule.subRules)
+    sub_rule_flags_offer = []
+    for sub_rule in rule.subRules:
+        try:
+            sub_rule_flags_offer.append(resolve_offer_validation_sub_rule(sub_rule, offer))
+        except exceptions.UnapplicableModel:
+            sub_rule_flags_offer.append(False)
+            break
+    is_offer_flagged = all(sub_rule_flags_offer)
     return is_offer_flagged
 
 
