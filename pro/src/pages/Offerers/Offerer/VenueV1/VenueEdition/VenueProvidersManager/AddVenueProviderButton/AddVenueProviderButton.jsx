@@ -83,7 +83,7 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
           onChange={handleChange}
           name="provider"
           options={providersOptions}
-          value={selectedProvider.value.toString()}
+          value={selectedProvider.value}
         />
       </FieldLayout>
 
