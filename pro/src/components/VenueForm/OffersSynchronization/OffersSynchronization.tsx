@@ -7,7 +7,7 @@ import AddVenueProviderButton from 'pages/Offerers/Offerer/VenueV1/VenueEdition/
 import VenueProviderList from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/VenueProviderList/VenueProviderList'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-interface IOffersSynchronization {
+interface OffersSynchronization {
   provider: IProviders[]
   venueProvider: VenueProviderResponse[]
   venue: IVenue
@@ -17,7 +17,7 @@ const OffersSynchronization = ({
   venue,
   provider,
   venueProvider,
-}: IOffersSynchronization) => {
+}: OffersSynchronization) => {
   const [isLoading, setIsLoading] = useState(false)
   const [providers, setProviders] = useState(provider)
   const [venueProviders, setVenueProviders] =

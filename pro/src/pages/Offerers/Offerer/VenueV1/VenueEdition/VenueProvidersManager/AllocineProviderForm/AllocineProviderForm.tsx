@@ -3,6 +3,7 @@ import { Form } from 'react-final-form'
 import type { FormRenderProps } from 'react-final-form'
 import { Tooltip } from 'react-tooltip'
 
+import { PostVenueProviderBody } from 'apiClient/v1'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import { Banner, Button, SubmitButton, CheckboxField } from 'ui-kit'
@@ -31,13 +32,13 @@ interface FormValuesProps {
 export type InitialValuesProps = FormProps & FormValuesProps
 
 export interface AllocineProviderFormProps {
-  saveVenueProvider: (payload?: FormValuesProps) => void
+  saveVenueProvider: (payload?: PostVenueProviderBody) => void
   providerId: number
   offererId: number
   venueId: number
   isCreatedEntity?: boolean
-  onCancel: () => void
-  initialValues: InitialValuesProps
+  onCancel?: () => void
+  initialValues?: InitialValuesProps
 }
 
 const AllocineProviderForm = ({
@@ -54,15 +55,18 @@ const AllocineProviderForm = ({
 
   const handleSubmit = (formValues: FormValuesProps) => {
     const { isDuo = true, price } = formValues
-    const quantity = formValues.quantity !== '' ? formValues.quantity : null
+    const quantity =
+      formValues.quantity !== '' && formValues.quantity !== undefined
+        ? Number(formValues.quantity)
+        : undefined
 
     const payload = {
       quantity,
       isDuo,
-      price,
+      price: String(price),
       providerId,
       venueId,
-      isActive: initialValues.isActive,
+      isActive: initialValues?.isActive,
     }
 
     setIsLoading(true)

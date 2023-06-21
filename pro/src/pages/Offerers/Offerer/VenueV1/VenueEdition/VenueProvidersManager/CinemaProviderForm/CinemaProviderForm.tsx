@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import { Tooltip } from 'react-tooltip'
 
 import 'react-tooltip/dist/react-tooltip.css'
+import { PostVenueProviderBody } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
@@ -13,15 +14,15 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import Icon from 'ui-kit/Icon/Icon'
 
 import { DEFAULT_CINEMA_PROVIDER_FORM_VALUES } from './constants'
-import { ICinemaProviderFormValues } from './types'
+import { CinemaProviderFormValues } from './types'
 
 export interface CinemaProviderFormProps {
-  saveVenueProvider: (values: ICinemaProviderFormValues) => void
+  saveVenueProvider: (values: PostVenueProviderBody) => void
   providerId: number
   venueId: number
   offererId: number
   isCreatedEntity?: boolean
-  initialValues: ICinemaProviderFormValues
+  initialValues?: CinemaProviderFormValues
   onCancel?: () => void
 }
 
@@ -37,7 +38,7 @@ export const CinemaProviderForm = ({
   const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
 
-  const handleFormSubmit = (values: ICinemaProviderFormValues) => {
+  const handleFormSubmit = (values: CinemaProviderFormValues) => {
     const payload = {
       providerId,
       venueId,

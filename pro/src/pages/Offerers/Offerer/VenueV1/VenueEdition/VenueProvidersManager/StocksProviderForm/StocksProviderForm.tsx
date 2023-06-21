@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 
+import { PostVenueProviderBody } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
@@ -19,7 +20,7 @@ interface PayloadProps {
 export interface StocksProviderFormProps {
   offererId: number
   providerId: number
-  saveVenueProvider: (payload: PayloadProps) => void
+  saveVenueProvider: (payload: PostVenueProviderBody) => void
   siret: string
   venueId: number
   hasOffererProvider: boolean
