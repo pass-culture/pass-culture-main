@@ -24,6 +24,7 @@ interface IconListItem {
 const fullIcons: IconListItem[] = [
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
+  { src: 'icons/full-validate.svg' }, // TODO 1 in CollectiveOfferConfirmation
   { src: 'icons/full-infos.svg' },
   { src: 'icons/full-link.svg' }, // TODO 17 uses left inside <ButtonLink> and <Banner> and <InternalBanner>
   { src: 'icons/full-mail.svg' }, // TODO 2 uses left inside ButtonLink, 1 use left inside SubmitButton
@@ -84,7 +85,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-guichet-full.svg' },
   { src: 'icons/ico-home.svg' },
   { src: 'icons/ico-hourglass.svg' },
-  { src: 'icons/ico-is-valid.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-left-arrow.svg', viewBox: '0 0 24 24' },
   { src: 'icons/library.svg', viewBox: '0 0 49 48' },
   { src: 'icons/linear-gradient.svg', viewBox: '0 0 623 1024' }, // TODO replace by a jpg/png
@@ -156,10 +156,7 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-unfold.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-unavailable-page-white.svg', viewBox: '0 0 317 198' },
   { src: 'icons/ico-user.svg', viewBox: '0 0 17 16' },
-  { src: 'icons/ico-validate-green.svg', viewBox: '0 0 15 14' },
-  { src: 'icons/validate.svg', viewBox: '0 0 56 56' },
   { src: 'icons/ico-validate-p.svg', viewBox: '0 0 17 17' },
-  { src: 'icons/ico-validate-purple.svg', viewBox: '0 0 15 14' },
   { src: 'icons/visual-disability.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-warning-grey.svg' },
   { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },

@@ -11,11 +11,12 @@ import { OFFER_STATUS_PENDING } from 'core/Offers'
 import { IOfferIndividual } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
+import fullValidateIcon from 'icons/full-validate.svg'
 import { ReactComponent as PendingIcon } from 'icons/pending.svg'
-import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
 import { DisplayOfferInAppLink } from 'screens/OfferIndividual/Summary/DisplayOfferInAppLink'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './OfferIndividualConfirmation.module.scss'
 
@@ -38,7 +39,11 @@ const OfferIndividualConfirmation = ({
         {isPendingOffer ? (
           <PendingIcon className={styles['pending-icon']} />
         ) : (
-          <ValidateIcon className={styles['validate-icon']} />
+          <SvgIcon
+            src={fullValidateIcon}
+            alt=""
+            className={styles['validate-icon']}
+          />
         )}
         <h2 className={styles['confirmation-title']}>{title}</h2>
         {isPendingOffer ? (
