@@ -35,7 +35,6 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-more.svg' }, // TODO still in 2 ButtonLink and 1 Button
   { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>
-  { src: 'icons/full-right.svg' },
   { src: 'icons/full-arrow-right.svg' },
 ]
 
