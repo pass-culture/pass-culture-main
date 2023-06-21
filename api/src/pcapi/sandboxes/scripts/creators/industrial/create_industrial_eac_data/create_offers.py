@@ -8,9 +8,12 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.offerers import models as offerers_models
+import pcapi.core.providers.models as providers_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.image_conversion import DO_NOT_CROP
+
+from .create_collective_api_provider import create_collective_api_provider
 
 
 def create_offers(
@@ -22,7 +25,9 @@ def create_offers(
 
     # eac_1
     offerer = next(offerers_iterator)
+    provider = create_collective_api_provider(offerer.managedVenues)
     create_offers_base_list(
+        provider=provider,
         offerer=offerer,
         institutions=institutions,
         domains=domains,
@@ -34,7 +39,9 @@ def create_offers(
     )
     # eac_2
     offerer = next(offerers_iterator)
+    provider = create_collective_api_provider(offerer.managedVenues)
     create_offers_base_list(
+        provider=provider,
         offerer=offerer,
         institutions=institutions,
         domains=domains,
@@ -47,7 +54,9 @@ def create_offers(
 
     # eac_pending_bank_informations
     offerer = next(offerers_iterator)
+    provider = create_collective_api_provider(offerer.managedVenues)
     create_offers_base_list(
+        provider=provider,
         offerer=offerer,
         institutions=institutions,
         domains=domains,
@@ -61,7 +70,9 @@ def create_offers(
 
     # eac_no_cb
     offerer = next(offerers_iterator)
+    provider = create_collective_api_provider(offerer.managedVenues)
     create_offers_base_list(
+        provider=provider,
         offerer=offerer,
         institutions=institutions,
         domains=domains,
@@ -75,6 +86,7 @@ def create_offers(
 
 
 def create_offers_base_list(
+    provider: providers_models.Provider,
     offerer: offerers_models.Offerer,
     institutions: list[educational_models.EducationalInstitution],
     domains: list[educational_models.EducationalDomain],
@@ -155,7 +167,7 @@ def create_offers_base_list(
                 collectiveOffer__venue=next(venue_iterator),
                 collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__interventionArea=[],
-                collectiveOffer__isPublicApi=True,
+                collectiveOffer__provider=provider,
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )

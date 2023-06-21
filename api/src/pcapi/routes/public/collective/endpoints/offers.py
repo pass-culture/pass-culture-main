@@ -201,13 +201,9 @@ def post_collective_offer_public(
             )
 
     try:
-        if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
-            requested_id = current_api_key.providerId
-        else:
-            requested_id = current_api_key.offererId
-
         offer = educational_api_offer.create_collective_offer_public(
-            requested_id=requested_id,
+            provider_id=current_api_key.providerId,
+            offerer_id=current_api_key.offererId,
             body=body,
         )
 
@@ -517,7 +513,7 @@ def patch_collective_offer_public(
     # real edition
     try:
         offer = educational_api_offer.edit_collective_offer_public(
-            offerer_id=current_api_key.offererId,
+            provider_id=current_api_key.providerId,
             new_values=new_values,
             offer=offer,
         )

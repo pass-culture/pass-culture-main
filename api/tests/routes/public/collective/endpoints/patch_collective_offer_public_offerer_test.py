@@ -10,6 +10,7 @@ from pcapi import settings
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import override_features
 
 import tests
@@ -37,13 +38,13 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True,
+            collectiveOffer__provider=api_key.provider,
             collectiveOffer__imageCredit="pouet",
             collectiveOffer__imageId="123456789",
             collectiveOffer__venue=venue,
@@ -149,10 +150,10 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True,
+            collectiveOffer__provider=api_key.provider,
             collectiveOffer__imageCredit="pouet",
             collectiveOffer__imageId="123456789",
             collectiveOffer__venue=venue,
@@ -184,11 +185,12 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True, collectiveOffer__venue=venue
+            collectiveOffer__provider=api_key.provider,
+            collectiveOffer__venue=venue,
         )
 
         payload = {
@@ -223,11 +225,11 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True, collectiveOffer__venue=venue
+            collectiveOffer__provider=api_key.provider, collectiveOffer__venue=venue
         )
 
         payload = {
@@ -255,7 +257,9 @@ class CollectiveOffersPublicPatchOfferTest:
         offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=False, collectiveOffer__venue=venue, collectiveOffer__name="old_name"
+            collectiveOffer__provider=providers_factories.ProviderFactory(),
+            collectiveOffer__venue=venue,
+            collectiveOffer__name="old_name",
         )
 
         payload = {
@@ -279,11 +283,11 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         educational_institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True, collectiveOffer__venue=venue
+            collectiveOffer__provider=api_key.provider, collectiveOffer__venue=venue
         )
 
         payload = {
@@ -308,11 +312,11 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         educational_institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True, collectiveOffer__venue=venue
+            collectiveOffer__provider=api_key.provider, collectiveOffer__venue=venue
         )
 
         payload = {
@@ -337,11 +341,11 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True, collectiveOffer__venue=venue
+            collectiveOffer__provider=api_key.provider, collectiveOffer__venue=venue
         )
 
         payload = {
@@ -387,7 +391,7 @@ class CollectiveOffersPublicPatchOfferTest:
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True, collectiveOffer__venue=venue
+            collectiveOffer__provider=providers_factories.ProviderFactory(), collectiveOffer__venue=venue
         )
 
         payload = {
@@ -429,12 +433,12 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         offerers_factories.VenueFactory(managingOfferer=offerer)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True,
+            collectiveOffer__provider=api_key.provider,
         )
 
         payload = {
@@ -476,10 +480,10 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         offerers_factories.VenueFactory(managingOfferer=offerer)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True,
+            collectiveOffer__provider=api_key.provider,
         )
 
         payload = {
@@ -500,13 +504,13 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory(isActive=False)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True,
+            collectiveOffer__provider=api_key.provider,
             collectiveOffer__imageCredit="pouet",
             collectiveOffer__imageCrop={"crop_data": 12},
             collectiveOffer__venue=venue,
@@ -556,10 +560,10 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True, collectiveOffer__venue=venue
+            collectiveOffer__provider=api_key.provider, collectiveOffer__venue=venue
         )
 
         payload = {"imageCredit": "a great artist", "imageFile": image_data.GOOD_IMAGE}
@@ -582,10 +586,10 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True, collectiveOffer__venue=venue
+            collectiveOffer__provider=api_key.provider, collectiveOffer__venue=venue
         )
 
         payload = {"name": "pouet", "imageCredit": "a great artist", "imageFile": image_data.WRONG_IMAGE_SIZE}
@@ -609,10 +613,10 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True, collectiveOffer__venue=venue
+            collectiveOffer__provider=api_key.provider, collectiveOffer__venue=venue
         )
 
         payload = {"name": "pouet", "imageCredit": "a great artist", "imageFile": image_data.WRONG_IMAGE_TYPE}
@@ -636,10 +640,10 @@ class CollectiveOffersPublicPatchOfferTest:
         # SETUP
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True, collectiveOffer__venue=venue
+            collectiveOffer__provider=api_key.provider, collectiveOffer__venue=venue
         )
         payload = {"imageCredit": "a great artist", "imageFile": image_data.GOOD_IMAGE}
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
@@ -668,11 +672,11 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         domain = educational_factories.EducationalDomainFactory()
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True,
+            collectiveOffer__provider=api_key.provider,
             collectiveOffer__imageCredit="pouet",
             collectiveOffer__imageId="123456789",
             collectiveOffer__venue=venue,
@@ -699,11 +703,11 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True,
+            collectiveOffer__provider=api_key.provider,
             collectiveOffer__imageCredit="pouet",
             collectiveOffer__imageId="123456789",
             collectiveOffer__venue=venue,
@@ -731,10 +735,10 @@ class CollectiveOffersPublicPatchOfferTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        api_key = offerers_factories.ApiKeyFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__isPublicApi=True,
+            collectiveOffer__provider=api_key.provider,
             collectiveOffer__imageCredit="pouet",
             collectiveOffer__imageId="123456789",
             collectiveOffer__venue=venue,

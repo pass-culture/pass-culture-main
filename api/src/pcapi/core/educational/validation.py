@@ -123,7 +123,7 @@ def check_collective_offer_number_of_collective_stocks(
 
 
 def check_if_offer_is_not_public_api(offer: models.CollectiveOffer) -> None:
-    if offer.isPublicApi:
+    if offer.providerId:
         raise exceptions.CollectiveOfferIsPublicApi()
 
 
