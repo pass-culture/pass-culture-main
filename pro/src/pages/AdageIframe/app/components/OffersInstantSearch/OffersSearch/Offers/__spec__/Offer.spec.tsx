@@ -173,33 +173,16 @@ describe('offer', () => {
       expect(offerName).toBeInTheDocument()
       const redactorName = screen.getByText('Jean Dupont')
       expect(redactorName).toBeInTheDocument()
-      const listItemsInOffer = screen.getAllByTestId('offer-listitem')
-      const summaryAndDomainList = within(listItemsInOffer[0]).getAllByRole(
-        'list'
-      )
-      expect(summaryAndDomainList).toHaveLength(3)
 
       // First summary line
-      expect(
-        within(summaryAndDomainList[1]).getByText('Cinéma')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Cinéma')).toBeInTheDocument()
 
-      expect(
-        within(summaryAndDomainList[1]).getByText('75000, Paris')
-      ).toBeInTheDocument()
+      expect(screen.getByText('75000, Paris')).toBeInTheDocument()
       // second summary line
-      expect(
-        within(summaryAndDomainList[2]).getByText('16/09/2022 à 02:00')
-      ).toBeInTheDocument()
-      expect(
-        within(summaryAndDomainList[2]).getByText('Jusqu’à 10 places')
-      ).toBeInTheDocument()
-      expect(
-        within(summaryAndDomainList[2]).getByText('1 400,00 €')
-      ).toBeInTheDocument()
-      expect(
-        within(summaryAndDomainList[2]).getByText('Multi niveaux')
-      ).toBeInTheDocument()
+      expect(screen.getByText('16/09/2022 à 02:00')).toBeInTheDocument()
+      expect(screen.getByText('Jusqu’à 10 places')).toBeInTheDocument()
+      expect(screen.getByText('1 400,00 €')).toBeInTheDocument()
+      expect(screen.getByText('Multi niveaux')).toBeInTheDocument()
 
       // Info that are in offer details component
       expect(
@@ -213,33 +196,19 @@ describe('offer', () => {
 
       const offerName = await screen.findByText(offerInCayenne.name)
       expect(offerName).toBeInTheDocument()
-      const listItemsInOffer = screen.getAllByTestId('offer-listitem')
-      const summaryAndDomainList = within(listItemsInOffer[0]).getAllByRole(
-        'list'
-      )
-      expect(summaryAndDomainList).toHaveLength(3)
 
       // First summary line
-      expect(
-        within(summaryAndDomainList[1]).getByText('Cinéma')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Cinéma')).toBeInTheDocument()
 
-      expect(
-        within(summaryAndDomainList[1]).getByText('A la mairie')
-      ).toBeInTheDocument()
+      expect(screen.getByText('A la mairie')).toBeInTheDocument()
+
       // second summary line
+      expect(screen.getByText('25/09/2021 à 19:00')).toBeInTheDocument()
       expect(
-        within(summaryAndDomainList[2]).getByText('25/09/2021 à 19:00')
-      ).toBeInTheDocument()
-      expect(
-        within(summaryAndDomainList[2]).queryByText('Jusqu’à', { exact: false })
+        screen.queryByText('Jusqu’à', { exact: false })
       ).not.toBeInTheDocument()
-      expect(
-        within(summaryAndDomainList[2]).getByText('Gratuit')
-      ).toBeInTheDocument()
-      expect(
-        within(summaryAndDomainList[2]).getByText('Collège - 4e')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Gratuit')).toBeInTheDocument()
+      expect(screen.getByText('Collège - 4e')).toBeInTheDocument()
 
       const seeMoreButton = await screen.findByRole('button', {
         name: 'en savoir plus',

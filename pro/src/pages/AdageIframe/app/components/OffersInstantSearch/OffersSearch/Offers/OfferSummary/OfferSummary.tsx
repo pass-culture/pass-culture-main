@@ -94,54 +94,71 @@ const OfferSummary = ({
 
   return (
     <div>
-      <ul className="offer-summary">
-        <li className="offer-summary-item">
-          <SubcategoryIcon className="offer-summary-item-icon" />
-          {subcategoryLabel}
-        </li>
-        <li className="offer-summary-item">
-          <LocationIcon className="offer-summary-item-icon" />
-          {offerVenueLabel}
-        </li>
-      </ul>
-      <ul className="offer-summary">
+      <dl className="offer-summary">
+        <div className="offer-summary-item">
+          <dt>
+            {/* TODO : add alt when changing to SvgIcon */}
+            <SubcategoryIcon className="offer-summary-item-icon" />
+          </dt>
+          <dd>{subcategoryLabel}</dd>
+        </div>
+        <div className="offer-summary-item">
+          <dt>
+            {/* TODO : add alt when changing to SvgIcon */}
+            <LocationIcon className="offer-summary-item-icon" />
+          </dt>
+          <dl>{offerVenueLabel}</dl>
+        </div>
+      </dl>
+      <dl className="offer-summary">
         {beginningDatetime && (
-          <li className="offer-summary-item">
-            <DateIcon className="offer-summary-item-icon" />
-            {getLocalBeginningDatetime(beginningDatetime, venue.postalCode)}
-          </li>
+          <div className="offer-summary-item">
+            <dt>
+              {/* TODO : add alt when changing to SvgIcon */}
+              <DateIcon className="offer-summary-item-icon" />
+            </dt>
+            <dd>
+              {getLocalBeginningDatetime(beginningDatetime, venue.postalCode)}
+            </dd>
+          </div>
         )}
         {numberOfTickets && (
-          <li className="offer-summary-item">
-            <SvgIcon
-              src={strokeUserIcon}
-              alt=""
-              className="offer-summary-item-icon"
-            />
-            Jusqu’à {numberOfTickets} places
-          </li>
+          <div className="offer-summary-item">
+            <dt>
+              <SvgIcon
+                src={strokeUserIcon}
+                alt="Nombre de places"
+                className="offer-summary-item-icon"
+              />
+            </dt>
+            <dd>Jusqu’à {numberOfTickets} places</dd>
+          </div>
         )}
         {formattedPrice && (
-          <li className="offer-summary-item">
-            <SvgIcon
-              src={strokeEuro}
-              alt=""
-              className="offer-summary-item-icon"
-            />
-            {formattedPrice}
-          </li>
+          <div className="offer-summary-item">
+            <dt>
+              <SvgIcon
+                src={strokeEuro}
+                alt="Prix"
+                className="offer-summary-item-icon"
+              />
+            </dt>
+            <dd>{formattedPrice}</dd>
+          </div>
         )}
         {studentsLabel && (
-          <li className="offer-summary-item">
-            <SvgIcon
-              src={buildingStrokeIcon}
-              alt=""
-              className="offer-summary-item-icon"
-            />
-            {studentsLabel}
-          </li>
+          <div className="offer-summary-item">
+            <dt>
+              <SvgIcon
+                src={buildingStrokeIcon}
+                alt="Niveau scolaire"
+                className="offer-summary-item-icon"
+              />
+            </dt>
+            <dd>{studentsLabel}</dd>
+          </div>
         )}
-      </ul>
+      </dl>
     </div>
   )
 }
