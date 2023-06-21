@@ -61,7 +61,7 @@ export const SurveySatisfaction = (): JSX.Element => {
           <ButtonLink
             variant={ButtonVariant.PRIMARY}
             link={{
-              to: 'https://passculture.qualtrics.com/jfe2/preview/previewId/b9b1d8ad-c0c2-45ba-9e55-fd562da0e798/SV_8w5mdHmrxly9bcW?Q_CHL=preview&Q_SurveyVersionID=current',
+              to: 'https://passculture.qualtrics.com/jfe/form/SV_8w5mdHmrxly9bcW',
               isExternal: true,
               rel: 'noopener noreferrer',
               target: '_blank',
