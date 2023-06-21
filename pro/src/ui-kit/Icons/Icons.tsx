@@ -1,9 +1,6 @@
 /* istanbul ignore file */
-import cn from 'classnames'
 import React, { useState } from 'react'
 
-import { Button } from 'ui-kit/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
 import BaseInput from 'ui-kit/form/shared/BaseInput'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Title } from 'ui-kit/typography'
@@ -21,12 +18,10 @@ interface IconListItem {
   viewBox?: string
 }
 
-const iconList = [
-  // Cleaned !
-  // Those icons are put in the order of the design library here:
-  // https://www.figma.com/file/AEXCkb4KbUyPmB4BRFa88s/PRO---Library?type=design&node-id=8059-111986&t=sLfFXFbaXGFLjdhX-0
-
-  // Full icons
+// Cleaned !
+// Those icons are put in the order of the design library here:
+// https://www.figma.com/file/AEXCkb4KbUyPmB4BRFa88s/PRO---Library?type=design&node-id=8059-111986&t=sLfFXFbaXGFLjdhX-0
+const fullIcons: IconListItem[] = [
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
   { src: 'icons/full-link.svg' }, // TODO 17 uses left inside <ButtonLink> and <Banner> and <InternalBanner>
@@ -42,8 +37,9 @@ const iconList = [
   { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-right.svg' },
   { src: 'icons/full-arrow-right.svg' },
+]
 
-  // Stroke icons
+const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
   { src: 'icons/stroke-error.svg' },
   { src: 'icons/stroke-valid.svg' }, // TODO 1 use left inside <Banner>
@@ -57,10 +53,13 @@ const iconList = [
   { src: 'icons/stroke-accessibility-ear.svg' },
   { src: 'icons/stroke-duplicate-offer.svg' },
   { src: 'icons/stroke-close.svg' },
+]
 
-  // Shadow icons
+const shadowIcons: IconListItem[] = [
   { src: 'icons/shadow-tips-help.svg', viewBox: '0 0 22 26' },
+]
 
+const notCleandIcons: IconListItem[] = [
   // Not cleaned
   { src: 'icons/ico-calendar-big.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-calendar-disabled.svg', viewBox: '0 0 24 24' },
@@ -174,64 +173,54 @@ const iconList = [
   { src: 'icons/ico-chevron-adage.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-alert-grey.svg', viewBox: '0 0 80 80' },
   { src: 'icons/ico-circle-arrow.svg', viewBox: '0 0 20 20' },
-  { src: 'icons/add-user.svg', viewbox: '0 0 106 74' },
-  { src: 'icons/ico-alert-filled.svg', viewbox: '0 0 24 24' },
-  { src: 'icons/ico-arrow-up-b.svg', viewbox: '0 0 24 24' },
-  { src: 'icons/ico-calendar-check.svg', viewbox: '0 0 48 48' },
-  { src: 'icons/icon-calendar.svg', viewbox: '0 0 30 30' },
-  { src: 'icons/ico-case.svg', viewbox: '0 0 48 48' },
-  { src: 'icons/ico-clear.svg', viewbox: '4 4 40 40' },
-  { src: 'icons/ico-clock.svg', viewbox: '0 0 24 24' },
-  { src: 'icons/ico-date.svg', viewbox: '0 0 48 48' },
-  { src: 'icons/ico-disconnect-full.svg', viewbox: '0 0 40 40' },
-  { src: 'icons/ico-events.svg', viewbox: '0 0 24 24' },
-  { src: 'icons/ico-eye-close.svg', viewbox: '0 0 20 20' },
-  { src: 'icons/ico-eye-open.svg', viewbox: '0 0 20 20' },
-  { src: 'icons/ico-help-S.svg', viewbox: '0 0 48 48' },
-  { src: 'icons/ico-info-wrong.svg', viewbox: '0 0 78 78' },
-  { src: 'icons/ico-key.svg', viewbox: '0 0 20 20' },
-  { src: 'icons/logo-pass-culture-dark.svg', viewbox: '0 0 71 24' },
-  { src: 'icons/ico-mail-outline.svg', viewbox: '0 0 82 67' },
-  { src: 'icons/ico-notification-error.svg', viewbox: '0 0 24 24' },
-  { src: 'icons/offer-card-euro.svg', viewbox: '0 0 30 30' },
-  { src: 'icons/other-offer.svg', viewbox: '0 0 30 30' },
-  { src: 'icons/party.svg', viewbox: '0 0 48 48' },
-  { src: 'icons/ico-passculture.svg', viewbox: '0 0 30 30' },
-  { src: 'icons/ico-plus-circle.svg', viewbox: '0 0 48 48' },
-  { src: 'icons/ico-search.svg', viewbox: '0 0 48 48' },
-  { src: 'icons/ico-ticket-plus-full.svg', viewbox: '0 0 20 20' },
-  { src: 'icons/ico-trash-filled.svg', viewbox: '0 0 48 48' },
-  { src: 'icons/ico-user-circled-w.svg', viewbox: '0 0 40 40' },
-  { src: 'icons/venue-2.svg', viewbox: '0 0 40 40' },
-  { src: 'icons/ico-venue.svg', viewbox: '0 0 28 23' },
-  { src: 'icons/ico-virtual-event.svg', viewbox: '0 0 48 48' },
-  { src: 'icons/ico-virtual-thing.svg', viewbox: '0 0 48 48' },
-  { src: 'icons/ico-institution.svg', viewbox: '0 0 18 18' },
-  { src: 'icons/logo-pass-culture-adage.svg', viewbox: '0 0 120 39' },
+  { src: 'icons/add-user.svg', viewBox: '0 0 106 74' },
+  { src: 'icons/ico-alert-filled.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-arrow-up-b.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-calendar-check.svg', viewBox: '0 0 48 48' },
+  { src: 'icons/icon-calendar.svg', viewBox: '0 0 30 30' },
+  { src: 'icons/ico-case.svg', viewBox: '0 0 48 48' },
+  { src: 'icons/ico-clear.svg', viewBox: '4 4 40 40' },
+  { src: 'icons/ico-clock.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-date.svg', viewBox: '0 0 48 48' },
+  { src: 'icons/ico-disconnect-full.svg', viewBox: '0 0 40 40' },
+  { src: 'icons/ico-events.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/ico-eye-close.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-eye-open.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-help-S.svg', viewBox: '0 0 48 48' },
+  { src: 'icons/ico-info-wrong.svg', viewBox: '0 0 78 78' },
+  { src: 'icons/ico-key.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },
+  { src: 'icons/ico-mail-outline.svg', viewBox: '0 0 82 67' },
+  { src: 'icons/ico-notification-error.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/offer-card-euro.svg', viewBox: '0 0 30 30' },
+  { src: 'icons/other-offer.svg', viewBox: '0 0 30 30' },
+  { src: 'icons/party.svg', viewBox: '0 0 48 48' },
+  { src: 'icons/ico-passculture.svg', viewBox: '0 0 30 30' },
+  { src: 'icons/ico-plus-circle.svg', viewBox: '0 0 48 48' },
+  { src: 'icons/ico-search.svg', viewBox: '0 0 48 48' },
+  { src: 'icons/ico-ticket-plus-full.svg', viewBox: '0 0 20 20' },
+  { src: 'icons/ico-trash-filled.svg', viewBox: '0 0 48 48' },
+  { src: 'icons/ico-user-circled-w.svg', viewBox: '0 0 40 40' },
+  { src: 'icons/venue-2.svg', viewBox: '0 0 40 40' },
+  { src: 'icons/ico-venue.svg', viewBox: '0 0 28 23' },
+  { src: 'icons/ico-virtual-event.svg', viewBox: '0 0 48 48' },
+  { src: 'icons/ico-virtual-thing.svg', viewBox: '0 0 48 48' },
+  { src: 'icons/ico-institution.svg', viewBox: '0 0 18 18' },
+  { src: 'icons/logo-pass-culture-adage.svg', viewBox: '0 0 120 39' },
+]
+
+const iconsSections = [
+  { title: 'Full icons', icons: fullIcons },
+  { title: 'Stroke icons', icons: strokeIcons },
+  { title: 'Shadow icons', icons: shadowIcons },
+  { title: 'Not cleaned icons', icons: notCleandIcons },
 ]
 
 export const Icons = () => {
-  const [filteredIcons, setFilteredIcons] = useState<IconListItem[]>(iconList)
-  const [whiteIcon, setWhiteIcon] = useState<boolean>(false)
-  const [blackBackground, setBlackBackground] = useState<boolean>(false)
+  const [searchInput, setSearchInput] = useState('')
+  const [fillColorInput, setFillColorInput] = useState('#000000')
+  const [backgroundColorInput, setBackgroundColorInput] = useState('#ffffff')
 
-  const handleSearchOnChange: React.ChangeEventHandler<
-    HTMLInputElement
-  > = e => {
-    e.stopPropagation()
-    const search = e.target.value
-    const newFilteredIcons = iconList.filter(iconListItem =>
-      fuzzyMatch(search, iconListItem.src)
-    )
-    setFilteredIcons(newFilteredIcons)
-  }
-
-  const onClickToggleIconColor = () => {
-    setWhiteIcon(current => !current)
-  }
-  const onClickToggleBackgroundColor = () => {
-    setBlackBackground(current => !current)
-  }
   const onClick: React.MouseEventHandler<HTMLDivElement> = e => {
     e.persist()
     const target = e.currentTarget as Element
@@ -246,80 +235,93 @@ export const Icons = () => {
   }
 
   return (
-    <div
-      className={cn(styles['icon-stories'], {
-        [styles['icon-white']]: whiteIcon,
-        [styles['background-black']]: blackBackground,
-      })}
-    >
-      <div className={styles['options']}>
-        <p>
-          Les couleurs des icons sont normalisé en noir (via la propriété css (
-          <code> fill </code>)
-        </p>
-        <div className={styles['button-group']}>
-          <Button
-            variant={ButtonVariant.PRIMARY}
-            onClick={onClickToggleIconColor}
-          >
-            {whiteIcon
-              ? 'Afficher les icônes en noir'
-              : 'Afficher les icônes en blanc'}
-          </Button>
-          <Button
-            variant={ButtonVariant.PRIMARY}
-            onClick={onClickToggleBackgroundColor}
-          >
-            {blackBackground
-              ? 'Afficher les backgrounds en blanc'
-              : 'Afficher les backgrounds en noir'}
-          </Button>
-        </div>
-      </div>
-
-      <Title level={1}>Liste des icones</Title>
-
+    <div className={styles['icon-stories']}>
       <div className={styles['search-input-container']}>
         <BaseInput
-          className={styles['search-input']}
           name="search"
-          onChange={handleSearchOnChange}
+          onChange={event => setSearchInput(event.target.value)}
           placeholder="Rechercher ..."
+          value={searchInput}
+        />
+
+        <BaseInput
+          type="color"
+          name="fillColor"
+          onChange={event => setFillColorInput(event.target.value)}
+          placeholder="#000000, red...."
+          value={fillColorInput}
+          className={styles['color-input']}
+        />
+
+        <BaseInput
+          type="color"
+          name="backgroundColor"
+          onChange={event => setBackgroundColorInput(event.target.value)}
+          placeholder="#000000, red...."
+          value={backgroundColorInput}
+          className={styles['color-input']}
         />
       </div>
 
-      <div className={styles['icon-list']}>
-        {filteredIcons.map(icon => {
-          const fileNameParts = icon.src.split('/')
-          const iconName = fileNameParts[fileNameParts.length - 1].split('.')[0]
+      {iconsSections.map(section => {
+        const filteredIcons = section.icons.filter(iconListItem =>
+          fuzzyMatch(searchInput, iconListItem.src)
+        )
 
-          return (
-            <div
-              key={icon.src}
-              className={styles['container']}
-              onClick={onClick}
-              data-src={icon.src}
-            >
-              <div className={styles['copy-to-clipboard-wrapper']}>
-                <span className={styles['copy-to-clipboard-name']}>
-                  Copié !
-                </span>
-              </div>
-              <div className={styles['icon-container']}>
-                <SvgIcon
-                  src={icon.src}
-                  alt={icon.src}
-                  viewBox={icon.viewBox}
-                  className={styles['icon']}
-                />
-              </div>
-              <div className={styles['name-container']}>
-                <span className={styles['name']}>{iconName}</span>
-              </div>
+        if (filteredIcons.length === 0) {
+          return null
+        }
+
+        return (
+          <div key={section.title}>
+            <Title level={2}>{section.title}</Title>
+
+            <div className={styles['icon-list']}>
+              {filteredIcons.map(icon => {
+                const fileNameParts = icon.src.split('/')
+                const iconName = fileNameParts[fileNameParts.length - 1]
+                  .split('.')[0]
+                  .replace('full-', '')
+                  .replace('stroke-', '')
+                  .replace('shadow-', '')
+
+                return (
+                  <div
+                    key={icon.src}
+                    className={styles['container']}
+                    onClick={onClick}
+                    data-src={icon.src}
+                  >
+                    <div className={styles['copy-to-clipboard-wrapper']}>
+                      <span className={styles['copy-to-clipboard-name']}>
+                        Copié !
+                      </span>
+                    </div>
+
+                    <div className={styles['icon-container']}>
+                      <SvgIcon
+                        src={icon.src}
+                        alt={icon.src}
+                        viewBox={icon.viewBox}
+                        className={styles['icon']}
+                        style={{
+                          fill: fillColorInput,
+                          color: fillColorInput,
+                          backgroundColor: backgroundColorInput,
+                        }}
+                      />
+                    </div>
+
+                    <div className={styles['name-container']}>
+                      <span className={styles['name']}>{iconName}</span>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
-          )
-        })}
-      </div>
+          </div>
+        )
+      })}
     </div>
   )
 }

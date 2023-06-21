@@ -11,27 +11,21 @@
   display: flex;
   flex-flow: wrap;
   flex-direction: row;
-  justify-content: space-between;
-}
-
-.options {
+  margin-top: rem.torem(16px);
   margin-bottom: rem.torem(16px);
-
-  .button-group {
-    display: flex;
-    margin-top: rem.torem(8px);
-    margin-left: rem.torem(-8px);
-
-    button {
-      margin-left: rem.torem(8px);
-      width: rem.torem(300px);
-    }
-  }
 }
 
 .search-input-container {
+  display: flex;
+  gap: rem.torem(8px);
   margin: rem.torem(16px) 0;
   margin-top: rem.torem(8px);
+}
+
+.color-input {
+  width: rem.torem(50px);
+  border-radius: 0;
+  padding: 0;
 }
 
 .container {
@@ -45,12 +39,15 @@
   margin: rem.torem(4px);
   box-shadow: 0 0 rem.torem(4px) colors.$black-shadow;
   border-radius: rem.torem(4px);
-  min-width: rem.torem(200px);
+  width: rem.torem(120px);
+
+  .name {
+    text-transform: capitalize;
+  }
 
   .name-container {
-    max-width: rem.torem(184px);
-    overflow: hidden;
     text-overflow: ellipsis;
+    text-align: center;
   }
 
   &.copy-to-clipboard {
@@ -62,7 +59,6 @@
     }
 
     .name-container {
-      opacity: 0.6;
       visibility: hidden;
     }
   }
@@ -81,21 +77,8 @@
 }
 
 .icon {
-  width: rem.torem(40px);
-  height: rem.torem(40px);
+  width: rem.torem(48px);
+  height: rem.torem(48px);
   fill: colors.$black;
   color: colors.$black;
-}
-
-.icon-white {
-  .icon {
-    fill: colors.$white;
-    color: colors.$white;
-  }
-}
-
-.background-black {
-  .icon {
-    background: colors.$black;
-  }
 }
