@@ -41,6 +41,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import UserOfferer
     from pcapi.core.offers.models import Mediation
     from pcapi.core.offers.models import Offer
+    from pcapi.core.permissions.models import BackOfficeUserProfile
 
 
 VOID_FIRST_NAME = ""
@@ -226,7 +227,9 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     trusted_devices: list["TrustedDevice"] = orm.relationship("TrustedDevice", back_populates="user")
     login_device_history: list["LoginDeviceHistory"] = orm.relationship("LoginDeviceHistory", back_populates="user")
     validatedBirthDate = sa.Column(sa.Date, nullable=True)  # validated by an Identity Provider
-    backoffice_profile = orm.relationship("BackOfficeUserProfile", uselist=False, back_populates="user")  # type: ignore [misc]
+    backoffice_profile: orm.Mapped["BackOfficeUserProfile"] = orm.relationship(
+        "BackOfficeUserProfile", uselist=False, back_populates="user"
+    )
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
     pro_flags: UserProFlags = orm.relationship("UserProFlags", back_populates="user", uselist=False)
 
@@ -710,7 +713,9 @@ class UserEmailHistory(PcObject, Base, Model):
     __tablename__ = "user_email_history"
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True)
-    user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("email_history", passive_deletes=True))  # type: ignore [misc]
+    user: sa.orm.Mapped["User"] = orm.relationship(
+        "User", foreign_keys=[userId], backref=orm.backref("email_history", passive_deletes=True)
+    )
 
     oldUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
     oldDomainEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)

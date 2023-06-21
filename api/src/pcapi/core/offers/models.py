@@ -42,6 +42,7 @@ logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from pcapi.core.bookings.models import Booking
+    from pcapi.core.criteria.models import Criterion
     from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import Venue
     from pcapi.core.users.models import User
@@ -155,7 +156,7 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
 class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     __tablename__ = "stock"
 
-    activationCodes = sa.orm.relationship("ActivationCode", back_populates="stock")  # type: ignore [misc]
+    activationCodes: sa_orm.Mapped["ActivationCode"] = sa.orm.relationship("ActivationCode", back_populates="stock")
     beginningDatetime = sa.Column(sa.DateTime, index=True, nullable=True)
     bookingLimitDatetime = sa.Column(sa.DateTime, nullable=True)
     dateCreated: datetime.datetime = sa.Column(
@@ -369,7 +370,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
     bookingEmail = sa.Column(sa.String(120), nullable=True)
     conditions = sa.Column(sa.String(120), nullable=True)
-    criteria = sa.orm.relationship(  # type: ignore [misc]
+    criteria: sa_orm.Mapped["Criterion"] = sa.orm.relationship(
         "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
     )
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
