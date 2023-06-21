@@ -10,7 +10,6 @@ import pcapi.core.offerers.repository as offerers_repository
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
-from pcapi.serialization.utils import humanize_field
 import pcapi.utils.date as date_utils
 
 
@@ -36,9 +35,6 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     venueTypeCode: offerers_models.VenueTypeCode
     withdrawalDetails: str | None
     collectiveDmsApplications: list[DMSApplicationForEAC]
-    _humanize_id = humanize_field("id")
-    _humanize_managing_offerer_id = humanize_field("managingOffererId")
-    _humanize_venue_label_id = humanize_field("venueLabelId")
 
     @classmethod
     def from_orm(
@@ -167,7 +163,6 @@ class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityCompliance
     collectivePhone: str | None
     collectiveEmail: str | None
     collectiveSubCategoryId: str | None
-    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True

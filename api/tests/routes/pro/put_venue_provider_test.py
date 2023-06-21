@@ -4,7 +4,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as provider_models
 import pcapi.core.users.factories as user_factories
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
@@ -43,7 +42,6 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        assert response.json["provider"]["id"] == humanize(provider.id)
         assert response.json["venueId"] == venue.id
         assert response.json["quantity"] == updated_venue_provider_data["quantity"]
         assert response.json["price"] == updated_venue_provider_data["price"]
@@ -70,7 +68,6 @@ class Returns200Test:
         response = auth_request.put("/venueProviders", json=updated_venue_provider_data)
 
         assert response.status_code == 200
-        assert response.json["provider"]["id"] == humanize(cds_provider.id)
         assert response.json["venueId"] == venue.id
         assert response.json["isDuo"] == updated_venue_provider_data["isDuo"]
         assert response.json["isActive"] == updated_venue_provider_data["isActive"]

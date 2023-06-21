@@ -2,7 +2,6 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.human_ids import humanize
 
 
 class GetEducationalOfferersTest:
@@ -40,7 +39,7 @@ class GetEducationalOfferersTest:
                             "address": venue_offerer_1.address,
                             "audioDisabilityCompliant": venue_offerer_1.audioDisabilityCompliant,
                             "city": venue_offerer_1.city,
-                            "id": humanize(venue_offerer_1.id),
+                            "id": str(venue_offerer_1.id),
                             "nonHumanizedId": venue_offerer_1.id,
                             "isVirtual": venue_offerer_1.isVirtual,
                             "mentalDisabilityCompliant": venue_offerer_1.mentalDisabilityCompliant,
@@ -64,7 +63,7 @@ class GetEducationalOfferersTest:
                             "address": venue_offerer_2.address,
                             "audioDisabilityCompliant": venue_offerer_2.audioDisabilityCompliant,
                             "city": venue_offerer_2.city,
-                            "id": humanize(venue_offerer_2.id),
+                            "id": str(venue_offerer_2.id),
                             "nonHumanizedId": venue_offerer_2.id,
                             "isVirtual": venue_offerer_2.isVirtual,
                             "mentalDisabilityCompliant": venue_offerer_2.mentalDisabilityCompliant,
@@ -124,7 +123,7 @@ class GetEducationalOfferersTest:
                             "address": venue_offerer_2.address,
                             "audioDisabilityCompliant": venue_offerer_2.audioDisabilityCompliant,
                             "city": venue_offerer_2.city,
-                            "id": humanize(venue_offerer_2.id),
+                            "id": str(venue_offerer_2.id),
                             "nonHumanizedId": venue_offerer_2.id,
                             "isVirtual": venue_offerer_2.isVirtual,
                             "mentalDisabilityCompliant": venue_offerer_2.mentalDisabilityCompliant,

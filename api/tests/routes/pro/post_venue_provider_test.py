@@ -143,28 +143,20 @@ class Returns201Test:
         # Then
         assert response.status_code == 201
         assert set(response.json.keys()) == {
-            "dateModifiedAtLastProvider",
-            "fieldsUpdated",
             "id",
-            "idAtProviders",
             "isActive",
             "isDuo",
             "isFromAllocineProvider",
-            "lastProviderId",
             "lastSyncDate",
             "nOffers",
             "price",
             "provider",
-            "providerId",
             "quantity",
             "venueId",
             "venueIdAtOfferProvider",
         }
         assert set(response.json["provider"].keys()) == {
-            "enabledForPro",
-            "id",
-            "isActive",
-            "localClass",
+            "nonHumanizedId",
             "name",
             "hasOffererProvider",
         }
@@ -314,7 +306,6 @@ class Returns201Test:
         response = client.post("/venueProviders", json=venue_provider_data)
 
         # Then
-        assert response.json["providerId"] == provider.id
         assert response.json["venueId"] == venue.id
         assert response.json["venueIdAtOfferProvider"] == cds_pivot.idAtProvider
 

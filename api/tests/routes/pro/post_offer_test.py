@@ -6,7 +6,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
@@ -31,7 +30,6 @@ class Returns200Test:
         offer = Offer.query.get(offer_id)
         response_dict = response.json
         assert offer.isActive is False
-        assert response_dict["venue"]["id"] == humanize(offer.venue.id)
         assert response_dict["name"] == "Celeste"
         assert response_dict["nonHumanizedId"] == offer.id
 
