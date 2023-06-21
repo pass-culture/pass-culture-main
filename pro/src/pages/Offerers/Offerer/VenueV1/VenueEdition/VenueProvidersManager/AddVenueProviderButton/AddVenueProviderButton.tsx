@@ -1,9 +1,11 @@
 import './AddVenueProviderButton.scss'
 
-import PropTypes from 'prop-types'
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 
+import { VenueProviderResponse } from 'apiClient/v1'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
+import { IVenue } from 'core/Venue'
+import { IProviders } from 'core/Venue/types'
 import useAnalytics from 'hooks/useAnalytics'
 import { MoreCircleIcon } from 'icons'
 import { Button } from 'ui-kit'
@@ -15,12 +17,26 @@ import { sortByLabel } from 'utils/strings'
 import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
 import VenueProviderForm from '../VenueProviderForm/VenueProviderForm'
 
-const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
+interface AddVenueProviderButtonProps {
+  providers: IProviders[]
+  setVenueProviders: (venueProviders: VenueProviderResponse[]) => void
+  venue: IVenue
+}
+
+const AddVenueProviderButton = ({
+  providers,
+  setVenueProviders,
+  venue,
+}: AddVenueProviderButtonProps) => {
   const { logEvent } = useAnalytics()
   const [isCreationMode, setIsCreationMode] = useState(false)
-  const [selectedProvider, setSelectedProvider] = useState(
-    DEFAULT_PROVIDER_OPTION
+  const [selectedProviderId, setSelectedProviderId] = useState(
+    DEFAULT_PROVIDER_OPTION.value
   )
+  const selectedProvider = providers.find(
+    provider => provider.id.toString() === selectedProviderId
+  )
+
   const providersOptions = sortByLabel(
     providers.map(item => ({
       value: item['id'].toString(),
@@ -28,38 +44,23 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
     }))
   )
 
-  const setCreationMode = useCallback(() => {
+  const setCreationMode = () => {
     logEvent?.(SynchronizationEvents.CLICKED_SYNCHRONIZE_OFFER, {
       offererId: venue.managingOfferer.nonHumanizedId,
       venueId: venue.nonHumanizedId,
     })
     setIsCreationMode(true)
-  }, [])
+  }
 
-  const cancelProviderSelection = useCallback(() => {
+  const cancelProviderSelection = () => {
     setIsCreationMode(false)
-    setSelectedProvider(DEFAULT_PROVIDER_OPTION)
-  }, [setIsCreationMode, setSelectedProvider])
+    setSelectedProviderId(DEFAULT_PROVIDER_OPTION.value)
+  }
 
-  const handleChange = useCallback(
-    event => {
-      const selectedProvider = providers.find(
-        provider => provider.id.toString() === event.target.value
-      )
-      setSelectedProvider(
-        selectedProvider ? selectedProvider : DEFAULT_PROVIDER_OPTION
-      )
-    },
-    [providers]
-  )
-
-  const afterSubmit = useCallback(
-    venueProvider => {
-      cancelProviderSelection()
-      venueProvider && setVenueProviders([venueProvider])
-    },
-    [cancelProviderSelection, setVenueProviders]
-  )
+  const afterSubmit = (venueProvider?: VenueProviderResponse) => {
+    cancelProviderSelection()
+    venueProvider && setVenueProviders([venueProvider])
+  }
 
   const AddButton = (
     <div className="has-text-centered">
@@ -80,14 +81,14 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
       <FieldLayout label="Source" name="provider">
         <SelectInput
           defaultOption={DEFAULT_PROVIDER_OPTION}
-          onChange={handleChange}
+          onChange={event => setSelectedProviderId(event.target.value)}
           name="provider"
           options={providersOptions}
-          value={selectedProvider.value}
+          value={String(selectedProviderId)}
         />
       </FieldLayout>
 
-      {selectedProvider.id !== DEFAULT_PROVIDER_OPTION.id && (
+      {selectedProvider && (
         <VenueProviderForm
           afterSubmit={afterSubmit}
           provider={selectedProvider}
@@ -98,19 +99,6 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
   )
 
   return isCreationMode ? VenueProviderSelection : AddButton
-}
-
-AddVenueProviderButton.defaultProps = {
-  providers: [],
-}
-
-AddVenueProviderButton.propTypes = {
-  providers: PropTypes.arrayOf(PropTypes.shape()),
-  setVenueProviders: PropTypes.func.isRequired,
-  venue: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    siret: PropTypes.string,
-  }).isRequired,
 }
 
 export default AddVenueProviderButton

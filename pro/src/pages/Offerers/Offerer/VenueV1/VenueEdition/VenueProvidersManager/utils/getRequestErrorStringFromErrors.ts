@@ -1,4 +1,4 @@
-export const getRequestErrorStringFromErrors = errors => {
+export const getRequestErrorStringFromErrors = (errors: any) => {
   if (errors instanceof Array) {
     return errors
       .map(error =>
@@ -11,7 +11,7 @@ export const getRequestErrorStringFromErrors = errors => {
 
   if (errors instanceof Object) {
     return Object.keys(errors)
-      .map(key => errors[key].map(error => error).join(' '))
+      .map(key => errors[key].map((error: any) => error).join(' '))
       .join(' ')
   }
 

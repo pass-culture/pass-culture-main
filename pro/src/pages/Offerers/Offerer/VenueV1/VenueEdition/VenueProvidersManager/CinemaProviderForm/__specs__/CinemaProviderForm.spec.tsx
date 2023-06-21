@@ -10,7 +10,7 @@ import {
   CinemaProviderForm,
   CinemaProviderFormProps,
 } from '../CinemaProviderForm'
-import { ICinemaProviderFormValues } from '../types'
+import { CinemaProviderFormValues } from '../types'
 
 const mockLogEvent = jest.fn()
 
@@ -34,7 +34,7 @@ describe('CinemaProviderForm', () => {
       offererId: offererId,
       isCreatedEntity: true,
       onCancel: jest.fn(),
-      initialValues: { isDuo: true } as ICinemaProviderFormValues,
+      initialValues: { isDuo: true } as CinemaProviderFormValues,
     }
 
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -89,7 +89,7 @@ describe('CinemaProviderForm', () => {
   describe('edit existing cinema provider', () => {
     beforeEach(() => {
       props.isCreatedEntity = false
-      props.initialValues.isDuo = false
+      props.initialValues = { isDuo: false, isActive: false }
     })
 
     it('should display modify and cancel button', async () => {
