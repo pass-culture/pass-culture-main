@@ -18,6 +18,11 @@
   padding-right: rem.torem(16px);
 }
 
+// Cancel additional padding from the filter results row
+.filters-active .table-head {
+  padding-bottom: 0;
+}
+
 .header-name {
   @include fonts.caption;
 }

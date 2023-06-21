@@ -115,7 +115,9 @@ const StockFormList = ({
               Tableau d'édition des stocks
             </caption>
 
-            <thead>
+            <thead
+              className={cn({ [styles['filters-active']]: areFiltersActive })}
+            >
               <tr>
                 <th className={styles['table-head']} scope="col">
                   <span className={styles['header-name']}>Date</span>
