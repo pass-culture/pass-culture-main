@@ -92,7 +92,11 @@ export const OfferFilters = ({
   )
 
   const setDefaultDepartmentFilter = useCallback(() => {
-    if (userDepartmentOption && user.role === AdageFrontRoles.REDACTOR) {
+    if (
+      userDepartmentOption &&
+      user.role === AdageFrontRoles.REDACTOR &&
+      !venueFilter
+    ) {
       dispatchCurrentFilters({
         type: 'POPULATE_DEPARTMENTS_FILTER',
         departmentFilters: [userDepartmentOption],
@@ -111,14 +115,6 @@ export const OfferFilters = ({
       type: 'RESET_CURRENT_FILTERS',
     })
   }
-
-  useEffect(() => {
-    if (venueFilter) {
-      dispatchCurrentFilters({
-        type: 'RESET_ONLY_IN_MY_DEPARTMENT',
-      })
-    }
-  }, [venueFilter])
 
   useEffect(() => {
     const loadFiltersOptions = async () => {
