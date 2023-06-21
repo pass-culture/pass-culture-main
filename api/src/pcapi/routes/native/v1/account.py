@@ -230,8 +230,9 @@ def create_account(body: serializers.AccountRequest) -> None:
 
     except exceptions.UserAlreadyExistsException:
         user = find_user_by_email(body.email)
+        assert user is not None
         try:
-            api.handle_create_account_with_existing_email(user)  # type: ignore [arg-type]
+            api.handle_create_account_with_existing_email(user)
         except exceptions.EmailNotSent:
             raise api_errors.ApiErrors({"email": ["L'email n'a pas pu être envoyé"]})
 
