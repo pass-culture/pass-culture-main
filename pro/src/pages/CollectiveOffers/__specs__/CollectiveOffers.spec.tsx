@@ -159,7 +159,9 @@ describe('route CollectiveOffers', () => {
           // Given
           await renderOffers(store)
           await userEvent.click(
-            screen.getByAltText('Afficher ou masquer le filtre par statut')
+            screen.getByRole('button', {
+              name: 'Statut Afficher ou masquer le filtre par statut',
+            })
           )
           await userEvent.click(screen.getByLabelText('Expirée'))
           // When
@@ -188,7 +190,9 @@ describe('route CollectiveOffers', () => {
           await renderOffers(store)
           // When
           await userEvent.click(
-            screen.getByAltText('Afficher ou masquer le filtre par statut')
+            screen.getByRole('button', {
+              name: 'Statut Afficher ou masquer le filtre par statut',
+            })
           )
           await userEvent.click(screen.getByLabelText('Expirée'))
           await userEvent.click(screen.getByText('Appliquer'))
@@ -239,10 +243,11 @@ describe('route CollectiveOffers', () => {
             // When
             await userEvent.click(screen.getByText('Lancer la recherche'))
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).toBeDisabled()
             expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
               undefined,
               undefined,
@@ -272,10 +277,11 @@ describe('route CollectiveOffers', () => {
             // When
             await userEvent.click(screen.getByText('Lancer la recherche'))
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).not.toBeDisabled()
             expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
               undefined,
               'EF',
@@ -302,10 +308,11 @@ describe('route CollectiveOffers', () => {
             // When
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).toBeDisabled()
             expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
               undefined,
               undefined,
@@ -334,10 +341,11 @@ describe('route CollectiveOffers', () => {
             // When
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).not.toBeDisabled()
             expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
               undefined,
               undefined,
@@ -357,10 +365,11 @@ describe('route CollectiveOffers', () => {
             // When
             await renderOffers(store, filters)
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).not.toBeDisabled()
           })
 
           it('should enable status filters when offerer filter is applied', async () => {
@@ -369,10 +378,11 @@ describe('route CollectiveOffers', () => {
             // When
             await renderOffers(store, filters)
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).not.toBeDisabled()
           })
         })
       })

@@ -281,7 +281,9 @@ describe('route CollectiveOffers', () => {
       ])
       await renderOffers(store)
       await userEvent.click(
-        screen.getByAltText('Afficher ou masquer le filtre par statut')
+        screen.getByRole('button', {
+          name: 'Statut Afficher ou masquer le filtre par statut',
+        })
       )
       await userEvent.click(screen.getByLabelText('Réservée'))
       // When
@@ -308,7 +310,9 @@ describe('route CollectiveOffers', () => {
       ])
       await renderOffers(store)
       await userEvent.click(
-        screen.getByAltText('Afficher ou masquer le filtre par statut')
+        screen.getByRole('button', {
+          name: 'Statut Afficher ou masquer le filtre par statut',
+        })
       )
       await userEvent.click(screen.getByLabelText('Toutes'))
       // When

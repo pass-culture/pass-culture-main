@@ -43,12 +43,6 @@
   border: none;
   line-height: rem.torem(20px);
   vertical-align: middle;
-
-  img {
-    height: rem.torem(20px);
-    vertical-align: middle;
-    width: rem.torem(20px);
-  }
 }
 
 .table-head-label {
@@ -64,4 +58,25 @@
   .status-filter {
     padding-left: 0;
   }
+}
+
+.status-container {
+  position: relative;
+} 
+
+.status-icon {
+  width: rem.torem(16px);
+  vertical-align: middle;
+
+  &.active {
+    color: colors.$primary;
+  }
+}
+
+.status-badge-icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: solid rem.torem(3px) colors.$primary;
+  border-radius: rem.torem(4px);
 }

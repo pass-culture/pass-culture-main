@@ -81,11 +81,11 @@ describe('components | FilterByBookingStatus', () => {
 
     // then
     const filterIcon = screen.getByRole('img')
-    expect(filterIcon).toHaveAttribute(
-      'src',
-      expect.stringContaining('ico-filter-status-black.svg')
+    expect(filterIcon).not.toHaveAttribute(
+      'class',
+      expect.stringContaining('active')
     )
-    expect(filterIcon).toHaveAttribute('alt', 'Filtrer par statut')
+    expect(filterIcon).toHaveAttribute('aria-label', 'Filtrer par statut')
   })
 
   it('should not display status filters', () => {
@@ -107,10 +107,10 @@ describe('components | FilterByBookingStatus', () => {
       // then
       const filterIcon = screen.getByRole('img')
       expect(filterIcon).toHaveAttribute(
-        'src',
-        expect.stringContaining('ico-filter-status-red.svg')
+        'class',
+        expect.stringContaining('active')
       )
-      expect(filterIcon).toHaveAttribute('alt', 'Filtrer par statut')
+      expect(filterIcon).toHaveAttribute('aria-label', 'Filtrer par statut')
     })
 
     it('should show filters with all available status in data', async () => {

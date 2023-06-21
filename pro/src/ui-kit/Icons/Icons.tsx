@@ -33,6 +33,7 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-more.svg' }, // TODO still in 2 ButtonLink and 1 Button
+  { src: 'icons/full-sort.svg' },
   { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-right.svg' },
@@ -78,9 +79,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-eye-full-close.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-eye-full-open.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-eye-open-filled-black.svg' },
-  { src: 'icons/ico-filter-status-active.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/ico-filter-status-black.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-filter-status-red.svg', viewBox: '0 0 24 24' },
   { src: 'icons/fraud.svg', viewBox: '0 0 88 88' },
   { src: 'icons/ico-guichet-full.svg' },
   { src: 'icons/ico-home.svg' },

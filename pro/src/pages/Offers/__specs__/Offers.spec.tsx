@@ -147,7 +147,9 @@ describe('route Offers', () => {
           await renderOffers(store)
 
           await userEvent.click(
-            screen.getByAltText('Afficher ou masquer le filtre par statut')
+            screen.getByRole('button', {
+              name: 'Statut Afficher ou masquer le filtre par statut',
+            })
           )
           await userEvent.click(screen.getByLabelText('Expirée'))
           await userEvent.click(screen.getByText('Appliquer'))
@@ -170,7 +172,9 @@ describe('route Offers', () => {
 
           // When
           await userEvent.click(
-            screen.getByAltText('Afficher ou masquer le filtre par statut')
+            screen.getByRole('button', {
+              name: 'Statut Afficher ou masquer le filtre par statut',
+            })
           )
           await userEvent.click(screen.getByLabelText('Brouillon'))
 
@@ -200,7 +204,9 @@ describe('route Offers', () => {
           await renderOffers(store)
           // When
           await userEvent.click(
-            screen.getByAltText('Afficher ou masquer le filtre par statut')
+            screen.getByRole('button', {
+              name: 'Statut Afficher ou masquer le filtre par statut',
+            })
           )
           await userEvent.click(screen.getByLabelText('Expirée'))
           await userEvent.click(screen.getByText('Appliquer'))
@@ -251,10 +257,11 @@ describe('route Offers', () => {
             // When
             await userEvent.click(screen.getByText('Lancer la recherche'))
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).toBeDisabled()
             expect(api.listOffers).toHaveBeenLastCalledWith(
               undefined,
               undefined,
@@ -283,10 +290,11 @@ describe('route Offers', () => {
             // When
             await userEvent.click(screen.getByText('Lancer la recherche'))
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).not.toBeDisabled()
             expect(api.listOffers).toHaveBeenLastCalledWith(
               undefined,
               'EF',
@@ -312,10 +320,11 @@ describe('route Offers', () => {
             // When
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).toBeDisabled()
             expect(api.listOffers).toHaveBeenLastCalledWith(
               undefined,
               undefined,
@@ -343,10 +352,11 @@ describe('route Offers', () => {
             // When
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).not.toBeDisabled()
             expect(api.listOffers).toHaveBeenLastCalledWith(
               undefined,
               undefined,
@@ -365,10 +375,11 @@ describe('route Offers', () => {
             // When
             await renderOffers(store, filters)
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).not.toBeDisabled()
           })
 
           it('should enable status filters when offerer filter is applied', async () => {
@@ -377,10 +388,11 @@ describe('route Offers', () => {
             // When
             await renderOffers(store, filters)
             // Then
-            const statusFiltersIcon = screen.getByAltText(
-              'Afficher ou masquer le filtre par statut'
-            )
-            expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
+            expect(
+              screen.getByRole('button', {
+                name: 'Statut Afficher ou masquer le filtre par statut',
+              })
+            ).not.toBeDisabled()
           })
         })
       })
@@ -667,7 +679,9 @@ describe('route Offers', () => {
       ])
       await renderOffers(store)
       await userEvent.click(
-        screen.getByAltText('Afficher ou masquer le filtre par statut')
+        screen.getByRole('button', {
+          name: 'Statut Afficher ou masquer le filtre par statut',
+        })
       )
       await userEvent.click(screen.getByLabelText('Épuisée'))
       // When
@@ -702,7 +716,9 @@ describe('route Offers', () => {
       ])
       await renderOffers(store)
       await userEvent.click(
-        screen.getByAltText('Afficher ou masquer le filtre par statut')
+        screen.getByRole('button', {
+          name: 'Statut Afficher ou masquer le filtre par statut',
+        })
       )
       await userEvent.click(screen.getByLabelText('Toutes'))
       // When

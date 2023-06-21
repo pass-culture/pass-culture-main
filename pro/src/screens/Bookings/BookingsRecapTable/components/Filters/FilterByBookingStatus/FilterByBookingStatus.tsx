@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 
 import {
@@ -8,7 +9,8 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
-import Icon from 'ui-kit/Icon/Icon'
+import fullSortIcon from 'icons/full-sort.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { BookingsFilters } from '../../../types'
 import {
@@ -100,16 +102,6 @@ const FilterByBookingStatus = <
     })
   }, [bookingStatusFilters, updateGlobalFilters])
 
-  const computeIconSrc = () => {
-    if (bookingStatusFilters.length > 0) {
-      return 'ico-filter-status-active'
-    } else if (isToolTipVisible) {
-      return 'ico-filter-status-red'
-    } else {
-      return 'ico-filter-status-black'
-    }
-  }
-
   const filteredBookingStatuses = getAvailableBookingStatuses(
     audience,
     bookingsRecap
@@ -124,8 +116,19 @@ const FilterByBookingStatus = <
         type="button"
       >
         <span className="table-head-label status-filter">Statut</span>
-
-        <Icon alt="Filtrer par statut" svg={computeIconSrc()} />
+        <span className="status-container">
+          <SvgIcon
+            alt="Filtrer par statut"
+            src={fullSortIcon}
+            className={cn(
+              'status-icon',
+              (bookingStatusFilters.length > 0 || isToolTipVisible) && 'active'
+            )}
+          />
+          {bookingStatusFilters.length > 0 && (
+            <span className="status-badge-icon"></span>
+          )}
+        </span>
       </button>
       <span className="bs-filter">
         {isToolTipVisible && (
