@@ -24,6 +24,7 @@ interface IconListItem {
 const fullIcons: IconListItem[] = [
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
+  { src: 'icons/full-infos.svg' },
   { src: 'icons/full-link.svg' }, // TODO 17 uses left inside <ButtonLink> and <Banner> and <InternalBanner>
   { src: 'icons/full-mail.svg' }, // TODO 2 uses left inside ButtonLink, 1 use left inside SubmitButton
   { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
@@ -83,7 +84,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-guichet-full.svg' },
   { src: 'icons/ico-home.svg' },
   { src: 'icons/ico-hourglass.svg' },
-  { src: 'icons/info.svg', viewBox: '0 0 78 78' },
   { src: 'icons/ico-is-valid.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-left-arrow.svg', viewBox: '0 0 24 24' },
   { src: 'icons/library.svg', viewBox: '0 0 49 48' },
@@ -116,8 +116,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-pen-black.svg', viewBox: '0 0 20 20' },
   { src: 'icons/pending.svg', viewBox: '0 0 44 44' },
   { src: 'icons/ico-phone.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/picto-info-grey.svg', viewBox: '0 0 22 22' },
-  { src: 'icons/picto-info.svg', viewBox: '0 0 22 22' },
   { src: 'icons/picto-tip.svg', viewBox: '0 0 18 18' },
   { src: 'icons/ico-radio-off.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-radio-on.svg', viewBox: '0 0 16 16' },
