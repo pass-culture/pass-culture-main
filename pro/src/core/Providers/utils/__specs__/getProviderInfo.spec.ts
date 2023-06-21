@@ -1,33 +1,19 @@
 import { getProviderInfo } from 'core/Providers'
 
-describe('src | getProviderInfo', () => {
+describe('getProviderInfo', () => {
   it('should return provider information which id match lowercase name', () => {
-    // given
-    const providerName = 'FNAC'
-
-    // when
-    const providerInfo = getProviderInfo(providerName)
-
-    // then
-    expect(providerInfo).toStrictEqual({
+    expect(getProviderInfo('FNAC')).toStrictEqual({
       id: 'fnac',
-      icon: 'logo-fnac',
+      logo: expect.any(String),
       name: 'Fnac',
       synchronizedOfferMessage: 'Offre synchronisée avec Fnac',
     })
   })
 
   it('should return provider information which id match beginning of name', () => {
-    // given
-    const providerName = 'titelive stocks'
-
-    // when
-    const providerInfo = getProviderInfo(providerName)
-
-    // then
-    expect(providerInfo).toStrictEqual({
+    expect(getProviderInfo('titelive stocks')).toStrictEqual({
       id: 'titelive',
-      icon: 'logo-titeLive',
+      logo: expect.any(String),
       name: 'Tite Live',
       synchronizedOfferMessage: 'Offre synchronisée avec Tite Live',
     })
