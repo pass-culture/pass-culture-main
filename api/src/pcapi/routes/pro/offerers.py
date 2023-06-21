@@ -148,11 +148,11 @@ def get_available_reimbursement_points(
     # TODO(fseguin, 2023-03-01): cleanup when WIP_ENABLE_NEW_ONBOARDING FF is removed
     return offerers_serialize.OffererReimbursementPointListResponseModel(
         __root__=[
-            offerers_serialize.OffererReimbursementPointResponseModel(  # type: ignore [call-arg]
+            offerers_serialize.OffererReimbursementPointResponseModel(
                 venueId=reimbursement_point.id,
-                venueName=reimbursement_point.common_name,  # type: ignore [arg-type]
+                venueName=reimbursement_point.common_name,
                 siret=reimbursement_point.siret,
-                iban=reimbursement_point.iban,  # type: ignore [arg-type]
+                iban=reimbursement_point.iban,
                 bic=reimbursement_point.bic,
             )
             for reimbursement_point in reimbursement_points

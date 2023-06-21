@@ -81,8 +81,8 @@ def _serialize_booking_status_info(
     serialized_booking_status_date = isoformat(booking_status_date) if booking_status_date else None
 
     return BookingRecapResponseBookingStatusHistoryModel(
-        status=booking_status.value,  # type: ignore [arg-type]
-        date=serialized_booking_status_date,  # type: ignore [arg-type]
+        status=booking_status.value,
+        date=serialized_booking_status_date,
     )
 
 
@@ -125,8 +125,8 @@ def _serialize_booking_status_history(
 
 
 def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapResponseModel:
-    serialized_booking_recap = BookingRecapResponseModel(  # type: ignore [call-arg]
-        stock={  # type: ignore [arg-type]
+    serialized_booking_recap = BookingRecapResponseModel(
+        stock={
             "offerName": booking_recap.offer_name,
             "offerId": booking_recap.offer_identifier,
             "eventBeginningDatetime": isoformat(booking_recap.event_beginning_datetime)
@@ -135,7 +135,7 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapRespons
             "offerEan": booking_recap.offer_ean,
             "offerIsEducational": False,
         },
-        beneficiary={  # type: ignore [arg-type]
+        beneficiary={
             "lastname": booking_recap.beneficiary_lastname or booking_recap.redactor_lastname,
             "firstname": booking_recap.beneficiary_firstname or booking_recap.redactor_firstname,
             "email": booking_recap.beneficiary_email or booking_recap.redactor_email,

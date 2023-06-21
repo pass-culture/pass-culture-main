@@ -24,4 +24,4 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
             institutionCity=institution.city if institution else None,
             email=authenticated_information.email,
         )
-    return AuthenticatedResponse(role=AdageFrontRoles.READONLY)  # type: ignore [call-arg]
+    return AuthenticatedResponse(role=AdageFrontRoles.READONLY)

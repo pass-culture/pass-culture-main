@@ -284,7 +284,7 @@ class InseeBackend(BaseBackend):
             siren=siren,
             name=self._get_name_from_siren_data(data),
             head_office_siret=head_office_siret,
-            legal_category_code=int(head_office["categorieJuridiqueUniteLegale"]),  # type: ignore [arg-type]
+            legal_category_code=int(head_office["categorieJuridiqueUniteLegale"]),
             ape_code=head_office["activitePrincipaleUniteLegale"],
             address=address,
         )

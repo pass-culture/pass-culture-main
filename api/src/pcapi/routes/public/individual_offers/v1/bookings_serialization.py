@@ -49,7 +49,7 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
             quantity=booking.quantity,
             price=finance_utils.to_eurocents(booking.amount),
             price_category_id=booking.stock.priceCategory.id if booking.stock.priceCategory else None,
-            price_category_label=booking.stock.priceCategory.label if booking.stock.priceCategory else None,  # type: ignore [arg-type]
+            price_category_label=booking.stock.priceCategory.label if booking.stock.priceCategory else None,
             offer_id=booking.stock.offer.id,
             stock_id=booking.stock.id,
             offer_name=booking.stock.offer.name,

@@ -135,7 +135,7 @@ def get_collective_offer_request(request_id: int) -> collective_offers_serialize
         totalStudents=collective_offer_request.totalStudents,
         totalTeachers=collective_offer_request.totalTeachers,
         comment=collective_offer_request.comment,
-        phoneNumber=collective_offer_request.phoneNumber,  # type: ignore
+        phoneNumber=collective_offer_request.phoneNumber,
         dateCreated=collective_offer_request.dateCreated,
         institution=collective_offers_serialize.CollectiveOfferInstitutionModel(
             institutionId=institution.institutionId,

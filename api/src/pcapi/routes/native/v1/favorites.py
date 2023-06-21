@@ -171,7 +171,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         "nbFavorites": len(favorites),
         "favorites": favorites,
     }
-    return serializers.PaginatedFavoritesResponse(**paginated_favorites)  # type: ignore [arg-type]
+    return serializers.PaginatedFavoritesResponse(**paginated_favorites)
 
 
 @blueprint.native_v1.route("/me/favorites", methods=["POST"])

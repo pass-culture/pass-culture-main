@@ -89,14 +89,14 @@ def _format_date(date: datetime | None) -> str | None:
 def track_deposit_activated_event(user_id: int, deposit: finance_models.Deposit) -> None:
     event_name = push_notifications.BatchEvent.USER_DEPOSIT_ACTIVATED.value
     event_payload = {"deposit_type": deposit.type.value, "deposit_amount": round(deposit.amount)}
-    payload = batch_tasks.TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user_id)  # type: ignore [arg-type]
+    payload = batch_tasks.TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user_id)
     batch_tasks.track_event_task.delay(payload)
 
 
 def track_identity_check_started_event(user_id: int, fraud_check_type: fraud_models.FraudCheckType) -> None:
     event_name = push_notifications.BatchEvent.USER_IDENTITY_CHECK_STARTED.value
     payload = batch_tasks.TrackBatchEventRequest(
-        event_name=event_name, event_payload={"type": fraud_check_type.value}, user_id=user_id  # type: ignore [arg-type]
+        event_name=event_name, event_payload={"type": fraud_check_type.value}, user_id=user_id
     )
     batch_tasks.track_event_task.delay(payload)
 

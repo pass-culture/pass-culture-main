@@ -115,11 +115,11 @@ def spectree_serialize(
         query_in_kwargs = route.__annotations__.get("query")
         form_in_kwargs = route.__annotations__.get("form")
 
-        if 403 not in on_error_statuses:  # type: ignore [operator]
-            on_error_statuses.append(403)  # type: ignore [union-attr]
+        if 403 not in on_error_statuses:
+            on_error_statuses.append(403)
 
         response_codes = {f"HTTP_{on_success_status}": response_model} | {
-            f"HTTP_{on_error_status}": None for on_error_status in on_error_statuses  # type: ignore [union-attr]
+            f"HTTP_{on_error_status}": None for on_error_status in on_error_statuses
         }
 
         if resp:
@@ -179,7 +179,7 @@ def spectree_serialize(
             if json_format:
                 return _make_json_response(
                     content=result,
-                    status_code=on_success_status if result else on_empty_status,  # type: ignore [arg-type]
+                    status_code=on_success_status if result else on_empty_status,
                     by_alias=response_by_alias,
                     exclude_none=exclude_none,
                     headers=response_headers,

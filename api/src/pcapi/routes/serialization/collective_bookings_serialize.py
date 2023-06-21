@@ -207,14 +207,14 @@ def _serialize_collective_booking_status_info(
 
     return BookingStatusHistoryResponseModel(
         status=collective_booking_status.value,
-        date=serialized_collective_booking_status_date,  # type: ignore [arg-type]
+        date=serialized_collective_booking_status_date,
     )
 
 
 def serialize_collective_booking_stock(
     collective_booking: models.CollectiveBooking,
 ) -> CollectiveBookingCollectiveStockResponseModel:
-    return CollectiveBookingCollectiveStockResponseModel(  # type: ignore [call-arg]
+    return CollectiveBookingCollectiveStockResponseModel(
         offerName=collective_booking.collectiveStock.collectiveOffer.name,
         offerIdentifier=humanize(collective_booking.collectiveStock.collectiveOfferId),
         offerId=collective_booking.collectiveStock.collectiveOfferId,
@@ -266,7 +266,7 @@ def _serialize_collective_booking_recap_status(
 
 
 def serialize_collective_booking(collective_booking: models.CollectiveBooking) -> CollectiveBookingResponseModel:
-    return CollectiveBookingResponseModel(  # type: ignore [call-arg]
+    return CollectiveBookingResponseModel(
         stock=serialize_collective_booking_stock(collective_booking),
         institution=serialize_collective_booking_institution(collective_booking),
         bookingId=collective_booking.id,
@@ -456,7 +456,7 @@ class CollectiveBookingByIdResponseModel(BaseModel):
 
         return cls(
             id=booking.id,
-            offerVenue=booking.collectiveStock.collectiveOffer.offerVenue,  # type: ignore [arg-type]
+            offerVenue=booking.collectiveStock.collectiveOffer.offerVenue,
             beginningDatetime=booking.collectiveStock.beginningDatetime,
             students=booking.collectiveStock.collectiveOffer.students,
             price=booking.collectiveStock.price,
@@ -469,6 +469,6 @@ class CollectiveBookingByIdResponseModel(BaseModel):
             venueDMSApplicationId=reimbursement_point.demarchesSimplifieesApplicationId
             if reimbursement_point
             else None,
-            venueId=humanize(booking.venueId),  # type: ignore [arg-type]
-            offererId=humanize(booking.venue.managingOffererId),  # type: ignore [arg-type]
+            venueId=humanize(booking.venueId),
+            offererId=humanize(booking.venue.managingOffererId),
         )

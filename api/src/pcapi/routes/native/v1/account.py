@@ -120,7 +120,7 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
     if not latest_email_update_event:
         raise api_errors.ResourceNotFoundError
     return serializers.EmailUpdateStatus(
-        newEmail=latest_email_update_event.newEmail,  # type: ignore [arg-type]
+        newEmail=latest_email_update_event.newEmail,
         expired=(email_api.get_active_token_expiration(user) or datetime.min) < datetime.utcnow(),
         status=latest_email_update_event.eventType,
     )

@@ -1525,7 +1525,7 @@ def create_from_onboarding_data(
                 siret=onboarding_data.siret,
             )
         venue_kwargs = common_kwargs | comment_and_siret
-        venue_creation_info = venues_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore [arg-type]
+        venue_creation_info = venues_serialize.PostVenueBodyModel(**venue_kwargs)
         venue = create_venue(venue_creation_info, strict_accessibility_compliance=False)
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
