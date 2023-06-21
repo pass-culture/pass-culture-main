@@ -15,7 +15,7 @@
 
 .scrollable-content-side {
   overflow: auto;
-  min-height: calc(100vh - #{size.$sign-footer-height});
+  min-height: 100vh;
   background: colors.$white;
   position: relative;
   width: 100%;
@@ -63,6 +63,8 @@ h1 {
 }
 
 .cookies-footer {
+  position: absolute;
   bottom: 0;
-  left: size.$logo-side-width;
+  left: 0;
+  right: 0;
 }
