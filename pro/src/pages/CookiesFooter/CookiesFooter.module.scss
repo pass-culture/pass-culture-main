@@ -1,77 +1,20 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_layout.scss" as layout;
-@use "styles/variables/_forms.scss" as forms;
 @use "styles/variables/_size.scss" as size;
-
-.sign-in {
-  display: flex;
-
-  .logo-side {
-    @include layout.logo-side;
-  }
-}
-
-.scrollable-content-side {
-  overflow: auto;
-  min-height: 100vh;
-  background: colors.$white;
-  position: relative;
-  width: 100%;
-  left: forms.$sign-form-space-left;
-  display: flex;
-  align-items: center;
-
-  .content {
-    width: rem.torem(486px);
-
-    .has-text-grey {
-      @include fonts.caption;
-
-      color: colors.$grey-dark;
-    }
-  }
-}
-
-h1 {
-  margin-bottom: rem.torem(16px);
-}
-
-.signin-form {
-  margin-top: rem.torem(16px);
-}
-
-.ico-key {
-  width: rem.torem(20px);
-  height: rem.torem(20px);
-  margin-top: rem.torem(8px);
-}
-
-.buttons-field {
-  display: flex;
-  flex-wrap: wrap;
-  gap: rem.torem(24px);
-  margin-top: rem.torem(32px);
-
-  a,
-  button {
-    text-align: center;
-    margin-bottom: rem.torem(5px);
-    width: rem.torem(231px);
-  }
-}
 
 .cookies-footer {
   display: flex;
   height: size.$sign-footer-height;
-  width: calc(100vw - #{size.$logo-side-width});
+  width: 100%;
   justify-content: center;
   align-items: center;
-  gap: rem.torem(24px);
-  position: absolute;
+  gap: rem.torem(16px);
 
   &-link {
     @include fonts.caption;
+
+    &, &:focus {
+      padding: 0;
+    }
   }
 }
