@@ -279,7 +279,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def add_test_role(self) -> None:
         self._add_role(UserRole.TEST)
 
-    def checkPassword(self, passwordToCheck):  # type: ignore [no-untyped-def]
+    def checkPassword(self, passwordToCheck: str) -> bool:
         return crypto.check_password(passwordToCheck, self.password)
 
     def get_notification_subscriptions(self) -> NotificationSubscriptions:
@@ -315,7 +315,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def is_anonymous(self) -> bool:  # required by flask-login
         return False
 
-    def get_id(self):  # type: ignore [no-untyped-def] # required by flask-login
+    def get_id(self) -> str:  # required by flask-login
         return str(self.id)
 
     def is_super_admin(self) -> bool:
@@ -348,7 +348,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         if self.has_non_attached_pro_role:
             self.roles.remove(UserRole.NON_ATTACHED_PRO)
 
-    def setPassword(self, newpass):  # type: ignore [no-untyped-def]
+    def setPassword(self, newpass: str) -> None:
         self.clearTextPassword = newpass
         self.password = crypto.hash_password(newpass)
 
