@@ -39,8 +39,8 @@ const SignIn = (): JSX.Element => {
               </span>
               <SigninForm />
             </div>
+            <CookiesFooter className={styles['cookies-footer']} />
           </section>
-          <CookiesFooter className={styles['cookies-footer']} />
         </AppLayout>
       </div>
     </>
