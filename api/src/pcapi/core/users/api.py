@@ -539,7 +539,7 @@ def update_user_password(user: models.User, new_password: str) -> None:
     repository.save(user)
 
 
-def update_password_and_external_user(user, new_password):  # type: ignore [no-untyped-def]
+def update_password_and_external_user(user: users_models.User, new_password: str) -> None:
     user.setPassword(new_password)
     if not user.isEmailValidated:
         user.isEmailValidated = True
