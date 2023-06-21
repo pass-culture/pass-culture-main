@@ -133,18 +133,18 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
     institution = getattr(offer, "institution", None)
     templateId = getattr(offer, "templateId", None)
 
-    return CollectiveOfferResponseModel(  # type: ignore [call-arg]
-        hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,  # type: ignore [arg-type]
+    return CollectiveOfferResponseModel(
+        hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
         nonHumanizedId=offer.id,
         isActive=False if offer.status == OfferStatus.INACTIVE else offer.isActive,
         isEditable=offer.isEditable,
         isEducational=True,
         name=offer.name,
-        stocks=serialized_stocks,  # type: ignore [arg-type]
+        stocks=serialized_stocks,
         booking=last_booking,
         thumbUrl=None,
-        subcategoryId=offer.subcategoryId,  # type: ignore [arg-type]
-        venue=_serialize_venue(offer.venue),  # type: ignore [arg-type]
+        subcategoryId=offer.subcategoryId,
+        venue=_serialize_venue(offer.venue),
         status=offer.status.name,  # type: ignore [attr-defined]
         isShowcase=is_offer_template,
         educationalInstitution=EducationalInstitutionResponseModel.from_orm(institution) if institution else None,
@@ -195,7 +195,7 @@ def _get_serialize_last_booking(bookings: list[CollectiveBooking]) -> Collective
         return None
     last_booking = sorted(bookings, key=lambda b: b.dateCreated, reverse=True)[0]
     return CollectiveOffersBookingResponseModel(
-        id=last_booking.id,  # type: ignore [arg-type]
+        id=last_booking.id,
         booking_status=last_booking.status.value,
     )
 

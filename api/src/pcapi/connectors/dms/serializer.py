@@ -130,7 +130,7 @@ def parse_beneficiary_information_graphql(
             )
             break
 
-    return fraud_models.DMSContent(  # type: ignore [call-arg]
+    return fraud_models.DMSContent(
         activity=activity,
         address=address,
         annotation=annotation,

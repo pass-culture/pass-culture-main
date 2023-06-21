@@ -68,7 +68,7 @@ def get_offerer_venues(
                 "venues": [serialization.VenueResponse.build_model(row.Venue) for row in group],
             }
         )
-    return serialization.GetOfferersVenuesResponse(__root__=accessible_venues_and_offerer)  # type: ignore [arg-type]
+    return serialization.GetOfferersVenuesResponse(__root__=accessible_venues_and_offerer)
 
 
 def _retrieve_offer_by_eans_query(eans: list[str]) -> sqla.orm.Query:

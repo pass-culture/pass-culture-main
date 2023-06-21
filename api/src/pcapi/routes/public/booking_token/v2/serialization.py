@@ -67,7 +67,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
 
     birth_date = isoformat(booking.user.birth_date) if booking.user.birth_date else None  # type: ignore [arg-type]
     return GetBookingResponse(
-        bookingId=humanize(booking.id),  # type: ignore [arg-type]
+        bookingId=humanize(booking.id),
         dateOfBirth=birth_date,
         datetime=(format_into_utc_date(booking.stock.beginningDatetime) if booking.stock.beginningDatetime else ""),
         ean13=(
@@ -75,12 +75,12 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         ),
         email=booking.email,
         formula=formula,
-        isUsed=booking.is_used_or_reimbursed,  # type: ignore [arg-type]
+        isUsed=booking.is_used_or_reimbursed,
         offerId=booking.stock.offer.id,
-        publicOfferId=humanize(booking.stock.offer.id),  # type: ignore [arg-type]
+        publicOfferId=humanize(booking.stock.offer.id),
         offerName=booking.stock.offer.product.name,
         offerType=BookingOfferType.EVENEMENT if booking.stock.offer.isEvent else BookingOfferType.EVENEMENT,
-        phoneNumber=booking.user.phoneNumber,  # type: ignore [arg-type]
+        phoneNumber=booking.user.phoneNumber,
         price=booking.amount,
         priceCategoryLabel=booking.priceCategoryLabel,
         quantity=booking.quantity,

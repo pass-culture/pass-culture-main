@@ -433,7 +433,7 @@ def handle_invalid_country_code(user: users_models.User, phone_number: str) -> m
 def handle_sms_sending_limit_reached(user: users_models.User) -> None:
     reason = "Le nombre maximum de sms envoyés est atteint"
     reason_codes = [models.FraudReasonCode.SMS_SENDING_LIMIT_REACHED]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)  # type: ignore [arg-type]
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)
 
     _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
@@ -441,7 +441,7 @@ def handle_sms_sending_limit_reached(user: users_models.User) -> None:
 def handle_phone_validation_attempts_limit_reached(user: users_models.User, attempts_count: int) -> None:
     reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
     reason_codes = [models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)  # type: ignore [arg-type]
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)
 
     _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 

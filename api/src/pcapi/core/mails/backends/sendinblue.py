@@ -57,7 +57,7 @@ class SendinblueBackend(BaseBackend):
                 sender=asdict(data.sender.value),
                 subject=data.subject,
                 html_content=data.html_content,
-                attachment=data.attachment,  # type: ignore [arg-type]
+                attachment=data.attachment,
                 reply_to=asdict(data.reply_to),  # equal to sender if reply_to is None
                 template_id=None,
                 params=None,
