@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
@@ -14,11 +13,17 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
+interface VenueCreationLinksProps {
+  hasPhysicalVenue?: boolean
+  hasVirtualOffers?: boolean
+  offererId?: number
+}
+
 const VenueCreationLinks = ({
   hasPhysicalVenue,
   hasVirtualOffers,
   offererId,
-}) => {
+}: VenueCreationLinksProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const { logEvent } = useAnalytics()
   const location = useLocation()
@@ -27,7 +32,7 @@ const VenueCreationLinks = ({
     ? `/structures/${offererId}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
 
-  const renderLinks = ({ insideCard }) => {
+  const renderLinks = (insideCard: boolean) => {
     return (
       <div className="actions-container">
         <ButtonLink
@@ -76,7 +81,7 @@ const VenueCreationLinks = ({
             Avant de créer votre première offre physique vous devez avoir un
             lieu
           </p>
-          {renderLinks({ insideCard: true })}
+          {renderLinks(true)}
         </div>
       </div>
     </div>
@@ -86,15 +91,9 @@ const VenueCreationLinks = ({
     <div className="venue-banner">
       {!(hasPhysicalVenue || hasVirtualOffers)
         ? renderCard()
-        : renderLinks({ insideCard: false })}
+        : renderLinks(false)}
     </div>
   )
-}
-
-VenueCreationLinks.propTypes = {
-  hasPhysicalVenue: PropTypes.bool.isRequired,
-  hasVirtualOffers: PropTypes.bool.isRequired,
-  offererId: PropTypes.number,
 }
 
 export default VenueCreationLinks

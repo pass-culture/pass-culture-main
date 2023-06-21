@@ -1,7 +1,8 @@
-import PropTypes from 'prop-types'
 import React, { useEffect, useMemo, useState } from 'react'
 
+import { GetOffererResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
+import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useNewOfferCreationJourney from 'hooks/useNewOfferCreationJourney'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
@@ -17,22 +18,29 @@ import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
 import MissingReimbursementPoints from './MissingReimbursementPoints/MissingReimbursementPoints'
 import VenueCreationLinks from './VenueCreationLinks'
 
+interface OffererDetailsProps {
+  handleChangeOfferer: (event: React.ChangeEvent<HTMLSelectElement>) => void
+  isUserOffererValidated: boolean
+  offererOptions: SelectOption[]
+  selectedOfferer: GetOffererResponseModel
+}
+
 const OffererDetails = ({
   handleChangeOfferer,
   isUserOffererValidated,
   offererOptions,
   selectedOfferer,
-}) => {
+}: OffererDetailsProps) => {
   const newOfferCreation = useNewOfferCreationJourney()
   const { logEvent } = useAnalytics()
 
   const hasAtLeastOnePhysicalVenue = selectedOfferer.managedVenues
-    .filter(venue => !venue.isVirtual)
+    ?.filter(venue => !venue.isVirtual)
     .map(venue => venue.id)
     .some(Boolean)
 
   const hasAtLeastOneVirtualVenue = selectedOfferer.managedVenues
-    .filter(venue => venue.isVirtual)
+    ?.filter(venue => venue.isVirtual)
     .map(venue => venue.id)
     .some(Boolean)
 
@@ -41,7 +49,7 @@ const OffererDetails = ({
       return false
     }
     return selectedOfferer.managedVenues
-      .filter(venue => !venue.isVirtual)
+      ?.filter(venue => !venue.isVirtual)
       .map(venue => venue.hasMissingReimbursementPoint)
       .some(Boolean)
   }, [selectedOfferer])
@@ -140,7 +148,7 @@ const OffererDetails = ({
             isDisabled={!isUserOffererValidated}
             onClick={() =>
               logEvent?.(Events.CLICKED_MODIFY_OFFERER, {
-                offerer_id: selectedOfferer.id,
+                offerer_id: selectedOfferer.nonHumanizedId,
               })
             }
           >
@@ -304,18 +312,6 @@ const OffererDetails = ({
       </div>
     </div>
   )
-}
-
-OffererDetails.propTypes = {
-  handleChangeOfferer: PropTypes.func.isRequired,
-  isUserOffererValidated: PropTypes.bool.isRequired,
-  offererOptions: PropTypes.arrayOf(
-    PropTypes.shape({
-      value: PropTypes.any.isRequired,
-      label: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  selectedOfferer: PropTypes.shape().isRequired,
 }
 
 export default OffererDetails

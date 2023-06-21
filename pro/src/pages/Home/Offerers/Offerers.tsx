@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import {
@@ -95,18 +95,15 @@ const Offerers = ({
     }
   }, [hasNewOfferCreationJourney])
 
-  const handleChangeOfferer = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const newOffererId = event.target.value
-      if (newOffererId === CREATE_OFFERER_SELECT_ID) {
-        navigate('/structures/creation')
-      } else if (newOffererId !== selectedOfferer?.nonHumanizedId.toString()) {
-        onSelectedOffererChange(newOffererId)
-        setQuery(newOffererId)
-      }
-    },
-    [navigate, selectedOfferer, setQuery]
-  )
+  const handleChangeOfferer = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newOffererId = event.target.value
+    if (newOffererId === CREATE_OFFERER_SELECT_ID) {
+      navigate('/structures/creation')
+    } else if (newOffererId !== selectedOfferer?.nonHumanizedId.toString()) {
+      onSelectedOffererChange(newOffererId)
+      setQuery(newOffererId)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -209,7 +206,9 @@ const Offerers = ({
         /* istanbul ignore next: DEBT, TO FIX */ isUserOffererValidated &&
           isOffererSoftDeleted && <SoftDeletedOffererWarning />
       }
+
       {!userHasOfferers && <OffererCreationLinks />}
+
       {creationLinkCondition && (
         <VenueCreationLinks
           hasPhysicalVenue={venues.physicalVenues.length > 0}
@@ -220,7 +219,7 @@ const Offerers = ({
           offererId={
             /* istanbul ignore next: DEBT, TO FIX */ selectedOfferer
               ? selectedOfferer.nonHumanizedId
-              : null
+              : undefined
           }
         />
       )}

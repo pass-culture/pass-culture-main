@@ -324,7 +324,7 @@ describe('offererDetailsLegacy', () => {
       await userEvent.click(editButton)
 
       expect(mockLogEvent).toHaveBeenCalledWith('hasClickedModifyOfferer', {
-        offerer_id: 'GE',
+        offerer_id: 12,
       })
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
     })
