@@ -94,22 +94,9 @@ const iconList = [
   { src: 'icons/loader.svg', viewBox: '0 0 32 32' },
   { src: 'icons/loader-pc.svg', viewBox: '0 0 56 56' },
   { src: 'icons/location.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/logo-allocine.svg', viewBox: '0 0 100 24' }, // TODO replace by a jpg/png
-  { src: 'icons/logo-boost.svg', viewBox: '0 0 386 254' }, // TODO replace by a jpg/png
-  { src: 'icons/logo-cgr.svg', viewBox: '0 0 283.46 255.12' }, // TODO replace by a jpg/png
-  { src: 'icons/logo-cdi-bookshop.svg', viewBox: '0 0 804 167.35' },
-  { src: 'icons/logo-cine-digital-service.svg', viewBox: '0 0 529 169' },
-  { src: 'icons/logo-decitre.svg', viewBox: '0 0 483 320' },
-  { src: 'icons/logo-fnac.svg', viewBox: '0 0 29 24' },
-  { src: 'icons/logo-libraires.svg', viewBox: '0 0 74 24' },
-  { src: 'icons/logo-librisoft.svg', viewBox: '0 0 526 206' },
-  { src: 'icons/logo-openAgenda.svg', viewBox: '0 0 60 90' },
   { src: 'icons/logo-pass-culture.svg', viewBox: '0 0 114 84' },
   { src: 'icons/logo-pass-culture-header.svg', viewBox: '0 0 119 40' },
   { src: 'icons/logo-pass-culture-white.svg', viewBox: '0 0 282 120' },
-  { src: 'icons/logo-praxiel.svg', viewBox: '0 0 29 24' },
-  { src: 'icons/logo-tmic-ellipses.svg', viewBox: '0 0 390 120' },
-  { src: 'icons/logo-titeLive.svg', viewBox: '0 0 75 24' },
   { src: 'icons/mental-disability.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-mini-arrow-left.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-mini-arrow-right.svg', viewBox: '0 0 24 24' },
