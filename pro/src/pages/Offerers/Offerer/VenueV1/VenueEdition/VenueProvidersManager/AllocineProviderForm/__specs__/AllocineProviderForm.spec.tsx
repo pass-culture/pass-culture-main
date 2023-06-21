@@ -100,7 +100,7 @@ describe('AllocineProviderForm', () => {
     await userEvent.click(offerImportButton)
 
     expect(props.saveVenueProvider).toHaveBeenCalledWith({
-      price: 10,
+      price: '10',
       quantity: 5,
       isDuo: false,
       providerId: provider.id,
@@ -108,7 +108,7 @@ describe('AllocineProviderForm', () => {
     })
   })
 
-  it('should be able to submit when price field is filled to 0  on creation', async () => {
+  it('should be able to submit when price field is filled to 0 on creation', async () => {
     await renderAllocineProviderForm(props)
     const offerImportButton = screen.getByRole('button', {
       name: 'Importer les offres',
@@ -121,15 +121,16 @@ describe('AllocineProviderForm', () => {
     await userEvent.click(offerImportButton)
 
     expect(props.saveVenueProvider).toHaveBeenCalledWith({
-      price: 0,
+      price: '0',
       quantity: undefined,
       isDuo: true,
       providerId: provider.id,
       venueId: venueId,
+      isActive: undefined,
     })
   })
 
-  it('should be able to submit when price field is filled with a decimal  on creation', async () => {
+  it('should be able to submit when price field is filled with a decimal on creation', async () => {
     await renderAllocineProviderForm(props)
     const offerImportButton = screen.getByRole('button', {
       name: 'Importer les offres',
@@ -142,11 +143,12 @@ describe('AllocineProviderForm', () => {
     await userEvent.click(offerImportButton)
 
     expect(props.saveVenueProvider).toHaveBeenCalledWith({
-      price: 0.42,
+      price: '0.42',
       quantity: undefined,
       isDuo: true,
       providerId: provider.id,
       venueId: venueId,
+      isActive: undefined,
     })
   })
 
@@ -176,9 +178,11 @@ describe('AllocineProviderForm', () => {
 
   it('should display modify and cancel button on edition', async () => {
     props.isCreatedEntity = false
-    props.initialValues.price = 15
-    props.initialValues.quantity = 50
-    props.initialValues.isDuo = false
+    props.initialValues = {
+      price: 15,
+      quantity: 50,
+      isDuo: false,
+    } as InitialValuesProps
     await renderAllocineProviderForm(props)
 
     const saveEditionProviderButton = screen.getByRole('button', {
@@ -193,9 +197,11 @@ describe('AllocineProviderForm', () => {
 
   it('should show existing parameters on edition', async () => {
     props.isCreatedEntity = false
-    props.initialValues.price = 15
-    props.initialValues.quantity = 50
-    props.initialValues.isDuo = false
+    props.initialValues = {
+      price: 15,
+      quantity: 50,
+      isDuo: false,
+    } as InitialValuesProps
     await renderAllocineProviderForm(props)
 
     const priceField = screen.getByLabelText('Prix de vente/place', {
@@ -216,9 +222,11 @@ describe('AllocineProviderForm', () => {
 
   it('should not be able to submit when price field is not filled on edition', async () => {
     props.isCreatedEntity = false
-    props.initialValues.price = 15
-    props.initialValues.quantity = 50
-    props.initialValues.isDuo = false
+    props.initialValues = {
+      price: 15,
+      quantity: 50,
+      isDuo: false,
+    } as InitialValuesProps
     await renderAllocineProviderForm(props)
 
     const saveEditionProviderButton = screen.getByRole('button', {
@@ -235,9 +243,11 @@ describe('AllocineProviderForm', () => {
 
   it('should be able to submit when price field is filled on edition', async () => {
     props.isCreatedEntity = false
-    props.initialValues.price = 15
-    props.initialValues.quantity = 50
-    props.initialValues.isDuo = false
+    props.initialValues = {
+      price: 15,
+      quantity: 50,
+      isDuo: false,
+    } as InitialValuesProps
     await renderAllocineProviderForm(props)
 
     const saveEditionProviderButton = screen.getByRole('button', {
@@ -258,7 +268,7 @@ describe('AllocineProviderForm', () => {
     await userEvent.click(saveEditionProviderButton)
 
     expect(props.saveVenueProvider).toHaveBeenCalledWith({
-      price: 5,
+      price: '5',
       quantity: 17,
       isDuo: true,
       providerId: provider.id,
