@@ -1,6 +1,6 @@
-export interface IProviderInfo {
+export interface ProviderInfo {
   id: string
-  icon: string
+  logo: string
   name: string
   synchronizedOfferMessage: string
 }

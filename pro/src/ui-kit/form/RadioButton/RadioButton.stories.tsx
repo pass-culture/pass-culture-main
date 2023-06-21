@@ -65,5 +65,5 @@ const WithImage = ({ src }: { src: string }) => (
 export const WithChildren = Template.bind({})
 WithChildren.args = {
   label1: <WithImage src="/icons/logo-pass-culture-dark.svg" />,
-  label2: <WithImage src="/icons/logo-librisoft.svg" />,
+  label2: <WithImage src="/icons/logo-pass-culture.svg" />,
 }

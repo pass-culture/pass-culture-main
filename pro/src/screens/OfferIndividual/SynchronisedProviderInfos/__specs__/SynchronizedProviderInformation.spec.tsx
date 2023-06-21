@@ -2,13 +2,13 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import SynchronizedProviderInformation, {
-  ISynchronizedProviderInformation,
+  SynchronizedProviderInformationProps,
 } from '../SynchronizedProviderInformation'
 
 const renderSynchronizedProviderInformation = ({
   props,
 }: {
-  props: ISynchronizedProviderInformation
+  props: SynchronizedProviderInformationProps
 }) => {
   return render(<SynchronizedProviderInformation {...props} />)
 }
@@ -19,7 +19,7 @@ describe('SynchronizedProviderInformation', () => {
       props: { providerName: 'unknown provider id' },
     })
     expect(
-      screen.queryByTestId('synchronized-provider-information')
+      screen.queryByText('Offre synchronisée', { exact: false })
     ).not.toBeInTheDocument()
   })
 
