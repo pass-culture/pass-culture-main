@@ -10,7 +10,7 @@ import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/create
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import copyIcon from 'icons/full-duplicate.svg'
-import moreBisIcon from 'icons/full-more-bis.svg'
+import moreBisIcon from 'icons/full-more.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
 import DuplicateOfferDialog from './DuplicateOfferDialog'
