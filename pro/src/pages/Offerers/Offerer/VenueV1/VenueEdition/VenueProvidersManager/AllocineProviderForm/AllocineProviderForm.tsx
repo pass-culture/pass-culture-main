@@ -6,11 +6,12 @@ import { Tooltip } from 'react-tooltip'
 import { PostVenueProviderBody } from 'apiClient/v1'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
+import strokeInfoIcon from 'icons/stroke-info.svg'
 import { Banner, Button, SubmitButton, CheckboxField } from 'ui-kit'
 import 'react-tooltip/dist/react-tooltip.css'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import NumberField from 'ui-kit/form_rff/fields/NumberField'
-import Icon from 'ui-kit/Icon/Icon'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getCanSubmit } from 'utils/react-final-form'
 import './AllocineProviderForm.scss'
 
@@ -110,7 +111,11 @@ const AllocineProviderForm = ({
                       data-tooltip-id="tooltip-price"
                       data-type="info"
                     >
-                      <Icon svg="picto-info" />
+                      <SvgIcon
+                        src={strokeInfoIcon}
+                        alt=""
+                        className="info-icon"
+                      />
                     </span>
                     <Tooltip
                       className="type-info flex-center items-center"
@@ -150,21 +155,21 @@ const AllocineProviderForm = ({
                   label="Accepter les réservations DUO"
                   name="isDuo"
                 />
+                <span
+                  className="apf-tooltip"
+                  data-tooltip-place="bottom"
+                  data-tooltip-html="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>"
+                  data-tooltip-type="info"
+                  data-tooltip-id="tooltip-duo"
+                >
+                  <SvgIcon src={strokeInfoIcon} alt="" className="info-icon" />
+                </span>
+                <Tooltip
+                  className="type-info flex-center items-center"
+                  delayHide={500}
+                  id="tooltip-duo"
+                />
               </div>
-              <span
-                className="apf-tooltip"
-                data-tooltip-place="bottom"
-                data-tooltip-html="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>"
-                data-tooltip-type="info"
-                data-tooltip-id="tooltip-duo"
-              >
-                <Icon svg="picto-info" />
-              </span>
-              <Tooltip
-                className="type-info flex-center items-center"
-                delayHide={500}
-                id="tooltip-duo"
-              />
 
               <Banner type="notification-info">
                 <p>
