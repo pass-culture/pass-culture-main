@@ -18,6 +18,7 @@ from werkzeug.exceptions import NotFound
 from pcapi import settings
 from pcapi.connectors import sirene
 from pcapi.connectors.dms.api import DMSGraphQLClient
+from pcapi.core import search
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -630,25 +631,49 @@ def batch_edit_venues() -> utils.BackofficeResponse:
         return redirect(request.referrer or url_for(".list_venues"), code=303)
 
     venues = offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(form.object_ids_list)).all()
-    criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
 
-    previous_criteria = list(reduce(set.intersection, [set(venue.criteria) for venue in venues]))  # type: ignore
-    deleted_criteria = list(set(previous_criteria).difference(criteria))
+    updated_criteria_venues = _update_venues_criteria(venues=venues, criteria_ids=form.criteria.data)
+    if form.all_permanent.data:
+        updated_permanent_venues = _update_permanent_venues(venues=venues, is_permanent=True)
+    elif form.all_not_permanent.data:
+        updated_permanent_venues = _update_permanent_venues(venues=venues, is_permanent=False)
 
-    for venue in venues:
-        if venue.criteria:
-            venue.criteria.extend(criterion for criterion in criteria if criterion not in venue.criteria)
-            for criterion in deleted_criteria:
-                venue.criteria.remove(criterion)
-        else:
-            venue.criteria = criteria
+    updated_venues = list(set(updated_criteria_venues + updated_permanent_venues))
 
-        if form.all_permanent.data:
-            venue.isPermanent = True
-        elif form.all_not_permanent.data:
-            venue.isPermanent = False
-
-    repository.save(*venues)
+    repository.save(*updated_venues)
+    search.async_index_venue_ids(updated_venues)
 
     flash("Les lieux ont été modifiés avec succès", "success")
     return redirect(request.referrer or url_for(".list_venues"), code=303)
+
+
+def _update_venues_criteria(
+    venues: list[offerers_models.Venue], criteria_ids: list[int]
+) -> list[offerers_models.Venue]:
+    new_criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(criteria_ids)).all()
+
+    previous_criteria = set.intersection(*(set(venue.criteria) for venue in venues))
+    deleted_criteria = list(previous_criteria.difference(new_criteria))
+
+    changed_venues = []
+
+    for venue in venues:
+        if venue.criteria == new_criteria:
+            continue
+        if venue.criteria:
+            venue.criteria.extend(criterion for criterion in new_criteria if criterion not in venue.criteria)
+            for criterion in deleted_criteria:
+                venue.criteria.remove(criterion)
+        else:
+            venue.criteria = new_criteria
+        changed_venues.append(venue)
+
+    return changed_venues
+
+
+def _update_permanent_venues(venues: list[offerers_models.Venue], is_permanent: bool) -> list[offerers_models.Venue]:
+    venues_to_update = [venue for venue in venues if venue.isPermanent != is_permanent]
+    for venue in venues_to_update:
+        venue.isPermanent = is_permanent
+
+    return venues_to_update

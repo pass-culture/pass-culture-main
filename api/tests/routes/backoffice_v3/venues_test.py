@@ -1317,7 +1317,15 @@ class BatchEditVenuesTest(PostEndpointHelper):
         assert venue.isPermanent is is_permanent  # unchanged
 
     @pytest.mark.parametrize("set_permanent", [True, False])
-    def test_batch_edit_venues(self, legit_user, authenticated_client, criteria, set_permanent):
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_batch_edit_venues(
+        self,
+        mock_async_index_venue_ids,
+        legit_user,
+        authenticated_client,
+        criteria,
+        set_permanent,
+    ):
         new_criterion = criteria_factories.CriterionFactory()
         venues = [
             offerers_factories.VenueFactory(criteria=criteria[:2], isPermanent=set_permanent),
@@ -1339,3 +1347,5 @@ class BatchEditVenuesTest(PostEndpointHelper):
 
         assert set(venues[1].criteria) == {criteria[0], criteria[2], new_criterion}  # 1 kept, 1 added
         assert venues[1].isPermanent is set_permanent
+
+        mock_async_index_venue_ids.assert_called_once()
