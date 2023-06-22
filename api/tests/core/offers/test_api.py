@@ -1902,6 +1902,23 @@ class ResolveOfferValidationRuleTest:
         assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.APPROVED
         assert api.set_offer_status_based_on_fraud_criteria_v2(collective_offer) == models.OfferValidationStatus.PENDING
 
+    def test_offer_validation_rule_with_offerer_id(self):
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = factories.OfferFactory(venue=venue)
+        collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
+        offer_validation_rule = factories.OfferValidationRuleFactory(name="Règle sur les structures")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_validation_rule,
+            model=models.OfferValidationModel.OFFERER,
+            attribute=models.OfferValidationAttribute.ID,
+            operator=models.OfferValidationRuleOperator.IN,
+            comparated={"comparated": [offerer.id]},
+        )
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.PENDING
+        assert api.set_offer_status_based_on_fraud_criteria_v2(collective_offer) == models.OfferValidationStatus.PENDING
+
     def test_offer_validation_with_multiple_rules(self):
         offer = factories.OfferFactory(name="offer with a verboten name")
         factories.StockFactory(offer=offer, price=15)
