@@ -5,6 +5,7 @@ from typing import Optional
 import pytest
 
 from pcapi.core.educational.factories import EducationalInstitutionFactory
+from pcapi.core.educational.factories import EducationalRedactorFactory
 
 from tests.conftest import TestClient
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_default_fake_valid_token
@@ -30,6 +31,7 @@ class AuthenticateTest:
 
     def test_should_return_redactor_role_when_token_has_an_uai_code(self, app) -> None:
         # Given
+        EducationalRedactorFactory(email=self.valid_user.get("mail"), preferences={"feedback_form_closed": True})
         EducationalInstitutionFactory(
             institutionId=self.valid_user.get("uai"),
             name="BELLEVUE",
@@ -54,6 +56,7 @@ class AuthenticateTest:
             "institutionName": "COLLEGE BELLEVUE",
             "institutionCity": "Ales",
             "email": "sabine.laprof@example.com",
+            "preferences": {"feedback_form_closed": True},
         }
 
     def test_should_return_readonly_role_when_token_has_no_uai_code(self, app) -> None:
@@ -75,6 +78,7 @@ class AuthenticateTest:
             "institutionName": None,
             "institutionCity": None,
             "email": None,
+            "preferences": None,
         }
 
     valid_user = {
