@@ -150,7 +150,7 @@ export const RecurrenceForm = ({
 
   return (
     <FormikProvider value={formik}>
-      <form onSubmit={formik.handleSubmit}>
+      <form onSubmit={formik.handleSubmit} className={styles['form']}>
         <FormLayout.Section title="Ajouter une ou plusieurs dates">
           <div className={styles['section']}>
             <div className={styles['legend']}>
@@ -287,7 +287,7 @@ export const RecurrenceForm = ({
                   label="Détail de la récurrence"
                   name="monthlyOption"
                   options={monthlyOptions}
-                  className={styles['price-category-input']}
+                  className={styles['monthly-option-input']}
                   defaultOption={{
                     label: 'Sélectionner une option',
                     value: '',

@@ -71,7 +71,7 @@ main {
 
   &.container {
     position: relative;
-    max-width: rem.torem(874px);
+    max-width: rem.torem(size.$main-content-width);
     margin: rem.torem(-88px) auto 0 auto;
     padding-bottom: calc(size.$action-bar-sticky-height + rem.torem(16px));
 

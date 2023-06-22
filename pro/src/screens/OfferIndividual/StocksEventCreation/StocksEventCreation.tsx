@@ -227,7 +227,7 @@ export const StocksEventCreation = ({
           onDismiss={onCancel}
           hasCloseButton
           labelledBy="add-recurrence"
-          extraClassNames={styles['recurrence-modal']}
+          fullContentWidth
         >
           <RecurrenceForm
             offer={offer}

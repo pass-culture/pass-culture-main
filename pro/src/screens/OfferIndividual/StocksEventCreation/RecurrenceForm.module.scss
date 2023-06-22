@@ -87,6 +87,11 @@
   width: rem.torem(328px);
 }
 
+.monthly-option-input {
+  width: auto;
+  flex-grow: 1;
+}
+
 .booking-date-limit-container {
   display: flex;
   gap: rem.torem(8px);

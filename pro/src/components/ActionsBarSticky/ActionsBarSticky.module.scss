@@ -16,7 +16,7 @@
   box-shadow: 0 2px rem.torem(16px) colors.$dark-blue-shadow;
 
   .actions-bar-content {
-    width: rem.torem(874px);
+    width: rem.torem(size.$main-content-width);
     margin: 0 auto;
     align-items: center;
     display: flex;
