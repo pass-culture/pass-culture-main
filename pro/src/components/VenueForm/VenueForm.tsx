@@ -95,14 +95,13 @@ const VenueForm = ({
       venue?.nonHumanizedId,
       user.currentUser
     )
-    if (
-      venue != null
-        ? nextLocation.pathname + nextLocation.search === url
-        : (nextLocation.pathname + nextLocation.search).startsWith(url)
-    ) {
-      return false
+
+    const nextUrl = nextLocation.pathname + nextLocation.search
+
+    if (venue === null) {
+      return !nextUrl.startsWith(url)
     } else {
-      return true
+      return nextUrl !== url
     }
   }
 
@@ -198,7 +197,7 @@ const VenueForm = ({
           <p>Les informations non enregistrées seront perdues.</p>
         </RouteLeavingGuard>
         <VenueFormActionBar
-          offererId={offerer.id}
+          offererId={offerer.nonHumanizedId}
           isCreatingVenue={isCreatingVenue}
         />
       </FormLayout>
