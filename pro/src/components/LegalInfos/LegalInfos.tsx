@@ -23,7 +23,7 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
     <div className={cn(styles['legal-infos'], className)}>
       <span>{`En cliquant sur ${title}, vous acceptez nos `}</span>
       <ButtonLink
-        className="quaternary-link"
+        className={styles['quaternary-link']}
         onClick={() =>
           logEvent?.(Events.CLICKED_CONSULT_CGU, { from: location.pathname })
         }
