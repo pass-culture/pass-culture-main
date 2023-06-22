@@ -12,7 +12,7 @@
 
   .header-content {
     display: flex;
-    max-width: rem.torem(874px);
+    max-width: rem.torem(size.$main-content-width);
     margin: 0 auto;
     justify-content: space-between;
   }

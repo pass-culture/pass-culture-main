@@ -16,7 +16,7 @@ $signup-content-margin: rem.torem(30px);
 $signup-content-width: rem.torem(488px);
 $button-icon-size: rem.torem(20px);
 $header-grid-template-columns: [col-start] 1fr [col-main]
-  minmax(rem.torem(874px), auto) 1fr;
+  minmax(rem.torem($main-content-width), auto) 1fr;
 $header-nav-item-padding: rem.torem(16px);
 $nav-brand-margin-right: 5%;
 $logo-side-width: rem.torem(520px);

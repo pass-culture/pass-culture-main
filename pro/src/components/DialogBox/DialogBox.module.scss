@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_z-index.scss" as zIndex;
+@use "styles/variables/_size.scss" as size;
 
 $dialog-box-padding: rem.torem(32px);
 
@@ -21,6 +22,10 @@ $dialog-box-padding: rem.torem(32px);
   min-width: rem.torem(534px);
   position: relative;
   width: auto;
+}
+
+.dialog-box-full-content-width {
+  width: size.$main-content-width !important;
 }
 
 .dialog-box-close-container {

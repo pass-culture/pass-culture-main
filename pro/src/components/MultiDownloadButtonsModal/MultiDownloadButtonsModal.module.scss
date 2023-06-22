@@ -20,6 +20,10 @@
       margin-left: rem.torem(80px);
       width: rem.torem(16px);
       height: rem.torem(16px);
+
+      // Shift icon downwards to center it visually instead of mathematically
+      position: relative;
+      top: 2px;
     }
   }
 
