@@ -533,11 +533,11 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props)
 
         const duplicateButton = screen.getByRole('button', {
-          name: 'Dupliquer',
+          name: 'Créer une offre réservable',
         })
         await userEvent.click(duplicateButton)
 
-        const modalTitle = screen.getAllByText('Dupliquer')
+        const modalTitle = screen.getAllByText('Créer une offre réservable')
         expect(modalTitle.length > 1).toBeTruthy()
       })
 
@@ -548,7 +548,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props)
 
         const duplicateButton = screen.getByRole('button', {
-          name: 'Dupliquer',
+          name: 'Créer une offre réservable',
         })
         await userEvent.click(duplicateButton)
 
