@@ -81,11 +81,12 @@ describe('DuplicateOfferCell', () => {
   it('should close dialog when click on cancel button', async () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'false')
     renderDuplicateOfferCell()
-    const buttons = screen.getAllByRole('button', {
-      name: 'Dupliquer',
+
+    const button = screen.getByRole('button', {
+      name: 'Créer une offre réservable',
     })
 
-    await userEvent.click(buttons[0])
+    await userEvent.click(button)
 
     const modalCancelButton = screen.getByRole('button', {
       name: 'Annuler',
@@ -103,11 +104,11 @@ describe('DuplicateOfferCell', () => {
   it('should update local storage if user check option to not display modal again ', async () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'false')
     renderDuplicateOfferCell()
-    const buttons = screen.getAllByRole('button', {
-      name: 'Dupliquer',
+    const button = screen.getByRole('button', {
+      name: 'Créer une offre réservable',
     })
 
-    await userEvent.click(buttons[0])
+    await userEvent.click(button)
 
     const checkBox = screen.getByRole('checkbox', {
       name: 'Je ne souhaite plus voir cette information',
@@ -130,11 +131,11 @@ describe('DuplicateOfferCell', () => {
   it('should not update local storage if user does not check any option', async () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'false')
     renderDuplicateOfferCell()
-    const buttons = screen.getAllByRole('button', {
-      name: 'Dupliquer',
+    const button = screen.getByRole('button', {
+      name: 'Créer une offre réservable',
     })
 
-    await userEvent.click(buttons[0])
+    await userEvent.click(button)
 
     const modalConfirmButton = screen.getByRole('button', {
       name: 'Créer une offre réservable',
@@ -152,13 +153,13 @@ describe('DuplicateOfferCell', () => {
   it('should redirect to offer duplication if user has already check option to not display modal again', async () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
     renderDuplicateOfferCell()
-    const buttons = screen.getAllByRole('button', {
-      name: 'Dupliquer',
+    const button = screen.getByRole('button', {
+      name: 'Créer une offre réservable',
     })
 
     jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
 
-    await userEvent.click(buttons[0])
+    await userEvent.click(button)
 
     expect(createFromTemplateUtils.createOfferFromTemplate).toHaveBeenCalled()
   })
@@ -208,11 +209,11 @@ describe('DuplicateOfferCell', () => {
 
       renderDuplicateOfferCell()
 
-      const buttons = screen.getAllByRole('button', {
+      const button = screen.getByRole('button', {
         name: 'Dupliquer',
       })
 
-      await userEvent.click(buttons[1])
+      await userEvent.click(button)
 
       expect(api.duplicateCollectiveOffer).toHaveBeenCalledTimes(1)
 
@@ -226,11 +227,11 @@ describe('DuplicateOfferCell', () => {
 
       renderDuplicateOfferCell()
 
-      const buttons = screen.getAllByRole('button', {
+      const button = screen.getByRole('button', {
         name: 'Dupliquer',
       })
 
-      await userEvent.click(buttons[1])
+      await userEvent.click(button)
 
       const response = await getCollectiveOfferAdapter(offer.nonHumanizedId)
 
@@ -250,11 +251,11 @@ describe('DuplicateOfferCell', () => {
 
       renderDuplicateOfferCell()
 
-      const buttons = screen.getAllByRole('button', {
+      const button = screen.getByRole('button', {
         name: 'Dupliquer',
       })
 
-      await userEvent.click(buttons[1])
+      await userEvent.click(button)
 
       expect(notifyError).toHaveBeenCalledWith(
         'Une erreur est survenue lors de la création de votre offre'
@@ -275,11 +276,11 @@ describe('DuplicateOfferCell', () => {
 
       renderDuplicateOfferCell()
 
-      const buttons = screen.getAllByRole('button', {
+      const button = screen.getByRole('button', {
         name: 'Dupliquer',
       })
 
-      await userEvent.click(buttons[1])
+      await userEvent.click(button)
 
       expect(notifyError).toHaveBeenCalledWith(
         'Une ou plusieurs erreurs sont présentes dans le formulaire'
@@ -293,11 +294,11 @@ describe('DuplicateOfferCell', () => {
 
       renderDuplicateOfferCell()
 
-      const buttons = screen.getAllByRole('button', {
+      const button = screen.getByRole('button', {
         name: 'Dupliquer',
       })
 
-      await userEvent.click(buttons[1])
+      await userEvent.click(button)
 
       expect(notifyError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
     })

@@ -65,7 +65,7 @@ const DuplicateOfferCell = ({
         innerRef={buttonRef}
         hasTooltip
       >
-        Dupliquer
+        {isShowcase ? 'Créer une offre réservable' : 'Dupliquer'}
       </ListIconButton>
       {isModalOpen && shouldDisplayModal && (
         <DuplicateOfferDialog
