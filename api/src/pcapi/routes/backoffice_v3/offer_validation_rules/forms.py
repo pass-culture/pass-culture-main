@@ -169,6 +169,12 @@ class OfferValidationSubRuleForm(FlaskForm):
             if self.form_field_configuration.get(self.sub_rule_type.data, {}).get("field") == "offer_type"
             else []
         )
+        offer_type_dict = {
+            "OFFER": "Offer",
+            "COLLECTIVE_OFFER": "CollectiveOffer",
+            "COLLECTIVE_OFFER_TEMPLATE": "CollectiveOfferTemplate",
+        }
+        offer_type.data = [offer_type_dict[offer_type] for offer_type in offer_type.data]
         return offer_type
 
     def validate_offerer(self, offerer: fields.PCTomSelectField) -> fields.PCSelectMultipleField:
@@ -177,6 +183,7 @@ class OfferValidationSubRuleForm(FlaskForm):
             if self.form_field_configuration.get(self.sub_rule_type.data, {}).get("field") == "offerer"
             else []
         )
+        offerer.data = [int(offerer_id) for offerer_id in offerer.data]
         return offerer
 
     def validate_categories(self, categories_field: fields.PCSelectMultipleField) -> fields.PCSelectMultipleField:

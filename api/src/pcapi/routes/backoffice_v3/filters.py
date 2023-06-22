@@ -439,9 +439,9 @@ def get_comparated_format_function(
 
 def format_offer_types(data: list[str]) -> str:
     types = {
-        "OFFER": "Offre individuelle",
-        "COLLECTIVE_OFFER": "Offre collective",
-        "COLLECTIVE_OFFER_TEMPLATE": "Offre collective vitrine",
+        "Offer": "Offre individuelle",
+        "CollectiveOffer": "Offre collective",
+        "CollectiveOfferTemplate": "Offre collective vitrine",
     }
     return " ou ".join([types[type_name] for type_name in data])
 
