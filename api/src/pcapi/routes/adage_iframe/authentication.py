@@ -17,7 +17,7 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
         department_code = get_educational_institution_department_code(institution) if institution else None
         institution_full_name = f"{institution.institutionType} {institution.name}".strip() if institution else None
         return AuthenticatedResponse(
-            role=AdageFrontRoles.REDACTOR,
+            role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
             uai=authenticated_information.uai,
             departmentCode=department_code,
             institutionName=institution_full_name,

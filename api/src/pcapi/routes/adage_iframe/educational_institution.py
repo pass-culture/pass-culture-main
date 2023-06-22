@@ -1,4 +1,3 @@
-from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository
 import pcapi.core.educational.api.institution as api
 from pcapi.models.api_errors import ApiErrors
@@ -25,10 +24,7 @@ def get_educational_institution_with_budget(
     if not institution:
         raise ApiErrors({"code": "INSTITUTION NOT FOUND"}, status_code=404)
 
-    try:
-        remaining_budget = api.get_current_year_remaining_credit(institution)
-    except exceptions.EducationalDepositNotFound:
-        raise ApiErrors({"code": "DEPOSIT_NOT_FOUND"}, status_code=404)
+    remaining_budget = api.get_current_year_remaining_credit(institution)
 
     return educational_institution.EducationalInstitutionWithBudgetResponseModel(
         id=institution.id,
