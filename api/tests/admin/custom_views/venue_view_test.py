@@ -679,7 +679,9 @@ class UpdateVenuesTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.search.async_index_venue_ids")
-    def test_reindexed_after_is_permanent_update(self, mock_async_index_venue_ids, _mocked_validate_csrf_token, client):
+    def test_reindexed_after_is_permanent_updated_to_true(
+        self, mock_async_index_venue_ids, _mocked_validate_csrf_token, client
+    ):
         admin = AdminFactory(email="user@example.com")
         venue_id = offerers_factories.VenueFactory(isPermanent=False).id
 
@@ -697,8 +699,31 @@ class UpdateVenuesTest:
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.core.search.reindex_venue_ids")
-    def test_immediate_reindexation_on_tag_update(self, mock_reindex_venue_ids, _mocked_validate_csrf_token, client):
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_unindexed_after_is_permanent_updated_to_false(
+        self, mock_async_index_venue_ids, _mocked_validate_csrf_token, client
+    ):
+        admin = AdminFactory(email="user@example.com")
+        venue_id = offerers_factories.VenueFactory(isPermanent=False).id
+
+        data = {"ids": [venue_id], "is_permanent": "false"}
+
+        client = client.with_session_auth(admin.email)
+        response = client.post("/pc/back-office/venue/update/", form=data)
+
+        assert response.status_code == 302
+
+        venue = Venue.query.get(venue_id)
+        assert not venue.isPermanent
+
+        mock_async_index_venue_ids.assert_called_once()
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_immediate_reindexation_on_tag_update(
+        self, mock_async_index_venue_ids, _mocked_validate_csrf_token, client
+    ):
         admin = AdminFactory(email="user@example.com")
         venue_id = offerers_factories.VenueFactory(isPermanent=False).id
         criterion = criteria_factories.CriterionFactory()
@@ -714,4 +739,4 @@ class UpdateVenuesTest:
         assert venue.isPermanent
         assert {criterion.name for criterion in venue.criteria} == {criterion.name}
 
-        mock_reindex_venue_ids.assert_called_once()
+        mock_async_index_venue_ids.assert_called_once()

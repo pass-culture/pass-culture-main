@@ -410,14 +410,7 @@ class VenueView(BaseAdminView):
             criteria_ids = [crit.id for crit in criteria]
             criteria_api.VenueUpdate(venue_ids, criteria_ids, replace_tags=remove_other_tags).run()
 
-            # Immediately index venues if tags (criteria) are involved:
-            # tags are used by other tools (eg. building playlists for the
-            # home page) and waiting N minutes for the next indexing
-            # cron tasks is painful.
-            if criteria or remove_other_tags:
-                search.reindex_venue_ids(venue_ids)
-            else:
-                search.async_index_venue_ids(venue_ids)
+            search.async_index_venue_ids(venue_ids)
 
             db.session.commit()
             return redirect(url)
