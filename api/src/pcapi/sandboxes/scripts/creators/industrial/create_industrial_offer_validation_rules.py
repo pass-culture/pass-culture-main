@@ -41,7 +41,7 @@ def create_industrial_offer_validation_rules() -> None:
         model=offers_models.OfferValidationModel.OFFERER,
         attribute=offers_models.OfferValidationAttribute.ID,
         operator=offers_models.OfferValidationRuleOperator.IN,
-        comparated={"comparated": [str(offerer.id) for offerer in offerers_to_reject]},
+        comparated={"comparated": [offerer.id for offerer in offerers_to_reject]},
     )
 
     collective_offer_and_template_siren_rule = offers_factories.OfferValidationRuleFactory(
@@ -52,14 +52,14 @@ def create_industrial_offer_validation_rules() -> None:
         model=offers_models.OfferValidationModel.OFFERER,
         attribute=offers_models.OfferValidationAttribute.ID,
         operator=offers_models.OfferValidationRuleOperator.IN,
-        comparated={"comparated": [str(offerers_to_reject[0].id), str(offerers_to_reject[1].id)]},
+        comparated={"comparated": [offerers_to_reject[0].id, offerers_to_reject[1].id]},
     )
     offers_factories.OfferValidationSubRuleFactory(
         validationRule=collective_offer_and_template_siren_rule,
         model=None,
         attribute=offers_models.OfferValidationAttribute.CLASS_NAME,
         operator=offers_models.OfferValidationRuleOperator.IN,
-        comparated={"comparated": ["COLLECTIVE_OFFER", "COLLECTIVE_OFFER_TEMPLATE"]},
+        comparated={"comparated": ["CollectiveOffer", "CollectiveOfferTemplate"]},
     )
 
     cabaret_show_sub_type_offer_rule = offers_factories.OfferValidationRuleFactory(
