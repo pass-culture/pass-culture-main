@@ -5,7 +5,6 @@ from typing import List
 from pydantic.main import BaseModel
 
 from pcapi.core.providers.models import VenueProvider
-from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
@@ -21,36 +20,25 @@ class PostVenueProviderBody(BaseModel):
     isActive: bool | None
 
 
-# TODO(asaunier): We usually exposed every field from ORM but some mightbe unecessary
 class ProviderResponse(BaseModel):
     name: str
-    enabledForPro: bool
-    id: str
+    id: int
     isActive: bool
-    localClass: str | None
     hasOffererProvider: bool
-
-    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True
 
 
 class VenueProviderResponse(BaseModel):
-    dateModifiedAtLastProvider: datetime | None
-    # TODO(asaunier): Check if this field is necessary
-    fieldsUpdated: List[str]
     id: int
-    idAtProviders: str | None
     isActive: bool
     isDuo: bool | None
     isFromAllocineProvider: bool
-    lastProviderId: str | None
     lastSyncDate: datetime | None
     nOffers: int
     price: float | None
     provider: ProviderResponse
-    providerId: int
     quantity: int | None
     venueId: int
     venueIdAtOfferProvider: str

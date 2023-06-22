@@ -24,7 +24,6 @@ class Returns200Test:
             collectiveSubCategoryId="SEANCE_CINE",
         )
         expected_serialized_venue = {
-            "id": venue.id,
             "collectiveAccessInformation": None,
             "collectiveDescription": venue.collectiveDescription,
             "collectiveDomains": [
