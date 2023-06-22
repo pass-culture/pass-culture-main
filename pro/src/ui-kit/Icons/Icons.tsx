@@ -104,7 +104,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-more-circle.svg', viewBox: '0 0 25 24' },
   { src: 'icons/ico-more-horiz.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-new-offer.svg', viewBox: '0 0 40 40' },
-  { src: 'icons/ico-next-S.svg', viewBox: '0 0 11 23' },
   { src: 'icons/ico-no-bookings.svg', viewBox: '0 0 124 124' },
   { src: 'icons/ico-404.svg', viewBox: '0 0 308 194' },
   { src: 'icons/ico-notification-success.svg', viewBox: '0 0 20 20' },
