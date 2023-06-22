@@ -74,6 +74,7 @@ const VenueFormScreen = ({
   const isWithdrawalUpdatedMailActive = useActiveFeature(
     'WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL'
   )
+  const { logEvent } = useAnalytics()
 
   const { currentUser } = useCurrentUser()
 
@@ -220,8 +221,6 @@ const VenueFormScreen = ({
     name: initialName,
   } = venue || {}
 
-  const { logEvent } = useAnalytics()
-
   return (
     <div>
       <div className={style['venue-form-heading']}>
@@ -231,7 +230,7 @@ const VenueFormScreen = ({
           </Title>
           {!isCreatingVenue && (
             <a
-              href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}
+              href={`/offre/creation?lieu=${initialId}&structure=${offerer.nonHumanizedId}`}
             >
               <Button
                 variant={ButtonVariant.PRIMARY}
