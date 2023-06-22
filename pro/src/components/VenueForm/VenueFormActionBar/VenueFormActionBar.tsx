@@ -11,7 +11,7 @@ import useNewOfferCreationJourney from '../../../hooks/useNewOfferCreationJourne
 import { VenueFormValues } from '../types'
 
 interface VenueFormActionBarProps {
-  offererId: string
+  offererId: number
   isCreatingVenue: boolean
 }
 
