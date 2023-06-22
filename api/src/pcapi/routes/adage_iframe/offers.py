@@ -11,6 +11,9 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import offers as serializers
+from pcapi.routes.adage_iframe.serialization.adage_authentication import (
+    get_redactor_information_from_adage_authentication,
+)
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -97,13 +100,16 @@ def create_collective_request(
         offer = educational_api_offer.get_collective_offer_template_by_id_for_adage(offer_id)
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
+
     institution = educational_repository.get_educational_institution_public(
         institution_id=None, uai=authenticated_information.uai
     )
     if not institution:
         raise ApiErrors({"code": "INSTITUTION_NOT_FOUND"}, status_code=404)
-    redactor = educational_repository.find_redactor_by_email(authenticated_information.email)  # type: ignore [arg-type]
-    assert redactor
+
+    redactor_informations = get_redactor_information_from_adage_authentication(authenticated_information)
+    redactor = educational_repository.find_or_create_redactor(redactor_informations)
+
     collective_request = educational_api_offer.create_offer_request(body, offer, institution, redactor)
 
     educational_utils.log_information_for_data_purpose(
