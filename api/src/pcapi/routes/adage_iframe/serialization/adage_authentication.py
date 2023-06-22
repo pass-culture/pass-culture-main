@@ -6,6 +6,8 @@ from pydantic import ValidationError
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
 from pcapi.routes.serialization import BaseModel
 
+from .redactor import RedactorPreferences
+
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +32,7 @@ class AuthenticatedResponse(BaseModel):
     institutionName: str | None
     institutionCity: str | None
     email: str | None
+    preferences: RedactorPreferences | None
 
     class Config:
         use_enum_values = True

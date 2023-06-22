@@ -872,6 +872,10 @@ class EducationalRedactor(PcObject, Base, Model):
 
     civility = sa.Column(sa.String(20), nullable=True)
 
+    preferences: sa.orm.Mapped[dict] = sa.Column(
+        sa.dialects.postgresql.JSONB(), server_default="{}", default={}, nullable=False
+    )
+
     collectiveBookings: list["CollectiveBooking"] = relationship(
         "CollectiveBooking", back_populates="educationalRedactor"
     )
