@@ -22,6 +22,8 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import repository
+from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.utils.clean_accents import clean_accents
 
 
@@ -242,6 +244,22 @@ def find_redactor_by_email(redactor_email: str) -> educational_models.Educationa
     return educational_models.EducationalRedactor.query.filter(
         educational_models.EducationalRedactor.email == redactor_email
     ).one_or_none()
+
+
+def find_or_create_redactor(information: RedactorInformation) -> educational_models.EducationalRedactor:
+    redactor = find_redactor_by_email(information.email)
+    if redactor:
+        return redactor
+
+    redactor = educational_models.EducationalRedactor(
+        email=information.email,
+        firstName=information.firstname,
+        lastName=information.lastname,
+        civility=information.civility,
+    )
+
+    repository.save(redactor)
+    return redactor
 
 
 def find_active_collective_booking_by_offer_id(
