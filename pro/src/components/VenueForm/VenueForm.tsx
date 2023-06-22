@@ -2,7 +2,10 @@ import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { VenueProviderResponse } from 'apiClient/v1'
+import {
+  SharedCurrentUserResponseModel,
+  VenueProviderResponse,
+} from 'apiClient/v1'
 import { Address } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
@@ -46,6 +49,41 @@ interface VenueFormProps {
   isNewOnboardingActive: boolean
 }
 
+interface ShouldBlockVenueNavigationProps {
+  isCreatingVenue: boolean
+  isNewOfferCreationJourney: boolean
+  offererId: number
+  user: SharedCurrentUserResponseModel
+}
+
+type ShouldBlockVenueNavigation = (
+  p: ShouldBlockVenueNavigationProps
+) => BlockerFunction
+
+export const shouldBlockVenueNavigation: ShouldBlockVenueNavigation =
+  ({
+    isCreatingVenue,
+    isNewOfferCreationJourney,
+    offererId,
+    user,
+  }: ShouldBlockVenueNavigationProps): BlockerFunction =>
+  ({ nextLocation }) => {
+    if (!isCreatingVenue) {
+      return false
+    }
+
+    const url = venueSubmitRedirectUrl(
+      isNewOfferCreationJourney,
+      isCreatingVenue,
+      offererId,
+      undefined,
+      user
+    )
+    const nextUrl = nextLocation.pathname + nextLocation.search
+
+    return !nextUrl.startsWith(url)
+  }
+
 const VenueForm = ({
   isCreatingVenue,
   offerer,
@@ -83,27 +121,6 @@ const VenueForm = ({
   const isCollectiveDmsTrackingActive = useActiveFeature(
     'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
   )
-
-  const shouldBlockNavigation: BlockerFunction = ({ nextLocation }) => {
-    if (!isCreatingVenue) {
-      return false
-    }
-    const url = venueSubmitRedirectUrl(
-      isNewOfferCreationJourney,
-      isCreatingVenue,
-      offerer.nonHumanizedId,
-      venue?.nonHumanizedId,
-      user.currentUser
-    )
-
-    const nextUrl = nextLocation.pathname + nextLocation.search
-
-    if (venue === null) {
-      return !nextUrl.startsWith(url)
-    } else {
-      return nextUrl !== url
-    }
-  }
 
   return (
     <div>
@@ -191,7 +208,12 @@ const VenueForm = ({
           />
         )}
         <RouteLeavingGuard
-          shouldBlockNavigation={shouldBlockNavigation}
+          shouldBlockNavigation={shouldBlockVenueNavigation({
+            isCreatingVenue,
+            isNewOfferCreationJourney,
+            offererId: offerer.nonHumanizedId,
+            user: user.currentUser,
+          })}
           dialogTitle="Voulez-vous quitter la création de lieu ?"
         >
           <p>Les informations non enregistrées seront perdues.</p>
