@@ -11,7 +11,6 @@ export { ReactComponent as DisconnectFullIcon } from 'icons/ico-disconnect-full.
 export { ReactComponent as EventsIcon } from 'icons/ico-events.svg'
 export { ReactComponent as InfoWrongIcon } from 'icons/ico-info-wrong.svg'
 export { ReactComponent as LogoPassCultureDarkIcon } from 'icons/logo-pass-culture-dark.svg'
-export { ReactComponent as MoreCircleIcon } from 'icons/ico-more-circle.svg'
 export { ReactComponent as OfferCardEuroIcon } from 'icons/offer-card-euro.svg'
 export { ReactComponent as OtherOfferIcon } from 'icons/other-offer.svg'
 export { ReactComponent as PartyIcon } from 'icons/party.svg'

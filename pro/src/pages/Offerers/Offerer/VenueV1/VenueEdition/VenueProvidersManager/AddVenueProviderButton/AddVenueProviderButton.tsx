@@ -1,5 +1,3 @@
-import './AddVenueProviderButton.scss'
-
 import React, { useState } from 'react'
 
 import { VenueProviderResponse } from 'apiClient/v1'
@@ -7,7 +5,7 @@ import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import { Venue } from 'core/Venue'
 import { Providers } from 'core/Venue/types'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as FullMore } from 'icons/full-more.svg'
+import { ReactComponent as StrokeMore } from 'icons/stroke-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
@@ -65,11 +63,9 @@ const AddVenueProviderButton = ({
   const AddButton = (
     <div className="has-text-centered">
       <Button
-        id="add-venue-provider-btn"
         onClick={setCreationMode}
-        type="button"
         variant={ButtonVariant.SECONDARY}
-        Icon={FullMore}
+        Icon={StrokeMore}
       >
         Synchroniser des offres
       </Button>
