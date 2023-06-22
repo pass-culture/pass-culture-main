@@ -9,9 +9,10 @@ import { PostVenueProviderBody } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
+import strokeInfoIcon from 'icons/stroke-info.svg'
 import { Button, Checkbox, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Icon from 'ui-kit/Icon/Icon'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { DEFAULT_CINEMA_PROVIDER_FORM_VALUES } from './constants'
 import { CinemaProviderFormValues } from './types'
@@ -83,7 +84,7 @@ export const CinemaProviderForm = ({
                   data-tooltip-type="info"
                   data-tooltip-id="tooltip-duo"
                 >
-                  <Icon svg="picto-info" />
+                  <SvgIcon src={strokeInfoIcon} alt="" className="info-icon" />
                 </span>
                 <Tooltip
                   className="type-info flex-center items-center"
