@@ -152,7 +152,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
                     "model": None,
                     "attribute": offers_models.OfferValidationAttribute.CLASS_NAME,
                     "operator": offers_models.OfferValidationRuleOperator.NOT_IN,
-                    "comparated": {"comparated": ["COLLECTIVE_OFFER_TEMPLATE"]},
+                    "comparated": {"comparated": ["CollectiveOfferTemplate"]},
                 },
             ),
             (
@@ -241,7 +241,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
         assert rule.subRules[0].model == offers_models.OfferValidationModel.OFFERER
         assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.ID
         assert rule.subRules[0].operator == offers_models.OfferValidationRuleOperator.IN
-        assert rule.subRules[0].comparated == {"comparated": [str(offerers[0].id), str(offerers[1].id)]}
+        assert rule.subRules[0].comparated == {"comparated": [offerers[0].id, offerers[1].id]}
 
     def test_create_offer_validation_rule_with_multiple_rules(self, legit_user, authenticated_client):
         sub_rule_data_0 = get_empty_sub_rule_data(0) | {

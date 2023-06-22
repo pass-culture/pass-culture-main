@@ -49,7 +49,7 @@ def _get_offerers_data_for_rules(rules: list[offers_models.OfferValidationRule])
         .filter(offerers_models.Offerer.id.in_(all_offerer_ids))
         .all()
     )
-    offerer_dict = {str(offerer.id): f"{offerer.name} ({offerer.siren})" for offerer in offerers_from_rules}
+    offerer_dict = {offerer.id: f"{offerer.name} ({offerer.siren})" for offerer in offerers_from_rules}
     return offerer_dict
 
 
