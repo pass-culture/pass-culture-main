@@ -42,7 +42,7 @@ pgcli # a tool not used in code. There is no point in pinning its version
 phonenumberslite==8.12.*
 Pillow>=8.1.1
 psycopg2
-pydantic[email]
+pydantic[email]<2.0.0
 PyJWT[crypto]==2.6.0
 pylint
 pylint-pydantic
