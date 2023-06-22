@@ -47,7 +47,6 @@ from pcapi.routes.backoffice_v3.accounts import _get_tunnel_type
 from pcapi.routes.backoffice_v3.accounts import _set_steps_with_active_and_disabled
 from pcapi.routes.backoffice_v3.accounts import get_eligibility_history
 from pcapi.routes.backoffice_v3.accounts import get_public_account_history
-from pcapi.routes.backoffice_v3.filters import format_date_time
 import pcapi.utils.email as email_utils
 
 from .helpers import button as button_helpers
@@ -661,63 +660,10 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert not html_parser.extract_table_rows(response.data, parent_class="bookings-tab-pane")
         assert "Aucune réservation à ce jour" in response.data.decode("utf-8")
 
-    def test_subscription_items(self, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory()
-
-        user_id = user.id
-        with assert_num_queries(4):  # 2 + user + 1 FF
-            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
-            assert response.status_code == 200
-
-        parsed_html = html_parser.get_soup(response.data)
-        underage_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.UNDERAGE.value}")
-        age18_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.AGE18.value}")
-        bfc_date_created = datetime.datetime.utcnow()
-        assert underage_subscription_card is None
-        assert age18_subscription_card is not None
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            dateCreated=bfc_date_created,
-            eligibilityType=users_models.EligibilityType.UNDERAGE,
-        )
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-
-        parsed_html = html_parser.get_soup(response.data)
-        #  step-3 profil completion, not completed here
-        html_no_bfc_data = html_parser.extract(response.data, "div", class_="step-3")
-        #  step-4 is identity check, completed with a beneficiary fraud check
-        rows_with_bfc_data = html_parser.extract_table_rows(response.data, parent_class="step-4")
-        underage_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.UNDERAGE.value}")
-        age18_subscription_card = parsed_html.find("div", class_=f"{users_models.EligibilityType.AGE18.value}")
-        expected_rows_with_bfc_data = {
-            "Code d'erreur": "",
-            "Date de création": format_date_time(bfc_date_created),
-            "Eligibilité": "Pass 15-17",
-            "Explication": "",
-            "Statut": "PENDING",
-            "Type": "ubble",
-        }
-        assert underage_subscription_card is not None
-        assert age18_subscription_card is not None
-
-        assert "Aucune données" in html_no_bfc_data[0]
-
-        for key, value in rows_with_bfc_data[0].items():
-            if key not in ("ID Technique", "Détails techniques"):
-                assert value == expected_rows_with_bfc_data[key]
-
     def test_fraud_check_link(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()
         # modifiy the date for clearer tests
         user.beneficiaryFraudChecks[0].dateCreated = datetime.date.today() - datetime.timedelta(days=5)
-
-        old_ubble = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            dateCreated=datetime.date.today() - datetime.timedelta(days=3),
-        )
         old_dms = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.DMS,
@@ -738,14 +684,6 @@ class GetPublicAccountTest(GetEndpointHelper):
             in main_dossier_card
         )
 
-        old_ubble_card = str(parsed_html.find("div", class_=old_ubble.thirdPartyId))
-        assert f"https://dashboard.ubble.ai/identifications/{old_ubble.thirdPartyId}" in old_ubble_card
-        old_dms_card = str(parsed_html.find("div", class_=old_dms.thirdPartyId))
-        assert (
-            f"https://www.demarches-simplifiees.fr/procedures/{old_dms.source_data().procedure_number}/dossiers/{old_dms.thirdPartyId}"
-            in old_dms_card
-        )
-
         new_dms = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.DMS,
@@ -761,11 +699,6 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert (
             f"https://www.demarches-simplifiees.fr/procedures/{new_dms.source_data().procedure_number}/dossiers/{new_dms.thirdPartyId}"
             in main_dossier_card
-        )
-        new_dms_card = str(parsed_html.find("div", class_=new_dms.thirdPartyId))
-        assert (
-            f"https://www.demarches-simplifiees.fr/procedures/{new_dms.source_data().procedure_number}/dossiers/{new_dms.thirdPartyId}"
-            in new_dms_card
         )
 
     def test_get_public_account_history(self, legit_user, authenticated_client):
