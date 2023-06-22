@@ -426,10 +426,9 @@ class TestClient:
         }
         return self
 
-    def with_adage_token(self, email: str, uai: str) -> "TestClient":
+    def with_adage_token(self, email: str, uai: str, **redactor_information) -> "TestClient":
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
-            email=email,
-            uai=uai,
+            email=email, uai=uai, **{k: v for k, v in redactor_information.items() if v}
         )
         self.auth_header = {
             "Authorization": f"Bearer {adage_jwt_fake_valid_token}",
