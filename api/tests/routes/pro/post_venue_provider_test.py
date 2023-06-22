@@ -156,8 +156,9 @@ class Returns201Test:
             "venueIdAtOfferProvider",
         }
         assert set(response.json["provider"].keys()) == {
-            "nonHumanizedId",
+            "id",
             "name",
+            "isActive",
             "hasOffererProvider",
         }
 
@@ -304,7 +305,7 @@ class Returns201Test:
 
         response = client.post("/venueProviders", json=venue_provider_data)
 
-        assert response.json["provider"]["nonHumanizedId"] == provider.id
+        assert response.json["provider"]["id"] == provider.id
         assert response.json["venueId"] == venue.id
         assert response.json["venueIdAtOfferProvider"] == cds_pivot.idAtProvider
 

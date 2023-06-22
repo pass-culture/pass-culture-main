@@ -3,11 +3,9 @@
 /* eslint-disable */
 
 export type ProviderResponse = {
-  enabledForPro: boolean;
   hasOffererProvider: boolean;
-  id: string;
+  id: number;
   isActive: boolean;
-  localClass?: string;
   name: string;
 };
 

@@ -89,7 +89,7 @@ const CinemaProviderParameters = ({
           initialValues={initialValues}
           onCancel={closeFormDialog}
           onConfirm={onConfirmDialog}
-          providerId={venueProvider.providerId}
+          providerId={venueProvider.provider.id}
           venueId={venueProvider.venueId}
           offererId={offererId}
         />
