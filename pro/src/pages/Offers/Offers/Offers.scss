@@ -119,6 +119,12 @@
           margin-top: rem.torem(2px);
         }
 
+        &:focus svg {
+          color: colors.$primary;
+          border: rem.torem(1px) solid colors.$primary;
+          border-radius: rem.torem(4px);
+        }
+
         &:disabled {
           cursor: not-allowed;
         }
