@@ -3,7 +3,6 @@ from decimal import Decimal
 import typing
 
 from pcapi.core.educational import adage_backends as adage_client
-from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
@@ -179,7 +178,7 @@ def get_current_year_remaining_credit(institution: educational_models.Educationa
         institution.id, educational_year.adageId
     )
     if deposit is None:
-        raise exceptions.EducationalDepositNotFound()
+        return Decimal(0)
 
     spent_amount = educational_repository.get_confirmed_collective_bookings_amount(
         institution.id, educational_year.adageId
