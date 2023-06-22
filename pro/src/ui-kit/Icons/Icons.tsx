@@ -48,6 +48,7 @@ const fullIcons: IconListItem[] = [
 const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
   { src: 'icons/stroke-error.svg' },
+  { src: 'icons/stroke-info.svg' },
   { src: 'icons/stroke-valid.svg' }, // TODO 1 use left inside <Banner>
   { src: 'icons/stroke-euro.svg' }, // TODO 3 use left inside a <TextInput>
   { src: 'icons/stroke-thing.svg' },

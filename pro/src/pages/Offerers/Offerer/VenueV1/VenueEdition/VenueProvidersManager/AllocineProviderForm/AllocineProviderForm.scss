@@ -53,5 +53,11 @@
 }
 
 .apf-tooltip {
+  display: flex;
   margin-left: rem.torem(4px);
+}
+
+.info-icon {
+  width: rem.torem(16px);
+  color: colors.$accent;
 }
