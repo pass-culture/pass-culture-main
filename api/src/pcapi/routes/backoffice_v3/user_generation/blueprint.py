@@ -4,6 +4,7 @@ from flask import render_template
 from flask import url_for
 from werkzeug.exceptions import NotFound
 
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 import pcapi.core.users.generator as users_generator
@@ -32,6 +33,22 @@ def generate_user() -> utils.BackofficeResponse:
     if not form.validate():
         error_msg = utils.build_form_error_msg(form)
         flash(error_msg, "warning")
+        return redirect(url_for("backoffice_v3_web.get_generated_user"), code=303)
+
+    # >18yo user cannot be identified with Educonnect
+    age = form.age.data
+    id_provider = form.id_provider.data
+    if age == users_constants.ELIGIBILITY_AGE_18 and id_provider == users_generator.GeneratedIdProvider.EDUCONNECT.name:
+        flash("Un utilisateur de plus de 18 ans ne peut pas être identifié via Educonnect", "warning")
+        return redirect(url_for("backoffice_v3_web.get_generated_user"), code=303)
+
+    # <18yo user cannot validate phone number
+    step = form.step.data
+    if (
+        age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
+        and step == users_generator.GeneratedSubscriptionStep.PHONE_VALIDATION.name
+    ):
+        flash("Un utilisateur de moins de 18 ans ne peut pas valider son numéro de téléphone", "warning")
         return redirect(url_for("backoffice_v3_web.get_generated_user"), code=303)
 
     try:
