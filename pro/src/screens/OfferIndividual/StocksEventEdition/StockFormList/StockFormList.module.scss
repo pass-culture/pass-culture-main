@@ -4,6 +4,8 @@
 
 .stock-table {
   margin-top: rem.torem(16px);
+  table-layout: fixed;
+  width: 100%;
 }
 
 .caption-table {
@@ -44,55 +46,37 @@
   vertical-align: top;
 }
 
+.head-date {
+  width: rem.torem(160px);
+}
+
+.head-time {
+  width: rem.torem(90px);
+}
+
 .head-booking-limit-datetime {
+  width: rem.torem(160px);
+
   // force header to break line
   padding-right: rem.torem(4px);
 }
 
+.head-remaining-quantity {
+  width: rem.torem(90px);
+}
+
 .head-booking-quantity {
   white-space: nowrap;
-  width: rem.torem(110px);
+  width: rem.torem(120px);
 }
 
-.field-layout-label {
-  white-space: break-spaces;
-  min-height: rem.torem(32px);
-  display: flex;
-  align-items: flex-end;
+.head-actions {
+  width: rem.torem(20px);
 }
 
-.input-booking-limit-datetime,
-.input-date {
-  min-width: rem.torem(154px);
+.data {
   padding-right: rem.torem(12px);
-
-  svg {
-    width: rem.torem(20px);
-  }
-}
-
-.input-beginning-time,
-.input-quantity {
-  min-width: rem.torem(90px);
-  padding-right: rem.torem(12px);
-}
-
-.input-price {
-  padding-right: rem.torem(12px);
-  min-width: rem.torem(101px);
-}
-
-.input-price-category {
-  min-width: rem.torem(204px);
-  padding-right: rem.torem(12px);
-}
-
-.field-info-bookings {
-  max-width: rem.torem(40px);
-}
-
-.field-layout-footer {
-  margin-bottom: rem.torem(16px);
+  padding-bottom: rem.torem(8px);
 }
 
 .stock-actions {

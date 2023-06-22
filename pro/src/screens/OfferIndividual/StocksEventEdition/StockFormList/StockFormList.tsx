@@ -119,7 +119,10 @@ const StockFormList = ({
               className={cn({ [styles['filters-active']]: areFiltersActive })}
             >
               <tr>
-                <th className={styles['table-head']} scope="col">
+                <th
+                  className={cn(styles['table-head'], styles['head-date'])}
+                  scope="col"
+                >
                   <span className={styles['header-name']}>Date</span>
 
                   {areFiltersEnabled && (
@@ -151,7 +154,10 @@ const StockFormList = ({
                   )}
                 </th>
 
-                <th className={styles['table-head']} scope="col">
+                <th
+                  className={cn(styles['table-head'], styles['head-time'])}
+                  scope="col"
+                >
                   <span className={styles['header-name']}>Horaire</span>
 
                   {areFiltersEnabled && (
@@ -182,7 +188,10 @@ const StockFormList = ({
                   )}
                 </th>
 
-                <th className={styles['table-head']} scope="col">
+                <th
+                  className={cn(styles['table-head'], styles['head-price'])}
+                  scope="col"
+                >
                   <span className={styles['header-name']}>Tarif</span>
 
                   {areFiltersEnabled && (
@@ -251,7 +260,13 @@ const StockFormList = ({
                   )}
                 </th>
 
-                <th className={styles['table-head']} scope="col">
+                <th
+                  className={cn(
+                    styles['table-head'],
+                    styles['head-remaining-quantity']
+                  )}
+                  scope="col"
+                >
                   <span className={styles['header-name']}>
                     Quantité restante
                   </span>
@@ -305,7 +320,7 @@ const StockFormList = ({
                   )}
                 </th>
 
-                <th></th>
+                <th className={styles['head-actions']}></th>
               </tr>
             </thead>
 
@@ -397,14 +412,12 @@ const StockFormList = ({
 
                   return (
                     <tr className={styles['table-row']} key={index}>
-                      <td className={styles['input-date']}>
+                      <td className={styles['data']}>
                         <DatePicker
                           smallLabel
                           name={`stocks[${index}]beginningDate`}
                           label="Date"
                           isLabelHidden
-                          classNameLabel={styles['field-layout-label']}
-                          className={styles['field-layout-footer']}
                           minDateTime={today}
                           openingDateTime={today}
                           disabled={readOnlyFields.includes('beginningDate')}
@@ -413,28 +426,24 @@ const StockFormList = ({
                         />
                       </td>
 
-                      <td className={styles['input-beginning-time']}>
+                      <td className={styles['data']}>
                         <TimePicker
                           smallLabel
                           label="Horaire"
                           isLabelHidden
-                          classNameLabel={styles['field-layout-label']}
-                          className={styles['field-layout-footer']}
                           name={`stocks[${index}]beginningTime`}
                           disabled={readOnlyFields.includes('beginningTime')}
                           hideFooter
                         />
                       </td>
 
-                      <td className={styles['input-price-category']}>
+                      <td className={styles['data']}>
                         <Select
                           name={`stocks[${index}]priceCategoryId`}
                           options={priceCategoriesOptions}
                           smallLabel
                           label="Tarif"
                           isLabelHidden
-                          classNameLabel={styles['field-layout-label']}
-                          className={styles['field-layout-footer']}
                           defaultOption={{
                             label: 'Sélectionner un tarif',
                             value: '',
@@ -447,14 +456,12 @@ const StockFormList = ({
                         />
                       </td>
 
-                      <td className={styles['input-booking-limit-datetime']}>
+                      <td className={styles['data']}>
                         <DatePicker
                           smallLabel
                           name={`stocks[${index}]bookingLimitDatetime`}
                           label="Date limite de réservation"
                           isLabelHidden
-                          classNameLabel={styles['field-layout-label']}
-                          className={styles['field-layout-footer']}
                           minDateTime={today}
                           maxDateTime={
                             beginningDate ? beginningDate : undefined
@@ -467,7 +474,7 @@ const StockFormList = ({
                         />
                       </td>
 
-                      <td className={styles['input-quantity']}>
+                      <td className={styles['data']}>
                         <TextInput
                           smallLabel
                           name={`stocks[${index}]remainingQuantity`}
@@ -478,8 +485,6 @@ const StockFormList = ({
                           }
                           isLabelHidden
                           placeholder="Illimité"
-                          classNameLabel={styles['field-layout-label']}
-                          className={styles['field-layout-footer']}
                           disabled={readOnlyFields.includes(
                             'remainingQuantity'
                           )}
@@ -489,7 +494,7 @@ const StockFormList = ({
                         />
                       </td>
 
-                      <td className={styles['field-info-bookings']}>
+                      <td className={styles['data']}>
                         <TextInput
                           name={`stocks[${index}]bookingsQuantity`}
                           value={values.stocks[index].bookingsQuantity || 0}
@@ -497,8 +502,6 @@ const StockFormList = ({
                           label="Réservations"
                           isLabelHidden
                           smallLabel
-                          classNameLabel={styles['field-layout-label']}
-                          className={styles['field-layout-footer']}
                           hideFooter
                         />
                       </td>
