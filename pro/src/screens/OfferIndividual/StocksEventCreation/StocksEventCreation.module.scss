@@ -1,6 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_size.scss" as size;
-@use "components/DialogBox/DialogBox.module.scss" as dialogBox;
 
 .container {
   display: flex;
@@ -15,12 +13,6 @@
 
 .stock-section {
   margin-top: rem.torem(32px);
-}
-
-// False positive
-/* stylelint-disable scss/operator-no-newline-after */
-.recurrence-modal {
-  width: calc(size.$main-content-width - dialogBox.$dialog-box-padding * 2);
 }
 
 .light-banner {

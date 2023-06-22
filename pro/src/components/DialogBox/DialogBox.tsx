@@ -1,6 +1,7 @@
 import '@reach/dialog/styles.css'
 
 import { DialogContent, DialogOverlay } from '@reach/dialog'
+import cn from 'classnames'
 import React, { FunctionComponent } from 'react'
 
 import CloseButton from './CloseButton'
@@ -13,6 +14,7 @@ interface DialogProps {
   onDismiss?: () => void
   initialFocusRef?: React.RefObject<HTMLButtonElement>
   children?: React.ReactNode
+  fullContentWidth?: boolean
 }
 
 const DialogBox: FunctionComponent<DialogProps> = ({
@@ -22,6 +24,7 @@ const DialogBox: FunctionComponent<DialogProps> = ({
   labelledBy,
   onDismiss,
   initialFocusRef,
+  fullContentWidth,
 }) => (
   <DialogOverlay
     className={styles['dialog-box-overlay']}
@@ -30,7 +33,9 @@ const DialogBox: FunctionComponent<DialogProps> = ({
   >
     <DialogContent
       aria-labelledby={labelledBy}
-      className={styles['dialog-box-content']}
+      className={cn(styles['dialog-box-content'], {
+        [styles['dialog-box-full-content-width']]: fullContentWidth,
+      })}
     >
       {hasCloseButton && (
         <span className={styles['dialog-box-close-container']}>
