@@ -1,25 +1,24 @@
-from datetime import datetime
 import logging
 
+from flask import url_for
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.educational.utils as educational_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
-stock_date = datetime(2021, 5, 15)
-educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
 
+class CreateCollectiveRequestTest:
+    endpoint = "adage_iframe.create_collective_request"
 
-class Returns200Test:
     def test_post_collective_request(self, client, caplog):
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_redactor = educational_factories.EducationalRedactorFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory()
-        offer_id = offer.id
 
         body = {
             "phoneNumber": "0139980101",
@@ -29,11 +28,9 @@ class Returns200Test:
         }
 
         # When
+        client = client.with_adage_token(email=educational_redactor.email, uai=educational_institution.institutionId)
         with caplog.at_level(logging.INFO):
-            test_client = client.with_adage_token(
-                email=educational_redactor.email, uai=educational_institution.institutionId
-            )
-            response = test_client.post(f"/adage-iframe/collective/offers-template/{offer_id}/request", json=body)
+            response = client.post(url_for(self.endpoint, offer_id=offer.id), json=body)
 
         # Then
         assert response.status_code == 200
@@ -70,8 +67,6 @@ class Returns200Test:
         assert request.comment == body["comment"]
         assert not request.requestedDate
 
-
-class Returns404Test:
     def test_post_collective_request_no_offer_template(self, client):
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_redactor = educational_factories.EducationalRedactorFactory(email="JamesHolden@rocinante.com")
@@ -85,10 +80,8 @@ class Returns404Test:
         }
 
         # When
-        test_client = client.with_adage_token(
-            email=educational_redactor.email, uai=educational_institution.institutionId
-        )
-        response = test_client.post("/adage-iframe/collective/offers-template/0/request", json=body)
+        client = client.with_adage_token(email=educational_redactor.email, uai=educational_institution.institutionId)
+        response = client.post(url_for(self.endpoint, offer_id=0), json=body)
 
         # Then
         assert response.status_code == 404
@@ -98,7 +91,6 @@ class Returns404Test:
     def test_post_collective_request_no_institution_found(self, client):
         educational_redactor = educational_factories.EducationalRedactorFactory(email="JamesHolden@rocinante.com")
         offer = educational_factories.CollectiveOfferTemplateFactory()
-        offer_id = offer.id
 
         body = {
             "email": "JamesHolden@rocinante.com",
@@ -109,10 +101,50 @@ class Returns404Test:
         }
 
         # When
-        test_client = client.with_adage_token(email=educational_redactor.email, uai="oh no, oh no, nonono")
-        response = test_client.post(f"/adage-iframe/collective/offers-template/{offer_id}/request", json=body)
+        client = client.with_adage_token(email=educational_redactor.email, uai="oh no, oh no, nonono")
+        response = client.post(url_for(self.endpoint, offer_id=offer.id), json=body)
 
         # Then
         assert response.status_code == 404
         assert response.json == {"code": "INSTITUTION_NOT_FOUND"}
         assert not adage_api_testing.adage_requests
+
+    def test_missing_redactor_is_created(self, client):
+        """
+        Test that if the redactor is missing from the database:
+          1. it is created with its authenticated information;
+          2. everything works as expected.
+        """
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_redactor = educational_factories.EducationalRedactorFactory.build()
+        offer = educational_factories.CollectiveOfferTemplateFactory()
+
+        body = {
+            "phoneNumber": "0139980101",
+            "totalStudents": 30,
+            "totalTeachers": 2,
+            "comment": "Un commentaire sublime que nous avons là",
+        }
+
+        client = client.with_adage_token(
+            email=educational_redactor.email,
+            civility=educational_redactor.civility,
+            firstname=educational_redactor.firstName,
+            lastname=educational_redactor.lastName,
+            uai=educational_institution.institutionId,
+        )
+
+        response = client.post(url_for(self.endpoint, offer_id=offer.id), json=body)
+        assert response.status_code == 200
+
+        # quick checks: response and adage request
+        assert response.json["email"] == educational_redactor.email
+        assert len(adage_api_testing.adage_requests) == 1
+
+        # check: a new redactor has been saved into database
+        found_redactor = educational_models.EducationalRedactor.query.one()
+
+        assert found_redactor.email == educational_redactor.email
+        assert found_redactor.civility == educational_redactor.civility
+        assert found_redactor.firstName == educational_redactor.firstName
+        assert found_redactor.lastName == educational_redactor.lastName
