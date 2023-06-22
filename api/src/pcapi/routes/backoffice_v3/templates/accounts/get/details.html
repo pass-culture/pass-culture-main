@@ -16,24 +16,7 @@
   {% endcall %}
   {% if eligibility_history is defined %}
     {% call build_details_tab_content("registration-workflow", active_tab == "registration") %}
-      <div class="col-6 form-check form-switch mb-2 form-switch-show-registration-as-steps">
-        {% set switch_boolean_field_id = random_hash() %}
-        <input class="form-check-input"
-               type="checkbox"
-               role="switch"
-               name="show_registration_as_steps"
-               id="{{ switch_boolean_field_id }}"
-               checked />
-        <label role="button"
-               class="form-check-label pc-switch-boolean-field-label pt-1"
-               for="{{ switch_boolean_field_id }}">Vue par étapes</label>
-      </div>
-      <div class="new-view">{% include "accounts/get/details/personal_information_registration.html" %}</div>
-      <div class="old-view">
-        {% for history_type, history in eligibility_history.items() %}
-          {% include "accounts/get/details/personal_information_registration_old.html" %}
-        {% endfor %}
-      </div>
+      {% include "accounts/get/details/personal_information_registration.html" %}
     {% endcall %}
   {% endif %}
   {% if bookings is defined %}

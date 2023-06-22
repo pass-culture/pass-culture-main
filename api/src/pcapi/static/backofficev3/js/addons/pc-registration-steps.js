@@ -4,13 +4,6 @@
  * - animate progress to active step
  *
  * Macro template for this addon can be found in `src/pcapi/routes/backoffice_v3/templates/components/public_accounts/registration_steps.html`
- *
- * This add-on is in test and integrate a switch to return to the old view until it is validated.
- * If validated, to remove the old view:
- * 1. Remove div `.old-view` and it's content
- * 1. Remove class `.new-view` from div
- * 1. Delete file `personal_information_registration_old.html`
- * 1. Remove in `_personal_information_registration_steps.scss` the whole styles for `.registration-workflow-tab-pane`
  */
 class PcRegistrationSteps extends PcAddOn {
 
@@ -20,8 +13,6 @@ class PcRegistrationSteps extends PcAddOn {
     static PROGRESS_BAR_SELECTOR = '.progress-bar'
     static STEP_CONTENT_SELECTOR = '.step-content'
     static STEP_DISABLED_SELECTOR = '.step-disabled'
-
-    static TOGGLE_OLD_VIEW_SELECTOR = 'input[name="old_view"]'
 
     state = {}
 

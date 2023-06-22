@@ -4,6 +4,7 @@
     left: 0;
     right: 0;
     height: .3rem;
+
     & > .progress-bar {
       height: .3rem;
     }
@@ -16,7 +17,7 @@
       flex-basis: 0;
 
       &.step-disabled {
-      cursor: not-allowed;
+        cursor: not-allowed;
         .step-number {
           color: #fff;
           background-color: $gray-600;
@@ -60,6 +61,7 @@
       left: 2.5em;
       top: 1.3em;
     }
+
     & .step-text {
       display: none;
 
@@ -83,29 +85,9 @@
       & ~ .step-content.d-block {
         display: none !important;
       }
+
       & ~ .all-id-check-history-container {
         display: block !important;
-      }
-    }
-  }
-}
-
-.registration-workflow-tab-pane {
-  .form-switch-show-registration-as-steps {
-    &:has(> input[name="show_registration_as_steps"]:checked) {
-      & ~ .new-view {
-        display: block;
-      }
-      & ~ .old-view {
-        display: none;
-      }
-    }
-    &:has(> input[name="show_registration_as_steps"]:not(:checked)) {
-      & ~ .new-view {
-        display: none;
-      }
-      & ~ .old-view {
-        display: block;
       }
     }
   }
