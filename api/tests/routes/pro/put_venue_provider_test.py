@@ -42,7 +42,7 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        assert response.json["provider"]["nonHumanizedId"] == provider.id
+        assert response.json["provider"]["id"] == provider.id
         assert response.json["venueId"] == venue.id
         assert response.json["quantity"] == updated_venue_provider_data["quantity"]
         assert response.json["price"] == updated_venue_provider_data["price"]
@@ -69,7 +69,7 @@ class Returns200Test:
         response = auth_request.put("/venueProviders", json=updated_venue_provider_data)
 
         assert response.status_code == 200
-        assert response.json["provider"]["nonHumanizedId"] == cds_provider.id
+        assert response.json["provider"]["id"] == cds_provider.id
         assert response.json["venueId"] == venue.id
         assert response.json["isDuo"] == updated_venue_provider_data["isDuo"]
         assert response.json["isActive"] == updated_venue_provider_data["isActive"]
