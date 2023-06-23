@@ -3,6 +3,6 @@ export { MESSAGE_VARIANT } from './types'
 export type {
   IBooking,
   IDeskGetBookingResponse,
-  IDeskProps,
+  DeskProps,
   IDeskSubmitResponse,
 } from './types'

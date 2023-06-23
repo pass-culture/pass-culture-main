@@ -12,7 +12,7 @@ import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Venue, { IVenueProps } from '../Venue'
+import Venue, { VenueProps } from '../Venue'
 
 jest.mock('apiClient/api', () => ({
   api: {
@@ -20,7 +20,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 const renderVenue = (
-  props: IVenueProps,
+  props: VenueProps,
   features?: { list: { isActive: true; nameKey: string }[] }
 ) => {
   const storeOverrides = {
@@ -32,7 +32,7 @@ const renderVenue = (
 }
 
 describe('venues', () => {
-  let props: IVenueProps
+  let props: VenueProps
   const offererId = 12
   const venueId = 1
 

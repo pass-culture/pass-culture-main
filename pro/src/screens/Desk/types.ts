@@ -26,7 +26,7 @@ export interface IDeskGetBookingResponse {
   booking?: IBooking
 }
 
-export interface IDeskProps {
+export interface DeskProps {
   getBooking: (token: string) => Promise<IDeskGetBookingResponse>
   submitInvalidate: (token: string) => Promise<IDeskSubmitResponse>
   submitValidate: (token: string) => Promise<IDeskSubmitResponse>

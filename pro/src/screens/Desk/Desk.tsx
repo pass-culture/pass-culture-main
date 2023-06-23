@@ -11,7 +11,7 @@ import styles from './Desk.module.scss'
 import {
   IBooking,
   IDeskGetBookingResponse,
-  IDeskProps,
+  DeskProps,
   IDeskSubmitResponse,
   IErrorMessage,
   MESSAGE_VARIANT,
@@ -22,7 +22,7 @@ const Desk = ({
   getBooking,
   submitInvalidate,
   submitValidate,
-}: IDeskProps): JSX.Element => {
+}: DeskProps): JSX.Element => {
   const [token, setToken] = useState('')
   const [isTokenValidated, setIsTokenValidated] = useState(false)
   const [booking, setBooking] = useState<IBooking | null>(null)
