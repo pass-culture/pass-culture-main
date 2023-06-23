@@ -1,3 +1,4 @@
+from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.bookings import validation as bookings_validation
@@ -46,3 +47,25 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
         raise api_errors.ApiErrors(errors={"booking": str(exc)}, status_code=403)
 
     return serialization.GetBookingResponse.build_booking(booking)
+
+
+@blueprint.v1_bookings_blueprint.route("/use/token/<token>", methods=["PATCH"])
+@spectree_serialize(on_success_status=204, api=blueprint.v1_bookings_schema)
+@api_key_required
+def validate_booking_by_token(token: str) -> None:
+    booking = _get_booking_by_token(token)
+    if booking is None:
+        raise api_errors.ApiErrors(errors={"global": "This countermark cannot be found"}, status_code=404)
+
+    try:
+        bookings_validation.check_is_usable(booking)
+    except exceptions.BookingIsAlreadyRefunded:
+        raise api_errors.ApiErrors(errors={"payment": "This booking has already been reimbursed"}, status_code=403)
+    except exceptions.BookingIsAlreadyUsed:
+        raise api_errors.ApiErrors(errors={"booking": "This booking has already been validated"}, status_code=410)
+    except exceptions.BookingIsAlreadyCancelled:
+        raise api_errors.ApiErrors(errors={"booking": "This booking has been canceled"}, status_code=410)
+    except exceptions.BookingIsNotConfirmed as exc:
+        raise api_errors.ApiErrors(errors={"booking": str(exc)}, status_code=403)
+
+    bookings_api.mark_as_used(booking)
