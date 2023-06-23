@@ -6,6 +6,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
+from pcapi.routes.public.individual_offers.v1 import constants
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
@@ -28,9 +29,16 @@ def _get_booking_by_token(token: str) -> booking_models.Booking:
 
 
 @blueprint.v1_bookings_blueprint.route("/token/<string:token>", methods=["GET"])
-@spectree_serialize(api=blueprint.v1_bookings_schema, response_model=serialization.GetBookingResponse)
+@spectree_serialize(
+    api=blueprint.v1_bookings_schema, response_model=serialization.GetBookingResponse, tags=[constants.BOOKING_TAG]
+)
 @api_key_required
 def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
+    """
+    Consultation of a booking.
+    The countermark or token code is a character string that identifies the reservation and serves as proof of booking.
+    This unique code is generated for each user's booking on the application and is transmitted to them on that occasion.
+    """
     booking = _get_booking_by_token(token)
     if booking is None:
         raise api_errors.ApiErrors(errors={"global": "This countermark cannot be found"}, status_code=404)
@@ -50,9 +58,13 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
 
 
 @blueprint.v1_bookings_blueprint.route("/use/token/<token>", methods=["PATCH"])
-@spectree_serialize(on_success_status=204, api=blueprint.v1_bookings_schema)
+@spectree_serialize(on_success_status=204, api=blueprint.v1_bookings_schema, tags=[constants.BOOKING_TAG])
 @api_key_required
 def validate_booking_by_token(token: str) -> None:
+    """
+    Validation of a booking.
+    To confirm that the booking has been successfully used by the beneficiary.
+    """
     booking = _get_booking_by_token(token)
     if booking is None:
         raise api_errors.ApiErrors(errors={"global": "This countermark cannot be found"}, status_code=404)
