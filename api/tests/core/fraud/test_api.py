@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 
+from pcapi import settings
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
@@ -21,73 +22,49 @@ import pcapi.core.users.models as users_models
 class CommonTest:
     @pytest.mark.parametrize(
         "id_piece_number",
-        ["I III1", "I I 1JII 11IB I E", "", "Passeport n: XXXXX", "15347402 5 ZX9 "],
+        ["I III1", "I I 1JII 11IB E", "", "Passeport n: XXXXX", "15347402 5 ZX9 21"],
     )
     def test_id_piece_number_wrong_format(self, id_piece_number):
         item = fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number)
         assert item.status == fraud_models.FraudStatus.SUSPICIOUS
 
     @pytest.mark.parametrize(
-        "id_piece_number",
+        "before,after",
         [
             # Some edge cases examples come from here:
             # https://www.notion.so/passcultureapp/79afb2e511544bfcb2da83826cde0043?v=48070c75add24820ac1cae498199d469
             # https://www.notion.so/passcultureapp/Tableau-des-ID-trang-res-sur-FA-440ab8cbb31d4ae9a16debe3eb5aab24
-            "210238320",
-            "12121L000454",
-            "593-0169535-39",
-            "CKKPZ0YH",
-            "B0715645",
-            "EB5853834",
-            "H394589",
-            "114454304",
-            "N1795170",
-            "PA1356204",
-            "YE227383",
-            "040211-5703",
-            "1774519",
-            "53 1278779",
-            "AU0443438",
-            "11658590",
-            "EK 1122107",
-            "037316896",
-            "M62082473",
-            "RL 4052317",
-            "AQ543939",
-            "2 99 20030915 00001 3",
-            "1 808 2011 01857",
-            "00825128061",
-            "A02621372",
-            "NND5PF684",
-            "FC5729729",
-            "25359693",
-            "MZ785199",
-            "1314109248",
-            "AQ1510973",
-            "20AA63328",
-            "32363144 4 ZZ7",
-            "1112338",
-            "339546T",
-            "AZ 3099856",
-            "CES 177869",
-            "FGRGJJTEF",
-            "0A0445529",
-            "CCF620343",
-            "121-21-L000454",
-            "PA 0473778",
-            "EB509436",
-            "C975773",
-            "X6372552",
-            "EJ0618532",
-            "1026070",
-            "S0010042",
-            "N 013057163",
-            "A02L8Z01",
+            ("@#&\"'(§!)-_^¨$*%`£,?;.:/=+<>{}€@≠÷…∞≤≥´„”’’[»]–¥‰#±\\•¿", ""),
+            (" -_1;,@&2:34=56789 012  ", "123456789012"),
+            ("*12AB1234?5./", "12AB12345"),
+            ("12AB12345", "12AB12345"),
         ],
     )
-    def test_id_piece_number_valid_format(self, id_piece_number):
-        item = fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number)
-        assert item.status == fraud_models.FraudStatus.OK
+    def test_format_id_piece_number(self, before, after):
+        assert after == fraud_api.format_id_piece_number(before)
+
+    @pytest.mark.parametrize(
+        "id_piece_number,procedure_number,result",
+        [
+            ("123456789012", settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
+            ("12345678901", settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.SUSPICIOUS),
+            (" -_1;,@&2:34=56789012", settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
+            ("12AB12345", settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
+            ("*12AB1234?5./", settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
+            (
+                "this is the wrong format (too long)",
+                settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
+                fraud_models.FraudStatus.SUSPICIOUS,
+            ),
+            (
+                "this is the wrong format (too long)",
+                settings.DMS_ENROLLMENT_PROCEDURE_ID_ET,
+                fraud_models.FraudStatus.OK,
+            ),
+        ],
+    )
+    def test_id_piece_number_valid_format(self, id_piece_number, procedure_number, result):
+        assert result == fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number, procedure_number).status
 
     @override_settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
     @pytest.mark.parametrize(
@@ -145,18 +122,18 @@ def filter_invalid_fraud_items_to_reason_codes(
 class CommonFraudCheckTest:
     def test_duplicate_id_piece_number_ok(self):
         user = users_factories.UserFactory()
-        fraud_item = fraud_api.duplicate_id_piece_number_fraud_item(user, "random_id")
+        fraud_item = fraud_api.duplicate_id_piece_number_fraud_item(user, "RANDOMID")
         assert fraud_item.status == fraud_models.FraudStatus.OK
 
     def test_duplicate_id_piece_number_suspicious(self):
-        user = users_factories.BeneficiaryGrant18Factory(idPieceNumber="random_id")
+        user = users_factories.BeneficiaryGrant18Factory(idPieceNumber="RANDOMID")
         applicant = users_factories.UserFactory()
 
         fraud_item = fraud_api.duplicate_id_piece_number_fraud_item(applicant, user.idPieceNumber)
         assert fraud_item.status == fraud_models.FraudStatus.SUSPICIOUS
 
     def test_duplicate_id_piece_number_suspicious_not_self(self):
-        applicant = users_factories.UserFactory(idPieceNumber="random_id")
+        applicant = users_factories.UserFactory(idPieceNumber="RANDOMID")
 
         fraud_item = fraud_api.duplicate_id_piece_number_fraud_item(applicant, applicant.idPieceNumber)
         assert fraud_item.status == fraud_models.FraudStatus.OK

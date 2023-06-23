@@ -418,7 +418,7 @@ class RunIntegrationTest:
     @freezegun.freeze_time("2021-10-30 09:00:00")
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_with_existing_user_with_the_same_id_number(self, get_applications_with_details, mocker):
-        beneficiary = users_factories.BeneficiaryGrant18Factory(idPieceNumber="1234123412")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(idPieceNumber="123412341234")
         applicant = users_factories.UserFactory(
             email=self.EMAIL,
             isEmailValidated=True,
@@ -430,7 +430,7 @@ class RunIntegrationTest:
                 application_number=123,
                 state="accepte",
                 email=applicant.email,
-                id_piece_number="1234123412",
+                id_piece_number="123412341234",
                 birth_date=self.BENEFICIARY_BIRTH_DATE,
             )
         ]
@@ -446,7 +446,8 @@ class RunIntegrationTest:
 
         assert fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert (
-            fraud_check.reason == f"La pièce d'identité n°1234123412 est déjà prise par l'utilisateur {beneficiary.id}"
+            fraud_check.reason
+            == f"La pièce d'identité n°123412341234 est déjà prise par l'utilisateur {beneficiary.id}"
         )
 
         fraud_content = fraud_models.DMSContent(**fraud_check.resultContent)

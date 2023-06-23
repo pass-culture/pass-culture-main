@@ -95,7 +95,7 @@ def parse_beneficiary_information_graphql(
 
         elif dms_models.FieldLabelKeyword.ID_PIECE_NUMBER.value in label:
             value = _sanitize_id_piece_number(value.strip())
-            if not fraud_api.validate_id_piece_number_format_fraud_item(value):
+            if not fraud_api.validate_id_piece_number_format_fraud_item(value, application_detail.procedure.number):
                 field_errors.append(
                     fraud_models.DmsFieldErrorDetails(
                         key=fraud_models.DmsFieldErrorKeyEnum.id_piece_number, value=value

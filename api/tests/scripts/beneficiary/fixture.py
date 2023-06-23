@@ -7,6 +7,7 @@ from typing import Optional
 import babel.dates
 from dateutil.relativedelta import relativedelta
 
+from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 
@@ -197,7 +198,7 @@ def make_new_application():
             "url": "https://example.com/some/path/to/application.pdf",
         },
         "instructeurs": [],
-        "demarche": {"id": "UHJvY2VkdXJlLTQ3NDgw", "number": 32},
+        "demarche": {"id": "UHJvY2VkdXJlLTQ3NDgw", "number": settings.DMS_ENROLLMENT_PROCEDURE_ID_FR},
         "groupeInstructeur": {"id": "R3JvdXBlSW5zdHJ1Y3RldXItNjE0NjU=", "number": 61465, "label": "défaut"},
         "revision": {
             "id": "UHJvY2VkdXJlUmV2aXNpb24tNTc4MTU=",
@@ -251,7 +252,7 @@ def make_new_application():
                     "id": "Q2hhbXAtMTg3Mzc0Mw==",
                     "type": "text",
                     "label": "Quel est le numéro de la pièce que tu viens de saisir ?",
-                    "description": "Indiquez ici le numéro de la pièce que vous avez envoyé (généralement située en haut à droite du recto). \nLe format ressemble à cela : \n- Ancienne carte d'identité : 880692310285\n- Nouvelle carte d'identité : F9GFAL123\n- Passeport : 21GT764978",
+                    "description": "Indiquez ici le numéro de la pièce que vous avez envoyé (généralement située en haut à droite du recto). \nLe format ressemble à cela : \n- Ancienne carte d'identité : 880692310285\n- Nouvelle carte d'identité : F9GFAL123\n- Passeport : 21GT76497",
                     "required": True,
                     "options": None,
                     "champDescriptors": None,
@@ -458,7 +459,7 @@ def make_new_stranger_application():
         "dateTraitement": None,
         "demarche": {
             "id": "RG9zc2llci01NzQyOTk0",
-            "number": 32,
+            "number": settings.DMS_ENROLLMENT_PROCEDURE_ID_ET,
         },
         "messages": [],
         "motivation": None,
