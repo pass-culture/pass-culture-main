@@ -118,16 +118,11 @@ export const collectiveOfferVenueFactory = (
 ): GetCollectiveOfferVenueResponseModel => {
   const currentVenueId = venueId++
   return {
-    address: 'Ma Rue',
-    city: 'Ma Ville',
-    isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
     managingOfferer: customOfferer,
-    postalCode: '11100',
     publicName: 'Mon Lieu',
     nonHumanizedId: currentVenueId,
     departementCode: '973',
-    thumbCount: 0,
     ...customVenue,
   }
 }
