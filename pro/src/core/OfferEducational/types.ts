@@ -82,7 +82,7 @@ export type GetStockOfferSuccessPayload = {
   isBooked: boolean
   isCancellable: boolean
   venueDepartmentCode: string
-  managingOffererId: string
+  managingOffererId: number
   isEducational: boolean
   isShowcase: boolean
   offerId?: string | null

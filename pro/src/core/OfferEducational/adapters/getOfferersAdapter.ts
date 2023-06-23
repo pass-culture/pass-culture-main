@@ -5,7 +5,7 @@ import {
 } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
-type Params = string | null
+type Params = number | null
 
 type GetOfferersAdapter = Adapter<
   Params,
@@ -38,7 +38,7 @@ const serializeOfferers = (
   }))
 
 export const getOfferersAdapter: GetOfferersAdapter = async (
-  offererId: string | null
+  offererId: number | null
 ) => {
   try {
     const { educationalOfferers }: GetEducationalOfferersResponseModel =

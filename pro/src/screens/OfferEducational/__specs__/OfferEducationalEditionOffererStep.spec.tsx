@@ -63,9 +63,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
           },
         },
         undefined,
-        collectiveOfferVenueFactory({
-          managingOffererId: secondOffererId.toString(),
-        })
+        collectiveOfferVenueFactory({ nonHumanizedId: secondOffererId })
       ),
     }
 
@@ -123,9 +121,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
           lastBookingStatus: CollectiveBookingStatus.USED,
         },
         undefined,
-        collectiveOfferVenueFactory({
-          managingOffererId: secondOffererId.toString(),
-        })
+        collectiveOfferVenueFactory({})
       ),
     }
     renderWithProviders(<OfferEducational {...props} />)

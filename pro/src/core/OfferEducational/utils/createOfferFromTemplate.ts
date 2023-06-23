@@ -25,7 +25,7 @@ export const createOfferFromTemplate = async (
   const offererId =
     offerTemplateResponse.payload.venue.managingOfferer.nonHumanizedId
   const result = await getCollectiveOfferFormDataApdater({
-    offererId: offererId.toString(),
+    offererId: offererId,
     offer: offerTemplateResponse.payload,
   })
 

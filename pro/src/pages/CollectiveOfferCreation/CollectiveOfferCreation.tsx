@@ -23,7 +23,7 @@ export const CollectiveOfferCreation = ({
   const { structure: offererId, requete: requestId } =
     queryParamsFromOfferer(location)
   const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
-    offererId,
+    Number(offererId),
     offer
   )
 

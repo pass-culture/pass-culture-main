@@ -21,7 +21,7 @@ export const createOfferFromBookableOffer = async (
   }
   const offererId = offerResponse.payload.venue.managingOfferer.nonHumanizedId
   const result = await getCollectiveOfferFormDataApdater({
-    offererId: offererId.toString(),
+    offererId: offererId,
     offer: offerResponse.payload,
   })
 

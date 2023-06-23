@@ -123,12 +123,10 @@ export const collectiveOfferVenueFactory = (
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
     managingOfferer: customOfferer,
-    managingOffererId: customOfferer.nonHumanizedId.toString(),
     postalCode: '11100',
     publicName: 'Mon Lieu',
     nonHumanizedId: currentVenueId,
     departementCode: '973',
-    fieldsUpdated: [],
     thumbCount: 0,
     ...customVenue,
   }

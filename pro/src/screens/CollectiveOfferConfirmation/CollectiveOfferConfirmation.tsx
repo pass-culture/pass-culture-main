@@ -11,7 +11,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import styles from './CollectiveOfferConfirmation.module.scss'
 
 interface CollectiveOfferConfirmationProps {
-  offererId?: string | null
+  offererId?: number | null
   offerStatus?: OfferStatus
   isShowcase?: boolean
   institutionDisplayName?: string
