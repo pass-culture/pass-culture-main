@@ -422,7 +422,7 @@ def _cancel_bookings_of_user_on_requested_account_suspension(
                 bookings_api.cancel_booking_for_fraud(booking)
                 cancelled_bookings_count += 1
 
-            case constants.SuspensionReason.UPON_USER_REQUEST:
+            case constants.SuspensionReason.UPON_USER_REQUEST | constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER:
                 bookings_api.cancel_booking_on_user_requested_account_suspension(booking)
                 cancelled_bookings_count += 1
 

@@ -2034,3 +2034,66 @@ class SuspensionTokenValidationTest:
 
         assert response.status_code == 401
         assert response.json["reason"] == "Le token a expiré."
+
+
+class SuspendAccountForSuspiciousLoginTest:
+    def test_error_when_token_is_invalid(self, client):
+        response = client.post("/native/v1/account/suspend_for_suspicious_login", {"token": "abc"})
+
+        assert response.status_code == 400
+        assert response.json["reason"] == "Le token est invalide."
+
+    def test_error_when_token_has_invalid_signature(self, client):
+        token = jwt.encode(
+            {"userId": 1},
+            "wrong_jwt_secret_key",
+            algorithm=ALGORITHM_HS_256,
+        )
+        response = client.post("/native/v1/account/suspend_for_suspicious_login", {"token": token})
+
+        assert response.status_code == 400
+        assert response.json["reason"] == "Le token est invalide."
+
+    def test_error_when_token_is_expired(self, client):
+        passed_expiration_date = (datetime.utcnow() - timedelta(days=1)).timestamp()
+        token = jwt.encode(
+            {"userId": 1, "exp": passed_expiration_date},
+            settings.JWT_SECRET_KEY,
+            algorithm=ALGORITHM_HS_256,
+        )
+        response = client.post("/native/v1/account/suspend_for_suspicious_login", {"token": token})
+
+        assert response.status_code == 401
+        assert response.json["reason"] == "Le token a expiré."
+
+    def test_error_when_account_suspension_attempt_with_unknown_user(self, client):
+        token = jwt.encode(
+            {"userId": 1},
+            settings.JWT_SECRET_KEY,
+            algorithm=ALGORITHM_HS_256,
+        )
+
+        response = client.post("/native/v1/account/suspend_for_suspicious_login", {"token": token})
+
+        assert response.status_code == 404
+
+    def test_suspend_account_for_suspicious_login(self, client):
+        booking = booking_factories.BookingFactory()
+        user = booking.user
+        token = jwt.encode(
+            {"userId": user.id},
+            settings.JWT_SECRET_KEY,
+            algorithm=ALGORITHM_HS_256,
+        )
+
+        response = client.post("/native/v1/account/suspend_for_suspicious_login", {"token": token})
+
+        assert response.status_code == 204
+        assert booking.status == BookingStatus.CANCELLED
+        db.session.refresh(user)
+        assert not user.isActive
+        assert user.suspension_reason == users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER
+        assert user.suspension_date
+        assert len(user.suspension_action_history) == 1
+        assert user.suspension_action_history[0].userId == user.id
+        assert user.suspension_action_history[0].authorUserId == user.id

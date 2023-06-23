@@ -43,6 +43,7 @@ class SuspensionReason(enum.Enum):
     FRAUD_SUSPICION = "fraud suspicion"
     FRAUD_USURPATION = "usurpating fraud"
     FRAUD_USURPATION_PRO = "usurpating PRO fraud"
+    SUSPICIOUS_LOGIN_REPORTED_BY_USER = "suspicious login reported by user"
     UPON_USER_REQUEST = "upon user request"
     DELETED = "deleted"
     BLACKLISTED_DOMAIN_NAME = "nom de domaine blacklisté"
@@ -59,6 +60,7 @@ SUSPENSION_REASON_CHOICES = {
     SuspensionReason.FRAUD_BOOKING_CANCEL: "Fraude annulation réservation",
     SuspensionReason.END_OF_CONTRACT: "Fin de contrat",
     SuspensionReason.END_OF_ELIGIBILITY: "Fin d'éligibilité",
+    SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER: "Connexion suspicieuse signalée par l'utilisateur",
     SuspensionReason.UPON_USER_REQUEST: "Demande de l'utilisateur",
     SuspensionReason.FRAUD_USURPATION_PRO: "Fraude PRO usurpation",
     SuspensionReason.FRAUD_CREATION_PRO: "Fraude PRO création",

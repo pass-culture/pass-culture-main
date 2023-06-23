@@ -1646,6 +1646,12 @@ def test_public_api(client):
                     "title": "SubscriptionStepperResponse",
                     "type": "object",
                 },
+                "SuspendAccountForSuspiciousLoginRequest": {
+                    "properties": {"token": {"title": "Token", "type": "string"}},
+                    "required": ["token"],
+                    "title": "SuspendAccountForSuspiciousLoginRequest",
+                    "type": "object",
+                },
                 "TrustedDevice": {
                     "properties": {
                         "deviceId": {"title": "Deviceid", "type": "string"},
@@ -2056,6 +2062,35 @@ def test_public_api(client):
                         },
                     },
                     "summary": "account_suspension_token_validation <GET>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/account/suspend_for_suspicious_login": {
+                "post": {
+                    "description": "",
+                    "operationId": "post_/native/v1/account/suspend_for_suspicious_login",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/SuspendAccountForSuspiciousLoginRequest"}
+                            }
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "400": {"description": "Bad Request"},
+                        "401": {"description": "Unauthorized"},
+                        "403": {"description": "Forbidden"},
+                        "404": {"description": "Not Found"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "suspend_account_for_suspicious_login <POST>",
                     "tags": [],
                 }
             },
