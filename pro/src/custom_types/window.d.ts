@@ -7,5 +7,10 @@ declare global {
       image: ImageBitmapSource,
       options?: ImageBitmapOptions
     ) => Promise<ImageBitmap>
+
+    Beamer: {
+      init: () => void
+      update: (config: any) => void
+    }
   }
 }

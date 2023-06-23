@@ -1,5 +1,5 @@
 import { setUser as setSentryUser } from '@sentry/browser'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
@@ -11,7 +11,7 @@ import useLogNavigation from 'hooks/useLogNavigation'
 import usePageTitle from 'hooks/usePageTitle'
 import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
 import { URL_FOR_MAINTENANCE } from 'utils/config'
-import { initCookieConsent } from 'utils/cookieConsentModal'
+import { Consents, initCookieConsent } from 'utils/cookieConsentModal'
 
 interface AppProps {
   children: JSX.Element
@@ -22,6 +22,7 @@ const App = ({ children }: AppProps): JSX.Element | null => {
   const location = useLocation()
   const { currentUser } = useCurrentUser()
   const [consentedToFirebase, setConsentedToFirebase] = useState(false)
+  const [consentedToBeamer, setConsentedToBeamer] = useState(false)
   const [isCookieConsentChecked, setIsCookieConsentChecked] = useState(false)
 
   // Initialize cookie consent modal
@@ -34,14 +35,25 @@ const App = ({ children }: AppProps): JSX.Element | null => {
         const orejime = initCookieConsent()
         // Set the consent on consent change
         orejime.internals.manager.watch({
-          update: ({ consents }: { consents: { firebase: boolean } }) => {
+          update: ({
+            consents,
+          }: {
+            consents: { [key in Consents]: boolean }
+          }) => {
             setConsentedToFirebase(consents.firebase)
+            setConsentedToBeamer(consents.beamer)
           },
         })
         // Set the consent if the user has already seen the modal
-        setConsentedToFirebase(orejime.internals.manager.consents['firebase'])
+        setConsentedToFirebase(
+          orejime.internals.manager.consents[Consents.FIREBASE]
+        )
+        setConsentedToBeamer(
+          orejime.internals.manager.consents[Consents.BEAMER]
+        )
       } else {
         setConsentedToFirebase(true)
+        setConsentedToBeamer(true)
       }
     })
     setIsCookieConsentChecked(true)
@@ -54,6 +66,22 @@ const App = ({ children }: AppProps): JSX.Element | null => {
   })
   usePageTitle()
   useLogNavigation()
+
+  useEffect(() => {
+    if (
+      consentedToBeamer &&
+      currentUser !== null &&
+      window.Beamer !== undefined
+    ) {
+      window.Beamer.update({
+        user_firstname: currentUser.firstName,
+        user_lastname: currentUser.lastName,
+        user_email: currentUser.email,
+        user_id: currentUser.nonHumanizedId.toString(),
+      })
+      window.Beamer.init()
+    }
+  }, [currentUser, consentedToBeamer])
 
   if (currentUser !== null) {
     setSentryUser({ id: currentUser.nonHumanizedId.toString() })
