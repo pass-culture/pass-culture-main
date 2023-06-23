@@ -219,27 +219,12 @@ class GetCollectiveOfferManagingOffererResponseModel(BaseModel):
         orm_mode = True
 
 
-class GetCollectiveOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    address: str | None
-    bookingEmail: str | None
-    city: str | None
-    comment: str | None
-    dateCreated: datetime | None
+class GetCollectiveOfferVenueResponseModel(BaseModel):
     departementCode: str | None
     nonHumanizedId: int
-    idAtProviders: str | None
-    isVirtual: bool
-    latitude: float | None
-    longitude: float | None
     managingOfferer: GetCollectiveOfferManagingOffererResponseModel
     name: str
-    postalCode: str | None
     publicName: str | None
-    siret: str | None
-    thumbCount: int
-    venueLabelId: str | None
-
-    _humanize_venue_label_id = humanize_field("venueLabelId")
 
     class Config:
         orm_mode = True
