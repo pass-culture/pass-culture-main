@@ -820,18 +820,6 @@ def user_has_bookings(user: User) -> bool:
     return db.session.query(bookings_query.filter(offerers_models.UserOfferer.userId == user.id).exists()).scalar()
 
 
-def get_collective_stock_for_offer(offer_id: int) -> educational_models.CollectiveStock | None:
-    return (
-        educational_models.CollectiveStock.query.options(
-            sa.orm.joinedload(educational_models.CollectiveStock.collectiveBookings).load_only(
-                educational_models.CollectiveBooking.status
-            )
-        )
-        .filter(educational_models.CollectiveStock.collectiveOfferId == offer_id)
-        .one_or_none()
-    )
-
-
 def get_collective_offer_by_offer_id(offer_id: int) -> educational_models.CollectiveOffer:
     return educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.offerId == offer_id).one()
 
