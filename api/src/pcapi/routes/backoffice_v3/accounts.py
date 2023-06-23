@@ -498,8 +498,10 @@ def _get_steps_tunnel_underage_age18(
                 in {
                     fraud_models.FraudCheckType.UBBLE.value,
                     fraud_models.FraudCheckType.EDUCONNECT.value,
+                    fraud_models.FraudCheckType.JOUVE.value,
                     fraud_models.FraudCheckType.DMS.value,
                 }
+                and users_models.EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
             ],
         ),
         RegistrationStep(
@@ -530,6 +532,7 @@ def _get_steps_tunnel_underage_age18(
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
                 if id_check_history.type == fraud_models.FraudCheckType.PHONE_VALIDATION.value
+                and users_models.EligibilityType.AGE18.value in id_check_history.applicable_eligibilities
             ],
         ),
         RegistrationStep(
@@ -549,9 +552,11 @@ def _get_steps_tunnel_underage_age18(
                 if id_check_history.type
                 in {
                     fraud_models.FraudCheckType.UBBLE.value,
-                    fraud_models.FraudCheckType.DMS.value,
+                    fraud_models.FraudCheckType.EDUCONNECT.value,
                     fraud_models.FraudCheckType.JOUVE.value,
+                    fraud_models.FraudCheckType.DMS.value,
                 }
+                and users_models.EligibilityType.AGE18.value in id_check_history.applicable_eligibilities
             ],
         ),
         RegistrationStep(
@@ -625,9 +630,11 @@ def _get_steps_tunnel_age18(
                 if id_check_history.type
                 in {
                     fraud_models.FraudCheckType.UBBLE.value,
-                    fraud_models.FraudCheckType.DMS.value,
+                    fraud_models.FraudCheckType.EDUCONNECT.value,
                     fraud_models.FraudCheckType.JOUVE.value,
+                    fraud_models.FraudCheckType.DMS.value,
                 }
+                and EligibilityType.AGE18.value in id_check_history.applicable_eligibilities
             ],
         ),
         RegistrationStep(
@@ -693,6 +700,7 @@ def _get_steps_tunnel_underage(
                     fraud_models.FraudCheckType.DMS.value,
                     fraud_models.FraudCheckType.JOUVE.value,
                 }
+                and EligibilityType.UNDERAGE.value in id_check_history.applicable_eligibilities
             ],
         ),
         RegistrationStep(
@@ -711,7 +719,7 @@ def _get_steps_tunnel_underage(
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
-                if review.eligibilityType == EligibilityType.AGE18
+                if review.eligibilityType == EligibilityType.UNDERAGE
             ],
         ),
     ]
@@ -939,6 +947,24 @@ def get_public_account_link(user_id: int, **kwargs: typing.Any) -> str:
     return url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user_id, **kwargs)
 
 
+def get_fraud_check_target_eligibility(
+    user: users_models.User, fraud_check: fraud_models.BeneficiaryFraudCheck
+) -> users_models.EligibilityType | None:
+    if fraud_check.eligibilityType:
+        return fraud_check.eligibilityType
+
+    if not user.dateOfBirth:
+        return None
+
+    age_at_fraud_check_date = users_utils.get_age_at_date(user.dateOfBirth, fraud_check.dateCreated)
+    target_eligibility = (
+        users_models.EligibilityType.UNDERAGE if age_at_fraud_check_date < 18 else users_models.EligibilityType.AGE18
+    )
+    fraud_check.eligibilityType = target_eligibility
+
+    return target_eligibility
+
+
 def get_eligibility_history(user: users_models.User) -> dict[str, accounts.EligibilitySubscriptionHistoryModel]:
     subscriptions = {}
     eligibility_types = []
@@ -957,14 +983,14 @@ def get_eligibility_history(user: users_models.User) -> dict[str, accounts.Eligi
             if age_at_creation == users_constants.ELIGIBILITY_AGE_18:
                 eligibility_types.append(users_models.EligibilityType.AGE18)
                 if users_models.EligibilityType.UNDERAGE in [
-                    fraud_check.eligibilityType for fraud_check in user.beneficiaryFraudChecks
+                    get_fraud_check_target_eligibility(user, fraud_check) for fraud_check in user.beneficiaryFraudChecks
                 ]:
                     eligibility_types.insert(0, users_models.EligibilityType.UNDERAGE)
             else:
                 eligibility_types.append(users_models.EligibilityType.UNDERAGE)
                 age_now = users_utils.get_age_from_birth_date(user.birth_date)  # type: ignore [arg-type]
                 if age_now >= users_constants.ELIGIBILITY_AGE_18 or users_models.EligibilityType.AGE18 in [
-                    fraud_check.eligibilityType for fraud_check in user.beneficiaryFraudChecks
+                    get_fraud_check_target_eligibility(user, fraud_check) for fraud_check in user.beneficiaryFraudChecks
                 ]:
                     eligibility_types.append(users_models.EligibilityType.AGE18)
     else:
@@ -981,6 +1007,7 @@ def get_eligibility_history(user: users_models.User) -> dict[str, accounts.Eligi
                 accounts.IdCheckItemModel.from_orm(fraud_check)
                 for fraud_check in user.beneficiaryFraudChecks
                 if fraud_check.eligibilityType == eligibility
+                or get_fraud_check_target_eligibility(user, fraud_check) == eligibility
             ],
         )
 
