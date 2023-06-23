@@ -1,8 +1,16 @@
+// @ts-expect-error no types for this lib yet
 import * as Orejime from 'orejime'
 import { v4 as uuidv4 } from 'uuid'
 
 import { api } from 'apiClient/api'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
+
+export enum Consents {
+  FIREBASE = 'firebase',
+  HOTJAR = 'hotjar',
+  BEAMER = 'beamer',
+  SENTRY = 'sentry',
+}
 
 export const initCookieConsent = () => {
   const mandatoryCookies = ['sentry']
@@ -17,6 +25,7 @@ export const initCookieConsent = () => {
     // This is called before saving the cookie.
     // We use it to execute the api call used to log the user consents
     // Still, we do not change the cookie content
+    // @ts-expect-error no types for this lib yet
     stringifyCookie: contents => {
       const nonMandatoryConsents = Object.entries(contents).filter(([app]) => {
         return mandatoryCookies.indexOf(app) === -1
@@ -46,14 +55,14 @@ export const initCookieConsent = () => {
               return app
             }),
         },
-        deviceId: localStorage.getItem('DEVICE_ID'),
+        deviceId: localStorage.getItem('DEVICE_ID') ?? 'NODEVICEID',
       }
 
       api.cookiesConsent(cookieConsent).then()
 
       return JSON.stringify(contents)
     },
-    parseCookie: cookie => {
+    parseCookie: (cookie: string) => {
       return JSON.parse(cookie)
     },
 
@@ -83,19 +92,19 @@ export const initCookieConsent = () => {
         accept: 'Tout accepter',
         decline: 'Tout refuser',
         save: 'Enregistrer mes choix',
-        firebase: {
+        [Consents.FIREBASE]: {
           description:
             'Ces cookies permettent d’établir des statistiques de fréquentation et de navigation afin d’améliorer votre parcours. Ils permettent par exemple de mesurer la pertinence d’une nouvelle fonctionnalité.',
         },
-        hotjar: {
+        [Consents.HOTJAR]: {
           description:
             'Ces cookies permettent d’analyser vos interactions avec la plateforme de façon anonyme afin d’identifier des points de friction. Ils permettent par exemple de recueillir vos avis grâce à des sondages.',
         },
-        sentry: {
+        [Consents.SENTRY]: {
           description:
             'Ces cookies sont nécessaires au fonctionnement de la plateforme et ne peuvent être désactivés. Ils permettent par exemple de remonter les erreurs techniques.',
         },
-        beamer: {
+        [Consents.BEAMER]: {
           description:
             'Ces cookies permettent de vous accompagner de façon personnalisée sur la plateforme grâce à un centre de notifications. Ils permettent par exemple de vous informer des dernières nouveautés et fonctionnalités.',
         },
@@ -104,25 +113,25 @@ export const initCookieConsent = () => {
 
     apps: [
       {
-        name: 'firebase',
+        name: Consents.FIREBASE,
         title: 'Firebase',
         cookies: /_ga.*/,
         purposes: ['personalization'],
       },
       {
-        name: 'hotjar',
+        name: Consents.HOTJAR,
         title: 'Hotjar',
         cookies: /_hs.*/,
         purposes: ['performance'],
       },
       {
-        name: 'beamer',
+        name: Consents.BEAMER,
         title: 'Beamer',
         purposes: ['marketing'],
         cookies: /_BEAMER.*/,
       },
       {
-        name: 'sentry',
+        name: Consents.SENTRY,
         title: 'Sentry',
         purposes: ['needed'],
         cookies: ['sentrysid'],
@@ -134,27 +143,27 @@ export const initCookieConsent = () => {
       {
         name: 'needed',
         title: 'Cookies essentiels',
-        apps: ['sentry'],
+        apps: [Consents.SENTRY],
       },
       {
         name: 'personalization',
         title: 'Cookies de statistiques',
-        apps: ['firebase'],
+        apps: [Consents.FIREBASE],
       },
       {
         name: 'performance',
         title: 'Cookies de performance',
-        apps: ['hotjar'],
+        apps: [Consents.HOTJAR],
       },
       {
         name: 'marketing',
         title: 'Cookies de personnalisation ',
-        apps: ['beamer'],
+        apps: [Consents.BEAMER],
       },
     ],
   }
 
-  let storageId = localStorage.getItem('DEVICE_ID')
+  const storageId = localStorage.getItem('DEVICE_ID')
   if (storageId == null) {
     localStorage.setItem('DEVICE_ID', uuidv4())
   }
