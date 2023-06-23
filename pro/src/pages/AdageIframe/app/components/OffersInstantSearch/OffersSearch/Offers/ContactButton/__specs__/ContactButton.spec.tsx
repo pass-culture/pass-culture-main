@@ -5,10 +5,10 @@ import React from 'react'
 import { AdageFrontRoles } from 'apiClient/adage'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ContactButton, { IContactButtonProps } from '../ContactButton'
+import ContactButton, { ContactButtonProps } from '../ContactButton'
 
 const renderContactButton = (
-  props: IContactButtonProps,
+  props: ContactButtonProps,
   features?: { list: { isActive: true; nameKey: string }[] }
 ) => {
   const storeOverrides = {
