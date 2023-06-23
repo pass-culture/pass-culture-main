@@ -18,7 +18,6 @@ from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import educational_redactors
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.human_ids import dehumanize_or_raise
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.workers.update_all_offers_active_status_job import update_all_collective_offers_active_status_job
 
@@ -596,7 +595,7 @@ def create_collective_offer_template(
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
 
 
-@private_api.route("/collective/offers/<offer_id>/image", methods=["POST"])
+@private_api.route("/collective/offers/<int:offer_id>/image", methods=["POST"])
 @login_required
 @spectree_serialize(
     on_success_status=200,
@@ -604,11 +603,10 @@ def create_collective_offer_template(
     api=blueprint.pro_private_schema,
 )
 def attach_offer_image(
-    offer_id: str, form: collective_offers_serialize.AttachImageFormModel
+    offer_id: int, form: collective_offers_serialize.AttachImageFormModel
 ) -> collective_offers_serialize.AttachImageResponseModel:
-    dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_api_offer.get_collective_offer_by_id(dehumanized_id)
+        offer = educational_api_offer.get_collective_offer_by_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
@@ -659,11 +657,10 @@ def attach_offer_image(
     api=blueprint.pro_private_schema,
 )
 def attach_offer_template_image(
-    offer_id: str, form: collective_offers_serialize.AttachImageFormModel
+    offer_id: int, form: collective_offers_serialize.AttachImageFormModel
 ) -> collective_offers_serialize.AttachImageResponseModel:
-    dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_api_offer.get_collective_offer_template_by_id(dehumanized_id)
+        offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
@@ -680,18 +677,17 @@ def attach_offer_template_image(
     return collective_offers_serialize.AttachImageResponseModel.from_orm(offer)
 
 
-@private_api.route("/collective/offers/<offer_id>/image", methods=["DELETE"])
+@private_api.route("/collective/offers/<int:offer_id>/image", methods=["DELETE"])
 @login_required
 @spectree_serialize(
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
 def delete_offer_image(
-    offer_id: str,
+    offer_id: int,
 ) -> None:
-    dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_api_offer.get_collective_offer_by_id(dehumanized_id)
+        offer = educational_api_offer.get_collective_offer_by_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
@@ -700,18 +696,17 @@ def delete_offer_image(
     educational_api_offer.delete_image(obj=offer)
 
 
-@private_api.route("/collective/offers-template/<offer_id>/image", methods=["DELETE"])
+@private_api.route("/collective/offers-template/<int:offer_id>/image", methods=["DELETE"])
 @login_required
 @spectree_serialize(
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
 def delete_offer_template_image(
-    offer_id: str,
+    offer_id: int,
 ) -> None:
-    dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_api_offer.get_collective_offer_template_by_id(dehumanized_id)
+        offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 

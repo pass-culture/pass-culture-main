@@ -4,6 +4,6 @@
 
 export type CollectiveOffersBookingResponseModel = {
   booking_status: string;
-  id: string;
+  id: number;
 };
 

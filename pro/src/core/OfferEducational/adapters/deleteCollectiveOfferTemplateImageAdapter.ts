@@ -1,7 +1,7 @@
 import { api } from 'apiClient/api'
 
 type PayloadFailure = null
-type DeleteCollectiveOfferImageAdapter = Adapter<string, null, PayloadFailure>
+type DeleteCollectiveOfferImageAdapter = Adapter<number, null, PayloadFailure>
 
 const FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
   isOk: false,

@@ -5,7 +5,7 @@ type Params = {
   offerId: number
 }
 
-type PayloadSuccess = { id: string }
+type PayloadSuccess = { id: string; nonHumanizedId: number }
 type PayloadFailure = null
 
 type PostOfferAdapter = Adapter<Params, PayloadSuccess, PayloadFailure>
@@ -33,6 +33,7 @@ const postCollectiveDuplicateOfferAdapter: PostOfferAdapter = async ({
       message: null,
       payload: {
         id: response.id,
+        nonHumanizedId: response.nonHumanizedId,
       },
     }
   } catch (error) {
