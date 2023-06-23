@@ -46,3 +46,13 @@ input {
     }
   }
 }
+
+.daterangepicker {
+  td.in-range {
+    color: $white !important;
+    @extend .bg-secondary
+  }
+  td.active {
+    @extend .bg-dark;
+  }
+}

@@ -288,12 +288,14 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
     def test_list_bookings_by_date(self, authenticated_client, bookings):
         # when
+        date_from = datetime.date.today() - datetime.timedelta(days=3)
+        date_to = datetime.date.today() - datetime.timedelta(days=2)
+        separator = " - "
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
                     self.endpoint,
-                    from_date=(datetime.date.today() - datetime.timedelta(days=3)).isoformat(),
-                    to_date=(datetime.date.today() - datetime.timedelta(days=2)).isoformat(),
+                    from_to_date=f"{date_from.strftime('%d/%m/%Y')}{separator}{date_to.strftime('%d/%m/%Y')}",
                 )
             )
 
