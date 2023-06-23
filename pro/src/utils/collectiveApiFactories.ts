@@ -90,7 +90,6 @@ export const collectiveStockFactory = (
 ): GetCollectiveOfferCollectiveStockResponseModel => {
   const currentStockId = stockId++
   return {
-    id: `STOCK${currentStockId}`,
     nonHumanizedId: currentStockId,
     price: 100,
     beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
