@@ -12,6 +12,9 @@ PRODUCT_OFFER_TAG = "Product offer"
 PRODUCT_EAN_OFFER_TAG = "Bulk product offer operation"
 OFFERER_VENUES_TAG = "Offerer and Venues"
 
+# Booking API tags
+BOOKING_TAG = "Booking"
+
 
 # Image settings
 MIN_IMAGE_WIDTH = 400
