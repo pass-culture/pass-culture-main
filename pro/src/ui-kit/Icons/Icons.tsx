@@ -54,6 +54,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-euro.svg' }, // TODO 3 use left inside a <TextInput>
   { src: 'icons/stroke-thing.svg' },
   { src: 'icons/stroke-duo.svg' },
+  { src: 'icons/stroke-mail.svg' },
   { src: 'icons/stroke-phone.svg' },
   { src: 'icons/stroke-home.svg' },
   { src: 'icons/stroke-building.svg' },
@@ -175,7 +176,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-info-wrong.svg', viewBox: '0 0 78 78' },
   { src: 'icons/ico-key.svg', viewBox: '0 0 20 20' },
   { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },
-  { src: 'icons/ico-mail-outline.svg', viewBox: '0 0 82 67' },
   { src: 'icons/ico-notification-error.svg', viewBox: '0 0 24 24' },
   { src: 'icons/offer-card-euro.svg', viewBox: '0 0 30 30' },
   { src: 'icons/other-offer.svg', viewBox: '0 0 30 30' },
