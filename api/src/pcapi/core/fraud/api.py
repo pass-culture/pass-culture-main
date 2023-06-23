@@ -89,7 +89,7 @@ def educonnect_fraud_checks(
 def dms_fraud_checks(user: users_models.User, content: models.DMSContent) -> list[models.FraudItem]:
     fraud_items = []
     id_piece_number = content.get_id_piece_number()
-    fraud_items.append(validate_id_piece_number_format_fraud_item(id_piece_number))
+    fraud_items.append(validate_id_piece_number_format_fraud_item(id_piece_number, content.procedure_number))
     if id_piece_number:
         fraud_items.append(duplicate_id_piece_number_fraud_item(user, id_piece_number))
     return fraud_items
@@ -142,7 +142,11 @@ def on_identity_fraud_check_result(
     return validate_frauds(fraud_items, beneficiary_fraud_check)
 
 
-def validate_id_piece_number_format_fraud_item(id_piece_number: str | None) -> models.FraudItem:
+def validate_id_piece_number_format_fraud_item(
+    id_piece_number: str | None, procedure_number: int | None = None
+) -> models.FraudItem:
+    if procedure_number == settings.DMS_ENROLLMENT_PROCEDURE_ID_ET:  # Pièce d'identité étrangère
+        return models.FraudItem(status=models.FraudStatus.OK, detail="La pièce d'identité n'est pas française.")
     if not id_piece_number or not id_piece_number.strip():
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS,
@@ -154,43 +158,17 @@ def validate_id_piece_number_format_fraud_item(id_piece_number: str | None) -> m
     # Doc des formats acceptés: https://www.notion.so/passcultureapp/Tableau-des-ID-trang-res-sur-FA-440ab8cbb31d4ae9a16debe3eb5aab24
     regexp = "|".join(
         (
-            # --- Titre de séjour français ---
-            r"^\d{6}\w{1}$",
-            # --- CNI Française ---
-            r"^[\s\w]{14}$",
-            # --- Passeports ---
-            # Passeport chiffres
-            r"^\d{7,10}$",  # Cameroune, Ile Maurice, Lithuanie, Danemark, Roumanie, Russie, Equateur
-            # Passeports x lettres + y chiffres
-            r"^\w{1} ?\d{6,9}$",  # Portugal, Tunisie, Bolivie, Honduras, Suisse, Mongolie, Sri Lanka, Angola, Autriche, Corée, Guinée, Mexique, Turquie, Egypte, Kosovo
-            r"^\w{2} ?\d{6,7}$",  # Bengladesh, Albanie, Chine, Congo, Maroc, Pakistan, Togo, Brésil, Canada, Laos, Liban, Pologne
-            r"^\w{3} ?\d{6}$",  # Norvège
-            # Passeports chiffres + lettres
-            r"^[A-Z0-9]{8,9}$",  # Lybie, Pays-Bas
-            # Passeports autres
-            r"^\d{2}\w{2}\d{5}$",  # Géorgie, Côte d’Ivoire, Bénin
-            r"^\d{3}-\d{2}-\w{1}\d{6}$",  # Syrie
-            # --- Cartes d'identité ---
-            # CNIs chiffres
-            r"^\d{8,9}$",  # Autriche, Albanie,Algérie,Finlande,Tchéquie,Bulgarie,Serbie
-            r"^\d{11}$",  # Togo
-            r"^(\d *){17}$",  # Sénégal
-            r"^(\d *){13}$",  # Sénégal (ancien)
-            # CNIs lettre
-            r"^\w{8,12}$",  # ID Europeene
-            # CNIs chiffres + lettres
-            r"^\w{1}\d{7}$",  # Burkina Faso
-            r"^\w{2}\d{6}$",  # Roumanie, Maroc
-            r"^\w{3} \d{6}$",  # Pologne
-            # CNIs autres
-            r"^\d{3}-\d{7}-\d{2}$",  # Belgique
-            r"^\d{8}( \d+)? ?[A-Z0-9]{3}$",  # Portugal
-            r"^\d{6,8}-\d{4}$",  # ID Suédoise
+            # --- ID Européenne (dont française) ---
+            r"^[A-Z0-9]{12}$",
+            # --- Nouvelle carte d'identité française ---
+            r"^[A-Z0-9]{9}$",
+            # --- Passeport Français ---
+            r"^\d{2}[a-zA-Z]{2}\d{5}$",
         )
     )
 
-    match = re.match(regexp, id_piece_number)
-    if not match or match.group(0) != id_piece_number:
+    match = re.match(regexp, format_id_piece_number(id_piece_number))
+    if not match:
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS,
             detail="Le format du numéro de la pièce d'identité n'est pas valide",
@@ -270,7 +248,7 @@ def duplicate_id_piece_number_fraud_item(user: users_models.User, id_piece_numbe
 
 
 def format_id_piece_number(id_piece_number: str) -> str:
-    return id_piece_number.replace(" ", "")
+    return re.sub(r"[\W^_]", "", id_piece_number.upper())
 
 
 def find_duplicate_id_piece_number_user(id_piece_number: str | None, excluded_user_id: int) -> users_models.User | None:

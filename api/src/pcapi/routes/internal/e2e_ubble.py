@@ -56,7 +56,7 @@ def make_identification_response(user: users_models.User, errors: list[UbbleErro
         birth_date=user.birth_date.isoformat(),  # type: ignore [attr-defined]
         identification_id=identification_id,
         identification_url=identification_url,
-        id_document_number="12345678901234",
+        id_document_number="123456789012",
         reason_codes=[fraud_models.UBBLE_REASON_CODE_MAPPING[error.value] for error in errors] if errors else None,
         status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
         score=ubble_fraud_models.UbbleScore.INVALID.value if errors else ubble_fraud_models.UbbleScore.VALID.value,

@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
 from pcapi.core.fraud import models as fraud_models
@@ -42,12 +43,12 @@ class ParseBeneficiaryInformationTest:
         information = dms_serializer.parse_beneficiary_information_graphql(application_detail)
         assert information.activity == activity
 
-    @pytest.mark.parametrize("possible_value", ["0123456789", " 0123456789", "0123456789 ", " 0123456789 "])
+    @pytest.mark.parametrize("possible_value", ["123456789012", " 123456789012", "123456789012 ", " 123456789012 "])
     def test_beneficiary_information_id_piece_number_with_spaces_graphql(self, possible_value):
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", id_piece_number=possible_value)
         information = dms_serializer.parse_beneficiary_information_graphql(application_detail)
 
-        assert information.id_piece_number == "0123456789"
+        assert information.id_piece_number == "123456789012"
 
     def test_new_procedure(self):
         raw_data = fixture.make_new_application()
@@ -57,7 +58,7 @@ class ParseBeneficiaryInformationTest:
         assert content.civility == users_models.GenderEnum.M
         assert content.email == "jean.valgean@example.com"
         assert content.application_number == 5718303
-        assert content.procedure_number == 32
+        assert content.procedure_number == settings.DMS_ENROLLMENT_PROCEDURE_ID_FR
         assert content.department is None
         assert content.birth_date == date(2004, 12, 19)
         assert content.phone == "0601010101"
@@ -74,7 +75,7 @@ class ParseBeneficiaryInformationTest:
         assert content.civility == users_models.GenderEnum.M
         assert content.email == "jean.valgean@example.com"
         assert content.application_number == 5742994
-        assert content.procedure_number == 32
+        assert content.procedure_number == settings.DMS_ENROLLMENT_PROCEDURE_ID_ET
         assert content.department is None
         assert content.birth_date == date(2006, 5, 12)
         assert content.phone == "0601010101"
@@ -147,9 +148,9 @@ class ParseBeneficiaryInformationTest:
         assert base_content == labels_edited_content
 
     def test_serializer_handles_id_piece_numbers_with_extra_spaces(self):
-        raw_data = fixture.make_graphql_application(1, "accepte", id_piece_number=" N  12345667 ")
+        raw_data = fixture.make_graphql_application(1, "accepte", id_piece_number="  12  345 67 89  012 ")
         content = dms_serializer.parse_beneficiary_information_graphql(dms_models.DmsApplicationResponse(**raw_data))
-        assert content.id_piece_number == "N 12345667"
+        assert content.id_piece_number == "12 345 67 89 012"
 
 
 class FieldErrorsTest:
