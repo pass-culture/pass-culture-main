@@ -60,6 +60,8 @@ def generate_and_send_beneficiary_confirmation_email_for_email_change(user: mode
     expiration_date = generate_email_change_token_expiration_date()
 
     token = generate_email_change_token(user, new_email, expiration_date, TokenType.CONFIRMATION)
+    check_email_address_does_not_exist(new_email)
+
     link_for_email_change_confirmation = _build_link_for_email_change_action(
         EmailChangeAction.CONFIRMATION,
         new_email,
@@ -98,14 +100,13 @@ def generate_and_send_beneficiary_validation_email_for_email_change(user: models
 
 
 def request_email_update(user: models.User, new_email: str, password: str) -> None:
-    check_user_password(user, password)
-    check_and_increment_email_update_attempts_count(user)
-    check_email_address_does_not_exist(new_email)
     check_no_ongoing_email_update_request(user)
+    check_email_update_attempts_count(user)
+    check_user_password(user, password)
 
-    # TODO: manage the atomicity and the errors
     email_history = models.UserEmailHistory.build_update_request(user=user, new_email=new_email)
     repository.save(email_history)
+    increment_email_update_attempts_count(user)
     generate_and_send_beneficiary_confirmation_email_for_email_change(user, new_email)
 
 
@@ -179,19 +180,25 @@ def request_email_update_from_pro(user: models.User, email: str, password: str) 
     send_pro_user_emails_for_email_change(user, email, expiration_date)
 
 
-def check_and_increment_email_update_attempts_count(user: models.User) -> None:
+def check_email_update_attempts_count(user: models.User) -> None:
     """Check if the user has reached the maximum number of email update attempts.
     If yes, raise an exception.
-    The number of attempts is *always* incremented, even if the limit is reached.
+    """
+    update_email_attempts = app.redis_client.get(f"update_email_attemps_user_{user.id}")  # type: ignore [attr-defined]
+    if update_email_attempts and int(update_email_attempts) >= settings.MAX_EMAIL_UPDATE_ATTEMPTS:
+        raise exceptions.EmailUpdateLimitReached()
+
+
+def increment_email_update_attempts_count(user: models.User) -> None:
+    """
+    increment or intitiate the number of attempts
     """
     update_email_attempts_key = f"update_email_attemps_user_{user.id}"
-    count = app.redis_client.incr(update_email_attempts_key)  # type: ignore [attr-defined]
 
-    if count == 1:
+    result = app.redis_client.incr(update_email_attempts_key)  # type: ignore [attr-defined]
+    if result == 1:
+        # If the key did not exist, set the expiration time
         app.redis_client.expire(update_email_attempts_key, settings.EMAIL_UPDATE_ATTEMPTS_TTL)  # type: ignore [attr-defined]
-
-    if count > settings.MAX_EMAIL_UPDATE_ATTEMPTS:
-        raise exceptions.EmailUpdateLimitReached()
 
 
 def check_pro_email_update_attempts(user: models.User) -> None:
