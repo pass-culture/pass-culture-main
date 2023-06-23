@@ -1774,6 +1774,8 @@ class RegistrationStepTest:
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
         user.add_beneficiary_role()
         users_factories.DepositGrantFactory(user=user)
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, eligibilityType=None)
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user)
         eligibility_history = get_eligibility_history(user)
         id_check_histories = _get_id_check_histories_desc(eligibility_history)
         fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
@@ -1794,11 +1796,17 @@ class RegistrationStepTest:
             assert step.step_id == index + 1
             assert step.description == steps_description[index]
 
+            if step.description == SubscriptionStep.IDENTITY_CHECK.value:
+                assert len(step.fraud_actions_history) == 2
+
     def test_get_steps_tunnel_underage(self):
         dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=1)
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
         user.add_beneficiary_role()
         users_factories.DepositGrantFactory(user=user)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, eligibilityType=None, dateCreated=dateOfBirth + relativedelta(years=15)
+        )
         eligibility_history = get_eligibility_history(user)
         id_check_histories = _get_id_check_histories_desc(eligibility_history)
         fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
@@ -1818,16 +1826,22 @@ class RegistrationStepTest:
             assert step.step_id == index + 1
             assert step.description == steps_description[index]
 
+            if step.description == SubscriptionStep.IDENTITY_CHECK.value:
+                assert len(step.fraud_actions_history) == 1
+
     def test_get_steps_tunnel_underage_age18(self):
-        dateCreated = datetime.datetime.utcnow() - relativedelta(
-            years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2
-        )
+        now = datetime.datetime.utcnow()
+        dateCreated = now - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=2)
         dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1)
         user = users_factories.UserFactory(
             dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth, dateCreated=dateCreated
         )
         user.add_beneficiary_role()
         users_factories.DepositGrantFactory(user=user)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, eligibilityType=None, dateCreated=dateOfBirth + relativedelta(years=15)
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, eligibilityType=None)
         eligibility_history = get_eligibility_history(user)
         id_check_histories = _get_id_check_histories_desc(eligibility_history)
         fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
@@ -1854,6 +1868,9 @@ class RegistrationStepTest:
         for index, step in enumerate(steps):
             assert step.step_id == index + 1
             assert step.description == steps_description[index]
+
+            if step.description == SubscriptionStep.IDENTITY_CHECK.value:
+                assert len(step.fraud_actions_history) == 1
 
     @pytest.mark.parametrize(
         "dateCreated,dateOfBirth,tunnel_type",
