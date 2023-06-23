@@ -84,12 +84,10 @@ def _get_individual_bookings(
         )
     )
 
-    if form.from_date.data:
-        from_datetime = date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time())
+    if form.from_to_date.data:
+        from_datetime = date_utils.date_to_localized_datetime(form.from_to_date.from_date, datetime.datetime.min.time())
         base_query = base_query.filter(bookings_models.Booking.dateCreated >= from_datetime)
-
-    if form.to_date.data:
-        to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time())
+        to_datetime = date_utils.date_to_localized_datetime(form.from_to_date.to_date, datetime.datetime.max.time())
         base_query = base_query.filter(bookings_models.Booking.dateCreated <= to_datetime)
 
     if form.event_from_date.data:

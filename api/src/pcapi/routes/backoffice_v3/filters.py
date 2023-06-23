@@ -504,6 +504,17 @@ def action_to_name(action_url: str) -> str:
         return action_url
 
 
+def format_date_range(daterange: list[datetime.date]) -> str:
+    """
+    Prepare string for date range picker field with following format:
+    %d/%m/%Y - %d/%m/%Y
+    """
+    try:
+        return f"{daterange[0].strftime('%d/%m/%Y')} - {daterange[1].strftime('%d/%m/%Y')}"
+    except Exception:  # pylint: disable=broad-except
+        return ""
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -543,6 +554,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_website"] = format_website
     app.jinja_env.filters["format_venue_target"] = format_venue_target
     app.jinja_env.filters["format_titelive_id_lectorat"] = format_titelive_id_lectorat
+    app.jinja_env.filters["format_date_range"] = format_date_range
     app.jinja_env.filters["parse_referrer"] = parse_referrer
     app.jinja_env.filters["unescape"] = html.unescape
     app.jinja_env.filters["action_to_name"] = action_to_name

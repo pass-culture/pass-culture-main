@@ -25,6 +25,12 @@
     <link href="{{ url_for('static', filename='backofficev3/css/tom-select-bootstrap-5.min.css') }}"
           rel="stylesheet"
           type="text/css" />
+    <!-- Vanilla datetime range picker -->
+    <link href="{{ url_for('static', filename='backofficev3/css/vanilla-datetimerange-picker@latest/dist/vanilla-datetimerange-picker.css') }}"
+          rel="stylesheet"
+          type="text/css" />
+    <script src="{{ url_for('static', filename='backofficev3/js/libs/momentjs@2.18.1/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='backofficev3/js/libs/vanilla-datetimerange-picker@latest/dist/vanilla-datetimerange-picker.js') }}"></script>
     <!-- Our css needs to be imported after Bootstrap to have a stronger weight -->
     <link href="{{ url_for('static', filename='backofficev3/css/compiled/pc/pc.css') }}"
           rel="stylesheet"
@@ -38,6 +44,8 @@
     <script src="{{ url_for('static', filename='backofficev3/js/core/pc-utils.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/core/pc-event-handler.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/core/pc-addon.js') }}"></script>
+    <!-- Our app -->
+    <script src="{{ url_for('static', filename='backofficev3/js/core/pc-backoffice-app.js') }}"></script>
     <!-- Our JS libs -->
     <script src="{{ url_for('static', filename='backofficev3/js/addons/bs-tooltips.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-validation-filters.js') }}"></script>
@@ -53,8 +61,7 @@
     <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-reset-modal-turbo-src.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-field-list.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-form-field.js') }}"></script>
-    <!-- Our app -->
-    <script src="{{ url_for('static', filename='backofficev3/js/pc-backoffice-app.js') }}"></script>
+    <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-date-range-field.js') }}"></script>
     <script>
       const app = new PcBackofficeApp({
         addOns: [
@@ -72,6 +79,7 @@
           PcResetModalTurboSrc,
           PcFieldList,
           PcFormField,
+          PcDateRangeField,
         ]
       })
     </script>
