@@ -8,7 +8,7 @@ import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.
 import { ReactComponent as StatusPendingIcon } from 'icons/ico-status-pending.svg'
 import { ReactComponent as StatusRejectedIcon } from 'icons/ico-status-rejected.svg'
 import { ReactComponent as StatusSoldOutIcon } from 'icons/ico-status-sold-out.svg'
-import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
+import { ReactComponent as StrokeCheckIcon } from 'icons/stroke-check.svg'
 
 import style from './StatusLabel.module.scss'
 
@@ -32,7 +32,7 @@ const OFFER_STATUS_PROPERTIES: Record<
   },
   [OfferStatus.ACTIVE]: {
     className: style['status-active'],
-    Icon: <StatusValidatedIcon />,
+    Icon: <StrokeCheckIcon />,
     label: 'publiée',
   },
   [OfferStatus.DRAFT]: {
