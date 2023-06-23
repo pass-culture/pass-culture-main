@@ -210,24 +210,10 @@ class OfferDomain(BaseModel):
 
 
 class GetCollectiveOfferManagingOffererResponseModel(BaseModel):
-    address: str | None
-    city: str
-    dateCreated: datetime
-    dateModifiedAtLastProvider: datetime | None
-    id: str
     nonHumanizedId: int
-    idAtProviders: str | None
-    isActive: bool
-    isValidated: bool
-    lastProviderId: str | None
     name: str
-    postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
     siren: str | None
-    thumbCount: int
-
-    _humanize_id = humanize_field("id")
-    _humanize_last_provider_id = humanize_field("lastProviderId")
 
     class Config:
         orm_mode = True

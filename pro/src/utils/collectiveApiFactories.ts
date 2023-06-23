@@ -123,7 +123,7 @@ export const collectiveOfferVenueFactory = (
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
     managingOfferer: customOfferer,
-    managingOffererId: customOfferer.id,
+    managingOffererId: customOfferer.nonHumanizedId.toString(),
     postalCode: '11100',
     publicName: 'Mon Lieu',
     nonHumanizedId: currentVenueId,
@@ -139,15 +139,8 @@ export const collectiveOfferOffererFactory = (
 ): GetCollectiveOfferManagingOffererResponseModel => {
   const currentOffererId = offererId++
   return {
-    id: `OFFERER${currentOffererId}`,
     nonHumanizedId: currentOffererId,
     name: `La nom de la structure ${currentOffererId}`,
-    city: 'Paris',
-    dateCreated: new Date().toISOString(),
-    isActive: true,
-    isValidated: true,
-    postalCode: '75018',
-    thumbCount: 0,
     ...customOfferer,
   }
 }
