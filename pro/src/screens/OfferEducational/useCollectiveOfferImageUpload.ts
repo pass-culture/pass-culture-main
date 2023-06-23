@@ -34,7 +34,7 @@ export const useCollectiveOfferImageUpload = (
   }, [])
 
   const handleImageOnSubmit = useCallback(
-    async (offerId: string) => {
+    async (offerId: number) => {
       // Image field is empty
       if (imageOffer === null) {
         // Delete image if one was present before

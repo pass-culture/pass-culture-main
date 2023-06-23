@@ -115,7 +115,7 @@ const OfferEducational = ({
     if (!isOk) {
       return notify.error(message)
     }
-    const offerId = offer?.id ?? payload.id
+    const offerId = offer?.nonHumanizedId ?? payload.nonHumanizedId
     await handleImageOnSubmit(offerId)
     if (
       offer &&

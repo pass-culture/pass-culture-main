@@ -58,7 +58,7 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit('someId')
+      await result.current.handleImageOnSubmit(3)
     })
 
     expect(postCollectiveOfferImageAdapter.default).toHaveBeenCalled()
@@ -86,7 +86,7 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit('someId')
+      await result.current.handleImageOnSubmit(3)
     })
 
     expect(postCollectiveOfferTemplateImageAdapter.default).toHaveBeenCalled()
@@ -106,7 +106,7 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit('someId')
+      await result.current.handleImageOnSubmit(3)
     })
 
     expect(deleteCollectiveOfferImageAdapter.default).toHaveBeenCalled()
@@ -130,7 +130,7 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit('someId')
+      await result.current.handleImageOnSubmit(3)
     })
 
     expect(deleteCollectiveOfferTemplateImageAdapter.default).toHaveBeenCalled()
@@ -151,7 +151,7 @@ describe('useCollectiveOfferImageUpload', () => {
     )
 
     await act(async () => {
-      await result.current.handleImageOnSubmit('someId')
+      await result.current.handleImageOnSubmit(3)
     })
 
     expect(
