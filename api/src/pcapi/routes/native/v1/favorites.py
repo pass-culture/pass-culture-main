@@ -114,7 +114,11 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
                 Offer.validation,
             )
         )
-        .options(joinedload(Favorite.offer).joinedload(Offer.venue).load_only(Venue.latitude, Venue.longitude))
+        .options(
+            joinedload(Favorite.offer)
+            .joinedload(Offer.venue)
+            .load_only(Venue.latitude, Venue.longitude, Venue.publicName, Venue.name)
+        )
         .options(
             joinedload(Favorite.offer)
             .joinedload(Offer.venue)

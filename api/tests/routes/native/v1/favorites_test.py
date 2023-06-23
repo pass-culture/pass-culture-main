@@ -45,7 +45,7 @@ class GetTest:
             tomorow = today + timedelta(days=1)
             user, test_client = utils.create_user_and_test_client(app)
             offerer = offerers_factories.OffererFactory()
-            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Le Petit Rintintin")
 
             # Event offer with 1 expired stock, 2 futures ones and a mediation
             offer1 = offers_factories.EventOfferFactory(venue=venue)
@@ -113,6 +113,7 @@ class GetTest:
             )
             assert favorites[5]["offer"]["expenseDomains"] == ["all"]
             assert favorites[5]["offer"]["subcategoryId"] == "SEANCE_CINE"
+            assert favorites[5]["offer"]["venueName"] == "Le Petit Rintintin"
 
             # Only stock2b is valid and product has a thumb
             assert favorites[4]["id"] == favorite2.id
@@ -127,6 +128,7 @@ class GetTest:
             )
             assert favorites[4]["offer"]["expenseDomains"] == ["all"]
             assert favorites[4]["offer"]["subcategoryId"] == "SEANCE_CINE"
+            assert favorites[4]["offer"]["venueName"] == "Le Petit Rintintin"
 
             # No date
             assert favorites[3]["id"] == favorite3.id
@@ -137,6 +139,7 @@ class GetTest:
             assert favorites[3]["offer"]["image"] is None
             assert set(favorites[3]["offer"]["expenseDomains"]) == {"physical", "all"}
             assert favorites[3]["offer"]["subcategoryId"] == "SUPPORT_PHYSIQUE_FILM"
+            assert favorites[3]["offer"]["venueName"] == "Le Petit Rintintin"
 
             # Offer in the future but past the booking limit
             assert favorites[2]["id"] == favorite4.id
@@ -150,6 +153,7 @@ class GetTest:
             )
             assert favorites[2]["offer"]["expenseDomains"] == ["all"]
             assert favorites[2]["offer"]["subcategoryId"] == "SEANCE_CINE"
+            assert favorites[2]["offer"]["venueName"] == "Le Petit Rintintin"
 
             # Offer in the past, favorite should appear but no price/date are valid
             assert favorites[1]["id"] == favorite5.id
@@ -163,6 +167,7 @@ class GetTest:
             )
             assert favorites[1]["offer"]["expenseDomains"] == ["all"]
             assert favorites[1]["offer"]["subcategoryId"] == "SEANCE_CINE"
+            assert favorites[1]["offer"]["venueName"] == "Le Petit Rintintin"
 
             # best price/same date twice should appear as single price/date
             assert favorites[0]["id"] == favorite6.id
@@ -173,6 +178,7 @@ class GetTest:
             assert favorites[0]["offer"]["image"] is None
             assert favorites[0]["offer"]["expenseDomains"] == ["all"]
             assert favorites[0]["offer"]["subcategoryId"] == "SEANCE_CINE"
+            assert favorites[0]["offer"]["venueName"] == "Le Petit Rintintin"
 
         def test_expired_offer(self, app):
             # Given
