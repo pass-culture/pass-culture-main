@@ -1,4 +1,7 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
+
+import { v4 as uuidv4 } from 'uuid'
+
 import {
   PriceCategoryResponseModel,
   SubcategoryIdEnum,
@@ -186,6 +189,7 @@ export const individualStockEventListFactory = (
     bookingLimitDatetime: new Date('2021-09-15T12:00:00Z').toISOString(),
     priceCategoryId: 2,
     quantity: 18,
+    uuid: uuidv4(),
     ...customStock,
   }
 }

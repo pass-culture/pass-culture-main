@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { v4 as uuidv4 } from 'uuid'
 
 import { api } from 'apiClient/api'
 import DialogBox from 'components/DialogBox'
@@ -56,6 +57,7 @@ const getInitialStocks = (offer: IOfferIndividual) =>
       bookingLimitDatetime: stock.bookingLimitDatetime,
       priceCategoryId: stock.priceCategoryId,
       quantity: stock.quantity,
+      uuid: uuidv4(),
     }
   })
 
@@ -120,8 +122,10 @@ export const StocksEventCreation = ({
       })
     )
   }
-
-  const stocksToCreate = stocks.filter(stock => stock.id === undefined)
+  const stocksToCreate = stocks
+    .filter(stock => stock.id === undefined)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    .map(({ uuid, ...rest }) => rest)
   const stocksToDelete = offer.stocks.filter(
     s =>
       !stocks.find(

@@ -318,10 +318,14 @@ describe('StocksEventList', () => {
   // where the last page was not changed when needed
   // user could have been to an empty page
   it('should bring me on new last page when deleting more than one page by action bar', async () => {
+    const stocks = []
+    for (let i = 0; i < STOCKS_PER_PAGE * 2 + 1; i++) {
+      const stock = individualStockEventListFactory({ priceCategoryId: 1 })
+      stocks.push(stock)
+    }
+
     renderStocksEventList({
-      stocks: Array(STOCKS_PER_PAGE * 2 + 1).fill(
-        individualStockEventListFactory({ priceCategoryId: 1 })
-      ),
+      stocks: stocks,
     })
 
     // select all lines but not first page
@@ -355,6 +359,7 @@ describe('StocksEventList', () => {
         bookingLimitDatetime: '2021-09-15T12:00:00.000Z',
         priceCategoryId: 1,
         quantity: 18,
+        uuid: expect.any(String),
       })
     )
 
@@ -386,6 +391,7 @@ describe('StocksEventList', () => {
         bookingLimitDatetime: '2021-09-15T12:00:00.000Z',
         priceCategoryId: 1,
         quantity: 18,
+        uuid: expect.any(String),
       },
     ])
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
