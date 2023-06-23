@@ -170,6 +170,14 @@ class WithdrawableEventOfferMustHaveWithdrawal(OfferCreationBaseException):
         )
 
 
+class WithdrawableEventOfferMustHaveBookingContact(OfferCreationBaseException):
+    def __init__(self) -> None:
+        super().__init__(
+            "offer",
+            "Une offre qui a un ticket retirable doit avoir l'email du contact de réservation",
+        )
+
+
 class ExtraDataValueNotAllowed(OfferCreationBaseException):
     pass
 

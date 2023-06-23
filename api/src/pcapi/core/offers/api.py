@@ -160,7 +160,7 @@ def create_offer(
     withdrawal_details: str | None = None,
     withdrawal_type: models.WithdrawalTypeEnum | None = None,
 ) -> models.Offer:
-    validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id)
+    validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id, booking_contact)
     validation.check_offer_subcategory_is_valid(subcategory_id)
     formatted_extra_data = _format_extra_data(subcategory_id, extra_data)
     validation.check_offer_extra_data(subcategory_id, formatted_extra_data, venue)
@@ -275,14 +275,20 @@ def update_offer(
         validation.check_is_duo_compliance(isDuo, offer.subcategory)
 
     withdrawal_updated = not (
-        withdrawalType is UNCHANGED and withdrawalDelay is UNCHANGED and withdrawalDetails is UNCHANGED
+        withdrawalType is UNCHANGED
+        and withdrawalDelay is UNCHANGED
+        and withdrawalDetails is UNCHANGED
+        and bookingContact is UNCHANGED
     )
     if withdrawal_updated:
         changed_withdrawalType = offer.withdrawalType if withdrawalType is UNCHANGED else withdrawalType
         changed_withdrawalDelay = offer.withdrawalDelay if withdrawalDelay is UNCHANGED else withdrawalDelay
+        changed_bookingContact = offer.bookingContact if bookingContact is UNCHANGED else bookingContact
 
-        if not (withdrawalType is UNCHANGED and withdrawalDelay is UNCHANGED):
-            validation.check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)
+        if not (withdrawalType is UNCHANGED and withdrawalDelay is UNCHANGED and changed_bookingContact is UNCHANGED):
+            validation.check_offer_withdrawal(
+                changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId, changed_bookingContact
+            )
 
     if offer.isFromProvider:
         validation.check_update_only_allowed_fields_for_offer_from_provider(set(modifications), offer.lastProvider)
