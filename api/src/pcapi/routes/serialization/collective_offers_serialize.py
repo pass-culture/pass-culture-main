@@ -29,7 +29,6 @@ from pcapi.routes.serialization.educational_institutions import EducationalInsti
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.human_ids import humanize
 from pcapi.utils.image_conversion import CropParams
 from pcapi.validation.routes.offers import check_collective_offer_name_length_is_valid
 
@@ -119,7 +118,7 @@ def serialize_collective_offers_capped(
 
 
 def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate) -> CollectiveOfferResponseModel:
-    serialized_stock = _serialize_stock(offer.id, getattr(offer, "collectiveStock", None))
+    serialized_stock = _serialize_stock(getattr(offer, "collectiveStock", None))
     last_booking = (
         _get_serialize_last_booking(offer.collectiveStock.collectiveBookings)
         if isinstance(offer, CollectiveOffer) and offer.collectiveStock
@@ -153,7 +152,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
     )
 
 
-def _serialize_stock(offer_id: int, stock: CollectiveStock | None = None) -> dict:
+def _serialize_stock(stock: CollectiveStock | None = None) -> dict:
     if stock:
         return {
             "nonHumanizedId": stock.id,
@@ -172,10 +171,8 @@ def _serialize_stock(offer_id: int, stock: CollectiveStock | None = None) -> dic
 
 def _serialize_venue(venue: Venue) -> dict:
     return {
-        "id": humanize(venue.id),
         "nonHumanizedId": venue.id,
         "isVirtual": venue.isVirtual,
-        "managingOffererId": humanize(venue.managingOffererId),
         "name": venue.name,
         "offererName": venue.managingOfferer.name,
         "publicName": venue.publicName,
@@ -263,7 +260,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     contactEmail: str
     contactPhone: str | None
     hasBookingLimitDatetimesPassed: bool
-    offerId: str | None
+    offerId: int | None
     isActive: bool
     isEditable: bool
     nonHumanizedId: int
@@ -277,7 +274,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     imageCredit: str | None
     imageUrl: str | None
 
-    _humanize_offerId = humanize_field("offerId")
     class Config:
         allow_population_by_field_name = True
         orm_mode = True
