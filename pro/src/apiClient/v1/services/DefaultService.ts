@@ -787,28 +787,6 @@ export class DefaultService {
   }
 
   /**
-   * get_collective_stock <GET>
-   * @param offerId
-   * @returns CollectiveStockResponseModel OK
-   * @throws ApiError
-   */
-  public getCollectiveStock(
-    offerId: string,
-  ): CancelablePromise<CollectiveStockResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/collective/offers/{offer_id}/stock',
-      path: {
-        'offer_id': offerId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
    * create_collective_stock <POST>
    * @param requestBody
    * @returns CollectiveStockResponseModel Created
