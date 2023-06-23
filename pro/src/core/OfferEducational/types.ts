@@ -84,7 +84,7 @@ export type GetStockOfferSuccessPayload = {
   managingOffererId: number
   isEducational: boolean
   isShowcase: boolean
-  offerId?: string | null
+  offerId?: number | null
   institution?: EducationalInstitutionResponseModel | null
   name: string
 }

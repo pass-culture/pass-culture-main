@@ -41,7 +41,7 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
       // given
       jest.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
         isActive: true,
-        offerId: 'A1',
+        offerId: 1,
         bookingEmails: [],
         name: 'mon offre',
         contactEmail: 'mail',

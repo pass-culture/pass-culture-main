@@ -429,7 +429,7 @@ export const defaultRequestResponseModel: GetCollectiveOfferRequestResponseModel
 export const defaultCollectifOfferResponseModel = {
   id: 'A1',
   isActive: true,
-  offerId: 'A1',
+  offerId: 1,
   bookingEmails: [],
   name: 'mon offre',
   contactEmail: 'mail@example.com',
