@@ -12,7 +12,7 @@ import {
 } from 'apiClient/v2'
 import { ApiRequestOptions } from 'apiClient/v2/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v2/core/ApiResult'
-import { IDeskProps, MESSAGE_VARIANT } from 'screens/Desk'
+import { DeskProps, MESSAGE_VARIANT } from 'screens/Desk'
 import { Button } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -22,7 +22,7 @@ const TestScreen = ({
   getBooking,
   submitInvalidate,
   submitValidate,
-}: IDeskProps) => {
+}: DeskProps) => {
   const [response, setResponse] = useState({})
   return (
     <div>

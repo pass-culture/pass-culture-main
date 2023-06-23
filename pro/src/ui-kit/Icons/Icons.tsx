@@ -25,7 +25,8 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
   { src: 'icons/full-validate.svg' }, // TODO 1 in CollectiveOfferConfirmation
-  { src: 'icons/full-infos.svg' }, // TODO 1 uses left inside <ButtonLink>
+  { src: 'icons/full-info.svg' },
+  { src: 'icons/full-error.svg' },
   { src: 'icons/full-help.svg' },
   { src: 'icons/full-link.svg' }, // TODO 17 uses left inside <ButtonLink> and <Banner> and <InternalBanner>
   { src: 'icons/full-more.svg' }, // TODO still in 2 ButtonLink and 1 Button
@@ -81,7 +82,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/close-tag.svg', viewBox: '0 0 10 10' },
   { src: 'icons/ico-compta.svg', viewBox: '0 0 20 23' },
   { src: 'icons/ico-double-check.svg' },
-  { src: 'icons/error.svg', viewBox: '0 0 18 18' },
   { src: 'icons/ico-euro-grey.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-euro-v2.svg', viewBox: '0 0 24 25' },
   { src: 'icons/ico-eye-open-filled-black.svg' },
@@ -104,7 +104,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-next-S.svg', viewBox: '0 0 11 23' },
   { src: 'icons/ico-no-bookings.svg', viewBox: '0 0 124 124' },
   { src: 'icons/ico-404.svg', viewBox: '0 0 308 194' },
-  { src: 'icons/ico-notification-error-red.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-notification-success.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-placeholder-offer-image.svg', viewBox: '0 0 80 80' },
   { src: 'icons/ico-offers.svg', viewBox: '0 0 48 49' },
@@ -175,7 +174,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-info-wrong.svg', viewBox: '0 0 78 78' },
   { src: 'icons/ico-key.svg', viewBox: '0 0 20 20' },
   { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },
-  { src: 'icons/ico-notification-error.svg', viewBox: '0 0 24 24' },
   { src: 'icons/offer-card-euro.svg', viewBox: '0 0 30 30' },
   { src: 'icons/other-offer.svg', viewBox: '0 0 30 30' },
   { src: 'icons/party.svg', viewBox: '0 0 48 48' },

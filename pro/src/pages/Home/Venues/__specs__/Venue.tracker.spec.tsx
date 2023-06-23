@@ -11,7 +11,7 @@ import * as useAnalytics from 'hooks/useAnalytics'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Venue, { IVenueProps } from '../Venue'
+import Venue, { VenueProps } from '../Venue'
 
 const mockLogEvent = jest.fn()
 
@@ -21,7 +21,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderVenue = async (props: IVenueProps) =>
+const renderVenue = async (props: VenueProps) =>
   renderWithProviders(<Venue {...props} />)
 
 const trackerForVenue = [
@@ -44,7 +44,7 @@ const trackerForVenue = [
 ]
 
 describe('venue create offer link', () => {
-  let props: IVenueProps
+  let props: VenueProps
   const venueId = 1
   const offererId = 12
 

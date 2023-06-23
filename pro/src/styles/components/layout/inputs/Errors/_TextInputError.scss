@@ -3,26 +3,5 @@
 @use "styles/variables/_colors.scss" as colors;
 
 .it-errors {
-  @include fonts.caption;
-
-  color: colors.$red-error;
-  display: flex;
-  line-height: rem.torem(16px);
   margin-top: rem.torem(8px);
-  text-align: left;
-
-  img {
-    height: rem.torem(15px);
-    margin-right: rem.torem(4px);
-    width: rem.torem(15px);
-  }
-
-  pre {
-    background: none;
-    color: colors.$red-error;
-    font-family: inherit;
-    font-size: inherit;
-    padding: 0;
-    white-space: pre-wrap;
-  }
 }

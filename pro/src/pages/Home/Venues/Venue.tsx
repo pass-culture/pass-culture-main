@@ -15,12 +15,12 @@ import {
 import { venueCreateOfferLink } from 'core/Venue/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { NotificationErrorIcon } from 'icons'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
 import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
 import { ReactComponent as IcoPlus } from 'icons/full-plus.svg'
 import { ReactComponent as IcoPlusCircle } from 'icons/ico-plus-circle.svg'
+import { ReactComponent as StrokeErrorIcon } from 'icons/stroke-error.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -30,7 +30,7 @@ import { VenueOfferSteps } from '../VenueOfferSteps'
 
 import VenueStat from './VenueStat'
 
-export interface IVenueProps {
+export interface VenueProps {
   hasMissingReimbursementPoint?: boolean
   venueId: number
   isVirtual?: boolean
@@ -54,7 +54,7 @@ const Venue = ({
   dmsInformations,
   hasAdageId,
   adageInscriptionDate,
-}: IVenueProps) => {
+}: VenueProps) => {
   const isCollectiveDmsTrackingActive = useActiveFeature(
     'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
   )
@@ -241,7 +241,7 @@ const Venue = ({
               </button>
               {initialOpenState && !isVirtual && (
                 <Button
-                  Icon={NotificationErrorIcon}
+                  Icon={StrokeErrorIcon}
                   className="needs-payment-icon"
                   variant={ButtonVariant.TERNARY}
                   hasTooltip

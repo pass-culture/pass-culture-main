@@ -4,9 +4,9 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { DeskScreen, IDeskProps } from '..'
+import { DeskScreen, DeskProps } from '..'
 
-const renderDeskScreen = (props: IDeskProps) => {
+const renderDeskScreen = (props: DeskProps) => {
   const rtlReturns = renderWithProviders(<DeskScreen {...props} />)
 
   const pageTitle = screen.getByRole('heading', { name: 'Guichet' })
@@ -31,12 +31,12 @@ describe('src | components | Desk', () => {
     priceCategoryLabel: 'mon label',
     venueDepartmentCode: '75',
   }
-  const defaultProps: IDeskProps = {
+  const defaultProps: DeskProps = {
     getBooking: jest.fn().mockResolvedValue({ booking: deskBooking }),
     submitValidate: jest.fn().mockResolvedValue({}),
     submitInvalidate: jest.fn().mockResolvedValue({}),
   }
-  let props: IDeskProps = { ...defaultProps }
+  let props: DeskProps = { ...defaultProps }
 
   beforeEach(() => {
     props = { ...defaultProps }

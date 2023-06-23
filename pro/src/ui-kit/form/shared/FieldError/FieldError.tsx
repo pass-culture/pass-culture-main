@@ -6,7 +6,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './FieldError.module.scss'
 
-interface IFieldErrorProps {
+interface FieldErrorProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
   name: string
@@ -18,7 +18,7 @@ const FieldError = ({
   className,
   name,
   iconAlt = '',
-}: IFieldErrorProps): JSX.Element => (
+}: FieldErrorProps): JSX.Element => (
   <div
     className={cn(styles['field-error'], className)}
     id={`error-${name}`}
