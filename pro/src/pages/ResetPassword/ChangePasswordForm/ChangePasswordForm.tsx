@@ -27,6 +27,7 @@ const ChangePasswordForm = ({ onSubmit }: IChangePasswordForm): JSX.Element => {
                 <PasswordInput
                   label="Nouveau mot de passe"
                   name="newPasswordValue"
+                  withErrorPreview
                 />
               </FormLayout.Row>
               <SubmitButton isLoading={formik.isSubmitting}>
