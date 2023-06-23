@@ -6,8 +6,8 @@ import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
-import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
+import { ReactComponent as StrokeCheckIcon } from 'icons/stroke-check.svg'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import { searchFiltersSelector } from 'store/offers/selectors'
 import { Button } from 'ui-kit'
@@ -191,7 +191,7 @@ const ActionsBar = ({
           Supprimer
         </Button>
       )}
-      <Button onClick={handleActivate} Icon={StatusValidatedIcon}>
+      <Button onClick={handleActivate} Icon={StrokeCheckIcon}>
         Publier
       </Button>
     </>
