@@ -123,6 +123,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_COOKIES_BANNER = "Active la nouvelle bannière de cookies"
     WIP_RECURRENCE_FILTERS = "Ajoute les filtres et le tri sur la vue liste des récurrences"
     WIP_ENABLE_SATISFACTION_SURVEY = "Activer l'affichage du questionnaire de satisfaction adage"
+    WIP_ENABLE_NEW_ADAGE_FILTERS = "Active les nouveaux filtres adage"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -190,6 +191,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_RECURRENCE_FILTERS,
     FeatureToggle.WIP_ENABLE_SATISFACTION_SURVEY,
     FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION,
+    FeatureToggle.WIP_ENABLE_NEW_ADAGE_FILTERS,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
