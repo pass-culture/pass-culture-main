@@ -106,7 +106,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/open-dropdown.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-other-download.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-other.svg', viewBox: '0 0 20 20' },
-  { src: 'icons/ico-pen-black-big.svg' },
   { src: 'icons/ico-pen-black.svg', viewBox: '0 0 20 20' },
   { src: 'icons/pending.svg', viewBox: '0 0 44 44' },
   { src: 'icons/picto-tip.svg', viewBox: '0 0 18 18' },
