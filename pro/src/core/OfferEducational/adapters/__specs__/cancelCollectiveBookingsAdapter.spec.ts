@@ -11,7 +11,7 @@ describe('cancelCollectiveBookingAdapter', () => {
     // given
 
     // when
-    const response = await cancelCollectiveBookingAdapter({ offerId: '' })
+    const response = await cancelCollectiveBookingAdapter({ offerId: 0 })
 
     // then
     expect(response.isOk).toBeFalsy()
@@ -33,7 +33,7 @@ describe('cancelCollectiveBookingAdapter', () => {
       )
 
     // when
-    const response = await cancelCollectiveBookingAdapter({ offerId: '12' })
+    const response = await cancelCollectiveBookingAdapter({ offerId: 12 })
 
     // then
     expect(response.isOk).toBeFalsy()
@@ -46,7 +46,7 @@ describe('cancelCollectiveBookingAdapter', () => {
     jest.spyOn(api, 'cancelCollectiveOfferBooking').mockResolvedValue()
 
     // when
-    const response = await cancelCollectiveBookingAdapter({ offerId: '12' })
+    const response = await cancelCollectiveBookingAdapter({ offerId: 12 })
 
     // then
     expect(response.isOk).toBeTruthy()
@@ -61,7 +61,7 @@ describe('cancelCollectiveBookingAdapter', () => {
 
     // when
     const response = await cancelCollectiveBookingAdapter({
-      offerId: '12',
+      offerId: 12,
       offerStatus: OfferStatus.EXPIRED,
     })
 

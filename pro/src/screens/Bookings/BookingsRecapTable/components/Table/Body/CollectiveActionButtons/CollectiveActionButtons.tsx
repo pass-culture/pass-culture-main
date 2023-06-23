@@ -26,7 +26,7 @@ const CollectiveActionButtons = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const notify = useNotification()
-  const offerId = bookingRecap.stock.offerIdentifier
+  const offerId = bookingRecap.stock.offerId
   const nonHumanizedOfferId = bookingRecap.stock.offerId
   const offerEditionUrl = useOfferEditionURL(
     true,
