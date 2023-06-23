@@ -74,7 +74,6 @@ export const collectiveOfferFactory = (
   const currentOfferId = offerId++
   return {
     ...sharedCollectiveOfferData,
-    id: currentOfferId.toString(),
     nonHumanizedId: currentOfferId,
     venue: customVenue,
     isBookable: true,
@@ -106,7 +105,7 @@ export const collectiveOfferTemplateFactory = (
   customVenue: GetCollectiveOfferVenueResponseModel = collectiveOfferVenueFactory()
 ): CollectiveOfferTemplate => ({
   ...sharedCollectiveOfferData,
-  id: (offerId++).toString(),
+  nonHumanizedId: offerId++,
   venue: customVenue,
   isTemplate: true,
   ...customCollectiveOfferTemplate,

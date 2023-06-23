@@ -29,7 +29,6 @@ from pcapi.routes.serialization.educational_institutions import EducationalInsti
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.image_conversion import CropParams
 from pcapi.validation.routes.offers import check_collective_offer_name_length_is_valid
@@ -242,14 +241,6 @@ class CollectiveOfferOfferVenueResponseModel(BaseModel):
     otherAddress: str
     venueId: int | None
 
-    @validator("venueId", pre=True)
-    def validate_venueId(cls, venue_id: str | int | None) -> int | None:
-        if isinstance(venue_id, int):
-            return venue_id
-        if not venue_id:
-            return None
-        return dehumanize(venue_id)
-
 
 class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     nonHumanizedId: int
@@ -269,7 +260,6 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
 
 
 class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixin):
-    id: str
     bookingEmails: list[str]
     dateCreated: datetime
     description: str
@@ -286,7 +276,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     name: str
     subcategoryId: SubcategoryIdEnum
     venue: GetCollectiveOfferVenueResponseModel
-    venueId: str
     status: OfferStatus
     domains: list[OfferDomain]
     interventionArea: list[str]
@@ -294,10 +283,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     imageCredit: str | None
     imageUrl: str | None
 
-    _humanize_id = humanize_field("id")
     _humanize_offerId = humanize_field("offerId")
-    _humanize_venue_id = humanize_field("venueId")
-
     class Config:
         allow_population_by_field_name = True
         orm_mode = True

@@ -118,7 +118,7 @@ const CollectiveOfferVisibility = ({
       return notify.error(result.message)
     }
     onSuccess({
-      offerId: offer.id,
+      offerId: offer.nonHumanizedId.toString(),
       message: result.message ?? '',
       payload: result.payload,
     })
@@ -358,7 +358,7 @@ const CollectiveOfferVisibility = ({
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
                   link={{
-                    to: `/offre/${offer.id}/collectif/stocks${
+                    to: `/offre/${offer.nonHumanizedId}/collectif/stocks${
                       requestId ? `?requete=${requestId}` : ''
                     }`,
                     isExternal: false,
