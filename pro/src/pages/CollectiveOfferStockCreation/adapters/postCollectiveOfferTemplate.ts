@@ -12,7 +12,7 @@ type Params = {
 
 type PostCollectiveOfferTemplateAdapter = Adapter<
   Params,
-  { id: string; nonHumanizedId: number },
+  { nonHumanizedId: number },
   null
 >
 
@@ -41,7 +41,7 @@ const postCollectiveOfferTemplateAdapter: PostCollectiveOfferTemplateAdapter =
       educationalPriceDetail: values.priceDetail,
     }
     try {
-      const { id, nonHumanizedId } =
+      const { nonHumanizedId } =
         await api.createCollectiveOfferTemplateFromCollectiveOffer(
           offerId,
           collectiveOfferTemplatePayload
@@ -49,7 +49,7 @@ const postCollectiveOfferTemplateAdapter: PostCollectiveOfferTemplateAdapter =
       return {
         isOk: true,
         message: null,
-        payload: { id, nonHumanizedId },
+        payload: { nonHumanizedId },
       }
     } catch (error) {
       if (hasStatusCodeAndErrorsCode(error) && error.status === 400) {
