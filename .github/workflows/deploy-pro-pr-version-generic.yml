@@ -50,6 +50,9 @@ jobs:
           set -a; 
           source ../config/run_envs/${{ inputs.ENV }};
           yarn build:${{ inputs.ENV }};
+      - if: ${{ inputs.ENV != 'testing' }}
+        run: |
+          cat package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > build/version.txt
       - name: Create Sentry release
         if: ${{ inputs.PUSH_RELEASE_TO_SENTRY }}
         uses: getsentry/action-release@v1
