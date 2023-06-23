@@ -44,6 +44,7 @@ export interface StocksEvent {
   bookingLimitDatetime: string
   priceCategoryId: number
   quantity: number | null
+  uuid: string
 }
 
 export interface StocksEventListProps {
@@ -108,13 +109,14 @@ const StocksEventList = ({
     }
   }
 
-  const onDeleteStock = (index: number) => {
+  const onDeleteStock = (selectIndex: number, uuid: string) => {
     // handle checkbox selection
     const newArray = [...isCheckedArray]
-    newArray.splice(index, 1)
+    newArray.splice(selectIndex, 1)
     setIsCheckedArray(newArray)
+    const stockIndex = stocks.findIndex(stock => stock.uuid === uuid)
 
-    stocks.splice(index, 1)
+    stocks.splice(stockIndex, 1)
     setStocks([...stocks])
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -131,7 +133,14 @@ const StocksEventList = ({
   }
 
   const onBulkDelete = () => {
-    const newStocks = stocks.filter((stock, index) => !isCheckedArray[index])
+    const stocksUuidToDelete = filteredStocks
+      .filter((stock, index) => isCheckedArray[index])
+      .map(stock => stock.uuid)
+
+    const newStocks = stocks.filter(
+      stock => !stocksUuidToDelete.includes(stock.uuid)
+    )
+
     const deletedStocksCount = stocks.length - newStocks.length
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -439,7 +448,7 @@ const StocksEventList = ({
                 <td className={cn(styles['data'], styles['clear-icon'])}>
                   <Button
                     variant={ButtonVariant.TERNARY}
-                    onClick={() => onDeleteStock(currentStockIndex)}
+                    onClick={() => onDeleteStock(index, stock.uuid)}
                     Icon={TrashFilledIcon}
                     hasTooltip
                   >
