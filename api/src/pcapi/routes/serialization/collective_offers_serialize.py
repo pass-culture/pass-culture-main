@@ -289,7 +289,6 @@ class CollectiveOfferOfferVenueResponseModel(BaseModel):
 
 
 class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
-    id: str
     nonHumanizedId: int
     isSoldOut: bool = Field(alias="isBooked")
     is_cancellable_from_offerer: bool = Field(alias="isCancellable")
@@ -299,8 +298,6 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     numberOfTickets: int | None
     priceDetail: str | None = Field(alias="educationalPriceDetail")
     isEditable: bool = Field(alias="isEducationalStockEditable")
-
-    _humanize_id = humanize_field("id")
 
     class Config:
         allow_population_by_field_name = True
