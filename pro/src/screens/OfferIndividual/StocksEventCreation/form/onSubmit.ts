@@ -1,4 +1,5 @@
 import sub from 'date-fns/sub'
+import { v4 as uuidv4 } from 'uuid'
 
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { serializeBeginningDateTime } from 'screens/OfferIndividual/StocksEventEdition/adapters/serializers'
@@ -110,6 +111,7 @@ const generateStocksForDates = (
               days: bookingLimitDateInterval,
             })
           ),
+          uuid: uuidv4(),
         }
       })
     )
