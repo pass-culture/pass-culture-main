@@ -66,7 +66,7 @@ describe('CollectiveOfferFromRequest', () => {
     jest.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
     jest
       .spyOn(api, 'createCollectiveOffer')
-      .mockResolvedValue({ id: '1', nonHumanizedId: 1 })
+      .mockResolvedValue({ nonHumanizedId: 1 })
   })
   it('should display request information', async () => {
     jest.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce({

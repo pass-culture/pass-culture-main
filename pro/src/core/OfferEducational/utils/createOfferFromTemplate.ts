@@ -53,7 +53,9 @@ export const createOfferFromTemplate = async (
   await postCollectiveOfferImage({ initialValues, notify, payload })
 
   navigate(
-    `/offre/collectif/${payload.id}/creation?structure=${offererId}${
+    `/offre/collectif/${
+      payload.nonHumanizedId
+    }/creation?structure=${offererId}${
       requestId ? `&requete=${requestId}` : ''
     }`
   )

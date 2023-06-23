@@ -26,7 +26,6 @@ from pcapi.routes.native.v1.serialization.common_models import AccessibilityComp
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
-from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParams
@@ -322,11 +321,10 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     collectiveStock: GetCollectiveOfferCollectiveStockResponseModel | None
     institution: EducationalInstitutionResponseModel | None
     isVisibilityEditable: bool
-    templateId: str | None
+    templateId: int | None
     lastBookingStatus: CollectiveBookingStatus | None
     lastBookingId: int | None
     teacher: EducationalRedactorResponseModel | None
-    _humanize_templateId = humanize_field("templateId")
     isPublicApi: bool
 
     @classmethod
@@ -340,10 +338,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
 
 
 class CollectiveOfferResponseIdModel(BaseModel):
-    id: str
     nonHumanizedId: int
-
-    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True
