@@ -9,7 +9,7 @@ import { ReactComponent as StatusExpiredIcon } from 'icons/ico-status-expired.sv
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
 import { ReactComponent as StatusPendingIcon } from 'icons/ico-status-pending.svg'
 import { ReactComponent as StatusRejectedIcon } from 'icons/ico-status-rejected.svg'
-import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
+import { ReactComponent as StrokeCheckIcon } from 'icons/stroke-check.svg'
 import strokeHourglass from 'icons/stroke-hourglass.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -51,7 +51,7 @@ export const getCollectiveStatusLabel = (
       return (
         <CollectiveStatusLabel
           className={style['status-active']}
-          icon={<StatusValidatedIcon className={style['status-label-icon']} />}
+          icon={<StrokeCheckIcon className={style['status-label-icon']} />}
           label="publiée"
         />
       )
@@ -74,7 +74,7 @@ export const getCollectiveStatusLabel = (
       ) : (
         <CollectiveStatusLabel
           className={style['status-booked']}
-          icon={<StatusValidatedIcon className={style['status-label-icon']} />}
+          icon={<StrokeCheckIcon className={style['status-label-icon']} />}
           label="réservée"
         />
       )

@@ -4,7 +4,7 @@ import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
-import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
+import { ReactComponent as StrokeCheckIcon } from 'icons/stroke-check.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -43,9 +43,7 @@ const StatusToggleButton = ({
       disabled={[OfferStatus.PENDING, OfferStatus.REJECTED].includes(status)}
       onClick={toggleOfferActiveStatus}
       Icon={
-        status !== OfferStatus.INACTIVE
-          ? StatusInactiveIcon
-          : StatusValidatedIcon
+        status !== OfferStatus.INACTIVE ? StatusInactiveIcon : StrokeCheckIcon
       }
     >
       {status !== OfferStatus.INACTIVE ? 'Désactiver' : 'Publier'}
