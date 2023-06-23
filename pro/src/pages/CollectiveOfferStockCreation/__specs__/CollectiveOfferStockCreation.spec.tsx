@@ -10,7 +10,6 @@ import {
   collectiveOfferFactory,
   collectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
-import { dehumanizeId } from 'utils/dehumanize'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOfferStockCreation } from '../CollectiveOfferStockCreation'
@@ -58,7 +57,7 @@ describe('CollectiveOfferStockCreation', () => {
   it('should render collective offer stock form from template', async () => {
     const props = {
       ...defaultProps,
-      offer: { ...defaultProps.offer, templateId: 'FM' },
+      offer: { ...defaultProps.offer, templateId: 12 },
     }
     const offerTemplate = collectiveOfferTemplateFactory({
       educationalPriceDetail: 'Details from template',
@@ -75,7 +74,7 @@ describe('CollectiveOfferStockCreation', () => {
   it('should failed render collective offer stock form from template', async () => {
     const props = {
       ...defaultProps,
-      offer: { ...defaultProps.offer, templateId: 'FM' },
+      offer: { ...defaultProps.offer, templateId: 12 },
     }
     jest.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValue({
       isOk: false,
@@ -95,7 +94,7 @@ describe('CollectiveOfferStockCreation', () => {
     ).toBeInTheDocument()
 
     const response = await getCollectiveOfferTemplateAdapter(
-      dehumanizeId(props.offer.templateId) || 0
+      props.offer.templateId
     )
     expect(response.isOk).toBeFalsy()
     await waitFor(() => {

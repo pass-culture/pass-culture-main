@@ -3,7 +3,6 @@
 /* eslint-disable */
 
 export type CollectiveOfferResponseIdModel = {
-  id: string;
   nonHumanizedId: number;
 };
 
