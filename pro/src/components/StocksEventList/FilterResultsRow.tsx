@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ResetIcon } from 'icons'
+import { ReactComponent as FullRefresh } from 'icons/full-refresh.svg'
 import { Button } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -30,7 +30,7 @@ export const FilterResultsRow = ({
 
         <div>
           <Button
-            Icon={ResetIcon}
+            Icon={FullRefresh}
             variant={ButtonVariant.TERNARY}
             onClick={onFiltersReset}
           >
