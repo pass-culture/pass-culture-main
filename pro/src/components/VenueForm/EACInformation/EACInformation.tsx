@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import FormLayout from 'components/FormLayout'
 import { IVenue } from 'core/Venue'
-import { ReactComponent as EditIcon } from 'icons/ico-pen-black.svg'
+import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
 import { venueHasCollectiveInformation } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/EACInformation/utils/venueHasCollectiveInformation'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Banner, ButtonLink } from 'ui-kit/index'
@@ -50,7 +50,7 @@ const EACInformation = ({ venue, isCreatingVenue }: IEACInformation) => {
             to: `/structures/${offererId}/lieux/${venue?.nonHumanizedId}/eac`,
             isExternal: false,
           }}
-          Icon={collectiveDataIsNotEmpty ? EditIcon : undefined}
+          Icon={collectiveDataIsNotEmpty ? FullEdit : undefined}
           variant={ButtonVariant.SECONDARY}
           isDisabled={isCreatingVenue}
           className={styles['edit-button']}

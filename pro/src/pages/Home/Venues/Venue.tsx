@@ -18,8 +18,8 @@ import useAnalytics from 'hooks/useAnalytics'
 import { NotificationErrorIcon } from 'icons'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
+import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
 import { ReactComponent as IcoPlus } from 'icons/full-more.svg'
-import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { ReactComponent as IcoPlusCircle } from 'icons/ico-plus-circle.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -288,7 +288,7 @@ const Venue = ({
                   to: editVenueLink,
                   isExternal: false,
                 }}
-                Icon={PenIcon}
+                Icon={FullEdit}
                 onClick={() =>
                   logEvent?.(
                     VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK,
