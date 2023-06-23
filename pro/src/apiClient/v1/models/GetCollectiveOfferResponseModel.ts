@@ -40,7 +40,7 @@ export type GetCollectiveOfferResponseModel = {
   motorDisabilityCompliant?: boolean | null;
   name: string;
   nonHumanizedId: number;
-  offerId?: string | null;
+  offerId?: number | null;
   offerVenue: CollectiveOfferOfferVenueResponseModel;
   status: OfferStatus;
   students: Array<StudentLevels>;
