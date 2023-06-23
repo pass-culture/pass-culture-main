@@ -9,21 +9,11 @@ from pydantic import validator
 from pydantic.fields import ModelField
 
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
 
 logger = logging.getLogger(__name__)
-
-
-class CollectiveStockIdResponseModel(BaseModel):
-    id: str
-
-    _humanize_id = humanize_field("id")
-
-    class Config:
-        orm_mode = True
 
 
 def validate_number_of_tickets(number_of_tickets: int | None) -> int:
