@@ -563,7 +563,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           { remainingQuantity: 0, beginningDatetime: getToday() },
         ]
         props.offer.educationalBooking = {
-          id: 'A1',
+          id: 1,
           booking_status: 'PENDING',
         }
 
@@ -584,7 +584,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         { remainingQuantity: 0, beginningDatetime: getToday() },
       ]
       props.offer.educationalBooking = {
-        id: 'A1',
+        id: 1,
         booking_status: 'USED',
       }
 
@@ -610,7 +610,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           ...props.offer,
           status: OfferStatus.SOLD_OUT,
           stocks: [{ remainingQuantity: 0, beginningDatetime: getToday() }],
-          educationalBooking: { id: 'A1', booking_status: 'PENDING' },
+          educationalBooking: { id: 1, booking_status: 'PENDING' },
         },
       })
 

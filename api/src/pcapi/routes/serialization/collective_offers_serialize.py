@@ -242,11 +242,9 @@ class GetCollectiveOfferVenueResponseModel(BaseModel, AccessibilityComplianceMix
     dateModifiedAtLastProvider: datetime | None
     departementCode: str | None
     fieldsUpdated: list[str]
-    id: str
     nonHumanizedId: int
     idAtProviders: str | None
     isVirtual: bool
-    lastProviderId: str | None
     latitude: float | None
     longitude: float | None
     managingOfferer: GetCollectiveOfferManagingOffererResponseModel
@@ -258,9 +256,7 @@ class GetCollectiveOfferVenueResponseModel(BaseModel, AccessibilityComplianceMix
     thumbCount: int
     venueLabelId: str | None
 
-    _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
-    _humanize_last_provider_id = humanize_field("lastProviderId")
     _humanize_venue_label_id = humanize_field("venueLabelId")
 
     class Config:
