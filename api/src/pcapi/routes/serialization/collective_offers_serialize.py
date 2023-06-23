@@ -57,9 +57,7 @@ class ListCollectiveOffersQueryModel(BaseModel):
 
 
 class CollectiveOffersStockResponseModel(BaseModel):
-    id: str
     hasBookingLimitDatetimePassed: bool
-    offerId: str
     remainingQuantity: int | str
     beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
@@ -158,17 +156,13 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
 def _serialize_stock(offer_id: int, stock: CollectiveStock | None = None) -> dict:
     if stock:
         return {
-            "id": humanize(stock.id),
             "nonHumanizedId": stock.id,
-            "offerId": humanize(offer_id),
             "hasBookingLimitDatetimePassed": stock.hasBookingLimitDatetimePassed,
             "remainingQuantity": 0 if stock.isSoldOut else 1,
             "beginningDatetime": stock.beginningDatetime,
             "bookingLimitDatetime": stock.bookingLimitDatetime,
         }
     return {
-        "id": humanize(0),
-        "offerId": humanize(offer_id),
         "hasBookingLimitDatetimePassed": False,
         "remainingQuantity": 1,
         "beginningDatetime": datetime(year=2030, month=1, day=1),
