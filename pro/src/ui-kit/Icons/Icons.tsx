@@ -25,7 +25,8 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
   { src: 'icons/full-validate.svg' }, // TODO 1 in CollectiveOfferConfirmation
-  { src: 'icons/full-infos.svg' },
+  { src: 'icons/full-infos.svg' }, // TODO 1 uses left inside <ButtonLink>
+  { src: 'icons/full-help.svg' },
   { src: 'icons/full-link.svg' }, // TODO 17 uses left inside <ButtonLink> and <Banner> and <InternalBanner>
   { src: 'icons/full-more.svg' }, // TODO still in 2 ButtonLink and 1 Button
   { src: 'icons/full-mail.svg' }, // TODO 2 uses left inside ButtonLink, 1 use left inside SubmitButton
@@ -171,7 +172,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-events.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-eye-close.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-eye-open.svg', viewBox: '0 0 20 20' },
-  { src: 'icons/ico-help-S.svg', viewBox: '0 0 48 48' },
   { src: 'icons/ico-info-wrong.svg', viewBox: '0 0 78 78' },
   { src: 'icons/ico-key.svg', viewBox: '0 0 20 20' },
   { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },

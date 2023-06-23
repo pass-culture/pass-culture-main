@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
+import { ReactComponent as FullInfoIcon } from 'icons/full-infos.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -13,7 +14,7 @@ import {
 } from '../../../core/FirebaseEvents/constants'
 import useActiveFeature from '../../../hooks/useActiveFeature'
 import useAnalytics from '../../../hooks/useAnalytics'
-import { CircleArrowIcon, HelpSIcon } from '../../../icons'
+import { CircleArrowIcon } from '../../../icons'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 
 import styles from './VenueOfferSteps.module.scss'
@@ -84,7 +85,7 @@ const VenueOfferSteps = ({
                       rel: 'noopener noreferrer',
                       target: '_blank',
                     }}
-                    Icon={HelpSIcon}
+                    Icon={FullInfoIcon}
                     onClick={() => {
                       logEvent?.(Events.CLICKED_NO_VENUE, {
                         from: location.pathname,
