@@ -162,6 +162,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "activeMediation": None,
+            "bookingContact": None,
             "bookingEmail": "offer.booking.email@example.com",
             "dateCreated": "2020-10-15T00:00:00Z",
             "description": "Tatort, but slower",

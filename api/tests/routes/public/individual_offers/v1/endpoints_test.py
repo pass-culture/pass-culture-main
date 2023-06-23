@@ -265,6 +265,7 @@ class PostProductTest:
         assert response.json == {
             "productOffers": [
                 {
+                    "bookingContact": None,
                     "bookingEmail": None,
                     "categoryRelatedFields": {
                         "author": None,
@@ -350,6 +351,7 @@ class PostProductTest:
         assert response.json == {
             "productOffers": [
                 {
+                    "bookingContact": None,
                     "bookingEmail": None,
                     "categoryRelatedFields": {
                         "author": None,
@@ -376,6 +378,7 @@ class PostProductTest:
                     "stock": None,
                 },
                 {
+                    "bookingContact": None,
                     "bookingEmail": None,
                     "categoryRelatedFields": {
                         "author": None,
@@ -416,6 +419,7 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "enableDoubleBookings": False,
+                        "bookingContact": "contact@example.com",
                         "bookingEmail": "spam@example.com",
                         "categoryRelatedFields": {
                             "author": "Maurice",
@@ -490,6 +494,7 @@ class PostProductTest:
         assert response.json == {
             "productOffers": [
                 {
+                    "bookingContact": "contact@example.com",
                     "bookingEmail": "spam@example.com",
                     "categoryRelatedFields": {
                         "author": "Maurice",
@@ -1291,6 +1296,7 @@ class PostEventTest:
             "/public/offers/v1/events",
             json={
                 "enableDoubleBookings": True,
+                "bookingContact": "contact@example.com",
                 "bookingEmail": "nicoj@example.com",
                 "categoryRelatedFields": {
                     "author": "Ray Charles",
@@ -1364,6 +1370,7 @@ class PostEventTest:
                 "motorDisabilityCompliant": True,
                 "visualDisabilityCompliant": True,
             },
+            "bookingContact": "contact@example.com",
             "bookingEmail": "nicoj@example.com",
             "categoryRelatedFields": {
                 "author": "Ray Charles",
@@ -1783,6 +1790,7 @@ class GetProductTest:
 
         assert response.status_code == 200
         assert response.json == {
+            "bookingContact": None,
             "bookingEmail": None,
             "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": None},
             "description": "Un livre de contrepèterie",
@@ -1895,6 +1903,7 @@ class GetProductByEanTest:
         assert response.json == {
             "products": [
                 {
+                    "bookingContact": None,
                     "bookingEmail": None,
                     "categoryRelatedFields": {
                         "category": "SUPPORT_PHYSIQUE_FILM",
@@ -1951,6 +1960,7 @@ class GetProductByEanTest:
         assert response.json == {
             "products": [
                 {
+                    "bookingContact": None,
                     "bookingEmail": None,
                     "categoryRelatedFields": {
                         "category": "SUPPORT_PHYSIQUE_FILM",
@@ -1974,6 +1984,7 @@ class GetProductByEanTest:
                     "stock": None,
                 },
                 {
+                    "bookingContact": None,
                     "bookingEmail": None,
                     "categoryRelatedFields": {
                         "category": "SUPPORT_PHYSIQUE_FILM",
@@ -1997,6 +2008,7 @@ class GetProductByEanTest:
                     "stock": None,
                 },
                 {
+                    "bookingContact": None,
                     "bookingEmail": None,
                     "categoryRelatedFields": {
                         "category": "SUPPORT_PHYSIQUE_FILM",
@@ -2094,6 +2106,7 @@ class GetProductByEanTest:
         assert response.json == {
             "products": [
                 {
+                    "bookingContact": None,
                     "bookingEmail": None,
                     "categoryRelatedFields": {
                         "category": "SUPPORT_PHYSIQUE_FILM",
@@ -2162,6 +2175,7 @@ class GetEventTest:
                 "motorDisabilityCompliant": False,
                 "visualDisabilityCompliant": False,
             },
+            "bookingContact": None,
             "bookingEmail": None,
             "categoryRelatedFields": {"author": None, "category": "SEANCE_CINE", "stageDirector": None, "visa": None},
             "description": "Un livre de contrepèterie",
@@ -3157,6 +3171,7 @@ class PatchEventTest:
             f"/public/offers/v1/events/{event_offer.id}",
             json={
                 "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 60},
+                "bookingContact": "test@myemail.com",
                 "bookingEmail": "test@myemail.com",
                 "eventDuration": 40,
                 "enableDoubleBookings": "true",
@@ -3168,6 +3183,7 @@ class PatchEventTest:
         assert event_offer.withdrawalDelay == 3600
         assert event_offer.durationMinutes == 40
         assert event_offer.isDuo is True
+        assert event_offer.bookingContact == "test@myemail.com"
         assert event_offer.bookingEmail == "test@myemail.com"
         assert event_offer.withdrawalDetails == "Here !"
 

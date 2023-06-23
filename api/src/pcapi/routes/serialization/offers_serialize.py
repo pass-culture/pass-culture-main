@@ -72,6 +72,7 @@ class CategoryResponseModel(BaseModel):
 
 class PostOfferBodyModel(BaseModel):
     audio_disability_compliant: bool
+    booking_contact: EmailStr | None
     booking_email: EmailStr | None
     description: str | None
     duration_minutes: int | None
@@ -113,6 +114,7 @@ class OfferAddressType(enum.Enum):
 
 
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
+    bookingContact: EmailStr | None
     bookingEmail: EmailStr | None
     description: str | None
     isNational: bool | None
@@ -327,6 +329,7 @@ class PriceCategoryResponseModel(BaseModel):
 
 class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     activeMediation: GetOfferMediationResponseModel | None
+    bookingContact: str | None
     bookingEmail: str | None
     dateCreated: datetime
     description: str | None

@@ -8,6 +8,7 @@ export type PatchOfferBodyModel = {
   ageMax?: number | null;
   ageMin?: number | null;
   audioDisabilityCompliant?: boolean | null;
+  bookingContact?: string | null;
   bookingEmail?: string | null;
   conditions?: string | null;
   description?: string | null;

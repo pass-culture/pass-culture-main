@@ -368,6 +368,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     ageMax = sa.Column(sa.Integer, nullable=True)
     author: sa_orm.Mapped["User"] | None = relationship("User", backref="offers", uselist=False)
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    bookingContact = sa.Column(sa.String(120), nullable=True)
     bookingEmail = sa.Column(sa.String(120), nullable=True)
     conditions = sa.Column(sa.String(120), nullable=True)
     criteria: sa_orm.Mapped["Criterion"] = sa.orm.relationship(
