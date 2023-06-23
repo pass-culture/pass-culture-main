@@ -269,7 +269,7 @@ class AdageHttpClient(AdageClient):
                 message="Cannot establish connection to omogen api",
             ) from exp
 
-        if api_response.status_code != 200:
+        if api_response.status_code != 201:
             raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
     def notify_redactor_when_collective_request_is_made(self, data: serialize.AdageCollectiveRequest) -> None:
