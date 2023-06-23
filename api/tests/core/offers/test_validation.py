@@ -336,6 +336,7 @@ class CheckOfferWithdrawalTest:
             withdrawal_type=None,
             withdrawal_delay=None,
             subcategory_id=None,
+            booking_contact=None,
         )
 
     def test_withdrawable_event_offer_can_have_no_ticket_to_withdraw(self):
@@ -343,6 +344,7 @@ class CheckOfferWithdrawalTest:
             withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
             withdrawal_delay=None,
             subcategory_id=subcategories.CONCERT.id,
+            booking_contact="booking@conta.ct",
         )
 
     def test_withdrawable_event_offer_with_no_ticket_to_withdraw_cant_have_delay(self):
@@ -351,6 +353,7 @@ class CheckOfferWithdrawalTest:
                 withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
                 withdrawal_delay=60 * 30,
                 subcategory_id=subcategories.CONCERT.id,
+                booking_contact="booking@conta.ct",
             )
 
     def test_non_withdrawable_event_offer_cant_have_withdrawal(self):
@@ -359,6 +362,7 @@ class CheckOfferWithdrawalTest:
                 withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
                 withdrawal_delay=None,
                 subcategory_id=subcategories.JEU_EN_LIGNE.id,
+                booking_contact=None,
             )
 
     @pytest.mark.parametrize(
@@ -373,6 +377,7 @@ class CheckOfferWithdrawalTest:
             withdrawal_type=withdrawal_type,
             withdrawal_delay=60 * 30,
             subcategory_id=subcategories.CONCERT.id,
+            booking_contact="booking@conta.ct",
         )
 
     @pytest.mark.parametrize(
@@ -388,6 +393,7 @@ class CheckOfferWithdrawalTest:
                 withdrawal_type=withdrawal_type,
                 withdrawal_delay=None,
                 subcategory_id=subcategories.CONCERT.id,
+                booking_contact="booking@conta.ct",
             )
 
     @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
@@ -400,6 +406,7 @@ class CheckOfferWithdrawalTest:
             withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
             withdrawal_delay=None,
             subcategory_id=subcategory_id,
+            booking_contact="booking@conta.ct",
         )
 
     # @TODO: bruno: remove this test when removing the feature flag PC-14050
@@ -413,6 +420,7 @@ class CheckOfferWithdrawalTest:
             withdrawal_type=None,
             withdrawal_delay=None,
             subcategory_id=subcategories.CONCERT.id,
+            booking_contact="booking@conta.ct",
         )
 
     @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
@@ -422,6 +430,16 @@ class CheckOfferWithdrawalTest:
                 withdrawal_type=None,
                 withdrawal_delay=None,
                 subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
+                booking_contact=None,
+            )
+
+    def test_withdrawable_event_offer_must_have_booking_contact(self):
+        with pytest.raises(exceptions.WithdrawableEventOfferMustHaveBookingContact):
+            validation.check_offer_withdrawal(
+                withdrawal_type=None,
+                withdrawal_delay=None,
+                subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
+                booking_contact=None,
             )
 
 

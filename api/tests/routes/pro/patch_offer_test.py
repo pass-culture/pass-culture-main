@@ -48,7 +48,7 @@ class Returns200Test:
         assert updated_offer.product.name == "New name"
 
     def test_withdrawal_can_be_updated(self, client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id)
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id, bookingContact="booking@conta.ct")
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         data = {
@@ -65,7 +65,7 @@ class Returns200Test:
     @override_features(WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL=True)
     def test_withdrawal_update_send_email_to_each_related_booker(self, client):
         # given
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id)
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id, bookingContact="booking@conta.ct")
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         stock = offers_factories.StockFactory(offer=offer)
         bookings = [bookings_factories.BookingFactory(stock=stock) for _ in range(3)]
@@ -104,7 +104,7 @@ class Returns200Test:
     @override_features(WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL=True)
     def test_withdrawal_update_does_not_send_email_if_not_specified_so(self, client):
         # given
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id)
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id, bookingContact="booking@conta.ct")
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         stock = offers_factories.StockFactory(offer=offer)
         _ = [bookings_factories.BookingFactory(stock=stock) for _ in range(3)]
@@ -272,7 +272,10 @@ class Returns400Test:
 
     def test_reuse_unchanged_withdrawal(self, client):
         offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.CONCERT.id, withdrawalType=WithdrawalTypeEnum.BY_EMAIL, withdrawalDelay=60 * 15
+            subcategoryId=subcategories.CONCERT.id,
+            withdrawalType=WithdrawalTypeEnum.BY_EMAIL,
+            withdrawalDelay=60 * 15,
+            bookingContact="booking@conta.ct",
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -284,6 +287,23 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["offer"] == [
             "Il ne peut pas y avoir de délai de retrait lorsqu'il s'agit d'un évènement sans ticket"
+        ]
+
+    def test_booking_contact_is_checked_when_changed(self, client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONCERT.id,
+            withdrawalType=WithdrawalTypeEnum.BY_EMAIL,
+            withdrawalDelay=60 * 15,
+            bookingContact="booking@conta.ct",
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"bookingContact": None}
+        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["offer"] == [
+            "Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"
         ]
 
 

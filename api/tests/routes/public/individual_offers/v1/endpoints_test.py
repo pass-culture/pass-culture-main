@@ -1406,6 +1406,7 @@ class PostEventTest:
                 "accessibility": ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
+                "bookingContact": "booking@conta.ct",
             },
         )
 
@@ -1431,6 +1432,7 @@ class PostEventTest:
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "ticketCollection": None,
+                "bookingContact": "booking@conta.ct",
             },
         )
 
@@ -1449,6 +1451,7 @@ class PostEventTest:
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 30},
+                "bookingContact": "booking@conta.ct",
             },
         )
 
@@ -1468,6 +1471,7 @@ class PostEventTest:
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "ticketCollection": {"way": "by_email", "daysBeforeEvent": 3},
+                "bookingContact": "booking@conta.ct",
             },
         )
 
@@ -1494,6 +1498,26 @@ class PostEventTest:
         assert offers_models.Offer.query.count() == 0
         assert response.json == {
             "offer": ["Une offre qui n'a pas de ticket retirable ne peut pas avoir un type de retrait renseigné"]
+        }
+
+    def test_error_when_withdrawable_event_but_no_booking_contact(self, client):
+        venue, _ = create_offerer_provider_linked_to_venue()
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+                "accessibility": ACCESSIBILITY_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "ticketCollection": {"way": "by_email", "daysBeforeEvent": 3},
+            },
+        )
+
+        assert response.status_code == 400
+        assert offers_models.Offer.query.count() == 0
+        assert response.json == {
+            "offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]
         }
 
 
@@ -3072,6 +3096,7 @@ class PatchEventTest:
             withdrawalDetails="Des conditions de retrait sur la sellette",
             withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
             withdrawalDelay=86400,
+            bookingContact="contact@example.com",
             bookingEmail="notify@example.com",
             lastProvider=api_key.provider,
         )
@@ -3157,6 +3182,7 @@ class PatchEventTest:
         venue, api_key = create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
+            bookingContact="contact@example.com",
             bookingEmail="notify@passq.com",
             subcategoryId="CONCERT",
             durationMinutes=20,
