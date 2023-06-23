@@ -256,7 +256,11 @@ class AdageHttpClient(AdageClient):
     def notify_reimburse_collective_booking(self, data: prebooking.AdageReibursementNotification) -> None:
         api_url = f"{self.base_url}/v1/reservation-remboursement"
         try:
-            api_response = requests.post(api_url, headers={self.header_key: self.api_key}, data=data.json())
+            api_response = requests.post(
+                api_url,
+                headers={self.header_key: self.api_key, "Content-Type": "application/json"},
+                data=data.json(),
+            )
         except ConnectionError as exp:
             logger.info("could not connect to adage, error: %s", traceback.format_exc())
             raise exceptions.AdageException(
