@@ -1,13 +1,12 @@
 import React, { useState } from 'react'
 
+import { ReactComponent as fullEdit } from 'icons/full-edit.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Icon from 'ui-kit/Icon/Icon'
 
 import { UploaderModeEnum } from '../types'
 
 import { ButtonImageAdd } from './ButtonImageAdd'
-import styles from './ButtonImageEdit.module.scss'
 import { ModalImageEdit } from './ModalImageEdit'
 import { IOnImageUploadArgs } from './ModalImageEdit/ModalImageEdit'
 import { IUploadImageValues } from './types'
@@ -32,12 +31,9 @@ const ButtonImageEdit = ({
         <Button
           onClick={() => setIsModalOpen(true)}
           variant={ButtonVariant.TERNARY}
+          alt="Modifier l’image"
+          Icon={fullEdit}
         >
-          <Icon
-            alt="Modifier l’image"
-            className={styles['icon-modify-image']}
-            svg="ico-pen-black-big"
-          />
           Modifier
         </Button>
       ) : (
