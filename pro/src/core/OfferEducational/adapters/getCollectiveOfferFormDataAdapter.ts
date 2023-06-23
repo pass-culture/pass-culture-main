@@ -20,7 +20,7 @@ type Payload = {
 }
 
 type Param = {
-  offererId: string | null
+  offererId: number | null
   offer?: CollectiveOffer | CollectiveOfferTemplate
 }
 
@@ -43,7 +43,7 @@ const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
   async ({ offererId, offer }) => {
     try {
       const targetOffererId =
-        offer?.venue.managingOfferer.nonHumanizedId.toString() || offererId
+        offer?.venue.managingOfferer.nonHumanizedId || offererId
       const responses = await Promise.all([
         getEducationalCategoriesAdapter(),
         getEducationalDomainsAdapter(),

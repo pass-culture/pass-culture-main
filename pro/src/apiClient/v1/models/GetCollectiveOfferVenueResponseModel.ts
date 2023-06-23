@@ -11,15 +11,12 @@ export type GetCollectiveOfferVenueResponseModel = {
   city?: string | null;
   comment?: string | null;
   dateCreated?: string | null;
-  dateModifiedAtLastProvider?: string | null;
   departementCode?: string | null;
-  fieldsUpdated: Array<string>;
   idAtProviders?: string | null;
   isVirtual: boolean;
   latitude?: number | null;
   longitude?: number | null;
   managingOfferer: GetCollectiveOfferManagingOffererResponseModel;
-  managingOffererId: string;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
