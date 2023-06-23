@@ -4,8 +4,8 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
+import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
-import { ReactComponent as PenIcon } from 'icons/ico-pen-black.svg'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
@@ -104,7 +104,7 @@ const OffererDetails = ({
               to: `/structures/${selectedOfferer.nonHumanizedId}`,
               isExternal: false,
             }}
-            Icon={PenIcon}
+            Icon={FullEdit}
             isDisabled={!isUserOffererValidated}
             onClick={() =>
               logEvent?.(Events.CLICKED_MODIFY_OFFERER, {

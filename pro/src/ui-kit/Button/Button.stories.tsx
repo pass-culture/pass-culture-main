@@ -3,9 +3,9 @@ import type { Story } from '@storybook/react'
 import React from 'react'
 
 import { ReactComponent as backFullIcon } from 'icons/full-back.svg'
+import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import { ReactComponent as circleArrowIcon } from 'icons/ico-circle-arrow.svg'
-import { ReactComponent as penIcon } from 'icons/ico-pen-black.svg'
 
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
@@ -92,7 +92,7 @@ export const LinkButtonWithIcon = TemplateLink.bind({})
 
 LinkButtonWithIcon.args = {
   ...LinkButton.args,
-  Icon: penIcon,
+  Icon: FullEdit,
 }
 
 export const LinkQuaternaryButtonWithIcon = TemplateLink.bind({})
@@ -108,7 +108,7 @@ export const WithTooltip = Template.bind({})
 WithTooltip.args = {
   ...DefaultButton.args,
   children: 'Créer une offre réservable pour un établissement scolaire',
-  Icon: penIcon,
+  Icon: FullEdit,
   iconPosition: IconPositionEnum.CENTER,
   variant: ButtonVariant.SECONDARY,
   hasTooltip: true,
