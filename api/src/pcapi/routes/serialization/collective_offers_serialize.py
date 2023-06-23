@@ -535,10 +535,7 @@ class CollectiveOfferTemplateBodyModel(BaseModel):
 
 
 class CollectiveOfferTemplateResponseIdModel(BaseModel):
-    id: str
     nonHumanizedId: int
-
-    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True
