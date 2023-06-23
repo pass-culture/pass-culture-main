@@ -1,3 +1,4 @@
+import datetime
 from functools import partial
 import json
 import typing
@@ -194,6 +195,44 @@ class PCDateField(wtforms.DateField):
                 return "Date invalide"
             case _:
                 return string
+
+
+class PCDateRangeField(wtforms.StringField):
+    separator = " - "
+    date_range_dateformat = "%d/%m/%Y"
+    widget = partial(widget, template="components/forms/date_range_field.html")
+
+    def process_formdata(self, valuelist: list) -> None:
+        if valuelist:
+            from_to_date_split = valuelist[0].split(self.separator)
+            from_date = datetime.datetime.strptime(from_to_date_split[0], self.date_range_dateformat)
+            to_date = datetime.datetime.strptime(from_to_date_split[1], self.date_range_dateformat)
+            self.data = [from_date, to_date]
+        else:
+            self.data = []
+
+    @property
+    def from_date(self) -> datetime.date | None:
+        return self.data[0]
+
+    @property
+    def to_date(self) -> datetime.date | None:
+        return self.data[1]
+
+    def __init__(
+        self,
+        label: str,
+        max_date: datetime.date = None,
+        reset_to_blank: bool = False,
+        calendar_start_date: datetime.date = None,
+        calendar_end_date: datetime.date = None,
+        **kwargs: typing.Any,
+    ):
+        super().__init__(label, **kwargs)
+        self.max_date = max_date
+        self.reset_to_blank = reset_to_blank
+        self.calendar_start_date = calendar_start_date
+        self.calendar_end_date = calendar_end_date
 
 
 class PCSelectField(wtforms.SelectField):
