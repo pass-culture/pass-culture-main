@@ -1,8 +1,8 @@
 import { AccessiblityEnum } from 'core/shared'
-import mentalDisabilitySvg from 'icons/mental-disability.svg'
-import motorDisabilitySvg from 'icons/motor-disability.svg'
+import strokeAccessibilityBrain from 'icons/stroke-accessibility-brain.svg'
 import audioDisabilitySvg from 'icons/stroke-accessibility-ear.svg'
-import visualDisabilitySvg from 'icons/visual-disability.svg'
+import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
+import strokeAccessibilityLeg from 'icons/stroke-accessibility-leg.svg'
 
 const useAccessibilityOptions = (
   setFieldValue: (
@@ -33,19 +33,19 @@ const useAccessibilityOptions = (
     {
       label: 'Visuel',
       name: `accessibility.${AccessiblityEnum.VISUAL}`,
-      icon: visualDisabilitySvg,
+      icon: strokeAccessibilityEye,
       onChange: onNormalOptionChange,
     },
     {
       label: 'Psychique ou cognitif',
       name: `accessibility.${AccessiblityEnum.MENTAL}`,
-      icon: mentalDisabilitySvg,
+      icon: strokeAccessibilityBrain,
       onChange: onNormalOptionChange,
     },
     {
       label: 'Moteur',
       name: `accessibility.${AccessiblityEnum.MOTOR}`,
-      icon: motorDisabilitySvg,
+      icon: strokeAccessibilityLeg,
       onChange: onNormalOptionChange,
     },
     {
