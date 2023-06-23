@@ -75,7 +75,7 @@ const CollectiveOfferSummaryCreation = ({
         offer={offer}
         categories={categories}
         offerEditLink={`/offre/collectif${offer.isTemplate ? '/vitrine' : ''}/${
-          offer.id
+          offer.nonHumanizedId
         }/creation`}
         stockEditLink={`/offre/${offer.nonHumanizedId}/collectif/stocks`}
         visibilityEditLink={`/offre/${offer.nonHumanizedId}/collectif/visibilite`}

@@ -49,7 +49,7 @@ describe('screens | OfferEducational', () => {
     props = {
       ...props,
       offer: collectiveOfferFactory(
-        { venueId: 'VENUE_WITH_INTERVENTION_AREA' },
+        undefined,
         undefined,
         collectiveOfferVenueFactory({})
       ),

@@ -213,7 +213,6 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: collectiveOfferFactory({
-        id: 'AE',
         nonHumanizedId: offerId,
         isActive: false,
         collectiveStock: collectiveStockFactory({

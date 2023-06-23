@@ -76,7 +76,6 @@ export type OfferEducationalStockFormValues = {
 }
 
 export type GetStockOfferSuccessPayload = {
-  id: string
   isActive: boolean
   status: OfferStatus
   isBooked: boolean

@@ -20,7 +20,6 @@ export type GetCollectiveOfferTemplateResponseModel = {
   durationMinutes?: number | null;
   educationalPriceDetail?: string | null;
   hasBookingLimitDatetimesPassed: boolean;
-  id: string;
   imageCredit?: string | null;
   imageUrl?: string | null;
   interventionArea: Array<string>;
@@ -37,7 +36,6 @@ export type GetCollectiveOfferTemplateResponseModel = {
   students: Array<StudentLevels>;
   subcategoryId: SubcategoryIdEnum;
   venue: GetCollectiveOfferVenueResponseModel;
-  venueId: string;
   visualDisabilityCompliant?: boolean | null;
 };
 

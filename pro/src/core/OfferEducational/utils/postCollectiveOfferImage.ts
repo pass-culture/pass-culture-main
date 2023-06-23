@@ -6,7 +6,7 @@ import { OfferEducationalFormValues } from '../types'
 interface PostCollectiveOfferImageProps {
   initialValues: OfferEducationalFormValues
   notify: ReturnType<typeof useNotification>
-  payload: { id: string; nonHumanizedId: number }
+  payload: { nonHumanizedId: number }
 }
 
 export const postCollectiveOfferImage = async ({

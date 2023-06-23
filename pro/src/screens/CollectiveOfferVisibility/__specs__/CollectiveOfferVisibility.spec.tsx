@@ -86,7 +86,7 @@ const renderVisibilityStep = (props: CollectiveOfferVisibilityProps) =>
 
 describe('CollectiveOfferVisibility', () => {
   let props: CollectiveOfferVisibilityProps
-
+  const offerId = 1
   beforeEach(() => {
     props = {
       mode: Mode.CREATION,
@@ -95,7 +95,7 @@ describe('CollectiveOfferVisibility', () => {
       onSuccess: jest.fn(),
       institutions,
       isLoadingInstitutions: false,
-      offer: collectiveOfferFactory({ id: 'BQ' }),
+      offer: collectiveOfferFactory({ nonHumanizedId: offerId }),
     }
   })
 
@@ -203,7 +203,7 @@ describe('CollectiveOfferVisibility', () => {
     )
     expect(spyPatch).toHaveBeenCalledTimes(1)
     expect(props.onSuccess).toHaveBeenCalledWith({
-      offerId: 'BQ',
+      offerId: offerId.toString(),
       message: '',
       payload: {
         institutions: [],
