@@ -30,6 +30,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
+from pcapi.routes.native.v1.api_errors import account as account_errors
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
@@ -75,38 +76,21 @@ def reset_recredit_amount_to_show(user: users_models.User) -> serializers.UserPr
 
 
 @blueprint.native_v1.route("/profile/update_email", methods=["POST"])
-@spectree_serialize(
-    on_success_status=204,
-    api=blueprint.api,
-)
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 def update_user_email(user: users_models.User, body: serializers.UserProfileEmailUpdate) -> None:
     try:
         email_api.request_email_update(user, body.email, body.password)
     except exceptions.EmailUpdateTokenExists:
-        raise api_errors.ApiErrors(
-            {"code": "TOKEN_EXISTS", "message": "Une demande de modification d'adresse e-mail est déjà en cours"},
-            status_code=400,
-        )
-    except exceptions.EmailUpdateInvalidPassword:
-        raise api_errors.ApiErrors(
-            {"code": "INVALID_PASSWORD", "message": "Mot de passe invalide"},
-            status_code=400,
-        )
-    except exceptions.InvalidEmailError:
-        raise api_errors.ApiErrors(
-            {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
-            status_code=400,
-        )
+        raise account_errors.EmailUpdatePendingError()
     except exceptions.EmailUpdateLimitReached:
-        raise api_errors.ApiErrors(
-            {"code": "EMAIL_UPDATE_ATTEMPTS_LIMIT", "message": "Trop de tentatives"},
-            status_code=400,
-        )
+        raise account_errors.EmailUpdateLimitError()
     except exceptions.EmailExistsError:
         # Returning an error message might help the end client find
         # existing email addresses.
-        pass
+        return
+    except exceptions.EmailUpdateInvalidPassword:
+        raise account_errors.WrongPasswordError()
 
 
 @blueprint.native_v1.route("/profile/email_update/status", methods=["GET"])

@@ -44,6 +44,7 @@ from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.sms import testing as sms_testing
+from pcapi.routes.native.v1.api_errors import account as account_errors
 from pcapi.routes.native.v1.serialization import account as account_serializers
 
 
@@ -739,6 +740,18 @@ class UpdateUserEmailTest:
         assert {"new_email", "token", "expiration_timestamp"} <= base_url_params.keys()
         assert base_url_params["new_email"] == [new_email]
 
+    def test_update_email_user_not_connected(self, app, client):
+        new_email = "updated_" + self.identifier
+        password = "some_random_string"
+        response = client.post(
+            "/native/v1/profile/update_email",
+            json={
+                "email": new_email,
+                "password": password,
+            },
+        )
+        assert response.status_code == 401
+
     def test_update_email_missing_password(self, app, client):
         user = users_factories.UserFactory(email=self.identifier)
 
@@ -757,15 +770,25 @@ class UpdateUserEmailTest:
         assert not mails_testing.outbox  # missing password => no update, no email sent
 
     @pytest.mark.parametrize(
-        "email,password",
+        "email,password,response_status,expected_error_code,expected_error_message,email_sent",
         [
-            ("new@example.com", "not_the_users_password"),
-            ("invalid.password@format.com", "short"),
-            ("not_an_email", "some_random_string"),
+            ("not_an_email", "not_the_users_password", 400, None, None, []),
+            (
+                "used_email@example.com",
+                "not_the_users_password",
+                account_errors.WrongPasswordError.status_code,
+                account_errors.WrongPasswordError().errors["error_code"],
+                account_errors.WrongPasswordError().errors["message"],
+                [],
+            ),
+            ("used_email@example.com", "this_is_the_users_password", 204, None, None, []),
         ],
     )
-    def test_update_email_errors(self, client, app, email, password):
-        user = users_factories.UserFactory(email=self.identifier)
+    def test_update_email_erros(
+        self, client, app, email, password, response_status, expected_error_code, expected_error_message, email_sent
+    ):
+        users_factories.UserFactory(email="used_email@example.com")
+        user = users_factories.UserFactory(email=self.identifier, password="this_is_the_users_password")
 
         client.with_token(user.email)
         response = client.post(
@@ -776,57 +799,24 @@ class UpdateUserEmailTest:
             },
         )
 
-        assert response.status_code == 400
+        assert response.status_code == response_status
+        if expected_error_code:
+            assert response.json["error_code"] == expected_error_code
+        if expected_error_message:
+            assert response.json["message"] == expected_error_message
 
         user = users_models.User.query.filter_by(email=self.identifier).first()
         assert user.email == self.identifier
-        assert not mails_testing.outbox
-
-    def test_update_email_existing_email(self, app, client):
-        """
-        Test that if the email already exists, an OK response is sent
-        but nothing is sent (avoid user enumeration).
-        """
-        password = "some_random_string"
-        user = users_factories.UserFactory(email=self.identifier, password=password)
-        other_user = users_factories.UserFactory(email="other_" + self.identifier)
-
-        client.with_token(user.email)
-        response = client.post(
-            "/native/v1/profile/update_email",
-            json={
-                "email": other_user.email,
-                "password": password,
-            },
-        )
-
-        assert response.status_code == 204
-
-        user = users_models.User.query.filter_by(email=self.identifier).first()
-        assert user.email == self.identifier
-        assert not mails_testing.outbox
+        assert mails_testing.outbox == email_sent
 
     @override_settings(MAX_EMAIL_UPDATE_ATTEMPTS=1)
-    def test_update_email_too_many_attempts(self, app, client):
+    @patch("pcapi.core.users.email.update.check_no_ongoing_email_update_request")
+    def test_update_email_too_many_attempts(self, _mock, client):
         """
         Test that a user cannot request more than
         MAX_EMAIL_UPDATE_ATTEMPTS email update change within the last
         N days.
         """
-        self.send_two_requests(client, "EMAIL_UPDATE_ATTEMPTS_LIMIT")
-
-    @override_settings(MAX_EMAIL_UPDATE_ATTEMPTS=2)
-    def test_token_exists(self, app, client):
-        """
-        Test that the expected error code is sent back when a token
-        already exists.
-
-        Note: override MAX_EMAIL_UPDATE_ATTEMPTS to avoid any
-        EMAIL_UPDATE_ATTEMPTS_LIMIT error.
-        """
-        self.send_two_requests(client, "TOKEN_EXISTS")
-
-    def send_two_requests(self, client, error_code):
         password = "some_random_string"
         user = users_factories.UserFactory(email=self.identifier, password=password)
 
@@ -834,14 +824,11 @@ class UpdateUserEmailTest:
         response = client.post(
             "/native/v1/profile/update_email",
             json={
-                "email": "updated_" + user.email,
+                "email": "updated_once_" + user.email,
                 "password": password,
             },
         )
-
         assert response.status_code == 204
-
-        client.with_token(user.email)
         response = client.post(
             "/native/v1/profile/update_email",
             json={
@@ -851,7 +838,35 @@ class UpdateUserEmailTest:
         )
 
         assert response.status_code == 400
-        assert response.json["code"] == error_code
+        assert response.json["error_code"] == account_errors.EMAIL_UPDATE_LIMIT.code
+        assert response.json["message"] == account_errors.EMAIL_UPDATE_LIMIT.message
+
+    def test_ongoing_email_update_blocks_the_next_update_request(self, client):
+        password = "some_random_string"
+        user = users_factories.UserFactory(email=self.identifier, password=password)
+        client.with_token(user.email)
+
+        first_response = client.post(
+            "/native/v1/profile/update_email",
+            json={
+                "email": "updated_" + user.email,
+                "password": password,
+            },
+        )
+        assert first_response.status_code == 204
+
+        client.with_token(user.email)
+        second_response = client.post(
+            "/native/v1/profile/update_email",
+            json={
+                "email": "updated_twice_" + user.email,
+                "password": password,
+            },
+        )
+
+        assert second_response.status_code == 400
+        assert second_response.json["error_code"] == account_errors.EMAIL_UPDATE_PENDING.code
+        assert second_response.json["message"] == account_errors.EMAIL_UPDATE_PENDING.message
 
 
 class GetEMailUpdateStatusTest:
