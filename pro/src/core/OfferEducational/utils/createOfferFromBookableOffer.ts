@@ -47,5 +47,7 @@ export const createOfferFromBookableOffer = async (
 
   await postCollectiveOfferImage({ initialValues, notify, payload })
 
-  navigate(`/offre/collectif/${payload.id}/creation?structure=${offererId}`)
+  navigate(
+    `/offre/collectif/${payload.nonHumanizedId}/creation?structure=${offererId}`
+  )
 }

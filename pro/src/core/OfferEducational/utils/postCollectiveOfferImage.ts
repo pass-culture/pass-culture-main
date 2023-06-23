@@ -6,7 +6,7 @@ import { OfferEducationalFormValues } from '../types'
 interface PostCollectiveOfferImageProps {
   initialValues: OfferEducationalFormValues
   notify: ReturnType<typeof useNotification>
-  payload: { id: string }
+  payload: { id: string; nonHumanizedId: number }
 }
 
 export const postCollectiveOfferImage = async ({
@@ -30,7 +30,7 @@ export const postCollectiveOfferImage = async ({
     /* istanbul ignore next: DEBT to fix */
     const imageFile = new File([blob], '', { type: contentType ?? '' })
     await postCollectiveOfferImageAdapter({
-      offerId: payload.id,
+      offerId: payload.nonHumanizedId,
       imageFile: imageFile,
       /* istanbul ignore next: DEBT to fix */
       credit: imageCredit ?? '',

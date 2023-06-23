@@ -471,7 +471,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public deleteOfferTemplateImage(
-    offerId: string,
+    offerId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
@@ -726,7 +726,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public deleteOfferImage(
-    offerId: string,
+    offerId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
@@ -748,7 +748,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public attachOfferImage(
-    offerId: string,
+    offerId: number,
   ): CancelablePromise<AttachImageResponseModel> {
     return this.httpRequest.request({
       method: 'POST',

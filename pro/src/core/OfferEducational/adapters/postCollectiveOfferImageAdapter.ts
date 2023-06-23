@@ -3,7 +3,7 @@ import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/Moda
 import * as pcapi from 'repository/pcapi/pcapi'
 
 interface Params extends OnImageUploadArgs {
-  offerId: string
+  offerId: number
 }
 
 type PayloadSuccess = AttachImageResponseModel

@@ -83,7 +83,7 @@ class EducationalRedactorResponseModel(BaseModel):
 
 
 class CollectiveOffersBookingResponseModel(BaseModel):
-    id: str
+    id: int
     booking_status: str
 
 
@@ -402,6 +402,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
 
 class CollectiveOfferResponseIdModel(BaseModel):
     id: str
+    nonHumanizedId: int
 
     _humanize_id = humanize_field("id")
 

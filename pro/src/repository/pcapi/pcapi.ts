@@ -52,7 +52,7 @@ export const postImageToVenue = async (
 // thumbnail
 //
 
-type PostImageMethodType<T> = (
+type LegacyPostImageMethodType<T> = (
   offerId: string,
   thumb: File,
   credit: string | null,
@@ -63,7 +63,7 @@ type PostImageMethodType<T> = (
   width?: number
 ) => Promise<T>
 
-export const postImage = (
+export const legacyPostImage = (
   url: string,
   offerId: string,
   thumb: File,
@@ -87,9 +87,44 @@ export const postImage = (
   return client.postWithFormData(url, body)
 }
 
-export const postThumbnail: PostImageMethodType<
+type PostImageMethodType<T> = (
+  offerId: number,
+  thumb: File,
+  credit: string | null,
+  thumbUrl?: string,
+  x?: number,
+  y?: number,
+  height?: number,
+  width?: number
+) => Promise<T>
+
+export const postImage = (
+  url: string,
+  offerId: number,
+  thumb: File,
+  credit?: string | null,
+  thumbUrl?: string,
+  x?: number,
+  y?: number,
+  height?: number,
+  width?: number
+) => {
+  const body = new FormData()
+  body.append('offerId', offerId.toString())
+  body.append('thumb', thumb)
+  body.append('credit', credit ?? '')
+  body.append('croppingRectX', x !== undefined ? String(x) : '')
+  body.append('croppingRectY', y !== undefined ? String(y) : '')
+  body.append('croppingRectHeight', height !== undefined ? String(height) : '')
+  body.append('croppingRectWidth', width !== undefined ? String(width) : '')
+  body.append('thumbUrl', thumbUrl ?? '')
+
+  return client.postWithFormData(url, body)
+}
+
+export const postThumbnail: LegacyPostImageMethodType<
   CreateThumbnailResponseModel
-> = (...args) => postImage('/offers/thumbnails', ...args)
+> = (...args) => legacyPostImage('/offers/thumbnails', ...args)
 
 export const postCollectiveOfferImage: PostImageMethodType<
   AttachImageResponseModel
