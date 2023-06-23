@@ -1,7 +1,7 @@
 import React from 'react'
 import { Form } from 'react-final-form'
 
-import { ReactComponent as MotorDisabilitySvg } from 'icons/motor-disability.svg'
+import { ReactComponent as strokeAccessibilityLeg } from 'icons/stroke-accessibility-leg.svg'
 
 import CheckboxField from './CheckboxField'
 
@@ -36,7 +36,7 @@ Default.args = {
 export const WithIcon = Template.bind({})
 
 WithIcon.args = {
-  SvgElement: MotorDisabilitySvg,
+  SvgElement: strokeAccessibilityLeg,
   id: 'test-checkbox',
   label: 'Checkbox label',
   labelAligned: true,

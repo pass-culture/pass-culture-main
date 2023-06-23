@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react'
 
 import { OfferStockResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { ReactComponent as HourGlassIcon } from 'icons/ico-hourglass.svg'
+import strokeHourglass from 'icons/stroke-hourglass.svg'
 import {
   Notification,
   NotificationComponent,
@@ -12,6 +12,7 @@ import {
 import './PrebookingButton.scss'
 import { logOfferConversion } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
@@ -69,7 +70,11 @@ const PrebookingButton = ({
       <div className={`prebooking-button-container ${className}`}>
         {hasPrebookedOffer ? (
           <div className="prebooking-tag">
-            <HourGlassIcon className="prebooking-tag-icon" />
+            <SvgIcon
+              className="prebooking-tag-icon"
+              src={strokeHourglass}
+              alt=""
+            />
             Préréservé
           </div>
         ) : (

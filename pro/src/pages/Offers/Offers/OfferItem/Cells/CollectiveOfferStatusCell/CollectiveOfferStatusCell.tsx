@@ -5,12 +5,13 @@ import { OfferStatus } from 'apiClient/v1'
 import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel'
 import { Offer } from 'core/Offers/types'
 import { ReactComponent as StatusEndedIcon } from 'icons/ico-double-check.svg'
-import { ReactComponent as StatusPreBookedIcon } from 'icons/ico-hourglass.svg'
 import { ReactComponent as StatusExpiredIcon } from 'icons/ico-status-expired.svg'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
 import { ReactComponent as StatusPendingIcon } from 'icons/ico-status-pending.svg'
 import { ReactComponent as StatusRejectedIcon } from 'icons/ico-status-rejected.svg'
 import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
+import strokeHourglass from 'icons/stroke-hourglass.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from '../../OfferItem.module.scss'
 
@@ -59,11 +60,13 @@ export const getCollectiveStatusLabel = (
         <CollectiveStatusLabel
           className={style['status-pre-booked']}
           icon={
-            <StatusPreBookedIcon
+            <SvgIcon
               className={cn(
                 style['status-label-icon'],
                 style['status-pre-booked-icon']
               )}
+              src={strokeHourglass}
+              alt=""
             />
           }
           label="préréservée"
