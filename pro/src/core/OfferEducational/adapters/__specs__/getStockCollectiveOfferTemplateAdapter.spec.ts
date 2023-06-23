@@ -65,7 +65,6 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
         subcategoryId: SubcategoryIdEnum.CONCERT,
         venue: {
           fieldsUpdated: [],
-          id: 'A1',
           isVirtual: false,
           nonHumanizedId: 1,
           managingOfferer: {

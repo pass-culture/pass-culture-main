@@ -14,10 +14,8 @@ export type GetCollectiveOfferVenueResponseModel = {
   dateModifiedAtLastProvider?: string | null;
   departementCode?: string | null;
   fieldsUpdated: Array<string>;
-  id: string;
   idAtProviders?: string | null;
   isVirtual: boolean;
-  lastProviderId?: string | null;
   latitude?: number | null;
   longitude?: number | null;
   managingOfferer: GetCollectiveOfferManagingOffererResponseModel;

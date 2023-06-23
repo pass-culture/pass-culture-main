@@ -42,7 +42,7 @@ describe('OfferNameCell', () => {
       status: OfferStatus.PENDING,
       educationalBooking: {
         booking_status: OfferStatus.PENDING,
-        id: '1',
+        id: 1,
       },
       stocks: [],
       venue: {

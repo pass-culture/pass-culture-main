@@ -12,7 +12,7 @@ import {
 import styles from '../../OfferItem.module.scss'
 
 interface BookingLinkCellProps {
-  bookingId: string
+  bookingId: number
   bookingStatus: string
   offerEventDate?: Date | null
 }
