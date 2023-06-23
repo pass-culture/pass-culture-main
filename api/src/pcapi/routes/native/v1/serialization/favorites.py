@@ -40,6 +40,7 @@ class FavoriteOfferResponse(BaseModel):
     expenseDomains: list[ExpenseDomain]
     isReleased: bool
     isSoldOut: bool = False
+    venueName: str
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
     _convert_start_price = validator("startPrice", pre=True, allow_reuse=True)(convert_to_cent)
@@ -50,6 +51,7 @@ class FavoriteOfferResponse(BaseModel):
     @classmethod
     def from_orm(cls, offer: Offer) -> "FavoriteOfferResponse":
         offer.coordinates = {"latitude": offer.venue.latitude, "longitude": offer.venue.longitude}
+        offer.venueName = offer.venue.common_name
         offer.expenseDomains = get_expense_domains(offer)
         return super().from_orm(offer)
 
