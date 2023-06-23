@@ -138,8 +138,8 @@ const OfferEducational = ({
     const requestIdParams = requestId ? `?requete=${requestId}` : ''
     navigate(
       isTemplate
-        ? `/offre/${payload.id}/collectif/vitrine/creation/recapitulatif`
-        : `/offre/${payload.id}/collectif/stocks${requestIdParams}`
+        ? `/offre/${payload.nonHumanizedId}/collectif/vitrine/creation/recapitulatif`
+        : `/offre/${payload.nonHumanizedId}/collectif/stocks${requestIdParams}`
     )
   }
 

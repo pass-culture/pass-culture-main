@@ -24,7 +24,6 @@ export const getStockCollectiveOfferTemplateAdapter: GetStockCollectiveOfferTemp
         isOk: true,
         message: '',
         payload: {
-          id: offer.id,
           managingOffererId: offer.venue.managingOfferer.nonHumanizedId,
           isActive: offer.isActive,
           status: offer.status,

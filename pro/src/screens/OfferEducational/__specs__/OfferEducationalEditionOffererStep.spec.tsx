@@ -51,10 +51,10 @@ describe('screens | OfferEducational : edition offerer step', () => {
       ]),
       offer: collectiveOfferFactory(
         {
-          venueId: thirdVenueId.toString(),
           nonHumanizedId: thirdVenueId,
           venue: {
             ...collectiveOfferVenueFactory({
+              nonHumanizedId: thirdVenueId,
               managingOfferer: collectiveOfferOffererFactory({
                 nonHumanizedId: secondOffererId,
               }),
@@ -108,7 +108,6 @@ describe('screens | OfferEducational : edition offerer step', () => {
       ]),
       offer: collectiveOfferFactory(
         {
-          venueId: thirdVenueId.toString(),
           nonHumanizedId: thirdVenueId,
           venue: {
             ...collectiveOfferVenueFactory({

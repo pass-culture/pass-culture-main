@@ -24,7 +24,6 @@ export type GetCollectiveOfferResponseModel = {
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;
   hasBookingLimitDatetimesPassed: boolean;
-  id: string;
   imageCredit?: string | null;
   imageUrl?: string | null;
   institution?: EducationalInstitutionResponseModel | null;
@@ -49,7 +48,6 @@ export type GetCollectiveOfferResponseModel = {
   teacher?: EducationalRedactorResponseModel | null;
   templateId?: string | null;
   venue: GetCollectiveOfferVenueResponseModel;
-  venueId: string;
   visualDisabilityCompliant?: boolean | null;
 };
 
