@@ -155,6 +155,7 @@ class Returns200Test:
             "venueId": venue.id,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.CONCERT.id,
+            "bookingContact": "booking@conta.ct",
             "withdrawalDetails": "Veuillez récuperer vos billets à l'accueil :)",
             "withdrawalType": "no_ticket",
             "extraData": {"musicType": -1, "musicSubType": -1},
@@ -391,6 +392,27 @@ class Returns400Test:
             "name": "Dofus",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "withdrawalType": "no_ticket",
+            "mentalDisabilityCompliant": False,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+        }
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+
+        # Then
+        assert response.status_code == 400
+
+    def test_withdrawable_event_offer_must_have_booking_contact(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "venueId": venue.id,
+            "name": "Vernissage",
+            "subcategoryId": subcategories.FESTIVAL_ART_VISUEL.id,
             "mentalDisabilityCompliant": False,
             "audioDisabilityCompliant": False,
             "visualDisabilityCompliant": False,

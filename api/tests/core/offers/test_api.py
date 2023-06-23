@@ -844,6 +844,7 @@ class CreateOfferTest:
                 venue=venue,
                 name="A pretty good offer",
                 subcategory_id=subcategories.CONCERT.id,
+                booking_contact="booking@conta.ct",
                 audio_disability_compliant=True,
                 mental_disability_compliant=True,
                 motor_disability_compliant=True,
