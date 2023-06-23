@@ -20,7 +20,6 @@ describe('extractInitialVisibilityValues', () => {
       beginningDatetime: '2023-02-23T10:46:20Z',
       bookingLimitDatetime: '2023-02-28T10:46:20Z',
       educationalPriceDetail: 'test',
-      id: 'UM',
       nonHumanizedId: 1,
       isBooked: false,
       isCancellable: false,

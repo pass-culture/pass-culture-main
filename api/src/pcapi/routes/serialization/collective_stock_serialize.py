@@ -146,7 +146,6 @@ class CollectiveStockEditionBodyModel(BaseModel):
 
 
 class CollectiveStockResponseModel(BaseModel):
-    id: str
     nonHumanizedId: int
     beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
@@ -154,11 +153,6 @@ class CollectiveStockResponseModel(BaseModel):
     numberOfTickets: int | None
     priceDetail: str | None = Field(alias="educationalPriceDetail")
     isEditable: bool = Field(alias="isEducationalStockEditable")
-    # FIXME (cgaunet, 2022-04-22): Remove this field once ENABLE_NEW_EAC_MODEL is activated
-    stockId: str | None
-
-    _humanize_id = humanize_field("id")
-    _humanize_stock_id = humanize_field("stockId")
 
     class Config:
         allow_population_by_field_name = True
