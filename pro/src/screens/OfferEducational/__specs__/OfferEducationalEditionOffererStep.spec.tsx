@@ -56,7 +56,6 @@ describe('screens | OfferEducational : edition offerer step', () => {
           venue: {
             ...collectiveOfferVenueFactory({
               managingOfferer: collectiveOfferOffererFactory({
-                id: secondOffererId.toString(),
                 nonHumanizedId: secondOffererId,
               }),
             }),
@@ -116,7 +115,6 @@ describe('screens | OfferEducational : edition offerer step', () => {
           venue: {
             ...collectiveOfferVenueFactory({
               managingOfferer: collectiveOfferOffererFactory({
-                id: secondOffererId.toString(),
                 nonHumanizedId: secondOffererId,
               }),
             }),
