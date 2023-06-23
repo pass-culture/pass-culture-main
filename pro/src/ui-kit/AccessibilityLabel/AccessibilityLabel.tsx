@@ -2,10 +2,10 @@ import cn from 'classnames'
 import React from 'react'
 
 import { AccessiblityEnum } from 'core/shared'
-import mentalDisabilitySvg from 'icons/mental-disability.svg'
-import motorDisabilitySvg from 'icons/motor-disability.svg'
+import strokeAccessibilityBrain from 'icons/stroke-accessibility-brain.svg'
 import audioDisabilitySvg from 'icons/stroke-accessibility-ear.svg'
-import visualDisabilitySvg from 'icons/visual-disability.svg'
+import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
+import strokeAccessibilityLeg from 'icons/stroke-accessibility-leg.svg'
 
 import styles from './AccessibilityLabel.module.scss'
 
@@ -25,15 +25,15 @@ const AccessibilityLabel = ({
     },
     [AccessiblityEnum.MENTAL]: {
       label: 'Psychique ou cognitif',
-      svg: mentalDisabilitySvg,
+      svg: strokeAccessibilityBrain,
     },
     [AccessiblityEnum.MOTOR]: {
       label: 'Moteur',
-      svg: motorDisabilitySvg,
+      svg: strokeAccessibilityLeg,
     },
     [AccessiblityEnum.VISUAL]: {
       label: 'Visuel',
-      svg: visualDisabilitySvg,
+      svg: strokeAccessibilityEye,
     },
     [AccessiblityEnum.NONE]: {
       label: 'Non accessible',
