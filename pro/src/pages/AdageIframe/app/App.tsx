@@ -89,7 +89,8 @@ export const App = (): JSX.Element => {
   const uniqueId = useId()
   const isNewHeaderActive = useActiveFeature('WIP_ENABLE_NEW_ADAGE_HEADER')
   useEffect(() => {
-    initAlgoliaAnalytics(uniqueId)
+    // User token can not contains special characters
+    initAlgoliaAnalytics(uniqueId.replace(/[\W_]/g, '_'))
   }, [])
 
   if (isLoading) {
