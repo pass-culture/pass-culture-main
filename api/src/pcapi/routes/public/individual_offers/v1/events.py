@@ -55,6 +55,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
         with repository.transaction():
             created_offer = offers_api.create_offer(
                 audio_disability_compliant=body.accessibility.audio_disability_compliant,
+                booking_contact=body.booking_contact,
                 booking_email=body.booking_email,
                 description=body.description,
                 duration_minutes=body.duration_minutes,
@@ -196,6 +197,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
         with repository.transaction():
             offer = offers_api.update_offer(
                 offer,
+                bookingContact=update_body.get("booking_contact", offers_api.UNCHANGED),
                 bookingEmail=update_body.get("booking_email", offers_api.UNCHANGED),
                 durationMinutes=update_body.get("duration_minutes", offers_api.UNCHANGED),
                 extraData=serialization.deserialize_extra_data(

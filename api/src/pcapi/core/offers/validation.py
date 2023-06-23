@@ -39,6 +39,7 @@ EDITABLE_FIELDS_FOR_ALLOCINE_STOCK = {"bookingLimitDatetime", "price", "priceCat
 EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER = {
     "isActive",
     "isDuo",
+    "bookingContact",
     "bookingEmail",
     "extraData",
     "withdrawalDetails",

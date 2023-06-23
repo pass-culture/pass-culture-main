@@ -138,6 +138,10 @@ WITHDRAWAL_DETAILS_FIELD = pydantic.Field(
     example="Opening hours, specific office, collection period, access code, email annoucement...",
     alias="itemCollectionDetails",
 )
+BOOKING_CONTACT_FIELD = pydantic.Field(
+    None,
+    description="Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+)
 LOCATION_FIELD = pydantic.Field(
     ...,
     discriminator="type",
@@ -190,6 +194,7 @@ class ImageResponse(serialization.ConfiguredBaseModel):
 
 class OfferCreationBase(serialization.ConfiguredBaseModel):
     accessibility: Accessibility
+    booking_contact: pydantic.EmailStr | None = BOOKING_CONTACT_FIELD
     booking_email: pydantic.EmailStr | None = BOOKING_EMAIL_FIELD
     category_related_fields: CategoryRelatedFields = CATEGORY_RELATED_FIELD
     description: str | None = DESCRIPTION_FIELD
@@ -523,6 +528,7 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     accessibility: PartialAccessibility | None = pydantic.Field(
         description="Accessibility to disabled people. Leave fields undefined to keep current value"
     )
+    booking_contact: pydantic.EmailStr | None = BOOKING_CONTACT_FIELD
     booking_email: pydantic.EmailStr | None = BOOKING_EMAIL_FIELD
     is_active: bool | None = pydantic.Field(
         description="Whether the offer is activated. An inactive offer cannot be booked."
@@ -683,6 +689,7 @@ class PostDatesResponse(serialization.ConfiguredBaseModel):
 class OfferResponse(serialization.ConfiguredBaseModel):
     id: int
     accessibility: Accessibility
+    booking_contact: pydantic.EmailStr | None = BOOKING_CONTACT_FIELD
     booking_email: pydantic.EmailStr | None = BOOKING_EMAIL_FIELD
     description: str | None = DESCRIPTION_FIELD
     external_ticket_office_url: pydantic.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
@@ -710,6 +717,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     def build_offer(cls, offer: offers_models.Offer) -> "OfferResponse":
         return cls(
             id=offer.id,
+            booking_contact=offer.bookingContact,
             booking_email=offer.bookingEmail,
             description=offer.description,
             accessibility=Accessibility.from_orm(offer),
