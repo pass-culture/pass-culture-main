@@ -120,7 +120,6 @@ export const collectiveOfferVenueFactory = (
   return {
     address: 'Ma Rue',
     city: 'Ma Ville',
-    id: `VENUE${currentVenueId}`,
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
     managingOfferer: customOfferer,
