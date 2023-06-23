@@ -108,6 +108,7 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
         with repository.transaction():
             offer = offers_api.create_offer(
                 audio_disability_compliant=body.audio_disability_compliant,
+                booking_contact=body.booking_contact,
                 booking_email=body.booking_email,
                 description=body.description,
                 duration_minutes=body.duration_minutes,
@@ -219,6 +220,7 @@ def patch_offer(
                 ageMax=update_body.get("ageMax", offers_api.UNCHANGED),
                 ageMin=update_body.get("ageMin", offers_api.UNCHANGED),
                 audioDisabilityCompliant=update_body.get("audioDisabilityCompliant", offers_api.UNCHANGED),
+                bookingContact=update_body.get("bookingContact", offers_api.UNCHANGED),
                 bookingEmail=update_body.get("bookingEmail", offers_api.UNCHANGED),
                 conditions=update_body.get("conditions", offers_api.UNCHANGED),
                 description=update_body.get("description", offers_api.UNCHANGED),

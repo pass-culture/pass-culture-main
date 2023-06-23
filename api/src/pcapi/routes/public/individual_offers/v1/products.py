@@ -99,6 +99,7 @@ def post_product_offer(body: serialization.BatchProductOfferCreation) -> seriali
             for product_offer in body.product_offers:
                 created_offer = offers_api.create_offer(
                     audio_disability_compliant=product_offer.accessibility.audio_disability_compliant,
+                    booking_contact=product_offer.booking_contact,
                     booking_email=product_offer.booking_email,
                     description=product_offer.description,
                     external_ticket_office_url=product_offer.external_ticket_office_url,
@@ -465,6 +466,7 @@ def edit_product(body: serialization.BatchProductOfferEdition) -> serialization.
                 updated_offer_from_body = product_offer.dict(exclude_unset=True)
                 updated_offer = offers_api.update_offer(
                     offer,
+                    bookingContact=updated_offer_from_body.get("booking_contact", offers_api.UNCHANGED),
                     bookingEmail=updated_offer_from_body.get("booking_email", offers_api.UNCHANGED),
                     extraData=serialization.deserialize_extra_data(
                         product_offer.category_related_fields, copy.deepcopy(offer.extraData)

@@ -14,6 +14,7 @@ import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 export type GetIndividualOfferResponseModel = {
   activeMediation?: GetOfferMediationResponseModel | null;
   audioDisabilityCompliant?: boolean | null;
+  bookingContact?: string | null;
   bookingEmail?: string | null;
   dateCreated: string;
   description?: string | null;

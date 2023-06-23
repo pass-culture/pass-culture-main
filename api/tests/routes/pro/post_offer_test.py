@@ -43,6 +43,7 @@ class Returns200Test:
         # When
         data = {
             "venueId": venue.id,
+            "bookingContact": "offer@example.com",
             "bookingEmail": "offer@example.com",
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
@@ -61,6 +62,7 @@ class Returns200Test:
         assert response.status_code == 201
         offer_id = response.json["nonHumanizedId"]
         offer = Offer.query.get(offer_id)
+        assert offer.bookingContact == "offer@example.com"
         assert offer.bookingEmail == "offer@example.com"
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
         assert offer.extraData == {"showType": 200, "showSubType": 201}

@@ -6,6 +6,7 @@ import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 
 export type PostOfferBodyModel = {
   audioDisabilityCompliant: boolean;
+  bookingContact?: string | null;
   bookingEmail?: string | null;
   description?: string | null;
   durationMinutes?: number | null;
