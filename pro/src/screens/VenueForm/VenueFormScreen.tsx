@@ -25,8 +25,8 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import { MailOutlineIcon } from 'icons'
-import { ReactComponent as FullPlusIcon } from 'icons/full-plus.svg'
+import { ReactComponent as FullPlusIcon } from 'icons/full-more.svg'
+import { ReactComponent as StrokeMailIcon } from 'icons/stroke-mail.svg'
 import { Button, Title } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -37,7 +37,7 @@ import {
 import { venueSubmitRedirectUrl } from './utils/venueSubmitRedirectUrl'
 import style from './VenueFormScreen.module.scss'
 
-interface IVenueEditionProps {
+interface VenueEditionProps {
   isCreatingVenue: boolean
   initialValues: VenueFormValues
   offerer: IOfferer
@@ -59,7 +59,7 @@ const VenueFormScreen = ({
   venue,
   providers,
   hasBookingQuantity,
-}: IVenueEditionProps): JSX.Element => {
+}: VenueEditionProps): JSX.Element => {
   const navigate = useNavigate()
   const location = useLocation()
   const notify = useNotification()
@@ -282,6 +282,7 @@ const VenueFormScreen = ({
             isNewOnboardingActive={isNewOnboardingActive}
           />
         </form>
+
         {isWithdrawalUpdatedMailActive && isWithdrawalDialogOpen && (
           <ConfirmDialog
             cancelText="Ne pas envoyer"
@@ -289,7 +290,7 @@ const VenueFormScreen = ({
             leftButtonAction={handleCancelWithdrawalDialog}
             onCancel={() => setIsWithdrawalDialogOpen(false)}
             onConfirm={handleConfirmWithdrawalDialog}
-            icon={MailOutlineIcon}
+            icon={StrokeMailIcon}
             title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
           />
         )}

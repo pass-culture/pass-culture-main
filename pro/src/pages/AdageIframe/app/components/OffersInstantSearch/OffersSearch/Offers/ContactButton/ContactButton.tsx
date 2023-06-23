@@ -10,7 +10,7 @@ import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 import ContactDialog from './ContactDialog'
 import RequestFormDialog from './RequestFormDialog'
 
-export interface IContactButtonProps {
+export interface ContactButtonProps {
   className?: string
   contactEmail?: string
   contactPhone?: string | null
@@ -34,7 +34,7 @@ const ContactButton = ({
   queryId,
   userEmail,
   userRole,
-}: IContactButtonProps): JSX.Element => {
+}: ContactButtonProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleButtonClick = () => {

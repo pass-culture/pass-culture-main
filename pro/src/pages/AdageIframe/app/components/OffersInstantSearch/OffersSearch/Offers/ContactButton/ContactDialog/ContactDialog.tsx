@@ -1,7 +1,7 @@
 import React from 'react'
 
 import Dialog from 'components/Dialog/Dialog'
-import { ReactComponent as MailOutlineIcon } from 'icons/ico-mail-outline.svg'
+import { ReactComponent as StrokeMailIcon } from 'icons/stroke-mail.svg'
 import { Button } from 'ui-kit'
 
 import styles from './ContactDialog.module.scss'
@@ -22,7 +22,7 @@ const ContactDialog = ({
       onCancel={closeModal}
       title="Contacter le partenaire culturel"
       extraClassNames={styles['contact-modal-dialog']}
-      icon={MailOutlineIcon}
+      icon={StrokeMailIcon}
     >
       <p className={styles['contact-modal-text']}>
         Afin de personnaliser cette offre, nous vous invitons à entrer en

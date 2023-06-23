@@ -36,7 +36,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import { MailOutlineIcon } from 'icons'
+import { ReactComponent as StrokeMailIcon } from 'icons/stroke-mail.svg'
 
 import { ActionBar } from '../ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks'
@@ -50,7 +50,7 @@ import {
   isOfferSubtypeEvent,
 } from './utils/filterCategories/filterCategories'
 
-export interface IInformationsProps {
+export interface InformationsProps {
   offererId: string
   venueId: string
 }
@@ -58,7 +58,7 @@ export interface IInformationsProps {
 const Informations = ({
   offererId,
   venueId,
-}: IInformationsProps): JSX.Element => {
+}: InformationsProps): JSX.Element => {
   const notify = useNotification()
   const location = useLocation()
   const { currentUser } = useCurrentUser()
@@ -338,7 +338,7 @@ const Informations = ({
             saveDraft: true,
             sendMail: true,
           })}
-          icon={MailOutlineIcon}
+          icon={StrokeMailIcon}
           title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
         />
       )}
