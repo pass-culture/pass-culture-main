@@ -10,7 +10,7 @@ describe('CollectiveOfferConfirmation', () => {
   it('should render confirmation page when offer is pending', () => {
     renderWithProviders(
       <CollectiveOfferConfirmation
-        offererId="O1"
+        offererId={1}
         offerStatus={OfferStatus.PENDING}
         isShowcase={false}
         institutionDisplayName="Collège Bellevue"
@@ -25,7 +25,7 @@ describe('CollectiveOfferConfirmation', () => {
   it('should render confirmation page when offer is active and associated to an institution', () => {
     renderWithProviders(
       <CollectiveOfferConfirmation
-        offererId="O1"
+        offererId={1}
         offerStatus={OfferStatus.ACTIVE}
         isShowcase={false}
         institutionDisplayName="Collège Bellevue"
@@ -43,7 +43,7 @@ describe('CollectiveOfferConfirmation', () => {
   it('should render confirmation page when offer is active and associated to all institutions', () => {
     renderWithProviders(
       <CollectiveOfferConfirmation
-        offererId="O1"
+        offererId={1}
         offerStatus={OfferStatus.ACTIVE}
         isShowcase={false}
         institutionDisplayName=""
@@ -66,7 +66,7 @@ describe('CollectiveOfferConfirmation', () => {
   it('should render confirmation page when offer is active and template', () => {
     renderWithProviders(
       <CollectiveOfferConfirmation
-        offererId=""
+        offererId={null}
         offerStatus={OfferStatus.ACTIVE}
         isShowcase={true}
         institutionDisplayName=""
@@ -81,7 +81,7 @@ describe('CollectiveOfferConfirmation', () => {
   it('should render banner at the bottom of the page', () => {
     renderWithProviders(
       <CollectiveOfferConfirmation
-        offererId=""
+        offererId={null}
         offerStatus={OfferStatus.ACTIVE}
         isShowcase={true}
         institutionDisplayName=""

@@ -29,7 +29,7 @@ const CollectiveOfferConfirmation = ({
       <CollectiveOfferConfirmationScreen
         isShowcase={offer.isTemplate}
         offerStatus={offer?.status}
-        offererId={offer.venue.managingOffererId}
+        offererId={offer.venue.managingOfferer.nonHumanizedId}
         institutionDisplayName={getInstitutionDisplayName()}
       />
       <RouteLeavingGuardCollectiveOfferCreation />

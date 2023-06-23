@@ -1096,7 +1096,7 @@ def can_venue_create_educational_offer(venue_id: int) -> None:
         raise exception
 
 
-def get_educational_offerers(offerer_id: str | None, current_user: users_models.User) -> list[models.Offerer]:
+def get_educational_offerers(offerer_id: int | None, current_user: users_models.User) -> list[models.Offerer]:
     if current_user.has_admin_role and not offerer_id:
         logger.info("Admin user must provide offerer_id as a query parameter")
         raise exceptions.MissingOffererIdQueryParameter

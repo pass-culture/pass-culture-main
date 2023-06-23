@@ -17,7 +17,7 @@ type OfferEducationalFormData = {
 }
 
 const useOfferEducationalFormData = (
-  offererId: string | null,
+  offererId: number | null,
   offer?: CollectiveOffer | CollectiveOfferTemplate
 ): OfferEducationalFormData & { isReady: boolean } => {
   const [isReady, setIsReady] = useState<boolean>(false)

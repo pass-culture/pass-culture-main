@@ -64,14 +64,12 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
         students: [],
         subcategoryId: SubcategoryIdEnum.CONCERT,
         venue: {
-          fieldsUpdated: [],
           isVirtual: false,
           nonHumanizedId: 1,
           managingOfferer: {
             nonHumanizedId: 1,
             name: 'mon offerer',
           },
-          managingOffererId: 'A1',
           name: 'mon lieu',
           thumbCount: 1,
         },

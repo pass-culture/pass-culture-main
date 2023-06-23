@@ -9,7 +9,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import styles from './CollectiveOfferConfirmation.module.scss'
 
 interface CollectiveOfferConfirmationProps {
-  offererId?: string | null
+  offererId?: number | null
   offerStatus?: OfferStatus
   isShowcase?: boolean
   institutionDisplayName?: string

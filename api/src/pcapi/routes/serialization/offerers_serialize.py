@@ -190,7 +190,7 @@ class GetEducationalOfferersResponseModel(BaseModel):
 
 
 class GetEducationalOfferersQueryModel(BaseModel):
-    offerer_id: str | None
+    offerer_id: int | None
 
     class Config:
         extra = "forbid"

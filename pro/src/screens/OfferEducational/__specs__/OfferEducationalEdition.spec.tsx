@@ -51,9 +51,7 @@ describe('screens | OfferEducational', () => {
       offer: collectiveOfferFactory(
         { venueId: 'VENUE_WITH_INTERVENTION_AREA' },
         undefined,
-        collectiveOfferVenueFactory({
-          managingOffererId: 'OFFERER_WITH_INTERVENTION_AREA',
-        })
+        collectiveOfferVenueFactory({})
       ),
       mode: Mode.READ_ONLY,
     }

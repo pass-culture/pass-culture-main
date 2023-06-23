@@ -1013,7 +1013,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public listEducationalOfferers(
-    offererId?: string | null,
+    offererId?: number | null,
   ): CancelablePromise<GetEducationalOfferersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
