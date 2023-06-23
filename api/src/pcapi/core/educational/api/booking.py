@@ -38,9 +38,7 @@ logger = logging.getLogger(__name__)
 def book_collective_offer(
     redactor_informations: RedactorInformation, stock_id: int
 ) -> educational_models.CollectiveBooking:
-    redactor = educational_repository.find_redactor_by_email(redactor_informations.email)
-    if not redactor:
-        redactor = _create_redactor(redactor_informations)
+    redactor = educational_repository.find_or_create_redactor(redactor_informations)
 
     educational_institution = educational_repository.find_educational_institution_by_uai_code(redactor_informations.uai)
     if not educational_institution:
@@ -329,17 +327,6 @@ def notify_pro_pending_booking_confirmation_limit_in_3_days() -> None:
                 "Could not notify offerer three days before booking confirmation limit date",
                 extra={"collectiveBooking": booking.id},
             )
-
-
-def _create_redactor(redactor_informations: RedactorInformation) -> educational_models.EducationalRedactor:
-    redactor = educational_models.EducationalRedactor(
-        email=redactor_informations.email,
-        firstName=redactor_informations.firstname,
-        lastName=redactor_informations.lastname,
-        civility=redactor_informations.civility,
-    )
-    repository.save(redactor)
-    return redactor
 
 
 def _cancel_collective_booking(
