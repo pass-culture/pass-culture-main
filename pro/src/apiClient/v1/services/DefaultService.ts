@@ -653,7 +653,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public cancelCollectiveOfferBooking(
-    offerId: string,
+    offerId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',

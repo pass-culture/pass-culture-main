@@ -146,18 +146,16 @@ def get_user_has_collective_bookings() -> UserHasBookingResponse:
     return UserHasBookingResponse(hasBookings=collective_repository.user_has_bookings(user))
 
 
-@private_api.route("/collective/offers/<offer_id>/cancel_booking", methods=["PATCH"])
+@private_api.route("/collective/offers/<int:offer_id>/cancel_booking", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     on_success_status=204,
     on_error_statuses=[400, 403, 404],
     api=blueprint.pro_private_schema,
 )
-def cancel_collective_offer_booking(offer_id: str) -> None:
-    dehumanized_offer_id = dehumanize_or_raise(offer_id)
-
+def cancel_collective_offer_booking(offer_id: int) -> None:
     try:
-        offerer = offerers_api.get_offerer_by_collective_offer_id(dehumanized_offer_id)
+        offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors(
             {"code": "NO_COLLECTIVE_OFFER_FOUND", "message": "No collective offer has been found with this id"}, 404
@@ -165,7 +163,7 @@ def cancel_collective_offer_booking(offer_id: str) -> None:
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        educational_api_booking.cancel_collective_offer_booking(dehumanized_offer_id)
+        educational_api_booking.cancel_collective_offer_booking(offer_id)
     except collective_exceptions.CollectiveStockNotFound:
         raise ApiErrors(
             {"code": "NO_ACTIVE_STOCK_FOUND", "message": "No active stock has been found with this id"}, 404

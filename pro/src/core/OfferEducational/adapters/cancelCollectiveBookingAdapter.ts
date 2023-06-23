@@ -5,7 +5,7 @@ import { OfferStatus } from 'apiClient/v2'
 type PayloadSuccess = null
 type PayloadFailure = null
 type cancelCollectiveBookingAdapter = Adapter<
-  { offerId?: string; offerStatus?: string },
+  { offerId?: number; offerStatus?: string },
   PayloadSuccess,
   PayloadFailure
 >
@@ -18,8 +18,7 @@ export const cancelCollectiveBookingAdapter: cancelCollectiveBookingAdapter =
         : 'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.'
 
     try {
-      // the api returns no understandable error when the id is not valid, so we deal before calling the api
-      if (!offerId || offerId === '') {
+      if (!offerId) {
         throw new Error('L’identifiant de l’offre n’est pas valide.')
       }
       await api.cancelCollectiveOfferBooking(offerId)
