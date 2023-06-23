@@ -6,13 +6,13 @@ import FormLayout from 'components/FormLayout/FormLayout'
 import MultiDownloadButtonsModal from 'components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import {
   DEFAULT_PRE_FILTERS,
-  TPreFilters,
   GetBookingsCSVFileAdapter,
   GetBookingsXLSFileAdapter,
+  TPreFilters,
 } from 'core/Bookings'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as ResetIcon } from 'icons/reset.svg'
+import { ReactComponent as RefreshIcon } from 'icons/full-refresh.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -193,7 +193,7 @@ const PreFilters = ({
 
         <div className={styles['reset-filters']}>
           <Button
-            Icon={ResetIcon}
+            Icon={RefreshIcon}
             disabled={!hasPreFilters}
             onClick={resetPreFilters}
             variant={ButtonVariant.TERNARY}
