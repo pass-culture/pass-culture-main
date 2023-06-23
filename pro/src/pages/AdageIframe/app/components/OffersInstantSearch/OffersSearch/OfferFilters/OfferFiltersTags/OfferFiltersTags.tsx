@@ -2,13 +2,14 @@ import React, { useContext } from 'react'
 
 import { VenueResponse } from 'apiClient/adage'
 import './OfferFiltersTags.scss'
-import { ReactComponent as ResetIcon } from 'icons/reset.svg'
+import fullRefresh from 'icons/full-refresh.svg'
 import {
   AlgoliaQueryContext,
   FiltersContext,
 } from 'pages/AdageIframe/app/providers'
 import { Option } from 'pages/AdageIframe/app/types'
 import { Tag } from 'ui-kit'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 const OfferFiltersTags = ({
   venueFilter,
@@ -127,7 +128,11 @@ const OfferFiltersTags = ({
           onClick={handleResetFilters}
           type="button"
         >
-          <ResetIcon className="offer-filters-reset-icon" />
+          <SvgIcon
+            src={fullRefresh}
+            alt=""
+            className="offer-filters-reset-icon"
+          />
           Réinitialiser les filtres
         </button>
       )}
