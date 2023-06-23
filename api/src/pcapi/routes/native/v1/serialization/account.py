@@ -274,3 +274,7 @@ class UserSuspensionDateResponse(BaseModel):
 
 class UserSuspensionStatusResponse(BaseModel):
     status: users_models.AccountState
+
+
+class SuspendAccountForSuspiciousLoginRequest(BaseModel):
+    token: str

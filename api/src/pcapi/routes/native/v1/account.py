@@ -4,6 +4,7 @@ import logging
 from flask import current_app as app
 import jwt
 import pydantic
+import sqlalchemy as sa
 
 from pcapi.connectors import api_recaptcha
 import pcapi.core.bookings.exceptions as bookings_exceptions
@@ -371,6 +372,22 @@ def suspend_account(user: users_models.User) -> None:
     except bookings_exceptions.BookingIsAlreadyRefunded:
         raise api_errors.ForbiddenError()
     transactional_mails.send_user_request_to_delete_account_reception_email(user)
+
+
+@blueprint.native_v1.route("/account/suspend_for_suspicious_login", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400, 401, 404])
+def suspend_account_for_suspicious_login(body: serializers.SuspendAccountForSuspiciousLoginRequest) -> None:
+    try:
+        decoded_token = decode_jwt_token(body.token)
+    except jwt.ExpiredSignatureError:
+        raise api_errors.ApiErrors({"reason": "Le token a expiré."}, status_code=401)
+    except (jwt.InvalidTokenError, jwt.InvalidSignatureError):
+        raise api_errors.ApiErrors({"reason": "Le token est invalide."})
+    try:
+        user = users_models.User.query.filter_by(id=decoded_token["userId"]).one()
+    except sa.orm.exc.NoResultFound:
+        raise api_errors.ResourceNotFoundError()
+    api.suspend_account(user, constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, actor=user)
 
 
 @blueprint.native_v1.route("/account/suspend/token_validation/<token>", methods=["GET"])
