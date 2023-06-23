@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react'
 
-import Icon from 'ui-kit/Icon/Icon'
+import { FieldError } from 'ui-kit/form/shared'
 
 import style from './ConstraintCheck.module.scss'
 import { Constraint } from './imageConstraints'
@@ -19,14 +19,7 @@ export const ConstraintCheck: FunctionComponent<ConstraintCheckProps> = ({
     constraints.map(constraint => (
       <li key={constraint.id}>
         {failingConstraints.includes(constraint.id) ? (
-          <strong
-            aria-live="assertive"
-            aria-relevant="all"
-            className={style['constraint-check-failing-constraint']}
-          >
-            <Icon svg="ico-notification-error-red" />
-            {constraint.description}
-          </strong>
+          <FieldError name={constraint.id}>{constraint.description}</FieldError>
         ) : (
           constraint.description
         )}

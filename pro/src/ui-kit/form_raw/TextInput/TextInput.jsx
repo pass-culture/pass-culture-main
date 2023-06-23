@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import InputError from '../Errors/InputError'
+import { FieldError } from 'ui-kit/form/shared'
 
 const TextInput = ({
   countCharacters,
@@ -45,7 +45,11 @@ const TextInput = ({
       type={type}
       value={value}
     />
-    {error && <InputError name={name}>{error}</InputError>}
+    {error && (
+      <FieldError className="it-errors" name={name}>
+        {error}
+      </FieldError>
+    )}
     {countCharacters && (
       <span className="it-character-count">
         {`${value ? value.length : 0}/${maxLength}`}

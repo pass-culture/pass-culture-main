@@ -9,7 +9,7 @@ import { SirenField } from 'ui-kit/form_rff/fields/SirenField'
 
 import styles from './OffererCreationForm.module.scss'
 
-interface IOffererCreationForm
+interface OffererCreationForm
   extends Pick<FormRenderProps, 'handleSubmit' | 'invalid' | 'pristine'> {
   backTo: string
 }
@@ -19,7 +19,7 @@ const OffererCreationForm = ({
   handleSubmit,
   invalid,
   pristine,
-}: IOffererCreationForm): JSX.Element => {
+}: OffererCreationForm): JSX.Element => {
   const renderAddress = useCallback(
     ({ values }: FormSpyRenderProps<CreateOffererQueryModel>) => (
       <div className={styles['op-detail-creation-form']}>

@@ -3,12 +3,12 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Field } from 'react-final-form'
 
+import { FieldError } from 'ui-kit/form/shared'
 import {
   createParseNumberValue,
   composeValidators,
 } from 'utils/react-final-form'
 
-import FieldErrors from '../FieldErrors'
 import getRequiredValidate from '../utils/getRequiredValidate'
 
 function getInputValue(inputType, value) {
@@ -96,7 +96,11 @@ function TextField(props) {
               </div>
               {props.renderTooltip()}
             </div>
-            <FieldErrors meta={meta} />
+            {meta.error && meta.touched && (
+              <FieldError className="it-errors" name={props.name}>
+                {meta.error}
+              </FieldError>
+            )}
           </div>
           <div />
         </div>

@@ -267,21 +267,6 @@ fieldset {
   }
 }
 
-.field-errors {
-  @include fonts.caption;
-
-  color: colors.$primary;
-  display: flex;
-  min-height: rem.torem(24px);
-
-  .field-error-icon {
-    flex-shrink: 0;
-    margin-right: rem.torem(12px);
-    margin-top: rem.torem(2px);
-    width: rem.torem(16px);
-  }
-}
-
 .input[type="email"],
 .input[type="text"],
 .input[type="url"] {
