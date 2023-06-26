@@ -82,7 +82,7 @@ describe('AllocineProviderForm', () => {
     expect(offerImportButton).toBeDisabled()
   })
 
-  it('should be able to submit when price field is filled  on creation', async () => {
+  it('should be able to submit when price field is filled on creation', async () => {
     await renderAllocineProviderForm(props)
 
     const offerImportButton = screen.getByRole('button', {
@@ -239,6 +239,40 @@ describe('AllocineProviderForm', () => {
     await userEvent.clear(priceField)
 
     expect(saveEditionProviderButton).toBeDisabled()
+  })
+
+  it('should not fill input quantity with negative value', async () => {
+    props.isCreatedEntity = false
+    props.initialValues = {
+      price: 15,
+      quantity: 50,
+      isDuo: false,
+    } as InitialValuesProps
+    await renderAllocineProviderForm(props)
+
+    const priceField = screen.getByLabelText('Prix de vente/place', {
+      exact: false,
+    })
+
+    await userEvent.clear(priceField)
+    await userEvent.type(priceField, '-1')
+    expect(priceField).toHaveValue(1)
+  })
+
+  it('should not fill input quantity with negative value', async () => {
+    props.isCreatedEntity = false
+    props.initialValues = {
+      price: 15,
+      quantity: 50,
+      isDuo: false,
+    } as InitialValuesProps
+    await renderAllocineProviderForm(props)
+
+    const quantityField = screen.getByLabelText('Nombre de places/séance')
+
+    await userEvent.clear(quantityField)
+    await userEvent.type(quantityField, '-1')
+    expect(quantityField).toHaveValue(1)
   })
 
   it('should be able to submit when price field is filled on edition', async () => {
