@@ -1,13 +1,19 @@
+from operator import attrgetter
 from operator import itemgetter
 
 from flask import url_for
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import override_features
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class CollectiveOffersGetVenuesTest:
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=False)
     def test_list_venues(self, client):
         # Given
         offerer = offerers_factories.OffererFactory()
@@ -65,6 +71,67 @@ class CollectiveOffersGetVenuesTest:
         # Then
         assert response.status_code == 401
 
+    def test_list_venues_anonymous_returns_401(self, client):
+        # Given
+        offerers_factories.VenueFactory()
+
+        # When
+        response = client.get(url_for("pro_public_api_v2.list_venues"))
+
+        # Then
+        assert response.status_code == 401
+
+
+# FIXME(jeremieb): remove this test class once the FF is no longer
+# needed.
+class CollectiveOffersGetVenuesWithFFTest:
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
+    def test_list_venues(self, client):
+        # Given
+        provider = providers_factories.ProviderFactory()
+        venue1 = providers_factories.VenueProviderFactory(provider=provider).venue
+        venue2 = providers_factories.VenueProviderFactory(provider=provider).venue
+        offerers_factories.ApiKeyFactory(provider=provider)
+
+        offerers_factories.VenueFactory()  # excluded from results
+
+        # When
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            url_for("pro_public_api_v2.list_venues")
+        )
+
+        # Then
+        assert response.status_code == 200
+
+        response_list = sorted(response.json, key=itemgetter("id"))
+        assert response_list == [
+            {
+                "id": venue.id,
+                "name": venue.name,
+                "address": venue.address,
+                "postalCode": venue.postalCode,
+                "city": venue.city,
+            }
+            for venue in sorted([venue1, venue2], key=attrgetter("id"))
+        ]
+
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
+    def test_list_venues_empty(self, client):
+        provider = providers_factories.ProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=provider)
+
+        offerers_factories.VenueFactory()  # excluded from results
+
+        # When
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            url_for("pro_public_api_v2.list_venues")
+        )
+
+        # Then
+        assert response.status_code == 200
+        assert response.json == []
+
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_list_venues_anonymous_returns_401(self, client):
         # Given
         offerers_factories.VenueFactory()

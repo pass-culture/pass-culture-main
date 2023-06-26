@@ -184,3 +184,7 @@ def is_external_ticket_applicable(offer: offers_models.Offer) -> bool:
         and offer.lastProviderId
         and db.session.query(get_cinema_venue_provider_query(offer.venueId).exists()).scalar()
     )
+
+
+def get_providers_venues(provider_id: int) -> BaseQuery:
+    return Venue.query.join(models.VenueProvider).filter(models.VenueProvider.providerId == provider_id)
