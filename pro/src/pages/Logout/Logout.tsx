@@ -10,6 +10,11 @@ const Logout = () => {
 
   api.signout().then(() => {
     dispatch(resetIsInitialized())
+
+    if (window.Beamer !== undefined) {
+      window.Beamer.destroy()
+    }
+
     navigate(`/connexion`)
   })
 
