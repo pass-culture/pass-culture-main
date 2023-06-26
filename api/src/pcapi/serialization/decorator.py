@@ -55,14 +55,6 @@ def _make_string_response(content: BaseModel | None, status_code: int, headers: 
     return response
 
 
-def _log_decoding_json_error(error: BadRequest, extra: dict) -> None:
-    logger.info(
-        "Error when decoding request body: %s",
-        error,
-        extra=extra,
-    )
-
-
 # When using this decorator, you should pass the following arguments when necessary:
 # - query: the query parameters
 # - body : the body of the request
@@ -144,22 +136,15 @@ def spectree_serialize(
         def sync_validate(*args: Any, **kwargs: Any) -> Response:
             try:
                 body_params = request.get_json()
-            except BadRequest as error:
-                extra = {
-                    "contentTypeHeader": request.headers.get("Content-Type"),
-                    "path": request.path,
-                    "lengthHeader": request.headers.get("Content-Length", "missing header")[:20],
-                }
-                try:
-                    content_length = request.headers.get("Content-Length", type=int)
-                except ValueError:
-                    pass
+            except BadRequest:
+                if "/v2/bookings" in request.path:
+                    # FIXME (mageoffray 26-06-2023): because of historical reasons we need to
+                    # not throw error when some invalid json in provided for V2 bookings api.
+                    body_params = None
                 else:
-                    if content_length is not None and content_length < 1000:
-                        extra["data"] = request.get_data()  # type: ignore [assignment]
-
-                _log_decoding_json_error(error, extra)
-                body_params = None
+                    # Since pydantic validator is applied before this method and use a silent json parser, # the only case we should end here is with an PATCH/POST with no validator for body params
+                    # or a GET request with a invalid body. raise
+                    raise
             query_params = request.args
             form = request.form
             if body_in_kwargs:
