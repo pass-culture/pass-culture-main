@@ -9,6 +9,7 @@ from pcapi.core.educational.models import CollectiveBooking
 import pcapi.core.educational.testing as adage_api_testing
 from pcapi.core.educational.utils import get_hashed_user_id
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 
 from tests.conftest import TestClient
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
@@ -54,11 +55,11 @@ class Returns200Test:
         assert booking.educationalYear.adageId == educational_year.adageId
         assert response.json["bookingId"] == booking.id
         assert caplog.records[0].message == "BookingConfirmationButtonClick"
-        assert caplog.records[0].extra == {
-            "analyticsSource": "adage",
-            "stockId": stock.id,
-            "userId": get_hashed_user_id(educational_redactor.email),
-        }
+        assert caplog.records[0].extra["analyticsSource"] == "adage"
+        assert caplog.records[0].extra["stockId"] == stock.id
+        assert caplog.records[0].extra["userId"] == get_hashed_user_id(educational_redactor.email)
+        assert caplog.records[0].extra["uai"] == educational_institution.institutionId
+        assert caplog.records[0].extra["user_role"] == AdageFrontRoles.REDACTOR
 
         assert len(adage_api_testing.adage_requests) == 1
 

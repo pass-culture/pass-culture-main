@@ -483,6 +483,8 @@ def _logs_for_data_purpose(collective_bookings_subquery: sa.orm.Query) -> None:
         educational_utils.log_information_for_data_purpose(
             event_name="BookingUsed",
             extra_data={"bookingId": booking_id, "stockId": stock_id},
+            uai=None,
+            user_role=None,
         )
 
 
