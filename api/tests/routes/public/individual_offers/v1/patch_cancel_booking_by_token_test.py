@@ -37,7 +37,6 @@ class CancelBookingByTokenReturns200Test:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/bookings/v1/cancel/token/{booking.token.lower()}",
         )
-        print(response.json)
         assert response.status_code == 204
         assert booking.status is BookingStatus.CANCELLED
 
@@ -48,12 +47,12 @@ class CancelBookingByTokenReturns200Test:
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        date_1_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         in_3_days = datetime.datetime.utcnow() + datetime.timedelta(days=3)
         event_stock = offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=in_3_days)
         booking = bookings_factories.BookingFactory(
             venue=venue,
-            dateCreated=date_1_days_ago,
+            dateCreated=yesterday,
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
             user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
@@ -83,12 +82,12 @@ class PatchBookingByTokenReturns401Test:
 class PatchBookingByTokenReturns403Test:
     def test_when_booking_event_in_less_than_48_hours(self, client):
         venue, _ = create_offerer_provider_linked_to_venue()
-        in_1_days = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
 
         offer = offers_factories.EventOfferFactory(
             venue=venue,
         )
-        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=in_1_days)
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=tomorrow)
         booking = bookings_factories.BookingFactory(stock=stock)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -101,13 +100,13 @@ class PatchBookingByTokenReturns403Test:
     def test_when_cancelling_after_48_hours_following_booking_date(self, client):
         venue, _ = create_offerer_provider_linked_to_venue()
         in_2_weeks = datetime.datetime.utcnow() + datetime.timedelta(weeks=1)
-        date_3_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        two_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2)
 
         offer = offers_factories.EventOfferFactory(
             venue=venue,
         )
         stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=in_2_weeks)
-        booking = bookings_factories.BookingFactory(stock=stock, dateCreated=date_3_days_ago)
+        booking = bookings_factories.BookingFactory(stock=stock, dateCreated=two_days_ago)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/bookings/v1/cancel/token/{booking.token}",
@@ -118,14 +117,14 @@ class PatchBookingByTokenReturns403Test:
 
     def test_when_cancelling_less_than_48_hours_before_beginning_date(self, client):
         venue, _ = create_offerer_provider_linked_to_venue()
-        date_1_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         in_36_hours = datetime.datetime.utcnow() + datetime.timedelta(hours=36)
 
         offer = offers_factories.EventOfferFactory(
             venue=venue,
         )
         stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=in_36_hours)
-        booking = bookings_factories.BookingFactory(stock=stock, dateCreated=date_1_days_ago)
+        booking = bookings_factories.BookingFactory(stock=stock, dateCreated=yesterday)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/bookings/v1/cancel/token/{booking.token}",
