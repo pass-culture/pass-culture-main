@@ -1,6 +1,8 @@
 from flask import Blueprint
+from flask import request
 from flask_cors import CORS
 from spectree import SecurityScheme
+from werkzeug.exceptions import BadRequest
 
 from pcapi.models import api_errors
 from pcapi.models import feature
@@ -9,7 +11,13 @@ from pcapi.serialization.utils import before_handler
 from pcapi.validation.routes import users_authentifications
 
 
-def check_api_is_enabled() -> None:
+def check_api_is_enabled_and_json_valid() -> None:
+    # We test the json validity because pydantic will not raise an error if the json is not valid.
+    # Pydantic will then try to apply the validation schema and throws unintelligible errors.
+    try:
+        _ = request.get_json()
+    except BadRequest as e:
+        raise api_errors.ApiErrors({"global": [e.description]}, status_code=400)
     if not feature.FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1.is_active():
         raise api_errors.ApiErrors({"global": ["This API is not enabled"]}, status_code=400)
 
@@ -33,7 +41,7 @@ class IndividualApiSpectree(ExtendedSpecTree):
 
 
 v1_blueprint = Blueprint("v1_blueprint", __name__, url_prefix="/v1")
-v1_blueprint.before_request(check_api_is_enabled)
+v1_blueprint.before_request(check_api_is_enabled_and_json_valid)
 CORS(
     v1_blueprint,
     resources={r"/*": {"origins": "*"}},
@@ -41,7 +49,7 @@ CORS(
 )
 
 v1_bookings_blueprint = Blueprint("v1_bookings_blueprint", __name__, url_prefix="/v1")
-v1_bookings_blueprint.before_request(check_api_is_enabled)
+v1_bookings_blueprint.before_request(check_api_is_enabled_and_json_valid)
 CORS(
     v1_bookings_blueprint,
     resources={r"/*": {"origins": "*"}},
