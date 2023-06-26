@@ -1174,7 +1174,7 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}],
-                    "summary": "Récupération de la liste des lieux associés à la structure authentifiée par le jeton d'API.",
+                    "summary": "Récupération de la liste des lieux associés au fournisseur authentifiée par le jeton d'API.",
                     "tags": ["API offres collectives BETA"],
                 }
             },
