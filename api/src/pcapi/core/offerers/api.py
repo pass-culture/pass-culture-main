@@ -226,6 +226,161 @@ def create_venue(
     return venue
 
 
+def delete_venue(venue_id: int) -> None:
+    venue_has_bookings = db.session.query(
+        bookings_models.Booking.query.filter(bookings_models.Booking.venueId == venue_id).exists()
+    ).scalar()
+    venue_has_collective_bookings = db.session.query(
+        educational_models.CollectiveBooking.query.filter(
+            educational_models.CollectiveBooking.venueId == venue_id
+        ).exists()
+    ).scalar()
+
+    if venue_has_bookings or venue_has_collective_bookings:
+        raise exceptions.CannotDeleteVenueWithBookingsException()
+
+    venue_used_as_pricing_point = db.session.query(
+        offerers_models.VenuePricingPointLink.query.filter(
+            offerers_models.VenuePricingPointLink.venueId != venue_id,
+            offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
+        ).exists()
+    ).scalar()
+
+    if venue_used_as_pricing_point:
+        raise exceptions.CannotDeleteVenueUsedAsPricingPointException()
+
+    venue_used_as_reimbursement_point = db.session.query(
+        offerers_models.VenueReimbursementPointLink.query.filter(
+            offerers_models.VenueReimbursementPointLink.venueId != venue_id,
+            offerers_models.VenueReimbursementPointLink.reimbursementPointId == venue_id,
+        ).exists()
+    ).scalar()
+
+    if venue_used_as_reimbursement_point:
+        raise exceptions.CannotDeleteVenueUsedAsReimbursementPointException()
+
+    offer_ids_to_delete = _delete_objects_linked_to_venue(venue_id)
+
+    # Warning: we should only delete rows where the "venueId" is the
+    # venue to delete. We should NOT delete rows where the
+    # "pricingPointId" or the "reimbursementId" is the venue to
+    # delete. If other venues still have the "venue to delete" as
+    # their pricing/reimbursement point, the database will rightfully
+    # raise an error. Either these venues should be deleted first, or
+    # the "venue to delete" should not be deleted.
+    offerers_models.VenuePricingPointLink.query.filter_by(
+        venueId=venue_id,
+    ).delete(synchronize_session=False)
+    offerers_models.VenueReimbursementPointLink.query.filter_by(venueId=venue_id).delete(synchronize_session=False)
+
+    offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id).delete(synchronize_session=False)
+
+    db.session.commit()
+
+    search.unindex_offer_ids(offer_ids_to_delete["individual_offer_ids_to_delete"])
+    search.unindex_collective_offer_ids(offer_ids_to_delete["collective_offer_ids_to_delete"])
+    search.unindex_collective_offer_template_ids(offer_ids_to_delete["collective_offer_template_ids_to_delete"])
+    search.unindex_venue_ids([venue_id])
+
+
+def _delete_objects_linked_to_venue(venue_id: int) -> dict:
+    offers_models.ActivationCode.query.filter(
+        offers_models.ActivationCode.stockId == offers_models.Stock.id,
+        offers_models.Stock.offerId == offers_models.Offer.id,
+        offers_models.Offer.venueId == venue_id,
+        # All bookingId should be None if venue_has_bookings is False, keep condition to get an exception otherwise
+        offers_models.ActivationCode.bookingId.is_(None),
+    ).delete(synchronize_session=False)
+
+    offers_models.Stock.query.filter(
+        offers_models.Stock.offerId == offers_models.Offer.id, offers_models.Offer.venueId == venue_id
+    ).delete(synchronize_session=False)
+    educational_models.CollectiveStock.query.filter(
+        educational_models.CollectiveStock.collectiveOfferId == educational_models.CollectiveOffer.id,
+        educational_models.CollectiveOffer.venueId == venue_id,
+    ).delete(synchronize_session=False)
+
+    users_models.Favorite.query.filter(
+        users_models.Favorite.offerId == offers_models.Offer.id, offers_models.Offer.venueId == venue_id
+    ).delete(synchronize_session=False)
+
+    criteria_models.OfferCriterion.query.filter(
+        criteria_models.OfferCriterion.offerId == offers_models.Offer.id, offers_models.Offer.venueId == venue_id
+    ).delete(synchronize_session=False)
+
+    offers_models.Mediation.query.filter(
+        offers_models.Mediation.offerId == offers_models.Offer.id, offers_models.Offer.venueId == venue_id
+    ).delete(synchronize_session=False)
+
+    providers_models.AllocineVenueProviderPriceRule.query.filter(
+        providers_models.AllocineVenueProviderPriceRule.allocineVenueProviderId
+        == providers_models.AllocineVenueProvider.id,
+        providers_models.AllocineVenueProvider.id == providers_models.VenueProvider.id,
+        providers_models.VenueProvider.venueId == venue_id,
+        offerers_models.Venue.id == venue_id,
+    ).delete(synchronize_session=False)
+    providers_models.AllocineVenueProvider.query.filter(
+        providers_models.AllocineVenueProvider.id == providers_models.VenueProvider.id,
+        providers_models.VenueProvider.venueId == venue_id,
+        offerers_models.Venue.id == venue_id,
+    ).delete(synchronize_session=False)
+    providers_models.AllocinePivot.query.filter_by(venueId=venue_id).delete(synchronize_session=False)
+
+    individual_offer_ids_to_delete = [
+        id[0] for id in db.session.query(offers_models.Offer.id).filter(offers_models.Offer.venueId == venue_id).all()
+    ]
+    collective_offer_ids_to_delete = [
+        id[0]
+        for id in db.session.query(educational_models.CollectiveOffer.id)
+        .filter(educational_models.CollectiveOffer.venueId == venue_id)
+        .all()
+    ]
+    collective_offer_template_ids_to_delete = [
+        id[0]
+        for id in db.session.query(educational_models.CollectiveOfferTemplate.id)
+        .filter(educational_models.CollectiveOfferTemplate.venueId == venue_id)
+        .all()
+    ]
+
+    offer_ids_to_delete = {
+        "individual_offer_ids_to_delete": individual_offer_ids_to_delete,
+        "collective_offer_ids_to_delete": collective_offer_ids_to_delete,
+        "collective_offer_template_ids_to_delete": collective_offer_template_ids_to_delete,
+    }
+
+    offers_models.Offer.query.filter(offers_models.Offer.venueId == venue_id).delete(synchronize_session=False)
+
+    educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.venueId == venue_id).delete(
+        synchronize_session=False
+    )
+
+    educational_models.CollectiveOffer.query.filter(
+        educational_models.CollectiveOffer.id.in_(
+            db.session.query(educational_models.CollectiveOffer.id)
+            .join(educational_models.CollectiveOfferTemplate, educational_models.CollectiveOffer.template)
+            .filter(educational_models.CollectiveOfferTemplate.venueId == venue_id)
+        )
+    ).update({"templateId": None}, synchronize_session=False)
+
+    educational_models.CollectiveOfferTemplate.query.filter(
+        educational_models.CollectiveOfferTemplate.venueId == venue_id
+    ).delete(synchronize_session=False)
+
+    providers_models.VenueProvider.query.filter(providers_models.VenueProvider.venueId == venue_id).delete(
+        synchronize_session=False
+    )
+
+    finance_models.BankInformation.query.filter(finance_models.BankInformation.venueId == venue_id).delete(
+        synchronize_session=False
+    )
+
+    educational_models.CollectiveDmsApplication.query.filter(
+        educational_models.CollectiveDmsApplication.venueId == venue_id
+    ).delete(synchronize_session=False)
+
+    return offer_ids_to_delete
+
+
 def link_venue_to_pricing_point(
     venue: models.Venue,
     pricing_point_id: int,
@@ -1574,3 +1729,72 @@ def _update_external_offerer(offerer: models.Offerer) -> None:
         external_attributes_api.update_external_pro(email)
 
     zendesk_sell.update_offerer(offerer)
+
+
+def delete_offerer(offerer_id: int) -> None:
+    offerer_has_bookings = db.session.query(
+        bookings_models.Booking.query.filter(bookings_models.Booking.offererId == offerer_id).exists()
+    ).scalar()
+
+    if offerer_has_bookings:
+        raise exceptions.CannotDeleteOffererWithBookingsException()
+
+    venue_ids_subquery = offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).with_entities(
+        offerers_models.Venue.id
+    )
+    venue_ids = [venue_id[0] for venue_id in venue_ids_subquery.all()]
+
+    offer_ids_to_delete: dict = {
+        "individual_offer_ids_to_delete": [],
+        "collective_offer_ids_to_delete": [],
+        "collective_offer_template_ids_to_delete": [],
+    }
+    for venue_id in venue_ids:
+        venue_offer_ids_to_delete = _delete_objects_linked_to_venue(venue_id)
+        offer_ids_to_delete["individual_offer_ids_to_delete"] += venue_offer_ids_to_delete[
+            "individual_offer_ids_to_delete"
+        ]
+        offer_ids_to_delete["collective_offer_ids_to_delete"] += venue_offer_ids_to_delete[
+            "collective_offer_ids_to_delete"
+        ]
+
+        offer_ids_to_delete["collective_offer_template_ids_to_delete"] += venue_offer_ids_to_delete[
+            "collective_offer_template_ids_to_delete"
+        ]
+
+    finance_models.BankInformation.query.filter(finance_models.BankInformation.offererId == offerer_id).delete(
+        synchronize_session=False
+    )
+
+    offerers_models.VenuePricingPointLink.query.filter(
+        offerers_models.VenuePricingPointLink.venueId.in_(venue_ids_subquery)
+        | offerers_models.VenuePricingPointLink.pricingPointId.in_(venue_ids_subquery),
+    ).delete(synchronize_session=False)
+    offerers_models.VenueReimbursementPointLink.query.filter(
+        offerers_models.VenueReimbursementPointLink.venueId.in_(venue_ids_subquery)
+        | offerers_models.VenueReimbursementPointLink.reimbursementPointId.in_(venue_ids_subquery),
+    ).delete(synchronize_session=False)
+    offerers_models.Venue.query.filter(offerers_models.Venue.managingOffererId == offerer_id).delete(
+        synchronize_session=False
+    )
+
+    offerers_models.UserOfferer.query.filter(offerers_models.UserOfferer.offererId == offerer_id).delete(
+        synchronize_session=False
+    )
+
+    offers_models.Product.query.filter(offers_models.Product.owningOffererId == offerer_id).delete(
+        synchronize_session=False
+    )
+
+    offerers_models.ApiKey.query.filter(offerers_models.ApiKey.offererId == offerer_id).delete(
+        synchronize_session=False
+    )
+
+    offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_id).delete()
+
+    db.session.commit()
+
+    search.unindex_offer_ids(offer_ids_to_delete["individual_offer_ids_to_delete"])
+    search.unindex_collective_offer_ids(offer_ids_to_delete["collective_offer_ids_to_delete"])
+    search.unindex_collective_offer_template_ids(offer_ids_to_delete["collective_offer_template_ids_to_delete"])
+    search.unindex_venue_ids(venue_ids_subquery)

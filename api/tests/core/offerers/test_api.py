@@ -11,6 +11,12 @@ import pytest
 import sqlalchemy as sa
 
 from pcapi.connectors import sirene
+from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings import models as bookings_models
+from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.criteria import models as criteria_models
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import models as history_models
@@ -23,11 +29,14 @@ import pcapi.core.offerers.exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
+from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.serialization import base as serialize_base
@@ -110,6 +119,262 @@ class CreateVenueTest:
         venue = offerers_models.Venue.query.one()
         assert venue.siret is None
         assert venue.current_pricing_point_id is None
+
+
+class DeleteVenueTest:
+    def test_delete_cascade_venue_should_abort_when_venue_has_any_bookings(self):
+        # Given
+        booking = bookings_factories.BookingFactory()
+        venue_to_delete = booking.venue
+
+        # When
+        with pytest.raises(offerers_exceptions.CannotDeleteVenueWithBookingsException) as exception:
+            offerers_api.delete_venue(venue_to_delete.id)
+
+        # Then
+        assert exception.value.errors["cannotDeleteVenueWithBookingsException"] == [
+            "Lieu non supprimable car il contient des réservations"
+        ]
+        assert offerers_models.Venue.query.count() == 1
+        assert offers_models.Stock.query.count() == 1
+        assert bookings_models.Booking.query.count() == 1
+
+    def test_delete_cascade_venue_should_abort_when_venue_has_any_collective_bookings(self):
+        # Given
+        booking = educational_factories.CollectiveBookingFactory()
+        venue_to_delete = booking.venue
+
+        # When
+        with pytest.raises(offerers_exceptions.CannotDeleteVenueWithBookingsException) as exception:
+            offerers_api.delete_venue(venue_to_delete.id)
+
+        # Then
+        assert exception.value.errors["cannotDeleteVenueWithBookingsException"] == [
+            "Lieu non supprimable car il contient des réservations"
+        ]
+        assert offerers_models.Venue.query.count() == 1
+        assert educational_models.CollectiveStock.query.count() == 1
+        assert educational_models.CollectiveBooking.query.count() == 1
+
+    def test_delete_cascade_venue_should_abort_when_pricing_point_for_another_venue(self):
+        # Given
+        venue_to_delete = offerers_factories.VenueFactory(pricing_point="self")
+        offerers_factories.VenueFactory(pricing_point=venue_to_delete, managingOfferer=venue_to_delete.managingOfferer)
+
+        # When
+        with pytest.raises(offerers_exceptions.CannotDeleteVenueUsedAsPricingPointException) as exception:
+            offerers_api.delete_venue(venue_to_delete.id)
+
+        # Then
+        assert exception.value.errors["cannotDeleteVenueUsedAsPricingPointException"] == [
+            "Lieu non supprimable car il est utilisé comme point de valorisation d'un autre lieu"
+        ]
+        assert offerers_models.Offerer.query.count() == 1
+        assert offerers_models.Venue.query.count() == 2
+        assert offerers_models.VenuePricingPointLink.query.count() == 2
+
+    def test_delete_cascade_venue_should_abort_when_reimbursement_point_for_another_venue(self):
+        # Given
+        venue_to_delete = offerers_factories.VenueFactory(reimbursement_point="self")
+        offerers_factories.VenueFactory(
+            reimbursement_point=venue_to_delete, managingOfferer=venue_to_delete.managingOfferer
+        )
+
+        # When
+        with pytest.raises(offerers_exceptions.CannotDeleteVenueUsedAsReimbursementPointException) as exception:
+            offerers_api.delete_venue(venue_to_delete.id)
+
+        # Then
+        assert exception.value.errors["cannotDeleteVenueUsedAsReimbursementPointException"] == [
+            "Lieu non supprimable car il est utilisé comme point de remboursement d'un autre lieu"
+        ]
+        assert offerers_models.Offerer.query.count() == 1
+        assert offerers_models.Venue.query.count() == 2
+        assert offerers_models.VenueReimbursementPointLink.query.count() == 2
+
+    def test_delete_cascade_venue_should_remove_offers_stocks_and_activation_codes(self):
+        # Given
+        venue_to_delete = offerers_factories.VenueFactory()
+        offers_factories.OfferFactory.create_batch(2, venue=venue_to_delete)
+        stock = offers_factories.StockFactory(offer__venue=venue_to_delete)
+        offers_factories.EventStockFactory(offer__venue=venue_to_delete)
+
+        other_venue = offerers_factories.VenueFactory(managingOfferer=venue_to_delete.managingOfferer)
+        price_category_label = offers_factories.PriceCategoryLabelFactory(label="otherLabel", venue=other_venue)
+        offers_factories.ActivationCodeFactory(stock=stock)
+        stock_with_another_venue = offers_factories.EventStockFactory(
+            offer__venue=other_venue,
+            priceCategory__priceCategoryLabel=price_category_label,
+        )
+        offers_factories.ActivationCodeFactory(stock=stock_with_another_venue)
+
+        # When
+        offerers_api.delete_venue(venue_to_delete.id)
+
+        # Then
+        assert offerers_models.Venue.query.count() == 1
+        assert offers_models.Offer.query.count() == 1
+        assert offers_models.Stock.query.count() == 1
+        assert offers_models.ActivationCode.query.count() == 1
+        assert offers_models.PriceCategory.query.count() == 1
+        assert offers_models.PriceCategoryLabel.query.count() == 1
+
+    def test_delete_cascade_venue_should_remove_collective_offers_stocks_and_templates(self):
+        # Given
+        venue_to_delete = offerers_factories.VenueFactory()
+        educational_factories.CollectiveOfferFactory(venue=venue_to_delete)
+        educational_factories.CollectiveOfferTemplateFactory(venue=venue_to_delete)
+        educational_factories.CollectiveStockFactory(collectiveOffer__venue=venue_to_delete)
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer__venue__managingOfferer=venue_to_delete.managingOfferer
+        )
+
+        # When
+        offerers_api.delete_venue(venue_to_delete.id)
+
+        # Then
+        assert offerers_models.Venue.query.count() == 1
+        assert educational_models.CollectiveOffer.query.count() == 1
+        assert educational_models.CollectiveOfferTemplate.query.count() == 0
+        assert educational_models.CollectiveStock.query.count() == 1
+
+    def test_delete_cascade_venue_should_remove_bank_informations_of_venue(self):
+        # Given
+        venue_to_delete = offerers_factories.VenueFactory()
+        finance_factories.BankInformationFactory(venue=venue_to_delete)
+        finance_factories.BankInformationFactory()
+
+        # When
+        offerers_api.delete_venue(venue_to_delete.id)
+
+        # Then
+        assert offerers_models.Venue.query.count() == 0
+        assert offerers_models.Offerer.query.count() == 1
+        assert finance_models.BankInformation.query.count() == 1
+
+    def test_delete_cascade_venue_should_remove_collective_dms_applications_of_venue(self):
+        # Given
+        venue_to_delete = offerers_factories.VenueFactory()
+        educational_factories.CollectiveDmsApplicationFactory(venue=venue_to_delete)
+
+        # When
+        offerers_api.delete_venue(venue_to_delete.id)
+
+        # Then
+        assert offerers_models.Venue.query.count() == 0
+        assert offerers_models.Offerer.query.count() == 1
+        assert educational_models.CollectiveDmsApplication.query.count() == 0
+
+    def test_delete_cascade_venue_should_remove_pricing_point_links(self):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        offerers_api.delete_venue(venue.id)
+
+        assert offerers_models.Venue.query.count() == 0
+        assert offerers_models.VenuePricingPointLink.query.count() == 0
+
+    def test_delete_cascade_venue_should_remove_reimbursement_point_links(self):
+        venue = offerers_factories.VenueFactory(reimbursement_point="self")
+
+        offerers_api.delete_venue(venue.id)
+
+        assert offerers_models.Venue.query.count() == 0
+        assert offerers_models.VenueReimbursementPointLink.query.count() == 0
+
+    def test_delete_cascade_venue_should_remove_mediations_of_managed_offers(self):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        venue_to_delete = offerers_factories.VenueFactory()
+        offers_factories.MediationFactory(offer__venue=venue_to_delete)
+        offers_factories.MediationFactory(offer__venue=venue)
+
+        # When
+        offerers_api.delete_venue(venue_to_delete.id)
+
+        # Then
+        assert offerers_models.Venue.query.count() == 1
+        assert offers_models.Offer.query.count() == 1
+        assert offers_models.Mediation.query.count() == 1
+
+    def test_delete_cascade_venue_should_remove_favorites_of_managed_offers(self):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        venue_to_delete = offerers_factories.VenueFactory()
+        users_factories.FavoriteFactory(offer__venue=venue_to_delete)
+        users_factories.FavoriteFactory(offer__venue=venue)
+
+        # When
+        offerers_api.delete_venue(venue_to_delete.id)
+
+        # Then
+        assert offerers_models.Venue.query.count() == 1
+        assert offers_models.Offer.query.count() == 1
+        assert users_models.Favorite.query.count() == 1
+
+    def test_delete_cascade_venue_should_remove_criterions(self):
+        # Given
+        offers_factories.OfferFactory(
+            venue=offerers_factories.VenueFactory(), criteria=[criteria_factories.CriterionFactory()]
+        )
+        offer_venue_to_delete = offers_factories.OfferFactory(
+            venue=offerers_factories.VenueFactory(), criteria=[criteria_factories.CriterionFactory()]
+        )
+
+        # When
+        offerers_api.delete_venue(offer_venue_to_delete.venue.id)
+
+        # Then
+        assert offerers_models.Venue.query.count() == 1
+        assert offers_models.Offer.query.count() == 1
+        assert criteria_models.OfferCriterion.query.count() == 1
+        assert criteria_models.Criterion.query.count() == 2
+
+    def test_delete_cascade_venue_should_remove_synchronization_to_provider(self):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        venue_to_delete = offerers_factories.VenueFactory()
+        providers_factories.VenueProviderFactory(venue=venue_to_delete)
+        providers_factories.VenueProviderFactory(venue=venue)
+
+        # When
+        offerers_api.delete_venue(venue_to_delete.id)
+
+        # Then
+        assert offerers_models.Venue.query.count() == 1
+        assert providers_models.VenueProvider.query.count() == 1
+        assert providers_models.Provider.query.count() > 0
+
+    def test_delete_cascade_venue_should_remove_synchronization_to_allocine_provider(self):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        venue_to_delete = offerers_factories.VenueFactory()
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue_to_delete)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue)
+        providers_factories.AllocinePivotFactory(venue=venue_to_delete)
+        providers_factories.AllocinePivotFactory(venue=venue, theaterId="ABCDEFGHIJKLMNOPQR==", internalId="PABCDE")
+
+        # When
+        offerers_api.delete_venue(venue_to_delete.id)
+
+        # Then
+        assert offerers_models.Venue.query.count() == 1
+        assert providers_models.VenueProvider.query.count() == 1
+        assert providers_models.AllocineVenueProvider.query.count() == 1
+        assert providers_models.AllocineVenueProviderPriceRule.query.count() == 1
+        assert providers_models.AllocinePivot.query.count() == 1
+        assert providers_models.Provider.query.count() > 0
+
+    def test_delete_cascade_venue_when_template_has_offer_on_other_venue(self):
+        venue = offerers_factories.VenueFactory()
+        venue2 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
+        offer = educational_factories.CollectiveOfferFactory(venue=venue2, template=template)
+        offerers_api.delete_venue(venue.id)
+
+        assert offerers_models.Venue.query.count() == 1
+        assert educational_models.CollectiveOffer.query.count() == 1
+        assert educational_models.CollectiveOfferTemplate.query.count() == 0
+        assert offer.template is None
 
 
 class EditVenueTest:
@@ -702,6 +967,260 @@ class UpdateOffererTest:
             "city": {"new_info": "Nantes", "old_info": "Portus Namnetum"},
             "address": {"new_info": "29 avenue de Bretagne", "old_info": "1 rue d'Armorique"},
         }
+
+
+class DeleteOffererTest:
+    def test_delete_cascade_offerer_should_abort_when_offerer_has_any_bookings(self):
+        # Given
+        offerer_to_delete = offerers_factories.OffererFactory()
+        offers_factories.OfferFactory(venue__managingOfferer=offerer_to_delete)
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer_to_delete)
+
+        # When
+        with pytest.raises(offerers_exceptions.CannotDeleteOffererWithBookingsException) as exception:
+            offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert exception.value.errors["cannotDeleteOffererWithBookingsException"] == [
+            "Structure juridique non supprimable car elle contient des réservations"
+        ]
+        assert offerers_models.Offerer.query.count() == 1
+        assert offerers_models.Venue.query.count() == 2
+        assert offers_models.Offer.query.count() == 2
+        assert offers_models.Stock.query.count() == 1
+        assert bookings_models.Booking.query.count() == 1
+
+    def test_delete_cascade_offerer_should_remove_managed_venues_offers_stocks_and_activation_codes(self):
+        # Given
+        offerer_to_delete = offerers_factories.OffererFactory()
+        offers_factories.OfferFactory(venue__managingOfferer=offerer_to_delete)
+        stock_1 = offers_factories.StockFactory(offer__venue__managingOfferer=offerer_to_delete)
+        offers_factories.ActivationCodeFactory(stock=stock_1)
+        offers_factories.EventStockFactory(offer__venue__managingOfferer=offerer_to_delete)
+
+        other_offerer = offerers_factories.OffererFactory()
+
+        other_venue = offerers_factories.VenueFactory(managingOfferer=other_offerer)
+        stock_2 = offers_factories.StockFactory(offer__venue=other_venue)
+        offers_factories.ActivationCodeFactory(stock=stock_2)
+        offers_factories.EventStockFactory(offer__venue=other_venue)
+        # When
+        offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 1
+        assert offerers_models.Venue.query.count() == 1
+        assert offers_models.Offer.query.count() == 2
+        assert offers_models.Stock.query.count() == 2
+        assert offers_models.ActivationCode.query.count() == 1
+        assert offers_models.PriceCategory.query.count() == 1
+        assert offers_models.PriceCategoryLabel.query.count() == 1
+
+    def test_delete_cascade_offerer_should_remove_all_user_attachments_to_deleted_offerer(self):
+        # Given
+        pro = users_factories.ProFactory()
+        offerer_to_delete = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer_to_delete)
+        offerers_factories.UserOffererFactory(user=pro)
+
+        # When
+        offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 1
+        assert offerers_models.UserOfferer.query.count() == 1
+
+    def test_delete_cascade_offerer_should_remove_api_key_of_offerer(self):
+        # Given
+        offerer_to_delete = offerers_factories.OffererFactory()
+        offerers_factories.ApiKeyFactory(offerer=offerer_to_delete)
+        offerers_factories.ApiKeyFactory(prefix="other-prefix")
+
+        # When
+        offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 1
+        assert offerers_models.ApiKey.query.count() == 1
+
+    def test_delete_cascade_offerer_should_remove_products_owned_by_offerer(self):
+        # Given
+        offerer_to_delete = offerers_factories.OffererFactory()
+        offers_factories.ProductFactory(owningOfferer=offerer_to_delete)
+        offers_factories.ProductFactory()
+
+        # When
+        offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 0
+        assert offers_models.Product.query.count() == 1
+
+    def test_delete_cascade_offerer_should_remove_bank_informations_of_offerer(self):
+        # Given
+        offerer_to_delete = offerers_factories.OffererFactory()
+        finance_factories.BankInformationFactory(offerer=offerer_to_delete)
+        finance_factories.BankInformationFactory()
+
+        # When
+        offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 0
+        assert finance_models.BankInformation.query.count() == 1
+
+    def test_delete_cascade_offerer_should_remove_offers_of_offerer(self):
+        # Given
+        offerer_to_delete = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer_to_delete)
+        offers_factories.EventOfferFactory(venue=venue)
+        offers_factories.ThingOfferFactory(venue=venue)
+
+        # When
+        offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 0
+        assert offers_models.Offer.query.count() == 0
+
+    def test_delete_cascade_offerer_should_remove_pricing_point_links(self):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        offerers_factories.VenueFactory(pricing_point=venue, managingOfferer=venue.managingOfferer)
+        offerer = venue.managingOfferer
+
+        offerers_api.delete_offerer(offerer.id)
+
+        assert offerers_models.Offerer.query.count() == 0
+        assert offerers_models.Venue.query.count() == 0
+        assert offerers_models.VenuePricingPointLink.query.count() == 0
+
+    def test_delete_cascade_offerer_should_remove_reimbursement_point_links(self):
+        venue = offerers_factories.VenueFactory(reimbursement_point="self")
+        offerer = venue.managingOfferer
+
+        offerers_api.delete_offerer(offerer.id)
+
+        assert offerers_models.Offerer.query.count() == 0
+        assert offerers_models.Venue.query.count() == 0
+        assert offerers_models.VenueReimbursementPointLink.query.count() == 0
+
+    def test_delete_cascade_offerer_should_remove_bank_informations_of_managed_venue(self):
+        # Given
+        venue = offerers_factories.VenueFactory(reimbursement_point="self")
+        finance_factories.BankInformationFactory(venue=venue)
+        offerer_to_delete = venue.managingOfferer
+        finance_factories.BankInformationFactory()
+        assert finance_models.BankInformation.query.count() == 2
+
+        # When
+        offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 0
+        assert offerers_models.Venue.query.count() == 0
+        assert finance_models.BankInformation.query.count() == 1
+
+    def test_delete_cascade_offerer_should_remove_collective_dms_applications_of_managed_venue(self):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        educational_factories.CollectiveDmsApplicationFactory(venue=venue)
+        offerer_to_delete = venue.managingOfferer
+        assert educational_models.CollectiveDmsApplication.query.count() == 1
+
+        # When
+        offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 0
+        assert offerers_models.Venue.query.count() == 0
+        assert educational_models.CollectiveDmsApplication.query.count() == 0
+
+    def test_delete_cascade_offerer_should_remove_mediations_of_managed_offers(self):
+        # Given
+        offerer_to_delete = offerers_factories.OffererFactory()
+        offers_factories.MediationFactory(offer__venue__managingOfferer=offerer_to_delete)
+        offers_factories.MediationFactory()
+
+        # When
+        offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 1
+        assert offerers_models.Venue.query.count() == 1
+        assert offers_models.Offer.query.count() == 1
+        assert offers_models.Mediation.query.count() == 1
+
+    def test_delete_cascade_offerer_should_remove_favorites_of_managed_offers(self):
+        # Given
+        offerer_to_delete = offerers_factories.OffererFactory()
+        users_factories.FavoriteFactory(offer__venue__managingOfferer=offerer_to_delete)
+        users_factories.FavoriteFactory()
+
+        # When
+        offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 1
+        assert offerers_models.Venue.query.count() == 1
+        assert offers_models.Offer.query.count() == 1
+        assert users_models.Favorite.query.count() == 1
+
+    def test_delete_cascade_offerer_should_remove_criterion_attachment_of_managed_offers(self):
+        # Given
+        offerer_to_delete = offerers_factories.OffererFactory()
+        offers_factories.OfferFactory(
+            venue__managingOfferer=offerer_to_delete,
+            criteria=[criteria_factories.CriterionFactory()],
+        )
+        offers_factories.OfferFactory(criteria=[criteria_factories.CriterionFactory()])
+        # When
+        offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 1
+        assert offerers_models.Venue.query.count() == 1
+        assert offers_models.Offer.query.count() == 1
+        assert criteria_models.OfferCriterion.query.count() == 1
+        assert criteria_models.Criterion.query.count() == 2
+
+    def test_delete_cascade_offerer_should_remove_venue_synchronization_to_provider(self):
+        # Given
+        offerer_to_delete = offerers_factories.OffererFactory()
+        providers_factories.VenueProviderFactory(venue__managingOfferer=offerer_to_delete)
+        providers_factories.VenueProviderFactory()
+
+        # When
+        offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 1
+        assert offerers_models.Venue.query.count() == 1
+        assert providers_models.VenueProvider.query.count() == 1
+        assert providers_models.Provider.query.count() > 0
+
+    def test_delete_cascade_offerer_should_remove_venue_synchronization_to_allocine_provider(self):
+        # Given
+        offerer_to_delete = offerers_factories.OffererFactory()
+        venue_to_delete = offerers_factories.VenueFactory(managingOfferer=offerer_to_delete)
+        other_venue = offerers_factories.VenueFactory()
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue_to_delete)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=other_venue)
+        providers_factories.AllocinePivotFactory(venue=venue_to_delete)
+        providers_factories.AllocinePivotFactory(
+            venue=other_venue, theaterId="ABCDEFGHIJKLMNOPQR==", internalId="PABCDE"
+        )
+
+        # When
+        offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 1
+        assert offerers_models.Venue.query.count() == 1
+        assert providers_models.VenueProvider.query.count() == 1
+        assert providers_models.AllocineVenueProvider.query.count() == 1
+        assert providers_models.AllocineVenueProviderPriceRule.query.count() == 1
+        assert providers_models.AllocinePivot.query.count() == 1
+        assert providers_models.Provider.query.count() > 0
 
 
 class SearchOffererTest:
