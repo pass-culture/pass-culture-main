@@ -80,10 +80,6 @@ const AllocineProviderForm = ({
     })
   }
 
-  const required = (value: number | undefined) => {
-    return typeof value === 'number' ? undefined : 'Ce champ est obligatoire'
-  }
-
   const renderForm = useCallback(
     (
       formProps: FormRenderProps<FormValuesProps, FormProps>
@@ -95,6 +91,7 @@ const AllocineProviderForm = ({
         hasValidationErrors: formProps.hasValidationErrors,
         pristine: formProps.pristine,
       })
+
       return (
         <form className="allocine-provider-form">
           {!isLoading && (
@@ -126,14 +123,14 @@ const AllocineProviderForm = ({
                 </div>
                 <NumberField
                   onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) =>
-                    (e.key === 'e' || e.key === 'E') && e.preventDefault()
+                    !/[0-9.,]|Backspace|Enter/.test(e.key) && e.preventDefault()
                   }
                   className="field-text price-field"
                   min="0"
                   name="price"
                   placeholder="Ex : 12€"
                   step={0.01}
-                  validate={required}
+                  required
                 />
               </div>
               <div className="apf-quantity-section">
@@ -146,6 +143,9 @@ const AllocineProviderForm = ({
                   name="quantity"
                   className="quantity-field"
                   placeholder="Illimité"
+                  onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) =>
+                    !/[0-9]|Backspace|Enter/.test(e.key) && e.preventDefault()
+                  }
                   step={1}
                 />
               </div>
@@ -218,7 +218,7 @@ const AllocineProviderForm = ({
         </form>
       )
     },
-    [isCreatedEntity, isLoading, onCancel, required]
+    [isCreatedEntity, isLoading, onCancel]
   )
 
   return (
