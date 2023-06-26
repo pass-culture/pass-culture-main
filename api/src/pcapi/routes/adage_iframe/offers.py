@@ -14,6 +14,7 @@ from pcapi.routes.adage_iframe.serialization import offers as serializers
 from pcapi.routes.adage_iframe.serialization.adage_authentication import (
     get_redactor_information_from_adage_authentication,
 )
+from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -123,6 +124,8 @@ def create_collective_request(
             "comment": body.comment,
         },
         user_email=authenticated_information.email,
+        uai=authenticated_information.uai,
+        user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
 
     return serializers.CollectiveRequestResponseModel.from_orm(collective_request)

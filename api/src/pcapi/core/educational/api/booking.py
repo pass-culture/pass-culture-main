@@ -128,6 +128,8 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
             "stockId": collective_booking.collectiveStockId,
             "bookingId": educational_booking_id,
         },
+        uai=None,
+        user_role=None,
     )
 
     validation.check_collective_booking_status(collective_booking)

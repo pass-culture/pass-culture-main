@@ -1,5 +1,7 @@
 import logging
 
+from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
+
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
 
@@ -23,6 +25,8 @@ class PostLogsTest:
             "analyticsSource": "adage",
             "source": "partnersMap",
             "AdageHeaderFrom": "for_my_institution",
+            "uai": "EAU123",
+            "user_role": AdageFrontRoles.READONLY,
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
         }
 
@@ -50,13 +54,12 @@ class PostLogsTest:
         assert caplog.records[0].message == "SearchButtonClicked"
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
-            "filters": [
-                "departments",
-                "institutionId",
-            ],
             "AdageHeaderFrom": "for_my_institution",
+            "filters": ["departments", "institutionId"],
             "resultsCount": 0,
+            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "uai": "EAU123",
+            "user_role": AdageFrontRoles.READONLY,
         }
 
     def test_log_offer_detail(self, client, caplog):
@@ -79,6 +82,8 @@ class PostLogsTest:
             "stockId": 1,
             "AdageHeaderFrom": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "uai": "EAU123",
+            "user_role": AdageFrontRoles.READONLY,
         }
 
     def test_log_offer_template_details_button_click(self, client, caplog):
@@ -101,6 +106,8 @@ class PostLogsTest:
             "offerId": 1,
             "AdageHeaderFrom": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "uai": "EAU123",
+            "user_role": AdageFrontRoles.READONLY,
         }
 
     def test_log_booking_modal_button_click(self, client, caplog):
@@ -123,6 +130,8 @@ class PostLogsTest:
             "stockId": 1,
             "AdageHeaderFrom": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "uai": "EAU123",
+            "user_role": AdageFrontRoles.READONLY,
         }
 
     def test_log_contact_modal_button_click(self, client, caplog):
@@ -145,6 +154,8 @@ class PostLogsTest:
             "offerId": 1,
             "AdageHeaderFrom": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "uai": "EAU123",
+            "user_role": AdageFrontRoles.READONLY,
         }
 
     def test_log_fav_offer_button_click(self, client, caplog):
@@ -167,6 +178,8 @@ class PostLogsTest:
             "offerId": 1,
             "AdageHeaderFrom": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "uai": "EAU123",
+            "user_role": AdageFrontRoles.READONLY,
         }
 
     def test_log_header_link_click(self, client, caplog):
@@ -190,6 +203,8 @@ class PostLogsTest:
             "header_link_name": "search",
             "AdageHeaderFrom": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "uai": "123456",
+            "user_role": AdageFrontRoles.READONLY,
         }
 
     def test_log_request_form_popin_dismiss(self, client, caplog):
@@ -216,12 +231,14 @@ class PostLogsTest:
         record = [record for record in caplog.records if record.message == "RequestPopinDismiss"][0]
         assert record.extra == {
             "analyticsSource": "adage",
+            "AdageHeaderFrom": "for_my_institution",
             "collectiveOfferTemplateId": 1,
             "phoneNumber": "0601020304",
             "requestedDate": "2022-12-02",
             "totalStudents": 30,
             "totalTeachers": 2,
             "comment": "La première règle du Fight Club est: il est interdit de parler du Fight Club",
-            "AdageHeaderFrom": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "uai": "EAU123",
+            "user_role": AdageFrontRoles.READONLY,
         }
