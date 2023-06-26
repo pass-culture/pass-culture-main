@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -60,32 +60,17 @@ const OffererDetails = ({
     isUserOffererValidated &&
     hasAtLeastOnePhysicalVenue
 
-  const refreshIsExpanded = () => {
-    return (
-      hasMissingReimbursementPoints ||
-      !isUserOffererValidated ||
-      showCreateVenueBanner ||
-      showMissingReimbursmentPointsBanner ||
-      showOffererNotValidatedAndNoPhysicalVenue ||
-      showOffererNotValidatedAndPhysicalVenue
-    )
-  }
-
-  const [isExpanded, setIsExpanded] = useState(refreshIsExpanded())
-
-  useEffect(
-    () => setIsExpanded(refreshIsExpanded()),
-    [
-      isUserOffererValidated,
-      selectedOfferer.isValidated,
-      hasAtLeastOnePhysicalVenue,
-      hasMissingReimbursementPoints,
-    ]
-  )
+  const isExpanded =
+    hasMissingReimbursementPoints ||
+    !isUserOffererValidated ||
+    showCreateVenueBanner ||
+    showMissingReimbursmentPointsBanner ||
+    showOffererNotValidatedAndNoPhysicalVenue ||
+    showOffererNotValidatedAndPhysicalVenue
 
   return (
     <div className="h-card h-card-secondary" data-testid="offerrer-wrapper">
-      <div className={`h-card-inner${isExpanded && ' h-no-bottom'}`}>
+      <div className="h-card-inner h-no-bottom">
         <div className="od-header-large">
           <div className="venue-select">
             <SelectInput
