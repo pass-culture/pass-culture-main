@@ -68,18 +68,19 @@ const App = ({ children }: AppProps): JSX.Element | null => {
   useLogNavigation()
 
   useEffect(() => {
-    if (
-      consentedToBeamer &&
-      currentUser !== null &&
-      window.Beamer !== undefined
-    ) {
-      window.Beamer.update({
-        user_firstname: currentUser.firstName,
-        user_lastname: currentUser.lastName,
-        user_email: currentUser.email,
-        user_id: currentUser.nonHumanizedId.toString(),
-      })
-      window.Beamer.init()
+    if (consentedToBeamer && currentUser !== null) {
+      // We use setTimeout because Beamer might not be loaded yet
+      setTimeout(() => {
+        if (window.Beamer !== undefined) {
+          window.Beamer.update({
+            user_firstname: currentUser.firstName,
+            user_lastname: currentUser.lastName,
+            user_email: currentUser.email,
+            user_id: currentUser.nonHumanizedId.toString(),
+          })
+          window.Beamer.init()
+        }
+      }, 1000)
     }
   }, [currentUser, consentedToBeamer])
 
