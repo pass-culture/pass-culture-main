@@ -42,7 +42,6 @@ from pcapi.core.offerers.models import Venue
 import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.offers.api import update_stock_id_at_providers
 from pcapi.models import db
-from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 from pcapi.utils.urls import build_pc_pro_offerer_link
 from pcapi.utils.urls import build_pc_pro_venue_bookings_link
 from pcapi.utils.urls import build_pc_pro_venue_link
@@ -229,7 +228,7 @@ class VenueView(BaseAdminView):
     def delete_model(self, venue: Venue) -> bool:
         emails = offerers_repository.get_emails_by_venue(venue)
         try:
-            delete_cascade_venue_by_id(venue.id)
+            offerers_api.delete_venue(venue.id)
             for email in emails:
                 update_external_pro(email)
             return True

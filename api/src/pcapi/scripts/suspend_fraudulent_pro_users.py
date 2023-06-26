@@ -1,9 +1,9 @@
+from pcapi.core.offerers.api import delete_offerer
 from pcapi.core.offerers.exceptions import CannotDeleteOffererWithBookingsException
 from pcapi.core.users import constants as user_constants
 from pcapi.core.users.api import suspend_account
 from pcapi.core.users.models import User
 from pcapi.repository.user_queries import find_pro_users_by_email_provider
-from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 
 
 def suspend_fraudulent_pro_by_email_providers(
@@ -18,7 +18,7 @@ def suspend_fraudulent_pro_by_email_providers(
         for fraudulent_pro in fraudulent_pros:
             for user_offerer in fraudulent_pro.UserOfferers:
                 try:
-                    delete_cascade_offerer_by_id(offerer_id=user_offerer.offererId)
+                    delete_offerer(offerer_id=user_offerer.offererId)
                 except CannotDeleteOffererWithBookingsException:
                     pass
 
