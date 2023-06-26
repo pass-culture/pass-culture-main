@@ -11,6 +11,7 @@ declare global {
     Beamer: {
       init: () => void
       update: (config: any) => void
+      destroy: () => void
     }
   }
 }
