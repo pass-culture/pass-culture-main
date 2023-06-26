@@ -36,6 +36,7 @@ def _get_booking_by_token(token: str) -> booking_models.Booking:
 def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
     """
     Consultation of a booking.
+
     The countermark or token code is a character string that identifies the reservation and serves as proof of booking.
     This unique code is generated for each user's booking on the application and is transmitted to them on that occasion.
     """
@@ -63,6 +64,7 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
 def validate_booking_by_token(token: str) -> None:
     """
     Validation of a booking.
+
     To confirm that the booking has been successfully used by the beneficiary.
     """
     booking = _get_booking_by_token(token)
@@ -89,6 +91,7 @@ def validate_booking_by_token(token: str) -> None:
 def cancel_booking_by_token(token: str) -> None:
     """
     Cancel a booking.
+
     To cancel a booking that has not been refunded.
     For events, the booking can be canceled until 48 hours before the event.
     """
