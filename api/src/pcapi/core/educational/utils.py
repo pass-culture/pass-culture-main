@@ -9,6 +9,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.core.users.utils import ALGORITHM_RS_256
 from pcapi.models.feature import FeatureToggle
+from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 from pcapi.utils import requests
 
 
@@ -43,8 +44,10 @@ def get_hashed_user_id(email: str) -> str:
 
 def log_information_for_data_purpose(
     event_name: str,
+    user_role: AdageFrontRoles | None,
     user_email: str | None = None,
     extra_data: dict | None = None,
+    uai: str | None = None,
 ) -> None:
     if extra_data is None:
         extra_data = {}
@@ -52,6 +55,12 @@ def log_information_for_data_purpose(
     if user_email is not None:
         user_id = get_hashed_user_id(user_email)
         extra_data["userId"] = user_id
+
+    if uai is not None:
+        extra_data["uai"] = uai
+
+    if user_role is not None:
+        extra_data["user_role"] = user_role
 
     logger.info(
         event_name,

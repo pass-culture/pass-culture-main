@@ -3,6 +3,7 @@ import logging
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.api import booking as educational_api_booking
+from pcapi.core.educational.repository import find_educational_institution_by_uai_code
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
@@ -10,6 +11,7 @@ from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.adage_authentication import (
     get_redactor_information_from_adage_authentication,
 )
+from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.collective_bookings import BookCollectiveOfferRequest
 from pcapi.routes.adage_iframe.serialization.collective_bookings import BookCollectiveOfferResponse
@@ -26,10 +28,13 @@ def book_collective_offer(
     body: BookCollectiveOfferRequest,
     authenticated_information: AuthenticatedInformation,
 ) -> BookCollectiveOfferResponse:
+    institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="BookingConfirmationButtonClick",
         extra_data={"stockId": body.stockId},
         user_email=authenticated_information.email,
+        uai=authenticated_information.uai,
+        user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
     try:
         booking = educational_api_booking.book_collective_offer(
