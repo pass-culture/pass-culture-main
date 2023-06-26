@@ -1,4 +1,3 @@
-import logging
 from typing import Optional
 from unittest.mock import Mock
 from unittest.mock import patch
@@ -28,6 +27,7 @@ class TestResponseModel(BaseModel):
 
 endpoint_method = Mock()
 test_blueprint = Blueprint("test_blueprint", __name__)
+test_bookings_blueprint = Blueprint("test_bookings_blueprint", __name__)
 
 
 @test_blueprint.route("/test", methods=["GET"])
@@ -39,6 +39,18 @@ def spectree_get_test_endpoint():
 @test_blueprint.route("/test", methods=["POST"])
 @spectree_serialize(on_success_status=204)
 def spectree_post_test_endpoint():
+    endpoint_method()
+
+
+@test_bookings_blueprint.route("/bookings", methods=["GET"])
+@spectree_serialize(on_success_status=204)
+def spectree_get_booking_test_endpoint():
+    endpoint_method()
+
+
+@test_bookings_blueprint.route("/bookings", methods=["POST"])
+@spectree_serialize(on_success_status=204)
+def spectree_post_booking_test_endpoint():
     endpoint_method()
 
 
@@ -108,27 +120,28 @@ class SerializationDecoratorTest:
         assert kwargs["resp"].code_models["HTTP_206"] == TestResponseModel
 
     def test_get_with_content_type_but_without_body(self, client):
-        response = client.get("/test-blueprint/test", headers={"Content-Type": "application/json"})
+        response = client.get("/v2/bookings", headers={"Content-Type": "application/json"})
         assert response.status_code == 204
 
     def test_post_with_content_type_with_invalid_body(self, client, caplog):
-        with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/test-blueprint/test",
-                headers={"Content-Type": "application/json"},
-                raw_json='{"test": "otherTest" "wrongJSON": "why?"}',
-            )
-        assert response.status_code == 204
-        assert (
-            caplog.records[0].message
-            == "Error when decoding request body: 400 Bad Request: The browser (or proxy) sent a request that this server could not understand."
+        response = client.post(
+            "/v2/bookings",
+            headers={"Content-Type": "application/json"},
+            raw_json='{"test": "otherTest" "wrongJSON": "why?"}',
         )
-        assert caplog.records[0].extra == {
-            "contentTypeHeader": "application/json",
-            "data": b'{"test": "otherTest" "wrongJSON": "why?"}',
-            "lengthHeader": "41",
-            "path": "/test-blueprint/test",
-        }
+        assert response.status_code == 204
+
+    def test_get_with_content_type_but_without_body_throws_error(self, client):
+        response = client.get("/test-blueprint/test", headers={"Content-Type": "application/json"})
+        assert response.status_code == 400
+
+    def test_post_with_content_type_with_invalid_body_throw_error(self, client, caplog):
+        response = client.post(
+            "/test-blueprint/test",
+            headers={"Content-Type": "application/json"},
+            raw_json='{"test": "otherTest" "wrongJSON": "why?"}',
+        )
+        assert response.status_code == 400
 
     def test_http_form_validation(self):
         @spectree_serialize(response_model=TestResponseModel, on_success_status=206)
