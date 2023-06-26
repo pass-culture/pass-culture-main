@@ -109,6 +109,14 @@ def check_booking_can_be_cancelled(booking: Booking) -> None:
         raise exceptions.BookingIsAlreadyRefunded()
 
 
+def check_booking_cancellation_limit_date(booking: Booking) -> None:
+    if booking.isConfirmed:
+        raise exceptions.CannotCancelConfirmedBooking(
+            constants.BOOKING_CONFIRMATION_ERROR_CLAUSES["after_creation_delay"],
+            constants.BOOKING_CONFIRMATION_ERROR_CLAUSES["before_event_delay"],
+        )
+
+
 def check_is_usable(booking: Booking) -> None:
     if finance_repository.has_reimbursement(booking):
         raise exceptions.BookingIsAlreadyRefunded()

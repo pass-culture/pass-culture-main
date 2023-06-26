@@ -81,3 +81,34 @@ def validate_booking_by_token(token: str) -> None:
         raise api_errors.ApiErrors(errors={"booking": str(exc)}, status_code=403)
 
     bookings_api.mark_as_used(booking)
+
+
+@blueprint.v1_bookings_blueprint.route("/cancel/token/<token>", methods=["PATCH"])
+@spectree_serialize(on_success_status=204, api=blueprint.v1_bookings_schema, tags=[constants.BOOKING_TAG])
+@api_key_required
+def cancel_booking_by_token(token: str) -> None:
+    """
+    Cancel a booking.
+    To cancel a booking that has not been refunded.
+    For events, the booking can be canceled until 48 hours before the event.
+    """
+    booking = _get_booking_by_token(token)
+    if booking is None:
+        raise api_errors.ApiErrors(errors={"global": "This countermark cannot be found"}, status_code=404)
+
+    try:
+        bookings_validation.check_booking_can_be_cancelled(booking)
+        if booking.stock.offer.isEvent:
+            bookings_validation.check_booking_cancellation_limit_date(booking)
+    except exceptions.BookingIsAlreadyRefunded:
+        raise api_errors.ApiErrors(errors={"payment": "This booking has been reimbursed"}, status_code=403)
+    except exceptions.BookingIsAlreadyUsed:
+        raise api_errors.ApiErrors(errors={"booking": "This booking has been validated"}, status_code=410)
+    except exceptions.BookingIsAlreadyCancelled:
+        raise api_errors.ApiErrors(errors={"booking": "This booking has already been canceled"}, status_code=410)
+    except exceptions.BookingIsNotConfirmed as exc:
+        raise api_errors.ApiErrors(errors={"booking": str(exc)}, status_code=403)
+    except exceptions.CannotCancelConfirmedBooking:
+        raise api_errors.ApiErrors(errors={"booking": "This booking cannot be canceled anymore"}, status_code=403)
+
+    bookings_api.cancel_booking_by_offerer(booking)
