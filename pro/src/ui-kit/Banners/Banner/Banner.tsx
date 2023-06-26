@@ -18,6 +18,7 @@ export type Link = {
   targetLink?: string
   hideLinkIcon?: boolean
   isExternal?: boolean
+  onClick?: () => void
 }
 export interface IBannerProps extends BannerLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
@@ -44,6 +45,7 @@ const Banner = ({
         link.hideLinkIcon ? undefined : link.Icon || FullLink
       }
       className={styles['bi-link']}
+      onClick={link.onClick ?? undefined}
     >
       {link.linkTitle}
     </ButtonLink>

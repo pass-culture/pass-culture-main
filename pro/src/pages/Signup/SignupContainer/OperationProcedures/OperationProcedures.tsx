@@ -3,9 +3,7 @@ import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import fullLink from 'icons/full-link.svg'
 import Banner from 'ui-kit/Banners/Banner'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './OperationProcedures.module.scss'
 
@@ -14,27 +12,22 @@ const OperatingProcedures = (): JSX.Element => {
   const { logEvent } = useAnalytics()
 
   return (
-    <Banner type={'notification-info'}>
+    <Banner
+      type="notification-info"
+      links={[
+        {
+          href: 'https://passculture.zendesk.com/hc/fr/articles/4411999179665',
+          linkTitle: 'Consulter notre centre d’aide',
+          isExternal: true,
+          onClick: () =>
+            logEvent?.(Events.CLICKED_HELP_CENTER, { from: location.pathname }),
+        },
+      ]}
+    >
       <p className={styles.description}>
         Nous vous invitons à prendre connaissance des modalités de
         fonctionnement avant de renseigner les champs suivants.
       </p>
-      <a
-        className="tertiary-link"
-        href="https://passculture.zendesk.com/hc/fr/articles/4411999179665"
-        onClick={() =>
-          logEvent?.(Events.CLICKED_HELP_CENTER, { from: location.pathname })
-        }
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        <SvgIcon
-          src={fullLink}
-          alt="Site aide.passculture.app"
-          className={styles.icon}
-        />
-        <span>Consulter notre centre d’aide</span>
-      </a>
     </Banner>
   )
 }
