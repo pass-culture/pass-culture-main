@@ -366,3 +366,38 @@ class PostProductByEanTest:
         assert created_offer.extraData["ean"] == ean_to_create
         assert created_offer.activeStocks[0].price == decimal.Decimal("98.76")
         assert created_offer.activeStocks[0].quantity == 22
+
+
+@pytest.mark.usefixtures("db_session")
+class JsonFormatTest:
+    def test_invalid_json_raise_syntax_error(self, client):
+        utils.create_offerer_provider_linked_to_venue()
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            raw_json="""{
+                "location": {"type": "physical", "venueId": venue.id},
+                "products": [
+                    {
+                        "ean": product.extraData["ean"],
+                        "idAtProvider": "id",
+                        "stock": {
+                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    } // The error is HERE, it misses a comma
+                    {
+                        "ean": unknown_ean,
+                        "stock": {
+                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    },
+                ],
+            },""",
+        )
+
+        assert response.status_code == 400
+        assert "global" in response.json
