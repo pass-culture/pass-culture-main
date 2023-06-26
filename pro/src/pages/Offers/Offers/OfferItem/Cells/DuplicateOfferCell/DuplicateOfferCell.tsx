@@ -10,7 +10,7 @@ import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/create
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import copyIcon from 'icons/full-duplicate.svg'
-import moreBisIcon from 'icons/full-more.svg'
+import fullPlusIcon from 'icons/full-plus.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
 import DuplicateOfferDialog from './DuplicateOfferDialog'
@@ -61,7 +61,7 @@ const DuplicateOfferCell = ({
     <>
       <ListIconButton
         onClick={handleCreateOfferClick}
-        icon={isShowcase ? moreBisIcon : copyIcon}
+        icon={isShowcase ? fullPlusIcon : copyIcon}
         innerRef={buttonRef}
         hasTooltip
       >
