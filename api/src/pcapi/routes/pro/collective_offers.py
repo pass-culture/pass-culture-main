@@ -1,5 +1,6 @@
 import logging
 
+from PIL import UnidentifiedImageError
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
@@ -670,12 +671,16 @@ def attach_offer_template_image(
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     image_as_bytes = form.get_image_as_bytes(request)
-    educational_api_offer.attach_image(
-        obj=offer,
-        image=image_as_bytes,
-        crop_params=form.crop_params,
-        credit=form.credit,
-    )
+
+    try:
+        educational_api_offer.attach_image(
+            obj=offer,
+            image=image_as_bytes,
+            crop_params=form.crop_params,
+            credit=form.credit,
+        )
+    except UnidentifiedImageError:
+        raise ApiErrors({"image": "Impossible d'identifier l'image"}, status_code=400)
 
     return collective_offers_serialize.AttachImageResponseModel.from_orm(offer)
 
