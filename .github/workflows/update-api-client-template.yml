@@ -109,7 +109,11 @@ jobs:
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         id: changes
         run: |
-          if ! [[ -z "$(git status --porcelain $STATUS_ARGS $PATHSPEC)" ]];
+            diff="$(git diff)"
+            if [[ "${diff}" != "" ]];
             then
-              exit 1
+                echo "Found changes in the API."
+                echo "${diff}" | awk '{ print "\t" $0 }'
+                echo "Please run 'yarn generate:api:client:local' and add the changes to the commit(s) that change the API."
+                exit 1
             fi
