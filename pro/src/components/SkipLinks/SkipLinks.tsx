@@ -12,28 +12,35 @@ interface SkipLinksProps {
 
 const SkipLinks = ({ displayMenu = false }: SkipLinksProps): JSX.Element => {
   return (
-    <nav className={styles['skip-links']}>
-      <ul className={styles['skip-list']}>
-        <li>
-          <ButtonLink
-            link={{
-              to: '#content',
-              isExternal: true,
-            }}
-            Icon={FullNextIcon}
-            className={styles['skip-list-button']}
-            variant={ButtonVariant.QUATERNARY}
-          >
-            Aller au contenu
-          </ButtonLink>
-        </li>
-        {displayMenu && (
+    <>
+      <input
+        tabIndex={-1}
+        id="top-page"
+        className={styles['input-focus-top-page']}
+      />
+      <nav className={styles['skip-links']}>
+        <ul className={styles['skip-list']}>
           <li>
-            <a href="#header-navigation">Menu</a>
+            <ButtonLink
+              link={{
+                to: '#content',
+                isExternal: true,
+              }}
+              Icon={FullNextIcon}
+              className={styles['skip-list-button']}
+              variant={ButtonVariant.QUATERNARY}
+            >
+              Aller au contenu
+            </ButtonLink>
           </li>
-        )}
-      </ul>
-    </nav>
+          {displayMenu && (
+            <li>
+              <a href="#header-navigation">Menu</a>
+            </li>
+          )}
+        </ul>
+      </nav>
+    </>
   )
 }
 

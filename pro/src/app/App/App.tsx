@@ -7,6 +7,7 @@ import Notification from 'components/Notification/Notification'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
+import useFocus from 'hooks/useFocus'
 import useLogNavigation from 'hooks/useLogNavigation'
 import usePageTitle from 'hooks/usePageTitle'
 import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
@@ -70,6 +71,7 @@ const App = ({ children }: AppProps): JSX.Element | null => {
   })
   usePageTitle()
   useLogNavigation()
+  useFocus()
 
   useEffect(() => {
     if (consentedToBeamer && currentUser !== null) {
