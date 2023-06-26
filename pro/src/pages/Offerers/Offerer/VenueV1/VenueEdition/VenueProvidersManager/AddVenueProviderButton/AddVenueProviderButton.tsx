@@ -7,7 +7,7 @@ import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import { IVenue } from 'core/Venue'
 import { IProviders } from 'core/Venue/types'
 import useAnalytics from 'hooks/useAnalytics'
-import { MoreCircleIcon } from 'icons'
+import { ReactComponent as FullMore } from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
@@ -69,7 +69,7 @@ const AddVenueProviderButton = ({
         onClick={setCreationMode}
         type="button"
         variant={ButtonVariant.SECONDARY}
-        Icon={MoreCircleIcon}
+        Icon={FullMore}
       >
         Synchroniser des offres
       </Button>

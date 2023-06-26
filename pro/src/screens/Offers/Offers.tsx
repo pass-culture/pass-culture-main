@@ -22,7 +22,7 @@ import { Audience } from 'core/shared'
 import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserValidatedOfferersNamesAdapter'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as AddOfferSvg } from 'icons/full-more.svg'
+import { ReactComponent as FullPlusIcon } from 'icons/full-plus.svg'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as strokeUserIcon } from 'icons/stroke-user.svg'
 import ActionsBar from 'pages/Offers/Offers/ActionsBar'
@@ -143,7 +143,7 @@ const Offers = ({
           })
         }
         link={{ isExternal: false, to: '/offre/creation' }}
-        Icon={AddOfferSvg}
+        Icon={FullPlusIcon}
       >
         Créer une offre
       </ButtonLink>

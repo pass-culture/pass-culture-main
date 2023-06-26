@@ -27,6 +27,7 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-validate.svg' }, // TODO 1 in CollectiveOfferConfirmation
   { src: 'icons/full-infos.svg' },
   { src: 'icons/full-link.svg' }, // TODO 17 uses left inside <ButtonLink> and <Banner> and <InternalBanner>
+  { src: 'icons/full-more.svg' }, // TODO still in 2 ButtonLink and 1 Button
   { src: 'icons/full-mail.svg' }, // TODO 2 uses left inside ButtonLink, 1 use left inside SubmitButton
   { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
   { src: 'icons/full-duplicate.svg' }, // TODO still used in 1 Button
@@ -35,7 +36,7 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
   { src: 'icons/full-refresh.svg' }, // TODO still unsed in <Button>s
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
-  { src: 'icons/full-more.svg' }, // TODO still in 2 ButtonLink and 1 Button
+  { src: 'icons/full-plus.svg' }, // TODO still in 2 ButtonLink and 1 Button
   { src: 'icons/full-sort.svg' },
   { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>

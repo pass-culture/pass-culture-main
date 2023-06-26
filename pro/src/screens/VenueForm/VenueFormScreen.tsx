@@ -7,9 +7,9 @@ import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { VenueProviderResponse } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import {
-  VenueFormValues,
   validationSchema,
   VenueForm,
+  VenueFormValues,
 } from 'components/VenueForm'
 import { generateSiretValidationSchema } from 'components/VenueForm/Informations/SiretOrCommentFields'
 import {
@@ -26,7 +26,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { MailOutlineIcon } from 'icons'
-import { ReactComponent as AddOfferSvg } from 'icons/full-more.svg'
+import { ReactComponent as FullPlusIcon } from 'icons/full-plus.svg'
 import { Button, Title } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -236,7 +236,7 @@ const VenueFormScreen = ({
                     isEdition: false,
                   })
                 }
-                Icon={AddOfferSvg}
+                Icon={FullPlusIcon}
               >
                 <span>Créer une offre</span>
               </Button>
