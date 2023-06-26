@@ -109,6 +109,22 @@ def request_email_update(user: models.User, new_email: str, password: str) -> No
     generate_and_send_beneficiary_confirmation_email_for_email_change(user, new_email)
 
 
+def check_and_expire_token(user: models.User, token: str, token_type: TokenType) -> None:
+    _check_token(user, token, token_type)
+    _expire_token(user, token_type)
+
+
+def _check_token(user: models.User, token_to_check: str, token_type: TokenType) -> None:
+    token_key = get_token_key(user, token_type)
+    if app.redis_client.get(token_key) != token_to_check:  # type: ignore [attr-defined]
+        raise exceptions.InvalidToken()
+
+
+def _expire_token(user: models.User, token_type: TokenType) -> None:
+    token_key = get_token_key(user, token_type)
+    app.redis_client.delete(token_key)  # type: ignore [attr-defined]
+
+
 def confirm_email_update_request(token: str) -> None:
     """Confirm the email update request for the given user"""
 
@@ -118,12 +134,13 @@ def confirm_email_update_request(token: str) -> None:
     user = users_repository.find_user_by_email(current_email)
     if not user:
         raise exceptions.InvalidEmailError()
+    _check_token(user, token, TokenType.CONFIRMATION)
     check_email_address_does_not_exist(new_email)
-    check_and_expire_token(user, token, TokenType.CONFIRMATION)
     try:
+        generate_and_send_beneficiary_validation_email_for_email_change(user, new_email)
         with transaction():
             models.UserEmailHistory.build_confirmation(user, new_email)
-            generate_and_send_beneficiary_validation_email_for_email_change(user, new_email)
+        _expire_token(user, TokenType.CONFIRMATION)
 
     except Exception as error:
         raise ApiErrors(
@@ -244,13 +261,6 @@ def generate_email_change_token(
     key = get_token_key(user, token_type)
     app.redis_client.set(key, token, ex=constants.EMAIL_CHANGE_TOKEN_LIFE_TIME)  # type: ignore [attr-defined]
     return token
-
-
-def check_and_expire_token(user: models.User, token: str, token_type: TokenType) -> None:
-    token_key = get_token_key(user, token_type)
-    if app.redis_client.get(token_key) != token:  # type: ignore [attr-defined]
-        raise exceptions.InvalidToken()
-    app.redis_client.delete(token_key)  # type: ignore [attr-defined]
 
 
 def get_active_token_expiration(user: models.User) -> datetime | None:
