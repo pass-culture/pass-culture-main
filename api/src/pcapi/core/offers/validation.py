@@ -372,7 +372,7 @@ def check_offer_withdrawal(
     if FeatureToggle.PRO_DISABLE_EVENTS_QRCODE.is_active() and is_offer_withdrawable and withdrawal_type is None:
         raise exceptions.WithdrawableEventOfferMustHaveWithdrawal()
 
-    if is_offer_withdrawable and not booking_contact:
+    if FeatureToggle.WIP_MANDATORY_BOOKING_CONTACT.is_active() and is_offer_withdrawable and not booking_contact:
         raise exceptions.WithdrawableEventOfferMustHaveBookingContact()
 
     if withdrawal_type == models.WithdrawalTypeEnum.NO_TICKET and withdrawal_delay is not None:
