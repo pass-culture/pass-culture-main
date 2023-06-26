@@ -157,13 +157,13 @@ def cancel_email_update_request(token: str) -> None:
     user = users_repository.find_user_by_email(current_email)
     if not user:
         raise exceptions.InvalidEmailError()
-    check_and_expire_token(user, token, TokenType.CONFIRMATION)
-    with transaction():
-        models.UserEmailHistory.build_cancellation(user, new_email)
-        api.suspend_account(
-            user, constants.SuspensionReason.FRAUD_SUSPICION, user, "Suspension suite à un changement d'email annulé"
-        )
-        transactional_mails.send_email_update_cancellation_email(user)
+    _check_token(user, token, TokenType.CONFIRMATION)
+    api.suspend_account(
+        user, constants.SuspensionReason.FRAUD_SUSPICION, user, "Suspension suite à un changement d'email annulé"
+    )
+    transactional_mails.send_email_update_cancellation_email(user)
+    models.UserEmailHistory.build_cancellation(user, new_email)
+    _expire_token(user, TokenType.CONFIRMATION)
 
 
 def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:
