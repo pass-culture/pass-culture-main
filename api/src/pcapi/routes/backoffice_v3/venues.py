@@ -32,7 +32,6 @@ import pcapi.core.permissions.models as perm_models
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 import pcapi.routes.serialization.base as serialize_base
-from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 import pcapi.utils.regions as regions_utils
 from pcapi.utils.regions import get_department_codes_for_region
 from pcapi.utils.string import to_camelcase
@@ -453,7 +452,7 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
     emails = offerers_repository.get_emails_by_venue(venue)
 
     try:
-        delete_cascade_venue_by_id(venue.id)
+        offerers_api.delete_venue(venue.id)
     except offerers_exceptions.CannotDeleteVenueWithBookingsException:
         flash("Impossible d'effacer un lieu pour lequel il existe des réservations", "warning")
         return redirect(url_for("backoffice_v3_web.venue.get", venue_id=venue.id), code=303)

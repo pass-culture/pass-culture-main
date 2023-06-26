@@ -20,7 +20,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 import pcapi.utils.regions as regions_utils
 
 from . import forms as offerer_forms
@@ -183,7 +182,7 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
     emails = offerers_repository.get_emails_by_offerer(offerer)
 
     try:
-        delete_cascade_offerer_by_id(offerer.id)
+        offerers_api.delete_offerer(offerer.id)
     except offerers_exceptions.CannotDeleteOffererWithBookingsException:
         flash("Impossible d'effacer une structure juridique pour laquelle il existe des réservations", "warning")
         return _self_redirect(offerer.id)
