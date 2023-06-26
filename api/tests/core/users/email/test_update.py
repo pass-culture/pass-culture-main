@@ -146,3 +146,76 @@ class EmailUpdateConfirmationTest:
 
         # Token is not deleted
         assert app.redis_client.get(email_update.get_token_key(user, email_update.TokenType.CONFIRMATION)) is not None
+
+
+class EmailUpdateCancellationTest:
+    def test_email_update_cancellation(self, app):
+        # Given
+        user = users_factories.UserFactory()
+        email_update_request = users_factories.EmailUpdateEntryFactory(user=user)
+        token = _initialize_token(user, app, email_update_request.newEmail)
+
+        # When
+        email_update.cancel_email_update_request(token)
+
+        # Then
+        # Email history is updated
+        email_history = user.email_history
+        assert len(email_history) == 2
+        assert email_history[0].eventType == EmailHistoryEventTypeEnum.UPDATE_REQUEST
+        assert email_history[1].eventType == EmailHistoryEventTypeEnum.CANCELLATION
+
+        # Account is suspended
+        assert user.is_active is False
+
+        # Token is deleted
+        assert app.redis_client.get(email_update.get_token_key(user, email_update.TokenType.CONFIRMATION)) is None
+
+    def test_email_update_cancellation_with_invalid_token(self, app):
+        # Given
+        user = users_factories.UserFactory()
+        email_update_request = users_factories.EmailUpdateEntryFactory(user=user)
+
+        _initialize_token(user, app, email_update_request.newEmail)
+
+        invalid_token = encode_jwt_payload({"current_email": user.email, "new_email": "new@e.mail"})
+
+        # When
+        with pytest.raises(users_exceptions.InvalidToken):
+            email_update.cancel_email_update_request(invalid_token)
+
+        # Then
+        # Email history is not updated
+        email_history = user.email_history
+        assert len(email_history) == 1
+        assert email_history[0].eventType == EmailHistoryEventTypeEnum.UPDATE_REQUEST
+
+        # Account is not suspended
+        assert user.is_active is True
+
+        # Token is not deleted
+        assert app.redis_client.get(email_update.get_token_key(user, email_update.TokenType.CONFIRMATION)) is not None
+
+    def test_email_update_cancellation_suspend_account_failed(self, app):
+        # Given
+        user = users_factories.UserFactory()
+        email_update_request = users_factories.EmailUpdateEntryFactory(user=user)
+        token = _initialize_token(user, app, email_update_request.newEmail)
+
+        with pytest.raises(Exception):
+            with patch(
+                "pcapi.core.users.api.suspend_account",
+                side_effect=Exception("Something went wrong"),
+            ):
+                email_update.cancel_email_update_request(token)
+
+        # Then
+        # Email history is not updated
+        email_history = user.email_history
+        assert len(email_history) == 1
+
+        # Account is not suspended
+        assert user.is_active is True
+
+        # Token is not deleted
+        assert app.redis_client.get(email_update.get_token_key(user, email_update.TokenType.CONFIRMATION)) is not None
