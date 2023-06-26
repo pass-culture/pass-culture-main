@@ -124,6 +124,7 @@ class FeatureToggle(enum.Enum):
     WIP_RECURRENCE_FILTERS = "Ajoute les filtres et le tri sur la vue liste des récurrences"
     WIP_ENABLE_SATISFACTION_SURVEY = "Activer l'affichage du questionnaire de satisfaction adage"
     WIP_ENABLE_NEW_ADAGE_FILTERS = "Active les nouveaux filtres adage"
+    WIP_MANDATORY_BOOKING_CONTACT = "Rend obligatoire offer.bookingContact pour les offres retirables"
 
     def is_active(self) -> bool:
         if flask.has_request_context():

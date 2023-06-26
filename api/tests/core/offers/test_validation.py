@@ -442,6 +442,15 @@ class CheckOfferWithdrawalTest:
                 booking_contact=None,
             )
 
+    @override_features(WIP_MANDATORY_BOOKING_CONTACT=False)
+    def test_withdrawable_event_offer_can_have_no_booking_contact(self):
+        assert not validation.check_offer_withdrawal(
+            withdrawal_type=None,
+            withdrawal_delay=None,
+            subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
+            booking_contact=None,
+        )
+
 
 @pytest.mark.usefixtures("db_session")
 class CheckOfferExtraDataTest:
