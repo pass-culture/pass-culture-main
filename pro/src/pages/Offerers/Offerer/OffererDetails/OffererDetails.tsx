@@ -13,6 +13,7 @@ import Titles from 'ui-kit/Titles/Titles'
 import { hasProperty } from 'utils/types'
 
 import ApiKey from './ApiKey/ApiKey'
+import AttachmentInvitations from './AttachmentInvitations/AttachmentInvitations'
 import {
   Offerer,
   formatSiren,
@@ -116,6 +117,8 @@ const OffererDetails = () => {
           </span>
         </div>
       </div>
+
+      <AttachmentInvitations offererId={offerer.nonHumanizedId} />
 
       <ApiKey
         maxAllowedApiKeys={offerer.apiKey.maxAllowed}
