@@ -7,14 +7,29 @@ import enum
 
 class Temporality(enum.Enum):
     TODAY = "today"
+    CURRENT_WEEK = "current_week"
+    EVERYDAY = "everyday"
 
 
 class Mood(enum.Enum):
     FESTIVE = "festive"
+    CHILL = "chill"
+    LOVE = "love"
+    ADVENTURE = "adventure"
 
 
 class Theme(enum.Enum):
     ADVENTURE = "adventure"
+    CLASSIC = "classic"
+    CREATIVE = "creative"
+    DARK_MODE = "dark_mode"
+    FUN = "fun"
+    MYSTERY = "mystery"
+    NERD = "nerd"
+    ROMANCE = "romance"
+    SCARY = "scary"
+    SUMMER_VIBE = "summer_vibe"
+    
 
 
 class MoodboardOffersRequest(BaseModel):

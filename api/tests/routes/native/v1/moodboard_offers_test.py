@@ -1,5 +1,6 @@
 import pytest
 from tests.conftest import TestClient
+from pcapi.routes.native.v1.serialization import moodboard_offers as serializers
 
 from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
@@ -32,7 +33,10 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class GetMoodboardOffersTest:
     def test_get_moodboard_offers(self, app):
-        response = TestClient(app.test_client()).get(f"/native/v1/moodboard_offers")
-        assert response.status_code == 200
+        response = TestClient(app.test_client()).post(f"/native/v1/moodboard_offers", {
+            "temporality": serializers.Temporality.TODAY.value,
+            "mood": serializers.Mood.FESTIVE.value,
+            "theme": serializers.Theme.SUMMER_VIBE.value
+        })
 
-        print("coucou")
+        assert response.status_code == 200
