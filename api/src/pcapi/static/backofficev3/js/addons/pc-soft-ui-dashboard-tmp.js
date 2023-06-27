@@ -28,6 +28,9 @@ class PcSoftUiDashboardTmp extends PcAddOn {
     }
     
     #initializeChart = () => {
+        if (!this.ctx || !this.ctx2) {
+            return
+        }
         new Chart(this.ctx, {
           type: "bar",
           data: {
