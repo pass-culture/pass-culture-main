@@ -141,6 +141,6 @@
 
 .offcanvas-body {
   flex-grow: 1;
-  padding: 0;
+  padding: var(--#{$prefix}offcanvas-padding-y) var(--#{$prefix}offcanvas-padding-x);
   overflow-y: auto;
 }
