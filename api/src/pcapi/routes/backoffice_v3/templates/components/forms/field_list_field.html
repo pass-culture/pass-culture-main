@@ -1,5 +1,5 @@
 {% set field_id = random_hash() %}
-<div class="d-flex d-flex-column justify-content-between"
+<div class="d-flex flex-column justify-content-center"
      data-field-list-container="{{ field.name }}-{{ field_id }}">
   <ul data-entries-count="{{ field|length }}"
       {% if field.max_entries %}data-max-entries="{{ field.max_entries }}"{% endif %}
@@ -7,7 +7,7 @@
       data-field-name="{{ field.name }}"
       class="field-list list-unstyled flex-grow">
     {% for subfield in field %}
-      <li>
+      <li class="d-flex align-items-start justify-content-between gap-2">
         {{ subfield }}
         <button class="btn btn-primary field-list-rm-btn"
                 type="button">
@@ -16,7 +16,7 @@
       </li>
     {% endfor %}
   </ul>
-  <button class="btn btn-primary field-list-add-btn align-self-start"
+  <button class="btn btn-primary field-list-add-btn align-self-center"
           type="button">
     <i class="bi bi-plus-circle pe-none"></i>
   </button>
